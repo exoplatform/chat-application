@@ -1,0 +1,29 @@
+Hello <%=user%>
+<br/>
+<br/>
+
+<div id="chats"></div>
+<input type="text" name="text" id="msg" autocomplete="off" />
+
+<script>
+  var username = "<%=user%>";
+  var jzChatSend = "@{send()}";
+  var room = "<%=room%>";
+
+  //console.log("index::"+username+"::"+jzChatSend+"::"+room);
+
+  var old = '';
+  /*
+  var source = new EventSource(jzChatSend+'&room='+room);
+
+  source.onmessage = function(e)
+  {
+    console.log("DATA="+e.data);
+    if(old!=e.data){
+      document.getElementById("chats").innerHTML='<span>'+e.data+'</span>';
+      old = e.data;
+    }
+  };
+  */
+
+</script>

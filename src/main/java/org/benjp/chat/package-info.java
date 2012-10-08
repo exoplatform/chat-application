@@ -1,0 +1,22 @@
+@Application(defaultController = Controller.class)
+@Portlet(name="ChatPortlet")
+
+@Assets(
+        scripts = {
+                @Script(src = "js/jquery-1.7.1.min.js"),
+                @Script(src = "js/main.js")
+        },
+        stylesheets = {
+                @Stylesheet(src = "css/main.css")
+        }
+)
+
+
+package org.benjp.chat;
+
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.portlet.Portlet;
+import org.benjp.chat.Controller;
