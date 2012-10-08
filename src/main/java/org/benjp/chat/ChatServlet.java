@@ -1,24 +1,10 @@
 package org.benjp.chat;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FilenameUtils;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class ChatServlet extends HttpServlet
 {
@@ -29,17 +15,20 @@ public class ChatServlet extends HttpServlet
     String[] params = request.getRequestURI().split("/");
     try
     {
-      if (params.length==6)
+      if (params.length==4)
       {
-        String uuid = params[4];
+        String room = params[3];
+        System.out.println("CHAT SERVLET::"+System.currentTimeMillis());
 
-        Node node = getFile(uuid);
-        response.setContentType(getMimeType(node));
+        response.setContentType("text/event-stream");
         response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        InputStream in = getStream(node);
+        //response.setStatus(HttpServletResponse.SC_OK);
+        response.setHeader("Cache-Control", "no-cache");
+        InputStream in = getStream(room);
         OutputStream out = response.getOutputStream();
 
+        out.write(new String("id: "+System.currentTimeMillis()+"\n").getBytes());
+        out.write(new String("data: ").getBytes());
 
         byte[] buffer = new byte[1024];
         int len = in.read(buffer);
@@ -47,6 +36,8 @@ public class ChatServlet extends HttpServlet
           out.write(buffer, 0, len);
           len = in.read(buffer);
         }
+        out.write(new String("\n\n").getBytes());
+        response.flushBuffer();
 
       }
     }
@@ -57,52 +48,22 @@ public class ChatServlet extends HttpServlet
     return;
   }
 
-  private Node getFile(String uuid)
-  {
-    RepositoryService repositoryService = (RepositoryService)PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator)PortalContainer.getInstance().getComponentInstanceOfType(NodeHierarchyCreator.class);
 
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
+  private InputStream getStream(String room) throws IOException
+  {
+    String file = "/Users/benjamin/Desktop/log-"+room+".txt";
+
     try
     {
-      //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService.getCurrentRepository());
-
-      Node node = session.getNodeByUUID(uuid);
-      return node;
+      //Construct the BufferedInputStream object
+      return new FileInputStream(file);
     }
-    catch (Exception e)
+    catch (FileNotFoundException fnfe)
     {
-      System.out.println("JCR::" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+
     }
     return null;
   }
 
-  private InputStream getStream(Node node) throws Exception
-  {
-    if (node.hasNode("jcr:content")) {
-      Node contentNode = node.getNode("jcr:content");
-      if (contentNode.hasProperty("jcr:data")) {
-        InputStream inputStream = contentNode.getProperty("jcr:data").getStream();
-        return inputStream;
-      }
-    }
-    return null;
-
-  }
-
-  private String getMimeType(Node node) throws Exception
-  {
-    if (node.hasNode("jcr:content")) {
-      Node jcrContent = node.getNode("jcr:content");
-      return jcrContent.getProperty("jcr:mimeType").getString();
-    }
-    return null;
-
-  }
 
 }

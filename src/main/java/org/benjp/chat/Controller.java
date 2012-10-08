@@ -34,7 +34,7 @@ public class Controller extends juzu.Controller
   {
     try
     {
-      System.out.println(user + "::" + message + "::" + room);
+      //System.out.println(user + "::" + message + "::" + room);
       if (message!=null && user!=null)
       {
         write(message, user, room);
@@ -46,7 +46,7 @@ public class Controller extends juzu.Controller
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
     String data = "id: "+System.currentTimeMillis()+"\n";
-    data += "data: "+read(room);
+    data += "data: "+read(room) +"\n\n";
 
 
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
@@ -97,7 +97,7 @@ public class Controller extends juzu.Controller
     {
 
     }
-    System.out.println("READ***"+sb.toString());
+    //System.out.println("READ***"+sb.toString());
     return sb.toString();
   }
 

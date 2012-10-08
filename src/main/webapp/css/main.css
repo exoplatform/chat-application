@@ -1,0 +1,30 @@
+#chats
+{
+	height: 300px;
+	overflow-y: scroll;
+}
+#msg
+{
+	font-size: 25px;
+	width: 99%;
+	border: 1px solid #DDD;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 5px auto 20px;
+	padding: 5px;
+	border-image: initial;
+}
+.msgln
+{
+	padding: 3px;
+}
+.msgln:nth-child(odd)
+{
+	background-color: #EAEAEA;
+}
+footer
+{
+	position: fixed;
+	bottom: 10px;
+}

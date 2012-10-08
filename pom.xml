@@ -22,7 +22,24 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-builder</artifactId>
-      <version>0.5.1</version>
+      <version>0.6.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-less</artifactId>
+      <version>0.6.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-portlet</artifactId>
+      <version>0.6.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Other Dependencies -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
     </dependency>
 
   </dependencies>
