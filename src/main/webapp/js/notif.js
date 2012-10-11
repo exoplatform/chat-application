@@ -4,16 +4,36 @@ $(document).ready(function(){
   var notifEventSource = new EventSource(jzNotification+'&user='+username);
 
   notifEventSource.onmessage = function(e){
-    console.log("notifEventSource::onmessage");
+    //console.log("notifEventSource::onmessage::"+e.data);
     if(old!=e.data){
-      var newts = e.data;
-      if (newts!==lastRead) {
-        document.getElementById("chatnotification").innerHTML='<span>NEW</span>';
+      var obj = $.parseJSON(e.data);
+      var newts = obj.last;
+      var newlr = obj.lastRead;
+      console.log(newts+"::"+newlr);
+      if (newts!==newlr) {
+        $("#chatnotification").html('<span>NEW</span>');
       } else {
-        document.getElementById("chatnotification").innerHTML='<span>OLD</span>';
+        $("#chatnotification").html('<span>OLD</span>');
       }
       old = e.data;
     }
   };
+
+  $("#chatnotification").click(function(){
+    $.ajax({
+      url: jzReadNotification,
+      data: {"user": username},
+
+      success:function(response){
+        window.location.href = "/portal/intranet/chat"
+      },
+
+      error:function (xhr, status, error){
+
+      }
+
+    });
+
+  });
 
 });

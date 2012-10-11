@@ -24,6 +24,7 @@ public class NotificationApplication extends Controller
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     Long ts = notificationService.getLastReadNotificationTimestamp(remoteUser);
+    System.out.println("NOTIFAPP::"+remoteUser+"::"+ts);
     index.with().set("user", remoteUser).set("lastRead", ts).render();
   }
 
@@ -31,11 +32,26 @@ public class NotificationApplication extends Controller
   public Response.Content notification(String user) throws IOException
   {
     NotificationBean last = notificationService.getLastNotification(user);
-    String data = "id: "+last.getTimestamp()+"\n";
-    data += "data: "+ last.getTimestamp() +"\n\n";
+    Long lastRead = notificationService.getLastReadNotificationTimestamp(user);
+    String data = "id: "+last.getTimestamp()+":"+lastRead+"\n";
+    data += "data: {\"last\": "+ last.getTimestamp() +", \"lastRead\": "+lastRead+"}\n\n";
 
 
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  public Response.Content readNotification(String user)
+  {
+    try
+    {
+      notificationService.setLastReadNotification(user, notificationService.getLastNotification(user).getTimestamp());
+    }
+    catch (Exception e)
+    {
+      return Response.notFound("Server not available");
+    }
+    return Response.ok("Updated.");
   }
 
 }
