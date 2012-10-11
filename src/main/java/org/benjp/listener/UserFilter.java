@@ -1,6 +1,6 @@
 package org.benjp.listener;
 
-import org.benjp.chat.UserService;
+import org.benjp.services.UserService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

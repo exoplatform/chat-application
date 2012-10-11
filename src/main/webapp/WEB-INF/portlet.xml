@@ -7,7 +7,7 @@
    <portlet>
      <portlet-name>ChatApplication</portlet-name>
      <display-name xml:lang="EN">Chat Application</display-name>
-     <portlet-class>org.benjp.chat.ChatPortlet</portlet-class>
+     <portlet-class>org.benjp.portlet.chat.ChatPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
@@ -24,6 +24,28 @@
      </supports>
      <portlet-info>
        <title>Chat Application</title>
+     </portlet-info>
+   </portlet>
+   <portlet>
+     <portlet-name>ChatNotificationApplication</portlet-name>
+     <display-name xml:lang="EN">Chat Notification Application</display-name>
+     <portlet-class>org.benjp.portlet.notification.NotificationPortlet</portlet-class>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>prod</value>
+     </init-param>
+     <init-param>
+       <name>juzu.inject</name>
+       <value>weld</value>
+       <!--
+       <value>spring</value>
+       -->
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Chat Notification Application</title>
      </portlet-info>
    </portlet>
 </portlet-app>

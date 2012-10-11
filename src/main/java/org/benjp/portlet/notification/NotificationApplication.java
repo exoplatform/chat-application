@@ -1,11 +1,24 @@
 package org.benjp.portlet.notification;
 
-/**
- * Created with IntelliJ IDEA.
- * User: benjamin
- * Date: 11/10/12
- * Time: 15:08
- * To change this template use File | Settings | File Templates.
- */
-public class NotificationApplication {
+import juzu.Controller;
+import juzu.Path;
+import juzu.View;
+import juzu.template.Template;
+
+import javax.inject.Inject;
+import java.io.IOException;
+
+public class NotificationApplication extends Controller
+{
+
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
+
+  @View
+  public void index() throws IOException
+  {
+    index.render();
+  }
+
 }
