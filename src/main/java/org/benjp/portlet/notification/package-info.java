@@ -4,10 +4,11 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/jquery-1.7.1.min.js")
+                @Script(src = "js/jquery-1.7.1.min.js"),
+                @Script(src = "js/notif.js")
         },
         stylesheets = {
-                @Stylesheet(src = "css/main.css")
+                @Stylesheet(src = "css/notif.css")
         }
 )
 

@@ -1,1 +1,7 @@
 <div id="chatnotification">0</div>
+
+
+<script>
+  var username = "<%=user%>";
+  var jzNotification = "@{notification()}";
+</script>

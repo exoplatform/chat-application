@@ -5,10 +5,10 @@
         location = AssetLocation.SERVER,
         scripts = {
                 @Script(src = "js/jquery-1.7.1.min.js"),
-                @Script(src = "js/main.js")
+                @Script(src = "js/chat.js")
         },
         stylesheets = {
-                @Stylesheet(src = "css/main.css")
+                @Stylesheet(src = "css/chat.css")
         }
 )
 

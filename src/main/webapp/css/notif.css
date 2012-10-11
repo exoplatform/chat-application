@@ -1,0 +1,29 @@
+#chatnotification {
+  color: #2F3334;
+  font-weight: normal;
+  padding: 0 20px;
+  display: block;
+  white-space: nowrap;
+  background: none;
+  margin-left: 0;
+  zoom: 1;
+  font-size: 14px!important;
+  font-family: verdana;
+  border: 1px solid transparent;
+  border-bottom: none;
+  line-height: 29px;
+  height: 29px;
+  cursor: pointer;
+}
+
+#chatnotification:hover {
+  border: 1px solid #DBDBDB;
+  border-bottom: none;
+  -moz-box-shadow: 1px 0 0 #e3e3e3;
+  -webkit-box-shadow: 1px 0 0 #E3E3E3;
+  box-shadow: 1px 0 0 #E3E3E3;
+  color: #20263F;
+  position: relative;
+  z-index: 2;
+  background: white;
+}
