@@ -3,6 +3,7 @@ package org.benjp.services;
 import com.mongodb.*;
 import juzu.SessionScoped;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.UnknownHostException;
 

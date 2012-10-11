@@ -6,6 +6,7 @@ import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 import org.benjp.services.ChatService;
+import org.benjp.services.NotificationService;
 import org.benjp.services.UserService;
 
 import javax.inject.Inject;
@@ -25,6 +26,9 @@ public class ChatApplication extends juzu.Controller
 
   @Inject
   ChatService chatService;
+
+  @Inject
+  NotificationService notificationService;
 
   @View
   public void index() throws IOException
@@ -48,6 +52,16 @@ public class ChatApplication extends juzu.Controller
       if (message!=null && user!=null)
       {
         chatService.write(message, user, room);
+        if ("mary".equals(user))
+        {
+          notificationService.addNotification("john", "chat", "new message");
+          notificationService.setLastReadNotification("mary", notificationService.getLastNotification("mary").getTimestamp());
+        }
+        if ("john".equals(user))
+        {
+          notificationService.addNotification("mary", "chat", "new message");
+          notificationService.setLastReadNotification("john", notificationService.getLastNotification("john").getTimestamp());
+        }
       }
 
     }

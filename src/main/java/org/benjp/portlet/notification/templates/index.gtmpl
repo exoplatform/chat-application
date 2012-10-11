@@ -3,5 +3,6 @@
 
 <script>
   var username = "<%=user%>";
+  var lastRead = "<%=lastRead%>";
   var jzNotification = "@{notification()}";
 </script>
