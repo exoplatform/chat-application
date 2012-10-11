@@ -1,4 +1,4 @@
-package org.benjp.chat;
+package org.benjp.services;
 
 import java.util.ArrayList;
 import java.util.Collection;

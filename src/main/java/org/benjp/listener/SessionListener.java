@@ -1,4 +1,4 @@
-package org.benjp.chat.listener;
+package org.benjp.listener;
 
 import org.benjp.chat.UserService;
 

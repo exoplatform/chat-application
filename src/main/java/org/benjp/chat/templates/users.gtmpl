@@ -1,7 +1,0 @@
-  <% if (users!=null) { %>
-    <% users.each { user -> %>
-
-    <%=user%> ;
-
-    <% } %>
-  <% } %>
