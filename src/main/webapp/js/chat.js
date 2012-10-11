@@ -4,7 +4,7 @@ $(document).ready(function(){
   $('#msg').keypress(function(event) {
     var msg = $(this).attr("value");
     if ( event.which == 13 ) {
-      console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
       if(!msg)
       {
         return;
@@ -22,7 +22,7 @@ $(document).ready(function(){
               },
 
         success:function(response){
-          console.log("success");
+          //console.log("success");
           document.getElementById("msg").value = '';
         },
 
@@ -43,7 +43,8 @@ $(document).ready(function(){
     //console.log("chatEventSource::onmessage");
     if(old!=e.data){
       //console.log("DATA="+e.data);
-      document.getElementById("chats").innerHTML='<span>'+e.data+'</span>';
+      $("#chats").html('<span>'+e.data+'</span>');
+      $("#chats").animate({ scrollTop: 2000 }, 'normal');
       old = e.data;
     }
   };
