@@ -9,11 +9,12 @@ $(document).ready(function(){
       var obj = $.parseJSON(e.data);
       var newts = obj.last;
       var newlr = obj.lastRead;
-      console.log(newts+"::"+newlr);
+      var total = obj.total;
+      console.log(newts+"::"+newlr+"::"+total);
       if (newts!==newlr) {
-        $("#chatnotification").html('<span>NEW</span>');
+        $("#chatnotification").html('<span>'+total+'</span>');
       } else {
-        $("#chatnotification").html('<span>OLD</span>');
+        $("#chatnotification").html('<span></span>');
       }
       old = e.data;
     }

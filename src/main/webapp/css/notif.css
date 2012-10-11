@@ -1,13 +1,14 @@
 #chatnotification {
   color: #2F3334;
-  font-weight: normal;
-  padding: 0 20px;
+  font-weight: bold;
+  padding: 0 8px;
   display: block;
   white-space: nowrap;
-  background: none;
+  background-position: 0px 0px;
+  background:url('../img/notif-icon.png') no-repeat 0px 4px;
   margin-left: 0;
   zoom: 1;
-  font-size: 14px!important;
+  font-size: 11px!important;
   font-family: verdana;
   border: 1px solid transparent;
   border-bottom: none;
@@ -25,5 +26,5 @@
   color: #20263F;
   position: relative;
   z-index: 2;
-  background: white;
+  background:url('../img/notif-icon.png');
 }

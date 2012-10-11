@@ -33,8 +33,9 @@ public class NotificationApplication extends Controller
   {
     NotificationBean last = notificationService.getLastNotification(user);
     Long lastRead = notificationService.getLastReadNotificationTimestamp(user);
+    int totalUnread = notificationService.getUnreadNotificationsTotal(user);
     String data = "id: "+last.getTimestamp()+":"+lastRead+"\n";
-    data += "data: {\"last\": "+ last.getTimestamp() +", \"lastRead\": "+lastRead+"}\n\n";
+    data += "data: {\"last\": "+ last.getTimestamp() +", \"lastRead\": "+lastRead+", \"total\": "+totalUnread+"}\n\n";
 
 
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");

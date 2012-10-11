@@ -89,6 +89,20 @@ public class NotificationService
     return bean;
   }
 
+  public int getUnreadNotificationsTotal(String user)
+  {
+    int total = -1;
+    Long lastRead = getLastReadNotificationTimestamp(user);
+    DBCollection coll = db.getCollection(user);
+    BasicDBObject query = new BasicDBObject();
+
+    query.put("timestamp", new BasicDBObject("$gt", lastRead));
+    DBCursor cursor = coll.find(query);
+    total = cursor.size();
+
+    return total;
+  }
+
 
 
 }
