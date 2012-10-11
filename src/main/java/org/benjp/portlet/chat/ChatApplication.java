@@ -23,7 +23,8 @@ public class ChatApplication extends juzu.Controller
   @Path("users.gtmpl")
   Template users;
 
-  String roomdata;
+  @Inject
+  ChatService chatService;
 
   @View
   public void index() throws IOException
@@ -46,7 +47,7 @@ public class ChatApplication extends juzu.Controller
       //System.out.println(user + "::" + message + "::" + room);
       if (message!=null && user!=null)
       {
-        ChatService.write(message, user, room);
+        chatService.write(message, user, room);
       }
 
     }
@@ -55,7 +56,7 @@ public class ChatApplication extends juzu.Controller
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
     String data = "id: "+System.currentTimeMillis()+"\n";
-    data += "data: "+ChatService.read(room) +"\n\n";
+    data += "data: "+chatService.read(room) +"\n\n";
 
 
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
