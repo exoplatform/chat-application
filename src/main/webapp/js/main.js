@@ -42,12 +42,18 @@ $(document).ready(function(){
   chatEventSource.onmessage = function(e){
     //console.log("chatEventSource::onmessage");
     if(old!=e.data){
-      console.log("DATA="+e.data);
+      //console.log("DATA="+e.data);
       document.getElementById("chats").innerHTML='<span>'+e.data+'</span>';
       old = e.data;
     }
   };
 
+  setInterval(refreshWhoIsOnline, 5000);
+  refreshWhoIsOnline();
+
+  function refreshWhoIsOnline() {
+    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username}, function () { });
+  }
 
   function strip(html)
   {

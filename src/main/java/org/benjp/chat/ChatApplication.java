@@ -11,6 +11,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Scope;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ChatApplication extends juzu.Controller
@@ -20,6 +22,10 @@ public class ChatApplication extends juzu.Controller
   @Path("index.gtmpl")
   Template index;
 
+  @Inject
+  @Path("users.gtmpl")
+  Template users;
+
   String roomdata;
 
   @View
@@ -27,6 +33,19 @@ public class ChatApplication extends juzu.Controller
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     index.with().set("user", remoteUser).set("room", "roomname").render();
+  }
+
+  @Resource
+  public void whoIsOnline(String user)
+  {
+    Collection<String> dest = new ArrayList<String>();
+    Collection<String> usersc = UserService.getUsers();
+    for (String userc: usersc)
+    {
+      if (!userc.equals(user))
+        dest.add(userc);
+    }
+    users.with().set("users", dest).render();
   }
 
   @Resource

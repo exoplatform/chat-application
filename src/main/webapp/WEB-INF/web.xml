@@ -3,6 +3,17 @@
                  "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
   <display-name>Chat</display-name>
+  <filter>
+    <filter-name>UserFilter</filter-name>
+    <filter-class>org.benjp.chat.listener.UserFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>UserFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <listener>
+    <listener-class>org.benjp.chat.listener.SessionListener</listener-class>
+  </listener>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
