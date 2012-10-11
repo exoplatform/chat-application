@@ -38,14 +38,7 @@ public class ChatApplication extends juzu.Controller
   @Resource
   public void whoIsOnline(String user)
   {
-    Collection<String> dest = new ArrayList<String>();
-    Collection<String> usersc = UserService.getUsers();
-    for (String userc: usersc)
-    {
-      if (!userc.equals(user))
-        dest.add(userc);
-    }
-    users.with().set("users", dest).render();
+    users.with().set("users", UserService.getUsersFilterBy(user)).render();
   }
 
   @Resource

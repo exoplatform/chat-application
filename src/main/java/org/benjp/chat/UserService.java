@@ -1,5 +1,6 @@
 package org.benjp.chat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ public class UserService
     {
       if (!users.containsValue(user))
       {
-        System.out.println("USER SERVICE :: ADDING :: "+user+" : "+session);
+        System.out.println("USER SERVICE :: ADDING :: " + user + " : " + session);
         users.put(session, user);
       }
     }
@@ -42,6 +43,18 @@ public class UserService
   public static Collection<String> getUsers()
   {
     return users.values();
+  }
+
+  public static Collection<String> getUsersFilterBy(String user)
+  {
+    Collection<String> dest = new ArrayList<String>();
+    Collection<String> usersc = UserService.getUsers();
+    for (String userc: usersc)
+    {
+      if (!userc.equals(user))
+        dest.add(userc);
+    }
+    return dest;
   }
 
 }
