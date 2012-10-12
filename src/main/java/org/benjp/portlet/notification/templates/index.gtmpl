@@ -1,4 +1,4 @@
-<div id="chatnotification"></div>
+<div id="chatnotification" style="display:none"></div>
 
 
 <script>

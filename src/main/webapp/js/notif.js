@@ -13,8 +13,10 @@ $(document).ready(function(){
       console.log(newts+"::"+newlr+"::"+total);
       if (newts!==newlr) {
         $("#chatnotification").html('<span>'+total+'</span>');
+        $("#chatnotification").css('display', 'block');
       } else {
         $("#chatnotification").html('<span></span>');
+        $("#chatnotification").css('display', 'none');
       }
       old = e.data;
     }

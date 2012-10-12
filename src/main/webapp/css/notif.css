@@ -1,12 +1,14 @@
 #chatnotification {
-  color: #2F3334;
+  color: #444;
   font-weight: bold;
   padding: 0 8px;
   display: block;
   white-space: nowrap;
   background-position: 0px 0px;
-  background:url('../img/notif-icon.png') no-repeat 0px 4px;
-  margin-left: 0;
+  background:url('../img/notif-icon-off.png') no-repeat 3px 4px;
+  margin: 0px auto;
+  min-width: 15px;
+  text-align: center;
   zoom: 1;
   font-size: 11px!important;
   font-family: verdana;
@@ -23,8 +25,8 @@
   -moz-box-shadow: 1px 0 0 #e3e3e3;
   -webkit-box-shadow: 1px 0 0 #E3E3E3;
   box-shadow: 1px 0 0 #E3E3E3;
-  color: #20263F;
+  color: #4283C7;
   position: relative;
   z-index: 2;
-  background:url('../img/notif-icon.png');
+  background:url('../img/notif-icon.png') no-repeat 3px 4px white;
 }
