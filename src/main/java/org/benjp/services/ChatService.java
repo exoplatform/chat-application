@@ -1,10 +1,8 @@
 package org.benjp.services;
 
 import com.mongodb.*;
-import juzu.SessionScoped;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.UnknownHostException;
 
@@ -16,7 +14,6 @@ public class ChatService
 
   public ChatService() throws UnknownHostException
   {
-    System.out.println("INIT MONGO in CHAT SERVICE");
     m = new Mongo("localhost");
     m.setWriteConcern(WriteConcern.SAFE);
   }

@@ -1,7 +1,6 @@
 package org.benjp.services;
 
 import com.mongodb.*;
-import juzu.SessionScoped;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
