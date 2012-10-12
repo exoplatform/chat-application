@@ -3,25 +3,31 @@ package org.benjp.services;
 import com.mongodb.*;
 import juzu.SessionScoped;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.net.UnknownHostException;
 
 @Named("notificationService")
-@SessionScoped
+@ApplicationScoped
 public class NotificationService
 {
-  DB db=null;
+  private static Mongo m;
 
   public NotificationService() throws UnknownHostException
   {
-    Mongo m = new Mongo("localhost");
+    m = new Mongo("localhost");
     m.setWriteConcern(WriteConcern.SAFE);
-    db = m.getDB("notifications");
   }
+
+  private DB db()
+  {
+    return m.getDB("notifications");
+  }
+
 
   public void addNotification(String user, String type, String info)
   {
-    DBCollection coll = db.getCollection(user);
+    DBCollection coll = db().getCollection(user);
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
@@ -33,7 +39,7 @@ public class NotificationService
 
   public void setLastReadNotification(String user, Long timestamp)
   {
-    DBCollection coll = db.getCollection("lastNotifications");
+    DBCollection coll = db().getCollection("lastNotifications");
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -56,7 +62,7 @@ public class NotificationService
   public Long getLastReadNotificationTimestamp(String user)
   {
     Long ts = new Long(-1);
-    DBCollection coll = db.getCollection("lastNotifications");
+    DBCollection coll = db().getCollection("lastNotifications");
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -73,7 +79,7 @@ public class NotificationService
   {
     NotificationBean bean = new NotificationBean();
 
-    DBCollection coll = db.getCollection(user);
+    DBCollection coll = db().getCollection(user);
     BasicDBObject query = new BasicDBObject();
     query.put("timestamp", -1);
     DBCursor cursor = coll.find().sort(query);
@@ -93,7 +99,7 @@ public class NotificationService
   {
     int total = -1;
     Long lastRead = getLastReadNotificationTimestamp(user);
-    DBCollection coll = db.getCollection(user);
+    DBCollection coll = db().getCollection(user);
     BasicDBObject query = new BasicDBObject();
 
     query.put("timestamp", new BasicDBObject("$gt", lastRead));

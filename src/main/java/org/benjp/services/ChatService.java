@@ -3,26 +3,32 @@ package org.benjp.services;
 import com.mongodb.*;
 import juzu.SessionScoped;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.UnknownHostException;
 
 @Named("chatService")
-@SessionScoped
+@ApplicationScoped
 public class ChatService
 {
-  DB db=null;
+  private static Mongo m;
 
   public ChatService() throws UnknownHostException
   {
-    Mongo m = new Mongo("localhost");
+    System.out.println("INIT MONGO in CHAT SERVICE");
+    m = new Mongo("localhost");
     m.setWriteConcern(WriteConcern.SAFE);
-    db = m.getDB("chat");
+  }
+
+  private DB db()
+  {
+    return m.getDB("chat");
   }
 
   public void write(String message, String user, String room)
   {
-    DBCollection coll = db.getCollection(room);
+    DBCollection coll = db().getCollection(room);
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);
@@ -34,7 +40,7 @@ public class ChatService
   public String read(String room)
   {
     StringBuffer sb = new StringBuffer();
-    DBCollection coll = db.getCollection(room);
+    DBCollection coll = db().getCollection(room);
 
     DBCursor cursor = coll.find();
     while(cursor.hasNext()) {
