@@ -8,6 +8,7 @@
                 @Script(src = "js/chat.js")
         },
         stylesheets = {
+                @Stylesheet(src = "/org/benjp/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
                 @Stylesheet(src = "css/chat.css")
         }
 )
