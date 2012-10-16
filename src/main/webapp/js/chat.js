@@ -10,8 +10,8 @@ $(document).ready(function(){
         return;
       }
 
-      document.getElementById("chats").innerHTML+=strip('<div class="msgln"><b>'+username+'</b>: '+msg+'<br/></div>');
-      $("#chats").animate({ scrollTop: 2000 }, 'normal');
+      //document.getElementById("chats").innerHTML+=strip('<div class="msgln"><b>'+username+'</b>: '+msg+'<br/></div>');
+      //$("#chats").animate({ scrollTop: 2000 }, 'normal');
 
 
       $.ajax({

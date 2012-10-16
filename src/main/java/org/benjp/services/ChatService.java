@@ -49,13 +49,24 @@ public class ChatService
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
     DBCursor cursor = coll.find();
+    String prevUser = "";
     while(cursor.hasNext()) {
       DBObject dbo = cursor.next();
-      sb.append("<div class='msgln'><b>");
-      sb.append(dbo.get("user"));
-      sb.append("</b>: ");
+      String user = dbo.get("user").toString();
+      if (!prevUser.equals(user))
+      {
+        if (!prevUser.equals(""))
+          sb.append("</div>");
+        sb.append("<div class='msgln'><b>");
+        sb.append(user);
+        sb.append("</b><br/>");
+      }
+      else
+      {
+        sb.append("<hr style='margin:0px;'>");
+      }
       sb.append(dbo.get("message"));
-      sb.append("<br></div>");
+      prevUser = user;
     }
 
     return sb.toString();
