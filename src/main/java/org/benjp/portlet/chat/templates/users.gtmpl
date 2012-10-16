@@ -1,7 +1,13 @@
+<table class="table table-condensed">
+
   <% if (users!=null) { %>
     <% users.each { user -> %>
-
-    <%=user%> ;
+    <tr>
+      <td>
+        <%=user%>
+      </td>
+    </tr>
 
     <% } %>
   <% } %>
+</table>

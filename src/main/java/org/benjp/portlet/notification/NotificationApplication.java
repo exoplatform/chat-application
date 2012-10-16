@@ -24,7 +24,7 @@ public class NotificationApplication extends Controller
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     Long ts = notificationService.getLastReadNotificationTimestamp(remoteUser);
-    System.out.println("NOTIFAPP::"+remoteUser+"::"+ts);
+//    System.out.println("NOTIFAPP::"+remoteUser+"::"+ts);
     index.with().set("user", remoteUser).set("lastRead", ts).render();
   }
 
