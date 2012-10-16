@@ -17,6 +17,7 @@ $(document).ready(function(){
       $.ajax({
         url: jzChatSend,
         data: {"user": username,
+               "targetUser": targetUser,
                "room": room,
                "message": msg,
               },

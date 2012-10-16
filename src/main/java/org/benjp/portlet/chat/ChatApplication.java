@@ -35,7 +35,7 @@ public class ChatApplication extends juzu.Controller
   public void index() throws IOException
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
-    index.with().set("user", remoteUser).set("room", "roomname").render();
+    index.with().set("user", remoteUser).set("room", "noroom").render();
   }
 
   @Resource
@@ -45,7 +45,7 @@ public class ChatApplication extends juzu.Controller
   }
 
   @Resource
-  public Response.Content send(String user, String message, String room) throws IOException
+  public Response.Content send(String user, String targetUser, String message, String room) throws IOException
   {
     try
     {
@@ -53,16 +53,8 @@ public class ChatApplication extends juzu.Controller
       if (message!=null && user!=null)
       {
         chatService.write(message, user, room);
-        if ("mary".equals(user))
-        {
-          notificationService.addNotification("john", "chat", "new message");
-          notificationService.setLastReadNotification("mary", notificationService.getLastNotification("mary").getTimestamp());
-        }
-        if ("john".equals(user))
-        {
-          notificationService.addNotification("mary", "chat", "new message");
-          notificationService.setLastReadNotification("john", notificationService.getLastNotification("john").getTimestamp());
-        }
+        notificationService.addNotification(targetUser, "chat", "new message");
+        notificationService.setLastReadNotification(user, notificationService.getLastNotification(user).getTimestamp());
       }
 
     }
