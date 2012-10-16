@@ -2,7 +2,7 @@
 
   <% if (users!=null) { %>
     <% users.each { user -> %>
-    <tr>
+    <tr id="users-online-<%=user%>" class="users-online">
       <td>
         <a href="#" user-data="<%=user%>" class="user-link"><%=user%></a>
       </td>
@@ -13,20 +13,22 @@
 </table>
 
 <script>
+  $("#users-online-"+targetUser).addClass("info");
 
   $('.user-link').on("click", function() {
-    var targetUser = $(this).attr("user-data");
-    console.log("TARGET::"+targetUser);
+    targetUser = $(this).attr("user-data");
+    //console.log("TARGET::"+targetUser);
+    $(".users-online").removeClass("info");
+    $("#users-online-"+targetUser).addClass("info");
 
     $.ajax({
       url: jzChatGetRoom,
       data: {"user": targetUser},
 
       success: function(response){
-        console.log("SUCCESS::"+response);
+        //console.log("SUCCESS::"+response);
         room = response;
-
-        chatEventSource.close();
+        if (chatEventSource!=undefined) chatEventSource.close();
         chatEventSource = new EventSource(jzChatSend+'&room='+room);
 
         chatEventSource.onmessage = function(e){

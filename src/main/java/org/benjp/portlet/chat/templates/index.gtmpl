@@ -16,4 +16,5 @@
   var room = "<%=room%>";
   var old = '';
   var chatEventSource;
+  var targetUser;
 </script>

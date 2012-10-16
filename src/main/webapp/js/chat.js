@@ -35,7 +35,7 @@ $(document).ready(function(){
 
   });
 
-  //var chatEventSource = new EventSource('/chat/chatServlet/<%=room%>');
+  /*
   chatEventSource = new EventSource(jzChatSend+'&room='+room);
 
   chatEventSource.onmessage = function(e){
@@ -47,6 +47,7 @@ $(document).ready(function(){
       old = e.data;
     }
   };
+  */
 
   setInterval(refreshWhoIsOnline, 5000);
   refreshWhoIsOnline();
