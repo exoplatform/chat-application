@@ -11,6 +11,7 @@ import org.benjp.services.UserService;
 
 import javax.inject.Inject;
 import java.io.*;
+import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ChatApplication extends juzu.Controller
@@ -76,5 +77,25 @@ public class ChatApplication extends juzu.Controller
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
   }
 
+  @Resource
+  public Response.Content getRoom(String user)
+  {
+    String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+    String room = "";
+    try
+    {
+      ArrayList<String> users = new ArrayList<String>(2);
+      users.add(user);
+      users.add(remoteUser);
+
+      room = chatService.getRoom(users);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("No Room yet");
+    }
+    return Response.ok(room);
+  }
 
 }

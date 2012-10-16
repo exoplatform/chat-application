@@ -35,9 +35,8 @@ $(document).ready(function(){
 
   });
 
-  var old = '';
   //var chatEventSource = new EventSource('/chat/chatServlet/<%=room%>');
-  var chatEventSource = new EventSource(jzChatSend+'&room='+room);
+  chatEventSource = new EventSource(jzChatSend+'&room='+room);
 
   chatEventSource.onmessage = function(e){
     //console.log("chatEventSource::onmessage");

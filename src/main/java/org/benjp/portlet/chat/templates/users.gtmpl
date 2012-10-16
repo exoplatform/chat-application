@@ -1,13 +1,56 @@
-<table class="table table-condensed">
+<table class="table">
 
   <% if (users!=null) { %>
     <% users.each { user -> %>
     <tr>
       <td>
-        <%=user%>
+        <a href="#" user-data="<%=user%>" class="user-link"><%=user%></a>
       </td>
     </tr>
 
     <% } %>
   <% } %>
 </table>
+
+<script>
+
+  $('.user-link').on("click", function() {
+    var targetUser = $(this).attr("user-data");
+    console.log("TARGET::"+targetUser);
+
+    $.ajax({
+      url: jzChatGetRoom,
+      data: {"user": targetUser},
+
+      success: function(response){
+        console.log("SUCCESS::"+response);
+        room = response;
+
+        chatEventSource.close();
+        chatEventSource = new EventSource(jzChatSend+'&room='+room);
+
+        chatEventSource.onmessage = function(e){
+          //console.log("chatEventSource::onmessage");
+          if(old!=e.data){
+            //console.log("DATA="+e.data);
+            $("#chats").html('<span>'+e.data+'</span>');
+            $("#chats").animate({ scrollTop: 2000 }, 'normal');
+            old = e.data;
+          }
+        };
+
+
+      },
+
+      error: function(xhr, status, error){
+        console.log("ERROR::"+xhr.responseText);
+      }
+
+    });
+
+
+
+  });
+
+
+</script>

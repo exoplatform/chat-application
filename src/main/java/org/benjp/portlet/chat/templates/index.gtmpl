@@ -12,5 +12,8 @@
   var username = "<%=user%>";
   var jzChatWhoIsOnline = "@{whoIsOnline()}";
   var jzChatSend = "@{send()}";
+  var jzChatGetRoom = "@{getRoom()}";
   var room = "<%=room%>";
+  var old = '';
+  var chatEventSource;
 </script>

@@ -38,10 +38,11 @@
 {
   float: left;
   height: 100%;
-  background-color: #E0E5EA;
+  background-color: #CEDEEE;
   border: 1px solid #D0D0D0;
   border-bottom: 2px solid #CCC;
   width: 150px;
+  cursor: default;
 }
 .msgln
 {
