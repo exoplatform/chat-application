@@ -1,6 +1,5 @@
-
 target/*
-
 *.iml
-
 .DS_Store
+server/target/*
+application/target/*
