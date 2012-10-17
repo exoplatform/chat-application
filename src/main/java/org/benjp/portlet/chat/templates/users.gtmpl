@@ -33,6 +33,7 @@
       success: function(response){
         //console.log("SUCCESS::"+response);
         room = response;
+
         if (chatEventSource!=undefined) chatEventSource.close();
         chatEventSource = new EventSource(jzChatSend+'&room='+room);
 
@@ -46,7 +47,6 @@
             old = e.data;
           }
         };
-
 
       },
 

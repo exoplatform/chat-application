@@ -107,6 +107,7 @@ public class ChatApplication extends juzu.Controller
       users.add(remoteUser);
 
       room = chatService.getRoom(users);
+      chatService.updateLastReadMessage(remoteUser, room);
     }
     catch (Exception e)
     {
@@ -114,6 +115,22 @@ public class ChatApplication extends juzu.Controller
       return Response.notFound("No Room yet");
     }
     return Response.ok(room);
+  }
+
+  @Resource
+  public Response.Content updateUnreadMessages(String room)
+  {
+    String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+    try
+    {
+      chatService.updateLastReadMessage(remoteUser,  room);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("Server Not Available yet");
+    }
+    return Response.ok("Updated.");
   }
 
 }

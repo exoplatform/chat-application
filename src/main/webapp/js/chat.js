@@ -1,6 +1,26 @@
 $(document).ready(function(){
 
 
+
+  $('#msg').focus(function() {
+    //console.log("focus on msg : "+targetUser+":"+room);
+    $.ajax({
+      url: jzChatUpdateUnreadMessages,
+      data: {"room": room},
+
+      success:function(response){
+        //console.log("success");
+      },
+
+      error:function (xhr, status, error){
+
+      }
+
+    });
+
+  });
+
+
   $('#msg').keypress(function(event) {
     var msg = $(this).attr("value");
     if ( event.which == 13 ) {
