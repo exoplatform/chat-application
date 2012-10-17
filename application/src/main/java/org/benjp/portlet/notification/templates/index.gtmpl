@@ -1,0 +1,9 @@
+<div id="chatnotification" style="display:none"></div>
+
+
+<script>
+  var username = "<%=user%>";
+  var lastRead = "<%=lastRead%>";
+  var jzNotification = "/chatServer/notification";
+  var jzReadNotification = "/chatServer/readNotification";
+</script>

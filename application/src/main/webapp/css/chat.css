@@ -1,0 +1,61 @@
+.chatapplication
+{
+  height: 600px;
+  background-color: #FFF;
+  padding: 10px;
+}
+.rightchat
+{
+  float: left;
+  height: 100%;
+  border: 1px solid #D0D0D0;
+  margin-left: 10px;
+}
+.chatmessage
+{
+  width: 100%;
+  background-color: #F1F1F1;
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+}
+#chats
+{
+	height: 560px;
+	overflow-y: scroll;
+	width: 350px;
+}
+#msg
+{
+	font-size: 12px;
+	border: 1px solid #DDD;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 4px 20px;
+	padding: 5px;
+	border-image: initial;
+	width: 298px;
+}
+#whoisonline
+{
+  float: left;
+  height: 100%;
+  background-color: #CEDEEE;
+  border: 1px solid #D0D0D0;
+  border-bottom: 2px solid #CCC;
+  width: 150px;
+  cursor: default;
+}
+.msgln
+{
+	padding: 3px;
+}
+.msgln:nth-child(odd)
+{
+	background-color: #EFF9FE;
+}
+footer
+{
+	position: fixed;
+	bottom: 10px;
+}

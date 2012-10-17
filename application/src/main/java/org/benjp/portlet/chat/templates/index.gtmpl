@@ -1,0 +1,22 @@
+<div class="chatapplication">
+  <div id="whoisonline"></div>
+  <div class="rightchat" style="display:none;">
+    <div id="chats"></div>
+    <div class="chatmessage">
+      <input type="text" name="text" id="msg" autocomplete="off" />
+    </div>
+  </div>
+</div>
+
+<script>
+  var username = "<%=user%>";
+  var sessionId = "<%=sessionId%>";
+  var jzChatWhoIsOnline = "/chatServer/whoIsOnline";
+  var jzChatSend = "/chatServer/send";
+  var jzChatGetRoom = "/chatServer/getRoom";
+  var jzChatUpdateUnreadMessages = "/chatServer/updateUnreadMessages";
+  var room = "<%=room%>";
+  var old = '';
+  var chatEventSource;
+  var targetUser;
+</script>
