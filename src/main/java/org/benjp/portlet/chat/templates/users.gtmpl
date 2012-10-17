@@ -28,7 +28,10 @@
 
     $.ajax({
       url: jzChatGetRoom,
-      data: {"user": targetUser},
+      data: {"targetUser": targetUser,
+              "user": username,
+              "sessionId": sessionId
+              },
 
       success: function(response){
         //console.log("SUCCESS::"+response);

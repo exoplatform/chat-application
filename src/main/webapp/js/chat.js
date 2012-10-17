@@ -6,7 +6,10 @@ $(document).ready(function(){
     //console.log("focus on msg : "+targetUser+":"+room);
     $.ajax({
       url: jzChatUpdateUnreadMessages,
-      data: {"room": room},
+      data: {"room": room,
+              "user": username,
+              "sessionId": sessionId
+            },
 
       success:function(response){
         //console.log("success");
@@ -40,6 +43,7 @@ $(document).ready(function(){
                "targetUser": targetUser,
                "room": room,
                "message": msg,
+               "sessionId": sessionId
               },
 
         success:function(response){
@@ -74,7 +78,7 @@ $(document).ready(function(){
   refreshWhoIsOnline();
 
   function refreshWhoIsOnline() {
-    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username}, function () { });
+    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId}, function () { });
   }
 
   function strip(html)

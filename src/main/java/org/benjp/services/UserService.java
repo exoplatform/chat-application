@@ -1,60 +1,134 @@
 package org.benjp.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import com.mongodb.*;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+import java.net.UnknownHostException;
+import java.util.*;
+
+@Named("userService")
+@ApplicationScoped
 public class UserService
 {
 
-  private static final HashMap<String, String> users = new HashMap<String, String>(); // <session, user>
+  private static Mongo m;
 
-  public static boolean hasSession(String session)
+  private static final String M_DB = "users";
+  private static final String M_SESSIONS_COLLECTION = "sessions";
+
+  public UserService() throws UnknownHostException
   {
-    return users.containsKey(session);
+    m = new Mongo("localhost");
+    m.setWriteConcern(WriteConcern.SAFE);
   }
 
-  public static boolean hasUser(String user)
+  private DB db()
   {
-    return users.containsValue(user);
+    return m.getDB(M_DB);
   }
 
-  public static void addUser(String user, String session)
+
+  public boolean hasSession(String session)
   {
-    synchronized (users)
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("session", session);
+    DBCursor cursor = coll.find(query);
+    return (cursor.hasNext());
+  }
+
+  public boolean hasUser(String user)
+  {
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    return (cursor.hasNext());
+  }
+
+  public boolean hasUserWithSession(String user, String session)
+  {
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    query.put("session", session);
+    DBCursor cursor = coll.find(query);
+    return (cursor.hasNext());
+  }
+
+  public void addUser(String user, String session)
+  {
+    if (!hasUserWithSession(user, session))
     {
-      if (!users.containsValue(user))
-      {
-        System.out.println("USER SERVICE :: ADDING :: " + user + " : " + session);
-        users.put(session, user);
-      }
+      System.out.println("USER SERVICE :: ADDING :: " + user + " : " + session);
+      removeUser(user);
+      DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("user", user);
+      doc.put("session", session);
+
+      coll.insert(doc);
     }
   }
 
-  public static void removeSession(String session)
+  public void removeSession(String session)
   {
-    synchronized (users)
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("session", session);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
     {
-      System.out.println("USER SERVICE :: REMOVING :: "+users.get(session)+" : "+session);
-      users.remove(session);
+      DBObject doc = cursor.next();
+      String user = doc.get("user").toString();
+      System.out.println("USER SERVICE :: REMOVING :: " + user + " : " + session);
+      coll.remove(doc);
     }
   }
 
-  public static Collection<String> getUsers()
+  private void removeUser(String user)
   {
-    return users.values();
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      coll.remove(doc);
+    }
   }
 
-  public static Collection<String> getUsersFilterBy(String user)
+  public List<String> getUsers()
   {
-    Collection<String> dest = new ArrayList<String>();
-    Collection<String> usersc = UserService.getUsers();
-    for (String userc: usersc)
+    ArrayList<String> users = new ArrayList<String>();
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    DBCursor cursor = coll.find();
+    while (cursor.hasNext())
     {
-      if (!userc.equals(user))
-        dest.add(userc);
+      DBObject doc = cursor.next();
+      users.add(doc.get("user").toString());
     }
-    return dest;
+
+    return users;
+  }
+
+  public List<String> getUsersFilterBy(String user)
+  {
+    ArrayList<String> users = new ArrayList<String>();
+    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
+    DBCursor cursor = coll.find();
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      String target = doc.get("user").toString();
+      if (!user.equals(target))
+        users.add(target);
+    }
+
+    return users;
   }
 
 }

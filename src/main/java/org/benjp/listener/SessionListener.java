@@ -5,6 +5,7 @@ import org.benjp.services.UserService;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.net.UnknownHostException;
 
 public class SessionListener implements HttpSessionListener
 {
@@ -17,7 +18,11 @@ public class SessionListener implements HttpSessionListener
   @Override
   public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
     HttpSession session = httpSessionEvent.getSession();
-    UserService.removeSession(session.getId());
+    try {
+      new UserService().removeSession(session.getId());
+    } catch (UnknownHostException e) {
+
+    }
 //    System.out.println("SESSION REMOVED :: "+httpSessionEvent.getSession().getId());
   }
 }

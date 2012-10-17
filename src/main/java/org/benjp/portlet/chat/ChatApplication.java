@@ -4,6 +4,7 @@ import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
+import juzu.request.HttpContext;
 import juzu.template.Template;
 import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
@@ -11,6 +12,7 @@ import org.benjp.services.RoomBean;
 import org.benjp.services.UserService;
 
 import javax.inject.Inject;
+import javax.servlet.http.Cookie;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,52 +34,66 @@ public class ChatApplication extends juzu.Controller
   ChatService chatService;
 
   @Inject
+  UserService userService;
+
+  @Inject
   NotificationService notificationService;
 
   @View
   public void index() throws IOException
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
-    index.with().set("user", remoteUser).set("room", "noroom").render();
+    String sessionId = getSessionId(renderContext.getHttpContext());
+    index.with().set("user", remoteUser).set("room", "noroom")
+            .set("sessionId", sessionId).render();
   }
 
   @Resource
-  public void whoIsOnline(String user)
+  public void whoIsOnline(String user, String sessionId)
   {
-    Collection<String> usersc = UserService.getUsersFilterBy(user);
-    ArrayList<RoomBean> rooms = new ArrayList<RoomBean>(usersc.size());
-    for (String tuser: usersc)
+    if (userService.hasUserWithSession(user,  sessionId))
     {
-      ArrayList<String> userslist = new ArrayList<String>(2);
-      userslist.add(user);
-      userslist.add(tuser);
-      RoomBean room = new RoomBean();
-      room.setUser(tuser);
-      String roomId = null;
-      if (chatService.hasRoom(userslist))
+      Collection<String> usersc = userService.getUsersFilterBy(user);
+      ArrayList<RoomBean> rooms = new ArrayList<RoomBean>(usersc.size());
+      for (String tuser: usersc)
       {
-        roomId = chatService.getRoom(userslist);
-      }
-      if (roomId!=null)
-      {
-        room.setRoom(roomId);
-        room.setUnreadTotal(chatService.getUnreadMessagesTotal(user, roomId));
-      }
+        ArrayList<String> userslist = new ArrayList<String>(2);
+        userslist.add(user);
+        userslist.add(tuser);
+        RoomBean room = new RoomBean();
+        room.setUser(tuser);
+        String roomId = null;
+        if (chatService.hasRoom(userslist))
+        {
+          roomId = chatService.getRoom(userslist);
+        }
+        if (roomId!=null)
+        {
+          room.setRoom(roomId);
+          room.setUnreadTotal(chatService.getUnreadMessagesTotal(user, roomId));
+        }
 //      System.out.print("ROOM FOR "+user+" :: "+tuser+" ; "+roomId+" ; ");
-      rooms.add(room);
-    }
+        rooms.add(room);
+      }
 
-    users.with().set("rooms", rooms).render();
+      users.with().set("rooms", rooms).render();
+    }
   }
 
   @Resource
-  public Response.Content send(String user, String targetUser, String message, String room) throws IOException
+  public Response.Content send(String user, String sessionId, String targetUser, String message, String room) throws IOException
   {
     try
     {
       //System.out.println(user + "::" + message + "::" + room);
       if (message!=null && user!=null)
       {
+        if (!userService.hasUserWithSession(user,  sessionId))
+        {
+          return Response.notFound("Petit malin !");
+        }
+
+
         chatService.write(message, user, room);
         notificationService.addNotification(targetUser, "chat", "new message");
         notificationService.setLastReadNotification(user, notificationService.getLastNotification(user).getTimestamp());
@@ -96,18 +112,21 @@ public class ChatApplication extends juzu.Controller
   }
 
   @Resource
-  public Response.Content getRoom(String user)
+  public Response.Content getRoom(String user, String sessionId, String targetUser)
   {
-    String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
     String room = "";
     try
     {
       ArrayList<String> users = new ArrayList<String>(2);
       users.add(user);
-      users.add(remoteUser);
+      users.add(targetUser);
 
       room = chatService.getRoom(users);
-      chatService.updateLastReadMessage(remoteUser, room);
+      chatService.updateLastReadMessage(user, room);
     }
     catch (Exception e)
     {
@@ -118,12 +137,15 @@ public class ChatApplication extends juzu.Controller
   }
 
   @Resource
-  public Response.Content updateUnreadMessages(String room)
+  public Response.Content updateUnreadMessages(String room, String user, String sessionId)
   {
-    String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
     try
     {
-      chatService.updateLastReadMessage(remoteUser,  room);
+      chatService.updateLastReadMessage(user,  room);
     }
     catch (Exception e)
     {
@@ -133,4 +155,17 @@ public class ChatApplication extends juzu.Controller
     return Response.ok("Updated.");
   }
 
+
+  private String getSessionId(HttpContext httpContext)
+  {
+    for (Cookie cookie:renderContext.getHttpContext().getCookies())
+    {
+      if("JSESSIONID".equals(cookie.getName()))
+      {
+        return cookie.getValue();
+      }
+    }
+    return null;
+
+  }
 }

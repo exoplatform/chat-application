@@ -28,7 +28,7 @@ public class UserFilter implements Filter
     {
 //      System.out.println("FILTER :: "+request.getRemoteUser());
 
-      UserService.addUser(request.getRemoteUser(), request.getSession().getId());
+      new UserService().addUser(request.getRemoteUser(), request.getSession().getId());
     }
 
     filterChain.doFilter(request, response);
