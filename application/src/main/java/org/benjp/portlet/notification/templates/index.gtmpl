@@ -3,7 +3,8 @@
 
 <script>
   var username = "<%=user%>";
-  var lastRead = "<%=lastRead%>";
+  var lastRead = "-1";
   var jzNotification = "/chatServer/notification";
   var jzReadNotification = "/chatServer/readNotification";
+  var jzLastReadNotificationTimestamp = "/chatServer/lastReadNotificationTimestamp";
 </script>

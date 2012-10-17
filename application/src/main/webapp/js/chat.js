@@ -33,10 +33,6 @@ $(document).ready(function(){
         return;
       }
 
-      //document.getElementById("chats").innerHTML+=strip('<div class="msgln"><b>'+username+'</b>: '+msg+'<br/></div>');
-      //$("#chats").animate({ scrollTop: 2000 }, 'normal');
-
-
       $.ajax({
         url: jzChatSend,
         data: {"user": username,
@@ -60,21 +56,7 @@ $(document).ready(function(){
 
   });
 
-  /*
-  chatEventSource = new EventSource(jzChatSend+'&room='+room);
-
-  chatEventSource.onmessage = function(e){
-    //console.log("chatEventSource::onmessage");
-    if(old!=e.data){
-      //console.log("DATA="+e.data);
-      $("#chats").html('<span>'+e.data+'</span>');
-      $("#chats").animate({ scrollTop: 2000 }, 'normal');
-      old = e.data;
-    }
-  };
-  */
-
-  setInterval(refreshWhoIsOnline, 30000);
+  setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
   function refreshWhoIsOnline() {

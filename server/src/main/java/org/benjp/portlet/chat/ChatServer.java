@@ -182,6 +182,22 @@ public class ChatServer extends juzu.Controller
     return Response.ok("Updated.");
   }
 
+  @Resource
+  @Route("/lastReadNotificationTimestamp")
+  public Response.Content lastReadNotificationTimestamp(String user)
+  {
+    String notif="";
+    try
+    {
+      notif += notificationService.getLastReadNotificationTimestamp(user);
+    }
+    catch (Exception e)
+    {
+      return Response.notFound("Server not available");
+    }
+    return Response.ok(notif);
+
+  }
 
   private String getSessionId(HttpContext httpContext)
   {

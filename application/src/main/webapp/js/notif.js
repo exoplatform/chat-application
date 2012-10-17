@@ -1,5 +1,19 @@
 $(document).ready(function(){
 
+  $.ajax({
+    url: jzLastReadNotificationTimestamp,
+    data: {"user": username},
+
+    success:function(response){
+      lastRead = response;
+    },
+
+    error:function (xhr, status, error){
+
+    }
+
+  });
+
   var old = '';
   var notifEventSource = new EventSource(jzNotification+'?user='+username);
 

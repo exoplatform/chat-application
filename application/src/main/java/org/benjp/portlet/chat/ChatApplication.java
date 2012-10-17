@@ -16,10 +16,6 @@ public class ChatApplication extends juzu.Controller
   @Path("index.gtmpl")
   Template index;
 
-  @Inject
-  @Path("users.gtmpl")
-  Template users;
-
   @View
   public void index()
   {
