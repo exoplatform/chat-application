@@ -1,10 +1,15 @@
 <table class="table">
 
-  <% if (users!=null) { %>
-    <% users.each { user -> %>
-    <tr id="users-online-<%=user%>" class="users-online">
+  <% if (rooms!=null) { %>
+    <% rooms.each { room -> %>
+    <tr id="users-online-<%=room.user%>" class="users-online">
       <td>
-        <a href="#" user-data="<%=user%>" class="user-link"><%=user%></a>
+        <a href="#" user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.user%></a>
+      </td>
+      <td>
+        <% if (room.unreadTotal>0) { %>
+        <span class="badge badge-info" style="float:right;"><%=room.unreadTotal%></span>
+        <% } %>
       </td>
     </tr>
 
@@ -35,6 +40,7 @@
           //console.log("chatEventSource::onmessage");
           if(old!=e.data){
             //console.log("DATA="+e.data);
+            $(".rightchat").css("display", "block");
             $("#chats").html('<span>'+e.data+'</span>');
             $("#chats").animate({ scrollTop: 2000 }, 'normal');
             old = e.data;
