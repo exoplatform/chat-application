@@ -6,10 +6,14 @@ import juzu.View;
 import juzu.template.Template;
 
 import javax.inject.Inject;
+import javax.portlet.PortletPreferences;
 import java.io.IOException;
 
 public class NotificationApplication extends Controller
 {
+
+  @Inject
+  PortletPreferences portletPreferences;
 
   @Inject
   @Path("index.gtmpl")
@@ -18,8 +22,9 @@ public class NotificationApplication extends Controller
   @View
   public void index() throws IOException
   {
+    String chatServerURL = portletPreferences.getValue("chatServerURL", "/chatServer");
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
-    index.with().set("user", remoteUser).render();
+    index.with().set("user", remoteUser).set("chatServerURL", chatServerURL).render();
   }
 
 }

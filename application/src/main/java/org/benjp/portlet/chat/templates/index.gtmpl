@@ -11,10 +11,10 @@
 <script>
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
-  var jzChatWhoIsOnline = "/chatServer/whoIsOnline";
-  var jzChatSend = "/chatServer/send";
-  var jzChatGetRoom = "/chatServer/getRoom";
-  var jzChatUpdateUnreadMessages = "/chatServer/updateUnreadMessages";
+  var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
+  var jzChatSend = "<%=chatServerURL%>/send";
+  var jzChatGetRoom = "<%=chatServerURL%>/getRoom";
+  var jzChatUpdateUnreadMessages = "<%=chatServerURL%>/updateUnreadMessages";
   var room = "<%=room%>";
   var old = '';
   var chatEventSource;

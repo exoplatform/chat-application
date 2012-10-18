@@ -6,10 +6,15 @@ import juzu.request.HttpContext;
 import juzu.template.Template;
 
 import javax.inject.Inject;
+import javax.portlet.PortletPreferences;
 import javax.servlet.http.Cookie;
 
 public class ChatApplication extends juzu.Controller
 {
+
+
+  @Inject
+  PortletPreferences portletPreferences;
 
   @Inject
   @Path("index.gtmpl")
@@ -20,8 +25,9 @@ public class ChatApplication extends juzu.Controller
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     String sessionId = getSessionId(renderContext.getHttpContext());
+    String chatServerURL = portletPreferences.getValue("chatServerURL", "/chatServer");
     index.with().set("user", remoteUser).set("room", "noroom")
-            .set("sessionId", sessionId).render();
+            .set("sessionId", sessionId).set("chatServerURL", chatServerURL).render();
   }
 
   private String getSessionId(HttpContext httpContext)

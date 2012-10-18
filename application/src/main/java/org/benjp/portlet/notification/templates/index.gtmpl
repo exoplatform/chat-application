@@ -3,5 +3,5 @@
 
 <script>
   var username = "<%=user%>";
-  var jzNotification = "/chatServer/notification";
+  var jzNotification = "<%=chatServerURL%>/notification";
 </script>

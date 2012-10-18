@@ -25,6 +25,13 @@
      <portlet-info>
        <title>Chat Application</title>
      </portlet-info>
+     <portlet-preferences>
+       <preference>
+         <name>chatServerURL</name>
+         <value>/chatServer</value>
+         <read-only>false</read-only>
+       </preference>
+     </portlet-preferences>
    </portlet>
    <portlet>
      <portlet-name>ChatNotificationApplication</portlet-name>
@@ -47,5 +54,12 @@
      <portlet-info>
        <title>Chat Notification Application</title>
      </portlet-info>
+     <portlet-preferences>
+       <preference>
+         <name>chatServerURL</name>
+         <value>/chatServer</value>
+         <read-only>false</read-only>
+       </preference>
+     </portlet-preferences>
    </portlet>
 </portlet-app>
