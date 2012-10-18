@@ -13,22 +13,14 @@ import java.util.*;
 @ApplicationScoped
 public class ChatService
 {
-  private static Mongo m;
-
   private static final String M_DB = "chat";
   private static final String M_ROOM_PREFIX = "room_";
   private static final String M_ROOMS_COLLECTION = "rooms";
   private static final String M_UNREAD_PREFIX = "unread_";
 
-  public ChatService() throws UnknownHostException
-  {
-    m = new Mongo("localhost");
-    m.setWriteConcern(WriteConcern.SAFE);
-  }
-
   private DB db()
   {
-    return m.getDB(M_DB);
+    return MongoBootstrap.mongo().getDB(M_DB);
   }
 
   public void write(String message, String user, String room)

@@ -12,20 +12,12 @@ import java.util.*;
 public class UserService
 {
 
-  private static Mongo m;
-
   private static final String M_DB = "users";
   private static final String M_SESSIONS_COLLECTION = "sessions";
 
-  public UserService() throws UnknownHostException
-  {
-    m = new Mongo("localhost");
-    m.setWriteConcern(WriteConcern.SAFE);
-  }
-
   private DB db()
   {
-    return m.getDB(M_DB);
+    return MongoBootstrap.mongo().getDB(M_DB);
   }
 
 
@@ -54,6 +46,7 @@ public class UserService
     query.put("user", user);
     query.put("session", session);
     DBCursor cursor = coll.find(query);
+    //System.out.println("hasUserWithSession Size = "+cursor.size()+" - "+cursor.hasNext()+" - "+user+" ; "+session);
     return (cursor.hasNext());
   }
 
@@ -79,7 +72,7 @@ public class UserService
     BasicDBObject query = new BasicDBObject();
     query.put("session", session);
     DBCursor cursor = coll.find(query);
-    if (cursor.hasNext())
+    while (cursor.hasNext())
     {
       DBObject doc = cursor.next();
       String user = doc.get("user").toString();

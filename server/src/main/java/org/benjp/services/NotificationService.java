@@ -10,21 +10,14 @@ import java.net.UnknownHostException;
 @ApplicationScoped
 public class NotificationService
 {
-  private static Mongo m;
   private static final String M_DB = "notifications";
   private static final String M_USER_PREFIX = "users_";
   private static final String M_NOTIFICATIONS = "lastNotifications";
 
 
-  public NotificationService() throws UnknownHostException
-  {
-    m = new Mongo("localhost");
-    m.setWriteConcern(WriteConcern.SAFE);
-  }
-
   private DB db()
   {
-    return m.getDB(M_DB);
+    return MongoBootstrap.mongo().getDB(M_DB);
   }
 
 

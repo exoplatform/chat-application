@@ -5,6 +5,7 @@ import juzu.request.HttpContext;
 import juzu.template.Template;
 import org.benjp.services.*;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import java.io.*;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@ApplicationScoped
 public class ChatServer extends juzu.Controller
 {
 
@@ -32,6 +33,9 @@ public class ChatServer extends juzu.Controller
 
   @Inject
   NotificationService notificationService;
+
+
+
 
   @View
   @Route("/")

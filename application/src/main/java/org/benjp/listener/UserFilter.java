@@ -1,7 +1,5 @@
 package org.benjp.listener;
 
-import org.benjp.services.UserService;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,13 +7,10 @@ import java.io.IOException;
 
 public class UserFilter implements Filter
 {
-
-
   @Override
   public void init(FilterConfig filterConfig) throws ServletException
   {
   }
-
 
   public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException
   {
@@ -24,11 +19,11 @@ public class UserFilter implements Filter
 
   private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException
   {
-    if (request.getRemoteUser()!=null)
+    String remoteUser = request.getRemoteUser();
+    String sessionId = request.getSession().getId();
+    if (remoteUser!=null)
     {
-//      System.out.println("FILTER :: "+request.getRemoteUser());
-
-      new UserService().addUser(request.getRemoteUser(), request.getSession().getId());
+      ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
     }
 
     filterChain.doFilter(request, response);
