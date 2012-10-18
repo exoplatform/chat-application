@@ -67,7 +67,7 @@ public class ChatServer extends juzu.Controller
         if (roomId!=null)
         {
           room.setRoom(roomId);
-          room.setUnreadTotal(chatService.getUnreadMessagesTotal(user, roomId));
+          room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
         }
 //      System.out.print("ROOM FOR "+user+" :: "+tuser+" ; "+roomId+" ; ");
         rooms.add(room);
@@ -91,15 +91,17 @@ public class ChatServer extends juzu.Controller
           return Response.notFound("Petit malin !");
         }
 
-
+//        System.out.println(user + "::" + message + "::" + room);
         chatService.write(message, user, room);
-        notificationService.addNotification(targetUser, "chat", "new message");
-        notificationService.setLastReadNotification(user, notificationService.getLastNotification(user).getTimestamp());
+        String content = "New message from "+user+" : "+((message.length()>15)?message.substring(0,14)+"...":message);
+        notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
+        notificationService.setNotificationsAsRead(user, "chat", "room", room);
       }
 
     }
     catch (Exception e)
     {
+      e.printStackTrace();
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
     String data = "id: "+System.currentTimeMillis()+"\n";
@@ -125,7 +127,7 @@ public class ChatServer extends juzu.Controller
       users.add(targetUser);
 
       room = chatService.getRoom(users);
-      chatService.updateLastReadMessage(user, room);
+      notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)
     {
@@ -145,7 +147,7 @@ public class ChatServer extends juzu.Controller
     }
     try
     {
-      chatService.updateLastReadMessage(user,  room);
+      notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)
     {
@@ -156,63 +158,16 @@ public class ChatServer extends juzu.Controller
   }
 
 
-
   @Resource
   @Route("/notification")
   public Response.Content notification(String user) throws IOException
   {
-    NotificationBean last = notificationService.getLastNotification(user);
-    Long lastRead = notificationService.getLastReadNotificationTimestamp(user);
     int totalUnread = notificationService.getUnreadNotificationsTotal(user);
-    String data = "id: "+last.getTimestamp()+":"+lastRead+"\n";
-    data += "data: {\"last\": "+ last.getTimestamp() +", \"lastRead\": "+lastRead+", \"total\": "+totalUnread+"}\n\n";
+    String data = "id: "+totalUnread+"\n";
+    data += "data: {\"total\": "+totalUnread+"}\n\n";
 
 
     return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
   }
 
-  @Resource
-  @Route("/readNotification")
-  public Response.Content readNotification(String user)
-  {
-    try
-    {
-      notificationService.setLastReadNotification(user, notificationService.getLastNotification(user).getTimestamp());
-    }
-    catch (Exception e)
-    {
-      return Response.notFound("Server not available");
-    }
-    return Response.ok("Updated.");
-  }
-
-  @Resource
-  @Route("/lastReadNotificationTimestamp")
-  public Response.Content lastReadNotificationTimestamp(String user)
-  {
-    String notif="";
-    try
-    {
-      notif += notificationService.getLastReadNotificationTimestamp(user);
-    }
-    catch (Exception e)
-    {
-      return Response.notFound("Server not available");
-    }
-    return Response.ok(notif);
-
-  }
-
-  private String getSessionId(HttpContext httpContext)
-  {
-    for (Cookie cookie:renderContext.getHttpContext().getCookies())
-    {
-      if("JSESSIONID".equals(cookie.getName()))
-      {
-        return cookie.getValue();
-      }
-    }
-    return null;
-
-  }
 }
