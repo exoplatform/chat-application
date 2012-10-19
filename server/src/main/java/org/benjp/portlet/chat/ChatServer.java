@@ -149,7 +149,7 @@ public class ChatServer extends juzu.Controller
     data += "data: {\"total\": "+totalUnread+"}\n\n";
 
 
-    return Response.ok(data).withMimeType("text/event-stream").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
 }
