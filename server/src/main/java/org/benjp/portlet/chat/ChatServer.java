@@ -50,29 +50,7 @@ public class ChatServer extends juzu.Controller
   {
     if (userService.hasUserWithSession(user,  sessionId))
     {
-      Collection<String> usersc = userService.getUsersFilterBy(user);
-      ArrayList<RoomBean> rooms = new ArrayList<RoomBean>(usersc.size());
-      for (String tuser: usersc)
-      {
-        ArrayList<String> userslist = new ArrayList<String>(2);
-        userslist.add(user);
-        userslist.add(tuser);
-        RoomBean room = new RoomBean();
-        room.setUser(tuser);
-        String roomId = null;
-        if (chatService.hasRoom(userslist))
-        {
-          roomId = chatService.getRoom(userslist);
-        }
-        if (roomId!=null)
-        {
-          room.setRoom(roomId);
-          room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
-        }
-//      System.out.print("ROOM FOR "+user+" :: "+tuser+" ; "+roomId+" ; ");
-        rooms.add(room);
-      }
-
+      List<RoomBean> rooms = chatService.getRooms(user, notificationService, userService);
       users.with().set("rooms", rooms).render();
     }
   }

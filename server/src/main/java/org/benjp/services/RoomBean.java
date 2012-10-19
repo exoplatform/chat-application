@@ -1,10 +1,11 @@
 package org.benjp.services;
 
-public class RoomBean
+public class RoomBean implements Comparable<RoomBean>
 {
   String user = "";
   String room = "";
   int unreadTotal = -1;
+  boolean isAvailableUser = false;
 
   public String getUser() {
     return user;
@@ -28,5 +29,22 @@ public class RoomBean
 
   public void setUnreadTotal(int unreadTotal) {
     this.unreadTotal = unreadTotal;
+  }
+
+  public boolean isAvailableUser() {
+    return isAvailableUser;
+  }
+
+  public void setAvailableUser(boolean availableUser) {
+    isAvailableUser = availableUser;
+  }
+
+  public boolean isActive() {
+    return (isAvailableUser || (!"".equals(room)));
+  }
+
+  @Override
+  public int compareTo(RoomBean roomBean) {
+    return user.compareTo(roomBean.getUser());
   }
 }

@@ -3,8 +3,15 @@
   <% if (rooms!=null) { %>
     <% rooms.each { room -> %>
     <tr id="users-online-<%=room.user%>" class="users-online">
+      <td class="td-status">
+        <span <% if (room.isAvailableUser) { %>class="user-available"<% } %>>&nbsp;&nbsp;&nbsp;</span>
+      </td>
       <td>
-        <a href="#" user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.user%></a>
+        <% if (room.isActive()) { %>
+          <a href="#" user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.user%></a>
+        <% } else { %>
+          <span class="room-inactive"><%=room.user%></span>
+        <% } %>
       </td>
       <td>
         <% if (room.unreadTotal>0) { %>

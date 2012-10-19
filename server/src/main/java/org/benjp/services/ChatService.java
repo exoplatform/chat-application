@@ -48,6 +48,10 @@ public class ChatService
 
     DBCursor cursor = coll.find();
     String prevUser = "";
+    if (!cursor.hasNext())
+    {
+      sb.append("<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>");
+    }
     while(cursor.hasNext()) {
       DBObject dbo = cursor.next();
       String user = dbo.get("user").toString();
@@ -110,6 +114,32 @@ public class ChatService
     return room;
   }
 
+  public List<RoomBean> getExistingRooms(String user, NotificationService notificationService)
+  {
+    List<RoomBean> rooms = new ArrayList<RoomBean>();
+    String roomId = null;
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("users", user);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    while (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      roomId = ((ObjectId)dbo.get("_id")).toString();
+      List<String> users = ((List<String>)dbo.get("users"));
+      users.remove(user);
+      RoomBean roomBean = new RoomBean();
+      roomBean.setRoom(roomId);
+      roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
+      roomBean.setUser(users.get(0));
+      rooms.add(roomBean);
+    }
+
+    return rooms;
+  }
+
   public boolean hasRoom(List<String> users)
   {
     Collections.sort(users);
@@ -124,5 +154,37 @@ public class ChatService
   }
 
 
+  public List<RoomBean> getRooms(String user, NotificationService notificationService, UserService userService)
+  {
+    Collection<String> availableUsers = userService.getUsersFilterBy(user);
+    List<RoomBean> rooms = this.getExistingRooms(user, notificationService);
+
+    for (RoomBean roomBean:rooms) {
+      String targetUser = roomBean.getUser();
+      if (availableUsers.contains(targetUser))
+      {
+        roomBean.setAvailableUser(true);
+        availableUsers.remove(targetUser);
+      }
+      else
+      {
+        roomBean.setAvailableUser(false);
+      }
+
+    }
+
+    for (String availableUser: availableUsers)
+    {
+      RoomBean roomBean = new RoomBean();
+      roomBean.setUser(availableUser);
+      roomBean.setAvailableUser(true);
+      rooms.add(roomBean);
+    }
+
+    Collections.sort(rooms);
+
+    return rooms;
+
+  }
 
 }

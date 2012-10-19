@@ -18,6 +18,19 @@
   border-top: 1px solid #CCC;
   border-bottom: 1px solid #CCC;
 }
+.room-inactive
+{
+  color: #D0D0D0;
+}
+.td-status {
+  width: 7px;
+  min-width: 7px;
+  padding: 8px 0px 8px 8px !important;
+}
+.user-available {
+  background-position: 0px 0px;
+  background:url('../img/available.png') no-repeat 3px 5px;
+}
 #chats
 {
 	height: 560px;
