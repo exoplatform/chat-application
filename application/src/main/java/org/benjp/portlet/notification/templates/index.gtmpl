@@ -3,5 +3,6 @@
 
 <script>
   var username = "<%=user%>";
+  var sessionId = "<%=sessionId%>";
   var jzNotification = "<%=chatServerURL%>/notification";
 </script>

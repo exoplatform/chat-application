@@ -59,15 +59,15 @@ public class ChatServer extends juzu.Controller
   @Route("/send")
   public Response.Content send(String user, String sessionId, String targetUser, String message, String room) throws IOException
   {
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
     try
     {
       //System.out.println(user + "::" + message + "::" + room);
       if (message!=null && user!=null)
       {
-        if (!userService.hasUserWithSession(user,  sessionId))
-        {
-          return Response.notFound("Petit malin !");
-        }
 
 //        System.out.println(user + "::" + message + "::" + room);
         chatService.write(message, user, room);
@@ -79,7 +79,7 @@ public class ChatServer extends juzu.Controller
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      //e.printStackTrace();
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
     String data = "id: "+System.currentTimeMillis()+"\n";
@@ -138,8 +138,12 @@ public class ChatServer extends juzu.Controller
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user) throws IOException
+  public Response.Content notification(String user, String sessionId) throws IOException
   {
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
     int totalUnread = notificationService.getUnreadNotificationsTotal(user);
     String data = "id: "+totalUnread+"\n";
     data += "data: {\"total\": "+totalUnread+"}\n\n";

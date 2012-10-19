@@ -45,7 +45,7 @@
         room = response;
 
         if (chatEventSource!=undefined) chatEventSource.close();
-        chatEventSource = new EventSource(jzChatSend+'?room='+room);
+        chatEventSource = new EventSource(jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId);
 
         chatEventSource.onmessage = function(e){
           console.log("chatEventSource::onmessage::");

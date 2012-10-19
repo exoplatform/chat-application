@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
   var old = '';
-  var notifEventSource = new EventSource(jzNotification+'?user='+username);
+  var notifEventSource = new EventSource(jzNotification+'?user='+username+'&sessionId='+sessionId);
 
   notifEventSource.onmessage = function(e){
     //console.log("notifEventSource::onmessage::"+e.data);
