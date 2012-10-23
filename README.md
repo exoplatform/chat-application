@@ -34,7 +34,7 @@ In your Apache, configure some Proxy Pass rules, here's an example :
 
 <pre><code>
 
-<VirtualHost *:8888>
+&lt;VirtualHost *:8888&gt;
   ServerName www.localhost.com
 
   ProxyRequests Off
