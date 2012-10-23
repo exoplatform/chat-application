@@ -46,45 +46,64 @@ public class ChatService
 
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
-    DBCursor cursor = coll.find();
+    BasicDBObject query = new BasicDBObject();
+    query.put("timestamp", new BasicDBObject("$gt", System.currentTimeMillis()-7*24*60*60*1000));
+
+    BasicDBObject sort = new BasicDBObject();
+    sort.put("timestamp", -1);
+
+    DBCursor cursor = coll.find(query).sort(sort).limit(200);
     String prevUser = "";
     if (!cursor.hasNext())
     {
       sb.append("<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>");
     }
-    while(cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      String user = dbo.get("user").toString();
-      String date = "";
-      try
+    else
+    {
+      List<DBObject> listdbo = new ArrayList<DBObject>();
+      while (cursor.hasNext())
       {
-        if (dbo.containsField("time"))
+        /** sorting and unsorting on cursor doesn't work, we need to reverse using a 2nd loop
+         * not good in term of performance, we should find a better way for this to work with
+         * sorting and limit in the query
+         */
+        DBObject dbo = cursor.next();
+        listdbo.add(0, dbo);
+      }
+      for(DBObject dbo:listdbo)
+      {
+        String user = dbo.get("user").toString();
+        String date = "";
+        try
         {
-          Date date1 = (Date)dbo.get("time");
-          date = formatter.format(date1);
+          if (dbo.containsField("time"))
+          {
+            Date date1 = (Date)dbo.get("time");
+            date = formatter.format(date1);
+          }
         }
-      }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-      }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+        }
 
-      if (!prevUser.equals(user))
-      {
-        if (!prevUser.equals(""))
-          sb.append("</div>");
-        sb.append("<div class='msgln'><b>");
-        sb.append(user);
-        sb.append("</b><br/>");
+        if (!prevUser.equals(user))
+        {
+          if (!prevUser.equals(""))
+            sb.append("</div>");
+          sb.append("<div class='msgln'><b>");
+          sb.append(user);
+          sb.append("</b><br/>");
+        }
+        else
+        {
+          sb.append("<hr style='margin:0px;'>");
+        }
+        sb.append("<div><span style='float:left'>"+dbo.get("message")+"</span>" +
+                "<span style='float:right;color:#CCC;font-size:10px'>"+date+"</span></div>" +
+                "<div style='clear:both;'></div>");
+        prevUser = user;
       }
-      else
-      {
-        sb.append("<hr style='margin:0px;'>");
-      }
-      sb.append("<div><span style='float:left'>"+dbo.get("message")+"</span>" +
-              "<span style='float:right;color:#CCC;font-size:10px'>"+date+"</span></div>" +
-              "<div style='clear:both;'></div>");
-      prevUser = user;
     }
 
     return sb.toString();
