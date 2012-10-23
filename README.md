@@ -33,23 +33,22 @@ This easiest way to do so is to use Apache to re-route the requests using ProxyP
 In your Apache, configure some Proxy Pass rules, here's an example :
 
 <pre><code>
-
 &lt;VirtualHost *:8888&gt;
   ServerName www.localhost.com
 
   ProxyRequests Off
   ProxyPreserveHost On
 
-  <Proxy *>
+  &lt;Proxy *&gt;
     Order deny,allow
     Allow from all
-  </Proxy>
+  &lt;/Proxy&gt;
 
   ProxyPass /chatServer http://localhost:8280/chatServer
   ProxyPassReverse /chatServer http://localhost:8280/chatServer
   ProxyPass / http://localhost:8080/
   ProxyPassReverse / http://localhost:8080/
-</VirtualHost>
+&lt;/VirtualHost&gt;
 
 </code></pre>
 
@@ -60,10 +59,10 @@ If you don't want problems with encoding, one important tip is to configure the 
 conf/server.xml :
 
 <pre><code>
-    <Connector port="8280" protocol="HTTP/1.1"
+    &lt;Connector port="8280" protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="8243" URIEncoding="UTF-8" />
+               redirectPort="8243" URIEncoding="UTF-8" /&gt;
 
-    <Connector port="8209" protocol="AJP/1.3" redirectPort="8243" URIEncoding="UTF-8" />
+    &lt;Connector port="8209" protocol="AJP/1.3" redirectPort="8243" URIEncoding="UTF-8" /&gt;
 
 </code></pre>
