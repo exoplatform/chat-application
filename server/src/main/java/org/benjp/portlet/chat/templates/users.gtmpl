@@ -53,7 +53,7 @@
             //console.log("DATA="+e.data);
             $(".rightchat").css("display", "block");
             $("#chats").html('<span>'+e.data+'</span>');
-            $("#chats").animate({ scrollTop: 2000 }, 'normal');
+            $("#chats").animate({ scrollTop: 20000 }, 'fast');
             old = e.data;
           }
         };
