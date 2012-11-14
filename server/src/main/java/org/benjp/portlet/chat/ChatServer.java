@@ -57,7 +57,7 @@ public class ChatServer extends juzu.Controller
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String sessionId, String targetUser, String message, String room) throws IOException
+  public Response.Content send(String user, String sessionId, String targetUser, String message, String room, String event) throws IOException
   {
     if (!userService.hasUserWithSession(user,  sessionId))
     {
@@ -82,8 +82,12 @@ public class ChatServer extends juzu.Controller
       //e.printStackTrace();
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
-    String data = "id: "+System.currentTimeMillis()+"\n";
-    data += "data: "+chatService.read(room) +"\n\n";
+
+    String data = chatService.read(room);
+    if (event!=null && event.equals("1"))
+    {
+      data = "id: "+System.currentTimeMillis()+"\n"+"data: "+data+"\n\n";
+    }
 
 
     return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");

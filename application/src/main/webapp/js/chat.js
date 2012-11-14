@@ -45,6 +45,7 @@ $(document).ready(function(){
         success:function(response){
           //console.log("success");
           document.getElementById("msg").value = '';
+          refreshChat();
         },
 
         error:function (xhr, status, error){

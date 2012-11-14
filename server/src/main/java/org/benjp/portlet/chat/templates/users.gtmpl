@@ -44,8 +44,11 @@
         console.log("SUCCESS::getRoom::"+response);
         room = response;
 
+        chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
+        refreshChat();
+        /*
         if (chatEventSource!=undefined) chatEventSource.close();
-        chatEventSource = new EventSource(jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId);
+        chatEventSource = new EventSource(jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=1');
 
         chatEventSource.onmessage = function(e){
           console.log("chatEventSource::onmessage::");
@@ -57,6 +60,7 @@
             old = e.data;
           }
         };
+        */
 
       },
 
@@ -69,6 +73,18 @@
 
 
   });
+
+
+  setInterval(refreshChat, 3000);
+
+  function refreshChat() {
+      $(".rightchat").css("display", "block");
+      $('#chats').load(chatEventURL, function () { });
+      //$("#chats").html('<span>'+e.data+'</span>');
+      $("#chats").animate({ scrollTop: 20000 }, 'fast');
+
+  }
+
 
 
 </script>
