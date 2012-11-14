@@ -86,29 +86,34 @@
       $.getJSON(chatEventURL, function(data) {
 
         var im, message, out="", prevUser="";
-        for (im=0 ; im<data.messages.length ; im++) {
-          message = data.messages[im];
+        if (data.messages.length==0) {
+          out = "<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>";
+        } else {
+          for (im=0 ; im<data.messages.length ; im++) {
+            message = data.messages[im];
 
-          if (prevUser != message.user)
-          {
-            if (prevUser != "")
-              out += "</div>";
-            out += "<div class='msgln";
-            if (message.user != username)
-              out += " msgln-odd";
-            out += "'><b>";
-            out += message.user;
-            out += "</b><br/>";
+            if (prevUser != message.user)
+            {
+              if (prevUser != "")
+                out += "</div>";
+              out += "<div class='msgln";
+              if (message.user != username)
+                out += " msgln-odd";
+              out += "'><b>";
+              out += message.user;
+              out += "</b><br/>";
+            }
+            else
+            {
+              out += "<hr style='margin:0px;'>";
+            }
+            out += "<div><span style='float:left'>"+message.message+"</span>" +
+                    "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
+                    "<div style='clear:both;'></div>";
+            prevUser = message.user;
           }
-          else
-          {
-            out += "<hr style='margin:0px;'>";
-          }
-          out += "<div><span style='float:left'>"+message.message+"</span>" +
-                  "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
-                  "<div style='clear:both;'></div>";
-          prevUser = message.user;
         }
+
         $("#chats").html('<span>'+out+'</span>');
         $("#chats").animate({ scrollTop: 20000 }, 'fast');
 

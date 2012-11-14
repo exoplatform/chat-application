@@ -56,7 +56,7 @@ public class ChatService
     String prevUser = "";
     if (!cursor.hasNext())
     {
-      sb.append("<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>");
+      sb.append("{\"messages\": []}");
     }
     else
     {
