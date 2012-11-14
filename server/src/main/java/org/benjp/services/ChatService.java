@@ -60,6 +60,7 @@ public class ChatService
     }
     else
     {
+      sb.append("{\"messages\": [");
       List<DBObject> listdbo = new ArrayList<DBObject>();
       while (cursor.hasNext())
       {
@@ -70,6 +71,7 @@ public class ChatService
         DBObject dbo = cursor.next();
         listdbo.add(0, dbo);
       }
+      boolean first = true;
       for(DBObject dbo:listdbo)
       {
         String user = dbo.get("user").toString();
@@ -87,23 +89,15 @@ public class ChatService
           e.printStackTrace();
         }
 
-        if (!prevUser.equals(user))
-        {
-          if (!prevUser.equals(""))
-            sb.append("</div>");
-          sb.append("<div class='msgln'><b>");
-          sb.append(user);
-          sb.append("</b><br/>");
-        }
-        else
-        {
-          sb.append("<hr style='margin:0px;'>");
-        }
-        sb.append("<div><span style='float:left'>"+dbo.get("message")+"</span>" +
-                "<span style='float:right;color:#CCC;font-size:10px'>"+date+"</span></div>" +
-                "<div style='clear:both;'></div>");
-        prevUser = user;
+        if (!first)sb.append(",");
+        sb.append("{\"user\": \"").append(user).append("\",");
+        sb.append("\"date\": \"").append(date).append("\",");
+        sb.append("\"message\": \"").append(dbo.get("message")).append("\"}");
+        first = false;
       }
+
+      sb.append("]}");
+
     }
 
     return sb.toString();

@@ -59,14 +59,17 @@
   width: 150px;
   cursor: default;
 }
+
 .msgln
 {
 	padding: 3px;
 }
-.msgln:nth-child(odd)
+.msgln-odd
 {
+	padding: 3px;
 	background-color: #EFF9FE;
 }
+
 footer
 {
 	position: fixed;

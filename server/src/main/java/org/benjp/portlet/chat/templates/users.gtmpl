@@ -79,10 +79,44 @@
   chatEventInt = setInterval(refreshChat, 3000);
 
   function refreshChat() {
+      $("#chats").html('<span></span>')
       $(".rightchat").css("display", "block");
-      $('#chats').load(chatEventURL, function () { });
+      //$('#chats').load(chatEventURL, function () { });
+
+      $.getJSON(chatEventURL, function(data) {
+
+        var im, message, out="", prevUser="";
+        for (im=0 ; im<data.messages.length ; im++) {
+          message = data.messages[im];
+
+          if (prevUser != message.user)
+          {
+            if (prevUser != "")
+              out += "</div>";
+            out += "<div class='msgln";
+            if (message.user != username)
+              out += " msgln-odd";
+            out += "'><b>";
+            out += message.user;
+            out += "</b><br/>";
+          }
+          else
+          {
+            out += "<hr style='margin:0px;'>";
+          }
+          out += "<div><span style='float:left'>"+message.message+"</span>" +
+                  "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
+                  "<div style='clear:both;'></div>";
+          prevUser = message.user;
+        }
+        $("#chats").html('<span>'+out+'</span>');
+        $("#chats").animate({ scrollTop: 20000 }, 'fast');
+
+      });
+
+
       //$("#chats").html('<span>'+e.data+'</span>');
-      $("#chats").animate({ scrollTop: 20000 }, 'fast');
+      //$("#chats").animate({ scrollTop: 20000 }, 'fast');
 
   }
 
