@@ -20,4 +20,5 @@
   var chatEventSource;
   var targetUser;
   var chatEventURL;
+  var chatEventInt;
 </script>

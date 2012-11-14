@@ -75,7 +75,8 @@
   });
 
 
-  setInterval(refreshChat, 3000);
+  chatEventInt = window.clearInterval(chatEventInt);
+  chatEventInt = setInterval(refreshChat, 3000);
 
   function refreshChat() {
       $(".rightchat").css("display", "block");
