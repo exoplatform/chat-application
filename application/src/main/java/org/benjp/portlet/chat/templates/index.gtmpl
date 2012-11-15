@@ -21,4 +21,5 @@
   var targetUser;
   var chatEventURL;
   var chatEventInt;
+  var firstLoad = true;
 </script>

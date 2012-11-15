@@ -25,10 +25,23 @@
 </table>
 
 <script>
+
+  var value = jzGetParam("lastUser");
+  if (value && firstLoad) {
+    loadRoom(value);
+    firstLoad = false;
+  }
+
   $("#users-online-"+targetUser).addClass("info");
 
   $('.user-link').on("click", function() {
     targetUser = $(this).attr("user-data");
+    loadRoom(targetUser);
+
+  });
+
+
+  function loadRoom(targetUser) {
     //console.log("TARGET::"+targetUser);
     $(".users-online").removeClass("info");
     $("#users-online-"+targetUser).addClass("info");
@@ -46,7 +59,7 @@
 
         chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
 
-
+        jzStoreParam("lastUser", targetUser, 60000);
         jzStoreParam("lastTS", "0");
         chatEventInt = window.clearInterval(chatEventInt);
         chatEventInt = setInterval(refreshChat, 3000);
@@ -76,9 +89,7 @@
 
     });
 
-
-
-  });
+  }
 
 
   function refreshChat() {
