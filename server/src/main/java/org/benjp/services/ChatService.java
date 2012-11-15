@@ -16,7 +16,6 @@ public class ChatService
   private static final String M_DB = "chat";
   private static final String M_ROOM_PREFIX = "room_";
   private static final String M_ROOMS_COLLECTION = "rooms";
-  private static final String M_UNREAD_PREFIX = "unread_";
 
   private DB db()
   {
@@ -26,6 +25,10 @@ public class ChatService
   public void write(String message, String user, String room)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
+    if (coll.count()==0) {
+      coll.ensureIndex("timestamp");
+    }
+
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);

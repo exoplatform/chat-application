@@ -22,6 +22,13 @@ public class NotificationService
   public void addNotification(String user, String type, String category, String categoryId, String content, String link)
   {
     DBCollection coll = db().getCollection(M_USERS);
+    if (coll.count()==0) {
+      coll.ensureIndex("user");
+      coll.ensureIndex("type");
+      coll.ensureIndex("category");
+      coll.ensureIndex("categoryId");
+      coll.ensureIndex("isRead");
+    }
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
