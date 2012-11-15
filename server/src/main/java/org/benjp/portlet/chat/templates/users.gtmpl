@@ -45,7 +45,13 @@
         room = response;
 
         chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
+
+
+        jzStoreParam("lastTS", "0");
+        chatEventInt = window.clearInterval(chatEventInt);
+        chatEventInt = setInterval(refreshChat, 3000);
         refreshChat();
+
         /*
         if (chatEventSource!=undefined) chatEventSource.close();
         chatEventSource = new EventSource(jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=1');
@@ -75,53 +81,53 @@
   });
 
 
-  chatEventInt = window.clearInterval(chatEventInt);
-  chatEventInt = setInterval(refreshChat, 3000);
-
   function refreshChat() {
-      $("#chats").html('<span></span>')
-      $(".rightchat").css("display", "block");
-      //$('#chats').load(chatEventURL, function () { });
-
       $.getJSON(chatEventURL, function(data) {
-
+        var lastTS = jzGetParam("lastTS");
+        //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
         var im, message, out="", prevUser="";
         if (data.messages.length==0) {
           out = "<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>";
+          $("#chats").html('<span>'+out+'</span>');
+          $("#chats").animate({ scrollTop: 20000 }, 'fast');
         } else {
-          for (im=0 ; im<data.messages.length ; im++) {
-            message = data.messages[im];
 
-            if (prevUser != message.user)
-            {
-              if (prevUser != "")
-                out += "</div>";
-              if (message.user != username)
-                out += "<div class='msgln-odd'><b>";
+          var ts = data.timestamp;
+          if (ts != lastTS) {
+            jzStoreParam("lastTS", ts, 600);
+            //console.log("new data to show");
+            for (im=0 ; im<data.messages.length ; im++) {
+              message = data.messages[im];
+
+              if (prevUser != message.user)
+              {
+                if (prevUser != "")
+                  out += "</div>";
+                if (message.user != username)
+                  out += "<div class='msgln-odd'><b>";
+                else
+                  out += "<div class='msgln'><b>";
+                out += message.fullname;
+                out += "</b><br/>";
+              }
               else
-                out += "<div class='msgln'><b>";
-              out += message.fullname;
-              out += "</b><br/>";
+              {
+                out += "<hr style='margin:0px;'>";
+              }
+              out += "<div><span style='float:left'>"+message.message+"</span>" +
+                      "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
+                      "<div style='clear:both;'></div>";
+              prevUser = message.user;
             }
-            else
-            {
-              out += "<hr style='margin:0px;'>";
-            }
-            out += "<div><span style='float:left'>"+message.message+"</span>" +
-                    "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
-                    "<div style='clear:both;'></div>";
-            prevUser = message.user;
+            $("#chats").html('<span>'+out+'</span>');
+            $("#chats").animate({ scrollTop: 20000 }, 'fast');
+
+
           }
         }
-
-        $("#chats").html('<span>'+out+'</span>');
-        $("#chats").animate({ scrollTop: 20000 }, 'fast');
+        $(".rightchat").css("display", "block");
 
       });
-
-
-      //$("#chats").html('<span>'+e.data+'</span>');
-      //$("#chats").animate({ scrollTop: 20000 }, 'fast');
 
   }
 

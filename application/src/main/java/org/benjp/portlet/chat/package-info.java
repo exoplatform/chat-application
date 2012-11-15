@@ -5,6 +5,7 @@
         location = AssetLocation.SERVER,
         scripts = {
                 @Script(src = "js/jquery-1.7.1.min.js"),
+                @Script(src = "js/jquery-juzu-utils-0.1.0.js"),
                 @Script(src = "js/chat.js")
         },
         stylesheets = {

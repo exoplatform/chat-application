@@ -65,8 +65,8 @@ public class ChatService
     {
       Map<String, String> users = new HashMap<String, String>();
 
-      sb.append("{\"messages\": [");
       List<DBObject> listdbo = new ArrayList<DBObject>();
+      String mostRecentTimestamp = null;
       while (cursor.hasNext())
       {
         /** sorting and unsorting on cursor doesn't work, we need to reverse using a 2nd loop
@@ -74,8 +74,15 @@ public class ChatService
          * sorting and limit in the query
          */
         DBObject dbo = cursor.next();
+        if (mostRecentTimestamp==null)
+        {
+          mostRecentTimestamp = dbo.get("timestamp").toString();
+        }
         listdbo.add(0, dbo);
       }
+      sb.append("{\"room\": \"").append(room).append("\",");
+      sb.append("\"timestamp\": \"").append(mostRecentTimestamp).append("\",");
+      sb.append("\"messages\": [");
       boolean first = true;
       for(DBObject dbo:listdbo)
       {
