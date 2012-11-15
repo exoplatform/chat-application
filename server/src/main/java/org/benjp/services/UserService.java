@@ -60,6 +60,7 @@ public class UserService
       DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
 
       BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", session);
       doc.put("user", user);
       doc.put("session", session);
 
