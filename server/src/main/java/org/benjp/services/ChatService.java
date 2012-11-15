@@ -37,7 +37,7 @@ public class ChatService
   }
 
 
-  public String read(String room)
+  public String read(String room, UserService userService)
   {
     StringBuffer sb = new StringBuffer();
 
@@ -60,6 +60,8 @@ public class ChatService
     }
     else
     {
+      Map<String, String> users = new HashMap<String, String>();
+
       sb.append("{\"messages\": [");
       List<DBObject> listdbo = new ArrayList<DBObject>();
       while (cursor.hasNext())
@@ -75,6 +77,13 @@ public class ChatService
       for(DBObject dbo:listdbo)
       {
         String user = dbo.get("user").toString();
+        String fullname = users.get(user);
+        if (fullname==null)
+        {
+          fullname = userService.getUserFullName(user);
+          users.put(user, fullname);
+        }
+
         String date = "";
         try
         {
@@ -91,6 +100,7 @@ public class ChatService
 
         if (!first)sb.append(",");
         sb.append("{\"user\": \"").append(user).append("\",");
+        sb.append("\"fullname\": \"").append(fullname).append("\",");
         sb.append("\"date\": \"").append(date).append("\",");
         sb.append("\"message\": \"").append(dbo.get("message")).append("\"}");
         first = false;
@@ -174,6 +184,7 @@ public class ChatService
 
     for (RoomBean roomBean:rooms) {
       String targetUser = roomBean.getUser();
+      roomBean.setFullname(userService.getUserFullName(targetUser));
       if (availableUsers.contains(targetUser))
       {
         roomBean.setAvailableUser(true);
@@ -190,6 +201,7 @@ public class ChatService
     {
       RoomBean roomBean = new RoomBean();
       roomBean.setUser(availableUser);
+      roomBean.setFullname(userService.getUserFullName(availableUser));
       roomBean.setAvailableUser(true);
       rooms.add(roomBean);
     }

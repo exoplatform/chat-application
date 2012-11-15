@@ -3,6 +3,7 @@ package org.benjp.services;
 public class RoomBean implements Comparable<RoomBean>
 {
   String user = "";
+  String fullname = "";
   String room = "";
   int unreadTotal = -1;
   boolean isAvailableUser = false;
@@ -41,6 +42,14 @@ public class RoomBean implements Comparable<RoomBean>
 
   public boolean isActive() {
     return (isAvailableUser || (!"".equals(room)));
+  }
+
+  public String getFullname() {
+    return fullname;
+  }
+
+  public void setFullname(String fullname) {
+    this.fullname = fullname;
   }
 
   @Override

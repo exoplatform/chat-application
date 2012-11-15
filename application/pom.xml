@@ -12,6 +12,7 @@
   <name>Chat Application</name>
 
   <properties>
+    <juzu.version>0.6.0-SNAPSHOT</juzu.version>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
   </properties>
@@ -20,19 +21,36 @@
 
     <!-- Application dependencies-->
     <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-builder</artifactId>
-      <version>0.6.0-SNAPSHOT</version>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+      <version>1</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-less</artifactId>
-      <version>0.6.0-SNAPSHOT</version>
+      <artifactId>juzu-core</artifactId>
+      <version>${juzu.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-core</artifactId>
+      <classifier>sources</classifier>
+      <version>${juzu.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-builder</artifactId>
+      <version>${juzu.version}</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
-      <version>0.6.0-SNAPSHOT</version>
+      <version>${juzu.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-less</artifactId>
+      <version>${juzu.version}</version>
     </dependency>
 
     <!-- Other Dependencies -->
@@ -51,30 +69,40 @@
       <artifactId>server</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.container</artifactId>
+      <version>2.3.8-GA</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.organization.api</artifactId>
+      <version>2.3.8-GA</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <finalName>chat</finalName>
-    <plugins>
 
+    <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <compilerArguments>
-            <sourcepath>${project.basedir}/src/main/java</sourcepath>
-          </compilerArguments>
+          <source>1.5</source>
+          <target>1.5</target>
         </configuration>
       </plugin>
-
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
         <dependencies>
           <dependency>
             <groupId>org.juzu</groupId>
             <artifactId>juzu-builder</artifactId>
-            <version>0.5.1</version>
+            <version>${juzu.version}</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -97,8 +125,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
-
 </project>

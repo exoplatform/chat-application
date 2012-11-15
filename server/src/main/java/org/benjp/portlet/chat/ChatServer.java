@@ -83,7 +83,7 @@ public class ChatServer extends juzu.Controller
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
 
-    String data = chatService.read(room);
+    String data = chatService.read(room, userService);
     if (event!=null && event.equals("1"))
     {
       data = "id: "+System.currentTimeMillis()+"\n"+"data: "+data+"\n\n";

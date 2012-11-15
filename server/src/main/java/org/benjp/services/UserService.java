@@ -4,8 +4,8 @@ import com.mongodb.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Named("userService")
 @ApplicationScoped
@@ -14,6 +14,7 @@ public class UserService
 
   private static final String M_DB = "users";
   private static final String M_SESSIONS_COLLECTION = "sessions";
+  private static final String M_USERS_COLLECTION = "users";
 
   private DB db()
   {
@@ -64,6 +65,37 @@ public class UserService
 
       coll.insert(doc);
     }
+  }
+
+  public void addUserFullName(String user, String fullname)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (!cursor.hasNext())
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("user", user);
+      doc.put("fullname", fullname);
+      coll.insert(doc);
+    }
+  }
+
+  public String getUserFullName(String user)
+  {
+    String fullname = null;
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      fullname = doc.get("fullname").toString();
+    }
+
+    return fullname;
   }
 
   public void removeSession(String session)
@@ -123,5 +155,7 @@ public class UserService
 
     return users;
   }
+
+
 
 }
