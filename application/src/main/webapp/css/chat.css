@@ -63,11 +63,12 @@
 .msgln
 {
 	padding: 3px;
+	background-color: #F3F3F3;
 }
 .msgln-odd
 {
 	padding: 3px;
-	background-color: #EFF9FE;
+	background-color: #FFF;
 }
 
 footer

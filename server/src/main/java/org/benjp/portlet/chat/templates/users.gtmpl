@@ -96,10 +96,10 @@
             {
               if (prevUser != "")
                 out += "</div>";
-              out += "<div class='msgln";
               if (message.user != username)
-                out += " msgln-odd";
-              out += "'><b>";
+                out += "<div class='msgln-odd'><b>";
+              else
+                out += "<div class='msgln'><b>";
               out += message.fullname;
               out += "</b><br/>";
             }
