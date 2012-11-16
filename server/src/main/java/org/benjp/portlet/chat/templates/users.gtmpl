@@ -36,10 +36,16 @@
 
   $("#users-online-"+targetUser).addClass("info");
 
+
+  $('.users-online').on("click", function() {
+    targetUser = $(".user-link:first",this).attr("user-data");
+    loadRoom();
+  });
+
+
   $('.user-link').on("click", function() {
     targetUser = $(this).attr("user-data");
     loadRoom();
-
   });
 
 
