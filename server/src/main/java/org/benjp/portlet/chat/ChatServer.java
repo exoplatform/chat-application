@@ -46,11 +46,11 @@ public class ChatServer extends juzu.Controller
 
   @Resource
   @Route("/whoIsOnline")
-  public void whoIsOnline(String user, String sessionId)
+  public void whoIsOnline(String user, String sessionId, String filter)
   {
     if (userService.hasUserWithSession(user,  sessionId))
     {
-      List<RoomBean> rooms = chatService.getRooms(user, notificationService, userService);
+      List<RoomBean> rooms = chatService.getRooms(user, filter, notificationService, userService);
       users.with().set("rooms", rooms).render();
     }
   }

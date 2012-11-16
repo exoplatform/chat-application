@@ -57,11 +57,18 @@ $(document).ready(function(){
 
   });
 
+  $('#chatSearch').keyup(function(event) {
+    var filter = $(this).attr("value");
+    console.log(filter);
+    userFilter = filter;
+    refreshWhoIsOnline();
+  });
+
   setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
   function refreshWhoIsOnline() {
-    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId}, function () { });
+    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId, "filter": userFilter}, function () { });
   }
 
   function strip(html)

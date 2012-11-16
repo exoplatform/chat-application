@@ -1,8 +1,8 @@
 <div class="chatapplication">
   <div class="leftchat">
     <div class="input-prepend chatsearch">
-      <span class="add-on"><i class="icon-user"></i></span>
-      <input class="span2" id="inputIcon" type="text">
+      <span class="add-on"><i class="icon-search"></i></span>
+      <input class="span2" id="chatSearch" type="text">
     </div>
     <div id="whoisonline"></div>
   </div>
@@ -28,4 +28,5 @@
   var chatEventURL;
   var chatEventInt;
   var firstLoad = true;
+  var userFilter = "";
 </script>

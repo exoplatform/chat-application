@@ -186,8 +186,12 @@ public class ChatService
     return cursor.hasNext();
   }
 
-
   public List<RoomBean> getRooms(String user, NotificationService notificationService, UserService userService)
+  {
+    return getRooms(user, null, notificationService, userService);
+  }
+
+  public List<RoomBean> getRooms(String user, String filter, NotificationService notificationService, UserService userService)
   {
     Collection<String> availableUsers = userService.getUsersFilterBy(user);
     List<RoomBean> rooms = this.getExistingRooms(user, notificationService);
@@ -218,10 +222,24 @@ public class ChatService
       rooms.add(roomBean);
     }
 
-    Collections.sort(rooms);
+    List<RoomBean> finalRooms = new ArrayList<RoomBean>();
+    for (RoomBean roomBean:rooms) {
+      String targetUser = roomBean.getFullname();
+      if (filter(targetUser, filter))
+        finalRooms.add(roomBean);
+    }
 
-    return rooms;
+    Collections.sort(finalRooms);
 
+    return finalRooms;
+
+  }
+
+  private boolean filter(String user, String filter)
+  {
+    if (user==null || filter==null || "".equals(filter)) return true;
+
+    return user.toLowerCase().contains(filter.toLowerCase());
   }
 
 }
