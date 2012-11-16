@@ -44,6 +44,9 @@
   min-width: 7px;
   padding: 8px 0px 8px 8px !important;
 }
+.users-online td {
+  border: 0px !important;
+}
 .user-available {
   background-position: 0px 0px;
   background:url('../img/available.png') no-repeat 3px 5px;
