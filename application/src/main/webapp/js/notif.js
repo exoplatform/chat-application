@@ -11,7 +11,7 @@ $(document).ready(function(){
         var total = data.total;
         console.log('Notif :: '+total);
         if (total>0) {
-          $("#chatnotification").html('<span>'+total+'</span>');
+          $("#chatnotification").html('<span class="notiftotal">'+total+'</span>');
           $("#chatnotification").css('display', 'block');
         } else {
           $("#chatnotification").html('<span></span>');
