@@ -40,6 +40,7 @@ $(document).ready(function(){
   });
 
   $("a.popupchat").click(function(){
+     $(".MenuItemContainer").css('display', 'none');
      window.open("/portal/default/chat?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=565, height=625");
   });
 
@@ -61,12 +62,10 @@ $(document).ready(function(){
         $("span.chatstatus").removeClass("chatstatus-invisible-black");
         $("span.chatstatus").removeClass("chatstatus-away-black");
         $("span.chatstatus").addClass("chatstatus-"+response+"-black");
+        $(".MenuItemContainer").css('display', 'none');
       }
     });
 
-
-
-    //$(".MenuItemContainer:first",this).css('display', 'none');
   });
 
   $("#chatstatus").mouseenter(function(){
