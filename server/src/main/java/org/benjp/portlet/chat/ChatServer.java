@@ -142,16 +142,20 @@ public class ChatServer extends juzu.Controller
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user, String sessionId) throws IOException
+  public Response.Content notification(String user, String sessionId, String event) throws IOException
   {
     if (!userService.hasUserWithSession(user,  sessionId))
     {
       return Response.notFound("Petit malin !");
     }
     int totalUnread = notificationService.getUnreadNotificationsTotal(user);
-    String data = "id: "+totalUnread+"\n";
-    data += "data: {\"total\": "+totalUnread+"}\n\n";
 
+    String data = "{\"total\": \""+totalUnread+"\"}";
+    if (event!=null && event.equals("1"))
+    {
+      data = "id: "+totalUnread+"\n";
+      data += "data: {\"total\": "+totalUnread+"}\n\n";
+    }
 
     return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }

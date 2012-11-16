@@ -5,4 +5,6 @@
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
   var jzNotification = "<%=chatServerURL%>/notification";
+  var notifEventInt;
+  var notifEventURL;
 </script>

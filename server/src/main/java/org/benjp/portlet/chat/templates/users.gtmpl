@@ -28,7 +28,9 @@
 
   var value = jzGetParam("lastUser");
   if (value && firstLoad) {
-    loadRoom(value);
+    //console.log("firstLoad with user : *"+value+"*");
+    targetUser = value;
+    loadRoom();
     firstLoad = false;
   }
 
@@ -36,13 +38,13 @@
 
   $('.user-link').on("click", function() {
     targetUser = $(this).attr("user-data");
-    loadRoom(targetUser);
+    loadRoom();
 
   });
 
 
-  function loadRoom(targetUser) {
-    //console.log("TARGET::"+targetUser);
+  function loadRoom() {
+    console.log("TARGET::"+targetUser);
     $(".users-online").removeClass("info");
     $("#users-online-"+targetUser).addClass("info");
 
