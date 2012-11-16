@@ -1,18 +1,15 @@
 $(document).ready(function(){
 
-  var old = '';
-
   notifEventURL = jzNotification+'?user='+username+'&sessionId='+sessionId;
-  console.log(notifEventURL);
   notifEventInt = window.clearInterval(notifEventInt);
   notifEventInt = setInterval(refreshNotif, 3000);
   refreshNotif();
 
   function refreshNotif() {
     $.getJSON(notifEventURL, function(data) {
-      if(old!=data){
+      if(oldNotifTotal!=data.total){
         var total = data.total;
-        console.log(total);
+        console.log('Notif :: '+total);
         if (total>0) {
           $("#chatnotification").html('<span>'+total+'</span>');
           $("#chatnotification").css('display', 'block');
@@ -20,7 +17,7 @@ $(document).ready(function(){
           $("#chatnotification").html('<span></span>');
           $("#chatnotification").css('display', 'none');
         }
-        old = data;
+        oldNotifTotal = data.total;
       }
 
     });

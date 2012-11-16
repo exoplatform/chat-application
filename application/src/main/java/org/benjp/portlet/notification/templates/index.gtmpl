@@ -7,4 +7,5 @@
   var jzNotification = "<%=chatServerURL%>/notification";
   var notifEventInt;
   var notifEventURL;
+  var oldNotifTotal = '';
 </script>
