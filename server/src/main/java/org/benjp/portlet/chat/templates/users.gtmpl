@@ -4,7 +4,7 @@
     <% rooms.each { room -> %>
     <tr id="users-online-<%=room.user%>" class="users-online">
       <td class="td-status">
-        <span <% if (room.isAvailableUser) { %>class="user-available"<% } %>>&nbsp;&nbsp;&nbsp;</span>
+        <span <% if (room.isAvailableUser) { %>class="user-<%=room.status%>"<% } %>>&nbsp;&nbsp;&nbsp;</span>
       </td>
       <td>
         <% if (room.isActive()) { %>

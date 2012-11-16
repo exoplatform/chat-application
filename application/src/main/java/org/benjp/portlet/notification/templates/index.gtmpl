@@ -1,10 +1,36 @@
-<div id="chatnotification" style="display:none"></div>
+<div id="chatstatus">
+  <li class="UITab NormalToolbarTab">
+    <a class="ArrowIcon TBIcon" href="#" style="padding:0px;">
+      <span class="chatstatus">
+        <span id="chatnotification" style="display:none"></span>
+      </span>
+    </a>
+    <ul  style="display: none; min-width: 120px; width: 120px;" class="MenuItemContainer">
+      <li class="MenuItem ">
+        <a href="#" class="chatstatus chatstatus-available" status="available">Available</a>
+      </li>
+      <li class="MenuItem ">
+        <a href="#" class="chatstatus chatstatus-away" status="away">Away</a>
+      </li>
+      <li class="MenuItem ">
+        <a href="#" class="chatstatus chatstatus-donotdisturb" status="donotdisturb">Do not disturb</a>
+      </li>
+      <li class="MenuItem ">
+        <a href="#" class="chatstatus chatstatus-invisible" status="invisible">Invisible</a>
+      </li>
+    </ul>
+	</li>
+</div>
+
+
 
 
 <script>
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
   var jzNotification = "<%=chatServerURL%>/notification";
+  var jzGetStatus = "<%=chatServerURL%>/getStatus";
+  var jzSetStatus = "<%=chatServerURL%>/setStatus";
   var notifEventInt;
   var notifEventURL;
   var oldNotifTotal = '';

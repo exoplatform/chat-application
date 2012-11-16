@@ -7,6 +7,7 @@ public class RoomBean implements Comparable<RoomBean>
   String room = "";
   int unreadTotal = -1;
   boolean isAvailableUser = false;
+  String status = UserService.STATUS_INVISIBLE;
 
   public String getUser() {
     return user;
@@ -50,6 +51,14 @@ public class RoomBean implements Comparable<RoomBean>
 
   public void setFullname(String fullname) {
     this.fullname = fullname;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
   @Override

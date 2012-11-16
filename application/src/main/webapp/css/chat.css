@@ -31,6 +31,14 @@
   background-position: 0px 0px;
   background:url('../img/available.png') no-repeat 3px 5px;
 }
+.user-donotdisturb {
+  background-position: 0px 0px;
+  background:url('../img/donotdisturb.png') no-repeat 3px 5px;
+}
+.user-away {
+  background-position: 0px 0px;
+  background:url('../img/away.png') no-repeat 3px 5px;
+}
 #chats
 {
 	height: 560px;

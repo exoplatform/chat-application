@@ -198,6 +198,7 @@ public class ChatService
       if (availableUsers.contains(targetUser))
       {
         roomBean.setAvailableUser(true);
+        roomBean.setStatus(userService.getStatus(targetUser));
         availableUsers.remove(targetUser);
       }
       else
@@ -212,6 +213,7 @@ public class ChatService
       RoomBean roomBean = new RoomBean();
       roomBean.setUser(availableUser);
       roomBean.setFullname(userService.getUserFullName(availableUser));
+      roomBean.setStatus(userService.getStatus(availableUser));
       roomBean.setAvailableUser(true);
       rooms.add(roomBean);
     }

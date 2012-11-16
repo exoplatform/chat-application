@@ -16,6 +16,13 @@ public class UserService
   private static final String M_SESSIONS_COLLECTION = "sessions";
   private static final String M_USERS_COLLECTION = "users";
 
+  public static final String STATUS_AVAILABLE = "available";
+  public static final String STATUS_DONOTDISTURB = "donotdisturb";
+  public static final String STATUS_AWAY = "away";
+  public static final String STATUS_INVISIBLE = "invisible";
+  public static final String STATUS_NONE = "none";
+
+
   private DB db()
   {
     return MongoBootstrap.mongo().getDB(M_DB);
@@ -81,6 +88,49 @@ public class UserService
       doc.put("fullname", fullname);
       coll.insert(doc);
     }
+  }
+
+  public String setStatus(String user, String status)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      doc.put("status", status);
+      coll.save(doc, WriteConcern.SAFE);
+    }
+    else
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("user", user);
+      doc.put("status", status);
+      coll.insert(doc);
+    }
+    return status;
+  }
+
+  public String getStatus(String user)
+  {
+    String status = STATUS_NONE;
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      if (doc.containsField("status"))
+        status = doc.get("status").toString();
+    }
+    else
+    {
+      status = setStatus(user, STATUS_AVAILABLE);
+    }
+
+    return status;
   }
 
   public String getUserFullName(String user)

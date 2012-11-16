@@ -160,4 +160,52 @@ public class ChatServer extends juzu.Controller
     return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
+  @Resource
+  @Route("/getStatus")
+  public Response.Content getStatus(String user, String sessionId)
+  {
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    String status = UserService.STATUS_INVISIBLE;
+    try
+    {
+      status = userService.getStatus(user);
+/*
+      if (UserService.STATUS_NONE.equals(status))
+      {
+        status = userService.setStatus(user, UserService.STATUS_AVAILABLE);
+      }
+*/
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound(status);
+    }
+    return Response.ok(status);
+  }
+
+  @Resource
+  @Route("/setStatus")
+  public Response.Content setStatus(String user, String sessionId, String status)
+  {
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    try
+    {
+      userService.setStatus(user, status);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("No Status for this User");
+    }
+    return Response.ok(status);
+  }
+
+
 }
