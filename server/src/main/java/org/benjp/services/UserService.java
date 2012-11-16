@@ -124,6 +124,8 @@ public class UserService
       DBObject doc = cursor.next();
       if (doc.containsField("status"))
         status = doc.get("status").toString();
+      else
+        status = setStatus(user, STATUS_AVAILABLE);
     }
     else
     {

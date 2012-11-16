@@ -172,12 +172,6 @@ public class ChatServer extends juzu.Controller
     try
     {
       status = userService.getStatus(user);
-/*
-      if (UserService.STATUS_NONE.equals(status))
-      {
-        status = userService.setStatus(user, UserService.STATUS_AVAILABLE);
-      }
-*/
     }
     catch (Exception e)
     {
