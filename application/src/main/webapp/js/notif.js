@@ -39,6 +39,10 @@ $(document).ready(function(){
     window.location.href = "/portal/default/chat"
   });
 
+  $("a.popupchat").click(function(){
+     window.open("/portal/default/chat?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=565, height=625");
+  });
+
   $("a.chatstatus").click(function(){
     var status = $(this).attr("status");
     console.log("setStatus :: "+status);

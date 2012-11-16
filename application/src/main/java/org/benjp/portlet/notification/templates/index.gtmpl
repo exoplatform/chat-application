@@ -6,16 +6,20 @@
       </span>
     </a>
     <ul  style="display: none; min-width: 120px; width: 120px;" class="MenuItemContainer">
-      <li class="MenuItem ">
+      <li class="MenuItem" style="height:30px;">
+        <a href="#" class="popupchat chaticon">Open Chat</a>
+        <hr>
+      </li>
+      <li class="MenuItem">
         <a href="#" class="chatstatus chatstatus-available" status="available">Available</a>
       </li>
-      <li class="MenuItem ">
+      <li class="MenuItem">
         <a href="#" class="chatstatus chatstatus-away" status="away">Away</a>
       </li>
-      <li class="MenuItem ">
+      <li class="MenuItem">
         <a href="#" class="chatstatus chatstatus-donotdisturb" status="donotdisturb">Do not disturb</a>
       </li>
-      <li class="MenuItem ">
+      <li class="MenuItem">
         <a href="#" class="chatstatus chatstatus-invisible" status="invisible">Invisible</a>
       </li>
     </ul>

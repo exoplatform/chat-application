@@ -29,14 +29,13 @@
   z-index: 2;
 }
 
-.chatstatus {
+.chatstatus, .popupchat {
   color: #444;
   font-weight: bold;
   padding: 0 6px;
   display: block;
   white-space: nowrap;
   background-position: 0px 0px;
-  background:url('../img/notif-icon-off.png') no-repeat 3px 4px;
   margin: 0px auto;
   min-width: 17px;
   text-align: center;
@@ -52,6 +51,10 @@
   padding-left: 25px !important;
 }
 
+.chaticon {
+  background:url('../img/chat.png') no-repeat 3px 4px;
+  height: 22px;
+}
 .chatstatus-available-black {
   background:url('../img/status-available-black.png') no-repeat 3px 4px;
 }
