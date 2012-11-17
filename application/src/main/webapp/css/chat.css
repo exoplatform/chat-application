@@ -59,6 +59,10 @@
   background-position: 0px 0px;
   background:url('../img/away.png') no-repeat 3px 5px;
 }
+.user-space {
+  background-position: 0px 0px;
+  background:url('../img/space.png') no-repeat 3px 5px;
+}
 
 .room-total {
   background-color: #3A87AD;

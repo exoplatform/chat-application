@@ -25,13 +25,16 @@ $(document).ready(function(){
 
   $.ajax({
     url: jzGetStatus,
-    data: { "user": username,
-            "sessionId": sessionId
-            },
-
+    data: {
+      "user": username,
+      "sessionId": sessionId
+    },
     success: function(response){
       console.log("getStatus::"+response);
       $("span.chatstatus").addClass("chatstatus-"+response+"-black");
+    },
+    error: function(response){
+      $("span.chatstatus").addClass("chatstatus-invisible-black");
     }
   });
 

@@ -15,12 +15,14 @@ public class UserService
   private static final String M_DB = "users";
   private static final String M_SESSIONS_COLLECTION = "sessions";
   private static final String M_USERS_COLLECTION = "users";
+  private static final String M_SPACES_COLLECTION = "spaces";
 
   public static final String STATUS_AVAILABLE = "available";
   public static final String STATUS_DONOTDISTURB = "donotdisturb";
   public static final String STATUS_AWAY = "away";
   public static final String STATUS_INVISIBLE = "invisible";
   public static final String STATUS_NONE = "none";
+  public static final String STATUS_SPACE = "space";
 
 
   private DB db()
@@ -88,6 +90,89 @@ public class UserService
       doc.put("fullname", fullname);
       coll.insert(doc);
     }
+  }
+
+  public void setSpaces(String user, List<SpaceBean> spaces)
+  {
+    List<String> spaceIds = new ArrayList<String>();
+    DBCollection coll = db().getCollection(M_SPACES_COLLECTION);
+    for (SpaceBean bean:spaces)
+    {
+      spaceIds.add(bean.getId());
+
+      BasicDBObject query = new BasicDBObject();
+      query.put("_id", bean.getId());
+      DBCursor cursor = coll.find(query);
+      if (!cursor.hasNext())
+      {
+        BasicDBObject doc = new BasicDBObject();
+        doc.put("_id", bean.getId());
+        doc.put("displayName", bean.getDisplayName());
+        doc.put("groupId", bean.getGroupId());
+        doc.put("shortName", bean.getShortName());
+        coll.insert(doc);
+      }
+
+
+    }
+    coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      doc.put("spaces", spaceIds);
+      coll.save(doc, WriteConcern.SAFE);
+    }
+    else
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("user", user);
+      doc.put("spaces", spaceIds);
+      coll.insert(doc);
+    }
+  }
+
+  private SpaceBean getSpace(String spaceId)
+  {
+    SpaceBean spaceBean = null;
+    DBCollection coll = db().getCollection(M_SPACES_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", spaceId);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      spaceBean = new SpaceBean();
+      spaceBean.setId(spaceId);
+      spaceBean.setDisplayName(doc.get("displayName").toString());
+      spaceBean.setGroupId(doc.get("groupId").toString());
+      spaceBean.setShortName(doc.get("shortName").toString());
+    }
+
+    return spaceBean;
+  }
+
+  public List<SpaceBean> getSpaces(String user)
+  {
+    List<SpaceBean> spaces = new ArrayList<SpaceBean>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+
+      List<String> listspaces = ((List<String>)doc.get("spaces"));
+      for (String space:listspaces)
+      {
+        spaces.add(getSpace(space));
+      }
+
+    }
+    return spaces;
   }
 
   public String setStatus(String user, String status)

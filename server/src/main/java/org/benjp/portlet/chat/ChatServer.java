@@ -72,7 +72,10 @@ public class ChatServer extends juzu.Controller
 //        System.out.println(user + "::" + message + "::" + room);
         chatService.write(message, user, room);
         String content = "New message from "+user+" : "+((message.length()>15)?message.substring(0,14)+"...":message);
-        notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
+
+        if (!targetUser.startsWith("space-"))
+          notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
+
         notificationService.setNotificationsAsRead(user, "chat", "room", room);
       }
 
@@ -104,11 +107,18 @@ public class ChatServer extends juzu.Controller
     String room = "";
     try
     {
-      ArrayList<String> users = new ArrayList<String>(2);
-      users.add(user);
-      users.add(targetUser);
+      if (targetUser.startsWith("space-"))
+      {
+        room = chatService.getSpaceRoom(targetUser);
 
-      room = chatService.getRoom(users);
+      }
+      else
+      {
+        ArrayList<String> users = new ArrayList<String>(2);
+        users.add(user);
+        users.add(targetUser);
+        room = chatService.getRoom(users);
+      }
       notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)

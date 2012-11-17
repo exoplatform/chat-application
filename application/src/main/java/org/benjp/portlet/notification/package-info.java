@@ -1,7 +1,10 @@
 @Application(defaultController = NotificationApplication.class)
 @Portlet(name="NotificationPortlet")
 @Bindings(
-  @Binding(value = org.exoplatform.services.organization.OrganizationService.class, implementation=GateInMetaProvider.class)
+  {
+    @Binding(value = org.exoplatform.services.organization.OrganizationService.class, implementation=GateInMetaProvider.class),
+    @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class, implementation=GateInMetaProvider.class)
+  }
 )
 
 @Assets(

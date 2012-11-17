@@ -8,6 +8,7 @@ public class RoomBean implements Comparable<RoomBean>
   int unreadTotal = -1;
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
+  boolean isSpace = false;
 
   public String getUser() {
     return user;
@@ -59,6 +60,14 @@ public class RoomBean implements Comparable<RoomBean>
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public boolean isSpace() {
+    return isSpace;
+  }
+
+  public void setSpace(boolean space) {
+    isSpace = space;
   }
 
   @Override

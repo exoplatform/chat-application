@@ -123,6 +123,29 @@ public class ChatService
     return sb.toString();
   }
 
+  public String getSpaceRoom(String space)
+  {
+    String room = null;
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("space", space);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      room = ((ObjectId)dbo.get("_id")).toString();
+    }
+    else
+    {
+      coll.insert(basicDBObject);
+      room = getSpaceRoom(space);
+    }
+
+    return room;
+  }
+
   public String getRoom(List<String> users)
   {
     Collections.sort(users);
@@ -220,6 +243,19 @@ public class ChatService
       roomBean.setStatus(userService.getStatus(availableUser));
       roomBean.setAvailableUser(true);
       rooms.add(roomBean);
+    }
+
+    List<SpaceBean> spaces = userService.getSpaces(user);
+    for (SpaceBean space:spaces)
+    {
+      RoomBean roomBeanS = new RoomBean();
+      roomBeanS.setUser("space-"+space.getId());
+      roomBeanS.setFullname(space.getDisplayName());
+      roomBeanS.setStatus(UserService.STATUS_SPACE);
+      roomBeanS.setAvailableUser(true);
+      roomBeanS.setSpace(true);
+      rooms.add(roomBeanS);
+
     }
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
