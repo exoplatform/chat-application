@@ -1,7 +1,11 @@
 <div class="chatapplication">
   <div class="leftchat">
     <div class="input-prepend chatsearch">
-      <label style="text-align:center;"><%=fullname%></label>
+      <label style="margin-bottom:3px;">
+        <span class="label-user"><%=fullname%></span>
+        <span class="filter-user"><span class="filter-on"></span></span>
+        <span class="filter-space"><span class="filter-on"></span></span>
+      </label>
       <span class="add-on"><i class="icon-search"></i></span>
       <input class="span2" id="chatSearch" type="text">
     </div>

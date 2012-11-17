@@ -64,6 +64,35 @@
   background:url('../img/space.png') no-repeat 3px 5px;
 }
 
+.label-user {
+  display: block;
+  width: 130px;
+  margin-top: 3px;
+  float: left;
+}
+
+.filter-on {
+  background-position: 0px 0px;
+  background:url('../img/filter-on.png') no-repeat 0px 0px;
+  padding-left: 19px;
+}
+
+.filter-off {
+  background-position: 0px 0px;
+  background:url('../img/filter-off.png') no-repeat 0px 0px;
+  padding-left: 19px;
+}
+
+.filter-user {
+  background-position: 0px 0px;
+  background:url('../img/filter-user.png') no-repeat 0px 0px;
+}
+
+.filter-space {
+  background-position: 0px 0px;
+  background:url('../img/filter-space.png') no-repeat 0px 0px;
+}
+
 .room-total {
   background-color: #3A87AD;
   color: white;
@@ -90,7 +119,7 @@
 }
 #whoisonline
 {
-  height: 535px;
+  height: 537px;
   background-color: #CEDEEE;
   border: 1px solid #D0D0D0;
   /* border-bottom: 2px solid #CCC; */
