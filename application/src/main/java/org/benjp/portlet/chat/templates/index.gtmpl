@@ -1,6 +1,7 @@
 <div class="chatapplication">
   <div class="leftchat">
     <div class="input-prepend chatsearch">
+      <label style="text-align:center;"><%=fullname%></label>
       <span class="add-on"><i class="icon-search"></i></span>
       <input class="span2" id="chatSearch" type="text">
     </div>
