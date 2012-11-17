@@ -72,6 +72,6 @@ public class RoomBean implements Comparable<RoomBean>
 
   @Override
   public int compareTo(RoomBean roomBean) {
-    return user.compareTo(roomBean.getUser());
+    return fullname.compareTo(roomBean.getFullname());
   }
 }

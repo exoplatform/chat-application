@@ -17,6 +17,8 @@ public class ChatService
   private static final String M_ROOM_PREFIX = "room_";
   private static final String M_ROOMS_COLLECTION = "rooms";
 
+  public static final String SPACE_PREFIX = "space-";
+
   private DB db()
   {
     return MongoBootstrap.mongo().getDB(M_DB);
@@ -249,11 +251,12 @@ public class ChatService
     for (SpaceBean space:spaces)
     {
       RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser("space-"+space.getId());
+      roomBeanS.setUser(SPACE_PREFIX+space.getId());
       roomBeanS.setFullname(space.getDisplayName());
       roomBeanS.setStatus(UserService.STATUS_SPACE);
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX+space.getId())));
       rooms.add(roomBeanS);
 
     }

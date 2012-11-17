@@ -112,6 +112,15 @@ public class UserService
         doc.put("shortName", bean.getShortName());
         coll.insert(doc);
       }
+      else
+      {
+        DBObject doc = cursor.next();
+        doc.put("_id", bean.getId());
+        doc.put("displayName", bean.getDisplayName());
+        doc.put("groupId", bean.getGroupId());
+        doc.put("shortName", bean.getShortName());
+        coll.save(doc);
+      }
 
 
     }
@@ -294,6 +303,23 @@ public class UserService
     return users;
   }
 
+  public List<String> getUsersFilterBy(String user, String space)
+  {
+    ArrayList<String> users = new ArrayList<String>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("spaces", space);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      String target = doc.get("user").toString();
+      if (!user.equals(target))
+        users.add(target);
+    }
+
+    return users;
+  }
 
 
 }
