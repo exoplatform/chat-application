@@ -290,7 +290,18 @@ public class ChatService
   {
     if (user==null || filter==null || "".equals(filter)) return true;
 
-    return user.toLowerCase().contains(filter.toLowerCase());
+    String[] args = filter.toLowerCase().split(" ");
+    String s = user.toLowerCase();
+    int ind;
+    for (String arg:args)
+    {
+      ind = s.indexOf(arg);
+      if (ind == -1)
+        return false;
+      else
+        s = s.substring(ind);
+    }
+    return true;
   }
 
 }
