@@ -228,6 +228,7 @@ public class ChatService
       for (RoomBean roomBean:rooms) {
         String targetUser = roomBean.getUser();
         roomBean.setFullname(userService.getUserFullName(targetUser));
+        roomBean.setFavorite(userService.isFavorite(user, roomBean.getUser()));
         if (availableUsers.contains(targetUser))
         {
           roomBean.setAvailableUser(true);
@@ -248,6 +249,7 @@ public class ChatService
         roomBean.setFullname(userService.getUserFullName(availableUser));
         roomBean.setStatus(userService.getStatus(availableUser));
         roomBean.setAvailableUser(true);
+        roomBean.setFavorite(userService.isFavorite(user, roomBean.getUser()));
         rooms.add(roomBean);
       }
     }
@@ -264,6 +266,7 @@ public class ChatService
         roomBeanS.setAvailableUser(true);
         roomBeanS.setSpace(true);
         roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
+        roomBeanS.setFavorite(userService.isFavorite(user, roomBeanS.getUser()));
         rooms.add(roomBeanS);
 
       }

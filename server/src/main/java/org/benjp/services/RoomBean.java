@@ -9,6 +9,7 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   boolean isSpace = false;
+  boolean isFavorite = false;
 
   public String getUser() {
     return user;
@@ -70,8 +71,18 @@ public class RoomBean implements Comparable<RoomBean>
     isSpace = space;
   }
 
+  public boolean isFavorite() {
+    return isFavorite;
+  }
+
+  public void setFavorite(boolean favorite) {
+    isFavorite = favorite;
+  }
+
   @Override
   public int compareTo(RoomBean roomBean) {
-    return fullname.compareTo(roomBean.getFullname());
+    String l = ((isFavorite)?"0":"1")+fullname;
+    String r = ((roomBean.isFavorite())?"0":"1")+roomBean.getFullname();
+    return l.compareTo(r);
   }
 }

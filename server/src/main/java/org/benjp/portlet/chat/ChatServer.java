@@ -105,6 +105,26 @@ public class ChatServer extends juzu.Controller
   }
 
   @Resource
+  @Route("/toggleFavorite")
+  public Response.Content toggleFavorite(String user, String sessionId, String targetUser)
+  {
+    if (!userService.hasUserWithSession(user,  sessionId))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    try
+    {
+      userService.toggleFavorite(user, targetUser);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("Oups");
+    }
+    return Response.ok("Updated!");
+  }
+
+  @Resource
   @Route("/getRoom")
   public Response.Content getRoom(String user, String sessionId, String targetUser)
   {

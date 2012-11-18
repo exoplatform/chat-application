@@ -4,7 +4,7 @@
     <% rooms.each { room -> %>
     <tr id="users-online-<%=room.user%>" class="users-online">
       <td class="td-status">
-        <span class="user-status"></span><span class="user-<%=room.status%>"></span>
+        <span class="user-status <% if (room.isFavorite) { %> user-favorite<% } %>" user-data="<%=room.user%>"></span><span class="user-<%=room.status%>"></span>
       </td>
       <td>
         <% if (room.isActive()) { %>
@@ -49,10 +49,25 @@
   });
 
   $('.user-status').on("click", function(e) {
-    console.log("ADD TO FAVORITE");
-    e.preventDefault();
+    var targetFav = $(this).attr("user-data");
+    toggleFavorite(targetFav);
   });
 
+  function toggleFavorite(targetFav) {
+    console.log("FAVORITE::"+targetFav);
+    $.ajax({
+      url: jzChatToggleFavorite,
+      data: {"targetUser": targetFav,
+              "user": username,
+              "sessionId": sessionId
+              },
+      success: function(response){
+        refreshWhoIsOnline();
+      },
+      error: function(xhr, status, error){
+      }
+    });
+  }
 
   function loadRoom() {
     console.log("TARGET::"+targetUser);

@@ -25,6 +25,7 @@
   var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
   var jzChatSend = "<%=chatServerURL%>/send";
   var jzChatGetRoom = "<%=chatServerURL%>/getRoom";
+  var jzChatToggleFavorite = "<%=chatServerURL%>/toggleFavorite";
   var jzChatUpdateUnreadMessages = "<%=chatServerURL%>/updateUnreadMessages";
   var room = "<%=room%>";
   var old = '';

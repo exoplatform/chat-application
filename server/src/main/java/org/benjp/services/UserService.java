@@ -77,6 +77,47 @@ public class UserService
     }
   }
 
+  public void toggleFavorite(String user, String targetUser)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      List<String> favorites = new ArrayList<String>();
+      if (doc.containsField("favorites")) {
+        favorites = (List<String>)doc.get("favorites");
+      }
+      if (favorites.contains(targetUser))
+        favorites.remove(targetUser);
+      else
+        favorites.add(targetUser);
+
+      doc.put("favorites", favorites);
+      coll.save(doc, WriteConcern.SAFE);
+    }
+  }
+
+  public boolean isFavorite(String user, String targetUser)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      if (doc.containsField("favorites")) {
+        List<String> favorites = (List<String>)doc.get("favorites");
+        if (favorites.contains(targetUser))
+          return true;
+      }
+    }
+    return false;
+  }
+
   public void addUserFullName(String user, String fullname)
   {
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);

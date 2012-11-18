@@ -78,10 +78,6 @@
 
 .user-favorite {
   background:url('../img/mask-star.png') no-repeat 0px 0px;
-  width: 16px;
-  display: block;
-  height: 16px;
-  float: left;
 }
 
 .user-favorite:hover {

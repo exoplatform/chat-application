@@ -82,12 +82,6 @@ $(document).ready(function(){
   setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
-  function refreshWhoIsOnline() {
-    var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
-    var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
-    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
-      "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function () { });
-  }
 
   function strip(html)
   {
@@ -97,3 +91,10 @@ $(document).ready(function(){
   }
 
 });
+
+function refreshWhoIsOnline() {
+  var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
+  var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
+  $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
+    "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function () { });
+}
