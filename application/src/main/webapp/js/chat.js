@@ -57,6 +57,21 @@ $(document).ready(function(){
 
   });
 
+  $(".filter").on("click", function() {
+    var child = $("span:first",this);
+    if (child.hasClass("filter-on")) {
+      child.removeClass("filter-on").addClass("filter-off");
+      if ($(this).hasClass("filter-user")) {
+        $(".filter-space span:first-child").removeClass("filter-off").addClass("filter-on");
+      } else {
+        $(".filter-user span:first-child").removeClass("filter-off").addClass("filter-on");
+      }
+    } else {
+      child.removeClass("filter-off").addClass("filter-on");
+    }
+    refreshWhoIsOnline();
+  });
+
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
     console.log(filter);
@@ -68,7 +83,10 @@ $(document).ready(function(){
   refreshWhoIsOnline();
 
   function refreshWhoIsOnline() {
-    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId, "filter": userFilter}, function () { });
+    var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
+    var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
+    $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
+      "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function () { });
   }
 
   function strip(html)

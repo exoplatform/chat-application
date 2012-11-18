@@ -75,12 +75,14 @@
   background-position: 0px 0px;
   background:url('../img/filter-on.png') no-repeat 0px 0px;
   padding-left: 19px;
+  cursor: pointer;
 }
 
 .filter-off {
   background-position: 0px 0px;
   background:url('../img/filter-off.png') no-repeat 0px 0px;
   padding-left: 19px;
+  cursor: pointer;
 }
 
 .filter-user {

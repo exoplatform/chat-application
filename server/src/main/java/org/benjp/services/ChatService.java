@@ -213,53 +213,62 @@ public class ChatService
 
   public List<RoomBean> getRooms(String user, NotificationService notificationService, UserService userService)
   {
-    return getRooms(user, null, notificationService, userService);
+    return getRooms(user, null, true, true, notificationService, userService);
   }
 
-  public List<RoomBean> getRooms(String user, String filter, NotificationService notificationService, UserService userService)
+  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, NotificationService notificationService, UserService userService)
   {
-    Collection<String> availableUsers = userService.getUsersFilterBy(user);
-    List<RoomBean> rooms = this.getExistingRooms(user, notificationService);
+    List<RoomBean> rooms = new ArrayList<RoomBean>();
 
-    for (RoomBean roomBean:rooms) {
-      String targetUser = roomBean.getUser();
-      roomBean.setFullname(userService.getUserFullName(targetUser));
-      if (availableUsers.contains(targetUser))
+    if (withUsers)
+    {
+      Collection<String> availableUsers = userService.getUsersFilterBy(user);
+      rooms = this.getExistingRooms(user, notificationService);
+
+      for (RoomBean roomBean:rooms) {
+        String targetUser = roomBean.getUser();
+        roomBean.setFullname(userService.getUserFullName(targetUser));
+        if (availableUsers.contains(targetUser))
+        {
+          roomBean.setAvailableUser(true);
+          roomBean.setStatus(userService.getStatus(targetUser));
+          availableUsers.remove(targetUser);
+        }
+        else
+        {
+          roomBean.setAvailableUser(false);
+        }
+
+      }
+
+      for (String availableUser: availableUsers)
       {
+        RoomBean roomBean = new RoomBean();
+        roomBean.setUser(availableUser);
+        roomBean.setFullname(userService.getUserFullName(availableUser));
+        roomBean.setStatus(userService.getStatus(availableUser));
         roomBean.setAvailableUser(true);
-        roomBean.setStatus(userService.getStatus(targetUser));
-        availableUsers.remove(targetUser);
+        rooms.add(roomBean);
       }
-      else
+    }
+
+    if (withSpaces)
+    {
+      List<SpaceBean> spaces = userService.getSpaces(user);
+      for (SpaceBean space:spaces)
       {
-        roomBean.setAvailableUser(false);
+        RoomBean roomBeanS = new RoomBean();
+        roomBeanS.setUser(SPACE_PREFIX+space.getId());
+        roomBeanS.setFullname(space.getDisplayName());
+        roomBeanS.setStatus(UserService.STATUS_SPACE);
+        roomBeanS.setAvailableUser(true);
+        roomBeanS.setSpace(true);
+        roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
+        rooms.add(roomBeanS);
+
       }
-
     }
 
-    for (String availableUser: availableUsers)
-    {
-      RoomBean roomBean = new RoomBean();
-      roomBean.setUser(availableUser);
-      roomBean.setFullname(userService.getUserFullName(availableUser));
-      roomBean.setStatus(userService.getStatus(availableUser));
-      roomBean.setAvailableUser(true);
-      rooms.add(roomBean);
-    }
-
-    List<SpaceBean> spaces = userService.getSpaces(user);
-    for (SpaceBean space:spaces)
-    {
-      RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser(SPACE_PREFIX+space.getId());
-      roomBeanS.setFullname(space.getDisplayName());
-      roomBeanS.setStatus(UserService.STATUS_SPACE);
-      roomBeanS.setAvailableUser(true);
-      roomBeanS.setSpace(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX+space.getId())));
-      rooms.add(roomBeanS);
-
-    }
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
     for (RoomBean roomBean:rooms) {
