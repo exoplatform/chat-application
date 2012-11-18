@@ -126,7 +126,7 @@
                   out += "<div class='msgln-odd'><b>";
                 else
                   out += "<div class='msgln'><b>";
-                out += message.fullname;
+                out += "<span class='no-user-selection'>"+message.fullname+"</span>";
                 out += "</b><br/>";
               }
               else
@@ -134,7 +134,7 @@
                 out += "<hr style='margin:0px;'>";
               }
               out += "<div><span style='float:left'>"+message.message+"</span>" +
-                      "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span></div>" +
+                      "<span style='float:right;color:#CCC;font-size:10px' class='no-user-selection'>"+message.date+"</span></div>" +
                       "<div style='clear:both;'></div>";
               prevUser = message.user;
             }
