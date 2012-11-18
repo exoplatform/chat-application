@@ -4,11 +4,11 @@
     <% rooms.each { room -> %>
     <tr id="users-online-<%=room.user%>" class="users-online">
       <td class="td-status">
-        <span <% if (room.isAvailableUser) { %>class="user-<%=room.status%>"<% } %>>&nbsp;&nbsp;&nbsp;</span>
+        <span class="user-status"></span><span class="user-<%=room.status%>"></span>
       </td>
       <td>
         <% if (room.isActive()) { %>
-          <a href="#" user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.fullname%></a>
+          <span user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.fullname%></span>
         <% } else { %>
           <span class="room-inactive"><%=room.user%></span>
         <% } %>
@@ -46,6 +46,11 @@
   $('.user-link').on("click", function() {
     targetUser = $(this).attr("user-data");
     loadRoom();
+  });
+
+  $('.user-status').on("click", function(e) {
+    console.log("ADD TO FAVORITE");
+    e.preventDefault();
   });
 
 

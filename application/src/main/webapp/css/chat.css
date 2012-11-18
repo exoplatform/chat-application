@@ -50,28 +50,75 @@
   color: #D0D0D0;
 }
 .td-status {
-  width: 7px;
-  min-width: 7px;
-  padding: 8px 0px 8px 8px !important;
+  width: 16px;
+  min-width: 16px;
+  padding: 8px 5px 8px 6px !important;
 }
 .users-online td {
   border: 0px !important;
+  color: #333;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 5px 5px 5px 0px;
 }
+.user-status {
+  background:url('../img/mask-dot.png') no-repeat 0px 0px;
+  width: 16px;
+  display: block;
+  height: 16px;
+  float: left;
+}
+
+.user-status:hover {
+  background:url('../img/mask-star.png') no-repeat 0px 0px;
+}
+
+.user-favorite {
+  background:url('../img/mask-star.png') no-repeat 0px 0px;
+  width: 16px;
+  display: block;
+  height: 16px;
+  float: left;
+}
+
+.user-favorite:hover {
+  background:url('../img/mask-dot.png') no-repeat 0px 0px;
+}
+
 .user-available {
-  background-position: 0px 0px;
-  background:url('../img/available.png') no-repeat 3px 5px;
+  background-color: #180;
+  margin: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 .user-donotdisturb {
-  background-position: 0px 0px;
-  background:url('../img/donotdisturb.png') no-repeat 3px 5px;
+  background-color: #B10;
+  margin: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 .user-away {
-  background-position: 0px 0px;
-  background:url('../img/away.png') no-repeat 3px 5px;
+  background-color: #DA0;
+  margin: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+.user-invisible, .user-none {
+  background-color: #EEE;
+  margin: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 .user-space {
-  background-position: 0px 0px;
-  background:url('../img/space.png') no-repeat 3px 5px;
+  background-color: #08C;
+  margin: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 
 .label-user {
@@ -108,7 +155,7 @@
 .room-total {
   background-color: #3A87AD;
   color: white;
-  font-size: 12px;
+  font-size: 11px;
   padding: 2px 6px;
   line-height: 14px;
   -moz-border-radius: 4px;
@@ -132,7 +179,7 @@
 #whoisonline
 {
   height: 537px;
-  background-color: #CEDEEE;
+  /* background-color: #CEDEEE; */
   border: 1px solid #D0D0D0;
   /* border-bottom: 2px solid #CCC; */
   width: 180px;
