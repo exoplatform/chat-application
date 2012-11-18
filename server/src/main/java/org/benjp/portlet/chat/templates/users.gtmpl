@@ -1,8 +1,14 @@
 <table class="table">
 
-  <% if (rooms!=null) { %>
+  <% if (rooms!=null) {
+    def fav=null;%>
     <% rooms.each { room -> %>
-    <tr id="users-online-<%=room.user%>" class="users-online">
+    <%
+      if (fav==null && room.isFavorite()) fav="";
+      else if ("".equals(fav) && !room.isFavorite()) fav="border-top:1px solid #CCC;";
+      else if ("border-top:1px solid #CCC;".equals(fav)) fav=" ";
+    %>
+    <tr id="users-online-<%=room.user%>" class="users-online" style="<%=fav%>">
       <td class="td-status">
         <span class="user-status <% if (room.isFavorite) { %> user-favorite<% } %>" user-data="<%=room.user%>"></span><span class="user-<%=room.status%>"></span>
       </td>
