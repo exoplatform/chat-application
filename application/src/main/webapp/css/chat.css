@@ -58,7 +58,7 @@
   border: 0px !important;
   color: #333;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 11px;
   padding: 5px 5px 5px 0px;
 }
 .users-online:hover {
@@ -149,10 +149,16 @@
   background-position: 0px 0px;
   background:url('../img/filter-user.png') no-repeat 0px 0px;
 }
+.filter-user:hover {
+  background-color: #F1F1F1;
+}
 
 .filter-space {
   background-position: 0px 0px;
   background:url('../img/filter-space.png') no-repeat 0px 0px;
+}
+.filter-space:hover {
+  background-color: #F1F1F1;
 }
 
 .room-total {
