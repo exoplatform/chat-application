@@ -21,6 +21,12 @@ $(document).ready(function(){
           oldNotifTotal = data.total;
         }
 
+      })
+      .error(function() {
+        changeStatus("offline");
+        $("#chatnotification").html('<span></span>');
+        $("#chatnotification").css('display', 'none');
+        oldNotifTotal = -1;
       });
      } else {
         $("#chatnotification").html('<span></span>');

@@ -97,5 +97,21 @@ function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
   $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
-    "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function () { });
+    "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function (response, status, xhr) {
+    if (status == "error") {
+      $("#whoisonline").html("");
+      $(".chatErrorPanel").css("display", "inline");
+      $(".chatLoginPanel").css("display", "none");
+    } else {
+      $(".chatErrorPanel").css("display", "none");
+    }
+  });
+}
+
+
+function reloadWindow() {
+  var sURL = unescape(window.location.href);
+  //console.log(sURL);
+  window.location.href = sURL;
+  //window.location.reload( false );
 }

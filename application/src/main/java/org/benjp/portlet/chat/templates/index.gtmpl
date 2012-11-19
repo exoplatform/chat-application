@@ -1,4 +1,11 @@
 <div class="chatapplication">
+  <div class="chatErrorPanel" style="display:none;">
+    Service Not Available.<br/><br/>Please, come back later.
+  </div>
+  <div class="chatLoginPanel" style="display:none;">
+    You must be logged in to use the Chat.<br><br>
+    <a href="#" onclick="javascript:reloadWindow();">Click here to reload</a>
+  </div>
   <div class="leftchat no-user-selection">
     <div class="input-prepend chatsearch">
       <label style="margin-bottom:3px;">

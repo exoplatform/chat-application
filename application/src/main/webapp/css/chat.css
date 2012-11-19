@@ -4,6 +4,19 @@
   background-color: #FFF;
   padding: 10px;
 }
+.chatErrorPanel, .chatLoginPanel {
+  float: left;
+  z-index: 10;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 533px;
+  height: 553px;
+  color: white;
+  padding: 50px 0px 0px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: normal;
+}
 .leftchat
 {
   float: left;

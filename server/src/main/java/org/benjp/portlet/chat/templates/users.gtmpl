@@ -171,7 +171,15 @@
           }
         }
         $(".rightchat").css("display", "block");
-
+        $(".chatLoginPanel").css("display", "none");
+      })
+      .error(function() {
+        $(".rightchat").css("display", "none");
+        if ( $(".chatErrorPanel").css("display") == "none") {
+          $(".chatLoginPanel").css("display", "inline");
+        } else {
+          $(".chatLoginPanel").css("display", "none");
+        }
       });
 
   }
