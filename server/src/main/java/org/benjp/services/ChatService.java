@@ -46,8 +46,14 @@ public class ChatService
   {
     StringBuffer sb = new StringBuffer();
 
-    SimpleDateFormat formatter = new SimpleDateFormat("h:mm aaa");
+    SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
+    SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
     // formatter.format();
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.HOUR, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    Date today = calendar.getTime();
 
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
@@ -102,7 +108,11 @@ public class ChatService
           if (dbo.containsField("time"))
           {
             Date date1 = (Date)dbo.get("time");
-            date = formatter.format(date1);
+            if (date1.before(today))
+              date = formatterDate.format(date1);
+            else
+              date = formatter.format(date1);
+
           }
         }
         catch (Exception e)
