@@ -115,3 +115,15 @@ function reloadWindow() {
   window.location.href = sURL;
   //window.location.reload( false );
 }
+
+// We change the current history by removing get parameters so they won't be visible in the popup
+// Having a location bar with ?noadminbar=true is not User Friendly ;-)
+function removeParametersFromLocation() {
+  var sURL = window.location.href;
+  if (sURL.indexOf("?")>-1) {
+    sURL = sURL.substring(0,sURL.indexOf("?"));
+    window.history.replaceState("#", "Chat", sURL);
+  }
+}
+
+removeParametersFromLocation();
