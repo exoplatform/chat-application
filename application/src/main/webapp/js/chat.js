@@ -79,7 +79,8 @@ $(document).ready(function(){
     refreshWhoIsOnline();
   });
 
-  setInterval(refreshWhoIsOnline, 3000);
+  chatOnlineInt = clearInterval(chatOnlineInt);
+  chatOnlineInt = setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
 

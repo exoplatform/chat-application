@@ -92,3 +92,6 @@
 .chatstatus-invisible {
   background:url('../img/status-invisible.png') no-repeat 3px 4px;
 }
+.chatstatus-offline-black {
+  background:url('../img/status-offline-black.png') no-repeat 3px 4px;
+}

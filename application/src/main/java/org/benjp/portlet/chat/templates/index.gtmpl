@@ -33,6 +33,7 @@
   var targetUser;
   var chatEventURL;
   var chatEventInt;
+  var chatOnlineInt;
   var firstLoad = true;
   var userFilter = "";
 </script>

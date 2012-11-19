@@ -6,37 +6,50 @@ $(document).ready(function(){
   refreshNotif();
 
   function refreshNotif() {
-    $.getJSON(notifEventURL, function(data) {
-      if(oldNotifTotal!=data.total){
-        var total = data.total;
-        console.log('Notif :: '+total);
-        if (total>0) {
-          $("#chatnotification").html('<span class="notiftotal">'+total+'</span>');
-          $("#chatnotification").css('display', 'block');
-        } else {
-          $("#chatnotification").html('<span></span>');
-          $("#chatnotification").css('display', 'none');
+    if ( ! $("span.chatstatus").hasClass("chatstatus-offline-black") ) {
+      $.getJSON(notifEventURL, function(data) {
+        if(oldNotifTotal!=data.total){
+          var total = data.total;
+          console.log('Notif :: '+total);
+          if (total>0) {
+            $("#chatnotification").html('<span class="notiftotal">'+total+'</span>');
+            $("#chatnotification").css('display', 'block');
+          } else {
+            $("#chatnotification").html('<span></span>');
+            $("#chatnotification").css('display', 'none');
+          }
+          oldNotifTotal = data.total;
         }
-        oldNotifTotal = data.total;
-      }
 
+      });
+     } else {
+        $("#chatnotification").html('<span></span>');
+        $("#chatnotification").css('display', 'none');
+        oldNotifTotal = -1;
+     }
+  }
+
+  notifStatusInt = window.clearInterval(notifStatusInt);
+  notifStatusInt = setInterval(refreshStatus, 10000);
+  refreshStatus();
+
+  function refreshStatus() {
+    $.ajax({
+      url: jzGetStatus,
+      data: {
+        "user": username,
+        "sessionId": sessionId
+      },
+      success: function(response){
+        console.log("getStatus::"+response);
+        changeStatus(response);
+      },
+      error: function(response){
+        changeStatus("offline");
+      }
     });
   }
 
-  $.ajax({
-    url: jzGetStatus,
-    data: {
-      "user": username,
-      "sessionId": sessionId
-    },
-    success: function(response){
-      console.log("getStatus::"+response);
-      $("span.chatstatus").addClass("chatstatus-"+response+"-black");
-    },
-    error: function(response){
-      $("span.chatstatus").addClass("chatstatus-invisible-black");
-    }
-  });
 
   $("#chatnotification").click(function(){
     window.location.href = "/portal/default/chat"
@@ -60,13 +73,13 @@ $(document).ready(function(){
 
       success: function(response){
         console.log("SUCCESS:setStatus::"+response);
-        $("span.chatstatus").removeClass("chatstatus-available-black");
-        $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
-        $("span.chatstatus").removeClass("chatstatus-invisible-black");
-        $("span.chatstatus").removeClass("chatstatus-away-black");
-        $("span.chatstatus").addClass("chatstatus-"+response+"-black");
+        changeStatus(response);
         $(".MenuItemContainer").css('display', 'none');
+      },
+      error: function(response){
+        changeStatus("offline");
       }
+
     });
 
   });
@@ -78,3 +91,13 @@ $(document).ready(function(){
   });
 
 });
+
+function changeStatus(status) {
+  $("span.chatstatus").removeClass("chatstatus-available-black");
+  $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
+  $("span.chatstatus").removeClass("chatstatus-invisible-black");
+  $("span.chatstatus").removeClass("chatstatus-away-black");
+  $("span.chatstatus").removeClass("chatstatus-offline-black");
+  $("span.chatstatus").addClass("chatstatus-"+status+"-black");
+
+}

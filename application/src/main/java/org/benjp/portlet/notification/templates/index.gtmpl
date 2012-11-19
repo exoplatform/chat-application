@@ -36,6 +36,7 @@
   var jzGetStatus = "<%=chatServerURL%>/getStatus";
   var jzSetStatus = "<%=chatServerURL%>/setStatus";
   var notifEventInt;
+  var notifStatusInt;
   var notifEventURL;
   var oldNotifTotal = '';
 </script>
