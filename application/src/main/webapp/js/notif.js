@@ -30,7 +30,7 @@ $(document).ready(function(){
   }
 
   notifStatusInt = window.clearInterval(notifStatusInt);
-  notifStatusInt = setInterval(refreshStatus, 10000);
+  notifStatusInt = setInterval(refreshStatus, 60000);
   refreshStatus();
 
   function refreshStatus() {
@@ -41,7 +41,6 @@ $(document).ready(function(){
         "sessionId": sessionId
       },
       success: function(response){
-        console.log("getStatus::"+response);
         changeStatus(response);
       },
       error: function(response){
