@@ -6,7 +6,7 @@
 
   <groupId>org.benjp.chat</groupId>
   <artifactId>application</artifactId>
-  <version>1.0-ALPHA1</version>
+  <version>1.0-ALPHA2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Chat Application</name>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.benjp.chat</groupId>
       <artifactId>server</artifactId>
-      <version>1.0-ALPHA1</version>
+      <version>1.0-ALPHA2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
