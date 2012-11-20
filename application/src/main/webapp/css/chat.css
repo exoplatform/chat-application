@@ -4,7 +4,7 @@
   background-color: #FFF;
   padding: 10px;
 }
-.chatErrorPanel, .chatLoginPanel {
+.chatErrorPanel, .chatLoginPanel, .chatAboutPanel {
   float: left;
   z-index: 10;
   position: absolute;

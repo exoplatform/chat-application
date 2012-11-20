@@ -74,7 +74,9 @@ $(document).ready(function(){
 
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
-    console.log(filter);
+    if (filter == "aboutme") {
+      $('.chatAboutPanel').css("display", "inline");
+    }
     userFilter = filter;
     refreshWhoIsOnline();
   });
@@ -106,6 +108,10 @@ function refreshWhoIsOnline() {
       $(".chatErrorPanel").css("display", "none");
     }
   });
+}
+
+function closeAbout() {
+  $('.chatAboutPanel').css("display", "none");
 }
 
 
