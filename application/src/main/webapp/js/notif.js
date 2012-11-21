@@ -77,12 +77,12 @@ var jq171 = jQuery.noConflict(true);
 
 
     $("#chatnotification").click(function(){
-      window.location.href = "/portal/default/chat"
+      window.location.href = chatPage;
     });
 
     $("a.popupchat").click(function(){
        $(".MenuItemContainer").css('display', 'none');
-       window.open("/portal/default/chat?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=553, height=625");
+       window.open(chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=553, height=625");
     });
 
     $("a.chatstatus").click(function(){

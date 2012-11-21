@@ -5,6 +5,7 @@ import juzu.request.HttpContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
+import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
@@ -23,9 +24,6 @@ import java.util.List;
 @SessionScoped
 public class NotificationApplication extends juzu.Controller
 {
-
-  @Inject
-  PortletPreferences portletPreferences;
 
   @Inject
   @Path("index.gtmpl")
@@ -47,11 +45,13 @@ public class NotificationApplication extends juzu.Controller
   @View
   public void index() throws IOException
   {
-    String chatServerURL = portletPreferences.getValue("chatServerURL", "/chatServer");
+    String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     String sessionId = getSessionId(renderContext.getHttpContext());
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
 
-    index.with().set("user", remoteUser).set("sessionId", sessionId).set("chatServerURL", chatServerURL).render();
+    index.with().set("user", remoteUser).set("sessionId", sessionId)
+            .set("chatServerURL", chatServerURL).set("chatPage", chatPage).render();
   }
 
   @Resource

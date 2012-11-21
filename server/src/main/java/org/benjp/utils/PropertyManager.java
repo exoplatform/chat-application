@@ -9,12 +9,14 @@ public class PropertyManager {
 
   private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
 
-  public static final String PROPERTY_SERVER_HOST = "serverHost";
-  public static final String PROPERTY_SERVER_PORT = "serverPort";
+  public static final String PROPERTY_SERVER_HOST = "dbServerHost";
+  public static final String PROPERTY_SERVER_PORT = "dbServerPort";
   public static final String PROPERTY_DB_NAME = "dbName";
   public static final String PROPERTY_DB_AUTHENTICATION = "dbAuthentication";
   public static final String PROPERTY_DB_USER = "dbUser";
   public static final String PROPERTY_DB_PASSWORD = "dbPassword";
+  public static final String PROPERTY_CHAT_SERVER_URL = "chatServerUrl";
+  public static final String PROPERTY_CHAT_PORTAL_PAGE = "chatPortalPage";
 
   public static String getProperty(String key)
   {
@@ -43,6 +45,8 @@ public class PropertyManager {
         properties.setProperty(PROPERTY_DB_AUTHENTICATION, "false");
         properties.setProperty(PROPERTY_DB_USER, "");
         properties.setProperty(PROPERTY_DB_PASSWORD, "");
+        properties.setProperty(PROPERTY_CHAT_SERVER_URL, "/chatServer");
+        properties.setProperty(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
       }
     }
     return properties;

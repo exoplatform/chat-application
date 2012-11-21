@@ -5,6 +5,7 @@ import juzu.View;
 import juzu.request.HttpContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
+import org.benjp.utils.PropertyManager;
 
 import javax.inject.Inject;
 import javax.portlet.PortletPreferences;
@@ -12,10 +13,6 @@ import javax.servlet.http.Cookie;
 
 public class ChatApplication extends juzu.Controller
 {
-
-
-  @Inject
-  PortletPreferences portletPreferences;
 
   @Inject
   @Path("index.gtmpl")
@@ -26,7 +23,7 @@ public class ChatApplication extends juzu.Controller
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     String sessionId = getSessionId(renderContext.getHttpContext());
-    String chatServerURL = portletPreferences.getValue("chatServerURL", "/chatServer");
+    String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser);
     index.with().set("user", remoteUser).set("room", "noroom")
             .set("sessionId", sessionId).set("chatServerURL", chatServerURL)
