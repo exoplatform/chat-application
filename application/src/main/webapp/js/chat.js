@@ -143,17 +143,17 @@ function messageBeautifier(message) {
     if (w.indexOf("/")>-1) {
       w = "<a href='"+w+"' target='_new'>"+w+"</a>";
     } else if (w == ":-)" || w==":)") {
-      w = "<span class='smiley smileySmile'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>"
     } else if (w == ":-D" || w==":D") {
-      w = "<span class='smiley smileyBigSmile'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>"
     } else if (w == ":-|" || w==":|") {
-      w = "<span class='smiley smileyNoVoice'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>"
     } else if (w == ":-(" || w==":(") {
-      w = "<span class='smiley smileySad'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>"
     } else if (w == ";-)" || w==";)") {
-      w = "<span class='smiley smileyEyeBlink'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>"
     } else if (w == ":-O" || w==":O") {
-      w = "<span class='smiley smileySurprise'>&nbsp;&nbsp;</span>"
+      w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>"
     }
     msg += w+" ";
   }

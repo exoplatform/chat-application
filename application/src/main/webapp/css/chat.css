@@ -254,3 +254,6 @@ hr
 .smileySurprise {
   background:url('../img/smileys/surprise.png') no-repeat 0px 0px;
 }
+.smileyText, .invisibleText {
+  font-size: 0px;
+}
