@@ -12,7 +12,6 @@ import java.util.List;
 public class UserService
 {
 
-  private static final String M_DB = "users";
   private static final String M_SESSIONS_COLLECTION = "sessions";
   private static final String M_USERS_COLLECTION = "users";
   private static final String M_SPACES_COLLECTION = "spaces";
@@ -27,7 +26,7 @@ public class UserService
 
   private DB db()
   {
-    return MongoBootstrap.mongo().getDB(M_DB);
+    return MongoBootstrap.getDB();
   }
 
 

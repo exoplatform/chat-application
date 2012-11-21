@@ -13,7 +13,6 @@ import java.util.*;
 @ApplicationScoped
 public class ChatService
 {
-  private static final String M_DB = "chat";
   private static final String M_ROOM_PREFIX = "room_";
   private static final String M_ROOMS_COLLECTION = "rooms";
 
@@ -21,7 +20,7 @@ public class ChatService
 
   private DB db()
   {
-    return MongoBootstrap.mongo().getDB(M_DB);
+    return MongoBootstrap.getDB();
   }
 
   public void write(String message, String user, String room)
