@@ -1,6 +1,7 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.utils.PropertyManager;
 
 import java.net.UnknownHostException;
 
@@ -17,7 +18,9 @@ public class MongoBootstrap {
         options.connectionsPerHost = 50;
         options.connectTimeout = 60000;
         options.threadsAllowedToBlockForConnectionMultiplier = 10;
-        m = new Mongo(new ServerAddress("localhost", 27017), options);
+        String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
+        int port = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT)).intValue();
+        m = new Mongo(new ServerAddress(host, port), options);
         m.setWriteConcern(WriteConcern.SAFE);
       } catch (UnknownHostException e) {
       }
@@ -28,9 +31,12 @@ public class MongoBootstrap {
   public static DB getDB() {
     if (db==null)
     {
-      db = mongo().getDB("chat");
-      //db.authenticate("admin", "".toCharArray());
-
+      db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
+      boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION));
+      if (authenticate)
+      {
+        db.authenticate(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER), PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD).toCharArray());
+      }
       initCollection("notifications");
       initCollection("room_rooms");
       initCollection("sessions");

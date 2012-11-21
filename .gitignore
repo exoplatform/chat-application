@@ -3,3 +3,5 @@ target/*
 .DS_Store
 server/target/*
 application/target/*
+
+chat-mongohq.properties
