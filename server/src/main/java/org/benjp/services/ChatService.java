@@ -197,11 +197,14 @@ public class ChatService
       roomId = ((ObjectId)dbo.get("_id")).toString();
       List<String> users = ((List<String>)dbo.get("users"));
       users.remove(user);
-      RoomBean roomBean = new RoomBean();
-      roomBean.setRoom(roomId);
-      roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
-      roomBean.setUser(users.get(0));
-      rooms.add(roomBean);
+      if (users.size()>0 && !user.equals(users.get(0)))
+      {
+        RoomBean roomBean = new RoomBean();
+        roomBean.setRoom(roomId);
+        roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
+        roomBean.setUser(users.get(0));
+        rooms.add(roomBean);
+      }
     }
 
     return rooms;
