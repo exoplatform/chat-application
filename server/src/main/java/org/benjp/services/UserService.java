@@ -130,6 +130,13 @@ public class UserService
       doc.put("fullname", fullname);
       coll.insert(doc);
     }
+    else
+    {
+      DBObject doc = cursor.next();
+      doc.put("fullname", fullname);
+      coll.save(doc);
+
+    }
   }
 
   public void setSpaces(String user, List<SpaceBean> spaces)
@@ -279,7 +286,8 @@ public class UserService
     if (cursor.hasNext())
     {
       DBObject doc = cursor.next();
-      fullname = doc.get("fullname").toString();
+      if (doc.get("fullname")!=null)
+        fullname = doc.get("fullname").toString();
     }
 
     return fullname;
