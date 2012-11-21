@@ -4,10 +4,29 @@ var jq171 = jQuery.noConflict(true);
 
   $(document).ready(function(){
 
-    notifEventURL = jzNotification+'?user='+username+'&sessionId='+sessionId;
-    notifEventInt = window.clearInterval(notifEventInt);
-    notifEventInt = setInterval(refreshNotif, 3000);
-    refreshNotif();
+    function initUserProfile() {
+      $.ajax({
+        url: jzInitUserProfile,
+        success: function(response){
+          console.log("Profile Updated.");
+
+          notifEventURL = jzNotification+'?user='+username+'&sessionId='+sessionId;
+          notifEventInt = window.clearInterval(notifEventInt);
+          notifEventInt = setInterval(refreshNotif, 3000);
+          refreshNotif();
+
+          notifStatusInt = window.clearInterval(notifStatusInt);
+          notifStatusInt = setInterval(refreshStatus, 60000);
+          refreshStatus();
+
+        },
+        error: function(response){
+          //retry in 3 sec
+          setTimeout(initUserProfile, 3000);
+        }
+      });
+    }
+    initUserProfile();
 
     function refreshNotif() {
       if ( ! $("span.chatstatus").hasClass("chatstatus-offline-black") ) {
@@ -39,9 +58,6 @@ var jq171 = jQuery.noConflict(true);
        }
     }
 
-    notifStatusInt = window.clearInterval(notifStatusInt);
-    notifStatusInt = setInterval(refreshStatus, 60000);
-    refreshStatus();
 
     function refreshStatus() {
       $.ajax({

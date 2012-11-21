@@ -1,7 +1,6 @@
 package org.benjp.portlet.notification;
 
-import juzu.Path;
-import juzu.View;
+import juzu.*;
 import juzu.request.HttpContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
@@ -49,18 +48,40 @@ public class NotificationApplication extends juzu.Controller
     String sessionId = getSessionId(renderContext.getHttpContext());
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
 
-    // Set user's Full Name in the DB
-    saveFullName(remoteUser);
-
-    // Set user's Spaces in the DB
-    saveSpaces(remoteUser);
-
     index.with().set("user", remoteUser).set("sessionId", sessionId).set("chatServerURL", chatServerURL).render();
   }
 
+  @Resource
+  @Route("/initUserProfile")
+  public Response.Content initUserProfile()
+  {
+    try
+    {
+      String sessionId = getSessionId(resourceContext.getHttpContext());
+      String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+
+      // Add User in the DB
+      addUser(remoteUser, sessionId);
+
+      // Set user's Full Name in the DB
+      saveFullName(remoteUser);
+
+      // Set user's Spaces in the DB
+      saveSpaces(remoteUser);
+    }
+    catch (Exception e)
+    {
+      return Response.notFound("Error during init, try later");
+    }
+
+    return Response.ok("updated.").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+
+  }
+
+
   private String getSessionId(HttpContext httpContext)
   {
-    for (Cookie cookie:renderContext.getHttpContext().getCookies())
+    for (Cookie cookie:httpContext.getCookies())
     {
       if("JSESSIONID".equals(cookie.getName()))
       {
@@ -69,6 +90,11 @@ public class NotificationApplication extends juzu.Controller
     }
     return null;
 
+  }
+
+  protected void addUser(String remoteUser, String sessionId)
+  {
+    ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
   }
 
   protected String saveFullName(String username)
