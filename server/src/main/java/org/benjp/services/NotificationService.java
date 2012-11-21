@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 @ApplicationScoped
 public class NotificationService
 {
-  private static final String M_USERS = "users";
+  private static final String M_NOTIFICATIONS = "notifications";
 
   private DB db()
   {
@@ -20,7 +20,7 @@ public class NotificationService
 
   public void addNotification(String user, String type, String category, String categoryId, String content, String link)
   {
-    DBCollection coll = db().getCollection(M_USERS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     if (coll.count()==0) {
       coll.ensureIndex("user");
       coll.ensureIndex("type");
@@ -44,7 +44,7 @@ public class NotificationService
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId)
   {
-    DBCollection coll = db().getCollection(M_USERS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("type", type);
@@ -70,7 +70,7 @@ public class NotificationService
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
   {
     int total = -1;
-    DBCollection coll = db().getCollection(M_USERS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
 
     query.put("user", user);
