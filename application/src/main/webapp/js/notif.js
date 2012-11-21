@@ -8,7 +8,7 @@ var jq171 = jQuery.noConflict(true);
       $.ajax({
         url: jzInitUserProfile,
         success: function(response){
-          console.log("Profile Updated.");
+          console.log("Profile Update : "+response);
 
           notifEventURL = jzNotification+'?user='+username+'&sessionId='+sessionId;
           notifEventInt = window.clearInterval(notifEventInt);

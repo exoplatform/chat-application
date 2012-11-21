@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SessionScoped
 public class NotificationApplication extends juzu.Controller
 {
 
@@ -29,6 +30,8 @@ public class NotificationApplication extends juzu.Controller
   @Inject
   @Path("index.gtmpl")
   Template index;
+
+  String sessionId = null;
 
   OrganizationService organizationService_;
 
@@ -55,26 +58,33 @@ public class NotificationApplication extends juzu.Controller
   @Route("/initUserProfile")
   public Response.Content initUserProfile()
   {
-    try
+    String  out = "nothing to update";
+    if (this.sessionId==null)
     {
-      String sessionId = getSessionId(resourceContext.getHttpContext());
-      String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
+      try
+      {
+        sessionId = getSessionId(resourceContext.getHttpContext());
+        String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
 
-      // Add User in the DB
-      addUser(remoteUser, sessionId);
+        // Add User in the DB
+        addUser(remoteUser, sessionId);
 
-      // Set user's Full Name in the DB
-      saveFullName(remoteUser);
+        // Set user's Full Name in the DB
+        saveFullName(remoteUser);
 
-      // Set user's Spaces in the DB
-      saveSpaces(remoteUser);
+        // Set user's Spaces in the DB
+        saveSpaces(remoteUser);
+
+        out = "updated";
+      }
+      catch (Exception e)
+      {
+        sessionId = null;
+        return Response.notFound("Error during init, try later");
+      }
     }
-    catch (Exception e)
-    {
-      return Response.notFound("Error during init, try later");
-    }
 
-    return Response.ok("updated.").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
   }
 
