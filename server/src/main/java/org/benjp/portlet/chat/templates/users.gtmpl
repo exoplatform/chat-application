@@ -159,7 +159,7 @@
               {
                 out += "<hr style='margin:0px;'>";
               }
-              out += "<div><span style='float:left'>"+message.message+"</span>" +
+              out += "<div><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
                       "<span style='float:right;color:#CCC;font-size:10px' class='no-user-selection'>"+message.date+"</span></div>" +
                       "<div style='clear:both;'></div>";
               prevUser = message.user;

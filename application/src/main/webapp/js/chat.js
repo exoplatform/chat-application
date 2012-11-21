@@ -133,3 +133,30 @@ function removeParametersFromLocation() {
 }
 
 removeParametersFromLocation();
+
+function messageBeautifier(message) {
+  var msg = "";
+  var tab = message.split(" ");
+  var it,w;
+  for (it=0 ; it<tab.length ; it++) {
+    w = tab[it];
+    if (w.indexOf("/")>-1) {
+      w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+    } else if (w == ":-)" || w==":)") {
+      w = "<span class='smiley smileySmile'>&nbsp;&nbsp;</span>"
+    } else if (w == ":-D" || w==":D") {
+      w = "<span class='smiley smileyBigSmile'>&nbsp;&nbsp;</span>"
+    } else if (w == ":-|" || w==":|") {
+      w = "<span class='smiley smileyNoVoice'>&nbsp;&nbsp;</span>"
+    } else if (w == ":-(" || w==":(") {
+      w = "<span class='smiley smileySad'>&nbsp;&nbsp;</span>"
+    } else if (w == ";-)" || w==";)") {
+      w = "<span class='smiley smileyEyeBlink'>&nbsp;&nbsp;</span>"
+    } else if (w == ":-O" || w==":O") {
+      w = "<span class='smiley smileySurprise'>&nbsp;&nbsp;</span>"
+    }
+    msg += w+" ";
+  }
+
+  return msg;
+}

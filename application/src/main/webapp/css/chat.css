@@ -227,3 +227,30 @@ hr
   border: none;
   border-top: dotted 1px #F4F4F4;
 }
+
+.smiley {
+  display: inline-block;
+  min-width: 16px;
+  height: 16px;
+  padding: 2px;
+  margin: 0px;
+}
+
+.smileySmile {
+  background:url('../img/smileys/smile.png') no-repeat 0px 0px;
+}
+.smileyBigSmile {
+  background:url('../img/smileys/bigsmile.png') no-repeat 0px 0px;
+}
+.smileyEyeBlink {
+  background:url('../img/smileys/eyeblink.png') no-repeat 0px 0px;
+}
+.smileyNoVoice {
+  background:url('../img/smileys/novoice.png') no-repeat 0px 0px;
+}
+.smileySad {
+  background:url('../img/smileys/sad.png') no-repeat 0px 0px;
+}
+.smileySurprise {
+  background:url('../img/smileys/surprise.png') no-repeat 0px 0px;
+}
