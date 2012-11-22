@@ -30,6 +30,9 @@ public class ChatService
       coll.ensureIndex("timestamp");
     }
 
+    message = message.replace("<", "&lt;");
+    message = message.replace(">", "&gt;");
+    message = message.replace("\"", "&quot;");
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);

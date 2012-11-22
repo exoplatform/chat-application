@@ -140,7 +140,7 @@ function messageBeautifier(message) {
   var it,w;
   for (it=0 ; it<tab.length ; it++) {
     w = tab[it];
-    if (w.indexOf("/")>-1) {
+    if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1) {
       w = "<a href='"+w+"' target='_new'>"+w+"</a>";
     } else if (w == ":-)" || w==":)") {
       w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>"
