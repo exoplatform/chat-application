@@ -199,9 +199,9 @@ Now, point your browser to [http://localhost:8888/portal/intranet/](http://local
 
 You will then 2 new applications you can find in the Applications section.
 
-Upcoming
+Preview
 ------------
 
-An eXo extension will be provided soon as a starter kit to auto-deploy the apps in eXo.
+![alt text](https://raw.github.com/benjp/chat/master/data/screenshots/01-overview.png "Overview")
 
 
