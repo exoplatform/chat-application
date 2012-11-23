@@ -32,6 +32,13 @@ $(document).ready(function(){
       {
         return;
       }
+      var im = messages.length;
+      messages[im] = {"user": username,
+                      "fullname": "You",
+                      "date": "pending",
+                      "message": msg};
+      showMessages();
+      document.getElementById("msg").value = '';
 
       $.ajax({
         url: jzChatSend,
@@ -44,7 +51,6 @@ $(document).ready(function(){
 
         success:function(response){
           //console.log("success");
-          document.getElementById("msg").value = '';
           refreshChat();
         },
 
@@ -116,6 +122,78 @@ function refreshWhoIsOnline() {
     }
   });
 }
+
+
+function showMessages(msgs) {
+  var im, message, out="", prevUser="";
+  if (msgs!==undefined) {
+    messages = msgs;
+  }
+
+  if (messages.length==0) {
+    out = "<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>";
+  } else {
+    for (im=0 ; im<messages.length ; im++) {
+      message = messages[im];
+
+      if (prevUser != message.user)
+      {
+        if (prevUser != "")
+          out += "</div>";
+        if (message.user != username)
+          out += "<div class='msgln-odd'><b>";
+        else
+          out += "<div class='msgln'><b>";
+        out += "<span class='invisibleText'>- </span><span>"+message.fullname+"</span><span class='invisibleText'> : </span>";
+        out += "</b><br/>";
+      }
+      else
+      {
+        out += "<hr style='margin:0px;'>";
+      }
+      out += "<div><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
+              "<span class='invisibleText'> [</span>"+
+              "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
+              "<span class='invisibleText'>]</span></div>"+
+              "<div style='clear:both;'></div>";
+      prevUser = message.user;
+    }
+  }
+  $("#chats").html('<span>'+out+'</span>');
+  $("#chats").animate({ scrollTop: 20000 }, 'fast');
+
+}
+
+function refreshChat() {
+    $.getJSON(chatEventURL, function(data) {
+      var lastTS = jzGetParam("lastTS");
+      //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
+      var im, message, out="", prevUser="";
+      if (data.messages.length==0) {
+        showMessages(data.messages);
+      } else {
+        var ts = data.timestamp;
+        if (ts != lastTS) {
+          jzStoreParam("lastTS", ts, 600);
+          //console.log("new data to show");
+          showMessages(data.messages);
+        }
+      }
+      $(".rightchat").css("display", "block");
+      $(".chatLoginPanel").css("display", "none");
+    })
+    .error(function() {
+      $(".rightchat").css("display", "none");
+      if ( $(".chatErrorPanel").css("display") == "none") {
+        $(".chatLoginPanel").css("display", "inline");
+      } else {
+        $(".chatLoginPanel").css("display", "none");
+      }
+    });
+
+}
+
+
 
 function closeAbout() {
   $('.chatAboutPanel').css("display", "none");

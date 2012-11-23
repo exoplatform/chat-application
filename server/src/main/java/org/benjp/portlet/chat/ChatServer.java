@@ -87,6 +87,13 @@ public class ChatServer extends juzu.Controller
       //System.out.println(user + "::" + message + "::" + room);
       if (message!=null && user!=null)
       {
+/*
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+*/
 
 //        System.out.println(user + "::" + message + "::" + room);
         chatService.write(message, user, room);
