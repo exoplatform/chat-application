@@ -7,6 +7,9 @@ This Chat application comes with a client project (/application) and a server pr
 Server can run on the same Java Application Server but as it's a near to real time application and can process a lot of data, it's recommended to use the Chat Server as a standalone application on another AS.
 Thus, Chat Client portlets will run on an eXo Platform based App Server, where the Chat Server can run on a standard tomcat installation.
 
+![alt text](https://raw.github.com/benjp/chat/master/data/screenshots/01-overview.png "Overview")
+
+
 Be Up and Running : One Tomcat Server mode
 ===============
 
@@ -198,10 +201,5 @@ Now, point your browser to [http://localhost:8888/portal/intranet/](http://local
 
 
 You will then 2 new applications you can find in the Applications section.
-
-Preview
-------------
-
-![alt text](https://raw.github.com/benjp/chat/master/data/screenshots/01-overview.png "Overview")
 
 
