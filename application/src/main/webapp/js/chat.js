@@ -85,6 +85,7 @@ $(document).ready(function(){
   chatOnlineInt = setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
+  setTimeout(showSyncPanel, 1500);
 
   function strip(html)
   {
@@ -95,11 +96,17 @@ $(document).ready(function(){
 
 });
 
+function showSyncPanel() {
+  if (!isLoaded)
+    $(".chatSyncPanel").css("display", "block");
+}
 function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
   $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
     "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function (response, status, xhr) {
+    isLoaded = true;
+    $(".chatSyncPanel").css("display", "none");
     if (status == "error") {
       $("#whoisonline").html("");
       $(".chatErrorPanel").css("display", "inline");

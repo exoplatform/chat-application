@@ -17,6 +17,25 @@
   font-size: 14px;
   font-weight: normal;
 }
+.chatSyncPanel {
+  float: left;
+  z-index: 10;
+  position: absolute;
+  width: 533px;
+  height: 553px;
+  color: white;
+  padding: 50px 0px 0px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: normal;
+}
+.chatSync {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  margin-top: 100px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
 .leftchat
 {
   float: left;
