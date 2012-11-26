@@ -49,9 +49,10 @@ public class ChatService
       coll.ensureIndex("timestamp");
     }
 
-    message = message.replace("<", "&lt;");
-    message = message.replace(">", "&gt;");
-    message = message.replace("\"", "&quot;");
+    message = message.replaceAll("<", "&lt;");
+    message = message.replaceAll(">", "&gt;");
+    message = message.replaceAll("\"", "&quot;");
+    message = message.replaceAll("\n", "");
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);
