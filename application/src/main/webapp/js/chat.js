@@ -91,7 +91,7 @@ $(document).ready(function(){
   chatOnlineInt = setInterval(refreshWhoIsOnline, 3000);
   refreshWhoIsOnline();
 
-  setTimeout(showSyncPanel, 1500);
+  setTimeout(showSyncPanel, 1000);
 
   function strip(html)
   {
@@ -113,6 +113,7 @@ function refreshWhoIsOnline() {
     "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function (response, status, xhr) {
     isLoaded = true;
     $(".chatSyncPanel").css("display", "none");
+    $(".leftchat").css("display", "block");
     if (status == "error") {
       $("#whoisonline").html("");
       $(".chatErrorPanel").css("display", "inline");

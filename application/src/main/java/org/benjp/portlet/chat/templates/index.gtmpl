@@ -18,7 +18,7 @@
     <a href="#" onclick="javascript:closeAbout();">Close</a>
 
   </div>
-  <div class="leftchat no-user-selection">
+  <div class="leftchat no-user-selection" style="display:none;">
     <div class="input-prepend chatsearch">
       <label style="margin-bottom:3px;">
         <span class="label-user"><%=(fullname.length()>15)?fullname.substring(0,15)+"...":fullname%></span>
