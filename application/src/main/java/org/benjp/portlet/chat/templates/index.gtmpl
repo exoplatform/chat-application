@@ -57,4 +57,5 @@
   var userFilter = "";
   var isLoaded = false;
   var messages = [];
+  var filterInt;
 </script>

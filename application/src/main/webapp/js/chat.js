@@ -84,7 +84,8 @@ $(document).ready(function(){
       $('.chatAboutPanel').css("display", "inline");
     }
     userFilter = filter;
-    refreshWhoIsOnline();
+    filterInt = clearTimeout(filterInt);
+    filterInt = setTimeout(refreshWhoIsOnline, 500);
   });
 
   chatOnlineInt = clearInterval(chatOnlineInt);
