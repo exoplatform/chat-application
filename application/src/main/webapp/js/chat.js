@@ -146,7 +146,7 @@ function showMessages(msgs) {
           out += "<div class='msgln-odd'><b>";
         else
           out += "<div class='msgln'><b>";
-        out += "<span class='invisibleText'>- </span><span>"+message.fullname+"</span><span class='invisibleText'> : </span>";
+        out += "<span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span>";
         out += "</b><br/>";
       }
       else

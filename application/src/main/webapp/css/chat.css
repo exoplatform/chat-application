@@ -235,6 +235,11 @@
 	padding: 3px 12px;
 	background-color: #FFF;
 }
+.userLink
+{
+	color: #333;
+  text-decoration: none;
+}
 
 footer
 {
