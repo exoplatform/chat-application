@@ -80,7 +80,7 @@ $(document).ready(function(){
 
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
-    if (filter == "aboutme") {
+    if (filter == "aboutme" || filter == "about me") {
       $('.chatAboutPanel').css("display", "inline");
     }
     userFilter = filter;
