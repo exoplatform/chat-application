@@ -44,6 +44,7 @@ public class ChatApplication extends juzu.Controller
     String sessionId = getSessionId(renderContext.getHttpContext());
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser);
+    if (fullname==null) fullname=remoteUser;
     index.with().set("user", remoteUser).set("room", "noroom")
             .set("sessionId", sessionId).set("chatServerURL", chatServerURL)
             .set("fullname", fullname).render();
