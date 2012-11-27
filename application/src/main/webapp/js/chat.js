@@ -77,6 +77,10 @@ $(document).ready(function(){
 
   });
 
+  $(".chatHelpPanel").on("click", function() {
+    $(".chatHelpPanel").css("display", "none");
+  });
+
   $(".filter").on("click", function() {
     var child = $("span:first",this);
     if (child.hasClass("filter-on")) {
@@ -96,6 +100,8 @@ $(document).ready(function(){
     var filter = $(this).attr("value");
     if (filter == ":aboutme" || filter == ":about me") {
       $('.chatAboutPanel').css("display", "inline");
+    } else if (filter == ":help") {
+      $('.chatHelpPanel').css("display", "inline");
     }
     if (filter.indexOf(":")===-1) {
       userFilter = filter;
@@ -152,15 +158,20 @@ function showMessages(msgs) {
     messages = msgs;
   }
 
-  if (messages.length==0) {
-    out = "<div class='msgln' style='padding:20px 0px;'><b><center>No messages yet.</center></b></div>";
+  if (messages.length===0) {
+    out = "<div class='msgln-odd chevron-left-help'>";
+    out += "<b>Type ':help' to get some help.</b>";
+    out += "</div>";
+    out += "<div class='msgln' style='padding:20px 20px;'>";
+    out += "<b><center>No messages yet.</center></b>";
+    out += "</div>";
   } else {
     for (im=0 ; im<messages.length ; im++) {
       message = messages[im];
 
       if (prevUser != message.user)
       {
-        if (prevUser != "")
+        if (prevUser !== "")
           out += "</div>";
         if (message.user != username)
           out += "<div class='msgln-odd'><b>";
@@ -192,7 +203,7 @@ function refreshChat() {
       var lastTS = jzGetParam("lastTS");
       //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
-      if (data.messages.length==0) {
+      if (data.messages.length===0) {
         showMessages(data.messages);
       } else {
         var ts = data.timestamp;

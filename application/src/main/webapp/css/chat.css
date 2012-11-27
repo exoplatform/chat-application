@@ -17,6 +17,16 @@
   font-size: 14px;
   font-weight: normal;
 }
+.chatHelpPanel {
+  float: left;
+  z-index: 10;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.6);
+  width: 533px;
+  height: 603px;
+  color: black;
+  padding: 0px 0px 0px 0px;
+}
 .chatSyncPanel {
   float: left;
   z-index: 10;
@@ -292,4 +302,69 @@ hr
 .smileyText, .invisibleText {
   font-size: 1px;
   color: white;
+}
+.chevron-left-help {
+  padding: 0px 0px 20px 40px;
+  margin: 25px 0px 0px 10px;
+  line-height: 32px;
+  vertical-align: baseline;
+  background: url('../img/chevron-left.png') no-repeat 0px 0px;
+}
+
+.chevron-left {
+  padding-left: 30px;
+  margin: 0px;
+  line-height: 24px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 12px;
+  background: #FFF url('../img/chevron-left-24px.png') no-repeat 0px 0px;
+  display: inline-block;
+  text-align: left;
+}
+
+.chevron-top {
+  padding-left: 30px;
+  margin: 0px;
+  line-height: 24px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 12px;
+  background: #FFF url('../img/chevron-top-24px.png') no-repeat 0px 0px;
+  display: inline-block;
+  text-align: left;
+}
+
+.chevron-right {
+  padding-right: 30px;
+  margin: 0px;
+  line-height: 24px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 12px;
+  background: #FFF url('../img/chevron-right-24px.png') no-repeat 0px 0px;
+  display: inline-block;
+  text-align: right;
+  background-position: right;
+}
+
+.chevron-none {
+  margin: 0px;
+  line-height: 24px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 12px;
+  background: #FFF;
+  display: inline-block;
+}
+
+.chevron-bottom {
+  padding-left: 30px;
+  margin: 0px;
+  line-height: 24px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 12px;
+  background: #FFF url('../img/chevron-bottom-24px.png') no-repeat 0px 0px;
+  display: inline-block;
 }
