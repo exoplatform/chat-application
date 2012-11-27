@@ -226,9 +226,8 @@
 #whoisonline
 {
   height: 537px;
-  /* background-color: #CEDEEE; */
+	overflow-y: scroll;
   border: 1px solid #D0D0D0;
-  /* border-bottom: 2px solid #CCC; */
   width: 180px;
   cursor: default;
 }
