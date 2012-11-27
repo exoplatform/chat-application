@@ -215,8 +215,13 @@
 	padding: 5px;
 	width: 326px;
 }
-.sh_java, .sh_javascript, .sh_css, .sh_html {
+.sh_container {
+  overflow-x: scroll;
   width: 325px;
+  background-color: white;
+}
+.sh_java, .sh_javascript, .sh_css, .sh_html {
+  min-width: 325px;
 }
 #whoisonline
 {
