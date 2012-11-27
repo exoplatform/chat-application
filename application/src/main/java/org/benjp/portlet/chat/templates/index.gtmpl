@@ -33,7 +33,7 @@
   <div class="rightchat" style="display:none;">
     <div id="chats"></div>
     <div class="chatmessage">
-      <input type="text" name="text" id="msg" autocomplete="off" />
+      <textarea type="text" name="text" id="msg" autocomplete="off" rows="2"></textarea>
     </div>
   </div>
 </div>
@@ -58,4 +58,5 @@
   var isLoaded = false;
   var messages = [];
   var filterInt;
+  var keydown = -1;
 </script>

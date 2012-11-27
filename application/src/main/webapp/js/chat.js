@@ -23,10 +23,16 @@ $(document).ready(function(){
 
   });
 
+  $('#msg').keydown(function(event) {
+    if ( event.which == 18 ) {
+      keydown = 18;
+    }
+  });
 
-  $('#msg').keypress(function(event) {
+  $('#msg').keyup(function(event) {
     var msg = $(this).attr("value");
-    if ( event.which == 13 ) {
+    // console.log(event.which + " ;"+msg.length+";");
+    if ( event.which == 13 && keydown !== 18 && msg.length>1) {
       //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
       if(!msg)
       {
@@ -60,6 +66,13 @@ $(document).ready(function(){
 
       });
     }
+    if ( event.which == 13 && keydown == 18 ) {
+      keydown = -1;
+    }
+    if ( event.which == 13 && msg.length == 1) {
+      document.getElementById("msg").value = '';
+    }
+
 
   });
 
@@ -107,6 +120,7 @@ function showSyncPanel() {
   if (!isLoaded)
     $(".chatSyncPanel").css("display", "block");
 }
+
 function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
@@ -196,6 +210,57 @@ function refreshChat() {
 }
 
 
+function toggleFavorite(targetFav) {
+  console.log("FAVORITE::"+targetFav);
+  $.ajax({
+    url: jzChatToggleFavorite,
+    data: {"targetUser": targetFav,
+            "user": username,
+            "sessionId": sessionId
+            },
+    success: function(response){
+      refreshWhoIsOnline();
+    },
+    error: function(xhr, status, error){
+    }
+  });
+}
+
+function loadRoom() {
+  console.log("TARGET::"+targetUser);
+  $(".users-online").removeClass("info");
+  $("#users-online-"+targetUser).addClass("info");
+
+  $.ajax({
+    url: jzChatGetRoom,
+    data: {"targetUser": targetUser,
+            "user": username,
+            "sessionId": sessionId
+            },
+
+    success: function(response){
+      console.log("SUCCESS::getRoom::"+response);
+      room = response;
+
+      chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
+
+      jzStoreParam("lastUser", targetUser, 60000);
+      jzStoreParam("lastTS", "0");
+      chatEventInt = window.clearInterval(chatEventInt);
+      chatEventInt = setInterval(refreshChat, 3000);
+      refreshChat();
+
+    },
+
+    error: function(xhr, status, error){
+      console.log("ERROR::"+xhr.responseText);
+    }
+
+  });
+
+}
+
+
 
 function closeAbout() {
   $('.chatAboutPanel').css("display", "none");
@@ -223,26 +288,35 @@ removeParametersFromLocation();
 
 function messageBeautifier(message) {
   var msg = "";
-  var tab = message.split(" ");
-  var it,w;
-  for (it=0 ; it<tab.length ; it++) {
-    w = tab[it];
-    if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1) {
-      w = "<a href='"+w+"' target='_new'>"+w+"</a>";
-    } else if (w == ":-)" || w==":)") {
-      w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>"
-    } else if (w == ":-D" || w==":D") {
-      w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>"
-    } else if (w == ":-|" || w==":|") {
-      w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>"
-    } else if (w == ":-(" || w==":(") {
-      w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>"
-    } else if (w == ";-)" || w==";)") {
-      w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>"
-    } else if (w == ":-O" || w==":O") {
-      w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>"
+  var lines = message.split("<br/>");
+  var il,l;
+  for (il=0 ; il<lines.length ; il++) {
+    l = lines[il];
+    var tab = l.split(" ");
+    var it,w;
+    for (it=0 ; it<tab.length ; it++) {
+      w = tab[it];
+      if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
+        w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+      } else if (w == ":-)" || w==":)") {
+        w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>";
+      } else if (w == ":-D" || w==":D") {
+        w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>";
+      } else if (w == ":-|" || w==":|") {
+        w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>";
+      } else if (w == ":-(" || w==":(") {
+        w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>";
+      } else if (w == ";-)" || w==";)") {
+        w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>";
+      } else if (w == ":-O" || w==":O") {
+        w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>";
+      }
+      msg += w+" ";
     }
-    msg += w+" ";
+    // console.log(il + "::" + lines.length);
+    if (il < lines.length-1) {
+      msg += "<br/>";
+    }
   }
 
   return msg;

@@ -52,7 +52,7 @@ public class ChatService
     message = message.replaceAll("<", "&lt;");
     message = message.replaceAll(">", "&gt;");
     message = message.replaceAll("\"", "&quot;");
-    message = message.replaceAll("\n", "");
+    message = message.replaceAll("\n", "<br/>");
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);
