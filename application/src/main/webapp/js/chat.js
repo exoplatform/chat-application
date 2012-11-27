@@ -1,3 +1,4 @@
+var highlight = "";
 $(document).ready(function(){
 
 
@@ -93,12 +94,17 @@ $(document).ready(function(){
 
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
-    if (filter == "aboutme" || filter == "about me") {
+    if (filter == ":aboutme" || filter == ":about me") {
       $('.chatAboutPanel').css("display", "inline");
     }
-    userFilter = filter;
-    filterInt = clearTimeout(filterInt);
-    filterInt = setTimeout(refreshWhoIsOnline, 500);
+    if (filter.indexOf(":")===-1) {
+      userFilter = filter;
+      filterInt = clearTimeout(filterInt);
+      filterInt = setTimeout(refreshWhoIsOnline, 500);
+    } else {
+      highlight = filter.substr(1, filter.length-1);
+      showMessages();
+    }
   });
 
   chatOnlineInt = clearInterval(chatOnlineInt);
@@ -290,16 +296,16 @@ removeParametersFromLocation();
 function messageBeautifier(message) {
   var msg = "";
   if (message.indexOf("java:")===0) {
-    msg = "<div class='sh_container'><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
+    msg = "<div class='sh_container '><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
     return msg;
   } else if (message.indexOf("html:")===0) {
-    msg = "<div class='sh_container'><pre class='sh_html'>"+message.substr(5, message.length-6)+"</pre></div>";
+    msg = "<div class='sh_container '><pre class='sh_html'>"+message.substr(5, message.length-6)+"</pre></div>";
     return msg;
   } else if (message.indexOf("js:")===0) {
-    msg = "<div class='sh_container'><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
+    msg = "<div class='sh_container '><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
     return msg;
   } else if (message.indexOf("css:")===0) {
-    msg = "<div class='sh_container'><pre class='sh_css'>"+message.substr(4, message.length-5)+"</pre></div>";
+    msg = "<div class='sh_container '><pre class='sh_css'>"+message.substr(4, message.length-5)+"</pre></div>";
     return msg;
   }
 
@@ -337,6 +343,8 @@ function messageBeautifier(message) {
           w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>";
         } else if (w == ":-O" || w==":O") {
           w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>";
+        } else if (highlight.length >1) {
+          w = w.replace(eval("/"+highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+highlight+"</span>");
         }
         msg += w+" ";
       }
@@ -346,6 +354,10 @@ function messageBeautifier(message) {
       msg += "<br/>";
     }
   }
+
+  // if (highlight.length >2) {
+  //   msg = msg.replace(eval("/"+highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+highlight+"</span>");
+  // }
 
   return msg;
 }

@@ -223,6 +223,10 @@
 .sh_java, .sh_javascript, .sh_css, .sh_html {
   min-width: 325px;
 }
+.highlight {
+  background-color:#FF0;
+  font-weight:bold;
+}
 #whoisonline
 {
   height: 537px;
