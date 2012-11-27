@@ -25,11 +25,16 @@
         scripts = {
                 @Script(src = "js/jquery-1.7.1.min.js"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js"),
-                @Script(src = "js/chat.js")
+                @Script(src = "js/chat.js"),
+                @Script(src = "js/sh_main.min.js"),
+                @Script(src = "js/sh_java.min.js"),
+                @Script(src = "js/sh_javascript.min.js"),
+                @Script(src = "js/sh_css.min.js")
         },
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
-                @Stylesheet(src = "css/chat.css")
+                @Stylesheet(src = "css/chat.css"),
+                @Stylesheet(src = "css/sh_style.css")
         }
 )
 

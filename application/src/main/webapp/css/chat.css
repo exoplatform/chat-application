@@ -215,6 +215,9 @@
 	padding: 5px;
 	width: 326px;
 }
+.sh_java, .sh_javascript, .sh_css {
+  width: 325px;
+}
 #whoisonline
 {
   height: 537px;

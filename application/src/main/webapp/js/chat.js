@@ -176,6 +176,7 @@ function showMessages(msgs) {
     }
   }
   $("#chats").html('<span>'+out+'</span>');
+  sh_highlightDocument();
   $("#chats").animate({ scrollTop: 20000 }, 'fast');
 
 }
@@ -288,30 +289,50 @@ removeParametersFromLocation();
 
 function messageBeautifier(message) {
   var msg = "";
+  if (message.indexOf("java:")===0) {
+    msg = "<div><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
+    return msg;
+  } else if (message.indexOf("js:")===0) {
+    msg = "<div><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
+    return msg;
+  } else if (message.indexOf("css:")===0) {
+    msg = "<div><pre class='sh_css'>"+message.substr(4, message.length-5)+"</pre></div>";
+    return msg;
+  }
+
+
   var lines = message.split("<br/>");
   var il,l;
   for (il=0 ; il<lines.length ; il++) {
     l = lines[il];
-    var tab = l.split(" ");
-    var it,w;
-    for (it=0 ; it<tab.length ; it++) {
-      w = tab[it];
-      if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
-        w = "<a href='"+w+"' target='_new'>"+w+"</a>";
-      } else if (w == ":-)" || w==":)") {
-        w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>";
-      } else if (w == ":-D" || w==":D") {
-        w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>";
-      } else if (w == ":-|" || w==":|") {
-        w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>";
-      } else if (w == ":-(" || w==":(") {
-        w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>";
-      } else if (w == ";-)" || w==";)") {
-        w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>";
-      } else if (w == ":-O" || w==":O") {
-        w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>";
+    if (l.indexOf("google:")===0) {
+      // console.log("*"+l+"* "+l.length);
+      msg += "Google : <a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_new'>"+l.substr(7, l.length-7)+"</a> ";
+    } else if (l.indexOf("wolfram:")===0) {
+      // console.log("*"+l+"* "+l.length);
+      msg += "Wolfram : <a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_new'>"+l.substr(8, l.length-8)+"</a> ";
+    } else {
+      var tab = l.split(" ");
+      var it,w;
+      for (it=0 ; it<tab.length ; it++) {
+        w = tab[it];
+        if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
+          w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+        } else if (w == ":-)" || w==":)") {
+          w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>";
+        } else if (w == ":-D" || w==":D") {
+          w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>";
+        } else if (w == ":-|" || w==":|") {
+          w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>";
+        } else if (w == ":-(" || w==":(") {
+          w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>";
+        } else if (w == ";-)" || w==";)") {
+          w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>";
+        } else if (w == ":-O" || w==":O") {
+          w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>";
+        }
+        msg += w+" ";
       }
-      msg += w+" ";
     }
     // console.log(il + "::" + lines.length);
     if (il < lines.length-1) {
