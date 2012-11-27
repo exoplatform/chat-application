@@ -292,6 +292,9 @@ function messageBeautifier(message) {
   if (message.indexOf("java:")===0) {
     msg = "<div><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
     return msg;
+  } else if (message.indexOf("html:")===0) {
+    msg = "<div><pre class='sh_html'>"+message.substr(5, message.length-6)+"</pre></div>";
+    return msg;
   } else if (message.indexOf("js:")===0) {
     msg = "<div><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
     return msg;

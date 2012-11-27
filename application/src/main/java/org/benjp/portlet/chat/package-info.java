@@ -27,6 +27,7 @@
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js"),
                 @Script(src = "js/chat.js"),
                 @Script(src = "js/sh_main.min.js"),
+                @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),
                 @Script(src = "js/sh_javascript.min.js"),
                 @Script(src = "js/sh_css.min.js")
