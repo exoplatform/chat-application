@@ -307,16 +307,20 @@ function messageBeautifier(message) {
     l = lines[il];
     if (l.indexOf("google:")===0) {
       // console.log("*"+l+"* "+l.length);
-      msg += "Google : <a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_new'>"+l.substr(7, l.length-7)+"</a> ";
+      msg += "google:<a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_new'>"+l.substr(7, l.length-7)+"</a> ";
     } else if (l.indexOf("wolfram:")===0) {
       // console.log("*"+l+"* "+l.length);
-      msg += "Wolfram : <a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_new'>"+l.substr(8, l.length-8)+"</a> ";
+      msg += "wolfram:<a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_new'>"+l.substr(8, l.length-8)+"</a> ";
     } else {
       var tab = l.split(" ");
       var it,w;
       for (it=0 ; it<tab.length ; it++) {
         w = tab[it];
-        if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
+        if (w.indexOf("google:")===0) {
+          w = "google:<a href='http://www.google.com/search?q="+w.substr(7, w.length-7)+"' target='_new'>"+w.substr(7, w.length-7)+"</a>";
+        } else if (w.indexOf("wolfram:")===0) {
+          w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_new'>"+w.substr(8, w.length-8)+"</a>";
+        } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
           w = "<a href='"+w+"' target='_new'>"+w+"</a>";
         } else if (w == ":-)" || w==":)") {
           w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>";
