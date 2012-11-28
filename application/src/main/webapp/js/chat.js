@@ -78,7 +78,10 @@ $(document).ready(function(){
   });
 
   $(".msgEmoticons").on("click", function() {
-    $(".msgEmoticonsPanel").css("display", "inline-block");
+    if ($(".msgEmoticonsPanel").css("display")==="none")
+      $(".msgEmoticonsPanel").css("display", "inline-block");
+    else
+      $(".msgEmoticonsPanel").css("display", "none");
   });
 
   $(".smileyBtn").on("click", function() {
