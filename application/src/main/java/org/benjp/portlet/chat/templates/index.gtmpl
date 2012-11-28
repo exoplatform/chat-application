@@ -23,10 +23,7 @@
       <div class="chevron-left" style="margin: 3px 0px 0px 177px;">Search Users or Spaces by typing their name</div>
       <div class="chevron-none" style="margin: 3px 0px 0px 207px;">Highlight messages by typing ':' and your word</div>
       <div class="chevron-top" style="margin: 8px 0px 0px 3px;">Click on Status icon to toggle your Favorites</div>
-      <div class="chevron-top" style="margin: 80px 0px 6px 270px;">&nbsp;</div>
-      <span class="chevron-left" style="margin: 0px 0px 0px 150px;padding-left: 36px;">Click anywhere to close this Help</span>
-      <div class="chevron-right" style="margin: 0px 0px 0px 0px;">&nbsp;</div>
-      <div class="chevron-bottom" style="margin: 6px 0px 0px 270px;">&nbsp;</div>
+      <div class="chevron-rounded" style="margin: 100px 0px 0px 150px;">Click anywhere to close this Help</div>
       <div class="chevron-none" style="margin: 125px 0px 0px 190px;width: 335px;">Some commands for a better experience:
         <ul>
           <li>- 'google:' + word : search on Google</li>
@@ -51,6 +48,8 @@
   <div class="rightchat" style="display:none;">
     <div id="chats"></div>
     <div class="chatmessage">
+      <span class="msgButton msgEmoticons" style="display:none;">&nbsp;</span>
+      <span class="msgButton msgHelp">&nbsp;</span>
       <textarea type="text" name="text" id="msg" autocomplete="off" rows="2"></textarea>
     </div>
   </div>

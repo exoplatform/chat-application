@@ -77,6 +77,14 @@ $(document).ready(function(){
 
   });
 
+  $(".msgEmoticons").on("click", function() {
+    //$(".chatEmoticonsPanel").css("display", "inline-block");
+  });
+
+  $(".msgHelp").on("click", function() {
+    $(".chatHelpPanel").css("display", "inline");
+  });
+
   $(".chatHelpPanel").on("click", function() {
     $(".chatHelpPanel").css("display", "none");
   });
@@ -100,8 +108,6 @@ $(document).ready(function(){
     var filter = $(this).attr("value");
     if (filter == ":aboutme" || filter == ":about me") {
       $('.chatAboutPanel').css("display", "inline");
-    } else if (filter == ":help") {
-      $('.chatHelpPanel').css("display", "inline");
     }
     if (filter.indexOf(":")===-1) {
       userFilter = filter;
@@ -159,10 +165,10 @@ function showMessages(msgs) {
   }
 
   if (messages.length===0) {
-    out = "<div class='msgln-odd chevron-left-help'>";
-    out += "<b>Type ':help' to get some help.</b>";
-    out += "</div>";
-    out += "<div class='msgln' style='padding:20px 20px;'>";
+//    out = "<div class='msgln-odd chevron-left-help'>";
+//    out += "<b>Type ':help' to get some help.</b>";
+//    out += "</div>";
+    out = "<div class='msgln' style='padding:22px 20px;'>";
     out += "<b><center>No messages yet.</center></b>";
     out += "</div>";
   } else {
