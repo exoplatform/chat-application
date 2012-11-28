@@ -144,12 +144,34 @@ $(document).ready(function(){
     return tmp.textContent||tmp.innerText;
   }
 
+
+
+  function initChatProfile() {
+    $.ajax({
+      url: jzInitChatProfile,
+      success: function(response){
+        console.log("Chat Profile Update : "+response);
+
+      },
+      error: function(response){
+        //retry in 3 sec
+        setTimeout(initChatProfile, 3000);
+      }
+    });
+  }
+  initChatProfile();
+
+
+
 });
 
 function showSyncPanel() {
   if (!isLoaded)
     $(".chatSyncPanel").css("display", "block");
 }
+
+var totalNotif = 0;
+var oldNotif = 0;
 
 function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
@@ -165,9 +187,80 @@ function refreshWhoIsOnline() {
       $(".chatLoginPanel").css("display", "none");
     } else {
       $(".chatErrorPanel").css("display", "none");
+
+      if (window.fluid!==undefined) {
+        totalNotif = 0;
+        $('span.room-total').each(function(index) {
+          totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
+          window.fluid.dockBadge = totalNotif;
+        });
+        if (totalNotif>oldNotif) {
+          window.fluid.showGrowlNotification({
+              title: "eXo Chat",
+              description: "You have new messages",
+              priority: 1,
+              sticky: false,
+              identifier: "messages"
+          });
+        }
+        oldNotif = totalNotif;
+      }
     }
   });
 }
+
+function setStatus(status) {
+  $.ajax({
+    url: "http://localhost:8888/chatServer/setStatus",
+    data: { "user": username,
+            "sessionId": sessionId,
+            "status": status
+            },
+
+    success: function(response){
+      console.log("SUCCESS:setStatus::"+response);
+      window.fluid.showGrowlNotification({
+          title: "eXo Chat",
+          description: "Status changed to "+status,
+          priority: 1,
+          sticky: false,
+          identifier: "status"
+      });
+    },
+    error: function(response){
+    }
+
+  });
+
+}
+
+function setStatusAvailable() {
+  setStatus("available");
+}
+
+function setStatusAway() {
+  setStatus("away");
+}
+
+function setStatusDoNotDisturb() {
+  setStatus("donotdisturb");
+}
+
+function setStatusInvisible() {
+  setStatus("invisible");
+}
+
+function initFluidMenu() {
+  if (window.fluid!==undefined) {
+    window.fluid.addDockMenuItem("Available", setStatusAvailable);
+    window.fluid.addDockMenuItem("Away", setStatusAway);
+    window.fluid.addDockMenuItem("Do not disturb", setStatusDoNotDisturb);
+    window.fluid.addDockMenuItem("Invisible", setStatusInvisible);
+  }
+  
+  
+}
+initFluidMenu();
 
 
 function showMessages(msgs) {
@@ -320,7 +413,7 @@ function removeParametersFromLocation() {
   }
 }
 
-removeParametersFromLocation();
+//removeParametersFromLocation();
 
 function messageBeautifier(message) {
   var msg = "";
