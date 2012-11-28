@@ -6,7 +6,7 @@
 
   <groupId>org.benjp.chat</groupId>
   <artifactId>application</artifactId>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.3</version>
   <packaging>jar</packaging>
 
   <name>Chat Application</name>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.benjp.chat</groupId>
       <artifactId>server</artifactId>
-      <version>0.3-SNAPSHOT</version>
+      <version>0.3</version>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>

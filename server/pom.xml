@@ -6,7 +6,7 @@
 
   <groupId>org.benjp.chat</groupId>
   <artifactId>server</artifactId>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.3</version>
   <packaging>jar</packaging>
 
   <name>Chat Server</name>
