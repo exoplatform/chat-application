@@ -78,7 +78,16 @@ $(document).ready(function(){
   });
 
   $(".msgEmoticons").on("click", function() {
-    //$(".chatEmoticonsPanel").css("display", "inline-block");
+    $(".msgEmoticonsPanel").css("display", "inline-block");
+  });
+
+  $(".smileyBtn").on("click", function() {
+    var sml = $(this).attr("data");
+    $(".msgEmoticonsPanel").css("display", "none");
+    var val = $('#msg').val();
+    if (val.charAt(val.length-1)!==' ') val +=" ";
+    val += sml + " ";
+    $('#msg').val(val);
   });
 
   $(".msgHelp").on("click", function() {

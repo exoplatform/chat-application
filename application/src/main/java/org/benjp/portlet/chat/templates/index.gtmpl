@@ -48,7 +48,15 @@
   <div class="rightchat" style="display:none;">
     <div id="chats"></div>
     <div class="chatmessage">
-      <span class="msgButton msgEmoticons" style="display:none;">&nbsp;</span>
+      <span class="msgEmoticonsPanel" style="display:none">
+        <span class="smiley smileySmileWhite smileyBtn" data=":)">&nbsp;</span>
+        <span class="smiley smileySadWhite smileyBtn" data=":(">&nbsp;</span>
+        <span class="smiley smileyBigSmileWhite smileyBtn" data=":D">&nbsp;</span><br>
+        <span class="smiley smileyEyeBlinkWhite smileyBtn" data=";)">&nbsp;</span>
+        <span class="smiley smileySurpriseWhite smileyBtn" data=":O">&nbsp;</span>
+        <span class="smiley smileyNoVoiceWhite smileyBtn" data=":|">&nbsp;</span>
+      </span>
+      <span class="msgButton msgEmoticons">&nbsp;</span>
       <span class="msgButton msgHelp">&nbsp;</span>
       <textarea type="text" name="text" id="msg" autocomplete="off" rows="2"></textarea>
     </div>
