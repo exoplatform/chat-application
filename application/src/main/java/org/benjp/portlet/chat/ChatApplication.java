@@ -87,6 +87,14 @@ public class ChatApplication extends juzu.Controller
   }
 
   @Resource
+  @Route("/maintainSession")
+  public Response.Content maintainSession()
+  {
+    getSessionId(resourceContext.getHttpContext());
+    return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
   @Route("/initChatProfile")
   public Response.Content initChatProfile()
   {

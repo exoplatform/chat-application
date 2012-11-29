@@ -151,7 +151,6 @@ $(document).ready(function(){
       url: jzInitChatProfile,
       success: function(response){
         console.log("Chat Profile Update : "+response);
-
       },
       error: function(response){
         //retry in 3 sec
@@ -159,7 +158,23 @@ $(document).ready(function(){
       }
     });
   }
-  initChatProfile();
+
+  function maintainSession() {
+    $.ajax({
+      url: jzMaintainSession,
+      success: function(response){
+        console.log("Chat Session Maintained : "+response);
+      },
+      error: function(response){
+        chatSessionInt = clearInterval(chatSessionInt);
+      }
+    });
+  }
+
+  if (window.fluid!==undefined) {
+    chatSessionInt = clearInterval(chatSessionInt);
+    chatSessionInt = setInterval(maintainSession, 60000);
+  }
 
 
 

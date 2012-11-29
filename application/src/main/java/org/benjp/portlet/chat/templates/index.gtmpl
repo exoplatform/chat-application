@@ -67,6 +67,7 @@
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
   var jzInitChatProfile = "@{initChatProfile()}";
+  var jzMaintainSession = "@{maintainSession()}";
   var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
   var jzChatSend = "<%=chatServerURL%>/send";
   var jzChatGetRoom = "<%=chatServerURL%>/getRoom";
@@ -79,6 +80,7 @@
   var chatEventURL;
   var chatEventInt;
   var chatOnlineInt;
+  var chatSessionInt;
   var firstLoad = true;
   var userFilter = "";
   var isLoaded = false;
