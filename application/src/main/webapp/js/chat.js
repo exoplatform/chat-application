@@ -151,6 +151,11 @@ $(document).ready(function(){
       url: jzInitChatProfile,
       success: function(response){
         console.log("Chat Profile Update : "+response);
+
+        notifStatusInt = window.clearInterval(notifStatusInt);
+        notifStatusInt = setInterval(refreshStatus, 60000);
+        refreshStatus();
+
       },
       error: function(response){
         //retry in 3 sec
@@ -158,6 +163,7 @@ $(document).ready(function(){
       }
     });
   }
+  initChatProfile();
 
   function maintainSession() {
     $.ajax({
@@ -234,6 +240,7 @@ function setStatus(status) {
 
     success: function(response){
       console.log("SUCCESS:setStatus::"+response);
+      changeStatus(status);
       window.fluid.showGrowlNotification({
           title: "eXo Chat",
           description: "Status changed to "+status,
@@ -265,7 +272,7 @@ function setStatusInvisible() {
   setStatus("invisible");
 }
 
-function initFluidMenu() {
+function initFluidApp() {
   if (window.fluid!==undefined) {
     window.fluid.addDockMenuItem("Available", setStatusAvailable);
     window.fluid.addDockMenuItem("Away", setStatusAway);
@@ -275,8 +282,42 @@ function initFluidMenu() {
   
   
 }
-initFluidMenu();
+initFluidApp();
 
+
+function refreshStatus() {
+  $.ajax({
+    url: jzGetStatus,
+    data: {
+      "user": username,
+      "sessionId": sessionId
+    },
+    success: function(response){
+      changeStatus(response);
+    },
+    error: function(response){
+      changeStatus("offline");
+    }
+  });
+}
+
+
+function changeStatus(status) {
+  $("span.chatstatus").removeClass("chatstatus-available-black");
+  $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
+  $("span.chatstatus").removeClass("chatstatus-invisible-black");
+  $("span.chatstatus").removeClass("chatstatus-away-black");
+  $("span.chatstatus").removeClass("chatstatus-offline-black");
+  $("span.chatstatus").addClass("chatstatus-"+status+"-black");
+
+  $("span.chatstatus-chat").removeClass("chatstatus-available");
+  $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
+  $("span.chatstatus-chat").removeClass("chatstatus-invisible");
+  $("span.chatstatus-chat").removeClass("chatstatus-away");
+  $("span.chatstatus-chat").removeClass("chatstatus-offline");
+  $("span.chatstatus-chat").addClass("chatstatus-"+status);
+
+}
 
 function showMessages(msgs) {
   var im, message, out="", prevUser="";
@@ -385,7 +426,7 @@ function loadRoom() {
     success: function(response){
       console.log("SUCCESS::getRoom::"+response);
       room = response;
-
+      $('#msg').removeAttr("disabled");
       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
 
       jzStoreParam("lastUser", targetUser, 60000);

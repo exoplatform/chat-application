@@ -33,19 +33,20 @@
       </div>
       <div class="chevron-bottom" style="margin: 0px 0px 0px 192px;">&nbsp;</div>
   </div>
+  <div class="input-prepend chatsearch no-user-selection">
+    <span class="chatstatus-chat chatstatus-invisible"></span>
+    <label>
+      <span class="label-user"><%=(fullname.length()>30)?fullname.substring(0,30)+"...":fullname%></span>
+    </label>
+    <span class="filter filter-user"><span class="filter-on"></span></span>
+    <span class="filter filter-space"><span class="filter-on"></span></span>
+    <span class="add-on"><i class="icon-search"></i></span>
+    <input class="span2" id="chatSearch" type="text">
+  </div>
   <div class="leftchat no-user-selection" style="display:none;">
-    <div class="input-prepend chatsearch">
-      <label style="margin-bottom:3px;">
-        <span class="label-user"><%=(fullname.length()>15)?fullname.substring(0,15)+"...":fullname%></span>
-        <span class="filter filter-user"><span class="filter-on"></span></span>
-        <span class="filter filter-space"><span class="filter-on"></span></span>
-      </label>
-      <span class="add-on"><i class="icon-search"></i></span>
-      <input class="span2" id="chatSearch" type="text">
-    </div>
     <div id="whoisonline"></div>
   </div>
-  <div class="rightchat" style="display:none;">
+  <div class="rightchat">
     <div id="chats"></div>
     <div class="chatmessage">
       <span class="msgEmoticonsPanel no-user-selection" style="display:none">
@@ -58,7 +59,7 @@
       </span>
       <span class="msgButton msgEmoticons no-user-selection">&nbsp;</span>
       <span class="msgButton msgHelp no-user-selection">&nbsp;</span>
-      <textarea type="text" name="text" id="msg" autocomplete="off" rows="2"></textarea>
+      <textarea type="text" name="text" id="msg" autocomplete="off" rows="2" disabled></textarea>
     </div>
   </div>
 </div>
@@ -68,6 +69,7 @@
   var sessionId = "<%=sessionId%>";
   var jzInitChatProfile = "@{initChatProfile()}";
   var jzMaintainSession = "@{maintainSession()}";
+  var jzGetStatus = "<%=chatServerURL%>/getStatus";
   var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
   var jzChatSend = "<%=chatServerURL%>/send";
   var jzChatGetRoom = "<%=chatServerURL%>/getRoom";
@@ -81,6 +83,7 @@
   var chatEventInt;
   var chatOnlineInt;
   var chatSessionInt;
+  var notifStatusInt;
   var firstLoad = true;
   var userFilter = "";
   var isLoaded = false;

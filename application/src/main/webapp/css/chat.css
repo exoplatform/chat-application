@@ -1,8 +1,13 @@
+.UIToolbarContainer .ToolbarContainer .TRContainer {
+  min-width: 700px !important;
+}
+
 .chatapplication
 {
   height: 600px;
   background-color: #FFF;
-  padding: 10px;
+  padding-left: 1px;
+  min-width: 534px;
 }
 .chatErrorPanel, .chatLoginPanel, .chatAboutPanel {
   float: left;
@@ -10,7 +15,7 @@
   position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
   width: 533px;
-  height: 553px;
+  height: 594px;
   color: white;
   padding: 50px 0px 0px;
   text-align: center;
@@ -32,7 +37,7 @@
   z-index: 10;
   position: absolute;
   width: 533px;
-  height: 553px;
+  height: 594px;
   color: white;
   padding: 50px 0px 0px;
   text-align: center;
@@ -75,11 +80,70 @@
   background-color: white;
   border-top: 1px solid #CCC;
   border-left: 1px solid #CCC;
-  padding: 5px 4px 5px 6px;
+  padding: 0px 4px 5px 6px;
   margin-bottom: 0px;
   border-right: 1px solid #CCC;
-  width: 170px;
+  width: 521px;
 }
+
+.chatstatus-chat {
+  padding: 0px 2px;
+  display: inline-block;
+  white-space: nowrap;
+  background-position: 0px 0px;
+  margin: 8px 7px 0px 0px;
+  min-width: 17px;
+  line-height: 29px;
+  height: 29px;
+  cursor: pointer;
+  float: left;
+}
+
+.label-user {
+  display: block;
+  width: 282px;
+  margin-top: 10px;
+  float: left;
+  line-height: 20px;
+}
+
+.filter-on {
+  background-position: 0px 0px;
+  background:url('../img/filter-on.png') no-repeat 0px 0px;
+  padding-left: 19px;
+  cursor: pointer;
+}
+
+.filter-off {
+  background-position: 0px 0px;
+  background:url('../img/filter-off.png') no-repeat 0px 0px;
+  padding-left: 19px;
+  cursor: pointer;
+}
+
+.filter-user {
+  background-position: 0px 0px;
+  background:url('../img/filter-user.png') no-repeat 0px 0px;
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 3px;
+}
+.filter-user:hover {
+  background-color: #F1F1F1;
+}
+
+.filter-space {
+  background-position: 0px 0px;
+  background:url('../img/filter-space.png') no-repeat 0px 0px;
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 5px;
+}
+.filter-space:hover {
+  background-color: #F1F1F1;
+}
+
+
 .chatmessage
 {
   /* width: 100%; */
@@ -163,42 +227,6 @@
   display: block;
 }
 
-.label-user {
-  display: block;
-  width: 130px;
-  margin-top: 3px;
-  float: left;
-}
-
-.filter-on {
-  background-position: 0px 0px;
-  background:url('../img/filter-on.png') no-repeat 0px 0px;
-  padding-left: 19px;
-  cursor: pointer;
-}
-
-.filter-off {
-  background-position: 0px 0px;
-  background:url('../img/filter-off.png') no-repeat 0px 0px;
-  padding-left: 19px;
-  cursor: pointer;
-}
-
-.filter-user {
-  background-position: 0px 0px;
-  background:url('../img/filter-user.png') no-repeat 0px 0px;
-}
-.filter-user:hover {
-  background-color: #F1F1F1;
-}
-
-.filter-space {
-  background-position: 0px 0px;
-  background:url('../img/filter-space.png') no-repeat 0px 0px;
-}
-.filter-space:hover {
-  background-color: #F1F1F1;
-}
 
 .room-total {
   background-color: #3A87AD;
@@ -242,7 +270,7 @@
 .msgEmoticonsPanel {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.6);
-  left: 463px;
+  left: 454px;
   margin-top: -41px;
   min-width: 63px;
   height: 40px;
@@ -254,13 +282,13 @@
 .msgEmoticons {
   position: absolute;
   background:url('../img/smileys/smile.png') no-repeat 0px 0px;
-  left: 515px;
+  left: 506px;
   margin-top: 10px;
 }
 .msgHelp {
   position: absolute;
   background:url('../img/help.png') no-repeat 0px 0px;
-  left: 515px;
+  left: 506px;
   margin-top: 34px;
 }
 
@@ -278,7 +306,7 @@
 }
 #whoisonline
 {
-  height: 537px;
+  height: 601px;
 	overflow-y: scroll;
   border: 1px solid #D0D0D0;
   width: 180px;

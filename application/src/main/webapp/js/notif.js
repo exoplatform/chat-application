@@ -125,6 +125,12 @@ var jq171 = jQuery.noConflict(true);
     $("span.chatstatus").removeClass("chatstatus-offline-black");
     $("span.chatstatus").addClass("chatstatus-"+status+"-black");
 
+    $("span.chatstatus-chat").removeClass("chatstatus-available");
+    $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
+    $("span.chatstatus-chat").removeClass("chatstatus-invisible");
+    $("span.chatstatus-chat").removeClass("chatstatus-away");
+    $("span.chatstatus-chat").removeClass("chatstatus-offline");
+    $("span.chatstatus-chat").addClass("chatstatus-"+status);
   }
 
 })(jq171);

@@ -41,6 +41,7 @@
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
                 @Stylesheet(src = "css/chat.css"),
+                @Stylesheet(src = "css/notif.css"),
                 @Stylesheet(src = "css/sh_style.css")
         }
 )
