@@ -82,7 +82,7 @@ var jq171 = jQuery.noConflict(true);
 
     $("a.popupchat").click(function(){
        $(".MenuItemContainer").css('display', 'none');
-       window.open(chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=553, height=625");
+       window.open(chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=535, height=647");
     });
 
     $("a.chatstatus").click(function(){

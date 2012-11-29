@@ -35,6 +35,12 @@
   </div>
   <div class="input-prepend chatsearch no-user-selection">
     <span class="chatstatus-chat chatstatus-invisible"></span>
+    <span class="chatStatusPanel" style="display:none;">
+      <div class="chatMenu chatstatus chatstatus-available" status="available">Available</div>
+      <div class="chatMenu chatstatus chatstatus-away" status="away">Away</div>
+      <div class="chatMenu chatstatus chatstatus-donotdisturb" status="donotdisturb">Do not disturb</div>
+      <div class="chatMenu chatstatus chatstatus-invisible" status="invisible">Invisible</div>
+    </span>
     <label>
       <span class="label-user"><%=(fullname.length()>30)?fullname.substring(0,30)+"...":fullname%></span>
     </label>
@@ -70,6 +76,7 @@
   var jzInitChatProfile = "@{initChatProfile()}";
   var jzMaintainSession = "@{maintainSession()}";
   var jzGetStatus = "<%=chatServerURL%>/getStatus";
+  var jzSetStatus = "<%=chatServerURL%>/setStatus";
   var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
   var jzChatSend = "<%=chatServerURL%>/send";
   var jzChatGetRoom = "<%=chatServerURL%>/getRoom";

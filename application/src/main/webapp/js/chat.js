@@ -77,6 +77,37 @@ $(document).ready(function(){
 
   });
 
+  $(".chatstatus-chat").on("click", function() {
+    if ($(".chatStatusPanel").css("display")==="none")
+      $(".chatStatusPanel").css("display", "inline-block");
+    else
+      $(".chatStatusPanel").css("display", "none");
+  });
+
+  $("div.chatMenu").click(function(){
+    var status = $(this).attr("status");
+    console.log("setStatus :: "+status);
+
+    $.ajax({
+      url: jzSetStatus,
+      data: { "user": username,
+              "sessionId": sessionId,
+              "status": status
+              },
+
+      success: function(response){
+        console.log("SUCCESS:setStatus::"+response);
+        changeStatus(response);
+        $(".chatStatusPanel").css('display', 'none');
+      },
+      error: function(response){
+        changeStatus("offline");
+      }
+
+    });
+
+  });
+
   $(".msgEmoticons").on("click", function() {
     if ($(".msgEmoticonsPanel").css("display")==="none")
       $(".msgEmoticonsPanel").css("display", "inline-block");

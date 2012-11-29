@@ -99,6 +99,27 @@
   float: left;
 }
 
+.chatStatusPanel {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.9);
+  left: 6px;
+  min-width: 150px;
+  cursor: pointer;
+  margin-top: 30px;
+  border: 1px solid #AAA;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.chatMenu {
+  padding-left: 27px!important;
+  background-position-y: 7px!important;
+}
+
+.chatMenu:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .label-user {
   display: block;
   width: 282px;
