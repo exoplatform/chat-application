@@ -94,7 +94,7 @@ $(document).ready(function(){
   });
 
   $(".msgHelp").on("click", function() {
-    $(".chatHelpPanel").css("display", "inline");
+    $(".chatHelpPanel").css("display", "block");
   });
 
   $(".chatHelpPanel").on("click", function() {
@@ -119,7 +119,7 @@ $(document).ready(function(){
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
     if (filter == ":aboutme" || filter == ":about me") {
-      $('.chatAboutPanel').css("display", "inline");
+      $('.chatAboutPanel').css("display", "block");
     }
     if (filter.indexOf(":")===-1) {
       userFilter = filter;
@@ -183,7 +183,7 @@ function refreshWhoIsOnline() {
     $(".leftchat").css("display", "block");
     if (status == "error") {
       $("#whoisonline").html("");
-      $(".chatErrorPanel").css("display", "inline");
+      $(".chatErrorPanel").css("display", "block");
       $(".chatLoginPanel").css("display", "none");
     } else {
       $(".chatErrorPanel").css("display", "none");
@@ -330,7 +330,7 @@ function refreshChat() {
     .error(function() {
       $(".rightchat").css("display", "none");
       if ( $(".chatErrorPanel").css("display") == "none") {
-        $(".chatLoginPanel").css("display", "inline");
+        $(".chatLoginPanel").css("display", "block");
       } else {
         $(".chatLoginPanel").css("display", "none");
       }
