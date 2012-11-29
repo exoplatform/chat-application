@@ -97,11 +97,11 @@ $(document).ready(function(){
 
       success: function(response){
         console.log("SUCCESS:setStatus::"+response);
-        changeStatus(response);
+        changeStatusChat(response);
         $(".chatStatusPanel").css('display', 'none');
       },
       error: function(response){
-        changeStatus("offline");
+        changeStatusChat("offline");
       }
 
     });
@@ -184,8 +184,8 @@ $(document).ready(function(){
         console.log("Chat Profile Update : "+response);
 
         notifStatusInt = window.clearInterval(notifStatusInt);
-        notifStatusInt = setInterval(refreshStatus, 60000);
-        refreshStatus();
+        notifStatusInt = setInterval(refreshStatusChat, 60000);
+        refreshStatusChat();
 
       },
       error: function(response){
@@ -246,7 +246,7 @@ function refreshWhoIsOnline() {
           totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
           window.fluid.dockBadge = totalNotif;
         });
-        if (totalNotif>oldNotif) {
+        if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
           window.fluid.showGrowlNotification({
               title: "eXo Chat",
               description: "You have new messages",
@@ -271,14 +271,7 @@ function setStatus(status) {
 
     success: function(response){
       console.log("SUCCESS:setStatus::"+response);
-      changeStatus(status);
-      window.fluid.showGrowlNotification({
-          title: "eXo Chat",
-          description: "Status changed to "+status,
-          priority: 1,
-          sticky: false,
-          identifier: "status"
-      });
+      changeStatusChat(status);
     },
     error: function(response){
     }
@@ -316,7 +309,7 @@ function initFluidApp() {
 initFluidApp();
 
 
-function refreshStatus() {
+function refreshStatusChat() {
   $.ajax({
     url: jzGetStatus,
     data: {
@@ -324,16 +317,18 @@ function refreshStatus() {
       "sessionId": sessionId
     },
     success: function(response){
-      changeStatus(response);
+      changeStatusChat(response);
     },
     error: function(response){
-      changeStatus("offline");
+      changeStatusChat("offline");
     }
   });
 }
 
 
-function changeStatus(status) {
+function changeStatusChat(status) {
+  profileStatus = status;
+
   $("span.chatstatus").removeClass("chatstatus-available-black");
   $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
   $("span.chatstatus").removeClass("chatstatus-invisible-black");

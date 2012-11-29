@@ -97,4 +97,5 @@
   var messages = [];
   var filterInt;
   var keydown = -1;
+  var profileStatus = "offline";
 </script>
