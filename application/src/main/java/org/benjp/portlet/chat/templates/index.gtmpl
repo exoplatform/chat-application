@@ -50,7 +50,9 @@
     <input class="span2" id="chatSearch" type="text">
   </div>
   <div class="leftchat no-user-selection" style="display:none;">
-    <div id="whoisonline"></div>
+    <div id="whoisonline">
+      <span>&nbsp;</span>
+    </div>
   </div>
   <div class="rightchat">
     <div id="chats"></div>
