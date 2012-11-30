@@ -53,6 +53,7 @@
 }
 .leftchat
 {
+  clear: both;
   float: left;
   height: 100%;
 }
@@ -84,6 +85,7 @@
   margin-bottom: 0px;
   border-right: 1px solid #CCC;
   width: 521px;
+  position: relative;
 }
 
 .chatstatus-chat {
@@ -102,10 +104,9 @@
 .chatStatusPanel {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.9);
-  left: 6px;
-  min-width: 150px;
   cursor: pointer;
-  margin-top: 30px;
+  margin-top: 32px;
+  margin-left: -1px;
   border: 1px solid #AAA;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -171,6 +172,7 @@
   background-color: #F1F1F1;
   border-top: 1px solid #CCC;
   border-bottom: 1px solid #CCC;
+  height: 60px;
 }
 .room-inactive
 {
@@ -271,48 +273,45 @@
 	font-size: 12px;
 	font-family: Arial, Helvetica, sans-serif;
 	margin: 4px 6px;
-  padding: 5px 25px 5px 5px;
+  padding: 5px;
   width: 306px;
+  float: left;
+  height: 40px;
 }
 
 .msgButton {
-  display: inline-block;
   min-width: 16px;
   height: 16px;
   padding: 2px;
   opacity:0.4;
   filter:alpha(opacity=40);
   cursor: pointer;
-}
+  display: inline-block;
+  float: right;
+  margin-top: 8px;
+}  
 .msgButton:hover {
   opacity:1;
   filter:alpha(opacity=100);
 }
 .msgEmoticonsPanel {
-  position: absolute;
   background-color: rgba(0, 0, 0, 0.6);
-  left: 454px;
-  margin-top: -41px;
   min-width: 63px;
   height: 40px;
   padding: 2px 0px 4px 4px;
   -moz-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
+  float: right;
+  position: relative;
+  top: -107px;
 }
 .msgEmoticons {
-  position: absolute;
-  background:url('../img/smileys/smile.png') no-repeat 0px 0px;
-  left: 506px;
-  margin-top: 10px;
+  background:url('../img/smileys/smile.png') no-repeat 0 0;
 }
 .msgHelp {
-  position: absolute;
-  background:url('../img/help.png') no-repeat 0px 0px;
-  left: 506px;
-  margin-top: 34px;
+  background:url('../img/help.png') no-repeat 0 0;
 }
-
 .sh_container {
   overflow-x: scroll;
   width: 325px;
