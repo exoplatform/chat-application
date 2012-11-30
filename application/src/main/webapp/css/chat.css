@@ -4,10 +4,11 @@
 
 .chatapplication
 {
-  height: 600px;
+  height: 645px;
   background-color: #FFF;
   padding-left: 1px;
   min-width: 534px;
+  width: 534px;
 }
 .chatErrorPanel, .chatLoginPanel, .chatAboutPanel {
   float: left;
@@ -70,11 +71,8 @@
 .rightchat
 {
   float: left;
-  height: 100%;
   border-top: 1px solid #D0D0D0;
   border-right: 1px solid #D0D0D0;
-  border-bottom: 1px solid #D0D0D0;
-  /* margin-left: 10px; */
 }
 .chatsearch
 {
