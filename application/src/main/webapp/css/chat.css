@@ -55,16 +55,6 @@
 {
   float: left;
   height: 100%;
-  background:url('../img/left-bg.png') no-repeat 0px 0px;
-}
-#whoisonline
-{
-  height: 601px;
-  overflow-y: scroll;
-  border-bottom: 1px solid #D0D0D0;
-  border-left: 1px solid #D0D0D0;
-  cursor: default;
-  padding-right: 3px;
 }
 .no-user-selection
 {
@@ -80,22 +70,20 @@
 {
   float: left;
   height: 100%;
-  /*border-top: 1px solid #D0D0D0;*/
+  border-top: 1px solid #D0D0D0;
   border-right: 1px solid #D0D0D0;
   border-bottom: 1px solid #D0D0D0;
   /* margin-left: 10px; */
 }
 .chatsearch
 {
-  /*background-color: #f8f6f6;*/
-  background:url('../img/top-bg.png') no-repeat 0px 0px;
+  background-color: #F8F8F8;
   border-top: 1px solid #CCC;
   border-left: 1px solid #CCC;
   padding: 0px 4px 5px 6px;
   margin-bottom: 0px;
   border-right: 1px solid #CCC;
-  width: 523px;
-  height: 37px;
+  width: 521px;
 }
 
 .chatstatus-chat {
@@ -134,10 +122,10 @@
 
 .label-user {
   display: block;
-  width: 284px;
+  width: 282px;
   margin-top: 10px;
   float: left;
-  line-height: 22px;
+  line-height: 20px;
 }
 
 .filter-on {
@@ -202,7 +190,7 @@
   vertical-align: middle;
 }
 .users-online:hover {
-  background-color: #E8E8E8;
+  background-color: #F1F1F1;
 }
 .user-status {
   background:url('../img/mask-dot.png') no-repeat 0px 0px;
@@ -276,7 +264,7 @@
 {
 	height: 540px;
 	overflow-y: scroll;
-	width: 356px;
+	width: 350px;
 }
 #msg
 {
@@ -284,7 +272,7 @@
 	font-family: Arial, Helvetica, sans-serif;
 	margin: 4px 6px;
   padding: 5px 25px 5px 5px;
-  width: 312px;
+  width: 306px;
 }
 
 .msgButton {
@@ -327,7 +315,7 @@
 
 .sh_container {
   overflow-x: scroll;
-  width: 335px;
+  width: 325px;
   background-color: white;
 }
 .sh_java, .sh_javascript, .sh_css, .sh_html {
@@ -337,15 +325,23 @@
   background-color:#FF0;
   font-weight:bold;
 }
+#whoisonline
+{
+  height: 601px;
+	overflow-y: scroll;
+  border: 1px solid #D0D0D0;
+  width: 180px;
+  cursor: default;
+}
 
 .msgln
 {
-	padding: 3px 12px 3px 10px;
+	padding: 3px 12px;
 	background-color: #F3F3F3;
 }
 .msgln-odd
 {
-	padding: 3px 12px 3px 10px;
+	padding: 3px 12px;
 	background-color: #FFF;
 }
 .userLink
