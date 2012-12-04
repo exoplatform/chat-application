@@ -37,7 +37,7 @@
     <span class="add-on"><i class="icon-search"></i></span>
     <input class="span2" id="chatSearch" type="text">
   </div>
-  <div class="leftchat no-user-selection" style="display:none;">
+  <div class="leftchat no-user-selection">
     <div id="whoisonline">
       <span>&nbsp;</span>
     </div>

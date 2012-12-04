@@ -67,6 +67,13 @@ public class ChatServer extends juzu.Controller
   @Route("/whoIsOnline")
   public void whoIsOnline(String user, String sessionId, String filter, String withUsers, String withSpaces)
   {
+/*
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+*/
     if (userService.hasUserWithSession(user,  sessionId))
     {
       List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService);
