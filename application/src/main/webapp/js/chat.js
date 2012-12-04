@@ -362,19 +362,25 @@ function showMessages(msgs) {
       if (prevUser != message.user)
       {
         if (prevUser !== "")
-          out += "</div>";
-        if (message.user != username)
-          out += "<div class='msgln-odd'><b>";
-        else
-          out += "<div class='msgln'><b>";
-        out += "<span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span>";
+          out += "</span></div>";
+        if (message.user != username) {
+          out += "<div class='msgln-odd'>";
+          out += "<span style='position:absolute; padding:4px 10px 0px 0px;'>";
+          out += "<img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px'>";
+          out += "</span>";
+        } else {
+          out += "<div class='msgln'>";
+          //out += "<span style='float:left; '>&nbsp;</span>";
+        }
+        out += "<span style='margin-left:40px;'>";
+        out += "<b><span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span>";
         out += "</b><br/>";
       }
       else
       {
         out += "<hr style='margin:0px;'>";
       }
-      out += "<div><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
+      out += "<div style='margin-left:40px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
               "<span class='invisibleText'> [</span>"+
               "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
               "<span class='invisibleText'>]</span></div>"+
