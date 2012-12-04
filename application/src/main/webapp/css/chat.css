@@ -2,6 +2,10 @@
   min-width: 700px !important;
 }
 
+a:hover {
+  text-decoration: none;
+}
+
 .chatapplication
 {
   height: 645px;
@@ -27,9 +31,10 @@
   float: left;
   z-index: 10;
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.3);
+  /* background-color: rgba(255, 255, 255, 0.3); */
+  background:url('../img/help-panel.png') no-repeat 0px 0px;
   width: 533px;
-  height: 603px;
+  height: 644px;
   color: black;
   padding: 0px 0px 0px 0px;
 }
@@ -406,82 +411,4 @@ hr
 .smileyText, .invisibleText {
   font-size: 1px;
   color: white;
-}
-.chevron-left-help {
-  padding: 0px 0px 20px 40px;
-  margin: 25px 0px 0px 10px;
-  line-height: 32px;
-  vertical-align: baseline;
-  background: url('../img/chevron-left.png') no-repeat 0px 0px;
-}
-
-.chevron-left {
-  padding-left: 30px;
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 12px;
-  background: #FFF url('../img/chevron-left-24px.png') no-repeat 0px 0px;
-  display: inline-block;
-  text-align: left;
-}
-
-.chevron-top {
-  padding-left: 30px;
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 12px;
-  background: #FFF url('../img/chevron-top-24px.png') no-repeat 0px 0px;
-  display: inline-block;
-  text-align: left;
-}
-
-.chevron-right {
-  padding-right: 30px;
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 12px;
-  background: #FFF url('../img/chevron-right-24px.png') no-repeat 0px 0px;
-  display: inline-block;
-  text-align: right;
-  background-position: right;
-}
-
-.chevron-none {
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 12px;
-  background: #FFF;
-  display: inline-block;
-}
-
-.chevron-rounded {
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-size: 12px;
-  display: inline-block;
-  padding: 20px 40px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
-.chevron-bottom {
-  padding-left: 30px;
-  margin: 0px;
-  line-height: 24px;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 12px;
-  background: #FFF url('../img/chevron-bottom-24px.png') no-repeat 0px 0px;
-  display: inline-block;
 }

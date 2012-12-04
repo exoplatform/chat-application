@@ -19,19 +19,7 @@
 
   </div>
   <div class="chatHelpPanel" style="display: none;">
-      <div class="chevron-left" style="margin: 4px 0px 0px 177px;">Quick filter on Users and Spaces</div>
-      <div class="chevron-left" style="margin: 3px 0px 0px 177px;">Search Users or Spaces by typing their name</div>
-      <div class="chevron-none" style="margin: 3px 0px 0px 207px;">Highlight messages by typing ':' and your word</div>
-      <div class="chevron-top" style="margin: 8px 0px 0px 3px;">Click on Status icon to toggle your Favorites</div>
-      <div class="chevron-rounded" style="margin: 100px 0px 0px 150px;">Click anywhere to close this Help</div>
-      <div class="chevron-none" style="margin: 125px 0px 0px 190px;width: 335px;">Some commands for a better experience:
-        <ul>
-          <li>- 'google:' + word : search on Google</li>
-          <li>- 'wolfram:' + word : find your answer</li>
-          <li>- 'html:' + some code : colorize Html code (works also with java:, js: and css:)</li>
-        </ul>
-      </div>
-      <div class="chevron-bottom" style="margin: 0px 0px 0px 192px;">&nbsp;</div>
+    <span>&nbsp;</span>
   </div>
   <div class="input-prepend chatsearch no-user-selection">
     <span class="chatstatus-chat chatstatus-invisible"></span>

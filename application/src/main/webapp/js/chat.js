@@ -352,9 +352,6 @@ function showMessages(msgs) {
   }
 
   if (messages.length===0) {
-//    out = "<div class='msgln-odd chevron-left-help'>";
-//    out += "<b>Type ':help' to get some help.</b>";
-//    out += "</div>";
     out = "<div class='msgln' style='padding:22px 20px;'>";
     out += "<b><center>No messages yet.</center></b>";
     out += "</div>";
