@@ -365,14 +365,15 @@ function showMessages(msgs) {
           out += "</span></div>";
         if (message.user != username) {
           out += "<div class='msgln-odd'>";
-          out += "<span style='position:absolute; padding:4px 10px 0px 0px;'>";
+          out += "<span style='position:relative; padding-right:9px;top:8px'>";
           out += "<img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px'>";
           out += "</span>";
+          out += "<span>";
         } else {
           out += "<div class='msgln'>";
+          out += "<span style='margin-left:40px;'>";
           //out += "<span style='float:left; '>&nbsp;</span>";
         }
-        out += "<span style='margin-left:40px;'>";
         out += "<b><span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span>";
         out += "</b><br/>";
       }
