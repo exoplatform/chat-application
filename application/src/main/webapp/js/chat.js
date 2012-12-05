@@ -325,8 +325,11 @@ function refreshWhoIsOnline() {
         totalNotif = 0;
         $('span.room-total').each(function(index) {
           totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
-          window.fluid.dockBadge = totalNotif;
         });
+        if (totalNotif>0)
+          window.fluid.dockBadge = totalNotif;
+        else
+          window.fluid.dockBadge = "";
         if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
           window.fluid.showGrowlNotification({
               title: "eXo Chat",
