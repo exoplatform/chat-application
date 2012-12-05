@@ -5,6 +5,7 @@
   <div class="chatAboutPanel" style="display:none;"></div>
   <div class="chatHelpPanel" style="display: none;"><span>&nbsp;</span></div>
   <div class="input-prepend chatsearch no-user-selection">
+    <span class="avatar-user"><img onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
     <span class="chatstatus-chat chatstatus-invisible"></span>
     <span class="chatStatusPanel" style="display:none;">
       <div class="chatMenu chatstatus chatstatus-available" status="available">Available</div>
@@ -13,7 +14,7 @@
       <div class="chatMenu chatstatus chatstatus-invisible" status="invisible">Invisible</div>
     </span>
     <label>
-      <span class="label-user"><%=(fullname.length()>30)?fullname.substring(0,30)+"...":fullname%></span>
+      <span class="label-user"><a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a></span>
     </label>
     <span class="filter filter-user"><span class="filter-on"></span></span>
     <span class="filter filter-space"><span class="filter-on"></span></span>

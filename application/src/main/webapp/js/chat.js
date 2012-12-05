@@ -468,8 +468,7 @@ function showMessages(msgs) {
           out += "<span style='margin-left:40px;'>";
           //out += "<span style='float:left; '>&nbsp;</span>";
         }
-        out += "<b><span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span>";
-        out += "</b><br/>";
+        out += "<span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span><br/>";
       }
       else
       {
