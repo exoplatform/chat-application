@@ -24,7 +24,8 @@ import org.benjp.utils.PropertyManager;
 
 import java.net.UnknownHostException;
 
-public class MongoBootstrap {
+public class MongoBootstrap
+{
   private static Mongo m;
   private static DB db;
 
@@ -32,7 +33,8 @@ public class MongoBootstrap {
   {
     if (m==null)
     {
-      try {
+      try
+      {
         MongoOptions options = new MongoOptions();
         options.connectionsPerHost = 50;
         options.connectTimeout = 60000;
@@ -41,13 +43,16 @@ public class MongoBootstrap {
         int port = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT)).intValue();
         m = new Mongo(new ServerAddress(host, port), options);
         m.setWriteConcern(WriteConcern.SAFE);
-      } catch (UnknownHostException e) {
+      }
+      catch (UnknownHostException e)
+      {
       }
     }
     return m;
   }
 
-  public static DB getDB() {
+  public static DB getDB()
+  {
     if (db==null)
     {
       db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
@@ -62,19 +67,24 @@ public class MongoBootstrap {
       initCollection("spaces");
       initCollection("users");
 
+      ensureIndexes();
+
     }
     return db;
   }
 
-  public static void initCappedCollection(String name, int size) {
+  public static void initCappedCollection(String name, int size)
+  {
     initCollection(name, true, size);
   }
 
-  public static void initCollection(String name) {
+  public static void initCollection(String name)
+  {
     initCollection(name, false, 0);
   }
 
-  private static void initCollection(String name, boolean isCapped, int size) {
+  private static void initCollection(String name, boolean isCapped, int size)
+  {
     if (getDB().collectionExists(name)) return;
 
     BasicDBObject doc = new BasicDBObject();
@@ -82,6 +92,32 @@ public class MongoBootstrap {
     if (isCapped)
       doc.put("size", size);
     getDB().createCollection(name, doc);
+
+  }
+
+  private static void ensureIndexes()
+  {
+    DBCollection notifications = getDB().getCollection("notifications");
+    notifications.ensureIndex("user");
+    notifications.ensureIndex("type");
+    notifications.ensureIndex("category");
+    notifications.ensureIndex("categoryId");
+    notifications.ensureIndex("isRead");
+
+    DBCollection rooms = getDB().getCollection("room_rooms");
+    rooms.ensureIndex("space");
+    rooms.ensureIndex("users");
+
+    DBCollection sessions = getDB().getCollection("sessions");
+    sessions.ensureIndex("user");
+    sessions.ensureIndex("session");
+
+    DBCollection users = getDB().getCollection("users");
+    users.ensureIndex("user");
+    users.ensureIndex("spaces");
+
+    DBCollection spaces = getDB().getCollection("spaces");
+    spaces.ensureIndex("user");
 
   }
 }
