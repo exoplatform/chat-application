@@ -183,7 +183,7 @@ $(document).ready(function(){
   $('#chatSearch').keyup(function(event) {
     var filter = $(this).attr("value");
     if (filter == ":aboutme" || filter == ":about me") {
-      $('.chatAboutPanel').css("display", "block");
+      showAboutPanel();
     }
     if (filter.indexOf(":")===-1) {
       userFilter = filter;
