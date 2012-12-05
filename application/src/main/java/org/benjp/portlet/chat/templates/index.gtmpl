@@ -1,26 +1,9 @@
 <div class="chatapplication">
-  <div class="chatSyncPanel" style="display:none;">
-    <img src="/chat/img/sync.gif" width="64px" class="chatSync" />
-  </div>
-  <div class="chatErrorPanel" style="display:none;">
-    Service Not Available.<br/><br/>Please, come back later.
-  </div>
-  <div class="chatLoginPanel" style="display:none;">
-    You must be logged in to use the Chat.<br><br>
-    <a href="#" onclick="javascript:reloadWindow();">Click here to reload</a>
-  </div>
-  <div class="chatAboutPanel" style="display:none;">
-    eXo Community Chat<br>
-    Version 0.4-SNAPSHOT<br><br>
-    Designed and Developed by <a href="mailto:bpaillereau@gmail.com">Benjamin Paillereau</a><br>
-    Sources available on <a href="https://github.com/exo-addons/chat-application" target="_new">https://github.com/exo-addons/chat-application</a>
-    <br><br>
-    <a href="#" onclick="javascript:closeAbout();">Close</a>
-
-  </div>
-  <div class="chatHelpPanel" style="display: none;">
-    <span>&nbsp;</span>
-  </div>
+  <div class="chatSyncPanel" style="display:none;"></div>
+  <div class="chatErrorPanel" style="display:none;"></div>
+  <div class="chatLoginPanel" style="display:none;"></div>
+  <div class="chatAboutPanel" style="display:none;"></div>
+  <div class="chatHelpPanel" style="display: none;"><span>&nbsp;</span></div>
   <div class="input-prepend chatsearch no-user-selection">
     <span class="chatstatus-chat chatstatus-invisible"></span>
     <span class="chatStatusPanel" style="display:none;">

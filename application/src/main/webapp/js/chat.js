@@ -2,32 +2,36 @@ var highlight = "";
 $(document).ready(function(){
 
   $.fn.setCursorPosition = function(position){
-      if(this.length === 0) return this;
-      return $(this).setSelection(position, position);
+    if(this.length === 0) return this;
+    return $(this).setSelection(position, position);
   };
 
   $.fn.setSelection = function(selectionStart, selectionEnd) {
-      if(this.length === 0) return this;
-      input = this[0];
+    if(this.length === 0) return this;
+    input = this[0];
 
-      if (input.createTextRange) {
-          var range = input.createTextRange();
-          range.collapse(true);
-          range.moveEnd('character', selectionEnd);
-          range.moveStart('character', selectionStart);
-          range.select();
-      } else if (input.setSelectionRange) {
-          input.focus();
-          input.setSelectionRange(selectionStart, selectionEnd);
-      }
+    if (input.createTextRange) {
+      var range = input.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', selectionEnd);
+      range.moveStart('character', selectionStart);
+      range.select();
+    } else if (input.setSelectionRange) {
+      input.focus();
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
 
-      return this;
+    return this;
   };
 
   $.fn.focusEnd = function(){
-      this.setCursorPosition(this.val().length);
-              return this;
+    this.setCursorPosition(this.val().length);
+    return this;
   };
+
+  $(window).unload(function() {
+     hidePanels();
+  });
 
   $('#msg').focus(function() {
     //console.log("focus on msg : "+targetUser+":"+room);
@@ -154,11 +158,11 @@ $(document).ready(function(){
   });
 
   $(".msgHelp").on("click", function() {
-    $(".chatHelpPanel").css("display", "block");
+    showHelpPanel();
   });
 
   $(".chatHelpPanel").on("click", function() {
-    $(".chatHelpPanel").css("display", "none");
+    hidePanel(".chatHelpPanel");
   });
 
   $(".filter").on("click", function() {
@@ -246,9 +250,54 @@ $(document).ready(function(){
 
 });
 
+function hidePanel(panel) {
+  $(panel).css("display", "none");
+  $(panel).html("");
+}
+
+function hidePanels() {
+  hidePanel(".chatSyncPanel");
+  hidePanel(".chatErrorPanel");
+  hidePanel(".chatLoginPanel");
+  hidePanel(".chatAboutPanel");
+}
+
 function showSyncPanel() {
-  if (!isLoaded)
+  if (!isLoaded) {
+  hidePanels();
+    $(".chatSyncPanel").html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
     $(".chatSyncPanel").css("display", "block");
+  }
+}
+
+function showErrorPanel() {
+  hidePanels();
+  console.log("showErrorPanel")
+  $(".chatErrorPanel").html("Service Not Available.<br/><br/>Please, come back later.");
+  $(".chatErrorPanel").css("display", "block");
+}
+
+function showLoginPanel() {
+  hidePanels();
+  console.log("showLoginPanel")
+  $(".chatLoginPanel").html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
+  $(".chatLoginPanel").css("display", "block");
+}
+
+function showAboutPanel() {
+  var about = "eXo Community Chat<br>";
+  about += "Version 0.4-SNAPSHOT<br><br>";
+  about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
+  about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
+  about += "<br><br><a href=\"#\" onclick=\"javascript:closeAbout();\">Close</a>";
+  hidePanels();
+  $(".chatAboutPanel").html(about);
+  $(".chatAboutPanel").css("display", "block");
+}
+
+function showHelpPanel() {
+  hidePanels();
+  $(".chatHelpPanel").css("display", "block");
 }
 
 var totalNotif = 0;
@@ -257,18 +306,21 @@ var oldNotif = 0;
 function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
-  $('#whoisonline').load(jzChatWhoIsOnline, {"user": username, "sessionId": sessionId,
-    "filter": userFilter, "withSpaces": withSpaces, "withUsers": withUsers}, function (response, status, xhr) {
-    isLoaded = true;
-    $(".chatSyncPanel").css("display", "none");
-    $(".leftchat").css("display", "block");
-    if (status == "error") {
-      $("#whoisonline").html("");
-      $(".chatErrorPanel").css("display", "block");
-      $(".chatLoginPanel").css("display", "none");
-    } else {
-      $(".chatErrorPanel").css("display", "none");
 
+  $.ajax({
+    url: jzChatWhoIsOnline,
+    data: { "user": username,
+            "sessionId": sessionId,
+            "filter": userFilter,
+            "withSpaces": withSpaces,
+            "withUsers": withUsers
+            },
+
+    success: function(response){
+      isLoaded = true;
+      hidePanel(".chatErrorPanel");
+      hidePanel(".chatSyncPanel");
+      $("#whoisonline").html(response);
       if (window.fluid!==undefined) {
         totalNotif = 0;
         $('span.room-total').each(function(index) {
@@ -286,8 +338,21 @@ function refreshWhoIsOnline() {
         }
         oldNotif = totalNotif;
       }
+    },
+    error: function(jqXHR, textStatus, errorThrown){
+      //console.log("whoisonline :: "+textStatus+" :: "+errorThrown);
+      setTimeout(errorOnRefresh, 1000);
     }
   });
+}
+
+function errorOnRefresh() {
+  isLoaded = true;
+  hidePanel(".chatSyncPanel");
+  $("#whoisonline").html("<span>&nbsp;</span>");
+  hidePanel(".chatLoginPanel");
+  changeStatusChat("offline");
+  showErrorPanel();
 }
 
 function setStatus(status) {
@@ -440,14 +505,15 @@ function refreshChat() {
         }
       }
       $(".rightchat").css("display", "block");
-      $(".chatLoginPanel").css("display", "none");
+      hidePanel(".chatLoginPanel");
+      hidePanel(".chatErrorPanel");
     })
     .error(function() {
       $(".rightchat").css("display", "none");
       if ( $(".chatErrorPanel").css("display") == "none") {
-        $(".chatLoginPanel").css("display", "block");
+        showLoginPanel();
       } else {
-        $(".chatLoginPanel").css("display", "none");
+        hidePanel(".chatLoginPanel");
       }
     });
 
@@ -508,7 +574,7 @@ function loadRoom() {
 
 
 function closeAbout() {
-  $('.chatAboutPanel').css("display", "none");
+  hidePanel('.chatAboutPanel');
 }
 
 
