@@ -11,7 +11,7 @@ if [ $# = 1 ]
 then
   PROPERTIES=$1
 else
-  PROPERTIES="chat.properties"
+  PROPERTIES="data/chat.properties"
 fi
 
 cd $PROJECT_DIR/..
@@ -20,13 +20,13 @@ cd $PROJECT_DIR/..
 mvn clean install -Dmaven.test.skip=true -pl server/
 rm -Rf $CHT_TOMCAT_DIRECTORY/webapps/chatServer.war
 rm -Rf $CHT_TOMCAT_DIRECTORY/webapps/chatServer/
-cp "data/$PROPERTIES" $CHT_TOMCAT_DIRECTORY/conf/chat.properties
+cp "$PROPERTIES" $CHT_TOMCAT_DIRECTORY/conf/chat.properties
 cp server/target/chatServer.war $CHT_TOMCAT_DIRECTORY/webapps/
 
 ### CLIENT
 mvn clean install -Dmaven.test.skip=true -pl application/
 rm -Rf $PLF_TOMCAT_DIRECTORY/webapps/chat.war
 rm -Rf $PLF_TOMCAT_DIRECTORY/webapps/chat/
-cp "data/$PROPERTIES" $PLF_TOMCAT_DIRECTORY/conf/chat.properties
+cp "$PROPERTIES" $PLF_TOMCAT_DIRECTORY/conf/chat.properties
 cp server/target/chatServer.jar $PLF_TOMCAT_DIRECTORY/lib/
 cp application/target/chat.war $PLF_TOMCAT_DIRECTORY/webapps/
