@@ -1,7 +1,33 @@
 var highlight = "";
 $(document).ready(function(){
 
+  $.fn.setCursorPosition = function(position){
+      if(this.length === 0) return this;
+      return $(this).setSelection(position, position);
+  };
 
+  $.fn.setSelection = function(selectionStart, selectionEnd) {
+      if(this.length === 0) return this;
+      input = this[0];
+
+      if (input.createTextRange) {
+          var range = input.createTextRange();
+          range.collapse(true);
+          range.moveEnd('character', selectionEnd);
+          range.moveStart('character', selectionStart);
+          range.select();
+      } else if (input.setSelectionRange) {
+          input.focus();
+          input.setSelectionRange(selectionStart, selectionEnd);
+      }
+
+      return this;
+  };
+
+  $.fn.focusEnd = function(){
+      this.setCursorPosition(this.val().length);
+              return this;
+  };
 
   $('#msg').focus(function() {
     //console.log("focus on msg : "+targetUser+":"+room);
@@ -118,10 +144,13 @@ $(document).ready(function(){
   $(".smileyBtn").on("click", function() {
     var sml = $(this).attr("data");
     $(".msgEmoticonsPanel").css("display", "none");
-    var val = $('#msg').val();
+    $msg = $('#msg');
+    var val = $msg.val();
     if (val.charAt(val.length-1)!==' ') val +=" ";
     val += sml + " ";
-    $('#msg').val(val);
+    $msg.val(val);
+    $msg.focusEnd();
+
   });
 
   $(".msgHelp").on("click", function() {
@@ -457,6 +486,7 @@ function loadRoom() {
       console.log("SUCCESS::getRoom::"+response);
       room = response;
       $('#msg').removeAttr("disabled");
+      $('#msg').focus();
       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
 
       jzStoreParam("lastUser", targetUser, 60000);
