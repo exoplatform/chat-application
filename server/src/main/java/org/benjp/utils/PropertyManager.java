@@ -36,6 +36,10 @@ public class PropertyManager {
   public static final String PROPERTY_DB_PASSWORD = "dbPassword";
   public static final String PROPERTY_CHAT_SERVER_URL = "chatServerUrl";
   public static final String PROPERTY_CHAT_PORTAL_PAGE = "chatPortalPage";
+  public static final String PROPERTY_INTERVAL_CHAT = "chatIntervalChat";
+  public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
+  public static final String PROPERTY_INTERVAL_STATUS = "chatIntervalStatus";
+  public static final String PROPERTY_INTERVAL_USERS = "chatIntervalUsers";
 
   public static String getProperty(String key)
   {
@@ -66,6 +70,10 @@ public class PropertyManager {
         properties.setProperty(PROPERTY_DB_PASSWORD, "");
         properties.setProperty(PROPERTY_CHAT_SERVER_URL, "/chatServer");
         properties.setProperty(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
+        properties.setProperty(PROPERTY_INTERVAL_CHAT, "3000");
+        properties.setProperty(PROPERTY_INTERVAL_SESSION, "60000");
+        properties.setProperty(PROPERTY_INTERVAL_STATUS, "15000");
+        properties.setProperty(PROPERTY_INTERVAL_USERS, "5000");
       }
     }
     return properties;

@@ -72,4 +72,8 @@
   var filterInt;
   var keydown = -1;
   var profileStatus = "offline";
+  var chatIntervalChat = <%=chatIntervalChat%>;
+  var chatIntervalSession = <%=chatIntervalSession%>;
+  var chatIntervalStatus = <%=chatIntervalStatus%>;
+  var chatIntervalUsers = <%=chatIntervalUsers%>;
 </script>

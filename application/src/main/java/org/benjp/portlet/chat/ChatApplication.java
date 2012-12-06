@@ -66,11 +66,18 @@ public class ChatApplication extends juzu.Controller
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     String sessionId = getSessionId(renderContext.getHttpContext());
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
+    String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
+    String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
+    String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
     String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser);
     if (fullname==null) fullname=remoteUser;
     index.with().set("user", remoteUser).set("room", "noroom")
             .set("sessionId", sessionId).set("chatServerURL", chatServerURL)
-            .set("fullname", fullname).render();
+            .set("fullname", fullname)
+            .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
+            .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+            .render();
   }
 
   private String getSessionId(HttpContext httpContext)

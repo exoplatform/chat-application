@@ -196,7 +196,7 @@ $(document).ready(function(){
   });
 
   chatOnlineInt = clearInterval(chatOnlineInt);
-  chatOnlineInt = setInterval(refreshWhoIsOnline, 3000);
+  chatOnlineInt = setInterval(refreshWhoIsOnline, chatIntervalUsers);
   refreshWhoIsOnline();
 
   setTimeout(showSyncPanel, 1000);
@@ -217,7 +217,7 @@ $(document).ready(function(){
         console.log("Chat Profile Update : "+response);
 
         notifStatusInt = window.clearInterval(notifStatusInt);
-        notifStatusInt = setInterval(refreshStatusChat, 60000);
+        notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
         refreshStatusChat();
 
       },
@@ -243,7 +243,7 @@ $(document).ready(function(){
 
   if (window.fluid!==undefined) {
     chatSessionInt = clearInterval(chatSessionInt);
-    chatSessionInt = setInterval(maintainSession, 60000);
+    chatSessionInt = setInterval(maintainSession, chatIntervalSession);
   }
 
 
@@ -560,7 +560,7 @@ function loadRoom() {
       jzStoreParam("lastUser", targetUser, 60000);
       jzStoreParam("lastTS", "0");
       chatEventInt = window.clearInterval(chatEventInt);
-      chatEventInt = setInterval(refreshChat, 3000);
+      chatEventInt = setInterval(refreshChat, chatIntervalChat);
       refreshChat();
 
     },
