@@ -12,7 +12,7 @@
   </filter-mapping-->
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
-    <servlet-class>juzu.standalone.JuzuServlet</servlet-class>
+    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
       <param-name>juzu.app_name</param-name>
       <param-value>org.benjp.portlet.chat</param-value>
