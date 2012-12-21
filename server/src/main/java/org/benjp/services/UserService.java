@@ -74,7 +74,6 @@ public class UserService
     query.put("user", user);
     query.put("session", session);
     DBCursor cursor = coll.find(query);
-    //System.out.println("hasUserWithSession Size = "+cursor.size()+" - "+cursor.hasNext()+" - "+user+" ; "+session);
     return (cursor.hasNext());
   }
 

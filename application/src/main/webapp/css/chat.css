@@ -84,7 +84,12 @@ a:hover {
 }
 .chatsearch
 {
-  background-color: #F8F8F8;
+  background-image: -webkit-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
+  background-image: linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
+  background-image: -o-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
+  background-image: -moz-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
+  background-image: -webkit-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
+  background-image: -ms-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
   border-top: 1px solid #CCC;
   border-left: 1px solid #CCC;
   padding: 0px 4px 5px 6px;
