@@ -21,8 +21,8 @@
 @Portlet(name="ChatPortlet")
 @Bindings(
         {
-                @Binding(value = org.exoplatform.services.organization.OrganizationService.class, implementation=GateInMetaProvider.class),
-                @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class, implementation=GateInMetaProvider.class)
+                @Binding(value = org.exoplatform.services.organization.OrganizationService.class),
+                @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class)
         }
 )
 
@@ -57,4 +57,4 @@ import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
-import org.benjp.portlet.notification.GateInMetaProvider;
+import org.benjp.provider.GateInMetaProvider;

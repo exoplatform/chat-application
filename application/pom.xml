@@ -12,7 +12,7 @@
   <name>Chat Application</name>
 
   <properties>
-    <juzu.version>0.6.0-SNAPSHOT</juzu.version>
+    <juzu.version>0.6.0-beta5</juzu.version>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
   </properties>
@@ -44,7 +44,7 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-builder</artifactId>
+      <artifactId>juzu-bom-core</artifactId>
       <version>${juzu.version}</version>
     </dependency>
     <dependency>
@@ -107,7 +107,7 @@
         <dependencies>
           <dependency>
             <groupId>org.juzu</groupId>
-            <artifactId>juzu-builder</artifactId>
+            <artifactId>juzu-bom-core</artifactId>
             <version>${juzu.version}</version>
           </dependency>
         </dependencies>

@@ -21,6 +21,8 @@ package org.benjp.portlet.notification;
 
 import juzu.*;
 import juzu.request.HttpContext;
+import juzu.request.RenderContext;
+import juzu.request.ResourceContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
@@ -28,12 +30,10 @@ import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SessionScoped
-public class NotificationApplication extends juzu.Controller
+public class NotificationApplication
 {
 
   @Inject
@@ -62,7 +62,7 @@ public class NotificationApplication extends juzu.Controller
   }
 
   @View
-  public void index() throws IOException
+  public void index(RenderContext renderContext) throws IOException
   {
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
@@ -75,7 +75,7 @@ public class NotificationApplication extends juzu.Controller
 
   @Resource
   @Route("/initUserProfile")
-  public Response.Content initUserProfile()
+  public Response.Content initUserProfile(ResourceContext resourceContext)
   {
     String  out = "nothing to update";
     if (this.sessionId==null)

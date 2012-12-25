@@ -20,20 +20,20 @@
 package org.benjp.portlet.chat;
 
 import juzu.*;
-import juzu.request.HttpContext;
 import juzu.template.Template;
-import org.benjp.services.*;
+import org.benjp.services.ChatService;
+import org.benjp.services.NotificationService;
+import org.benjp.services.RoomBean;
+import org.benjp.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @ApplicationScoped
-public class ChatServer extends juzu.Controller
+public class ChatServer
 {
 
   @Inject

@@ -21,6 +21,8 @@ package org.benjp.portlet.chat;
 
 import juzu.*;
 import juzu.request.HttpContext;
+import juzu.request.RenderContext;
+import juzu.request.ResourceContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
@@ -32,14 +34,13 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
 import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @SessionScoped
-public class ChatApplication extends juzu.Controller
+public class ChatApplication
 {
 
   @Inject
@@ -61,7 +62,7 @@ public class ChatApplication extends juzu.Controller
 
 
   @View
-  public void index()
+  public void index(RenderContext renderContext)
   {
     String remoteUser = renderContext.getSecurityContext().getRemoteUser();
     String sessionId = getSessionId(renderContext.getHttpContext());
@@ -95,7 +96,7 @@ public class ChatApplication extends juzu.Controller
 
   @Resource
   @Route("/maintainSession")
-  public Response.Content maintainSession()
+  public Response.Content maintainSession(ResourceContext resourceContext)
   {
     getSessionId(resourceContext.getHttpContext());
     return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -103,7 +104,7 @@ public class ChatApplication extends juzu.Controller
 
   @Resource
   @Route("/initChatProfile")
-  public Response.Content initChatProfile()
+  public Response.Content initChatProfile(ResourceContext resourceContext)
   {
     String  out = "nothing to update";
     if (this.sessionId==null)

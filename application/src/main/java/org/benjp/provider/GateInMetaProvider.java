@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.portlet.notification;
+package org.benjp.provider;
 
 import javax.inject.Provider;
 

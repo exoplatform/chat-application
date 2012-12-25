@@ -3,5 +3,5 @@ target/*
 .DS_Store
 server/target/*
 application/target/*
-
 chat-mongohq.properties
+application/src/main/resources/rebel.xml
