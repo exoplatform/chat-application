@@ -2,6 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+  <parent>
+    <groupId>org.benjp</groupId>
+    <artifactId>chat</artifactId>
+    <version>0.4-SNAPSHOT</version>
+  </parent>
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.benjp.chat</groupId>
@@ -24,17 +30,17 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-bom-core</artifactId>
-      <version>0.6.0-beta5</version>
+      <version>${juzu.version}</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-less</artifactId>
-      <version>0.6.0-beta5</version>
+      <version>${juzu.version}</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
-      <version>0.6.0-beta5</version>
+      <version>${juzu.version}</version>
     </dependency>
 
     <!-- Other Dependencies -->
@@ -129,7 +135,7 @@
           <dependency>
             <groupId>org.juzu</groupId>
             <artifactId>juzu-bom-core</artifactId>
-            <version>0.6.0-beta5</version>
+            <version>${juzu.version}</version>
           </dependency>
         </dependencies>
         <configuration>
