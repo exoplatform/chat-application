@@ -21,9 +21,27 @@ Prerequisite : install [Maven 3](http://maven.apache.org/download.html).
     git clone https://github.com/exo-addons/chat-application.git
     cd chat-application
 
+or download the last tag [v0.4](https://github.com/exo-addons/chat-application/tags)
+
+    unzip chat-application-XXX.zip
+    cd chat-application-XXX
+
+
 then build the project with maven :
 
     mvn clean install
+
+
+If you have a problem of dependency during the building, try adding eXo Mirror in your Maven settings :
+     <mirrors>
+        <mirror>
+          <id>exo-central-server</id>
+          <name>eXo Central Server</name>
+          <url>http://repository.exoplatform.org/public/</url>
+          <mirrorOf>central</mirrorOf>
+        </mirror>
+      </mirrors>
+
 
 Step 2 :  Configure MongoDB Server
 ----------------
