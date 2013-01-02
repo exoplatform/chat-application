@@ -22,7 +22,6 @@ package org.benjp.portlet.notification;
 import juzu.*;
 import juzu.request.HttpContext;
 import juzu.request.RenderContext;
-import juzu.request.ResourceContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
@@ -48,7 +47,9 @@ public class NotificationApplication
   @Path("index.gtmpl")
   Template index;
 
-  String sessionId = null;
+  String sessionId_ = null;
+  String remoteUser_ = null;
+  boolean profileInitialized_ = false;
 
   OrganizationService organizationService_;
 
@@ -66,39 +67,38 @@ public class NotificationApplication
   {
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-    String sessionId = getSessionId(renderContext.getHttpContext());
-    String remoteUser = renderContext.getSecurityContext().getRemoteUser();
+    sessionId_ = getSessionId(renderContext.getHttpContext());
+    remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
 
-    index.with().set("user", remoteUser).set("sessionId", sessionId)
+    index.with().set("user", remoteUser_).set("sessionId", sessionId_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage).render();
   }
 
   @Resource
-  @Route("/initUserProfile")
-  public Response.Content initUserProfile(ResourceContext resourceContext)
+  public Response.Content initUserProfile()
   {
     String  out = "nothing to update";
-    if (this.sessionId==null)
+    if (!profileInitialized_)
     {
       try
       {
-        sessionId = getSessionId(resourceContext.getHttpContext());
-        String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
 
         // Add User in the DB
-        addUser(remoteUser, sessionId);
+        addUser(remoteUser_, sessionId_);
 
         // Set user's Full Name in the DB
-        saveFullName(remoteUser);
+        saveFullName(remoteUser_);
 
         // Set user's Spaces in the DB
-        saveSpaces(remoteUser);
+        saveSpaces(remoteUser_);
 
         out = "updated";
+
+        profileInitialized_ = true;
       }
       catch (Exception e)
       {
-        sessionId = null;
+        profileInitialized_ = false;
         return Response.notFound("Error during init, try later");
       }
     }

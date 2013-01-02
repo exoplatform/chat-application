@@ -22,7 +22,6 @@ package org.benjp.portlet.chat;
 import juzu.*;
 import juzu.request.HttpContext;
 import juzu.request.RenderContext;
-import juzu.request.ResourceContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
@@ -47,7 +46,10 @@ public class ChatApplication
   @Path("index.gtmpl")
   Template index;
 
-  String sessionId = null;
+  String sessionId_ = null;
+  String remoteUser_ = null;
+  boolean profileInitialized_ = false;
+
 
   OrganizationService organizationService_;
 
@@ -64,17 +66,17 @@ public class ChatApplication
   @View
   public void index(RenderContext renderContext)
   {
-    String remoteUser = renderContext.getSecurityContext().getRemoteUser();
-    String sessionId = getSessionId(renderContext.getHttpContext());
+    remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
+    sessionId_ = getSessionId(renderContext.getHttpContext());
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
-    String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser);
-    if (fullname==null) fullname=remoteUser;
-    index.with().set("user", remoteUser).set("room", "noroom")
-            .set("sessionId", sessionId).set("chatServerURL", chatServerURL)
+    String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
+    if (fullname==null) fullname=remoteUser_;
+    index.with().set("user", remoteUser_).set("room", "noroom")
+            .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
@@ -96,39 +98,36 @@ public class ChatApplication
 
   @Resource
   @Route("/maintainSession")
-  public Response.Content maintainSession(ResourceContext resourceContext)
+  public Response.Content maintainSession()
   {
-    getSessionId(resourceContext.getHttpContext());
     return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/initChatProfile")
-  public Response.Content initChatProfile(ResourceContext resourceContext)
+  public Response.Content initChatProfile()
   {
     String  out = "nothing to update";
-    if (this.sessionId==null)
+    if (!profileInitialized_)
     {
       try
       {
-        sessionId = getSessionId(resourceContext.getHttpContext());
-        String remoteUser = resourceContext.getSecurityContext().getRemoteUser();
-
         // Add User in the DB
-        addUser(remoteUser, sessionId);
+        addUser(remoteUser_, sessionId_);
 
         // Set user's Full Name in the DB
-        saveFullName(remoteUser);
+        saveFullName(remoteUser_);
 
         // Set user's Spaces in the DB
-        saveSpaces(remoteUser);
+        saveSpaces(remoteUser_);
 
         out = "updated";
+        profileInitialized_ = true;
       }
       catch (Exception e)
       {
         e.printStackTrace();
-        sessionId = null;
+        profileInitialized_ = false;
         return Response.notFound("Error during init, try later");
       }
     }
