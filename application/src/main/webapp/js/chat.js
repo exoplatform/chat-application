@@ -108,10 +108,11 @@ $(document).ready(function(){
   });
 
   $(".chatstatus-chat").on("click", function() {
-    if ($(".chatStatusPanel").css("display")==="none")
-      $(".chatStatusPanel").css("display", "inline-block");
+    var $chatStatusPanel = $(".chatStatusPanel");
+    if ($chatStatusPanel.css("display")==="none")
+      $chatStatusPanel.css("display", "inline-block");
     else
-      $(".chatStatusPanel").css("display", "none");
+      $chatStatusPanel.css("display", "none");
   });
 
   $("div.chatMenu").click(function(){
@@ -139,10 +140,11 @@ $(document).ready(function(){
   });
 
   $(".msgEmoticons").on("click", function() {
-    if ($(".msgEmoticonsPanel").css("display")==="none")
-      $(".msgEmoticonsPanel").css("display", "inline-block");
+    var $msgEmoticonsPanel = $(".msgEmoticonsPanel");
+    if ($msgEmoticonsPanel.css("display")==="none")
+      $msgEmoticonsPanel.css("display", "inline-block");
     else
-      $(".msgEmoticonsPanel").css("display", "none");
+      $msgEmoticonsPanel.css("display", "none");
   });
 
   $(".smileyBtn").on("click", function() {
@@ -265,23 +267,26 @@ function hidePanels() {
 function showSyncPanel() {
   if (!isLoaded) {
   hidePanels();
-    $(".chatSyncPanel").html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
-    $(".chatSyncPanel").css("display", "block");
+  var $chatSyncPanel = $(".chatSyncPanel");
+  $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
+  $chatSyncPanel.css("display", "block");
   }
 }
 
 function showErrorPanel() {
   hidePanels();
   console.log("showErrorPanel")
-  $(".chatErrorPanel").html("Service Not Available.<br/><br/>Please, come back later.");
-  $(".chatErrorPanel").css("display", "block");
+  var $chatErrorPanel = $(".chatErrorPanel");
+  $chatErrorPanel.html("Service Not Available.<br/><br/>Please, come back later.");
+  $chatErrorPanel.css("display", "block");
 }
 
 function showLoginPanel() {
   hidePanels();
-  console.log("showLoginPanel")
-  $(".chatLoginPanel").html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
-  $(".chatLoginPanel").css("display", "block");
+  console.log("showLoginPanel");
+  var $chatLoginPanel = $(".chatLoginPanel");
+  $chatLoginPanel.html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
+  $chatLoginPanel.css("display", "block");
 }
 
 function showAboutPanel() {
@@ -291,8 +296,9 @@ function showAboutPanel() {
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" onclick=\"javascript:closeAbout();\">Close</a>";
   hidePanels();
-  $(".chatAboutPanel").html(about);
-  $(".chatAboutPanel").css("display", "block");
+  var $chatAboutPanel = $(".chatAboutPanel");
+  $chatAboutPanel.html(about);
+  $chatAboutPanel.css("display", "block");
 }
 
 function showHelpPanel() {
@@ -426,19 +432,21 @@ function refreshStatusChat() {
 function changeStatusChat(status) {
   profileStatus = status;
 
-  $("span.chatstatus").removeClass("chatstatus-available-black");
-  $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
-  $("span.chatstatus").removeClass("chatstatus-invisible-black");
-  $("span.chatstatus").removeClass("chatstatus-away-black");
-  $("span.chatstatus").removeClass("chatstatus-offline-black");
-  $("span.chatstatus").addClass("chatstatus-"+status+"-black");
+  var $chatStatus = $("span.chatstatus");
+  $chatStatus.removeClass("chatstatus-available-black");
+  $chatStatus.removeClass("chatstatus-donotdisturb-black");
+  $chatStatus.removeClass("chatstatus-invisible-black");
+  $chatStatus.removeClass("chatstatus-away-black");
+  $chatStatus.removeClass("chatstatus-offline-black");
+  $chatStatus.addClass("chatstatus-"+status+"-black");
 
-  $("span.chatstatus-chat").removeClass("chatstatus-available");
-  $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
-  $("span.chatstatus-chat").removeClass("chatstatus-invisible");
-  $("span.chatstatus-chat").removeClass("chatstatus-away");
-  $("span.chatstatus-chat").removeClass("chatstatus-offline");
-  $("span.chatstatus-chat").addClass("chatstatus-"+status);
+  var $chatStatusChat = $("span.chatstatus-chat");
+  $chatStatusChat.removeClass("chatstatus-available");
+  $chatStatusChat.removeClass("chatstatus-donotdisturb");
+  $chatStatusChat.removeClass("chatstatus-invisible");
+  $chatStatusChat.removeClass("chatstatus-away");
+  $chatStatusChat.removeClass("chatstatus-offline");
+  $chatStatusChat.addClass("chatstatus-"+status);
 
 }
 
@@ -485,9 +493,10 @@ function showMessages(msgs) {
       prevUser = message.user;
     }
   }
-  $("#chats").html('<span>'+out+'</span>');
+  var $chats = $("#chats");
+  $chats.html('<span>'+out+'</span>');
   sh_highlightDocument();
-  $("#chats").animate({ scrollTop: 20000 }, 'fast');
+  $chats.animate({ scrollTop: 20000 }, 'fast');
 
 }
 
@@ -553,8 +562,9 @@ function loadRoom() {
     success: function(response){
       console.log("SUCCESS::getRoom::"+response);
       room = response;
-      $('#msg').removeAttr("disabled");
-      $('#msg').focus();
+      var $msg = $('#msg');
+      $msg.removeAttr("disabled");
+      $msg.focus();
       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
 
       jzStoreParam("lastUser", targetUser, 60000);
