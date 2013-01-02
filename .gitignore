@@ -7,3 +7,4 @@ chat-mongohq.properties
 application/src/main/resources/rebel.xml
 
 release.properties
+*.releaseBackup
