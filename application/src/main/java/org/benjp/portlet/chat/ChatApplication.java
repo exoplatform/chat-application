@@ -25,6 +25,7 @@ import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.services.SpaceBean;
+import org.benjp.services.UserService;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -45,6 +46,10 @@ public class ChatApplication
   @Inject
   @Path("index.gtmpl")
   Template index;
+
+  @Inject
+  @Path("indexDemo.gtmpl")
+  Template indexDemo;
 
   String sessionId_ = null;
   String remoteUser_ = null;
@@ -67,20 +72,37 @@ public class ChatApplication
   public void index(RenderContext renderContext)
   {
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
+    if (remoteUser_==null) remoteUser_ = UserService.ANONIM_USER;
     sessionId_ = getSessionId(renderContext.getHttpContext());
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
-    String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
-    if (fullname==null) fullname=remoteUser_;
-    index.with().set("user", remoteUser_).set("room", "noroom")
-            .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
-            .set("fullname", fullname)
-            .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
-            .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
-            .render();
+
+    if (!UserService.ANONIM_USER.equals(remoteUser_))
+    {
+      String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
+      if (fullname==null) fullname=remoteUser_;
+      index.with().set("user", remoteUser_).set("room", "noroom")
+              .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
+              .set("fullname", fullname)
+              .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
+              .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+              .render();
+    }
+    else
+    {
+      indexDemo.with().set("user", remoteUser_).set("room", "noroom")
+              .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
+              .set("fullname", remoteUser_)
+              .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
+              .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+              .render()
+              .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
+
+    }
+
   }
 
   private String getSessionId(HttpContext httpContext)
@@ -108,7 +130,7 @@ public class ChatApplication
   public Response.Content initChatProfile()
   {
     String  out = "nothing to update";
-    if (!profileInitialized_)
+    if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
       {
@@ -136,6 +158,20 @@ public class ChatApplication
 
   }
 
+  @Resource
+  public Response.Content createDemoUser(String fullname, String email)
+  {
+    String out = "created";
+
+    String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-");
+    remoteUser_ = username;
+    addUser(remoteUser_, sessionId_);
+    UserService userService = ServerBootstrap.getUserService();
+    userService.addUserFullName(username, fullname);
+    userService.addUserEmail(username, email);
+
+    return Response.ok(username).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
 
   protected void addUser(String remoteUser, String sessionId)
   {
@@ -152,8 +188,11 @@ public class ChatApplication
       if (fullname==null)
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
-        fullname = user.getFirstName()+" "+user.getLastName();
-        ServerBootstrap.getUserService().addUserFullName(username, fullname);
+        if (user!=null)
+        {
+          fullname = user.getFirstName()+" "+user.getLastName();
+          ServerBootstrap.getUserService().addUserFullName(username, fullname);
+        }
       }
 
 

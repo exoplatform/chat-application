@@ -1,4 +1,6 @@
 var highlight = "";
+var ANONIM_USER = "__anonim_";
+
 $(document).ready(function(){
 
   $.fn.setCursorPosition = function(position){
@@ -213,21 +215,35 @@ $(document).ready(function(){
 
 
   function initChatProfile() {
-    $.ajax({
-      url: jzInitChatProfile,
-      success: function(response){
-        console.log("Chat Profile Update : "+response);
 
-        notifStatusInt = window.clearInterval(notifStatusInt);
-        notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
-        refreshStatusChat();
+    if (username===ANONIM_USER) {
+      var anonimFullname = jzGetParam("anonimFullname");
+      var anonimUsername = jzGetParam("anonimUsername");
+      var anonimEmail = jzGetParam("anonimEmail");
 
-      },
-      error: function(response){
-        //retry in 3 sec
-        setTimeout(initChatProfile, 3000);
+      if (anonimUsername===undefined || anonimUsername===null) {
+        showDemoPanel();
+      } else {
+        createDemoUser(anonimFullname, anonimEmail);
       }
-    });
+    } else {
+      $.ajax({
+        url: jzInitChatProfile,
+        success: function(response){
+          console.log("Chat Profile Update : "+response);
+
+          notifStatusInt = window.clearInterval(notifStatusInt);
+          notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
+          refreshStatusChat();
+
+        },
+        error: function(response){
+          //retry in 3 sec
+          setTimeout(initChatProfile, 3000);
+        }
+      });
+    }
+
   }
   initChatProfile();
 
@@ -262,6 +278,7 @@ function hidePanels() {
   hidePanel(".chatErrorPanel");
   hidePanel(".chatLoginPanel");
   hidePanel(".chatAboutPanel");
+  hidePanel(".chatDemoPanel");
 }
 
 function showSyncPanel() {
@@ -275,7 +292,7 @@ function showSyncPanel() {
 
 function showErrorPanel() {
   hidePanels();
-  console.log("showErrorPanel")
+  console.log("showErrorPanel");
   var $chatErrorPanel = $(".chatErrorPanel");
   $chatErrorPanel.html("Service Not Available.<br/><br/>Please, come back later.");
   $chatErrorPanel.css("display", "block");
@@ -287,6 +304,47 @@ function showLoginPanel() {
   var $chatLoginPanel = $(".chatLoginPanel");
   $chatLoginPanel.html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
   $chatLoginPanel.css("display", "block");
+}
+
+function showDemoPanel() {
+  hidePanels();
+  console.log("showDemoPanel");
+  var $chatDemoPanel = $(".chatDemoPanel");
+  $chatDemoPanel.html("Welcome in the Demo mode.<br><br><div style='text-align:right;width:80%;'>" +
+          "<br><br>Display Name : <input type='text' id='anonimName'>" +
+          "<br><br>Email : <input type='text' id='anonimEmail'></div>" +
+          "<br><a href='#' id='anonimSave'>Save Your Profile</a>");
+  $chatDemoPanel.css("display", "block");
+
+  $("#anonimSave").on("click", function() {
+    var fullname = $("#anonimName").val();
+    var email = $("#anonimEmail").val();
+    createDemoUser(fullname, email);
+  });
+}
+
+function createDemoUser(fullname, email) {
+  $.ajax({
+    url: jzCreateDemoUser,
+    data: { "fullname": fullname,
+            "email": email
+    },
+    success: function(response){
+
+      notifStatusInt = window.clearInterval(notifStatusInt);
+      notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
+      refreshStatusChat();
+
+      jzStoreParam("anonimUsername", response, 600000);
+      jzStoreParam("anonimFullname", fullname, 600000);
+      jzStoreParam("anonimEmail", email, 600000);
+
+      username = response;
+      $(".label-user").html(fullname);
+      hidePanels();
+    }
+  });
+
 }
 
 function showAboutPanel() {
@@ -312,6 +370,12 @@ var oldNotif = 0;
 function refreshWhoIsOnline() {
   var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
+
+  if (username.indexOf(ANONIM_USER)>-1) {
+    console.log("DEMO MODE");
+    withUsers = true;
+    withSpaces = false;
+  }
 
   $.ajax({
     url: jzChatWhoIsOnline,
@@ -349,7 +413,7 @@ function refreshWhoIsOnline() {
       }
     },
     error: function(jqXHR, textStatus, errorThrown){
-      //console.log("whoisonline :: "+textStatus+" :: "+errorThrown);
+      console.log("whoisonline :: "+textStatus+" :: "+errorThrown);
       setTimeout(errorOnRefresh, 1000);
     }
   });

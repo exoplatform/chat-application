@@ -42,6 +42,8 @@ public class UserService
   public static final String STATUS_NONE = "none";
   public static final String STATUS_SPACE = "space";
 
+  public static final String ANONIM_USER = "__anonim_";
+
 
   private DB db()
   {
@@ -89,6 +91,7 @@ public class UserService
       doc.put("_id", session);
       doc.put("user", user);
       doc.put("session", session);
+      doc.put("isDemoUser", user.startsWith(ANONIM_USER));
 
       coll.insert(doc);
     }
@@ -144,6 +147,7 @@ public class UserService
     if (!cursor.hasNext())
     {
       BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
       doc.put("user", user);
       doc.put("fullname", fullname);
       coll.insert(doc);
@@ -152,6 +156,29 @@ public class UserService
     {
       DBObject doc = cursor.next();
       doc.put("fullname", fullname);
+      coll.save(doc);
+
+    }
+  }
+
+  public void addUserEmail(String user, String email)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (!cursor.hasNext())
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
+      doc.put("user", user);
+      doc.put("email", email);
+      coll.insert(doc);
+    }
+    else
+    {
+      DBObject doc = cursor.next();
+      doc.put("email", email);
       coll.save(doc);
 
     }
@@ -202,6 +229,7 @@ public class UserService
     else
     {
       BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
       doc.put("user", user);
       doc.put("spaces", spaceIds);
       coll.insert(doc);
@@ -264,6 +292,7 @@ public class UserService
     else
     {
       BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
       doc.put("user", user);
       doc.put("status", status);
       coll.insert(doc);
@@ -357,7 +386,9 @@ public class UserService
   {
     ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    DBCursor cursor = coll.find();
+    BasicDBObject query = new BasicDBObject();
+    query.put("isDemoUser", user.startsWith(ANONIM_USER));
+    DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
       DBObject doc = cursor.next();

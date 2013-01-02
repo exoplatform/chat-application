@@ -1,0 +1,77 @@
+<div class="chatapplication">
+  <div class="chatSyncPanel" style="display:none;"></div>
+  <div class="chatErrorPanel" style="display:none;"></div>
+  <div class="chatLoginPanel" style="display:none;"></div>
+  <div class="chatDemoPanel" style="display:none;"></div>
+  <div class="chatAboutPanel" style="display:none;"></div>
+  <div class="chatHelpPanel" style="display: none;"><span>&nbsp;</span></div>
+  <div class="input-prepend chatsearch no-user-selection">
+    <span class="chatstatus-chat chatstatus-invisible"></span>
+    <span class="chatStatusPanel" style="display:none;">
+      <div class="chatMenu chatstatus chatstatus-available" status="available">Available</div>
+      <div class="chatMenu chatstatus chatstatus-away" status="away">Away</div>
+      <div class="chatMenu chatstatus chatstatus-donotdisturb" status="donotdisturb">Do not disturb</div>
+      <div class="chatMenu chatstatus chatstatus-invisible" status="invisible">Invisible</div>
+    </span>
+    <label>
+      <span class="label-user"><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></span>
+    </label>
+    <span class="add-on"><i class="icon-search"></i></span>
+    <input class="span2" id="chatSearch" type="text">
+  </div>
+  <div class="leftchat no-user-selection">
+    <div id="whoisonline">
+      <span>&nbsp;</span>
+    </div>
+  </div>
+  <div class="rightchat">
+    <div id="chats"></div>
+    <div class="chatmessage">
+      <textarea type="text" name="text" id="msg" autocomplete="off" rows="2" disabled></textarea>
+      <span class="msgButton msgEmoticons no-user-selection">&nbsp;</span><br/>
+      <span class="msgEmoticonsPanel no-user-selection" style="display:none">
+        <span class="smiley smileySmileWhite smileyBtn" data=":)">&nbsp;</span>
+        <span class="smiley smileySadWhite smileyBtn" data=":(">&nbsp;</span>
+        <span class="smiley smileyBigSmileWhite smileyBtn" data=":D">&nbsp;</span><br>
+        <span class="smiley smileyEyeBlinkWhite smileyBtn" data=";)">&nbsp;</span>
+        <span class="smiley smileySurpriseWhite smileyBtn" data=":O">&nbsp;</span>
+        <span class="smiley smileyNoVoiceWhite smileyBtn" data=":|">&nbsp;</span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+  var username = "<%=user%>";
+  var sessionId = "<%=sessionId%>";
+  var jzInitChatProfile = "@{initChatProfile()}";
+  var jzCreateDemoUser = "@{createDemoUser()}";
+  var jzMaintainSession = "@{maintainSession()}";
+  var jzGetStatus = "<%=chatServerURL%>/getStatus";
+  var jzSetStatus = "<%=chatServerURL%>/setStatus";
+  var jzChatWhoIsOnline = "<%=chatServerURL%>/whoIsOnline";
+  var jzChatSend = "<%=chatServerURL%>/send";
+  var jzChatGetRoom = "<%=chatServerURL%>/getRoom";
+  var jzChatToggleFavorite = "<%=chatServerURL%>/toggleFavorite";
+  var jzChatUpdateUnreadMessages = "<%=chatServerURL%>/updateUnreadMessages";
+  var room = "<%=room%>";
+  var old = '';
+  var chatEventSource;
+  var targetUser;
+  var chatEventURL;
+  var chatEventInt;
+  var chatOnlineInt;
+  var chatSessionInt;
+  var notifStatusInt;
+  var firstLoad = true;
+  var userFilter = "";
+  var isLoaded = false;
+  var messages = [];
+  var filterInt;
+  var keydown = -1;
+  var profileStatus = "offline";
+  var chatIntervalChat = <%=chatIntervalChat%>;
+  var chatIntervalSession = <%=chatIntervalSession%>;
+  var chatIntervalStatus = <%=chatIntervalStatus%>;
+  var chatIntervalUsers = <%=chatIntervalUsers%>;
+</script>
