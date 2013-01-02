@@ -37,6 +37,12 @@
     </developer>
   </developers>
 
+  <scm>
+    <connection>scm:git:git://github.com/benjp/chat.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/benjp/chat.git</developerConnection>
+    <url>https://github.com/benjp/chat</url>
+  </scm>
+
   <modules>
     <module>server</module>
     <module>application</module>
