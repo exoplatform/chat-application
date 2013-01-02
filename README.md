@@ -16,7 +16,13 @@ Be Up and Running : One Tomcat Server mode
 Step 1 :  Build 
 ----------------
 
+Step 1a : Maven
+-------------
 Prerequisite : install [Maven 3](http://maven.apache.org/download.html).
+
+Step 1b : Source
+-------------
+Clone the chat repo :
 
     git clone https://github.com/exo-addons/chat-application.git
     cd chat-application
@@ -26,8 +32,10 @@ or download the last tag [v0.4](https://github.com/exo-addons/chat-application/t
     unzip chat-application-XXX.zip
     cd chat-application-XXX
 
+Step 1c : Build
+-------------
 
-then build the project with maven :
+Finally, build the project with maven :
 
     mvn clean install
 
