@@ -232,6 +232,7 @@ $(document).ready(function(){
         success: function(response){
           console.log("Chat Profile Update : "+response);
 
+          refreshWhoIsOnline();
           notifStatusInt = window.clearInterval(notifStatusInt);
           notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
           refreshStatusChat();
@@ -331,10 +332,6 @@ function createDemoUser(fullname, email) {
     },
     success: function(response){
 
-      notifStatusInt = window.clearInterval(notifStatusInt);
-      notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
-      refreshStatusChat();
-
       jzStoreParam("anonimUsername", response, 600000);
       jzStoreParam("anonimFullname", fullname, 600000);
       jzStoreParam("anonimEmail", email, 600000);
@@ -342,6 +339,12 @@ function createDemoUser(fullname, email) {
       username = response;
       $(".label-user").html(fullname);
       hidePanels();
+
+      refreshWhoIsOnline();
+      notifStatusInt = window.clearInterval(notifStatusInt);
+      notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
+      refreshStatusChat();
+
     }
   });
 
