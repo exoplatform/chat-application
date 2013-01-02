@@ -41,14 +41,16 @@ Finally, build the project with maven :
 
 
 If you have a problem of dependency during the building, try adding eXo Mirror in your Maven settings :
-     <mirrors>
-        <mirror>
-          <id>exo-central-server</id>
-          <name>eXo Central Server</name>
-          <url>http://repository.exoplatform.org/public/</url>
-          <mirrorOf>central</mirrorOf>
-        </mirror>
-      </mirrors>
+<pre><code>
+     &lt;mirrors&gt;
+        &lt;mirror&gt;
+          &lt;id&gt;exo-central-server&lt;/id&gt;
+          &lt;name&gt;eXo Central Server&lt;/name&gt;
+          &lt;url&gt;http://repository.exoplatform.org/public/&lt;/url&gt;
+          &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
+        &lt;/mirror&gt;
+      &lt;/mirrors&gt;
+</code></pre>
 
 
 Step 2 :  Configure MongoDB Server
