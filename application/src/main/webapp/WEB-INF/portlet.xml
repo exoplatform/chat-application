@@ -49,4 +49,16 @@
        <title>Chat Notification Application</title>
      </portlet-info>
    </portlet>
+
+
+  <filter>
+    <filter-name>ResponseFilter</filter-name>
+    <filter-class>org.benjp.portlet.chat.ResponseFilter</filter-class>
+    <lifecycle>RENDER_PHASE</lifecycle>
+  </filter>
+  <filter-mapping>
+    <filter-name>ResponseFilter</filter-name>
+    <portlet-name>ChatApplication</portlet-name>
+  </filter-mapping>
+
 </portlet-app>
