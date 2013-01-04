@@ -375,9 +375,8 @@ function refreshWhoIsOnline() {
   var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
 
   if (username.indexOf(ANONIM_USER)>-1) {
-    console.log("DEMO MODE");
     withUsers = true;
-    withSpaces = false;
+    withSpaces = true;
   }
 
   $.ajax({

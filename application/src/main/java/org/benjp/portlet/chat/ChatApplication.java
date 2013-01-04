@@ -169,6 +169,7 @@ public class ChatApplication
     UserService userService = ServerBootstrap.getUserService();
     userService.addUserFullName(username, fullname);
     userService.addUserEmail(username, email);
+    saveDemoSpace(username);
 
     return Response.ok(username).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
@@ -220,6 +221,27 @@ public class ChatApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
+      ServerBootstrap.getUserService().setSpaces(username, beans);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+  }
+
+  protected void saveDemoSpace(String username)
+  {
+    try
+    {
+      List<SpaceBean> beans = new ArrayList<SpaceBean>();
+      SpaceBean spaceBean = new SpaceBean();
+      spaceBean.setDisplayName("Welcome Space");
+      spaceBean.setGroupId("/public");
+      spaceBean.setId("welcome_space");
+      spaceBean.setShortName("welcome_space");
+      beans.add(spaceBean);
+
       ServerBootstrap.getUserService().setSpaces(username, beans);
     }
     catch (Exception e)
