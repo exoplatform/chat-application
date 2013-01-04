@@ -428,3 +428,20 @@ hr
   font-size: 1px;
   color: white;
 }
+
+/*
+@media (max-width: 767px) {
+
+.label-user {
+  padding-right: 8px;
+}
+
+}
+
+@media (min-width: 768px) {
+
+.label-user {
+  width: 248px;
+}
+
+*/
