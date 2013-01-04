@@ -13,6 +13,10 @@
        <value>prod</value>
      </init-param>
      <init-param>
+       <name>juzu.src_path</name>
+       <value>/Users/benjamin/git/chat/application/src/main/java</value>
+     </init-param>
+     <init-param>
        <name>juzu.inject</name>
        <value>weld</value>
        <!--
