@@ -387,12 +387,13 @@ function refreshWhoIsOnline() {
             "withSpaces": withSpaces,
             "withUsers": withUsers
             },
-
+    dataType: 'html',
     success: function(response){
       isLoaded = true;
       hidePanel(".chatErrorPanel");
       hidePanel(".chatSyncPanel");
       $("#whoisonline").html(response);
+      jQueryForUsersTemplate();
       if (window.fluid!==undefined) {
         totalNotif = 0;
         $('span.room-total').each(function(index) {
@@ -419,6 +420,37 @@ function refreshWhoIsOnline() {
       setTimeout(errorOnRefresh, 1000);
     }
   });
+}
+
+
+function jQueryForUsersTemplate() {
+  var value = jzGetParam("lastUser");
+  if (value && firstLoad) {
+    //console.log("firstLoad with user : *"+value+"*");
+    targetUser = value;
+    loadRoom();
+    firstLoad = false;
+  }
+
+  $("#users-online-"+targetUser).addClass("info");
+
+
+  $('.users-online').on("click", function() {
+    targetUser = $(".user-link:first",this).attr("user-data");
+    loadRoom();
+  });
+
+
+  $('.user-link').on("click", function() {
+    targetUser = $(this).attr("user-data");
+    loadRoom();
+  });
+
+  $('.user-status').on("click", function(e) {
+    var targetFav = $(this).attr("user-data");
+    toggleFavorite(targetFav);
+  });
+
 }
 
 function errorOnRefresh() {

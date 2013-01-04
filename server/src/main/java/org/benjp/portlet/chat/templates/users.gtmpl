@@ -1,5 +1,4 @@
 <table class="table">
-
   <% if (rooms!=null) {
     def fav=null;%>
     <% rooms.each { room -> %>
@@ -25,38 +24,6 @@
         <% } %>
       </td>
     </tr>
-
     <% } %>
   <% } %>
 </table>
-
-<script>
-
-  var value = jzGetParam("lastUser");
-  if (value && firstLoad) {
-    //console.log("firstLoad with user : *"+value+"*");
-    targetUser = value;
-    loadRoom();
-    firstLoad = false;
-  }
-
-  $("#users-online-"+targetUser).addClass("info");
-
-
-  $('.users-online').on("click", function() {
-    targetUser = $(".user-link:first",this).attr("user-data");
-    loadRoom();
-  });
-
-
-  $('.user-link').on("click", function() {
-    targetUser = $(this).attr("user-data");
-    loadRoom();
-  });
-
-  $('.user-status').on("click", function(e) {
-    var targetFav = $(this).attr("user-data");
-    toggleFavorite(targetFav);
-  });
-
-</script>
