@@ -9,6 +9,12 @@ Thus, Chat Client portlets will run on an eXo Platform based App Server, where t
 
 ![alt text](https://raw.github.com/benjp/chat/master/data/screenshots/01-overview.png "Overview")
 
+I wrote some blog posts on this app and technologies I use to build it, you can find them here :
+- [eXo Platform Add-Ons: Chat in Space](http://blog.exoplatform.com/2012/12/11/exo-platform-add-ons-chat-in-space)
+- [Chat Application: Why MongoDB?](http://blog.exoplatform.com/2012/12/18/chat-application-why-mongodb)
+- [Chat in the Cloud with MongoHQ](http://blog.exoplatform.com/2012/12/20/chat-in-the-cloud-with-mongohq)
+
+If you simply want to build it and use it, follow the steps.
 
 Be Up and Running : One Tomcat Server mode
 ===============
