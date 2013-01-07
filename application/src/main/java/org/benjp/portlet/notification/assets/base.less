@@ -73,34 +73,38 @@
   /*padding-left: 25px !important;*/
 }
 
+.chaticonFn (@image:'chat.png') {
+  background:url('@{iconStatusPath}@{image}') no-repeat 3px 4px;
+}
+
 .chaticon {
-  background:url('@{iconStatusPath}chat.png') no-repeat 3px 4px;
+  .chaticonFn();
   height: 22px;
 }
 .chatstatus-available-black {
-  background:url('@{iconStatusPath}status-available-black.png') no-repeat 3px 4px;
+  .chaticonFn('status-available-black.png');
 }
 .chatstatus-available {
-  background:url('@{iconStatusPath}status-available.png') no-repeat 3px 4px;
+  .chaticonFn('status-available.png');
 }
 .chatstatus-donotdisturb-black {
-  background:url('@{iconStatusPath}status-donotdisturb-black.png') no-repeat 3px 4px;
+  .chaticonFn('status-donotdisturb-black.png');
 }
 .chatstatus-donotdisturb {
-  background:url('@{iconStatusPath}status-donotdisturb.png') no-repeat 3px 4px;
+  .chaticonFn('status-donotdisturb.png');
 }
 .chatstatus-away-black {
-  background:url('@{iconStatusPath}status-away-black.png') no-repeat 3px 4px;
+  .chaticonFn('status-away-black.png');
 }
 .chatstatus-away {
-  background:url('@{iconStatusPath}status-away.png') no-repeat 3px 4px;
+  .chaticonFn('status-away.png');
 }
 .chatstatus-invisible-black {
-  background:url('@{iconStatusPath}status-invisible-black.png') no-repeat 3px 4px;
+  .chaticonFn('status-invisible-black.png');
 }
 .chatstatus-invisible {
-  background:url('@{iconStatusPath}status-invisible.png') no-repeat 3px 4px;
+  .chaticonFn('status-invisible.png');
 }
 .chatstatus-offline-black {
-  background:url('@{iconStatusPath}status-offline-black.png') no-repeat 3px 4px;
+  .chaticonFn('status-offline-black.png');
 }
