@@ -33,7 +33,7 @@
                 @Script(src = "js/notif.js")
         },
         stylesheets = {
-                @Stylesheet(src = "css/notif.css")
+                @Stylesheet(src = "/org/benjp/assets/notification/assets/notif.css", location = AssetLocation.CLASSPATH)
         }
 )
 

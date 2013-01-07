@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Less(value = "bootstrap.less", minify = true)
-package org.benjp;
+@Less(value = "notif.less", minify = true)
+package org.benjp.assets.notification;
 
 import juzu.plugin.less.Less;

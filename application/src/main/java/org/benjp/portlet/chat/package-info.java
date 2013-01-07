@@ -39,7 +39,7 @@
                 @Script(src = "js/sh_css.min.js")
         },
         stylesheets = {
-                @Stylesheet(src = "/org/benjp/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
+                @Stylesheet(src = "/org/benjp/assets/bootstrap/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
                 @Stylesheet(src = "css/chat.css"),
                 @Stylesheet(src = "css/notif.css"),
                 @Stylesheet(src = "css/sh_style.css")
