@@ -40,11 +40,13 @@
         },
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/assets/bootstrap/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
-                @Stylesheet(src = "css/chat.css"),
-                @Stylesheet(src = "css/notif.css"),
+                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat.css", location = AssetLocation.CLASSPATH),
+                @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.CLASSPATH),
                 @Stylesheet(src = "css/sh_style.css")
         }
 )
+
+@Less(value = "chat.less", minify = true)
 
 
 package org.benjp.portlet.chat;
@@ -56,5 +58,6 @@ import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
+import juzu.plugin.less.Less;
 import juzu.plugin.portlet.Portlet;
 import org.benjp.provider.GateInMetaProvider;

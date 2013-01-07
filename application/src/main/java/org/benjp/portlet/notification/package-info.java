@@ -33,10 +33,11 @@
                 @Script(src = "js/notif.js")
         },
         stylesheets = {
-                @Stylesheet(src = "/org/benjp/assets/notification/assets/notif.css", location = AssetLocation.CLASSPATH)
+                @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.CLASSPATH)
         }
 )
 
+@Less(value = "notif.less", minify = true)
 
 package org.benjp.portlet.notification;
 
@@ -47,5 +48,6 @@ import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
+import juzu.plugin.less.Less;
 import juzu.plugin.portlet.Portlet;
 import org.benjp.provider.GateInMetaProvider;
