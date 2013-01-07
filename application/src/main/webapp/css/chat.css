@@ -352,6 +352,11 @@ a:hover {
   cursor: default;
 }
 
+#whoisonline .table
+{
+  margin-bottom: 0;
+}
+
 .msgln
 {
 	padding: 3px 12px;
