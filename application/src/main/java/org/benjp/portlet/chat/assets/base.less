@@ -1,21 +1,3 @@
-
-
-.chatapplication
-{
-  height: @height;
-  background-color: @backgroundColor;
-  padding-left: 1px;
-  min-width: @width;
-  width: @width;
-
-  div, td
-  {
-    font-family: Lucida,arial,tahoma;
-  }
-
-}
-
-
 .chatSync {
   background-color: @colorBgPanel;
   padding: 40px;
@@ -43,22 +25,6 @@
   float: left;
   border-top: 1px solid @colorBorder;
   border-right: 1px solid @colorBorder;
-}
-.chatsearch
-{
-  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  background-image: linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  background-image: -o-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  background-image: -moz-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  background-image: -ms-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
-  border-top: 1px solid @colorBorderGrey;
-  border-left: 1px solid @colorBorderGrey;
-  padding: 0px 4px 5px 6px;
-  margin-bottom: 0px;
-  border-right: 1px solid @colorBorderGrey;
-  width: (@width - 13);
-  position: relative;
 }
 
 .chatstatus-chat {
@@ -88,15 +54,6 @@
   display: inline-block;
   padding-top: 5px;
   padding-right: 3px;
-}
-
-.label-user {
-  display: block;
-  width: (@width - 286);
-  margin-top: 5px;
-  float: left;
-  line-height: 20px;
-  color: black;
 }
 
 .filter (@image, @paddingLeft) {
@@ -136,7 +93,6 @@
 
 .chatmessage
 {
-  /* width: 100%; */
   background-color: @colorBgLight;
   border-top: 1px solid @colorBorderGrey;
   border-bottom: 1px solid @colorBorderGrey;
@@ -214,22 +170,6 @@
   font-family: Verdana;
 }
 
-#chats
-{
-	height: (@height - 105);
-	overflow-y: scroll;
-	width: @widthMessages;
-}
-#msg
-{
-	font-size: 12px;
-	font-family: Arial, Helvetica, sans-serif;
-	margin: 4px 6px;
-  padding: 5px;
-  width: (@widthMessages - 44);
-  float: left;
-  height: 40px;
-}
 
 .msgButton {
   min-width: 16px;
@@ -249,25 +189,10 @@
 .msgHelp {
   .background('help.png');
 }
-.sh_container {
-  overflow-x: scroll;
-  width: (@widthMessages - 25);
-  background-color: @colorLightText;
-}
-.sh_java, .sh_javascript, .sh_css, .sh_html {
-  min-width: (@widthMessages - 25);
-}
+
 .highlight {
   background-color: @colorHighlight;
   font-weight:bold;
-}
-#whoisonline
-{
-  height: (@height - 44);
-	overflow-y: scroll;
-  border: 1px solid @colorBorder;
-  width: @widthUsers;
-  cursor: default;
 }
 
 #whoisonline .table
