@@ -149,7 +149,7 @@ $(document).ready(function(){
       $msgEmoticonsPanel.css("display", "none");
   });
 
-  $(".smileyBtn").on("click", function() {
+  $(".emoticonBtn").on("click", function() {
     var sml = $(this).attr("data");
     $(".msgEmoticonsPanel").css("display", "none");
     $msg = $('#msg');
@@ -746,17 +746,17 @@ function messageBeautifier(message) {
         } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
           w = "<a href='"+w+"' target='_new'>"+w+"</a>";
         } else if (w == ":-)" || w==":)") {
-          w = "<span class='smiley smileySmile'><span class='smileyText'>:)</span></span>";
+          w = "<span class='emoticon emoticonSmile'><span class='emoticonText'>:)</span></span>";
         } else if (w == ":-D" || w==":D") {
-          w = "<span class='smiley smileyBigSmile'><span class='smileyText'>:D</span></span>";
+          w = "<span class='emoticon emoticonBigSmile'><span class='emoticonText'>:D</span></span>";
         } else if (w == ":-|" || w==":|") {
-          w = "<span class='smiley smileyNoVoice'><span class='smileyText'>:|</span></span>";
+          w = "<span class='emoticon emoticonNoVoice'><span class='emoticonText'>:|</span></span>";
         } else if (w == ":-(" || w==":(") {
-          w = "<span class='smiley smileySad'><span class='smileyText'>:(</span></span>";
+          w = "<span class='emoticon emoticonSad'><span class='emoticonText'>:(</span></span>";
         } else if (w == ";-)" || w==";)") {
-          w = "<span class='smiley smileyEyeBlink'><span class='smileyText'>;)</span></span>";
+          w = "<span class='emoticon emoticonEyeBlink'><span class='emoticonText'>;)</span></span>";
         } else if (w == ":-O" || w==":O") {
-          w = "<span class='smiley smileySurprise'><span class='smileyText'>:O</span></span>";
+          w = "<span class='emoticon emoticonSurprise'><span class='emoticonText'>:O</span></span>";
         } else if (highlight.length >1) {
           w = w.replace(eval("/"+highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+highlight+"</span>");
         }

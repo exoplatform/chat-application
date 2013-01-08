@@ -33,12 +33,12 @@
       <span class="msgButton msgEmoticons no-user-selection">&nbsp;</span><br/>
       <span class="msgButton msgHelp no-user-selection">&nbsp;</span>
       <span class="msgEmoticonsPanel no-user-selection" style="display:none">
-        <span class="smiley smileySmileWhite smileyBtn" data=":)">&nbsp;</span>
-        <span class="smiley smileySadWhite smileyBtn" data=":(">&nbsp;</span>
-        <span class="smiley smileyBigSmileWhite smileyBtn" data=":D">&nbsp;</span><br>
-        <span class="smiley smileyEyeBlinkWhite smileyBtn" data=";)">&nbsp;</span>
-        <span class="smiley smileySurpriseWhite smileyBtn" data=":O">&nbsp;</span>
-        <span class="smiley smileyNoVoiceWhite smileyBtn" data=":|">&nbsp;</span>
+        <span class="emoticon emoticonSmileWhite emoticonBtn" data=":)">&nbsp;</span>
+        <span class="emoticon emoticonSadWhite emoticonBtn" data=":(">&nbsp;</span>
+        <span class="emoticon emoticonBigSmileWhite emoticonBtn" data=":D">&nbsp;</span><br>
+        <span class="emoticon emoticonEyeBlinkWhite emoticonBtn" data=";)">&nbsp;</span>
+        <span class="emoticon emoticonSurpriseWhite emoticonBtn" data=":O">&nbsp;</span>
+        <span class="emoticon emoticonNoVoiceWhite emoticonBtn" data=":|">&nbsp;</span>
       </span>
     </div>
   </div>

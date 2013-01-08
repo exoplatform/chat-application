@@ -1,0 +1,69 @@
+.backgroundEmoticon(@image) {
+  background: url('@{imgEmoticonPath}@{image}') no-repeat 0px 0px;
+}
+
+.msgEmoticonsPanel {
+  background-color: rgba(0, 0, 0, 0.6);
+  min-width: 63px;
+  height: 40px;
+  padding: 2px 0px 4px 4px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+  float: right;
+  position: relative;
+  top: -107px;
+}
+.msgEmoticons {
+  .backgroundEmoticon('smile.png');
+}
+
+.emoticon {
+  display: inline-block;
+  min-width: 16px;
+  height: 16px;
+  padding: 2px;
+  margin: 0px;
+  font-size: 1px;
+}
+
+.emoticonSmile {
+  .backgroundEmoticon('smile.png');
+}
+.emoticonBigSmile {
+  .backgroundEmoticon('bigsmile.png');
+}
+.emoticonEyeBlink {
+  .backgroundEmoticon('eyeblink.png');
+}
+.emoticonNoVoice {
+  .backgroundEmoticon('novoice.png');
+}
+.emoticonSad {
+  .backgroundEmoticon('sad.png');
+}
+.emoticonSurprise {
+  .backgroundEmoticon('surprise.png');
+}
+.emoticonSmileWhite {
+  .backgroundEmoticon('smile-white.png');
+}
+.emoticonBigSmileWhite {
+  .backgroundEmoticon('bigsmile-white.png');
+}
+.emoticonEyeBlinkWhite {
+  .backgroundEmoticon('eyeblink-white.png');
+}
+.emoticonNoVoiceWhite {
+  .backgroundEmoticon('novoice-white.png');
+}
+.emoticonSadWhite {
+  .backgroundEmoticon('sad-white.png');
+}
+.emoticonSurpriseWhite {
+  .backgroundEmoticon('surprise-white.png');
+}
+.emoticonText, .invisibleText {
+  font-size: 1px;
+  color: white;
+}

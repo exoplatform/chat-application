@@ -6,12 +6,8 @@
 @hoverColor:                  #4283C7;
 @statusColor:                 #444;
 @imgPath:                     "/chat/img/";
-@imgSmileysPath:              "@{imgPath}smileys/";
+@imgEmoticonPath:              "@{imgPath}emoticons/";
 
-
-a:hover {
-  text-decoration: none;
-}
 
 .chatapplication
 {
@@ -20,10 +16,16 @@ a:hover {
   padding-left: 1px;
   min-width: 534px;
   width: 534px;
+
+  div, td
+  {
+    font-family: Lucida,arial,tahoma;
+  }
+
 }
-.chatapplication div, .chatapplication td
-{
-  font-family: Lucida,arial,tahoma;
+
+.background(@image) {
+  background: url('@{imgPath}@{image}') no-repeat 0px 0px;
 }
 
 .chatSync {
@@ -120,41 +122,39 @@ a:hover {
   color: black;
 }
 
-.filter-on {
+.filter (@image, @paddingLeft) {
   background-position: 0px 0px;
-  background:url('@{imgPath}filter-on.png') no-repeat 0px 0px;
-  padding-left: 19px;
+  .background(@image);
   cursor: pointer;
+  padding-left: @paddingLeft;
+}
+
+.filter-on {
+  .filter('filter-on.png', 19px);
 }
 
 .filter-off {
-  background-position: 0px 0px;
-  background:url('@{imgPath}filter-off.png') no-repeat 0px 0px;
-  padding-left: 19px;
-  cursor: pointer;
+  .filter('filter-off.png', 19px);
 }
 
 .filter-user {
-  background-position: 0px 0px;
-  background:url('@{imgPath}filter-user.png') no-repeat 0px 0px;
+  .filter('filter-user.png', 0);
   display: inline-block;
   font-size: 12px;
   margin-top: 3px;
 }
-.filter-user:hover {
-  background-color: #F1F1F1;
-}
 
 .filter-space {
-  background-position: 0px 0px;
-  background:url('@{imgPath}filter-space.png') no-repeat 0px 0px;
+  .filter('filter-space.png', 0);
   display: inline-block;
   font-size: 12px;
   margin-right: 5px;
 }
-.filter-space:hover {
+
+.filter-user:hover, .filter-space:hover {
   background-color: #F1F1F1;
 }
+
 
 
 .chatmessage
@@ -185,23 +185,19 @@ a:hover {
   background-color: #F1F1F1;
 }
 .user-status {
-  background:url('@{imgPath}mask-dot.png') no-repeat 0px 0px;
+  .background('mask-dot.png');
   width: 16px;
   display: block;
   height: 16px;
   float: left;
 }
 
-.user-status:hover {
-  background:url('@{imgPath}mask-star.png') no-repeat 0px 0px;
-}
-
-.user-favorite {
-  background:url('@{imgPath}mask-star.png') no-repeat 0px 0px;
+.user-status:hover, .user-favorite {
+  .background('mask-star.png');
 }
 
 .user-favorite:hover {
-  background:url('@{imgPath}mask-dot.png') no-repeat 0px 0px;
+  .background('mask-dot.png');
 }
 
 .user-available {
@@ -285,23 +281,8 @@ a:hover {
   opacity:1;
   filter:alpha(opacity=100);
 }
-.msgEmoticonsPanel {
-  background-color: rgba(0, 0, 0, 0.6);
-  min-width: 63px;
-  height: 40px;
-  padding: 2px 0px 4px 4px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  float: right;
-  position: relative;
-  top: -107px;
-}
-.msgEmoticons {
-  background:url('@{imgSmileysPath}smile.png') no-repeat 0 0;
-}
 .msgHelp {
-  background:url('@{imgPath}help.png') no-repeat 0 0;
+  .background('help.png');
 }
 .sh_container {
   overflow-x: scroll;
@@ -356,11 +337,3 @@ hr
   border-top: dotted 1px #F4F4F4;
 }
 
-.smiley {
-  display: inline-block;
-  min-width: 16px;
-  height: 16px;
-  padding: 2px;
-  margin: 0px;
-  font-size: 1px;
-}
