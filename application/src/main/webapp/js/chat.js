@@ -5,6 +5,9 @@ $(document).ready(function(){
   var highlight = "";
   var ANONIM_USER = "__anonim_";
 
+  var jzInitChatProfile = $(".chatapplication").jzURL("ChatApplication.initChatProfile");
+  var jzCreateDemoUser = $(".chatapplication").jzURL("ChatApplication.createDemoUser");
+  var jzMaintainSession = $(".chatapplication").jzURL("ChatApplication.maintainSession");
   var jzGetStatus = chatServerURL+"/getStatus";
   var jzSetStatus = chatServerURL+"/setStatus";
   var jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";

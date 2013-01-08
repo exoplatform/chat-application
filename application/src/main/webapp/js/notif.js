@@ -4,6 +4,7 @@ var jq171 = jQuery.noConflict(true);
 
   $(document).ready(function(){
 
+    var jzInitUserProfile = $("#chatnotification").jzURL("NotificationApplication.initUserProfile");
     var jzNotification = chatServerURL+"/notification";
     var jzGetStatus = chatServerURL+"/getStatus";
     var jzSetStatus = chatServerURL+"/setStatus";

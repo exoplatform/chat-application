@@ -33,6 +33,5 @@
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
   var chatPage = "<%=chatPage%>";
-  var jzInitUserProfile = "@{initUserProfile()}";
   var chatServerURL = "<%=chatServerURL%>";
 </script>

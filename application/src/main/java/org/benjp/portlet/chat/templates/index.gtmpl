@@ -47,8 +47,6 @@
 <script>
   var username = "<%=user%>";
   var sessionId = "<%=sessionId%>";
-  var jzInitChatProfile = "@{initChatProfile()}";
-  var jzMaintainSession = "@{maintainSession()}";
   var chatServerURL = "<%=chatServerURL%>";
   var chatIntervalChat = <%=chatIntervalChat%>;
   var chatIntervalSession = <%=chatIntervalSession%>;
