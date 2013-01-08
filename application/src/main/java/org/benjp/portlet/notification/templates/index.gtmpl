@@ -26,12 +26,9 @@
 	</li>
 </div>
 
-
-
-
-<script>
-  var username = "<%=user%>";
-  var sessionId = "<%=sessionId%>";
-  var chatPage = "<%=chatPage%>";
-  var chatServerURL = "<%=chatServerURL%>";
-</script>
+<div id="NotificationApplicationConfig"
+  username="<%=user%>"
+  sessionId="<%=sessionId%>"
+  chatPage="<%=chatPage%>"
+  chatServerURL="<%=chatServerURL%>"
+></div>

@@ -41,12 +41,12 @@
   </div>
 </div>
 
-<script>
-  var username = "<%=user%>";
-  var sessionId = "<%=sessionId%>";
-  var chatServerURL = "<%=chatServerURL%>";
-  var chatIntervalChat = <%=chatIntervalChat%>;
-  var chatIntervalSession = <%=chatIntervalSession%>;
-  var chatIntervalStatus = <%=chatIntervalStatus%>;
-  var chatIntervalUsers = <%=chatIntervalUsers%>;
-</script>
+<div id="ChatApplicationConfig"
+  username="<%=user%>"
+  sessionId="<%=sessionId%>"
+  chatServerURL="<%=chatServerURL%>"
+  chatIntervalChat="<%=chatIntervalChat%>"
+  chatIntervalSession="<%=chatIntervalSession%>"
+  chatIntervalStatus="<%=chatIntervalStatus%>"
+  chatIntervalUsers="<%=chatIntervalUsers%>"
+></div>

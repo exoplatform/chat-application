@@ -5,6 +5,14 @@ $(document).ready(function(){
   var highlight = "";
   var ANONIM_USER = "__anonim_";
 
+  var chatConfig = $("#ChatApplicationConfig");
+  var username = chatConfig.attr("username");
+  var sessionId = chatConfig.attr("sessionId");
+  var chatServerURL = chatConfig.attr("chatServerURL");
+  var chatIntervalChat = chatConfig.attr("chatIntervalChat");
+  var chatIntervalSession = chatConfig.attr("chatIntervalSession");
+  var chatIntervalStatus = chatConfig.attr("chatIntervalStatus");
+  var chatIntervalUsers = chatConfig.attr("chatIntervalUsers");
   var jzInitChatProfile = $(".chatapplication").jzURL("ChatApplication.initChatProfile");
   var jzCreateDemoUser = $(".chatapplication").jzURL("ChatApplication.createDemoUser");
   var jzMaintainSession = $(".chatapplication").jzURL("ChatApplication.maintainSession");
