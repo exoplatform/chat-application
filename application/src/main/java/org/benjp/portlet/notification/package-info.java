@@ -29,8 +29,8 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/jquery-1.7.1.min.js"),
-                @Script(src = "js/notif.js")
+                @Script(src = "js/jquery-1.7.1.min.js", id = "jquery"),
+                @Script(src = "js/notif.js", depends = "jquery")
         },
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.CLASSPATH)

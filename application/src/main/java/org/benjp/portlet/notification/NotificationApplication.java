@@ -20,6 +20,7 @@
 package org.benjp.portlet.notification;
 
 import juzu.*;
+import juzu.plugin.ajax.Ajax;
 import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
@@ -74,6 +75,7 @@ public class NotificationApplication
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage).render();
   }
 
+  @Ajax
   @Resource
   public Response.Content initUserProfile()
   {

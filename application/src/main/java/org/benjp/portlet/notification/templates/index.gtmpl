@@ -34,11 +34,5 @@
   var sessionId = "<%=sessionId%>";
   var chatPage = "<%=chatPage%>";
   var jzInitUserProfile = "@{initUserProfile()}";
-  var jzNotification = "<%=chatServerURL%>/notification";
-  var jzGetStatus = "<%=chatServerURL%>/getStatus";
-  var jzSetStatus = "<%=chatServerURL%>/setStatus";
-  var notifEventInt;
-  var notifStatusInt;
-  var notifEventURL;
-  var oldNotifTotal = '';
+  var chatServerURL = "<%=chatServerURL%>";
 </script>

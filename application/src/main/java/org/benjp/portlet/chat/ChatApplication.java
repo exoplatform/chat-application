@@ -20,6 +20,7 @@
 package org.benjp.portlet.chat;
 
 import juzu.*;
+import juzu.plugin.ajax.Ajax;
 import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
@@ -118,15 +119,15 @@ public class ChatApplication
 
   }
 
+  @Ajax
   @Resource
-  @Route("/maintainSession")
   public Response.Content maintainSession()
   {
     return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
+  @Ajax
   @Resource
-  @Route("/initChatProfile")
   public Response.Content initChatProfile()
   {
     String  out = "nothing to update";
@@ -158,6 +159,7 @@ public class ChatApplication
 
   }
 
+  @Ajax
   @Resource
   public Response.Content createDemoUser(String fullname, String email)
   {

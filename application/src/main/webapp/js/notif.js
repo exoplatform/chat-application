@@ -4,6 +4,15 @@ var jq171 = jQuery.noConflict(true);
 
   $(document).ready(function(){
 
+    var jzNotification = chatServerURL+"/notification";
+    var jzGetStatus = chatServerURL+"/getStatus";
+    var jzSetStatus = chatServerURL+"/setStatus";
+    var notifEventInt;
+    var notifStatusInt;
+    var notifEventURL;
+    var oldNotifTotal = '';
+
+
     function initUserProfile() {
       $.ajax({
         url: jzInitUserProfile,
@@ -115,22 +124,23 @@ var jq171 = jQuery.noConflict(true);
       $(".MenuItemContainer:first",this).css('display', 'none');
     });
 
+    function changeStatus(status) {
+      $("span.chatstatus").removeClass("chatstatus-available-black");
+      $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
+      $("span.chatstatus").removeClass("chatstatus-invisible-black");
+      $("span.chatstatus").removeClass("chatstatus-away-black");
+      $("span.chatstatus").removeClass("chatstatus-offline-black");
+      $("span.chatstatus").addClass("chatstatus-"+status+"-black");
+
+      $("span.chatstatus-chat").removeClass("chatstatus-available");
+      $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
+      $("span.chatstatus-chat").removeClass("chatstatus-invisible");
+      $("span.chatstatus-chat").removeClass("chatstatus-away");
+      $("span.chatstatus-chat").removeClass("chatstatus-offline");
+      $("span.chatstatus-chat").addClass("chatstatus-"+status);
+    }
+
+
   });
-
-  function changeStatus(status) {
-    $("span.chatstatus").removeClass("chatstatus-available-black");
-    $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
-    $("span.chatstatus").removeClass("chatstatus-invisible-black");
-    $("span.chatstatus").removeClass("chatstatus-away-black");
-    $("span.chatstatus").removeClass("chatstatus-offline-black");
-    $("span.chatstatus").addClass("chatstatus-"+status+"-black");
-
-    $("span.chatstatus-chat").removeClass("chatstatus-available");
-    $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
-    $("span.chatstatus-chat").removeClass("chatstatus-invisible");
-    $("span.chatstatus-chat").removeClass("chatstatus-away");
-    $("span.chatstatus-chat").removeClass("chatstatus-offline");
-    $("span.chatstatus-chat").addClass("chatstatus-"+status);
-  }
 
 })(jq171);
