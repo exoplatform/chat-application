@@ -4,11 +4,11 @@ var jq171 = jQuery.noConflict(true);
 
   $(document).ready(function(){
 
-    var notifConfig = $("#NotificationApplicationConfig");
-    var username = notifConfig.attr("username");
-    var sessionId = notifConfig.attr("sessionId");
-    var chatPage = notifConfig.attr("chatPage");
-    var chatServerURL = notifConfig.attr("chatServerURL");
+    var notifConfig = $("#chatstatus");
+    var username = notifConfig.attr("data-username");
+    var sessionId = notifConfig.attr("data-session-id");
+    var chatPage = notifConfig.attr("data-chat-page");
+    var chatServerURL = notifConfig.attr("data-chat-server-url");
 
     var jzInitUserProfile = $("#chatnotification").jzURL("NotificationApplication.initUserProfile");
     var jzNotification = chatServerURL+"/notification";

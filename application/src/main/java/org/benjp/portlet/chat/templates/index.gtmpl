@@ -1,4 +1,12 @@
-<div class="chatapplication">
+<div id="chatapplication"
+  data-username="<%=user%>"
+  data-session-id="<%=sessionId%>"
+  data-chat-server-url="<%=chatServerURL%>"
+  data-chat-interval-chat="<%=chatIntervalChat%>"
+  data-chat-interval-session="<%=chatIntervalSession%>"
+  data-chat-interval-status="<%=chatIntervalStatus%>"
+  data-chat-interval-users="<%=chatIntervalUsers%>" >
+
   <div class="chatSyncPanel" style="display:none;"></div>
   <div class="chatErrorPanel" style="display:none;"></div>
   <div class="chatLoginPanel" style="display:none;"></div>
@@ -43,13 +51,3 @@
     </div>
   </div>
 </div>
-
-<div id="ChatApplicationConfig"
-  username="<%=user%>"
-  sessionId="<%=sessionId%>"
-  chatServerURL="<%=chatServerURL%>"
-  chatIntervalChat="<%=chatIntervalChat%>"
-  chatIntervalSession="<%=chatIntervalSession%>"
-  chatIntervalStatus="<%=chatIntervalStatus%>"
-  chatIntervalUsers="<%=chatIntervalUsers%>"
-></div>

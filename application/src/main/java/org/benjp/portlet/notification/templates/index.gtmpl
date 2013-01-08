@@ -1,4 +1,8 @@
-<div id="chatstatus">
+<div id="chatstatus"
+  data-username="<%=user%>"
+  data-session-id="<%=sessionId%>"
+  data-chat-page="<%=chatPage%>"
+  data-chat-server-url="<%=chatServerURL%>" >
   <li class="UITab NormalToolbarTab">
     <a class="ArrowIcon TBIcon" href="#" style="padding:0px;">
       <span class="chatstatus">
@@ -25,10 +29,3 @@
     </ul>
 	</li>
 </div>
-
-<div id="NotificationApplicationConfig"
-  username="<%=user%>"
-  sessionId="<%=sessionId%>"
-  chatPage="<%=chatPage%>"
-  chatServerURL="<%=chatServerURL%>"
-></div>
