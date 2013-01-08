@@ -1,21 +1,12 @@
-@notifBackgroundColor:        #C00;
-@notifColor:                  white;
-@backgroundColor:             white;
-@borderColor:                 #DBDBDB;
-@shadowColor:                 #E3E3E3;
-@hoverColor:                  #4283C7;
-@statusColor:                 #444;
-@imgPath:                     "/chat/img/";
-@imgEmoticonPath:              "@{imgPath}emoticons/";
 
 
 .chatapplication
 {
-  height: 645px;
-  background-color: #FFF;
+  height: @height;
+  background-color: @backgroundColor;
   padding-left: 1px;
-  min-width: 534px;
-  width: 534px;
+  min-width: @width;
+  width: @width;
 
   div, td
   {
@@ -24,12 +15,9 @@
 
 }
 
-.background(@image) {
-  background: url('@{imgPath}@{image}') no-repeat 0px 0px;
-}
 
 .chatSync {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: @colorBgPanel;
   padding: 40px;
   margin-top: 100px;
   -moz-border-radius: 10px;
@@ -53,23 +41,23 @@
 .rightchat
 {
   float: left;
-  border-top: 1px solid #D0D0D0;
-  border-right: 1px solid #D0D0D0;
+  border-top: 1px solid @colorBorder;
+  border-right: 1px solid @colorBorder;
 }
 .chatsearch
 {
-  background-image: -webkit-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  background-image: linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  background-image: -o-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  background-image: -moz-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  background-image: -webkit-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  background-image: -ms-linear-gradient(bottom, #E0E0E0 45%, #F0F0F0 73%);
-  border-top: 1px solid #CCC;
-  border-left: 1px solid #CCC;
+  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -o-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -moz-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -ms-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  border-top: 1px solid @colorBorderGrey;
+  border-left: 1px solid @colorBorderGrey;
   padding: 0px 4px 5px 6px;
   margin-bottom: 0px;
-  border-right: 1px solid #CCC;
-  width: 521px;
+  border-right: 1px solid @colorBorderGrey;
+  width: (@width - 13);
   position: relative;
 }
 
@@ -86,24 +74,13 @@
   float: left;
 }
 
-.chatStatusPanel {
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  margin-top: 32px;
-  margin-left: 31px;
-  border: 1px solid #AAA;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
 .chatMenu {
   padding-left: 27px!important;
   background-position-y: 7px!important;
 }
 
 .chatMenu:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: @colorChatMenu;
 }
 
 .avatar-user {
@@ -115,7 +92,7 @@
 
 .label-user {
   display: block;
-  width: 248px;
+  width: (@width - 286);
   margin-top: 5px;
   float: left;
   line-height: 20px;
@@ -152,7 +129,7 @@
 }
 
 .filter-user:hover, .filter-space:hover {
-  background-color: #F1F1F1;
+  background-color: @colorBgLight;
 }
 
 
@@ -160,10 +137,10 @@
 .chatmessage
 {
   /* width: 100%; */
-  background-color: #F1F1F1;
-  border-top: 1px solid #CCC;
-  border-bottom: 1px solid #CCC;
-  height: 60px;
+  background-color: @colorBgLight;
+  border-top: 1px solid @colorBorderGrey;
+  border-bottom: 1px solid @colorBorderGrey;
+  height: @heightMessage;
 }
 .room-inactive
 {
@@ -182,7 +159,7 @@
   vertical-align: middle;
 }
 .users-online:hover {
-  background-color: #F1F1F1;
+  background-color: @colorBgLight;
 }
 .user-status {
   .background('mask-dot.png');
@@ -200,46 +177,34 @@
   .background('mask-dot.png');
 }
 
-.user-available {
-  background-color: #180;
+.userStatus(@colorParam) {
+  background-color: @colorParam;
   margin: 2px;
   width: 12px;
   height: 12px;
   display: block;
+}
+
+.user-available {
+  .userStatus(@colorAvailable);
 }
 .user-donotdisturb {
-  background-color: #B10;
-  margin: 2px;
-  width: 12px;
-  height: 12px;
-  display: block;
+  .userStatus(@colorDoNoDisturb);
 }
 .user-away {
-  background-color: #DA0;
-  margin: 2px;
-  width: 12px;
-  height: 12px;
-  display: block;
+  .userStatus(@colorAway);
 }
 .user-invisible, .user-none {
-  background-color: #EEE;
-  margin: 2px;
-  width: 12px;
-  height: 12px;
-  display: block;
+  .userStatus(@colorInvisible);
 }
 .user-space {
-  background-color: #08C;
-  margin: 2px;
-  width: 12px;
-  height: 12px;
-  display: block;
+  .userStatus(@colorSpace);
 }
 
 
 .room-total {
-  background-color: #3A87AD;
-  color: white;
+  background-color: @colorNotif;
+  color: @colorLightText;
   font-size: 10px;
   padding: 1px 4px;
   line-height: 12px;
@@ -251,9 +216,9 @@
 
 #chats
 {
-	height: 540px;
+	height: (@height - 105);
 	overflow-y: scroll;
-	width: 350px;
+	width: @widthMessages;
 }
 #msg
 {
@@ -261,7 +226,7 @@
 	font-family: Arial, Helvetica, sans-serif;
 	margin: 4px 6px;
   padding: 5px;
-  width: 306px;
+  width: (@widthMessages - 44);
   float: left;
   height: 40px;
 }
@@ -286,22 +251,22 @@
 }
 .sh_container {
   overflow-x: scroll;
-  width: 325px;
-  background-color: white;
+  width: (@widthMessages - 25);
+  background-color: @colorLightText;
 }
 .sh_java, .sh_javascript, .sh_css, .sh_html {
-  min-width: 325px;
+  min-width: (@widthMessages - 25);
 }
 .highlight {
-  background-color:#FF0;
+  background-color: @colorHighlight;
   font-weight:bold;
 }
 #whoisonline
 {
-  height: 601px;
+  height: (@height - 44);
 	overflow-y: scroll;
-  border: 1px solid #D0D0D0;
-  width: 180px;
+  border: 1px solid @colorBorder;
+  width: @widthUsers;
   cursor: default;
 }
 
@@ -313,16 +278,16 @@
 .msgln
 {
 	padding: 3px 12px;
-	background-color: #F3F3F3;
+	background-color: @colorBgLight;
 }
 .msgln-odd
 {
 	padding: 3px 12px;
-	background-color: #FFF;
+	background-color: @backgroundColor;
 }
 .userLink
 {
-	color: #AAA;
+	color: @colorLink;
   text-decoration: none;
 }
 
@@ -334,6 +299,6 @@ footer
 hr
 {
   border: none;
-  border-top: dotted 1px #F4F4F4;
+  border-top: dotted 1px @colorBgLight;
 }
 

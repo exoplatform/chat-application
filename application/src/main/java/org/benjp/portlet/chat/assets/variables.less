@@ -6,6 +6,48 @@
 // Global values
 // --------------------------------------------------
 
+//@height:                      700px;
+//@width:                       800px;
+//@widthUsers:                  200px;
+@height:                      645px;
+@width:                       535px;
+@heightMessage:               60px;
+@widthUsers:                  180px;
+@widthMessages:               (@width - @widthUsers - 4);
+
+
+@backgroundColor:             white;
+
+@colorBgLight:                #F1F1F1;
+@colorBgGradient2:            @colorBgLight;
+@colorBgGradient1:            #E0E0E0;
+@colorBorder:                 #D0D0D0;
+@colorBorderGrey:             #CCC;
+@colorLink:                   #AAA;
+
+@colorAvailable:              #180;
+@colorDoNoDisturb:            #B10;
+@colorAway:                   #DA0;
+@colorInvisible:              #EEE;
+@colorSpace:                  #08C;
+@colorNotif:                  #3A87AD;
+@colorLightText:              #FFF;
+@colorHighlight:              #FF0;
+
+@colorBgPanel:                rgba(0, 0, 0, 0.8);
+@colorChatMenu:               rgba(0, 0, 0, 0.1);
+@colorBgStatus:               rgba(255, 255, 255, 0.9);
+@colorBorderStatus:           #AAA;
+
+@colorBgEmoticon:             rgba(0, 0, 0, 0.6);
+
+@imgPath:                     "/chat/img/";
+@imgEmoticonPath:             "@{imgPath}emoticons/";
+
+.background(@image) {
+  background: url('@{imgPath}@{image}') no-repeat 0px 0px;
+}
+
 
 // Grays
 // -------------------------

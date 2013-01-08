@@ -1,36 +1,37 @@
-.chatErrorPanel, .chatLoginPanel, .chatAboutPanel, .chatDemoPanel {
+.chatPanel (@heightParam, @colorParam) {
   float: left;
   z-index: 10;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  width: 533px;
-  height: 594px;
-  color: white;
+  width: @width;
+  height: @heightParam;
+  color: @colorParam;
   padding: 50px 0px 0px;
   text-align: center;
   font-size: 14px;
   font-weight: normal;
 }
+
+.chatErrorPanel, .chatLoginPanel, .chatAboutPanel, .chatDemoPanel {
+  .chatPanel((@height - 51), white);
+  background-color: @colorBgPanel;
+}
 .chatHelpPanel {
-  float: left;
-  z-index: 10;
-  position: absolute;
-  /* background-color: rgba(255, 255, 255, 0.3); */
+  .chatPanel((@height - 1), black);
   background:url('@{imgPath}help-panel.png') no-repeat 0px 0px;
-  width: 533px;
-  height: 644px;
-  color: black;
   padding: 0px 0px 0px 0px;
 }
 .chatSyncPanel {
-  float: left;
-  z-index: 10;
+  .chatPanel((@height - 51), white);
+}
+
+
+.chatStatusPanel {
   position: absolute;
-  width: 533px;
-  height: 594px;
-  color: white;
-  padding: 50px 0px 0px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: normal;
+  background-color: @colorBgStatus;
+  cursor: pointer;
+  margin-top: 32px;
+  margin-left: 31px;
+  border: 1px solid @colorBorderStatus;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
 }
