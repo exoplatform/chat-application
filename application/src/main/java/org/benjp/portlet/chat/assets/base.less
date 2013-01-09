@@ -1,11 +1,11 @@
-.chatSync {
+.chat-sync {
   background-color: @colorBgPanel;
   padding: 40px;
   margin-top: 100px;
   -moz-border-radius: 10px;
   border-radius: 10px;
 }
-.leftchat
+.left-chat
 {
   clear: both;
   float: left;
@@ -20,7 +20,7 @@
   user-select: none;
 }
 
-.rightchat
+.right-chat
 {
   float: left;
   border-top: 1px solid @colorBorder;
@@ -40,12 +40,12 @@
   float: left;
 }
 
-.chatMenu {
+.chat-menu {
   padding-left: 27px!important;
   background-position-y: 7px!important;
 }
 
-.chatMenu:hover {
+.chat-menu:hover {
   background-color: @colorChatMenu;
 }
 
@@ -91,7 +91,7 @@
 
 
 
-.chatmessage
+.chat-message
 {
   background-color: @colorBgLight;
   border-top: 1px solid @colorBorderGrey;
@@ -133,7 +133,7 @@
   .background('mask-dot.png');
 }
 
-.userStatus(@colorParam) {
+.user-status(@colorParam) {
   background-color: @colorParam;
   margin: 2px;
   width: 12px;
@@ -142,19 +142,19 @@
 }
 
 .user-available {
-  .userStatus(@colorAvailable);
+  .user-status(@colorAvailable);
 }
 .user-donotdisturb {
-  .userStatus(@colorDoNoDisturb);
+  .user-status(@colorDoNoDisturb);
 }
 .user-away {
-  .userStatus(@colorAway);
+  .user-status(@colorAway);
 }
 .user-invisible, .user-none {
-  .userStatus(@colorInvisible);
+  .user-status(@colorInvisible);
 }
 .user-space {
-  .userStatus(@colorSpace);
+  .user-status(@colorSpace);
 }
 
 
@@ -171,7 +171,7 @@
 }
 
 
-.msgButton {
+.msg-button {
   min-width: 16px;
   height: 16px;
   padding: 2px;
@@ -182,11 +182,11 @@
   float: right;
   margin-top: 8px;
 }
-.msgButton:hover {
+.msg-button:hover {
   opacity:1;
   filter:alpha(opacity=100);
 }
-.msgHelp {
+.msg-help {
   .background('help.png');
 }
 
@@ -195,7 +195,7 @@
   font-weight:bold;
 }
 
-#whoisonline .table
+#chat-users .table
 {
   margin-bottom: 0;
 }
@@ -210,9 +210,9 @@
 	padding: 3px 12px;
 	background-color: @backgroundColor;
 }
-.userLink
+.user-link
 {
-	color: @colorLink;
+	color: @colorUserLink;
   text-decoration: none;
 }
 

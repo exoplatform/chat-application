@@ -5,17 +5,17 @@ $(document).ready(function(){
   var highlight = "";
   var ANONIM_USER = "__anonim_";
 
-  var chatApplication = $("#chatapplication");
-  var username = chatApplication.attr("data-username");
-  var sessionId = chatApplication.attr("data-session-id");
-  var chatServerURL = chatApplication.attr("data-chat-server-url");
-  var chatIntervalChat = chatApplication.attr("data-chat-interval-chat");
-  var chatIntervalSession = chatApplication.attr("data-chat-interval-session");
-  var chatIntervalStatus = chatApplication.attr("data-chat-interval-status");
-  var chatIntervalUsers = chatApplication.attr("data-chat-interval-users");
-  var jzInitChatProfile = chatApplication.jzURL("ChatApplication.initChatProfile");
-  var jzCreateDemoUser = chatApplication.jzURL("ChatApplication.createDemoUser");
-  var jzMaintainSession = chatApplication.jzURL("ChatApplication.maintainSession");
+  var $chatApplication = $("#chat-application");
+  var username = $chatApplication.attr("data-username");
+  var sessionId = $chatApplication.attr("data-session-id");
+  var chatServerURL = $chatApplication.attr("data-chat-server-url");
+  var chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
+  var chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
+  var chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
+  var chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
+  var jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
+  var jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
+  var jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
   var jzGetStatus = chatServerURL+"/getStatus";
   var jzSetStatus = chatServerURL+"/setStatus";
   var jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
@@ -148,14 +148,14 @@ $(document).ready(function(){
   });
 
   $(".chat-status-chat").on("click", function() {
-    var $chatStatusPanel = $(".chatStatusPanel");
+    var $chatStatusPanel = $(".chat-status-panel");
     if ($chatStatusPanel.css("display")==="none")
       $chatStatusPanel.css("display", "inline-block");
     else
       $chatStatusPanel.css("display", "none");
   });
 
-  $("div.chatMenu").click(function(){
+  $("div.chat-menu").click(function(){
     var status = $(this).attr("status");
     console.log("setStatus :: "+status);
 
@@ -169,7 +169,7 @@ $(document).ready(function(){
       success: function(response){
         console.log("SUCCESS:setStatus::"+response);
         changeStatusChat(response);
-        $(".chatStatusPanel").css('display', 'none');
+        $(".chat-status-panel").css('display', 'none');
       },
       error: function(response){
         changeStatusChat("offline");
@@ -179,17 +179,17 @@ $(document).ready(function(){
 
   });
 
-  $(".msgEmoticons").on("click", function() {
-    var $msgEmoticonsPanel = $(".msgEmoticonsPanel");
+  $(".msg-emoticons").on("click", function() {
+    var $msgEmoticonsPanel = $(".msg-emoticons-panel");
     if ($msgEmoticonsPanel.css("display")==="none")
       $msgEmoticonsPanel.css("display", "inline-block");
     else
       $msgEmoticonsPanel.css("display", "none");
   });
 
-  $(".emoticonBtn").on("click", function() {
+  $(".emoticon-btn").on("click", function() {
     var sml = $(this).attr("data");
-    $(".msgEmoticonsPanel").css("display", "none");
+    $(".msg-emoticons-panel").css("display", "none");
     $msg = $('#msg');
     var val = $msg.val();
     if (val.charAt(val.length-1)!==' ') val +=" ";
@@ -199,12 +199,12 @@ $(document).ready(function(){
 
   });
 
-  $(".msgHelp").on("click", function() {
+  $(".msg-help").on("click", function() {
     showHelpPanel();
   });
 
-  $(".chatHelpPanel").on("click", function() {
-    hidePanel(".chatHelpPanel");
+  $(".chat-help-panel").on("click", function() {
+    hidePanel(".chat-help-panel");
   });
 
   $(".filter").on("click", function() {
@@ -222,7 +222,7 @@ $(document).ready(function(){
     refreshWhoIsOnline();
   });
 
-  $('#chatSearch').keyup(function(event) {
+  $('#chat-search').keyup(function(event) {
     var filter = $(this).attr("value");
     if (filter == ":aboutme" || filter == ":about me") {
       showAboutPanel();
@@ -310,17 +310,17 @@ function hidePanel(panel) {
  }
 
  function hidePanels() {
-   hidePanel(".chatSyncPanel");
-   hidePanel(".chatErrorPanel");
-   hidePanel(".chatLoginPanel");
-   hidePanel(".chatAboutPanel");
-   hidePanel(".chatDemoPanel");
+   hidePanel(".chat-sync-panel");
+   hidePanel(".chat-error-panel");
+   hidePanel(".chat-login-panel");
+   hidePanel(".chat-about-panel");
+   hidePanel(".chat-demo-panel");
  }
 
  function showSyncPanel() {
    if (!isLoaded) {
    hidePanels();
-   var $chatSyncPanel = $(".chatSyncPanel");
+   var $chatSyncPanel = $(".chat-sync-panel");
    $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
    $chatSyncPanel.css("display", "block");
    }
@@ -328,33 +328,33 @@ function hidePanel(panel) {
 
  function showErrorPanel() {
    hidePanels();
-   console.log("showErrorPanel");
-   var $chatErrorPanel = $(".chatErrorPanel");
+   console.log("show-error-panel");
+   var $chatErrorPanel = $(".chat-error-panel");
    $chatErrorPanel.html("Service Not Available.<br/><br/>Please, come back later.");
    $chatErrorPanel.css("display", "block");
  }
 
  function showLoginPanel() {
    hidePanels();
-   console.log("showLoginPanel");
-   var $chatLoginPanel = $(".chatLoginPanel");
+   console.log("show-login-panel");
+   var $chatLoginPanel = $(".chat-login-panel");
    $chatLoginPanel.html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
    $chatLoginPanel.css("display", "block");
  }
 
  function showDemoPanel() {
    hidePanels();
-   console.log("showDemoPanel");
-   var $chatDemoPanel = $(".chatDemoPanel");
+   console.log("show-demo-panel");
+   var $chatDemoPanel = $(".chat-demo-panel");
    $chatDemoPanel.html("Welcome in the Demo mode.<br><br><div style='text-align:right;width:80%;'>" +
-           "<br><br>Display Name : <input type='text' id='anonimName'>" +
-           "<br><br>Email : <input type='text' id='anonimEmail'></div>" +
-           "<br><a href='#' id='anonimSave'>Save Your Profile</a>");
+           "<br><br>Display Name : <input type='text' id='anonim-name'>" +
+           "<br><br>Email : <input type='text' id='anonim-email'></div>" +
+           "<br><a href='#' id='anonim-save'>Save Your Profile</a>");
    $chatDemoPanel.css("display", "block");
 
-   $("#anonimSave").on("click", function() {
-     var fullname = $("#anonimName").val();
-     var email = $("#anonimEmail").val();
+   $("#anonim-save").on("click", function() {
+     var fullname = $("#anonim-name").val();
+     var email = $("#anonim-email").val();
      createDemoUser(fullname, email);
    });
  }
@@ -392,14 +392,14 @@ function hidePanel(panel) {
    about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
    about += "<br><br><a href=\"#\" onclick=\"javascript:closeAbout();\">Close</a>";
    hidePanels();
-   var $chatAboutPanel = $(".chatAboutPanel");
+   var $chatAboutPanel = $(".chat-about-panel");
    $chatAboutPanel.html(about);
    $chatAboutPanel.css("display", "block");
  }
 
  function showHelpPanel() {
    hidePanels();
-   $(".chatHelpPanel").css("display", "block");
+   $(".chat-help-panel").css("display", "block");
  }
 
  var totalNotif = 0;
@@ -425,9 +425,9 @@ function hidePanel(panel) {
      dataType: 'html',
      success: function(response){
        isLoaded = true;
-       hidePanel(".chatErrorPanel");
-       hidePanel(".chatSyncPanel");
-       $("#whoisonline").html(response);
+       hidePanel(".chat-error-panel");
+       hidePanel(".chat-sync-panel");
+       $("#chat-users").html(response);
        jQueryForUsersTemplate();
        if (window.fluid!==undefined) {
          totalNotif = 0;
@@ -451,7 +451,7 @@ function hidePanel(panel) {
        }
      },
      error: function(jqXHR, textStatus, errorThrown){
-       console.log("whoisonline :: "+textStatus+" :: "+errorThrown);
+       console.log("chat-users :: "+textStatus+" :: "+errorThrown);
        setTimeout(errorOnRefresh, 1000);
      }
    });
@@ -490,16 +490,16 @@ function hidePanel(panel) {
 
  function errorOnRefresh() {
    isLoaded = true;
-   hidePanel(".chatSyncPanel");
-   $("#whoisonline").html("<span>&nbsp;</span>");
-   hidePanel(".chatLoginPanel");
+   hidePanel(".chat-sync-panel");
+   $("#chat-users").html("<span>&nbsp;</span>");
+   hidePanel(".chat-login-panel");
    changeStatusChat("offline");
    showErrorPanel();
  }
 
  function setStatus(status) {
    $.ajax({
-     url: "http://localhost:8888/chatServer/setStatus",
+     url: jzSetStatus,
      data: { "user": username,
              "sessionId": sessionId,
              "status": status
@@ -611,16 +611,16 @@ function hidePanel(panel) {
            out += "<span style='margin-left:40px;'>";
            //out += "<span style='float:left; '>&nbsp;</span>";
          }
-         out += "<span class='invisibleText'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='userLink' target='_new'>"+message.fullname+"</a><span class='invisibleText'> : </span><br/>";
+         out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
        }
        else
        {
          out += "<hr style='margin:0px;'>";
        }
        out += "<div style='margin-left:40px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
-               "<span class='invisibleText'> [</span>"+
+               "<span class='invisible-text'> [</span>"+
                "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
-               "<span class='invisibleText'>]</span></div>"+
+               "<span class='invisible-text'>]</span></div>"+
                "<div style='clear:both;'></div>";
        prevUser = message.user;
      }
@@ -647,16 +647,16 @@ function hidePanel(panel) {
            showMessages(data.messages);
          }
        }
-       $(".rightchat").css("display", "block");
-       hidePanel(".chatLoginPanel");
-       hidePanel(".chatErrorPanel");
+       $(".right-chat").css("display", "block");
+       hidePanel(".chat-login-panel");
+       hidePanel(".chat-error-panel");
      })
      .error(function() {
-       $(".rightchat").css("display", "none");
-       if ( $(".chatErrorPanel").css("display") == "none") {
+       $(".right-chat").css("display", "none");
+       if ( $(".chat-error-panel").css("display") == "none") {
          showLoginPanel();
        } else {
-         hidePanel(".chatLoginPanel");
+         hidePanel(".chat-login-panel");
        }
      });
 
@@ -718,7 +718,7 @@ function hidePanel(panel) {
 
 
  function closeAbout() {
-   hidePanel('.chatAboutPanel');
+   hidePanel('.chat-about-panel');
  }
 
 
@@ -780,17 +780,17 @@ function hidePanel(panel) {
          } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
            w = "<a href='"+w+"' target='_new'>"+w+"</a>";
          } else if (w == ":-)" || w==":)") {
-           w = "<span class='emoticon emoticonSmile'><span class='emoticonText'>:)</span></span>";
+           w = "<span class='emoticon emoticon-smile'><span class='emoticon-text'>:)</span></span>";
          } else if (w == ":-D" || w==":D") {
-           w = "<span class='emoticon emoticonBigSmile'><span class='emoticonText'>:D</span></span>";
+           w = "<span class='emoticon emoticon-big-smile'><span class='emoticon-text'>:D</span></span>";
          } else if (w == ":-|" || w==":|") {
-           w = "<span class='emoticon emoticonNoVoice'><span class='emoticonText'>:|</span></span>";
+           w = "<span class='emoticon emoticon-no-voice'><span class='emoticon-text'>:|</span></span>";
          } else if (w == ":-(" || w==":(") {
-           w = "<span class='emoticon emoticonSad'><span class='emoticonText'>:(</span></span>";
+           w = "<span class='emoticon emoticon-sad'><span class='emoticon-text'>:(</span></span>";
          } else if (w == ";-)" || w==";)") {
-           w = "<span class='emoticon emoticonEyeBlink'><span class='emoticonText'>;)</span></span>";
+           w = "<span class='emoticon emoticon-eye-blink'><span class='emoticon-text'>;)</span></span>";
          } else if (w == ":-O" || w==":O") {
-           w = "<span class='emoticon emoticonSurprise'><span class='emoticonText'>:O</span></span>";
+           w = "<span class='emoticon emoticon-surprise'><span class='emoticon-text'>:O</span></span>";
          } else if (highlight.length >1) {
            w = w.replace(eval("/"+highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+highlight+"</span>");
          }

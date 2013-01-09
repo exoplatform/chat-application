@@ -1,4 +1,4 @@
-.chatPanel (@heightParam, @colorParam) {
+.chat-panel (@heightParam, @colorParam) {
   float: left;
   z-index: 10;
   position: absolute;
@@ -11,21 +11,21 @@
   font-weight: normal;
 }
 
-.chatErrorPanel, .chatLoginPanel, .chatAboutPanel, .chatDemoPanel {
-  .chatPanel((@height - 51), white);
+.chat-error-panel, .chat-login-panel, .chat-about-panel, .chat-demo-panel {
+  .chat-panel((@height - 51), white);
   background-color: @colorBgPanel;
 }
-.chatHelpPanel {
-  .chatPanel((@height - 1), black);
+.chat-help-panel {
+  .chat-panel((@height - 1), black);
   background:url('@{imgPath}help-panel.png') no-repeat 0px 0px;
   padding: 0px 0px 0px 0px;
 }
-.chatSyncPanel {
-  .chatPanel((@height - 51), white);
+.chat-sync-panel {
+  .chat-panel((@height - 51), white);
 }
 
 
-.chatStatusPanel {
+.chat-status-panel {
   position: absolute;
   background-color: @colorBgStatus;
   cursor: pointer;
