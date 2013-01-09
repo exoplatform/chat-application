@@ -147,7 +147,7 @@ $(document).ready(function(){
 
   });
 
-  $(".chatstatus-chat").on("click", function() {
+  $(".chat-status-chat").on("click", function() {
     var $chatStatusPanel = $(".chatStatusPanel");
     if ($chatStatusPanel.css("display")==="none")
       $chatStatusPanel.css("display", "inline-block");
@@ -565,21 +565,20 @@ function hidePanel(panel) {
  function changeStatusChat(status) {
    profileStatus = status;
 
-   var $chatStatus = $("span.chatstatus");
-   $chatStatus.removeClass("chatstatus-available-black");
-   $chatStatus.removeClass("chatstatus-donotdisturb-black");
-   $chatStatus.removeClass("chatstatus-invisible-black");
-   $chatStatus.removeClass("chatstatus-away-black");
-   $chatStatus.removeClass("chatstatus-offline-black");
-   $chatStatus.addClass("chatstatus-"+status+"-black");
-
-   var $chatStatusChat = $("span.chatstatus-chat");
-   $chatStatusChat.removeClass("chatstatus-available");
-   $chatStatusChat.removeClass("chatstatus-donotdisturb");
-   $chatStatusChat.removeClass("chatstatus-invisible");
-   $chatStatusChat.removeClass("chatstatus-away");
-   $chatStatusChat.removeClass("chatstatus-offline");
-   $chatStatusChat.addClass("chatstatus-"+status);
+   var $chatStatus = $("span.chat-status");
+   $chatStatus.removeClass("chat-status-available-black");
+   $chatStatus.removeClass("chat-status-donotdisturb-black");
+   $chatStatus.removeClass("chat-status-invisible-black");
+   $chatStatus.removeClass("chat-status-away-black");
+   $chatStatus.removeClass("chat-status-offline-black");
+   $chatStatus.addClass("chat-status-"+status+"-black");
+   var $chatStatusChat = $("span.chat-status-chat");
+   $chatStatusChat.removeClass("chat-status-available");
+   $chatStatusChat.removeClass("chat-status-donotdisturb");
+   $chatStatusChat.removeClass("chat-status-invisible");
+   $chatStatusChat.removeClass("chat-status-away");
+   $chatStatusChat.removeClass("chat-status-offline");
+   $chatStatusChat.addClass("chat-status-"+status);
 
  }
 

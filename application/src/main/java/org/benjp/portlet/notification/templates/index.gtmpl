@@ -1,30 +1,30 @@
-<div id="chatstatus"
+<div id="chat-status"
   data-username="<%=user%>"
   data-session-id="<%=sessionId%>"
   data-chat-page="<%=chatPage%>"
   data-chat-server-url="<%=chatServerURL%>" >
   <li class="UITab NormalToolbarTab">
     <a class="ArrowIcon TBIcon" href="#" style="padding:0px;">
-      <span class="chatstatus">
-        <span id="chatnotification" style="display:none"></span>
+      <span class="chat-status">
+        <span id="chat-notification" style="display:none"></span>
       </span>
     </a>
     <ul  style="display: none; min-width: 120px; width: 120px;" class="MenuItemContainer">
       <li class="MenuItem" style="height:30px;">
-        <a href="#" class="popupchat chaticon">Open Chat</a>
+        <a href="#" class="popup-chat chat-icon">Open Chat</a>
         <hr>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chatstatus chatstatus-available" status="available">Available</a>
+        <a href="#" class="chat-status chat-status-available" status="available">Available</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chatstatus chatstatus-away" status="away">Away</a>
+        <a href="#" class="chat-status chat-status-away" status="away">Away</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chatstatus chatstatus-donotdisturb" status="donotdisturb">Do not disturb</a>
+        <a href="#" class="chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chatstatus chatstatus-invisible" status="invisible">Invisible</a>
+        <a href="#" class="chat-status chat-status-invisible" status="invisible">Invisible</a>
       </li>
     </ul>
 	</li>

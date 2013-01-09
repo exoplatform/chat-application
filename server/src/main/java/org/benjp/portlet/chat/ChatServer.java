@@ -157,7 +157,7 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
-    String room = "";
+    String room;
     try
     {
       if (targetUser.startsWith(ChatService.SPACE_PREFIX))

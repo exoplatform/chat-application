@@ -4,12 +4,12 @@ var jq171 = jQuery.noConflict(true);
 
   $(document).ready(function(){
 
-    var notificationApplication = $("#chatstatus");
-    var username = notificationApplication.attr("data-username");
-    var sessionId = notificationApplication.attr("data-session-id");
-    var chatPage = notificationApplication.attr("data-chat-page");
-    var chatServerURL = notificationApplication.attr("data-chat-server-url");
-    var jzInitUserProfile = notificationApplication.jzURL("NotificationApplication.initUserProfile");
+    var $notificationApplication = $("#chat-status");
+    var username = $notificationApplication.attr("data-username");
+    var sessionId = $notificationApplication.attr("data-session-id");
+    var chatPage = $notificationApplication.attr("data-chat-page");
+    var chatServerURL = $notificationApplication.attr("data-chat-server-url");
+    var jzInitUserProfile = $notificationApplication.jzURL("NotificationApplication.initUserProfile");
     var jzNotification = chatServerURL+"/notification";
     var jzGetStatus = chatServerURL+"/getStatus";
     var jzSetStatus = chatServerURL+"/setStatus";
@@ -44,31 +44,34 @@ var jq171 = jQuery.noConflict(true);
     initUserProfile();
 
     function refreshNotif() {
-      if ( ! $("span.chatstatus").hasClass("chatstatus-offline-black") ) {
+      if ( ! $("span.chat-status").hasClass("chat-status-offline-black") ) {
         $.getJSON(notifEventURL, function(data) {
           if(oldNotifTotal!=data.total){
             var total = data.total;
             console.log('Notif :: '+total);
+            var $chatNotification = $("#chat-notification");
             if (total>0) {
-              $("#chatnotification").html('<span class="notiftotal">'+total+'</span>');
-              $("#chatnotification").css('display', 'block');
+              $chatNotification.html('<span class="notif-total">'+total+'</span>');
+              $chatNotification.css('display', 'block');
             } else {
-              $("#chatnotification").html('<span></span>');
-              $("#chatnotification").css('display', 'none');
+              $chatNotification.html('<span></span>');
+              $chatNotification.css('display', 'none');
             }
             oldNotifTotal = data.total;
           }
 
         })
         .error(function() {
+          var $chatNotification = $("#chat-notification");
           changeStatus("offline");
-          $("#chatnotification").html('<span></span>');
-          $("#chatnotification").css('display', 'none');
+          $chatNotification.html('<span></span>');
+          $chatNotification.css('display', 'none');
           oldNotifTotal = -1;
         });
        } else {
-          $("#chatnotification").html('<span></span>');
-          $("#chatnotification").css('display', 'none');
+          var $chatNotification = $("#chat-notification");
+          $chatNotification.html('<span></span>');
+          $chatNotification.css('display', 'none');
           oldNotifTotal = -1;
        }
     }
@@ -91,16 +94,16 @@ var jq171 = jQuery.noConflict(true);
     }
 
 
-    $("#chatnotification").click(function(){
+    $("#chat-notification").click(function(){
       window.location.href = chatPage;
     });
 
-    $("a.popupchat").click(function(){
+    $("a.popup-chat").click(function(){
        $(".MenuItemContainer").css('display', 'none');
        window.open(chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=536, height=647");
     });
 
-    $("a.chatstatus").click(function(){
+    $("a.chat-status").click(function(){
       var status = $(this).attr("status");
       console.log("setStatus :: "+status);
 
@@ -124,26 +127,27 @@ var jq171 = jQuery.noConflict(true);
 
     });
 
-    $("#chatstatus").mouseenter(function(){
+    $("#chat-status").mouseenter(function(){
       $(".MenuItemContainer:first",this).css('display', 'block');
     }).mouseleave(function(){
       $(".MenuItemContainer:first",this).css('display', 'none');
     });
 
     function changeStatus(status) {
-      $("span.chatstatus").removeClass("chatstatus-available-black");
-      $("span.chatstatus").removeClass("chatstatus-donotdisturb-black");
-      $("span.chatstatus").removeClass("chatstatus-invisible-black");
-      $("span.chatstatus").removeClass("chatstatus-away-black");
-      $("span.chatstatus").removeClass("chatstatus-offline-black");
-      $("span.chatstatus").addClass("chatstatus-"+status+"-black");
-
-      $("span.chatstatus-chat").removeClass("chatstatus-available");
-      $("span.chatstatus-chat").removeClass("chatstatus-donotdisturb");
-      $("span.chatstatus-chat").removeClass("chatstatus-invisible");
-      $("span.chatstatus-chat").removeClass("chatstatus-away");
-      $("span.chatstatus-chat").removeClass("chatstatus-offline");
-      $("span.chatstatus-chat").addClass("chatstatus-"+status);
+      var $spanStatus = $("span.chat-status");
+      $spanStatus.removeClass("chat-status-available-black");
+      $spanStatus.removeClass("chat-status-donotdisturb-black");
+      $spanStatus.removeClass("chat-status-invisible-black");
+      $spanStatus.removeClass("chat-status-away-black");
+      $spanStatus.removeClass("chat-status-offline-black");
+      $spanStatus.addClass("chat-status-"+status+"-black");
+      var $spanStatusChat = $("span.chat-status-chat");
+      $spanStatusChat.removeClass("chat-status-available");
+      $spanStatusChat.removeClass("chat-status-donotdisturb");
+      $spanStatusChat.removeClass("chat-status-invisible");
+      $spanStatusChat.removeClass("chat-status-away");
+      $spanStatusChat.removeClass("chat-status-offline");
+      $spanStatusChat.addClass("chat-status-"+status);
     }
 
 
