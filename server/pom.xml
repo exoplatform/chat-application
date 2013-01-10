@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.benjp</groupId>
     <artifactId>chat</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.benjp.chat</groupId>
   <artifactId>server</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5</version>
   <packaging>jar</packaging>
 
   <name>Chat Server</name>
