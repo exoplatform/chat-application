@@ -170,25 +170,27 @@ $(document).ready(function(){
 
   $("div.chat-menu").click(function(){
     var status = $(this).attr("status");
-    console.log("setStatus :: "+status);
+    if (status !== undefined) {
+      console.log("setStatus :: "+status);
 
-    $.ajax({
-      url: jzSetStatus,
-      data: { "user": username,
-              "sessionId": sessionId,
-              "status": status
-              },
+      $.ajax({
+        url: jzSetStatus,
+        data: { "user": username,
+                "sessionId": sessionId,
+                "status": status
+                },
 
-      success: function(response){
-        console.log("SUCCESS:setStatus::"+response);
-        changeStatusChat(response);
-        $(".chat-status-panel").css('display', 'none');
-      },
-      error: function(response){
-        changeStatusChat("offline");
-      }
+        success: function(response){
+          console.log("SUCCESS:setStatus::"+response);
+          changeStatusChat(response);
+          $(".chat-status-panel").css('display', 'none');
+        },
+        error: function(response){
+          changeStatusChat("offline");
+        }
 
-    });
+      });
+    }
 
   });
 
@@ -604,7 +606,7 @@ function hidePanel(panel) {
  function changeStatusChat(status) {
    profileStatus = status;
    var $statusLabel = $(".chat-status-label");
-   $statusLabel.html("Your current status is : "+status);
+   $statusLabel.html("Your current status is : "+getStatusLabel(status));
    var $chatStatus = $("span.chat-status");
    $chatStatus.removeClass("chat-status-available-black");
    $chatStatus.removeClass("chat-status-donotdisturb-black");
@@ -619,6 +621,23 @@ function hidePanel(panel) {
    $chatStatusChat.removeClass("chat-status-away");
    $chatStatusChat.removeClass("chat-status-offline");
    $chatStatusChat.addClass("chat-status-"+status);
+
+ }
+
+ function getStatusLabel(status) {
+   switch (status) {
+     case "available":
+       return "Available";
+     case "donotdisturb":
+       return "Do not disturb";
+     case "away":
+       return "Away";
+     case "invisible":
+       return "Invisible";
+     case "offline":
+       return "Offline";
+
+   }
 
  }
 
