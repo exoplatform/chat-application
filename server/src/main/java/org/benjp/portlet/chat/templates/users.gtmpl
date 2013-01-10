@@ -13,7 +13,7 @@
       </td>
       <td>
         <% if (room.isActive()) { %>
-          <span user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link"><%=room.fullname%></span>
+          <span user-data="<%=room.user%>" room-data="<%=room.room%>" class="user-link" data-fullname="<%=room.fullname%>"><%=room.fullname%></span>
         <% } else { %>
           <span class="room-inactive"><%=room.user%></span>
         <% } %>

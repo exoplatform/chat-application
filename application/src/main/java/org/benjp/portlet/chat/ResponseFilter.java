@@ -32,6 +32,11 @@ public class ResponseFilter implements RenderFilter
     metaViewport.setAttribute("content", "yes");
     response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, metaViewport);
 
+    metaViewport = response.createElement("link");
+    metaViewport.setAttribute("rel", "apple-touch-icon");
+    metaViewport.setAttribute("href", "/chat/img/chat-icon.png");
+    response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, metaViewport);
+
     //
     chain.doFilter(request, response);
   }

@@ -49,7 +49,8 @@
   </div>
   <div class="right-chat">
     <div class="room-mobile">
-      <a class="btn btn-rooms"><span class="icon-chevron-left"></span></a>
+      <a class="btn-rooms"><span class="icon-chevron-left"></span></a>
+      <span class="room-name"></span>
     </div>
     <div id="chats"></div>
     <div class="chat-message">

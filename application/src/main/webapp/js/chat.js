@@ -1,5 +1,3 @@
-
-
 $(document).ready(function(){
 
   var highlight = "";
@@ -496,11 +494,12 @@ function hidePanel(panel) {
      firstLoad = false;
    }
 
-   $("#users-online-"+targetUser).addClass("info");
+   if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
 
 
    $('.users-online').on("click", function() {
      targetUser = $(".user-link:first",this).attr("user-data");
+     fullname = $(this).attr("data-fullname");
      loadRoom();
      if (isMobileView()) {
        $(".right-chat").css("display", "block");
@@ -511,10 +510,13 @@ function hidePanel(panel) {
 
    $('.user-link').on("click", function() {
      targetUser = $(this).attr("user-data");
+     fullname = $(this).attr("data-fullname");
      loadRoom();
      if (isMobileView()) {
        $(".right-chat").css("display", "block");
        $(".left-chat").css("display", "none");
+
+       $(".room-name").html(fullname);
      }
    });
 
@@ -720,7 +722,7 @@ function hidePanel(panel) {
  function loadRoom() {
    console.log("TARGET::"+targetUser);
    $(".users-online").removeClass("info");
-   $("#users-online-"+targetUser).addClass("info");
+   if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
 
    $.ajax({
      url: jzChatGetRoom,
@@ -734,7 +736,7 @@ function hidePanel(panel) {
        room = response;
        var $msg = $('#msg');
        $msg.removeAttr("disabled");
-       $msg.focus();
+       if (isDesktopView()) $msg.focus();
        chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
 
        jzStoreParam("lastUser", targetUser, 60000);
