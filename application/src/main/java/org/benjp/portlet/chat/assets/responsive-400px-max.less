@@ -2,6 +2,7 @@
   @height:                      460px;
   @width:                       320px;
   @heightMessage:               60px;
+  @heightBar:                   30px;
   @widthUsers:                  320px;
   @widthMessages:               321px;
 
@@ -14,33 +15,34 @@
   .UIWorkingWorkspace .UIPageBody {
     padding-top: 0px;
   }
-  span.filter, .avatar-user, #PlatformAdminToolbarContainer  {
+  span.filter, .avatar-user, #PlatformAdminToolbarContainer, .right-chat, .menu-standard  {
     display: none;
   }
   .chat-search {
     width: (@width - 10);
-    padding-bottom: 3px;
+    padding-bottom: 5px;
   }
-  .btn-mobile {
+  .btn-mobile, .btn-rooms {
     width: 14px;
     display: inline-block;
-    margin: 2px 20px 0px 0px;
+    margin: 5px 20px 0px 0px;
     height: 20px;
   }
   .menu-mobile {
     width: (@width + 1);
     background-color: white;
   }
+  .room-mobile {
+    display: block;
+    height: 30px;
+  }
   .chat-status-chat {
     float: initial;
     display: block;
     margin: 0;
   }
-  .menu-standard {
-    display: none;
-  }
   .add-on, #chat-search {
-    margin-top: 2px;
+    margin-top: 5px;
   }
   #chat-search {
     width: 227px;

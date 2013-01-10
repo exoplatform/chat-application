@@ -223,6 +223,11 @@ $(document).ready(function(){
       $menuMobile.css("display", "none");
   });
 
+  $(".btn-rooms").on("click", function() {
+    $(".left-chat").css("display", "block");
+    $(".right-chat").css("display", "none");
+  });
+
   $(".msg-help").on("click", function() {
     showHelpPanel();
   });
@@ -497,12 +502,20 @@ function hidePanel(panel) {
    $('.users-online').on("click", function() {
      targetUser = $(".user-link:first",this).attr("user-data");
      loadRoom();
+     if (isMobileView()) {
+       $(".right-chat").css("display", "block");
+       $(".left-chat").css("display", "none");
+     }
    });
 
 
    $('.user-link').on("click", function() {
      targetUser = $(this).attr("user-data");
      loadRoom();
+     if (isMobileView()) {
+       $(".right-chat").css("display", "block");
+       $(".left-chat").css("display", "none");
+     }
    });
 
    $('.user-status').on("click", function(e) {
@@ -597,7 +610,7 @@ function hidePanel(panel) {
    $chatStatus.removeClass("chat-status-away-black");
    $chatStatus.removeClass("chat-status-offline-black");
    $chatStatus.addClass("chat-status-"+status+"-black");
-   var $chatStatusChat = $("span.chat-status-chat");
+   var $chatStatusChat = $(".chat-status-chat");
    $chatStatusChat.removeClass("chat-status-available");
    $chatStatusChat.removeClass("chat-status-donotdisturb");
    $chatStatusChat.removeClass("chat-status-invisible");
@@ -672,12 +685,12 @@ function hidePanel(panel) {
            showMessages(data.messages);
          }
        }
-       $(".right-chat").css("display", "block");
+       if (isDesktopView()) $(".right-chat").css("display", "block");
        hidePanel(".chat-login-panel");
        hidePanel(".chat-error-panel");
      })
      .error(function() {
-       $(".right-chat").css("display", "none");
+       if (isDesktopView()) $(".right-chat").css("display", "none");
        if ( $(".chat-error-panel").css("display") == "none") {
          showLoginPanel();
        } else {

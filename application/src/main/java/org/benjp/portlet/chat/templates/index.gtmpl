@@ -48,6 +48,9 @@
     </div>
   </div>
   <div class="right-chat">
+    <div class="room-mobile">
+      <a class="btn btn-rooms"><span class="icon-chevron-left"></span></a>
+    </div>
     <div id="chats"></div>
     <div class="chat-message">
       <textarea type="text" name="text" id="msg" autocomplete="off" rows="2" disabled></textarea>
