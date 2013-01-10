@@ -3,14 +3,14 @@
   <parent>
     <groupId>org.benjp</groupId>
     <artifactId>chat</artifactId>
-    <version>0.5</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.benjp.chat</groupId>
   <artifactId>application</artifactId>
-  <version>0.5</version>
+  <version>0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Chat Application</name>
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.benjp.chat</groupId>
       <artifactId>server</artifactId>
-      <version>0.5</version>
+      <version>0.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
