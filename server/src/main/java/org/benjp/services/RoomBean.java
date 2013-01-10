@@ -19,6 +19,8 @@
 
 package org.benjp.services;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class RoomBean implements Comparable<RoomBean>
 {
   String user = "";
@@ -68,6 +70,10 @@ public class RoomBean implements Comparable<RoomBean>
 
   public String getFullname() {
     return fullname;
+  }
+
+  public String getEscapedFullname() {
+    return StringEscapeUtils.escapeHtml4(this.fullname);
   }
 
   public void setFullname(String fullname) {

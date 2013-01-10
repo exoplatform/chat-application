@@ -77,7 +77,7 @@ public class ChatServer
     if (userService.hasUserWithSession(user,  sessionId))
     {
       List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService);
-      users.with().set("rooms", rooms).render();
+      users.with().set("rooms", rooms).render().withMimeType("text/html; charset=UTF-8");
     }
   }
 
