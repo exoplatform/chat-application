@@ -73,7 +73,8 @@ public class ChatApplication
   public void index(RenderContext renderContext)
   {
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
-    if (remoteUser_==null) remoteUser_ = UserService.ANONIM_USER;
+    boolean isPublic = (remoteUser_==null);
+    if (isPublic) remoteUser_ = UserService.ANONIM_USER;
     sessionId_ = getSessionId(renderContext.getHttpContext());
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
@@ -81,28 +82,21 @@ public class ChatApplication
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
 
+    String fullname = remoteUser_;
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
-      String fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
+      fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
       if (fullname==null) fullname=remoteUser_;
-      index.with().set("user", remoteUser_).set("room", "noroom")
-              .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
-              .set("fullname", fullname)
-              .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
-              .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
-              .render();
     }
-    else
-    {
-      indexDemo.with().set("user", remoteUser_).set("room", "noroom")
-              .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
-              .set("fullname", remoteUser_)
-              .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
-              .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
-              .render()
-              .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
 
-    }
+    index.with().set("user", remoteUser_).set("room", "noroom")
+            .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
+            .set("fullname", fullname)
+            .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
+            .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+            .set("publicMode", isPublic)
+            .render()
+            .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
 
   }
 

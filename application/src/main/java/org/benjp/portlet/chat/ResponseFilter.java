@@ -24,8 +24,12 @@ public class ResponseFilter implements RenderFilter
 
     Element metaViewport = response.createElement("meta");
     metaViewport.setAttribute("name", "viewport");
-    metaViewport.setAttribute("content", "width=device-width, initial-scale=1.0");
+    metaViewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0");
+    response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, metaViewport);
 
+    metaViewport = response.createElement("meta");
+    metaViewport.setAttribute("name", "apple-mobile-web-app-capable");
+    metaViewport.setAttribute("content", "yes");
     response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, metaViewport);
 
     //

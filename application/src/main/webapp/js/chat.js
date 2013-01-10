@@ -39,7 +39,22 @@ $(document).ready(function(){
   var filterInt;
   var keydown = -1;
   var profileStatus = "offline";
+  var mobileView = false;
 
+  function checkViewportStatus() {
+    if ($(".btn-mobile").css("display")!=="none") {
+      mobileView = true;
+    }
+  }
+  checkViewportStatus();
+
+  function isMobileView() {
+    return mobileView;
+  }
+
+  function isDesktopView() {
+    return !mobileView;
+  }
 
   $.fn.setCursorPosition = function(position){
     if(this.length === 0) return this;
@@ -197,6 +212,15 @@ $(document).ready(function(){
     $msg.val(val);
     $msg.focusEnd();
 
+  });
+
+
+  $(".btn-mobile").on("click", function() {
+    var $menuMobile = $(".menu-mobile");
+    if ($menuMobile.css("display")==="none")
+      $menuMobile.css("display", "block");
+    else
+      $menuMobile.css("display", "none");
   });
 
   $(".msg-help").on("click", function() {
@@ -564,7 +588,8 @@ function hidePanel(panel) {
 
  function changeStatusChat(status) {
    profileStatus = status;
-
+   var $statusLabel = $(".chat-status-label");
+   $statusLabel.html("Your current status is : "+status);
    var $chatStatus = $("span.chat-status");
    $chatStatus.removeClass("chat-status-available-black");
    $chatStatus.removeClass("chat-status-donotdisturb-black");

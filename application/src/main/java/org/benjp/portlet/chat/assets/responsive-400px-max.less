@@ -1,0 +1,48 @@
+@media (max-width: 400px) {
+  @height:                      460px;
+  @width:                       320px;
+  @heightMessage:               60px;
+  @widthUsers:                  320px;
+  @widthMessages:               321px;
+
+  @import "sized";
+  @import "panels";
+
+  #chat-application {
+    padding-left: 0px;
+  }
+  .UIWorkingWorkspace .UIPageBody {
+    padding-top: 0px;
+  }
+  span.filter, .avatar-user, #PlatformAdminToolbarContainer  {
+    display: none;
+  }
+  .chat-search {
+    width: (@width - 10);
+    padding-bottom: 3px;
+  }
+  .btn-mobile {
+    width: 14px;
+    display: inline-block;
+    margin: 2px 20px 0px 0px;
+    height: 20px;
+  }
+  .menu-mobile {
+    width: (@width + 1);
+    background-color: white;
+  }
+  .chat-status-chat {
+    float: initial;
+    display: block;
+    margin: 0;
+  }
+  .menu-standard {
+    display: none;
+  }
+  .add-on, #chat-search {
+    margin-top: 2px;
+  }
+  #chat-search {
+    width: 227px;
+  }
+}

@@ -5,7 +5,8 @@
   data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-session="<%=chatIntervalSession%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
-  data-chat-interval-users="<%=chatIntervalUsers%>" >
+  data-chat-interval-users="<%=chatIntervalUsers%>"
+  data-public-mode="<%=publicMode%>">
 
   <div class="chat-sync-panel" style="display:none;"></div>
   <div class="chat-error-panel" style="display:none;"></div>
@@ -13,21 +14,33 @@
   <div class="chat-about-panel" style="display:none;"></div>
   <div class="chat-help-panel" style="display: none;"><span>&nbsp;</span></div>
   <div class="input-prepend chat-search no-user-selection">
-    <span class="avatar-user"><img onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
-    <span class="chat-status-chat chat-status-invisible"></span>
-    <span class="chat-status-panel" style="display:none;">
+    <a class="btn btn-mobile"><span class="icon-user"></span></a>
+    <span class="menu-standard">
+      <span class="avatar-user"><img onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
+      <span class="chat-status-chat chat-status-invisible"></span>
+      <span class="chat-status-panel" style="display:none;">
+        <div class="chat-menu chat-status chat-status-available" status="available">Available</div>
+        <div class="chat-menu chat-status chat-status-away" status="away">Away</div>
+        <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</div>
+        <div class="chat-menu chat-status chat-status-invisible" status="invisible">Invisible</div>
+      </span>
+      <label>
+        <span class="label-user"><a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a></span>
+      </label>
+      <span class="filter filter-user"><span class="filter-on"></span></span>
+      <span class="filter filter-space"><span class="filter-on"></span></span>
+    </span>
+    <span class="add-on"><i class="icon-search"></i></span>
+    <input class="span2" id="chat-search" type="text">
+  </div>
+  <div class="menu-mobile">
+    <div>
+      <div class="chat-menu chat-status-chat chat-status-invisible chat-status-label">Your status is :</div>
       <div class="chat-menu chat-status chat-status-available" status="available">Available</div>
       <div class="chat-menu chat-status chat-status-away" status="away">Away</div>
       <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</div>
       <div class="chat-menu chat-status chat-status-invisible" status="invisible">Invisible</div>
-    </span>
-    <label>
-      <span class="label-user"><a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a></span>
-    </label>
-    <span class="filter filter-user"><span class="filter-on"></span></span>
-    <span class="filter filter-space"><span class="filter-on"></span></span>
-    <span class="add-on"><i class="icon-search"></i></span>
-    <input class="span2" id="chat-search" type="text">
+    </div>
   </div>
   <div class="left-chat no-user-selection">
     <div id="chat-users">
