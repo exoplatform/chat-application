@@ -37,21 +37,17 @@ $(document).ready(function(){
   var filterInt;
   var keydown = -1;
   var profileStatus = "offline";
-  var mobileView = false;
 
   function checkViewportStatus() {
-    if ($(".btn-mobile").css("display")!=="none") {
-      mobileView = true;
-    }
+    return ($(".btn-mobile").css("display")!=="none");
   }
-  checkViewportStatus();
 
   function isMobileView() {
-    return mobileView;
+    return checkViewportStatus();
   }
 
   function isDesktopView() {
-    return !mobileView;
+    return !checkViewportStatus();
   }
 
   $.fn.setCursorPosition = function(position){
@@ -228,6 +224,11 @@ $(document).ready(function(){
     $(".right-chat").css("display", "none");
   });
 
+  $(".room-mobile").on("click", function() {
+    $(".left-chat").css("display", "block");
+    $(".right-chat").css("display", "none");
+  });
+
   $(".msg-help").on("click", function() {
     showHelpPanel();
   });
@@ -375,9 +376,9 @@ function hidePanel(panel) {
    hidePanels();
    console.log("show-demo-panel");
    var $chatDemoPanel = $(".chat-demo-panel");
-   $chatDemoPanel.html("Welcome in the Demo mode.<br><br><div style='text-align:right;width:80%;'>" +
-           "<br><br>Display Name : <input type='text' id='anonim-name'>" +
-           "<br><br>Email : <input type='text' id='anonim-email'></div>" +
+   $chatDemoPanel.html("Welcome in the Demo mode.<br><br><div class='welcome-panel'>" +
+           "<br><br>Display Name&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
+           "<br><br>Email&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
            "<br><a href='#' id='anonim-save'>Save Your Profile</a>");
    $chatDemoPanel.css("display", "block");
 
@@ -416,7 +417,7 @@ function hidePanel(panel) {
 
  function showAboutPanel() {
    var about = "eXo Community Chat<br>";
-   about += "Version 0.4-SNAPSHOT<br><br>";
+   about += "Version 0.6-SNAPSHOT<br><br>";
    about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
    about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
    about += "<br><br><a href=\"#\" onclick=\"javascript:closeAbout();\">Close</a>";
@@ -501,11 +502,12 @@ function hidePanel(panel) {
 
    $('.users-online').on("click", function() {
      targetUser = $(".user-link:first",this).attr("user-data");
-     fullname = $(this).attr("data-fullname");
+     fullname = $(".user-link:first",this).attr("data-fullname");
      loadRoom();
      if (isMobileView()) {
        $(".right-chat").css("display", "block");
        $(".left-chat").css("display", "none");
+       $(".room-name").html(fullname);
      }
    });
 
@@ -517,7 +519,6 @@ function hidePanel(panel) {
      if (isMobileView()) {
        $(".right-chat").css("display", "block");
        $(".left-chat").css("display", "none");
-
        $(".room-name").html(fullname);
      }
    });

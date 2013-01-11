@@ -10,6 +10,7 @@
 
   <div class="chat-sync-panel" style="display:none;"></div>
   <div class="chat-error-panel" style="display:none;"></div>
+  <div class="chat-demo-panel" style="display:none;"></div>
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
   <div class="chat-help-panel" style="display: none;"><span>&nbsp;</span></div>
