@@ -26,7 +26,7 @@
         <div class="chat-menu chat-status chat-status-invisible" status="invisible">Invisible</div>
       </span>
       <label>
-        <span class="label-user"><a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a></span>
+        <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
       </label>
       <span class="filter filter-user"><span class="filter-on"></span></span>
       <span class="filter filter-space"><span class="filter-on"></span></span>

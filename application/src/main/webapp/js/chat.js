@@ -501,8 +501,8 @@ function hidePanel(panel) {
 
 
    $('.users-online').on("click", function() {
-     targetUser = $(".user-link:first",this).attr("user-data");
-     fullname = $(".user-link:first",this).attr("data-fullname");
+     targetUser = $(".room-link:first",this).attr("user-data");
+     fullname = $(".room-link:first",this).attr("data-fullname");
      loadRoom();
      if (isMobileView()) {
        $(".right-chat").css("display", "block");
@@ -512,7 +512,7 @@ function hidePanel(panel) {
    });
 
 
-   $('.user-link').on("click", function() {
+   $('.room-link').on("click", function() {
      targetUser = $(this).attr("user-data");
      fullname = $(this).attr("data-fullname");
      loadRoom();
