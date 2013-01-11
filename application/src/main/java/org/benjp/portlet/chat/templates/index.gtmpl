@@ -17,7 +17,7 @@
   <div class="input-prepend chat-search no-user-selection">
     <a class="btn btn-mobile"><span class="icon-user"></span></a>
     <span class="menu-standard">
-      <span class="avatar-user"><img onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
+      <span class="avatar-user"><img class="avatar-image" onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
       <span class="chat-status-chat chat-status-invisible"></span>
       <span class="chat-status-panel" style="display:none;">
         <div class="chat-menu chat-status chat-status-available" status="available">Available</div>

@@ -403,6 +403,7 @@ function hidePanel(panel) {
 
        username = response;
        $(".label-user").html(fullname);
+       $(".avatar-image:first").attr("src", gravatar(email));
        hidePanels();
 
        refreshWhoIsOnline();
