@@ -642,6 +642,7 @@ function hidePanel(panel) {
 
  }
 
+
  function showMessages(msgs) {
    var im, message, out="", prevUser="";
    if (msgs!==undefined) {
@@ -663,7 +664,7 @@ function hidePanel(panel) {
          if (message.user != username) {
            out += "<div class='msgln-odd'>";
            out += "<span style='position:relative; padding-right:9px;top:8px'>";
-           out += "<img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px'>";
+           out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px'>";
            out += "</span>";
            out += "<span>";
          } else {

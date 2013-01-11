@@ -133,7 +133,7 @@ public class ChatApplication
         addUser(remoteUser_, sessionId_);
 
         // Set user's Full Name in the DB
-        saveFullName(remoteUser_);
+        saveFullNameAndEmail(remoteUser_);
 
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_);
@@ -175,7 +175,7 @@ public class ChatApplication
     ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
   }
 
-  protected String saveFullName(String username)
+  protected String saveFullNameAndEmail(String username)
   {
     String fullname = username;
     try
@@ -189,6 +189,7 @@ public class ChatApplication
         {
           fullname = user.getFirstName()+" "+user.getLastName();
           ServerBootstrap.getUserService().addUserFullName(username, fullname);
+          ServerBootstrap.getUserService().addUserEmail(username, user.getEmail());
         }
       }
 

@@ -89,7 +89,7 @@ public class NotificationApplication
         addUser(remoteUser_, sessionId_);
 
         // Set user's Full Name in the DB
-        saveFullName(remoteUser_);
+        saveFullNameAndEmail(remoteUser_);
 
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_);
@@ -128,7 +128,7 @@ public class NotificationApplication
     ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
   }
 
-  protected String saveFullName(String username)
+  protected String saveFullNameAndEmail(String username)
   {
     String fullname = username;
     try
@@ -140,6 +140,7 @@ public class NotificationApplication
         User user = organizationService_.getUserHandler().findUserByName(username);
         fullname = user.getFirstName()+" "+user.getLastName();
         ServerBootstrap.getUserService().addUserFullName(username, fullname);
+        ServerBootstrap.getUserService().addUserEmail(username, user.getEmail());
       }
 
 

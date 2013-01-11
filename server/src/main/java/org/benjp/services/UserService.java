@@ -340,6 +340,28 @@ public class UserService
     return fullname;
   }
 
+  public UserBean getUser(String user)
+  {
+    UserBean userBean = new UserBean();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      userBean.setName(user);
+      if (doc.get("fullname")!=null)
+        userBean.setFullname( doc.get("fullname").toString() );
+      if (doc.get("email")!=null)
+        userBean.setEmail( doc.get("email").toString() );
+      if (doc.get("status")!=null)
+        userBean.setStatus( doc.get("status").toString() );
+    }
+
+    return userBean;
+  }
+
   public void removeSession(String session)
   {
     DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);

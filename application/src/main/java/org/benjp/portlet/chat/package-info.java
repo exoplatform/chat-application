@@ -30,8 +30,9 @@
         location = AssetLocation.SERVER,
         scripts = {
                 @Script(src = "js/jquery-1.7.1.min.js", id = "jquery"),
-                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery"),
-                @Script(src = "js/chat.js", depends = "jquery"),
+                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
+                @Script(src = "js/md5.js", id = "md5"),
+                @Script(src = "js/chat.js", depends = "jquery,md5,juzu-utils"),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),

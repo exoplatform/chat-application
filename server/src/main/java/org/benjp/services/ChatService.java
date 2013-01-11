@@ -93,7 +93,7 @@ public class ChatService
     }
     else
     {
-      Map<String, String> users = new HashMap<String, String>();
+      Map<String, UserBean> users = new HashMap<String, UserBean>();
 
       List<DBObject> listdbo = new ArrayList<DBObject>();
       String mostRecentTimestamp = null;
@@ -117,12 +117,15 @@ public class ChatService
       for(DBObject dbo:listdbo)
       {
         String user = dbo.get("user").toString();
-        String fullname = users.get(user);
-        if (fullname==null)
+        String fullname = "", email = "";
+        UserBean userBean = users.get(user);
+        if (userBean==null)
         {
-          fullname = userService.getUserFullName(user);
-          users.put(user, fullname);
+          userBean = userService.getUser(user);
+          users.put(user, userBean);
         }
+        fullname = userBean.getFullname();
+        email = userBean.getEmail();
 
         String date = "";
         try
@@ -145,6 +148,7 @@ public class ChatService
         if (!first)sb.append(",");
         sb.append("{\"user\": \"").append(user).append("\",");
         sb.append("\"fullname\": \"").append(fullname).append("\",");
+        sb.append("\"email\": \"").append(email).append("\",");
         sb.append("\"date\": \"").append(date).append("\",");
         sb.append("\"message\": \"").append(dbo.get("message")).append("\"}");
         first = false;
