@@ -4,6 +4,7 @@ SCRIPT_LAUNCH_DIR=$(pwd)
 PROJECT_DIR=$(cd $(dirname "$0"); pwd)
 CHT_TOMCAT_DIRECTORY=/Users/benjamin/java/demos/apache-tomcat-7.0.30
 PLF_TOMCAT_DIRECTORY=/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.5/tomcat-bundle
+#PLF_TOMCAT_DIRECTORY=/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.5-BEN/tomcat-bundle
 #CHT_TOMCAT_DIRECTORY=/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.5/tomcat-bundle
 
 if [ $# = 1 ]

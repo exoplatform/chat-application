@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.services;
+package org.benjp.model;
 
 
 public class NotificationBean {

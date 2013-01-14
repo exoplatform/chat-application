@@ -40,6 +40,7 @@ public class PropertyManager {
   public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
   public static final String PROPERTY_INTERVAL_STATUS = "chatIntervalStatus";
   public static final String PROPERTY_INTERVAL_USERS = "chatIntervalUsers";
+  public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
 
   public static String getProperty(String key)
   {
@@ -74,6 +75,7 @@ public class PropertyManager {
         properties.setProperty(PROPERTY_INTERVAL_SESSION, "60000");
         properties.setProperty(PROPERTY_INTERVAL_STATUS, "15000");
         properties.setProperty(PROPERTY_INTERVAL_USERS, "5000");
+        properties.setProperty(PROPERTY_PASSPHRASE, "chat");
       }
     }
     return properties;

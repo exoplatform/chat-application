@@ -5,7 +5,7 @@ $(document).ready(function(){
 
   var $chatApplication = $("#chat-application");
   var username = $chatApplication.attr("data-username");
-  var sessionId = $chatApplication.attr("data-session-id");
+  var token = $chatApplication.attr("data-token");
   var chatServerURL = $chatApplication.attr("data-chat-server-url");
   var chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
   var chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
@@ -88,7 +88,7 @@ $(document).ready(function(){
       url: jzChatUpdateUnreadMessages,
       data: {"room": room,
               "user": username,
-              "sessionId": sessionId
+              "token": token
             },
 
       success:function(response){
@@ -132,7 +132,7 @@ $(document).ready(function(){
                "targetUser": targetUser,
                "room": room,
                "message": msg,
-               "sessionId": sessionId
+               "token": token
               },
 
         success:function(response){
@@ -172,7 +172,7 @@ $(document).ready(function(){
       $.ajax({
         url: jzSetStatus,
         data: { "user": username,
-                "sessionId": sessionId,
+                "token": token,
                 "status": status
                 },
 
@@ -390,18 +390,24 @@ function hidePanel(panel) {
  }
 
  function createDemoUser(fullname, email) {
-   $.ajax({
-     url: jzCreateDemoUser,
-     data: { "fullname": fullname,
-             "email": email
+   $.getJSON(jzCreateDemoUser,
+     {
+       "fullname": fullname,
+       "email": email
      },
-     success: function(response){
+     function(data) {
+       console.log("username : "+data.username);
+       console.log("token    : "+data.token);
 
-       jzStoreParam("anonimUsername", response, 600000);
+       jzStoreParam("anonimUsername", data.username, 600000);
        jzStoreParam("anonimFullname", fullname, 600000);
        jzStoreParam("anonimEmail", email, 600000);
 
-       username = response;
+       username = data.username;
+       $chatApplication.attr("data-username", username);
+       token = data.token;
+       $chatApplication.attr("data-token", token);
+
        $(".label-user").html(fullname);
        $(".avatar-image:first").attr("src", gravatar(email));
        hidePanels();
@@ -410,8 +416,6 @@ function hidePanel(panel) {
        notifStatusInt = window.clearInterval(notifStatusInt);
        notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
        refreshStatusChat();
-
-     }
    });
 
  }
@@ -448,7 +452,7 @@ function hidePanel(panel) {
    $.ajax({
      url: jzChatWhoIsOnline,
      data: { "user": username,
-             "sessionId": sessionId,
+             "token": token,
              "filter": userFilter,
              "withSpaces": withSpaces,
              "withUsers": withUsers
@@ -544,7 +548,7 @@ function hidePanel(panel) {
    $.ajax({
      url: jzSetStatus,
      data: { "user": username,
-             "sessionId": sessionId,
+             "token": token,
              "status": status
              },
 
@@ -593,7 +597,7 @@ function hidePanel(panel) {
      url: jzGetStatus,
      data: {
        "user": username,
-       "sessionId": sessionId
+       "token": token
      },
      success: function(response){
        changeStatusChat(response);
@@ -731,7 +735,7 @@ function hidePanel(panel) {
      url: jzChatToggleFavorite,
      data: {"targetUser": targetFav,
              "user": username,
-             "sessionId": sessionId
+             "token": token
              },
      success: function(response){
        refreshWhoIsOnline();
@@ -750,7 +754,7 @@ function hidePanel(panel) {
      url: jzChatGetRoom,
      data: {"targetUser": targetUser,
              "user": username,
-             "sessionId": sessionId
+             "token": token
              },
 
      success: function(response){
@@ -759,7 +763,7 @@ function hidePanel(panel) {
        var $msg = $('#msg');
        $msg.removeAttr("disabled");
        if (isDesktopView()) $msg.focus();
-       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&sessionId='+sessionId+'&event=0';
+       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&token='+token+'&event=0';
 
        jzStoreParam("lastUser", targetUser, 60000);
        jzStoreParam("lastTS", "0");

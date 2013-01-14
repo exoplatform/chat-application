@@ -1,6 +1,6 @@
 <div id="chat-application"
   data-username="<%=user%>"
-  data-session-id="<%=sessionId%>"
+  data-token="<%=token%>"
   data-chat-server-url="<%=chatServerURL%>"
   data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-session="<%=chatIntervalSession%>"

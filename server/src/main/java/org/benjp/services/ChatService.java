@@ -20,11 +20,13 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.model.RoomBean;
+import org.benjp.model.SpaceBean;
+import org.benjp.model.UserBean;
 import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -250,18 +252,18 @@ public class ChatService
     return cursor.hasNext();
   }
 
-  public List<RoomBean> getRooms(String user, NotificationService notificationService, UserService userService)
+  public List<RoomBean> getRooms(String user, NotificationService notificationService, TokenService tokenService, UserService userService)
   {
-    return getRooms(user, null, true, true, notificationService, userService);
+    return getRooms(user, null, true, true, notificationService, userService, tokenService);
   }
 
-  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, NotificationService notificationService, UserService userService)
+  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
 
     if (withUsers)
     {
-      Collection<String> availableUsers = userService.getUsersFilterBy(user);
+      Collection<String> availableUsers = tokenService.getUsersFilterBy(user);
       rooms = this.getExistingRooms(user, notificationService);
 
       for (RoomBean roomBean:rooms) {

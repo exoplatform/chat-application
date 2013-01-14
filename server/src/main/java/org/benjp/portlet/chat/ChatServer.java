@@ -23,7 +23,8 @@ import juzu.*;
 import juzu.template.Template;
 import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
-import org.benjp.services.RoomBean;
+import org.benjp.model.RoomBean;
+import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -51,6 +52,9 @@ public class ChatServer
   UserService userService;
 
   @Inject
+  TokenService tokenService;
+
+  @Inject
   NotificationService notificationService;
 
 
@@ -65,7 +69,7 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public void whoIsOnline(String user, String sessionId, String filter, String withUsers, String withSpaces)
+  public void whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces)
   {
 /*
     try {
@@ -74,18 +78,18 @@ public class ChatServer
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 */
-    if (userService.hasUserWithSession(user,  sessionId))
+    if (tokenService.hasUserWithToken(user,  token))
     {
-      List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService);
+      List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
       users.with().set("rooms", rooms).render().withMimeType("text/html; charset=UTF-8");
     }
   }
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String sessionId, String targetUser, String message, String room, String event) throws IOException
+  public Response.Content send(String user, String token, String targetUser, String message, String room, String event) throws IOException
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -131,9 +135,9 @@ public class ChatServer
 
   @Resource
   @Route("/toggleFavorite")
-  public Response.Content toggleFavorite(String user, String sessionId, String targetUser)
+  public Response.Content toggleFavorite(String user, String token, String targetUser)
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -151,9 +155,9 @@ public class ChatServer
 
   @Resource
   @Route("/getRoom")
-  public Response.Content getRoom(String user, String sessionId, String targetUser)
+  public Response.Content getRoom(String user, String token, String targetUser)
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -184,9 +188,9 @@ public class ChatServer
 
   @Resource
   @Route("/updateUnreadMessages")
-  public Response.Content updateUnreadMessages(String room, String user, String sessionId)
+  public Response.Content updateUnreadMessages(String room, String user, String token)
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -205,9 +209,9 @@ public class ChatServer
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user, String sessionId, String event) throws IOException
+  public Response.Content notification(String user, String token, String event) throws IOException
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -225,9 +229,9 @@ public class ChatServer
 
   @Resource
   @Route("/getStatus")
-  public Response.Content getStatus(String user, String sessionId)
+  public Response.Content getStatus(String user, String token)
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
@@ -246,9 +250,9 @@ public class ChatServer
 
   @Resource
   @Route("/setStatus")
-  public Response.Content setStatus(String user, String sessionId, String status)
+  public Response.Content setStatus(String user, String token, String status)
   {
-    if (!userService.hasUserWithSession(user,  sessionId))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }

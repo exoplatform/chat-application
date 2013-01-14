@@ -25,7 +25,7 @@ import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
-import org.benjp.services.SpaceBean;
+import org.benjp.model.SpaceBean;
 import org.benjp.services.UserService;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
@@ -48,11 +48,8 @@ public class ChatApplication
   @Path("index.gtmpl")
   Template index;
 
-  @Inject
-  @Path("indexDemo.gtmpl")
-  Template indexDemo;
 
-  String sessionId_ = null;
+  String token_ = null;
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
 
@@ -75,7 +72,7 @@ public class ChatApplication
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     boolean isPublic = (remoteUser_==null);
     if (isPublic) remoteUser_ = UserService.ANONIM_USER;
-    sessionId_ = getSessionId(renderContext.getHttpContext());
+    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
@@ -90,26 +87,13 @@ public class ChatApplication
     }
 
     index.with().set("user", remoteUser_).set("room", "noroom")
-            .set("sessionId", sessionId_).set("chatServerURL", chatServerURL)
+            .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
             .set("publicMode", isPublic)
             .render()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
-
-  }
-
-  private String getSessionId(HttpContext httpContext)
-  {
-    for (Cookie cookie:httpContext.getCookies())
-    {
-      if("JSESSIONID".equals(cookie.getName()))
-      {
-        return cookie.getValue();
-      }
-    }
-    return null;
 
   }
 
@@ -130,7 +114,7 @@ public class ChatApplication
       try
       {
         // Add User in the DB
-        addUser(remoteUser_, sessionId_);
+        addUser(remoteUser_, token_);
 
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_);
@@ -161,18 +145,23 @@ public class ChatApplication
 
     String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-");
     remoteUser_ = username;
-    addUser(remoteUser_, sessionId_);
+    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+    addUser(remoteUser_, token_);
     UserService userService = ServerBootstrap.getUserService();
     userService.addUserFullName(username, fullname);
     userService.addUserEmail(username, email);
     saveDemoSpace(username);
 
-    return Response.ok(username).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    StringBuffer json = new StringBuffer();
+    json.append("{ \"username\": \"").append(remoteUser_).append("\"");
+    json.append(", \"token\": \"").append(token_).append("\" }");
+
+    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
-  protected void addUser(String remoteUser, String sessionId)
+  protected void addUser(String remoteUser, String token)
   {
-    ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
+    ServerBootstrap.getTokenService().addUser(remoteUser, token);
   }
 
   protected String saveFullNameAndEmail(String username)

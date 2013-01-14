@@ -20,6 +20,8 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.model.SpaceBean;
+import org.benjp.model.UserBean;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -31,7 +33,6 @@ import java.util.List;
 public class UserService
 {
 
-  private static final String M_SESSIONS_COLLECTION = "sessions";
   private static final String M_USERS_COLLECTION = "users";
   private static final String M_SPACES_COLLECTION = "spaces";
 
@@ -48,53 +49,6 @@ public class UserService
   private DB db()
   {
     return MongoBootstrap.getDB();
-  }
-
-
-  public boolean hasSession(String session)
-  {
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("session", session);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-  }
-
-  public boolean hasUser(String user)
-  {
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-  }
-
-  public boolean hasUserWithSession(String user, String session)
-  {
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("session", session);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-  }
-
-  public void addUser(String user, String session)
-  {
-    if (!hasUserWithSession(user, session))
-    {
-      System.out.println("USER SERVICE :: ADDING :: " + user + " : " + session);
-      removeUser(user);
-      DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-
-      BasicDBObject doc = new BasicDBObject();
-      doc.put("_id", session);
-      doc.put("user", user);
-      doc.put("session", session);
-      doc.put("isDemoUser", user.startsWith(ANONIM_USER));
-
-      coll.insert(doc);
-    }
   }
 
   public void toggleFavorite(String user, String targetUser)
@@ -354,72 +308,12 @@ public class UserService
       if (doc.get("fullname")!=null)
         userBean.setFullname( doc.get("fullname").toString() );
       if (doc.get("email")!=null)
-        userBean.setEmail( doc.get("email").toString() );
+        userBean.setEmail(doc.get("email").toString());
       if (doc.get("status")!=null)
-        userBean.setStatus( doc.get("status").toString() );
+        userBean.setStatus(doc.get("status").toString());
     }
 
     return userBean;
-  }
-
-  public void removeSession(String session)
-  {
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("session", session);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      String user = doc.get("user").toString();
-      System.out.println("USER SERVICE :: REMOVING :: " + user + " : " + session);
-      coll.remove(doc);
-    }
-  }
-
-  private void removeUser(String user)
-  {
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      coll.remove(doc);
-    }
-  }
-
-  public List<String> getUsers()
-  {
-    ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    DBCursor cursor = coll.find();
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      users.add(doc.get("user").toString());
-    }
-
-    return users;
-  }
-
-  public List<String> getUsersFilterBy(String user)
-  {
-    ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_SESSIONS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("isDemoUser", user.startsWith(ANONIM_USER));
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      String target = doc.get("user").toString();
-      if (!user.equals(target))
-        users.add(target);
-    }
-
-    return users;
   }
 
   public List<String> getUsersFilterBy(String user, String space)

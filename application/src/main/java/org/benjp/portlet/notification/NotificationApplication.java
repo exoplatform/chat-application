@@ -25,7 +25,7 @@ import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
-import org.benjp.services.SpaceBean;
+import org.benjp.model.SpaceBean;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -48,7 +48,7 @@ public class NotificationApplication
   @Path("index.gtmpl")
   Template index;
 
-  String sessionId_ = null;
+  String token_ = null;
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
 
@@ -68,10 +68,10 @@ public class NotificationApplication
   {
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-    sessionId_ = getSessionId(renderContext.getHttpContext());
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
+    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
 
-    index.with().set("user", remoteUser_).set("sessionId", sessionId_)
+    index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage).render();
   }
 
@@ -86,7 +86,7 @@ public class NotificationApplication
       {
 
         // Add User in the DB
-        addUser(remoteUser_, sessionId_);
+        addUser(remoteUser_, token_);
 
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_);
@@ -110,6 +110,7 @@ public class NotificationApplication
   }
 
 
+/*
   private String getSessionId(HttpContext httpContext)
   {
     for (Cookie cookie:httpContext.getCookies())
@@ -122,10 +123,11 @@ public class NotificationApplication
     return null;
 
   }
+*/
 
-  protected void addUser(String remoteUser, String sessionId)
+  protected void addUser(String remoteUser, String token)
   {
-    ServerBootstrap.getUserService().addUser(remoteUser, sessionId);
+    ServerBootstrap.getTokenService().addUser(remoteUser, token);
   }
 
   protected String saveFullNameAndEmail(String username)

@@ -6,7 +6,7 @@ var jq171 = jQuery.noConflict(true);
 
     var $notificationApplication = $("#chat-status");
     var username = $notificationApplication.attr("data-username");
-    var sessionId = $notificationApplication.attr("data-session-id");
+    var token = $notificationApplication.attr("data-token");
     var chatPage = $notificationApplication.attr("data-chat-page");
     var chatServerURL = $notificationApplication.attr("data-chat-server-url");
     var jzInitUserProfile = $notificationApplication.jzURL("NotificationApplication.initUserProfile");
@@ -25,7 +25,7 @@ var jq171 = jQuery.noConflict(true);
         success: function(response){
           console.log("Profile Update : "+response);
 
-          notifEventURL = jzNotification+'?user='+username+'&sessionId='+sessionId;
+          notifEventURL = jzNotification+'?user='+username+'&token='+token;
           notifEventInt = window.clearInterval(notifEventInt);
           notifEventInt = setInterval(refreshNotif, 3000);
           refreshNotif();
@@ -82,7 +82,7 @@ var jq171 = jQuery.noConflict(true);
         url: jzGetStatus,
         data: {
           "user": username,
-          "sessionId": sessionId
+          "token": token
         },
         success: function(response){
           changeStatus(response);
@@ -110,7 +110,7 @@ var jq171 = jQuery.noConflict(true);
       $.ajax({
         url: jzSetStatus,
         data: { "user": username,
-                "sessionId": sessionId,
+                "token": token,
                 "status": status
                 },
 

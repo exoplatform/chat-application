@@ -31,8 +31,12 @@ public class SessionListener implements HttpSessionListener
   }
 
   public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
+
     HttpSession session = httpSessionEvent.getSession();
-    ServerBootstrap.getUserService().removeSession(session.getId());
+/*
+    HttpSession session = httpSessionEvent.getSession();
+    ServerBootstrap.getTokenService().removeToken(session.getId());
+*/
 //    System.out.println("SESSION REMOVED :: "+session.getId());
   }
 }

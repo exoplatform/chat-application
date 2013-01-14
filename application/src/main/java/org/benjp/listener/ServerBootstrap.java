@@ -19,12 +19,19 @@
 
 package org.benjp.listener;
 
+import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
 
 public class ServerBootstrap {
   private static final UserService userService = new UserService();
+  private static final TokenService tokenService = new TokenService();
 
   public static UserService getUserService() {
     return userService;
+  }
+
+  public static TokenService getTokenService()
+  {
+    return tokenService;
   }
 }

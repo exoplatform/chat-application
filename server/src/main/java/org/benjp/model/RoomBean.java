@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.services;
+package org.benjp.model;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.benjp.services.UserService;
 
 public class RoomBean implements Comparable<RoomBean>
 {

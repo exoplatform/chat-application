@@ -1,6 +1,6 @@
 <div id="chat-status"
   data-username="<%=user%>"
-  data-session-id="<%=sessionId%>"
+  data-token="<%=token%>"
   data-chat-page="<%=chatPage%>"
   data-chat-server-url="<%=chatServerURL%>" >
   <li class="UITab NormalToolbarTab">
