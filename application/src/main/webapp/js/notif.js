@@ -9,6 +9,8 @@ var jq171 = jQuery.noConflict(true);
     var token = $notificationApplication.attr("data-token");
     var chatPage = $notificationApplication.attr("data-chat-page");
     var chatServerURL = $notificationApplication.attr("data-chat-server-url");
+    var chatIntervalNotif = $notificationApplication.attr("data-chat-interval-notif");
+    var chatIntervalStatus = $notificationApplication.attr("data-chat-interval-status");
     var jzInitUserProfile = $notificationApplication.jzURL("NotificationApplication.initUserProfile");
     var jzNotification = chatServerURL+"/notification";
     var jzGetStatus = chatServerURL+"/getStatus";
@@ -27,11 +29,11 @@ var jq171 = jQuery.noConflict(true);
 
           notifEventURL = jzNotification+'?user='+username+'&token='+token;
           notifEventInt = window.clearInterval(notifEventInt);
-          notifEventInt = setInterval(refreshNotif, 3000);
+          notifEventInt = setInterval(refreshNotif, chatIntervalNotif);
           refreshNotif();
 
           notifStatusInt = window.clearInterval(notifStatusInt);
-          notifStatusInt = setInterval(refreshStatus, 60000);
+          notifStatusInt = setInterval(refreshStatus, chatIntervalStatus);
           refreshStatus();
 
         },
