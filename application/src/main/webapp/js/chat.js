@@ -416,6 +416,8 @@ function hidePanel(panel) {
        notifStatusInt = window.clearInterval(notifStatusInt);
        notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
        refreshStatusChat();
+       loadRoom();
+
    });
 
  }
@@ -498,7 +500,9 @@ function hidePanel(panel) {
    if (value && firstLoad) {
      //console.log("firstLoad with user : *"+value+"*");
      targetUser = value;
-     loadRoom();
+     if (username!==ANONIM_USER) {
+      loadRoom();
+     }
      firstLoad = false;
    }
 
