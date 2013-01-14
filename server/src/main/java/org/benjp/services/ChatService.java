@@ -263,7 +263,7 @@ public class ChatService
 
     if (withUsers)
     {
-      Collection<String> availableUsers = tokenService.getUsersFilterBy(user);
+      Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user);
       rooms = this.getExistingRooms(user, notificationService);
 
       for (RoomBean roomBean:rooms) {

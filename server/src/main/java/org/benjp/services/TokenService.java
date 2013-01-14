@@ -40,24 +40,6 @@ public class TokenService
     return MongoBootstrap.getDB();
   }
 
-  public boolean hasToken(String token)
-  {
-    DBCollection coll = db().getCollection(M_TOKENS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("token", token);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-  }
-
-  public boolean hasUser(String user)
-  {
-    DBCollection coll = db().getCollection(M_TOKENS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-  }
-
   public String getToken(String user)
   {
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
@@ -89,24 +71,10 @@ public class TokenService
       doc.put("_id", token);
       doc.put("user", user);
       doc.put("token", token);
+      doc.put("validity", System.currentTimeMillis());
       doc.put("isDemoUser", user.startsWith(ANONIM_USER));
 
       coll.insert(doc);
-    }
-  }
-
-  public void removeToken(String token)
-  {
-    DBCollection coll = db().getCollection(M_TOKENS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("token", token);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      String user = doc.get("user").toString();
-      System.out.println("TOKEN SERVICE :: REMOVING :: " + user + " : " + token);
-      coll.remove(doc);
     }
   }
 
@@ -123,26 +91,28 @@ public class TokenService
     }
   }
 
-  public List<String> getUsers()
+  public void updateValidity(String user, String token)
   {
-    ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_TOKENS);
-    DBCursor cursor = coll.find();
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    query.put("token", token);
+    DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
       DBObject doc = cursor.next();
-      users.add(doc.get("user").toString());
+      doc.put("validity", System.currentTimeMillis());
+      coll.save(doc, WriteConcern.SAFE);
     }
-
-    return users;
   }
 
-  public List<String> getUsersFilterBy(String user)
+  public List<String> getActiveUsersFilterBy(String user)
   {
     ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_TOKENS);
     BasicDBObject query = new BasicDBObject();
     query.put("isDemoUser", user.startsWith(ANONIM_USER));
+    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-10*1000)); //check token not updated since 10sec
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
