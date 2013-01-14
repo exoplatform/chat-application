@@ -751,37 +751,39 @@ function hidePanel(panel) {
 
  function loadRoom() {
    console.log("TARGET::"+targetUser);
-   $(".users-online").removeClass("info");
-   if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
+   if (targetUser!==undefined) {
+     $(".users-online").removeClass("info");
+     if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
 
-   $.ajax({
-     url: jzChatGetRoom,
-     data: {"targetUser": targetUser,
-             "user": username,
-             "token": token
-             },
+     $.ajax({
+       url: jzChatGetRoom,
+       data: {"targetUser": targetUser,
+               "user": username,
+               "token": token
+               },
 
-     success: function(response){
-       console.log("SUCCESS::getRoom::"+response);
-       room = response;
-       var $msg = $('#msg');
-       $msg.removeAttr("disabled");
-       if (isDesktopView()) $msg.focus();
-       chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&token='+token+'&event=0';
+       success: function(response){
+         console.log("SUCCESS::getRoom::"+response);
+         room = response;
+         var $msg = $('#msg');
+         $msg.removeAttr("disabled");
+         if (isDesktopView()) $msg.focus();
+         chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&token='+token+'&event=0';
 
-       jzStoreParam("lastUser", targetUser, 60000);
-       jzStoreParam("lastTS", "0");
-       chatEventInt = window.clearInterval(chatEventInt);
-       chatEventInt = setInterval(refreshChat, chatIntervalChat);
-       refreshChat();
+         jzStoreParam("lastUser", targetUser, 60000);
+         jzStoreParam("lastTS", "0");
+         chatEventInt = window.clearInterval(chatEventInt);
+         chatEventInt = setInterval(refreshChat, chatIntervalChat);
+         refreshChat();
 
-     },
+       },
 
-     error: function(xhr, status, error){
-       console.log("ERROR::"+xhr.responseText);
-     }
+       error: function(xhr, status, error){
+         console.log("ERROR::"+xhr.responseText);
+       }
 
-   });
+     });
+   }
 
  }
 
