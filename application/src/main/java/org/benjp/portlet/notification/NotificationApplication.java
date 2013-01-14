@@ -70,9 +70,14 @@ public class NotificationApplication
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+    String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
+    String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
 
     index.with().set("user", remoteUser_).set("token", token_)
-            .set("chatServerURL", chatServerURL).set("chatPage", chatPage).render();
+            .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
+            .set("chatIntervalStatus", chatIntervalStatus)
+            .set("chatIntervalNotif", chatIntervalNotif)
+            .render();
   }
 
   @Ajax

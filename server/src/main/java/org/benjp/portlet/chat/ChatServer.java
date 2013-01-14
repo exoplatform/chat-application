@@ -80,7 +80,6 @@ public class ChatServer
 */
     if (tokenService.hasUserWithToken(user,  token))
     {
-      tokenService.updateValidity(user, token);
       List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
       users.with().set("rooms", rooms).render().withMimeType("text/html; charset=UTF-8");
     }
@@ -240,6 +239,7 @@ public class ChatServer
     try
     {
       status = userService.getStatus(user);
+      tokenService.updateValidity(user, token);
     }
     catch (Exception e)
     {

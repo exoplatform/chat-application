@@ -34,6 +34,7 @@ public class TokenService
 {
   private static final String M_TOKENS = "tokens";
   public static final String ANONIM_USER = "__anonim_";
+  private int validity_ = -1;
 
   private DB db()
   {
@@ -112,7 +113,7 @@ public class TokenService
     DBCollection coll = db().getCollection(M_TOKENS);
     BasicDBObject query = new BasicDBObject();
     query.put("isDemoUser", user.startsWith(ANONIM_USER));
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-10*1000)); //check token not updated since 10sec
+    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
@@ -125,5 +126,21 @@ public class TokenService
     return users;
   }
 
+  private int getValidity() {
+    if (validity_==-1)
+    {
+      validity_ = 25000;
+      try
+      {
+        validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS)) + 10000;
+      }
+      catch (Exception e)
+      {
+        //do nothing if exception happens, keep 15000 value (=> statusInterval should set)
+      }
+
+    }
+    return validity_;
+  }
 
 }
