@@ -334,7 +334,7 @@ $(document).ready(function(){
   }
 
 
-function hidePanel(panel) {
+ function hidePanel(panel) {
    $(panel).css("display", "none");
    $(panel).html("");
  }
@@ -427,12 +427,18 @@ function hidePanel(panel) {
    about += "Version 0.6-SNAPSHOT<br><br>";
    about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
    about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
-   about += "<br><br><a href=\"#\" onclick=\"javascript:closeAbout();\">Close</a>";
+   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
    hidePanels();
    var $chatAboutPanel = $(".chat-about-panel");
    $chatAboutPanel.html(about);
    $chatAboutPanel.css("display", "block");
+
+   $("#about-close-btn").on("click", function() {
+     hidePanel('.chat-about-panel');
+     $('#chat-search').attr("value", "");
+   });
  }
+
 
  function showHelpPanel() {
    hidePanels();
@@ -786,13 +792,6 @@ function hidePanel(panel) {
    }
 
  }
-
-
-
- function closeAbout() {
-   hidePanel('.chat-about-panel');
- }
-
 
  function reloadWindow() {
    var sURL = unescape(window.location.href);
