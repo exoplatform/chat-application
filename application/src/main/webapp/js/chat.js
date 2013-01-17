@@ -849,11 +849,14 @@ $(document).ready(function(){
          } else if (w.indexOf("wolfram:")===0) {
            w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_new'>"+w.substr(8, w.length-8)+"</a>";
          } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
+           var link = w;
            if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
              w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
+             w += "<span class='invisible-text'>"+link+"</span>";
            } else if (w.indexOf("http://www.youtube.com/watch?v=")===0) {
              var id = w.substr(31);
-             w ="<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
+             w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
+             w += "<span class='invisible-text'>"+link+"</span>";
            } else {
              w = "<a href='"+w+"' target='_new'>"+w+"</a>";
            }
