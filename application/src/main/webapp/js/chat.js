@@ -849,7 +849,11 @@ $(document).ready(function(){
          } else if (w.indexOf("wolfram:")===0) {
            w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_new'>"+w.substr(8, w.length-8)+"</a>";
          } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
-           w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+           if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
+             w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
+           } else {
+             w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+           }
          } else if (w == ":-)" || w==":)") {
            w = "<span class='emoticon emoticon-smile'><span class='emoticon-text'>:)</span></span>";
          } else if (w == ":-D" || w==":D") {
@@ -880,6 +884,10 @@ $(document).ready(function(){
 
    return msg;
  }
+
+  String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+  };
 
 
 
