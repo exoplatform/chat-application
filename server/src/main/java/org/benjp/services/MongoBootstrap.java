@@ -63,7 +63,6 @@ public class MongoBootstrap
       }
       initCollection("notifications");
       initCollection("room_rooms");
-      initCollection("sessions");
       initCollection("tokens");
       initCollection("spaces");
       initCollection("users");
@@ -108,10 +107,6 @@ public class MongoBootstrap
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.ensureIndex("space");
     rooms.ensureIndex("users");
-
-    DBCollection sessions = getDB().getCollection("sessions");
-    sessions.ensureIndex("user");
-    sessions.ensureIndex("session");
 
     DBCollection tokens = getDB().getCollection("tokens");
     tokens.ensureIndex("user");
