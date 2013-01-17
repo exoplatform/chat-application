@@ -851,6 +851,9 @@ $(document).ready(function(){
          } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
            if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
              w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
+           } else if (w.indexOf("http://www.youtube.com/watch?v=")===0) {
+             var id = w.substr(31);
+             w ="<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
            } else {
              w = "<a href='"+w+"' target='_new'>"+w+"</a>";
            }
