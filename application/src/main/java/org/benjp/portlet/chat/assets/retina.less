@@ -1,0 +1,34 @@
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
+
+  .filter (@image, @paddingLeft) {
+    background-position: 0px 0px;
+    .background(@image);
+    cursor: pointer;
+    padding-left: @paddingLeft;
+    background-size: 19px 19px;
+  }
+
+  .filter-on {
+    .filter('2x/filter-on.png', 19px);
+  }
+
+  .filter-off {
+    .filter('2x/filter-off.png', 19px);
+  }
+
+  .filter-user {
+    .filter('2x/filter-user.png', 0);
+    display: inline-block;
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .filter-space {
+    .filter('2x/filter-space.png', 0);
+    display: inline-block;
+    font-size: 12px;
+    margin-right: 5px;
+  }
+
+}
+

@@ -1,0 +1,41 @@
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
+
+  .chaticonFn (@image:'chat.png') {
+    background:url('@{iconStatusPath}2x/@{image}') no-repeat 3px 4px;
+    background-size: 17px 17px;
+  }
+
+  .chat-icon {
+    .chaticonFn();
+    height: 22px;
+  }
+  .chat-status-available-black {
+    .chaticonFn('status-available-black.png');
+  }
+  .chat-status-available {
+    .chaticonFn('status-available.png');
+  }
+  .chat-status-donotdisturb-black {
+    .chaticonFn('status-donotdisturb-black.png');
+  }
+  .chat-status-donotdisturb {
+    .chaticonFn('status-donotdisturb.png');
+  }
+  .chat-status-away-black {
+    .chaticonFn('status-away-black.png');
+  }
+  .chat-status-away {
+    .chaticonFn('status-away.png');
+  }
+  .chat-status-invisible-black {
+    .chaticonFn('status-invisible-black.png');
+  }
+  .chat-status-invisible {
+    .chaticonFn('status-invisible.png');
+  }
+  .chat-status-offline-black {
+    .chaticonFn('status-offline-black.png');
+  }
+
+}
+
