@@ -30,5 +30,80 @@
     margin-right: 5px;
   }
 
+  @imgEmoticonPath:             "@{imgPath}2x/emoticons/";
+
+  .background-emoticon(@image) {
+    background: url('@{imgEmoticonPath}@{image}') no-repeat 0px 0px;
+    background-size: 16px 16px;
+  }
+
+  .msg-emoticons {
+    .background-emoticon('smile.png');
+  }
+
+  .emoticon-smile {
+    .background-emoticon('smile.png');
+  }
+  .emoticon-big-smile {
+    .background-emoticon('bigsmile.png');
+  }
+  .emoticon-eye-blink {
+    .background-emoticon('eyeblink.png');
+  }
+  .emoticon-no-voice {
+    .background-emoticon('novoice.png');
+  }
+  .emoticon-sad {
+    .background-emoticon('sad.png');
+  }
+  .emoticon-surprise {
+    .background-emoticon('surprise.png');
+  }
+  .emoticon-smile-white {
+    .background-emoticon('smile-white.png');
+  }
+  .emoticon-big-smile-white {
+    .background-emoticon('bigsmile-white.png');
+  }
+  .emoticon-eye-blink-white {
+    .background-emoticon('eyeblink-white.png');
+  }
+  .emoticon-no-voice-white {
+    .background-emoticon('novoice-white.png');
+  }
+  .emoticon-sad-white {
+    .background-emoticon('sad-white.png');
+  }
+  .emoticon-surprise-white {
+    .background-emoticon('surprise-white.png');
+  }
+
+  .msg-help {
+    .background('2x/help.png');
+    background-size: 16px 16px;
+  }
+
+  .user-status {
+    .background('2x/mask-dot.png');
+    background-size: 16px 16px;
+  }
+
+  .user-status:hover, .user-favorite {
+    .background('2x/mask-star.png');
+    background-size: 16px 16px;
+  }
+
+  .user-favorite:hover {
+    .background('2x/mask-dot.png');
+    background-size: 16px 16px;
+  }
+
+  .icon-search {
+    .background('2x/search.png');
+    background-size: 16px 16px;
+    width: 16px;
+    height: 16px;
+  }
+
 }
 
