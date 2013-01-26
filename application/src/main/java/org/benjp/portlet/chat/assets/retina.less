@@ -98,11 +98,20 @@
     background-size: 16px 16px;
   }
 
-  .icon-search {
-    .background('2x/search.png');
+  .icon(@name) {
+    .background('2x/icon-@{name}.png');
     background-size: 16px 16px;
     width: 16px;
     height: 16px;
+  }
+  .icon-search {
+    .icon('search');
+  }
+  .icon-user {
+    .icon('user');
+  }
+  .icon-chevron-left {
+    .icon('chevron-left');
   }
 
 }
