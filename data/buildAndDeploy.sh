@@ -3,9 +3,9 @@
 SCRIPT_LAUNCH_DIR=$(pwd)
 PROJECT_DIR=$(cd $(dirname "$0"); pwd)
 CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/apache-tomcat-7.0.35
-PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.5/tomcat-bundle
-#PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.5-BEN/tomcat-bundle
-#CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.5/tomcat-bundle
+PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6-BEN/tomcat-bundle
+#PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6/tomcat-bundle
+#CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6/tomcat-bundle
 
 if [ $# = 1 ]
 then
