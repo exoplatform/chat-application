@@ -69,7 +69,7 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public void whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces)
+  public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces)
   {
 /*
     try {
@@ -78,11 +78,13 @@ public class ChatServer
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 */
-    if (tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user,  token))
     {
-      List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
-      users.with().set("rooms", rooms).render().withMimeType("text/html; charset=UTF-8");
+      return Response.notFound("Petit malin !");
     }
+
+    List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
+    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8");
   }
 
   @Resource

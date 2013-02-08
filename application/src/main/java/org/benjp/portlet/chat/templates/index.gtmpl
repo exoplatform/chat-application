@@ -6,7 +6,25 @@
   data-chat-interval-session="<%=chatIntervalSession%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-chat-interval-users="<%=chatIntervalUsers%>"
-  data-public-mode="<%=publicMode%>">
+  data-public-mode="<%=publicMode%>"
+
+  data-label-panel-error1="&{benjp.chat.panel.error1}"
+  data-label-panel-error2="&{benjp.chat.panel.error2}"
+  data-label-panel-login1="&{benjp.chat.panel.login1}"
+  data-label-panel-login2="&{benjp.chat.panel.login2}"
+  data-label-panel-demo="&{benjp.chat.panel.demo}"
+  data-label-display-name="&{benjp.chat.display.name}"
+  data-label-email="&{benjp.chat.email}"
+  data-label-save-profile="&{benjp.chat.save.profile}"
+  data-label-title="&{benjp.chat.title}"
+  data-label-new-messages="&{benjp.chat.new.messages}"
+  data-label-available="&{benjp.chat.available}"
+  data-label-away="&{benjp.chat.away}"
+  data-label-donotdisturb="&{benjp.chat.donotdisturb}"
+  data-label-invisible="&{benjp.chat.invisible}"
+  data-label-current-status="&{benjp.chat.current.status}"
+  data-label-no-messages="&{benjp.chat.no.messages}"
+>
 
   <div class="chat-sync-panel" style="display:none;"></div>
   <div class="chat-error-panel" style="display:none;"></div>
@@ -20,10 +38,10 @@
       <span class="avatar-user"><img class="avatar-image" onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px'></span>
       <span class="chat-status-chat chat-status-invisible"></span>
       <span class="chat-status-panel" style="display:none;">
-        <div class="chat-menu chat-status chat-status-available" status="available">Available</div>
-        <div class="chat-menu chat-status chat-status-away" status="away">Away</div>
-        <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</div>
-        <div class="chat-menu chat-status chat-status-invisible" status="invisible">Invisible</div>
+        <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.available}</div>
+        <div class="chat-menu chat-status chat-status-away" status="away">&{benjp.chat.away}</div>
+        <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
+        <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
       </span>
       <label>
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
@@ -36,11 +54,11 @@
   </div>
   <div class="menu-mobile">
     <div>
-      <div class="chat-menu chat-status-chat chat-status-invisible chat-status-label">Your status is :</div>
-      <div class="chat-menu chat-status chat-status-available" status="available">Available</div>
-      <div class="chat-menu chat-status chat-status-away" status="away">Away</div>
-      <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</div>
-      <div class="chat-menu chat-status chat-status-invisible" status="invisible">Invisible</div>
+      <div class="chat-menu chat-status-chat chat-status-invisible chat-status-label">&{benjp.chat.your.status}</div>
+      <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.invisible}</div>
+      <div class="chat-menu chat-status chat-status-away" status="away">&{benjp.chat.away}</div>
+      <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
+      <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
     </div>
   </div>
   <div class="left-chat no-user-selection">

@@ -26,6 +26,9 @@
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
+     <supported-locale>en</supported-locale>
+     <supported-locale>fr</supported-locale>
+     <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
      <portlet-info>
        <title>Chat Application</title>
      </portlet-info>
@@ -49,6 +52,9 @@
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
+     <supported-locale>en</supported-locale>
+     <supported-locale>fr</supported-locale>
+     <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
      <portlet-info>
        <title>Chat Notification Application</title>
      </portlet-info>

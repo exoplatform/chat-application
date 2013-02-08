@@ -11,6 +11,25 @@ $(document).ready(function(){
   var chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
   var chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
   var chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
+
+  var labelPanelError1 = $chatApplication.attr("data-label-panel-error1");
+  var labelPanelError2 = $chatApplication.attr("data-label-panel-error2");
+  var labelPanelLogin1 = $chatApplication.attr("data-label-panel-login1");
+  var labelPanelLogin2 = $chatApplication.attr("data-label-panel-login2");
+  var labelPanelDemo = $chatApplication.attr("data-label-panel-demo");
+  var labelDisplayName = $chatApplication.attr("data-label-display-name");
+  var labelEmail = $chatApplication.attr("data-label-email");
+  var labelSaveProfile = $chatApplication.attr("data-label-save-profile");
+  var labelTitle = $chatApplication.attr("data-label-title");
+  var labelNewMessages = $chatApplication.attr("data-label-new-messages");
+  var labelAvailable = $chatApplication.attr("data-label-available");
+  var labelAway = $chatApplication.attr("data-label-away");
+  var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
+  var labelInvisible = $chatApplication.attr("data-label-invisible");
+  var labelCurrentStatus = $chatApplication.attr("data-label-current-status");
+  var labelNoMessages = $chatApplication.attr("data-label-no-messages");
+
+
   var jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
   var jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
   var jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
@@ -360,7 +379,7 @@ $(document).ready(function(){
    hidePanels();
    console.log("show-error-panel");
    var $chatErrorPanel = $(".chat-error-panel");
-   $chatErrorPanel.html("Service Not Available.<br/><br/>Please, come back later.");
+   $chatErrorPanel.html(labelPanelError1+"<br/><br/>"+labelPanelError2);
    $chatErrorPanel.css("display", "block");
  }
 
@@ -368,7 +387,7 @@ $(document).ready(function(){
    hidePanels();
    console.log("show-login-panel");
    var $chatLoginPanel = $(".chat-login-panel");
-   $chatLoginPanel.html("You must be logged in to use the Chat.<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">Click here to reload</a>");
+   $chatLoginPanel.html(labelPanelLogin1+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+labelPanelLogin2+"</a>");
    $chatLoginPanel.css("display", "block");
  }
 
@@ -376,10 +395,10 @@ $(document).ready(function(){
    hidePanels();
    console.log("show-demo-panel");
    var $chatDemoPanel = $(".chat-demo-panel");
-   $chatDemoPanel.html("Welcome in the Demo mode.<br><br><div class='welcome-panel'>" +
-           "<br><br>Display Name&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
-           "<br><br>Email&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
-           "<br><a href='#' id='anonim-save'>Save Your Profile</a>");
+   $chatDemoPanel.html(labelPanelDemo+"<br><br><div class='welcome-panel'>" +
+           "<br><br>"+labelDisplayName+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
+           "<br><br>"+labelEmail+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
+           "<br><a href='#' id='anonim-save'>"+labelSaveProfile+"</a>");
    $chatDemoPanel.css("display", "block");
 
    $("#anonim-save").on("click", function() {
@@ -483,8 +502,8 @@ $(document).ready(function(){
            window.fluid.dockBadge = "";
          if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
            window.fluid.showGrowlNotification({
-               title: "eXo Chat",
-               description: "You have new messages",
+               title: labelTitle,
+               description: labelNewMessages,
                priority: 1,
                sticky: false,
                identifier: "messages"
@@ -591,10 +610,10 @@ $(document).ready(function(){
 
  function initFluidApp() {
    if (window.fluid!==undefined) {
-     window.fluid.addDockMenuItem("Available", setStatusAvailable);
-     window.fluid.addDockMenuItem("Away", setStatusAway);
-     window.fluid.addDockMenuItem("Do not disturb", setStatusDoNotDisturb);
-     window.fluid.addDockMenuItem("Invisible", setStatusInvisible);
+     window.fluid.addDockMenuItem(labelAvailable, setStatusAvailable);
+     window.fluid.addDockMenuItem(labelAway, setStatusAway);
+     window.fluid.addDockMenuItem(labelDoNotDisturb, setStatusDoNotDisturb);
+     window.fluid.addDockMenuItem(labelInvisible, setStatusInvisible);
    }
 
 
@@ -622,7 +641,7 @@ $(document).ready(function(){
  function changeStatusChat(status) {
    profileStatus = status;
    var $statusLabel = $(".chat-status-label");
-   $statusLabel.html("Your current status is : "+getStatusLabel(status));
+   $statusLabel.html(labelCurrentStatus+" "+getStatusLabel(status));
    var $chatStatus = $("span.chat-status");
    $chatStatus.removeClass("chat-status-available-black");
    $chatStatus.removeClass("chat-status-donotdisturb-black");
@@ -666,7 +685,7 @@ $(document).ready(function(){
 
    if (messages.length===0) {
      out = "<div class='msgln' style='padding:22px 20px;'>";
-     out += "<b><center>No messages yet.</center></b>";
+     out += "<b><center>"+labelNoMessages+"</center></b>";
      out += "</div>";
    } else {
      for (im=0 ; im<messages.length ; im++) {

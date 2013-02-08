@@ -13,20 +13,20 @@
     </a>
     <ul  style="display: none; min-width: 120px; width: 120px;" class="MenuItemContainer">
       <li class="MenuItem" style="height:30px;">
-        <a href="#" class="popup-chat chat-icon">Open Chat</a>
+        <a href="#" class="popup-chat chat-icon">&{benjp.chat.open.chat}</a>
         <hr>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-available" status="available">Available</a>
+        <a href="#" class="chat-status chat-status-available" status="available">&{benjp.chat.available}</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-away" status="away">Away</a>
+        <a href="#" class="chat-status chat-status-away" status="away">&{benjp.chat.away}</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-donotdisturb" status="donotdisturb">Do not disturb</a>
+        <a href="#" class="chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</a>
       </li>
       <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-invisible" status="invisible">Invisible</a>
+        <a href="#" class="chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</a>
       </li>
     </ul>
 	</li>

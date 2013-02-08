@@ -67,7 +67,7 @@ public class ChatApplication
 
 
   @View
-  public void index(RenderContext renderContext)
+  public Response.Content index(RenderContext renderContext)
   {
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     boolean isPublic = (remoteUser_==null);
@@ -86,13 +86,13 @@ public class ChatApplication
       if (fullname==null) fullname=remoteUser_;
     }
 
-    index.with().set("user", remoteUser_).set("room", "noroom")
+    return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
             .set("publicMode", isPublic)
-            .render()
+            .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
 
   }
