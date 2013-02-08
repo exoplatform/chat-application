@@ -662,13 +662,13 @@ $(document).ready(function(){
  function getStatusLabel(status) {
    switch (status) {
      case "available":
-       return "Available";
+       return labelAvailable;
      case "donotdisturb":
-       return "Do not disturb";
+       return labelDoNotDisturb;
      case "away":
-       return "Away";
+       return labelAway;
      case "invisible":
-       return "Invisible";
+       return labelInvisible;
      case "offline":
        return "Offline";
 

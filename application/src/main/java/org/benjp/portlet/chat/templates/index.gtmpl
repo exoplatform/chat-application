@@ -55,7 +55,7 @@
   <div class="menu-mobile">
     <div>
       <div class="chat-menu chat-status-chat chat-status-invisible chat-status-label">&{benjp.chat.your.status}</div>
-      <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.invisible}</div>
+      <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.available}</div>
       <div class="chat-menu chat-status chat-status-away" status="away">&{benjp.chat.away}</div>
       <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
       <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
