@@ -36,6 +36,19 @@ public class NotificationService
     return MongoBootstrap.getDB();
   }
 
+  public static void cleanupNotifications()
+  {
+    DBCollection coll = MongoBootstrap.getDB().getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
+    query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
+    query.put("isRead", true);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      coll.remove(doc);
+    }
+  }
 
   public void addNotification(String user, String type, String category, String categoryId, String content, String link)
   {

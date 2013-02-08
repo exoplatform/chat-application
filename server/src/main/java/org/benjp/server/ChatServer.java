@@ -17,15 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.portlet.chat;
+package org.benjp.server;
 
 import juzu.*;
 import juzu.template.Template;
-import org.benjp.services.ChatService;
-import org.benjp.services.NotificationService;
+import org.benjp.services.*;
 import org.benjp.model.RoomBean;
-import org.benjp.services.TokenService;
-import org.benjp.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -57,7 +54,8 @@ public class ChatServer
   @Inject
   NotificationService notificationService;
 
-
+  @Inject
+  SchedulerService schedulerService;
 
 
   @View

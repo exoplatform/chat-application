@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.portlet.chat;
+package org.benjp.server;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;

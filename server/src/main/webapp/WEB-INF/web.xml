@@ -15,7 +15,7 @@
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
       <param-name>juzu.app_name</param-name>
-      <param-value>org.benjp.portlet.chat</param-value>
+      <param-value>org.benjp.server</param-value>
     </init-param>
     <init-param>
       <param-name>juzu.inject</param-name>
