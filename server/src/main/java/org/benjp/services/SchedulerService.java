@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import org.benjp.jobs.NotificationCleanupJob;
+import org.benjp.utils.PropertyManager;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -58,7 +59,7 @@ public class SchedulerService
 
       CronTrigger notificationTrigger = newTrigger()
               .withIdentity("notificationTrigger", "chatServer")
-              .withSchedule(cronSchedule("* 10 * * * ?"))
+              .withSchedule(cronSchedule(PropertyManager.getProperty(PropertyManager.PROPERTY_CRON_NOTIF_CLEANUP)))
               .build();
 
       sched.scheduleJob(notificationCleanupJob, notificationTrigger);
