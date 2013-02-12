@@ -48,7 +48,7 @@ public class NotificationApplication
   @Path("index.gtmpl")
   Template index;
 
-  String token_ = null;
+  String token_ = "---";
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
 
@@ -69,7 +69,6 @@ public class NotificationApplication
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
-    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
 
@@ -84,11 +83,13 @@ public class NotificationApplication
   @Resource
   public Response.Content initUserProfile()
   {
-    String  out = "nothing to update";
+    String out = "{\"token\": \""+token_+"\", \"msg\": \"nothing to update\"}";
     if (!profileInitialized_)
     {
       try
       {
+        // Generate and store token if doesn't exist yet.
+        token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
 
         // Add User in the DB
         addUser(remoteUser_, token_);
@@ -99,7 +100,7 @@ public class NotificationApplication
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_);
 
-        out = "updated";
+        out = "{\"token\": \""+token_+"\", \"msg\": \"updated\"}";
 
         profileInitialized_ = true;
       }
@@ -110,7 +111,7 @@ public class NotificationApplication
       }
     }
 
-    return Response.ok(out).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
   }
 

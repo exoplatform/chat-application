@@ -22,25 +22,24 @@ var jq171 = jQuery.noConflict(true);
 
 
     function initUserProfile() {
-      $.ajax({
-        url: jzInitUserProfile,
-        success: function(response){
-          console.log("Profile Update : "+response);
+      $.getJSON(jzInitUserProfile, function(data){
+        console.log("Profile Update : "+data.msg);
+        token = data.token;
+        console.log("Token : "+data.token);
 
-          notifEventURL = jzNotification+'?user='+username+'&token='+token;
-          notifEventInt = window.clearInterval(notifEventInt);
-          notifEventInt = setInterval(refreshNotif, chatIntervalNotif);
-          refreshNotif();
+        notifEventURL = jzNotification+'?user='+username+'&token='+token;
+        notifEventInt = window.clearInterval(notifEventInt);
+        notifEventInt = setInterval(refreshNotif, chatIntervalNotif);
+        refreshNotif();
 
-          notifStatusInt = window.clearInterval(notifStatusInt);
-          notifStatusInt = setInterval(refreshStatus, chatIntervalStatus);
-          refreshStatus();
-
-        },
-        error: function(response){
-          //retry in 3 sec
-          setTimeout(initUserProfile, 3000);
-        }
+        notifStatusInt = window.clearInterval(notifStatusInt);
+        notifStatusInt = setInterval(refreshStatus, chatIntervalStatus);
+        refreshStatus();
+      })
+      .error(function(response){
+        console.log("error::"+response);
+        //retry in 3 sec
+        setTimeout(initUserProfile, 3000);
       });
     }
     initUserProfile();

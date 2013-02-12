@@ -314,21 +314,24 @@ $(document).ready(function(){
         createDemoUser(anonimFullname, anonimEmail);
       }
     } else {
-      $.ajax({
-        url: jzInitChatProfile,
-        success: function(response){
-          console.log("Chat Profile Update : "+response);
+      $.getJSON(jzInitChatProfile, function(data){
+        console.log("Chat Profile Update : "+data.msg);
+        console.log("Chat Token : "+data.token);
+        console.log("Chat Fullname : "+data.fullname);
+        token = data.token;
+        var $chatApplication = $("#chat-application");
+        $chatApplication.attr("data-token", token);
+        $(".label-user").text(data.fullname);
 
-          refreshWhoIsOnline();
-          notifStatusInt = window.clearInterval(notifStatusInt);
-          notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
-          refreshStatusChat();
+        refreshWhoIsOnline();
+        notifStatusInt = window.clearInterval(notifStatusInt);
+        notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
+        refreshStatusChat();
 
-        },
-        error: function(response){
-          //retry in 3 sec
-          setTimeout(initChatProfile, 3000);
-        }
+      })
+      .error(function (response){
+        //retry in 3 sec
+        setTimeout(initChatProfile, 3000);
       });
     }
 
@@ -477,7 +480,7 @@ $(document).ready(function(){
       withSpaces = true;
     }
 
-    if (username !== ANONIM_USER) {
+    if (username !== ANONIM_USER && token !== "---") {
       $.ajax({
         url: jzChatWhoIsOnline,
         data: { "user": username,

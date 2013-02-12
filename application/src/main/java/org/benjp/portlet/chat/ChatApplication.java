@@ -49,8 +49,9 @@ public class ChatApplication
   Template index;
 
 
-  String token_ = null;
+  String token_ = "---";
   String remoteUser_ = null;
+  String fullname_ = null;
   boolean profileInitialized_ = false;
 
 
@@ -72,19 +73,13 @@ public class ChatApplication
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     boolean isPublic = (remoteUser_==null);
     if (isPublic) remoteUser_ = UserService.ANONIM_USER;
-    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
 
-    String fullname = remoteUser_;
-    if (!UserService.ANONIM_USER.equals(remoteUser_))
-    {
-      fullname = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
-      if (fullname==null) fullname=remoteUser_;
-    }
+    String fullname = (fullname_==null)?remoteUser_:fullname_;
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
@@ -108,11 +103,14 @@ public class ChatApplication
   @Resource
   public Response.Content initChatProfile()
   {
-    String  out = "nothing to update";
+    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\"}";
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
       {
+        // Generate and store token if doesn't exist yet.
+        token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+
         // Add User in the DB
         addUser(remoteUser_, token_);
 
@@ -122,7 +120,12 @@ public class ChatApplication
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_);
 
-        out = "updated";
+        if (!UserService.ANONIM_USER.equals(remoteUser_))
+        {
+          fullname_ = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
+        }
+
+        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\"}";
         profileInitialized_ = true;
       }
       catch (Exception e)
@@ -133,7 +136,7 @@ public class ChatApplication
       }
     }
 
-    return Response.ok(out).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
   }
 
