@@ -63,7 +63,7 @@
 
   <filter>
     <filter-name>ResponseFilter</filter-name>
-    <filter-class>org.benjp.server.ResponseFilter</filter-class>
+    <filter-class>org.benjp.portlet.chat.ResponseFilter</filter-class>
     <lifecycle>RENDER_PHASE</lifecycle>
   </filter>
   <filter-mapping>
