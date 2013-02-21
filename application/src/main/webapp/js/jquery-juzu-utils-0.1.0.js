@@ -5,7 +5,7 @@
 
     var now = Math.round(new Date()/1000);
 
-    if (val !== undefined && (now<ts || ts===-1 )) {
+    if (val !== undefined && val !== null && (now<ts || ts===-1 )) {
       return val;
     }
 

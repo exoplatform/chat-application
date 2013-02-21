@@ -1,3 +1,9 @@
+var console = console || {
+  log:function(){},
+  warn:function(){},
+  error:function(){}
+};
+
 $(document).ready(function(){
 
   var highlight = "";
@@ -329,10 +335,10 @@ $(document).ready(function(){
         refreshStatusChat();
 
       })
-      .error(function (response){
-        //retry in 3 sec
-        setTimeout(initChatProfile, 3000);
-      });
+        .error(function (response){
+          //retry in 3 sec
+          setTimeout(initChatProfile, 3000);
+        });
     }
 
   }
@@ -564,7 +570,7 @@ $(document).ready(function(){
       }
     });
 
-    $('.user-status').on("click", function(e) {
+    $('.user-status').on("click", function() {
       var targetFav = $(this).attr("user-data");
       toggleFavorite(targetFav);
     });
@@ -705,7 +711,7 @@ $(document).ready(function(){
           if (message.user != username) {
             out += "<div class='msgln-odd'>";
             out += "<span style='position:relative; padding-right:9px;top:8px'>";
-            out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px'>";
+            out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
             out += "</span>";
             out += "<span>";
           } else {
@@ -883,7 +889,7 @@ $(document).ready(function(){
             if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
               w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
               w += "<span class='invisible-text'>"+link+"</span>";
-            } else if (w.indexOf("http://www.youtube.com/watch?v=")===0) {
+            } else if (w.indexOf("http://www.youtube.com/watch?v=")===0 && !IsIE8Browser() ) {
               var id = w.substr(31);
               w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
               w += "<span class='invisible-text'>"+link+"</span>";
@@ -919,6 +925,16 @@ $(document).ready(function(){
     // }
 
     return msg;
+  }
+
+  function IsIE8Browser() {
+    var rv = -1;
+    var ua = navigator.userAgent;
+    var re = new RegExp("Trident\/([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null) {
+      rv = parseFloat(RegExp.$1);
+    }
+    return (rv == 4);
   }
 
   String.prototype.endsWith = function(suffix) {
