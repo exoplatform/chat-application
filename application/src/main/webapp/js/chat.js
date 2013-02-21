@@ -62,6 +62,7 @@ $(document).ready(function(){
   var filterInt;
   var keydown = -1;
   var profileStatus = "offline";
+  var whoIsOnlineMD5 = 0;
 
   function checkViewportStatus() {
     return ($(".btn-mobile").css("display")!=="none");
@@ -497,30 +498,35 @@ $(document).ready(function(){
         },
         dataType: 'html',
         success: function(response){
-          isLoaded = true;
-          hidePanel(".chat-error-panel");
-          hidePanel(".chat-sync-panel");
-          $("#chat-users").html(response);
-          jQueryForUsersTemplate();
-          if (window.fluid!==undefined) {
-            totalNotif = 0;
-            $('span.room-total').each(function(index) {
-              totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
-            });
-            if (totalNotif>0)
-              window.fluid.dockBadge = totalNotif;
-            else
-              window.fluid.dockBadge = "";
-            if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
-              window.fluid.showGrowlNotification({
-                title: labelTitle,
-                description: labelNewMessages,
-                priority: 1,
-                sticky: false,
-                identifier: "messages"
+          var tmpMD5 = calcMD5(response);
+          if (tmpMD5 !== whoIsOnlineMD5) {
+            whoIsOnlineMD5 = tmpMD5;
+            isLoaded = true;
+            hidePanel(".chat-error-panel");
+            hidePanel(".chat-sync-panel");
+            $("#chat-users").html(response);
+            jQueryForUsersTemplate();
+            if (window.fluid!==undefined) {
+              totalNotif = 0;
+              $('span.room-total').each(function(index) {
+                totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
               });
+              if (totalNotif>0)
+                window.fluid.dockBadge = totalNotif;
+              else
+                window.fluid.dockBadge = "";
+              if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
+                window.fluid.showGrowlNotification({
+                  title: labelTitle,
+                  description: labelNewMessages,
+                  priority: 1,
+                  sticky: false,
+                  identifier: "messages"
+                });
+              }
+              oldNotif = totalNotif;
             }
-            oldNotif = totalNotif;
+
           }
         },
         error: function(jqXHR, textStatus, errorThrown){
@@ -571,6 +577,10 @@ $(document).ready(function(){
     });
 
     $('.user-status').on("click", function() {
+      var targetFav = $(this).attr("user-data");
+      toggleFavorite(targetFav);
+    });
+    $('.user-favorite').on("click", function() {
       var targetFav = $(this).attr("user-data");
       toggleFavorite(targetFav);
     });
@@ -781,7 +791,8 @@ $(document).ready(function(){
       url: jzChatToggleFavorite,
       data: {"targetUser": targetFav,
         "user": username,
-        "token": token
+        "token": token,
+        "timestamp": new Date().getTime()
       },
       success: function(response){
         refreshWhoIsOnline();

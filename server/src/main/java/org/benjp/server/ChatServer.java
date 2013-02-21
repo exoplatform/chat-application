@@ -82,7 +82,7 @@ public class ChatServer
     }
 
     List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
-    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8");
+    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

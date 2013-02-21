@@ -9,7 +9,7 @@
     %>
     <tr id="users-online-<%=room.user%>" class="users-online" style="<%=fav%>">
       <td class="td-status">
-        <span class="user-status <% if (room.isFavorite) { %> user-favorite<% } %>" user-data="<%=room.user%>"></span><span class="user-<%=room.status%>"></span>
+        <span class="<% if (room.isFavorite) { %>user-favorite<% } else { %>user-status<% } %>" user-data="<%=room.user%>"></span><span class="user-<%=room.status%>"></span>
       </td>
       <td>
         <% if (room.isActive()) { %>

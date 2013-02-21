@@ -126,6 +126,7 @@
 .users-online:hover {
   background-color: @colorBgLight;
 }
+
 .user-status {
   .background('mask-dot.png');
   width: 16px;
@@ -133,9 +134,16 @@
   height: 16px;
   float: left;
 }
-
-.user-status:hover, .user-favorite {
+.user-status:hover {
   .background('mask-star.png');
+}
+
+.user-favorite{
+  .background('mask-star.png');
+  width: 16px;
+  display: block;
+  height: 16px;
+  float: left;
 }
 
 .user-favorite:hover {
