@@ -4,6 +4,7 @@
 }
 
 .msg-emoticons-panel {
+  background: @colorBgEmoticonPlain;
   background-color: @colorBgEmoticon;
   min-width: 63px;
   height: 40px;
@@ -11,9 +12,9 @@
   -moz-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
-  float: right;
   position: relative;
   top: -107px;
+  left: (@widthMessages - 72);
 }
 .msg-emoticons {
   .background-emoticon('smile.png');

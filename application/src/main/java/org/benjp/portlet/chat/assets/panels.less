@@ -13,6 +13,7 @@
 
 .chat-error-panel, .chat-login-panel, .chat-about-panel, .chat-demo-panel {
   .chat-panel((@height - 51), white);
+  background: @colorBgPanelPlain;
   background-color: @colorBgPanel;
 }
 .chat-help-panel {
@@ -22,6 +23,7 @@
 }
 .chat-sync-panel {
   .chat-panel((@height - 151), white);
+  background: @colorBgPanelPlain;
   background-color: @colorBgPanel;
   width: 200px;
   height: 130px;
@@ -33,11 +35,11 @@
 
 
 .chat-status-panel {
-  position: absolute;
+  position: fixed;
+  background: @colorBgStatusPlain;
   background-color: @colorBgStatus;
   cursor: pointer;
   margin-top: 32px;
-  margin-left: 31px;
   border: 1px solid @colorBorderStatus;
   -moz-border-radius: 3px;
   border-radius: 3px;
