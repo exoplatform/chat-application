@@ -12,19 +12,21 @@
   -moz-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
-  position: relative;
-  top: -107px;
-  left: (@widthMessages - 72);
+  position: absolute;
+  right: 0px;
+  bottom: 61px;
+  z-index: 5;
 }
 .msg-emoticons {
   .background-emoticon('smile.png');
+  z-index: 10;
 }
 
 .emoticon {
   display: inline-block;
-  min-width: 16px;
+  min-width: 15px;
   height: 16px;
-  padding: 2px;
+  padding: 1px;
   margin: 0px;
   font-size: 1px;
 }
