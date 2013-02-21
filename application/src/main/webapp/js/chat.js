@@ -114,7 +114,8 @@ $(document).ready(function(){
       url: jzChatUpdateUnreadMessages,
       data: {"room": room,
         "user": username,
-        "token": token
+        "token": token,
+        "timestamp": new Date().getTime()
       },
 
       success:function(response){
@@ -136,7 +137,7 @@ $(document).ready(function(){
   });
 
   $('#msg').keyup(function(event) {
-    var msg = $(this).attr("value");
+    var msg = $(this).val();
     // console.log(event.which + " ;"+msg.length+";");
     if ( event.which == 13 && keydown !== 18 && msg.length>1) {
       //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
@@ -158,7 +159,8 @@ $(document).ready(function(){
           "targetUser": targetUser,
           "room": room,
           "message": msg,
-          "token": token
+          "token": token,
+          "timestamp": new Date().getTime()
         },
 
         success:function(response){
@@ -199,7 +201,8 @@ $(document).ready(function(){
         url: jzSetStatus,
         data: { "user": username,
           "token": token,
-          "status": status
+          "status": status,
+          "timestamp": new Date().getTime()
         },
 
         success: function(response){
@@ -494,7 +497,8 @@ $(document).ready(function(){
           "token": token,
           "filter": userFilter,
           "withSpaces": withSpaces,
-          "withUsers": withUsers
+          "withUsers": withUsers,
+          "timestamp": new Date().getTime()
         },
         dataType: 'html',
         success: function(response){
@@ -601,7 +605,8 @@ $(document).ready(function(){
       url: jzSetStatus,
       data: { "user": username,
         "token": token,
-        "status": status
+        "status": status,
+        "timestamp": new Date().getTime()
       },
 
       success: function(response){
@@ -649,7 +654,8 @@ $(document).ready(function(){
       url: jzGetStatus,
       data: {
         "user": username,
-        "token": token
+        "token": token,
+        "timestamp": new Date().getTime()
       },
       success: function(response){
         changeStatusChat(response);
@@ -812,7 +818,8 @@ $(document).ready(function(){
         url: jzChatGetRoom,
         data: {"targetUser": targetUser,
           "user": username,
-          "token": token
+          "token": token,
+          "timestamp": new Date().getTime()
         },
 
         success: function(response){
