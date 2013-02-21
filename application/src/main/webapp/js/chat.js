@@ -278,7 +278,7 @@ $(document).ready(function(){
   });
 
   $('#chat-search').keyup(function(event) {
-    var filter = $(this).attr("value");
+    var filter = $(this).val();
     if (filter == ":aboutme" || filter == ":about me") {
       showAboutPanel();
     }
