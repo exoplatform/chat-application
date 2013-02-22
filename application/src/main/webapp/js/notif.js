@@ -1,3 +1,9 @@
+var console = console || {
+  log:function(){},
+  warn:function(){},
+  error:function(){}
+};
+
 var jq171 = jQuery.noConflict(true);
 
 (function($) {
