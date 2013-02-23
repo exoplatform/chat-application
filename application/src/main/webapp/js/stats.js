@@ -23,7 +23,7 @@ var jq171 = jQuery.noConflict(true);
         html += "<div class='stats-row'><span class='stats-label'>Notifications : </span><span class='stats-data'>"+data.notifications+"</span></div>";
         html += "<div class='stats-row'><span class='stats-label'>Unread Notifications : </span><span class='stats-data'>"+data.notificationsUnread+"</span></div>";
         $("#chat-statistics").html(html);
-        setTimeout(getStats, 1000);
+        //setTimeout(getStats, 1000);
       })
       .error(function(response){
         console.log("error::"+response);
