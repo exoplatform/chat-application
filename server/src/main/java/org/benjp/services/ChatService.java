@@ -366,7 +366,6 @@ public class ChatService
       DBCollection collr = db().getCollection(M_ROOM_PREFIX+roomId);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
-      System.out.println("getNumberOfMessages :: "+roomId+" = "+cursorr.count());
       nb += cursorr.count();
     }
 
