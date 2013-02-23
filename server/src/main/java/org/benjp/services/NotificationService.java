@@ -108,6 +108,22 @@ public class NotificationService
     return total;
   }
 
+  public int getNumberOfNotifications()
+  {
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
+    DBCursor cursor = coll.find(query);
+    return cursor.count();
+  }
+
+  public int getNumberOfUnreadNotifications()
+  {
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
+    query.put("isRead", false);
+    DBCursor cursor = coll.find(query);
+    return cursor.count();
+  }
 
 
 }

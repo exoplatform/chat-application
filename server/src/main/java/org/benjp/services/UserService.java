@@ -334,5 +334,13 @@ public class UserService
     return users;
   }
 
+  public int getNumberOfUsers()
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    DBCursor cursor = coll.find(query);
+    return cursor.count();
+  }
+
 
 }

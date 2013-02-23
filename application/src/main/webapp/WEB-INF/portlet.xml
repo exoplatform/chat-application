@@ -60,6 +60,29 @@
      </portlet-info>
    </portlet>
 
+   <portlet>
+     <portlet-name>ChatStatisticsApplication</portlet-name>
+     <display-name xml:lang="EN">Chat Statistics Application</display-name>
+     <portlet-class>org.benjp.portlet.statistics.StatisticsPortlet</portlet-class>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>prod</value>
+     </init-param>
+     <init-param>
+       <name>juzu.inject</name>
+       <value>weld</value>
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <supported-locale>en</supported-locale>
+     <supported-locale>fr</supported-locale>
+     <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
+     <portlet-info>
+       <title>Chat Statistics Application</title>
+     </portlet-info>
+   </portlet>
+
 
   <filter>
     <filter-name>ResponseFilter</filter-name>

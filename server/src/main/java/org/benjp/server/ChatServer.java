@@ -269,5 +269,20 @@ public class ChatServer
     return Response.ok(status);
   }
 
+  @Resource
+  @Route("/statistics")
+  public Response.Content getStatistics()
+  {
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"users\": "+userService.getNumberOfUsers()+", ");
+    data.append(" \"rooms\": "+chatService.getNumberOfRooms()+", ");
+    data.append(" \"messages\": "+ chatService.getNumberOfMessages()+", ");
+    data.append(" \"notifications\": "+notificationService.getNumberOfNotifications()+", ");
+    data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
 
 }

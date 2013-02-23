@@ -1,0 +1,3 @@
+<div id="chat-statistics"
+  data-chat-server-url="<%=chatServerURL%>" >
+</div>

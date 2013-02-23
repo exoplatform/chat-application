@@ -345,4 +345,33 @@ public class ChatService
     return true;
   }
 
+  public int getNumberOfRooms()
+  {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    DBCursor cursor = coll.find(query);
+    return cursor.count();
+  }
+
+  public int getNumberOfMessages()
+  {
+    int nb = 0;
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      String roomId = ((ObjectId)dbo.get("_id")).toString();
+      DBCollection collr = db().getCollection(M_ROOM_PREFIX+roomId);
+      BasicDBObject queryr = new BasicDBObject();
+      DBCursor cursorr = collr.find(queryr);
+      System.out.println("getNumberOfMessages :: "+roomId+" = "+cursorr.count());
+      nb += cursorr.count();
+    }
+
+    return nb;
+  }
+
+
 }
