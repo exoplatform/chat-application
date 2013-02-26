@@ -47,9 +47,6 @@ public class ChatService
   public void write(String message, String user, String room)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
-    if (coll.count()==0) {
-      coll.ensureIndex("timestamp");
-    }
 
     message = message.replaceAll("<", "&lt;");
     message = message.replaceAll(">", "&gt;");
@@ -181,10 +178,22 @@ public class ChatService
     {
       coll.insert(basicDBObject);
       room = getSpaceRoom(space);
+      ensureIndexInRoom(room);
     }
 
     return room;
   }
+
+  private void ensureIndexInRoom(String room)
+  {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
+    BasicDBObject doc = new BasicDBObject();
+    doc.put("timestamp", System.currentTimeMillis());
+    coll.insert(doc);
+    coll.ensureIndex("timestamp");
+    coll.remove(doc);
+  }
+
 
   public String getRoom(List<String> users)
   {
@@ -205,6 +214,7 @@ public class ChatService
     {
       coll.insert(basicDBObject);
       room = getRoom(users);
+      ensureIndexInRoom(room);
     }
 
     return room;
