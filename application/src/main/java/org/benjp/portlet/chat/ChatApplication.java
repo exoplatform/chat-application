@@ -21,7 +21,6 @@ package org.benjp.portlet.chat;
 
 import juzu.*;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
@@ -35,10 +34,13 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
+import javax.inject.Provider;
+import javax.portlet.PortletPreferences;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SessionScoped
 public class ChatApplication
@@ -52,12 +54,18 @@ public class ChatApplication
   String token_ = "---";
   String remoteUser_ = null;
   String fullname_ = null;
+  boolean isAdmin_=false;
+
   boolean profileInitialized_ = false;
 
+  Logger log = Logger.getLogger("ChatApplication");
 
   OrganizationService organizationService_;
 
   SpaceService spaceService_;
+
+  @Inject
+  Provider<PortletPreferences> providerPreferences;
 
   @Inject
   public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
@@ -81,6 +89,11 @@ public class ChatApplication
 
     String fullname = (fullname_==null)?remoteUser_:fullname_;
 
+    PortletPreferences portletPreferences = providerPreferences.get();
+    String view = portletPreferences.getValue("view", "responsive");
+    if (!"normal".equals(view) && !"responsive".equals(view))
+      view = "responsive";
+
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
@@ -88,7 +101,8 @@ public class ChatApplication
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
             .set("publicMode", isPublic)
             .ok()
-            .withMetaTag("viewport", "width=device-width, initial-scale=1.0");
+            .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
+            .withStylesheets("chat-"+view);
 
   }
 
@@ -103,7 +117,7 @@ public class ChatApplication
   @Resource
   public Response.Content initChatProfile()
   {
-    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\"}";
+    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\"}";
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
@@ -120,12 +134,18 @@ public class ChatApplication
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_);
 
+        if ("true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE)))
+        {
+          Collection ms = organizationService_.getMembershipHandler().findMembershipsByUserAndGroup(remoteUser_, PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_ADMIN_GROUP));
+          isAdmin_= (ms!=null && ms.size()>0);
+        }
+
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
           fullname_ = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
         }
 
-        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\"}";
+        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\"}";
         profileInitialized_ = true;
       }
       catch (Exception e)

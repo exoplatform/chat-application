@@ -2,14 +2,14 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
                  "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-  <!--filter>
+  <filter>
     <filter-name>ChatHeaderFilter</filter-name>
-    <filter-class>org.benjp.server.ChatHeaderFilter</filter-class>
+    <filter-class>org.benjp.filter.ChatHeaderFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>ChatHeaderFilter</filter-name>
-    <url-pattern>/whoIsOnline/*</url-pattern>
-  </filter-mapping-->
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>

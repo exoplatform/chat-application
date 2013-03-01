@@ -31,7 +31,7 @@
         scripts = {
                 @Script(src = "js/jquery-1.9.1.min.js", id = "jquery"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/chat.js", depends = "jquery,juzu-utils"),
+                @Script(src = "js/chat.js", depends = {"jquery","juzu-utils"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),
@@ -39,14 +39,19 @@
                 @Script(src = "js/sh_css.min.js")
         },
         stylesheets = {
-                @Stylesheet(src = "/org/benjp/assets/bootstrap/assets/bootstrap.css", location = AssetLocation.CLASSPATH),
-                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat.css", location = AssetLocation.CLASSPATH),
-                @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.CLASSPATH),
+                @Stylesheet(src = "/org/benjp/assets/bootstrap/assets/bootstrap.css", location = AssetLocation.APPLICATION),
+                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
+                @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION),
                 @Stylesheet(src = "css/sh_style.css")
+        }
+        ,
+        declaredStylesheets = {
+                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat-normal.css", location = AssetLocation.APPLICATION, id = "chat-normal", depends = "chat"),
+                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat-responsive.css", location = AssetLocation.APPLICATION, id = "chat-responsive", depends = "chat")
         }
 )
 
-@Less(value = "chat.less", minify = true)
+@Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less"}, minify = true)
 
 
 package org.benjp.portlet.chat;

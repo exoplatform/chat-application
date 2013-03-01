@@ -8,6 +8,7 @@ $(document).ready(function(){
 
   var highlight = "";
   var ANONIM_USER = "__anonim_";
+  var isAdmin = false;
 
   var $chatApplication = $("#chat-application");
   var username = $chatApplication.attr("data-username");
@@ -270,10 +271,12 @@ $(document).ready(function(){
     var child = $("span:first",this);
     if (child.hasClass("filter-on")) {
       child.removeClass("filter-on").addClass("filter-off");
-      if ($(this).hasClass("filter-user")) {
-        $(".filter-space span:first-child").removeClass("filter-off").addClass("filter-on");
-      } else {
-        $(".filter-user span:first-child").removeClass("filter-off").addClass("filter-on");
+      if (!isAdmin) {
+        if ($(this).hasClass("filter-user")) {
+          $(".filter-space span:first-child").removeClass("filter-off").addClass("filter-on");
+        } else {
+          $(".filter-user span:first-child").removeClass("filter-off").addClass("filter-on");
+        }
       }
     } else {
       child.removeClass("filter-off").addClass("filter-on");
@@ -326,12 +329,19 @@ $(document).ready(function(){
     } else {
       $.getJSON(jzInitChatProfile, function(data){
         console.log("Chat Profile Update : "+data.msg);
-        console.log("Chat Token : "+data.token);
-        console.log("Chat Fullname : "+data.fullname);
+        console.log("Chat Token          : "+data.token);
+        console.log("Chat Fullname       : "+data.fullname);
+        console.log("Chat isAdmin        : "+data.isAdmin);
         token = data.token;
         var $chatApplication = $("#chat-application");
         $chatApplication.attr("data-token", token);
-        $(".label-user").text(data.fullname);
+        var $labelUser = $(".label-user");
+        $labelUser.text(data.fullname);
+        if (data.isAdmin == "true") {
+          $(".filter-public").css("display", "inline-block");
+          $(".filter-empty").css("display", "none");
+        }
+        isAdmin = (data.isAdmin=="true");
 
         refreshWhoIsOnline();
         notifStatusInt = window.clearInterval(notifStatusInt);
@@ -484,10 +494,12 @@ $(document).ready(function(){
   function refreshWhoIsOnline() {
     var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
     var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
+    var withPublic = $(".filter-public span:first-child").hasClass("filter-on");
 
     if (username.indexOf(ANONIM_USER)>-1) {
       withUsers = true;
       withSpaces = true;
+      withPublic = false;
     }
 
     if (username !== ANONIM_USER && token !== "---") {
@@ -498,6 +510,8 @@ $(document).ready(function(){
           "filter": userFilter,
           "withSpaces": withSpaces,
           "withUsers": withUsers,
+          "withPublic": withPublic,
+          "isAdmin": isAdmin,
           "timestamp": new Date().getTime()
         },
         dataType: 'html',
@@ -544,7 +558,7 @@ $(document).ready(function(){
 
 
   function jQueryForUsersTemplate() {
-    var value = jzGetParam("lastUser");
+    var value = jzGetParam("lastUser"+username);
     if (value && firstLoad) {
       //console.log("firstLoad with user : *"+value+"*");
       targetUser = value;
@@ -760,7 +774,7 @@ $(document).ready(function(){
     if (username !== ANONIM_USER) {
 
       $.getJSON(chatEventURL, function(data) {
-        var lastTS = jzGetParam("lastTS");
+        var lastTS = jzGetParam("lastTS"+username);
         //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
         var im, message, out="", prevUser="";
         if (data.messages.length===0) {
@@ -768,7 +782,7 @@ $(document).ready(function(){
         } else {
           var ts = data.timestamp;
           if (ts != lastTS) {
-            jzStoreParam("lastTS", ts, 600);
+            jzStoreParam("lastTS"+username, ts, 600);
             //console.log("new data to show");
             showMessages(data.messages);
           }
@@ -830,8 +844,8 @@ $(document).ready(function(){
           if (isDesktopView()) $msg.focus();
           chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&token='+token+'&event=0';
 
-          jzStoreParam("lastUser", targetUser, 60000);
-          jzStoreParam("lastTS", "0");
+          jzStoreParam("lastUser"+username, targetUser, 60000);
+          jzStoreParam("lastTS"+username, "0");
           chatEventInt = window.clearInterval(chatEventInt);
           chatEventInt = setInterval(refreshChat, chatIntervalChat);
           refreshChat();

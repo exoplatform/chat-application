@@ -93,7 +93,21 @@
   margin-right: 5px;
 }
 
-.filter-user:hover, .filter-space:hover {
+.filter-public {
+  .filter('filter-public.png', 0);
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.filter-empty {
+  .filter('empty.png', 19px);
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.filter-user:hover, .filter-space:hover, .filter-public:hover {
   background-color: @colorBgLight;
 }
 

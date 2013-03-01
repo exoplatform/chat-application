@@ -67,7 +67,7 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces)
+  public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces, String withPublic, String isAdmin)
   {
 /*
     try {
@@ -81,7 +81,7 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), notificationService, userService, tokenService);
+    List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(isAdmin), notificationService, userService, tokenService);
     return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 

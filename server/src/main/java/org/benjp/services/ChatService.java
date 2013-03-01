@@ -212,15 +212,15 @@ public class ChatService
     }
     else
     {
-      coll.insert(basicDBObject);
-      room = getRoom(users);
+      WriteResult wr = coll.insert(basicDBObject);
+      room = wr.getField("_id").toString();//getRoom(users);
       ensureIndexInRoom(room);
     }
 
     return room;
   }
 
-  public List<RoomBean> getExistingRooms(String user, NotificationService notificationService)
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     String roomId = null;
@@ -238,11 +238,16 @@ public class ChatService
       users.remove(user);
       if (users.size()>0 && !user.equals(users.get(0)))
       {
-        RoomBean roomBean = new RoomBean();
-        roomBean.setRoom(roomId);
-        roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
-        roomBean.setUser(users.get(0));
-        rooms.add(roomBean);
+        String targetUser = users.get(0);
+        boolean isDemoUser = tokenService.isDemoUser(targetUser);
+        if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser))))
+        {
+          RoomBean roomBean = new RoomBean();
+          roomBean.setRoom(roomId);
+          roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
+          roomBean.setUser(users.get(0));
+          rooms.add(roomBean);
+        }
       }
     }
 
@@ -262,19 +267,14 @@ public class ChatService
     return cursor.hasNext();
   }
 
-  public List<RoomBean> getRooms(String user, NotificationService notificationService, TokenService tokenService, UserService userService)
-  {
-    return getRooms(user, null, true, true, notificationService, userService, tokenService);
-  }
-
-  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, NotificationService notificationService, UserService userService, TokenService tokenService)
+  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
 
-    if (withUsers)
+    if (withUsers || (isAdmin && withPublic) )
     {
-      Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user);
-      rooms = this.getExistingRooms(user, notificationService);
+      Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
 
       for (RoomBean roomBean:rooms) {
         String targetUser = roomBean.getUser();

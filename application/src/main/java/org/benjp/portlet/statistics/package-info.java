@@ -27,7 +27,7 @@
                 @Script(src = "js/stats.js", depends = "jquery")
         },
         stylesheets = {
-                @Stylesheet(src = "/org/benjp/portlet/statistics/assets/statistics.css", location = AssetLocation.CLASSPATH)
+                @Stylesheet(src = "/org/benjp/portlet/statistics/assets/statistics.css", location = AssetLocation.APPLICATION)
         }
 )
 

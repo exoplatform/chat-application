@@ -43,6 +43,8 @@ public class PropertyManager {
   public static final String PROPERTY_INTERVAL_USERS = "chatIntervalUsers";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
   public static final String PROPERTY_CRON_NOTIF_CLEANUP = "chatCronNotifCleanup";
+  public static final String PROPERTY_PUBLIC_MODE = "publicMode";
+  public static final String PROPERTY_PUBLIC_ADMIN_GROUP = "publicAdminGroup";
 
 
   public static String getProperty(String key)
@@ -81,6 +83,8 @@ public class PropertyManager {
         properties.setProperty(PROPERTY_INTERVAL_USERS, "5000");
         properties.setProperty(PROPERTY_PASSPHRASE, "chat");
         properties.setProperty(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
+        properties.setProperty(PROPERTY_PUBLIC_MODE, "false");
+        properties.setProperty(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       }
     }
     return properties;

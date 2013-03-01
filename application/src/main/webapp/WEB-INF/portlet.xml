@@ -32,6 +32,13 @@
      <portlet-info>
        <title>Chat Application</title>
      </portlet-info>
+     <portlet-preferences>
+       <preference>
+         <name>view</name>
+         <value>responsive</value>
+         <read-only>false</read-only>
+       </preference>
+     </portlet-preferences>
    </portlet>
 
    <portlet>

@@ -107,12 +107,26 @@ public class TokenService
     }
   }
 
-  public List<String> getActiveUsersFilterBy(String user)
+  public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
     ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_TOKENS);
     BasicDBObject query = new BasicDBObject();
-    query.put("isDemoUser", user.startsWith(ANONIM_USER));
+    if (isAdmin)
+    {
+      if (withPublic && !withUsers)
+      {
+        query.put("isDemoUser", true);
+      }
+      else if (!withPublic && withUsers)
+      {
+        query.put("isDemoUser", false);
+      }
+    }
+    else
+    {
+      query.put("isDemoUser", user.startsWith(ANONIM_USER));
+    }
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
@@ -125,6 +139,17 @@ public class TokenService
 
     return users;
   }
+
+  public boolean isDemoUser(String user)
+  {
+    DBCollection coll = db().getCollection(M_TOKENS);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    query.put("isDemoUser", true);
+    DBCursor cursor = coll.find(query);
+    return (cursor.hasNext());
+  }
+
 
   private int getValidity() {
     if (validity_==-1)
