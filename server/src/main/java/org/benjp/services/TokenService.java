@@ -142,12 +142,15 @@ public class TokenService
 
   public boolean isDemoUser(String user)
   {
+    return user.startsWith(ANONIM_USER);
+/*
     DBCollection coll = db().getCollection(M_TOKENS);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("isDemoUser", true);
     DBCursor cursor = coll.find(query);
     return (cursor.hasNext());
+*/
   }
 
 

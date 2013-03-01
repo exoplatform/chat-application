@@ -47,11 +47,12 @@
         ,
         declaredStylesheets = {
                 @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat-normal.css", location = AssetLocation.APPLICATION, id = "chat-normal", depends = "chat"),
+                @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat-public.css", location = AssetLocation.APPLICATION, id = "chat-public", depends = "chat"),
                 @Stylesheet(src = "/org/benjp/portlet/chat/assets/chat-responsive.css", location = AssetLocation.APPLICATION, id = "chat-responsive", depends = "chat")
         }
 )
 
-@Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less"}, minify = true)
+@Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less", "chat-public.less"}, minify = true)
 
 
 package org.benjp.portlet.chat;

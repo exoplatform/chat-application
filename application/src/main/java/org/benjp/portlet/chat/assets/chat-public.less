@@ -1,0 +1,23 @@
+// Base CSS
+@import "variables";
+
+@height:                      445px;
+@width:                       435px;
+@heightMessage:               60px;
+@widthUsers:                  100px;
+@widthMessages:               (@width - @widthUsers - 4);
+
+@import "sized";
+@import "panels";
+
+.right-chat {
+  border-left: 1px solid #d0d0d0;
+}
+
+.msg-emoticons {
+  display: none;
+}
+
+#msg {
+  width: (@widthMessages - 25);
+}

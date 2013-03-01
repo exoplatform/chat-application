@@ -91,7 +91,7 @@ public class ChatApplication
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String view = portletPreferences.getValue("view", "responsive");
-    if (!"normal".equals(view) && !"responsive".equals(view))
+    if (!"normal".equals(view) && !"responsive".equals(view) && !"public".equals(view))
       view = "responsive";
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
@@ -100,6 +100,7 @@ public class ChatApplication
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
             .set("publicMode", isPublic)
+            .set("view", view)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withStylesheets("chat-"+view);

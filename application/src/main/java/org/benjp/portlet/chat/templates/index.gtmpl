@@ -7,6 +7,7 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-chat-interval-users="<%=chatIntervalUsers%>"
   data-public-mode="<%=publicMode%>"
+  data-view="<%=view%>"
 
   data-label-panel-error1="&{benjp.chat.panel.error1}"
   data-label-panel-error2="&{benjp.chat.panel.error2}"
@@ -32,6 +33,7 @@
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
   <div class="chat-help-panel" style="display: none;"><span>&nbsp;</span></div>
+<% if (!"public".equals(view)) { %>
   <div class="input-prepend chat-search no-user-selection">
     <a class="btn btn-mobile"><span class="icon-user"></span></a>
     <span class="menu-standard">
@@ -68,6 +70,7 @@
       <span>&nbsp;</span>
     </div>
   </div>
+  <% } %>
   <div class="right-chat">
     <div class="room-mobile no-user-selection">
       <a class="btn-rooms"><span class="icon-chevron-left"></span></a>
