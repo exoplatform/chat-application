@@ -41,6 +41,7 @@ $(document).ready(function(){
   var labelCurrentStatus = $chatApplication.attr("data-label-current-status");
   var labelNoMessages = $chatApplication.attr("data-label-no-messages");
   var labelPublicWelcome = $chatApplication.attr("data-label-public-welcome");
+  var labelSupportFullname = $chatApplication.attr("data-label-support-fullname");
 
 
   var jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
@@ -473,7 +474,7 @@ $(document).ready(function(){
 
         if (isPublic) {
           targetUser = SUPPORT_USER;
-          fullname = "Support";
+          fullname = labelSupportFullname;
         }
 
         loadRoom();
@@ -768,7 +769,7 @@ $(document).ready(function(){
             out += "</span>";
             out += "<span>";
             if (isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>Support</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+labelSupportFullname+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {

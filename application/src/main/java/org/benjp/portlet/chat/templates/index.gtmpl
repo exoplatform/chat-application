@@ -27,6 +27,7 @@
   data-label-current-status="&{benjp.chat.current.status}"
   data-label-no-messages="&{benjp.chat.no.messages}"
   data-label-public-welcome="&{benjp.chat.public.welcome}"
+  data-label-support-fullname="&{benjp.chat.support.fullname}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
