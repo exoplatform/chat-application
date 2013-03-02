@@ -105,10 +105,32 @@ public class RoomBean implements Comparable<RoomBean>
     isFavorite = favorite;
   }
 
+
+
   @Override
   public int compareTo(RoomBean roomBean) {
     String l = ((isFavorite)?"0":"1")+fullname;
     String r = ((roomBean.isFavorite())?"0":"1")+roomBean.getFullname();
     return l.compareTo(r);
   }
-}
+
+  public String toJSON()
+  {
+    StringBuffer sb = new StringBuffer();
+
+    sb.append("{");
+
+    sb.append("\"escapedFullname\": \""+this.getEscapedFullname()+"\",");
+    sb.append("\"room\": \""+this.getRoom()+"\",");
+    sb.append("\"status\": \""+this.getStatus()+"\",");
+    sb.append("\"user\": \""+this.getUser()+"\",");
+    sb.append("\"unreadTotal\": \""+this.getUnreadTotal()+"\",");
+    sb.append("\"isActive\": \""+this.isActive()+"\",");
+    sb.append("\"isAvailableUser\": \""+this.isAvailableUser()+"\",");
+    sb.append("\"isFavorite\": \""+this.isFavorite()+"\",");
+    sb.append("\"isSpace\": \""+this.isSpace()+"\"");
+
+    sb.append("}");
+
+    return sb.toString();
+  }}

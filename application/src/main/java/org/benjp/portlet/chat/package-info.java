@@ -31,7 +31,8 @@
         scripts = {
                 @Script(src = "js/jquery-1.9.1.min.js", id = "jquery"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/chat.js", depends = {"jquery","juzu-utils"} ),
+                @Script(src = "js/taffy-min.js", id="taffy"),
+                @Script(src = "js/chat.js", depends = {"jquery","juzu-utils","taffy"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),

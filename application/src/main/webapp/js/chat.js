@@ -205,7 +205,7 @@ $(document).ready(function(){
   $("div.chat-menu").click(function(){
     var status = $(this).attr("status");
     if (status !== undefined) {
-      console.log("setStatus :: "+status);
+      //console.log("setStatus :: "+status);
 
       $.ajax({
         url: jzSetStatus,
@@ -216,7 +216,7 @@ $(document).ready(function(){
         },
 
         success: function(response){
-          console.log("SUCCESS:setStatus::"+response);
+          //console.log("SUCCESS:setStatus::"+response);
           changeStatusChat(response);
           $(".chat-status-panel").css('display', 'none');
         },
@@ -337,10 +337,10 @@ $(document).ready(function(){
       }
     } else {
       $.getJSON(jzInitChatProfile, function(data){
-        console.log("Chat Profile Update : "+data.msg);
-        console.log("Chat Token          : "+data.token);
-        console.log("Chat Fullname       : "+data.fullname);
-        console.log("Chat isAdmin        : "+data.isAdmin);
+        //console.log("Chat Profile Update : "+data.msg);
+        //console.log("Chat Token          : "+data.token);
+        //console.log("Chat Fullname       : "+data.fullname);
+        //console.log("Chat isAdmin        : "+data.isAdmin);
         token = data.token;
         var $chatApplication = $("#chat-application");
         $chatApplication.attr("data-token", token);
@@ -371,7 +371,7 @@ $(document).ready(function(){
     $.ajax({
       url: jzMaintainSession,
       success: function(response){
-        console.log("Chat Session Maintained : "+response);
+        //console.log("Chat Session Maintained : "+response);
       },
       error: function(response){
         chatSessionInt = clearInterval(chatSessionInt);
@@ -409,7 +409,7 @@ $(document).ready(function(){
 
   function showErrorPanel() {
     hidePanels();
-    console.log("show-error-panel");
+    //console.log("show-error-panel");
     var $chatErrorPanel = $(".chat-error-panel");
     $chatErrorPanel.html(labelPanelError1+"<br/><br/>"+labelPanelError2);
     $chatErrorPanel.css("display", "block");
@@ -417,7 +417,7 @@ $(document).ready(function(){
 
   function showLoginPanel() {
     hidePanels();
-    console.log("show-login-panel");
+    //console.log("show-login-panel");
     var $chatLoginPanel = $(".chat-login-panel");
     $chatLoginPanel.html(labelPanelLogin1+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+labelPanelLogin2+"</a>");
     $chatLoginPanel.css("display", "block");
@@ -425,7 +425,7 @@ $(document).ready(function(){
 
   function showDemoPanel() {
     hidePanels();
-    console.log("show-demo-panel");
+    //console.log("show-demo-panel");
     var $chatDemoPanel = $(".chat-demo-panel");
     var intro = labelPanelDemo;
     if (isPublic) intro = labelPanelPublic;
@@ -451,8 +451,8 @@ $(document).ready(function(){
         "isPublic": isPublic
       },
       function(data) {
-        console.log("username : "+data.username);
-        console.log("token    : "+data.token);
+        //console.log("username : "+data.username);
+        //console.log("token    : "+data.token);
 
         jzStoreParam("anonimUsername", data.username, 600000);
         jzStoreParam("anonimFullname", fullname, 600000);
@@ -521,9 +521,8 @@ $(document).ready(function(){
     }
 
     if (username !== ANONIM_USER && token !== "---") {
-      $.ajax({
-        url: jzChatWhoIsOnline,
-        data: { "user": username,
+      $.getJSON(jzChatWhoIsOnline,
+        { "user": username,
           "token": token,
           "filter": userFilter,
           "withSpaces": withSpaces,
@@ -531,16 +530,15 @@ $(document).ready(function(){
           "withPublic": withPublic,
           "isAdmin": isAdmin,
           "timestamp": new Date().getTime()
-        },
-        dataType: 'html',
-        success: function(response){
-          var tmpMD5 = calcMD5(response);
+        }, function(response){
+          var rooms = TAFFY(response.rooms);
+          var tmpMD5 = calcMD5(rooms().stringify());
           if (tmpMD5 !== whoIsOnlineMD5) {
             whoIsOnlineMD5 = tmpMD5;
             isLoaded = true;
             hidePanel(".chat-error-panel");
             hidePanel(".chat-sync-panel");
-            $("#chat-users").html(response);
+            showRooms(rooms)
             jQueryForUsersTemplate();
             if (window.fluid!==undefined) {
               totalNotif = 0;
@@ -564,16 +562,54 @@ $(document).ready(function(){
             }
 
           }
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-          console.log("chat-users :: "+textStatus+" :: "+errorThrown);
+        }).error(function (response){
+          //console.log("chat-users :: "+response);
           setTimeout(errorOnRefresh, 1000);
-        }
-      });
+        });
     }
 
   }
 
+  function showRooms(rooms) {
+
+    var out = '<table class="table">';
+    var fav=null;
+    rooms().order("isFavorite desc, unreadTotal desc, escapedFullname logical").each(function (room) {
+//      console.log("info = "+room.user+" :"+fav+":"+ room.isFavorite);
+      if (fav==null && room.isFavorite=="true") fav="";
+      else if (fav=="" && room.isFavorite=="false") fav="border-top:1px solid #CCC;";
+      else if (fav=="border-top:1px solid #CCC;") fav=" ";
+
+      out += '<tr id="users-online-'+room.user+'" class="users-online" style="'+fav+'">';
+      out += '<td class="td-status">';
+      out += '<span class="';
+      if (room.isFavorite == "true") {
+        out += 'user-favorite';
+      } else {
+        out += 'user-status';
+      }
+      out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
+      out += '</td>';
+      out +=  '<td>';
+      if (room.isActive=="true") {
+        out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
+      } else {
+        out += '<span class="room-inactive">'+room.user+'</span>';
+      }
+      out += '</td>';
+      out += '<td>';
+      if (Math.abs(room.unreadTotal)>0) {
+        out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+      }
+      out += '</td>';
+      out += '</tr>';
+    });
+    out += '</table>';
+
+
+    $("#chat-users").html(out);
+
+  }
 
   function jQueryForUsersTemplate() {
     var value = jzGetParam("lastUser"+username);
@@ -642,7 +678,7 @@ $(document).ready(function(){
       },
 
       success: function(response){
-        console.log("SUCCESS:setStatus::"+response);
+        //console.log("SUCCESS:setStatus::"+response);
         changeStatusChat(status);
       },
       error: function(response){
@@ -851,7 +887,7 @@ $(document).ready(function(){
   }
 
   function loadRoom() {
-    console.log("TARGET::"+targetUser+" ; ISADMIN::"+isAdmin);
+    //console.log("TARGET::"+targetUser+" ; ISADMIN::"+isAdmin);
     if (targetUser!==undefined) {
       $(".users-online").removeClass("info");
       if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
@@ -866,7 +902,7 @@ $(document).ready(function(){
         },
 
         success: function(response){
-          console.log("SUCCESS::getRoom::"+response);
+          //console.log("SUCCESS::getRoom::"+response);
           room = response;
           var $msg = $('#msg');
           $msg.removeAttr("disabled");
@@ -882,7 +918,7 @@ $(document).ready(function(){
         },
 
         error: function(xhr, status, error){
-          console.log("ERROR::"+xhr.responseText);
+          //console.log("ERROR::"+xhr.responseText);
         }
 
       });

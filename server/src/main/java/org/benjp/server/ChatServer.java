@@ -21,6 +21,7 @@ package org.benjp.server;
 
 import juzu.*;
 import juzu.template.Template;
+import org.benjp.model.RoomsBean;
 import org.benjp.services.*;
 import org.benjp.model.RoomBean;
 
@@ -82,7 +83,10 @@ public class ChatServer
     }
 
     List<RoomBean> rooms = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(isAdmin), notificationService, userService, tokenService);
-    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    RoomsBean roomsBean = new RoomsBean();
+    roomsBean.setRooms(rooms);
+//    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
