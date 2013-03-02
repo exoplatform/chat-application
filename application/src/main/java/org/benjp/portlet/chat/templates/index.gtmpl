@@ -14,6 +14,7 @@
   data-label-panel-login1="&{benjp.chat.panel.login1}"
   data-label-panel-login2="&{benjp.chat.panel.login2}"
   data-label-panel-demo="&{benjp.chat.panel.demo}"
+  data-label-panel-public="&{benjp.chat.panel.public}"
   data-label-display-name="&{benjp.chat.display.name}"
   data-label-email="&{benjp.chat.email}"
   data-label-save-profile="&{benjp.chat.save.profile}"
@@ -25,6 +26,7 @@
   data-label-invisible="&{benjp.chat.invisible}"
   data-label-current-status="&{benjp.chat.current.status}"
   data-label-no-messages="&{benjp.chat.no.messages}"
+  data-label-public-welcome="&{benjp.chat.public.welcome}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

@@ -44,6 +44,7 @@ public class UserService
   public static final String STATUS_SPACE = "space";
 
   public static final String ANONIM_USER = "__anonim_";
+  public static final String SUPPORT_USER = "__support_";
 
 
   private DB db()
@@ -222,9 +223,12 @@ public class UserService
       DBObject doc = cursor.next();
 
       List<String> listspaces = ((List<String>)doc.get("spaces"));
-      for (String space:listspaces)
+      if (listspaces!=null)
       {
-        spaces.add(getSpace(space));
+        for (String space:listspaces)
+        {
+          spaces.add(getSpace(space));
+        }
       }
 
     }

@@ -213,7 +213,7 @@ public class ChatService
     else
     {
       WriteResult wr = coll.insert(basicDBObject);
-      room = wr.getField("_id").toString();//getRoom(users);
+      room = getRoom(users);
       ensureIndexInRoom(room);
     }
 

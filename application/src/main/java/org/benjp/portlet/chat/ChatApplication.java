@@ -163,18 +163,19 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createDemoUser(String fullname, String email)
+  public Response.Content createDemoUser(String fullname, String email, String isPublic)
   {
     String out = "created";
+    boolean isPublicUser = "true".equals(isPublic);
 
-    String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-");
+    String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-").replace(".", "-");
     remoteUser_ = username;
     token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
     addUser(remoteUser_, token_);
     UserService userService = ServerBootstrap.getUserService();
     userService.addUserFullName(username, fullname);
     userService.addUserEmail(username, email);
-    saveDemoSpace(username);
+    if (!isPublicUser) saveDemoSpace(username);
 
     StringBuffer json = new StringBuffer();
     json.append("{ \"username\": \"").append(remoteUser_).append("\"");

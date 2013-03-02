@@ -155,7 +155,7 @@ public class ChatServer
 
   @Resource
   @Route("/getRoom")
-  public Response.Content getRoom(String user, String token, String targetUser)
+  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -171,8 +171,10 @@ public class ChatServer
       }
       else
       {
+        String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser.startsWith(UserService.ANONIM_USER))?UserService.SUPPORT_USER:user;
+
         ArrayList<String> users = new ArrayList<String>(2);
-        users.add(user);
+        users.add(finalUser);
         users.add(targetUser);
         room = chatService.getRoom(users);
       }

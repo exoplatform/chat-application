@@ -8,6 +8,7 @@ $(document).ready(function(){
 
   var highlight = "";
   var ANONIM_USER = "__anonim_";
+  var SUPPORT_USER = "__support_";
   var isAdmin = false;
 
   var $chatApplication = $("#chat-application");
@@ -18,12 +19,16 @@ $(document).ready(function(){
   var chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
   var chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
   var chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
+  var chatPublicMode = $chatApplication.attr("data-public-mode");
+  var chatView = $chatApplication.attr("data-view");
+  var isPublic = (chatPublicMode == "true" && chatView == "public");
 
   var labelPanelError1 = $chatApplication.attr("data-label-panel-error1");
   var labelPanelError2 = $chatApplication.attr("data-label-panel-error2");
   var labelPanelLogin1 = $chatApplication.attr("data-label-panel-login1");
   var labelPanelLogin2 = $chatApplication.attr("data-label-panel-login2");
   var labelPanelDemo = $chatApplication.attr("data-label-panel-demo");
+  var labelPanelPublic = $chatApplication.attr("data-label-panel-public");
   var labelDisplayName = $chatApplication.attr("data-label-display-name");
   var labelEmail = $chatApplication.attr("data-label-email");
   var labelSaveProfile = $chatApplication.attr("data-label-save-profile");
@@ -35,6 +40,7 @@ $(document).ready(function(){
   var labelInvisible = $chatApplication.attr("data-label-invisible");
   var labelCurrentStatus = $chatApplication.attr("data-label-current-status");
   var labelNoMessages = $chatApplication.attr("data-label-no-messages");
+  var labelPublicWelcome = $chatApplication.attr("data-label-public-welcome");
 
 
   var jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
@@ -64,6 +70,8 @@ $(document).ready(function(){
   var keydown = -1;
   var profileStatus = "offline";
   var whoIsOnlineMD5 = 0;
+
+  $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
   function checkViewportStatus() {
     return ($(".btn-mobile").css("display")!=="none");
@@ -418,7 +426,9 @@ $(document).ready(function(){
     hidePanels();
     console.log("show-demo-panel");
     var $chatDemoPanel = $(".chat-demo-panel");
-    $chatDemoPanel.html(labelPanelDemo+"<br><br><div class='welcome-panel'>" +
+    var intro = labelPanelDemo;
+    if (isPublic) intro = labelPanelPublic;
+    $chatDemoPanel.html(intro+"<br><br><div class='welcome-panel'>" +
       "<br><br>"+labelDisplayName+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
       "<br><br>"+labelEmail+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
       "<br><a href='#' id='anonim-save'>"+labelSaveProfile+"</a>");
@@ -436,7 +446,8 @@ $(document).ready(function(){
     $.getJSON(jzCreateDemoUser,
       {
         "fullname": fullname,
-        "email": email
+        "email": email,
+        "isPublic": isPublic
       },
       function(data) {
         console.log("username : "+data.username);
@@ -459,6 +470,12 @@ $(document).ready(function(){
         notifStatusInt = window.clearInterval(notifStatusInt);
         notifStatusInt = setInterval(refreshStatusChat, chatIntervalStatus);
         refreshStatusChat();
+
+        if (isPublic) {
+          targetUser = SUPPORT_USER;
+          fullname = "Support";
+        }
+
         loadRoom();
 
       });
@@ -728,7 +745,10 @@ $(document).ready(function(){
 
     if (messages.length===0) {
       out = "<div class='msgln' style='padding:22px 20px;'>";
-      out += "<b><center>"+labelNoMessages+"</center></b>";
+      if (isPublic)
+        out += "<b><center>"+labelPublicWelcome+"</center></b>";
+      else
+        out += "<b><center>"+labelNoMessages+"</center></b>";
       out += "</div>";
     } else {
       for (im=0 ; im<messages.length ; im++) {
@@ -741,15 +761,22 @@ $(document).ready(function(){
           if (message.user != username) {
             out += "<div class='msgln-odd'>";
             out += "<span style='position:relative; padding-right:9px;top:8px'>";
-            out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
+            if (isPublic)
+              out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
+            else
+              out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
             out += "</span>";
             out += "<span>";
+            if (isPublic)
+              out += "<span class='invisible-text'>- </span><a href='#'>Support</a><span class='invisible-text'> : </span><br/>";
+            else
+              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
             out += "<div class='msgln'>";
             out += "<span style='margin-left:40px;'>";
             //out += "<span style='float:left; '>&nbsp;</span>";
+            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           }
-          out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
         }
         else
         {
@@ -823,7 +850,7 @@ $(document).ready(function(){
   }
 
   function loadRoom() {
-    console.log("TARGET::"+targetUser);
+    console.log("TARGET::"+targetUser+" ; ISADMIN::"+isAdmin);
     if (targetUser!==undefined) {
       $(".users-online").removeClass("info");
       if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
@@ -833,6 +860,7 @@ $(document).ready(function(){
         data: {"targetUser": targetUser,
           "user": username,
           "token": token,
+          "isAdmin": isAdmin,
           "timestamp": new Date().getTime()
         },
 
