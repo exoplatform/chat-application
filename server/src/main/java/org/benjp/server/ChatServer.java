@@ -199,6 +199,11 @@ public class ChatServer
     try
     {
       notificationService.setNotificationsAsRead(user, "chat", "room", room);
+      if (userService.isAdmin(user))
+      {
+        notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room);
+      }
+
     }
     catch (Exception e)
     {
@@ -218,6 +223,11 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
     int totalUnread = notificationService.getUnreadNotificationsTotal(user);
+
+    if (userService.isAdmin(user))
+    {
+      totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
+    }
 
     String data = "{\"total\": \""+totalUnread+"\"}";
     if (event!=null && event.equals("1"))

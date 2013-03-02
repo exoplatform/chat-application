@@ -30,7 +30,8 @@
         location = AssetLocation.SERVER,
         scripts = {
                 @Script(src = "js/jquery-1.9.1.min.js", id = "jquery"),
-                @Script(src = "js/notif.js", depends = "jquery")
+                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
+                @Script(src = "js/notif.js", depends = {"jquery","juzu-utils"})
         },
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)

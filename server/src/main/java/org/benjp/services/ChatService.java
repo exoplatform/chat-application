@@ -275,6 +275,8 @@ public class ChatService
     {
       Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
       rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
+      if (isAdmin)
+        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
 
       for (RoomBean roomBean:rooms) {
         String targetUser = roomBean.getUser();

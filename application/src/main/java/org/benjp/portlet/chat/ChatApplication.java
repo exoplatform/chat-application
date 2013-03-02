@@ -144,6 +144,7 @@ public class ChatApplication
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
           fullname_ = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
+          ServerBootstrap.getUserService().setAsAdmin(remoteUser_, isAdmin_);
         }
 
         out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\"}";
@@ -175,6 +176,7 @@ public class ChatApplication
     UserService userService = ServerBootstrap.getUserService();
     userService.addUserFullName(username, fullname);
     userService.addUserEmail(username, email);
+    userService.setAsAdmin(username, false);
     if (!isPublicUser) saveDemoSpace(username);
 
     StringBuffer json = new StringBuffer();
@@ -214,6 +216,20 @@ public class ChatApplication
       e.printStackTrace();
     }
     return fullname;
+  }
+
+  protected void setAsAdmin(String username, boolean isAdmin)
+  {
+    try
+    {
+
+      ServerBootstrap.getUserService().setAsAdmin(username, isAdmin);
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
   }
 
   protected void saveSpaces(String username)

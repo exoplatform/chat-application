@@ -258,6 +258,43 @@ public class UserService
     return status;
   }
 
+  public void setAsAdmin(String user, boolean isAdmin)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      doc.put("isSupportAdmin", isAdmin);
+      coll.save(doc, WriteConcern.SAFE);
+    }
+    else
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
+      doc.put("user", user);
+      doc.put("isSupportAdmin", isAdmin);
+      coll.insert(doc);
+    }
+  }
+
+  public boolean isAdmin(String user)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      String isAdmin = doc.get("isSupportAdmin").toString();
+      return (isAdmin!=null && "true".equals(isAdmin));
+    }
+    return false;
+  }
+
   public String getStatus(String user)
   {
     String status = STATUS_NONE;
