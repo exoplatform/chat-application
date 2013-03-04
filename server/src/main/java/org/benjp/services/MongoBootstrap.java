@@ -110,7 +110,11 @@ public class MongoBootstrap
 
   private static void ensureIndexes()
   {
+    BasicDBObject foo = new BasicDBObject();
+    foo.put("foo", "bar");
+
     DBCollection notifications = getDB().getCollection("notifications");
+    notifications.insert(foo);
     notifications.ensureIndex("user");
     notifications.ensureIndex("type");
     notifications.ensureIndex("category");
@@ -123,12 +127,16 @@ public class MongoBootstrap
     index.put("category", 1);
     index.put("categoryId", 1);
     notifications.ensureIndex(index);
+    notifications.remove(foo);
 
     DBCollection rooms = getDB().getCollection("room_rooms");
+    rooms.insert(foo);
     rooms.ensureIndex("space");
     rooms.ensureIndex("users");
+    rooms.remove(foo);
 
     DBCollection tokens = getDB().getCollection("tokens");
+    tokens.insert(foo);
     tokens.ensureIndex("user");
     tokens.ensureIndex("token");
     tokens.ensureIndex("validity");
@@ -140,13 +148,18 @@ public class MongoBootstrap
     index.put("validity", -1);
     index.put("isDemoUser", 1);
     tokens.ensureIndex(index);
+    tokens.remove(foo);
 
     DBCollection users = getDB().getCollection("users");
+    users.insert(foo);
     users.ensureIndex("user");
     users.ensureIndex("spaces");
+    users.remove(foo);
 
     DBCollection spaces = getDB().getCollection("spaces");
+    spaces.insert(foo);
     spaces.ensureIndex("user");
+    spaces.remove(foo);
 
   }
 }
