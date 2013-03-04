@@ -71,10 +71,10 @@ public class NotificationService
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
+    query.put("isRead", false);
     query.put("type", type);
     query.put("category", category);
     query.put("categoryId", categoryId);
-    query.put("isRead", false);
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
@@ -98,10 +98,10 @@ public class NotificationService
     BasicDBObject query = new BasicDBObject();
 
     query.put("user", user);
+    query.put("isRead", false);
     if (type!=null) query.put("type", type);
     if (category!=null) query.put("category", category);
     if (categoryId!=null) query.put("categoryId", categoryId);
-    query.put("isRead", false);
     DBCursor cursor = coll.find(query);
     total = cursor.size();
 

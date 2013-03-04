@@ -337,6 +337,11 @@ public class UserService
 
   public UserBean getUser(String user)
   {
+    return getUser(user, false);
+  }
+
+  public UserBean getUser(String user, boolean withFavorites)
+  {
     UserBean userBean = new UserBean();
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -352,6 +357,9 @@ public class UserService
         userBean.setEmail(doc.get("email").toString());
       if (doc.get("status")!=null)
         userBean.setStatus(doc.get("status").toString());
+      if (doc.containsField("favorites")) {
+        userBean.setFavorites ((List<String>) doc.get("favorites"));
+      }
     }
 
     return userBean;

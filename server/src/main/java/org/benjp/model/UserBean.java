@@ -19,9 +19,12 @@
 
 package org.benjp.model;
 
+import java.util.List;
+
 public class UserBean
 {
   private String name, fullname="", email="", status;
+  private List<String> favorites;
 
   public String getName()
   {
@@ -61,5 +64,22 @@ public class UserBean
   public void setStatus(String status)
   {
     this.status = status;
+  }
+
+  public List<String> getFavorites() {
+    return favorites;
+  }
+
+  public void setFavorites(List<String> favorites) {
+    this.favorites = favorites;
+  }
+
+  public boolean isFavorite(String user)
+  {
+    if (favorites!=null)
+    {
+      return (favorites.contains(user));
+    }
+    return false;
   }
 }

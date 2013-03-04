@@ -36,9 +36,9 @@ public class MongoBootstrap
       try
       {
         MongoOptions options = new MongoOptions();
-        options.connectionsPerHost = 50;
+        options.connectionsPerHost = 100;
         options.connectTimeout = 60000;
-        options.threadsAllowedToBlockForConnectionMultiplier = 10;
+        options.threadsAllowedToBlockForConnectionMultiplier = 20;
         String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
         int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
         m = new Mongo(new ServerAddress(host, port), options);
@@ -51,11 +51,24 @@ public class MongoBootstrap
     return m;
   }
 
+  public static void dropDB(String dbName)
+  {
+    mongo().dropDatabase(dbName);
+  }
+
   public static DB getDB()
   {
-    if (db==null)
+    return getDB(null);
+  }
+
+  public static DB getDB(String dbName)
+  {
+    if (db==null || dbName!=null)
     {
-      db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
+      if (dbName!=null)
+        db = mongo().getDB(dbName);
+      else
+        db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
       boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION));
       if (authenticate)
       {
@@ -103,6 +116,13 @@ public class MongoBootstrap
     notifications.ensureIndex("category");
     notifications.ensureIndex("categoryId");
     notifications.ensureIndex("isRead");
+    BasicDBObject index = new BasicDBObject();
+    index.put("user", 1);
+    index.put("isRead", 1);
+    index.put("type", 1);
+    index.put("category", 1);
+    index.put("categoryId", 1);
+    notifications.ensureIndex(index);
 
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.ensureIndex("space");
@@ -112,6 +132,14 @@ public class MongoBootstrap
     tokens.ensureIndex("user");
     tokens.ensureIndex("token");
     tokens.ensureIndex("validity");
+    index = new BasicDBObject();
+    index.put("user", 1);
+    index.put("token", 1);
+    tokens.ensureIndex(index);
+    index = new BasicDBObject();
+    index.put("validity", -1);
+    index.put("isDemoUser", 1);
+    tokens.ensureIndex(index);
 
     DBCollection users = getDB().getCollection("users");
     users.ensureIndex("user");

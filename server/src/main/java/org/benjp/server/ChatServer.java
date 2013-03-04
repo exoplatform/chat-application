@@ -24,6 +24,7 @@ import juzu.template.Template;
 import org.benjp.model.RoomsBean;
 import org.benjp.services.*;
 import org.benjp.model.RoomBean;
+import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -296,6 +297,108 @@ public class ChatServer
     data.append(" \"messages\": "+ chatService.getNumberOfMessages()+", ");
     data.append(" \"notifications\": "+notificationService.getNumberOfNotifications()+", ");
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/createDemoUser")
+  public Response.Content createDemoUser(String username, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (username == null)
+    {
+      return Response.notFound("{ \"message\": \"username is null\"}");
+    }
+
+    String token = tokenService.getToken(username);
+    tokenService.addUser(username, token);
+    userService.addUserFullName(username, username);
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"OK\", ");
+    data.append(" \"token\": \""+token+"\", ");
+    data.append(" \"user\": \""+ username+"\" ");
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/getToken")
+  public Response.Content getToken(String username, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (username == null)
+    {
+      return Response.notFound("{ \"message\": \"username is null\"}");
+    }
+
+    String token = tokenService.getToken(username);
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"OK\", ");
+    data.append(" \"token\": \""+token+"\", ");
+    data.append(" \"user\": \""+ username+"\" ");
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/initDB")
+  public Response.Content initDB(String db, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (db == null)
+    {
+      return Response.notFound("{ \"message\": \"db is null\"}");
+    }
+
+    MongoBootstrap.getDB(db);
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"using db="+db+"\"");
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/dropDB")
+  public Response.Content dropDB(String db, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (db == null)
+    {
+      return Response.notFound("{ \"message\": \"db is null\"}");
+    }
+
+    MongoBootstrap.dropDB(db);
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"deleting db="+db+"\"");
     data.append("}");
 
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");

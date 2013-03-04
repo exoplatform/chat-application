@@ -270,6 +270,7 @@ public class ChatService
   public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
+    UserBean userBean = userService.getUser(user);
 
     if (withUsers || (isAdmin && withPublic) )
     {
@@ -280,12 +281,13 @@ public class ChatService
 
       for (RoomBean roomBean:rooms) {
         String targetUser = roomBean.getUser();
-        roomBean.setFullname(userService.getUserFullName(targetUser));
-        roomBean.setFavorite(userService.isFavorite(user, roomBean.getUser()));
+        UserBean targetUserBean = userService.getUser(targetUser);
+        roomBean.setFullname(targetUserBean.getFullname());
+        roomBean.setFavorite(userBean.isFavorite(targetUser));
         if (availableUsers.contains(targetUser))
         {
           roomBean.setAvailableUser(true);
-          roomBean.setStatus(userService.getStatus(targetUser));
+          roomBean.setStatus(targetUserBean.getStatus());
           availableUsers.remove(targetUser);
         }
         else
@@ -299,10 +301,11 @@ public class ChatService
       {
         RoomBean roomBean = new RoomBean();
         roomBean.setUser(availableUser);
-        roomBean.setFullname(userService.getUserFullName(availableUser));
-        roomBean.setStatus(userService.getStatus(availableUser));
+        UserBean availableUserBean = userService.getUser(availableUser);
+        roomBean.setFullname(availableUserBean.getFullname());
+        roomBean.setStatus(availableUserBean.getStatus());
         roomBean.setAvailableUser(true);
-        roomBean.setFavorite(userService.isFavorite(user, roomBean.getUser()));
+        roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
         rooms.add(roomBean);
       }
     }
@@ -319,7 +322,7 @@ public class ChatService
         roomBeanS.setAvailableUser(true);
         roomBeanS.setSpace(true);
         roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
-        roomBeanS.setFavorite(userService.isFavorite(user, roomBeanS.getUser()));
+        roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
         rooms.add(roomBeanS);
 
       }

@@ -46,7 +46,7 @@ public class TokenService
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
     String in = user+passphrase;
     String token = MessageDigester.getHash(in);
-    System.out.println("getToken :: user="+user+" ; token="+token);
+    //System.out.println("getToken :: user="+user+" ; token="+token);
     return token;
   }
 
@@ -64,7 +64,7 @@ public class TokenService
   {
     if (!hasUserWithToken(user, token))
     {
-      System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
+      //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
       removeUser(user);
       DBCollection coll = db().getCollection(M_TOKENS);
 
@@ -112,6 +112,7 @@ public class TokenService
     ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_TOKENS);
     BasicDBObject query = new BasicDBObject();
+    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     if (isAdmin)
     {
       if (withPublic && !withUsers)
@@ -127,7 +128,6 @@ public class TokenService
     {
       query.put("isDemoUser", user.startsWith(ANONIM_USER));
     }
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
