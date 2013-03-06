@@ -126,7 +126,7 @@ public class MongoBootstrap
 
     DBCollection notifications = getDB().getCollection("notifications");
     notifications.dropIndexes();
-    notifications.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", "gatling.notifications"));
+    notifications.createIndex(new BasicDBObject("user", 1), notUnique.append("name", "user_1").append("ns", "gatling.notifications"));
     notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", "gatling.notifications"));
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
@@ -139,8 +139,8 @@ public class MongoBootstrap
 
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.dropIndexes();
-    rooms.createIndex(new BasicDBObject("space", 1), unique.append("name", "space_1").append("ns", "gatling.room_rooms"));
-    rooms.createIndex(new BasicDBObject("users", 1), unique.append("name", "users_1").append("ns", "gatling.room_rooms"));
+    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", "gatling.room_rooms"));
+    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", "gatling.room_rooms"));
     log.info("### rooms indexes in "+getDB().getName());
 
     DBCollection tokens = getDB().getCollection("tokens");
