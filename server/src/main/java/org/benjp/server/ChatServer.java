@@ -404,4 +404,33 @@ public class ChatServer
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
+  @Resource
+  @Route("/ensureIndexes")
+  public Response.Content ensureIndexes(String db, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (db == null)
+    {
+      return Response.notFound("{ \"message\": \"db is null\"}");
+    }
+
+    if (!db.equals(MongoBootstrap.getDB().getName()))
+    {
+      return Response.notFound("{ \"message\": \"db name doesn't match\"}");
+    }
+
+    MongoBootstrap.ensureIndexes();
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"indexes created or updated on db="+db+"\"");
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
 }

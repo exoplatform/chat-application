@@ -55,7 +55,10 @@ public class MongoBootstrap
 
   public static void dropDB(String dbName)
   {
+    log.info("---- Dropping DB "+dbName);
     mongo().dropDatabase(dbName);
+    log.info("-------- DB "+dbName+" dropped!");
+
   }
 
   public static DB getDB()
@@ -82,7 +85,7 @@ public class MongoBootstrap
       initCollection("spaces");
       initCollection("users");
 
-      ensureIndexes();
+      //ensureIndexes();
       log.info("DB "+dbName+" initialized with indexes!");
 
     }
@@ -94,7 +97,7 @@ public class MongoBootstrap
     initCollection(name, true, size);
   }
 
-  public static void initCollection(String name)
+  private static void initCollection(String name)
   {
     initCollection(name, false, 0);
   }
@@ -111,67 +114,56 @@ public class MongoBootstrap
 
   }
 
-  private static void ensureIndexes()
+  public static void ensureIndexes()
   {
-    BasicDBObject foo = new BasicDBObject();
-    foo.put("user", "foo");
-    foo.put("type", "bar");
-    foo.put("category", "bar");
-    foo.put("categoryId", "bar");
-    foo.put("isRead", true);
-    foo.put("space", "bar");
-    foo.put("spaces", "bar");
-    foo.put("users", "bar");
-    foo.put("token", "bar");
-    foo.put("validity", 0);
-    foo.put("isDemoUser", true);
+    log.info("### ensureIndexes in "+getDB().getName());
+    BasicDBObject unique = new BasicDBObject();
+    unique.put("unique", true);
+    unique.put("background", true);
+    BasicDBObject notUnique = new BasicDBObject();
+    notUnique.put("unique", false);
+    notUnique.put("background", true);
 
     DBCollection notifications = getDB().getCollection("notifications");
-    notifications.insert(foo);
-    notifications.ensureIndex("user");
-    notifications.ensureIndex("isRead");
+    notifications.dropIndexes();
+    notifications.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", "gatling.notifications"));
+    notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", "gatling.notifications"));
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
     index.put("isRead", 1);
     index.put("type", 1);
     index.put("category", 1);
     index.put("categoryId", 1);
-    notifications.ensureIndex(index);
+    notifications.createIndex(index, notUnique.append("name", "user_1_isRead_1_type_1_category_1_categoryId_1").append("ns", "gatling.notifications"));
+    log.info("### notifications indexes in "+getDB().getName());
 
     DBCollection rooms = getDB().getCollection("room_rooms");
-    rooms.insert(foo);
-    rooms.ensureIndex("space");
-    rooms.ensureIndex("users");
+    rooms.dropIndexes();
+    rooms.createIndex(new BasicDBObject("space", 1), unique.append("name", "space_1").append("ns", "gatling.room_rooms"));
+    rooms.createIndex(new BasicDBObject("users", 1), unique.append("name", "users_1").append("ns", "gatling.room_rooms"));
+    log.info("### rooms indexes in "+getDB().getName());
 
     DBCollection tokens = getDB().getCollection("tokens");
-    tokens.insert(foo);
-    tokens.ensureIndex("token");
-    tokens.ensureIndex("validity");
+    tokens.dropIndexes();
+    tokens.createIndex(new BasicDBObject("token", 1), unique.append("name", "token_1").append("ns", "gatling.tokens"));
+    tokens.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", "gatling.tokens"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("token", 1);
-    tokens.ensureIndex(index);
+    tokens.createIndex(index, unique.append("name", "user_1_token_1").append("ns", "gatling.tokens"));
     index = new BasicDBObject();
     index.put("validity", -1);
     index.put("isDemoUser", 1);
-    tokens.ensureIndex(index);
+    tokens.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", "gatling.tokens"));
+    log.info("### tokens indexes in "+getDB().getName());
 
     DBCollection users = getDB().getCollection("users");
-    users.insert(foo);
-    users.ensureIndex("user");
-    users.ensureIndex("spaces");
+    users.dropIndexes();
+    users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", "gatling.users"));
+    users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", "gatling.users"));
+    log.info("### users indexes in "+getDB().getName());
 
-    DBCollection spaces = getDB().getCollection("spaces");
-    spaces.insert(foo);
-    spaces.ensureIndex("user");
-
-/*
-    notifications.remove(foo);
-    rooms.remove(foo);
-    tokens.remove(foo);
-    users.remove(foo);
-    spaces.remove(foo);
-*/
+    log.info("### Indexes creation completed in "+getDB().getName());
 
   }
 }
