@@ -23,11 +23,13 @@ import com.mongodb.*;
 import org.benjp.utils.PropertyManager;
 
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 public class MongoBootstrap
 {
   private static Mongo m;
   private static DB db;
+  private static Logger log = Logger.getLogger("MongoBootstrap");
 
   private static Mongo mongo()
   {
@@ -36,7 +38,7 @@ public class MongoBootstrap
       try
       {
         MongoOptions options = new MongoOptions();
-        options.connectionsPerHost = 100;
+        options.connectionsPerHost = 50;
         options.connectTimeout = 60000;
         options.threadsAllowedToBlockForConnectionMultiplier = 20;
         String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
@@ -81,6 +83,7 @@ public class MongoBootstrap
       initCollection("users");
 
       ensureIndexes();
+      log.info("DB "+dbName+" initialized with indexes!");
 
     }
     return db;
@@ -111,14 +114,21 @@ public class MongoBootstrap
   private static void ensureIndexes()
   {
     BasicDBObject foo = new BasicDBObject();
-    foo.put("foo", "bar");
+    foo.put("user", "foo");
+    foo.put("type", "bar");
+    foo.put("category", "bar");
+    foo.put("categoryId", "bar");
+    foo.put("isRead", true);
+    foo.put("space", "bar");
+    foo.put("spaces", "bar");
+    foo.put("users", "bar");
+    foo.put("token", "bar");
+    foo.put("validity", 0);
+    foo.put("isDemoUser", true);
 
     DBCollection notifications = getDB().getCollection("notifications");
     notifications.insert(foo);
     notifications.ensureIndex("user");
-    notifications.ensureIndex("type");
-    notifications.ensureIndex("category");
-    notifications.ensureIndex("categoryId");
     notifications.ensureIndex("isRead");
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
@@ -127,17 +137,14 @@ public class MongoBootstrap
     index.put("category", 1);
     index.put("categoryId", 1);
     notifications.ensureIndex(index);
-    notifications.remove(foo);
 
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.insert(foo);
     rooms.ensureIndex("space");
     rooms.ensureIndex("users");
-    rooms.remove(foo);
 
     DBCollection tokens = getDB().getCollection("tokens");
     tokens.insert(foo);
-    tokens.ensureIndex("user");
     tokens.ensureIndex("token");
     tokens.ensureIndex("validity");
     index = new BasicDBObject();
@@ -148,18 +155,23 @@ public class MongoBootstrap
     index.put("validity", -1);
     index.put("isDemoUser", 1);
     tokens.ensureIndex(index);
-    tokens.remove(foo);
 
     DBCollection users = getDB().getCollection("users");
     users.insert(foo);
     users.ensureIndex("user");
     users.ensureIndex("spaces");
-    users.remove(foo);
 
     DBCollection spaces = getDB().getCollection("spaces");
     spaces.insert(foo);
     spaces.ensureIndex("user");
+
+/*
+    notifications.remove(foo);
+    rooms.remove(foo);
+    tokens.remove(foo);
+    users.remove(foo);
     spaces.remove(foo);
+*/
 
   }
 }
