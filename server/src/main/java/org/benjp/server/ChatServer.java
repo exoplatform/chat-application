@@ -319,6 +319,7 @@ public class ChatServer
     String token = tokenService.getToken(username);
     tokenService.addUser(username, token);
     userService.addUserFullName(username, username);
+    userService.setAsAdmin(username, false);
 
     StringBuffer data = new StringBuffer();
     data.append("{");
