@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
 
@@ -49,7 +50,7 @@ public class UserService
 
   private DB db()
   {
-    return MongoBootstrap.getDB();
+    return ConnectionManager.getInstance().getDB();
   }
 
   public void toggleFavorite(String user, String targetUser)

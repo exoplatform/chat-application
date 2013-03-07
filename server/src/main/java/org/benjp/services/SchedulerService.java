@@ -39,6 +39,7 @@ public class SchedulerService
 {
   Logger log = Logger.getLogger("SchedulerService");
 
+  private static Scheduler sched;
 
   public SchedulerService()
   {
@@ -50,7 +51,7 @@ public class SchedulerService
   {
     SchedulerFactory sf = new StdSchedulerFactory();
     try {
-      Scheduler sched = sf.getScheduler();
+      sched = sf.getScheduler();
 
       JobDetail notificationCleanupJob = newJob(NotificationCleanupJob.class)
               .withIdentity("notificationCleanupJob", "chatServer")
@@ -73,5 +74,9 @@ public class SchedulerService
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
+  }
+
+  public void shutdown() throws SchedulerException {
+    sched.shutdown();
   }
 }

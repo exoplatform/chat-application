@@ -3,6 +3,9 @@
                  "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
   <display-name>Chat</display-name>
+  <listener>
+    <listener-class>org.benjp.listener.ConnectionManager</listener-class>
+  </listener>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>

@@ -10,6 +10,12 @@
     <filter-name>ChatHeaderFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  <listener>
+    <listener-class>org.benjp.listener.ConnectionManager</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.benjp.listener.SchedulerManager</listener-class>
+  </listener>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>

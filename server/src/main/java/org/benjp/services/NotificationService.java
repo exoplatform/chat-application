@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.listener.ConnectionManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -33,12 +34,12 @@ public class NotificationService
 
   private DB db()
   {
-    return MongoBootstrap.getDB();
+    return ConnectionManager.getInstance().getDB();
   }
 
   public static void cleanupNotifications()
   {
-    DBCollection coll = MongoBootstrap.getDB().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
     query.put("isRead", true);

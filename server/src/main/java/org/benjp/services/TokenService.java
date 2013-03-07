@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.benjp.listener.ConnectionManager;
 import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
 
@@ -38,7 +39,7 @@ public class TokenService
 
   private DB db()
   {
-    return MongoBootstrap.getDB();
+    return ConnectionManager.getInstance().getDB();
   }
 
   public String getToken(String user)

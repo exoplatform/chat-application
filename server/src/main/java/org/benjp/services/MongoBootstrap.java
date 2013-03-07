@@ -27,11 +27,11 @@ import java.util.logging.Logger;
 
 public class MongoBootstrap
 {
-  private static Mongo m;
-  private static DB db;
+  private Mongo m;
+  private DB db;
   private static Logger log = Logger.getLogger("MongoBootstrap");
 
-  private static Mongo mongo()
+  private Mongo mongo()
   {
     if (m==null)
     {
@@ -40,7 +40,7 @@ public class MongoBootstrap
         MongoOptions options = new MongoOptions();
         options.connectionsPerHost = 200;
         options.connectTimeout = 60000;
-        options.threadsAllowedToBlockForConnectionMultiplier = 5;
+        options.threadsAllowedToBlockForConnectionMultiplier = 10;
         String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
         int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
         m = new Mongo(new ServerAddress(host, port), options);
@@ -53,7 +53,12 @@ public class MongoBootstrap
     return m;
   }
 
-  public static void dropDB(String dbName)
+  public void close() {
+    if (m!=null)
+      m.close();
+  }
+
+  public void dropDB(String dbName)
   {
     log.info("---- Dropping DB "+dbName);
     mongo().dropDatabase(dbName);
@@ -61,12 +66,12 @@ public class MongoBootstrap
 
   }
 
-  public static DB getDB()
+  public DB getDB()
   {
     return getDB(null);
   }
 
-  public static DB getDB(String dbName)
+  public DB getDB(String dbName)
   {
     if (db==null || dbName!=null)
     {
@@ -85,24 +90,21 @@ public class MongoBootstrap
       initCollection("spaces");
       initCollection("users");
 
-      //ensureIndexes();
-      log.info("DB "+dbName+" initialized with indexes!");
-
     }
     return db;
   }
 
-  public static void initCappedCollection(String name, int size)
+  public void initCappedCollection(String name, int size)
   {
     initCollection(name, true, size);
   }
 
-  private static void initCollection(String name)
+  private void initCollection(String name)
   {
     initCollection(name, false, 0);
   }
 
-  private static void initCollection(String name, boolean isCapped, int size)
+  private void initCollection(String name, boolean isCapped, int size)
   {
     if (getDB().collectionExists(name)) return;
 
@@ -114,7 +116,7 @@ public class MongoBootstrap
 
   }
 
-  public static void ensureIndexes()
+  public void ensureIndexes()
   {
     log.info("### ensureIndexes in "+getDB().getName());
     BasicDBObject unique = new BasicDBObject();
