@@ -41,7 +41,7 @@ class PublicChatFullSimulation extends Simulation {
       .queryParam("passphrase", "chat")
     )
     .pause(500 milliseconds)
-		.repeat(300, "userId") {
+		.repeat(600, "userId") {
 			exec(http("create user")
 				.get("/chatServer/createDemoUser")
 				.queryParam("username", "user${userId}")
@@ -61,8 +61,9 @@ class PublicChatFullSimulation extends Simulation {
 						//  "token": "45b2b",
 			.check(regex("""token": "(.+)",""").saveAs("token"))
 		)
-    .repeat(3, "cptRoom") {
-      exec((session:Session) => session.setAttribute("targetUserId", scala.math.abs(random.nextInt(200))))
+    .repeat("10", "cptRoom") {
+      exec((session:Session) => session.setAttribute("targetUserId", scala.math.abs(random.nextInt(500))))
+      .exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(500)+1000))  // loop between 250 and 1000
       .exec(http("get room")
         .get("/chatServer/getRoom")
         .queryParam("user", "user${userId}")
@@ -71,18 +72,37 @@ class PublicChatFullSimulation extends Simulation {
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-      .during(2 minutes, "cpt") {
+      .exec(http("get token")
+        .get("/chatServer/getToken")
+        .queryParam("username", "user${targetUserId}")
+        .queryParam("passphrase", "chat")
+        //  "token": "45b2b",
+        .check(regex("""token": "(.+)",""").saveAs("tokenTarget"))
+      )
+      .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
-            exec(http("send message")
-              .get("/chatServer/send")
-              .queryParam("user", "user${userId}")
-              .queryParam("targetUser", "user${targetUserId}")
-              .queryParam("token", "${token}")
-              .queryParam("room", "${room}")
-              .queryParam("message", "This is gatlin message : ${cpt}")
+            randomSwitch(
+              50 ->
+                exec(http("send message")
+                  .get("/chatServer/send")
+                  .queryParam("user", "user${userId}")
+                  .queryParam("targetUser", "user${targetUserId}")
+                  .queryParam("token", "${token}")
+                  .queryParam("room", "${room}")
+                  .queryParam("message", "This is user gatlin message : ${cpt}")
+                )
+              ,
+              50 ->
+                exec(http("send message")
+                  .get("/chatServer/send")
+                  .queryParam("targetUser", "user${userId}")
+                  .queryParam("user", "user${targetUserId}")
+                  .queryParam("token", "${tokenTarget}")
+                  .queryParam("room", "${room}")
+                  .queryParam("message", "This is targetUser gatlin message : ${cpt}")
+                )
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           20 ->
             exec(http("who is online")
@@ -95,7 +115,6 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("withPublic", "true")
               .queryParam("isAdmin", "false")
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           1 ->
             exec(http("toggle favorite")
@@ -104,7 +123,6 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("targetUser", "user${targetUserId}")
               .queryParam("token", "${token}")
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           3 ->
             exec(http("get status")
@@ -112,7 +130,6 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("user", "user${userId}")
               .queryParam("token", "${token}")
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           1 ->
             exec(http("set status")
@@ -121,7 +138,6 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("token", "${token}")
               .queryParam("status", "away")
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           5 ->
             exec(http("update unread")
@@ -130,7 +146,6 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("token", "${token}")
               .queryParam("room", "${room}")
             )
-              .pause(0 milliseconds, 10 milliseconds)
           ,
           50 ->
             exec(http("read message")
@@ -140,15 +155,14 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("token", "${token}")
               .queryParam("room", "${room}")
             )
-              .pause(0 milliseconds, 10 milliseconds)
         )
-
+        .pause(200 milliseconds, 400 milliseconds)
       }
 
     }
 
 	setUp(
 		scnInit.users(1).protocolConfig(httpConf)
-    , scnSendMessages.users(200).ramp(20).delay(10).protocolConfig(httpConf)
+    , scnSendMessages.users(500).ramp(50).delay(5).protocolConfig(httpConf)
 		)
 }
