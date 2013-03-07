@@ -47,6 +47,14 @@ class PublicChatFullSimulation extends Simulation {
 				.queryParam("username", "user${userId}")
 				.queryParam("passphrase", "chat")
 			)			
+			.exec(http("create spaces")
+				.get("/chatServer/createDemoSpaces")
+				.queryParam("username", "user${userId}")
+				.queryParam("nbSpaces", "5")
+				.queryParam("nbSpacesMax", "100")
+				.queryParam("username", "user${userId}")
+				.queryParam("passphrase", "chat")
+			)
 		}
 
 	val iUser = new java.util.concurrent.atomic.AtomicInteger(0)
@@ -62,46 +70,41 @@ class PublicChatFullSimulation extends Simulation {
 			.check(regex("""token": "(.+)",""").saveAs("token"))
 		)
     .repeat("10", "cptRoom") {
-      exec((session:Session) => session.setAttribute("targetUserId", scala.math.abs(random.nextInt(500))))
-      .exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(500)+1000))  // loop between 250 and 1000
+      exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(5)+10))  // loop between 250 and 1000
+      .randomSwitch(
+        20 ->
+          exec((session:Session) => session.setAttribute("targetUserId", "space-demo-"+scala.math.abs(random.nextInt(100))))
+        ,
+        80 ->
+          exec((session:Session) => session.setAttribute("targetUserId", "user"+scala.math.abs(random.nextInt(500))))
+      )
       .exec(http("get room")
         .get("/chatServer/getRoom")
         .queryParam("user", "user${userId}")
         .queryParam("token", "${token}")
-        .queryParam("targetUser", "user${targetUserId}")
+        .queryParam("targetUser", "${targetUserId}")
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-      .exec(http("get token")
-        .get("/chatServer/getToken")
-        .queryParam("username", "user${targetUserId}")
-        .queryParam("passphrase", "chat")
-        //  "token": "45b2b",
-        .check(regex("""token": "(.+)",""").saveAs("tokenTarget"))
-      )
+/*
+      .doIf("${userId}", "1") {
+        exec(session => {
+          println(session)
+          session
+        })
+      }
+*/
+
       .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
-            randomSwitch(
-              50 ->
-                exec(http("send message")
-                  .get("/chatServer/send")
-                  .queryParam("user", "user${userId}")
-                  .queryParam("targetUser", "user${targetUserId}")
-                  .queryParam("token", "${token}")
-                  .queryParam("room", "${room}")
-                  .queryParam("message", "This is user gatlin message : ${cpt}")
-                )
-              ,
-              50 ->
-                exec(http("send message")
-                  .get("/chatServer/send")
-                  .queryParam("targetUser", "user${userId}")
-                  .queryParam("user", "user${targetUserId}")
-                  .queryParam("token", "${tokenTarget}")
-                  .queryParam("room", "${room}")
-                  .queryParam("message", "This is targetUser gatlin message : ${cpt}")
-                )
+            exec(http("send message")
+              .get("/chatServer/send")
+              .queryParam("user", "user${userId}")
+              .queryParam("targetUser", "${targetUserId}")
+              .queryParam("token", "${token}")
+              .queryParam("room", "${room}")
+              .queryParam("message", "This is user gatlin message : ${cpt}")
             )
           ,
           20 ->
@@ -120,7 +123,7 @@ class PublicChatFullSimulation extends Simulation {
             exec(http("toggle favorite")
               .get("/chatServer/toggleFavorite")
               .queryParam("user", "user${userId}")
-              .queryParam("targetUser", "user${targetUserId}")
+              .queryParam("targetUser", "${targetUserId}")
               .queryParam("token", "${token}")
             )
           ,
@@ -151,7 +154,7 @@ class PublicChatFullSimulation extends Simulation {
             exec(http("read message")
               .get("/chatServer/send")
               .queryParam("user", "user${userId}")
-              .queryParam("targetUser", "user${targetUserId}")
+              .queryParam("targetUser", "${targetUserId}")
               .queryParam("token", "${token}")
               .queryParam("room", "${room}")
             )

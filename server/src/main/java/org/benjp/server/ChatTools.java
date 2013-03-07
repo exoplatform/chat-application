@@ -23,6 +23,8 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.model.SpaceBean;
+import org.benjp.services.ChatService;
 import org.benjp.services.MongoBootstrap;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
@@ -30,6 +32,9 @@ import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @ApplicationScoped
 public class ChatTools
@@ -65,6 +70,58 @@ public class ChatTools
     data.append("{");
     data.append(" \"message\": \"OK\", ");
     data.append(" \"token\": \""+token+"\", ");
+    data.append(" \"user\": \""+ username+"\" ");
+    data.append("}");
+
+    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/createDemoSpaces")
+  public Response.Content createDemoSpaces(String username, String nbSpaces, String nbSpacesMax, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (username == null)
+    {
+      return Response.notFound("{ \"message\": \"username is null\"}");
+    }
+
+    int nbSpacesInt = new Integer(nbSpaces);
+    int nbSpacesMaxInt = new Integer(nbSpacesMax);
+    if (nbSpacesInt<1)
+    {
+      return Response.notFound("{ \"message\": \"you must create at least one space\"}");
+    }
+
+    if (nbSpacesMaxInt<nbSpacesInt)
+    {
+      return Response.notFound("{ \"message\": \"max spaces must be greater than spaces per user\"}");
+    }
+
+    String spacePrefix = "demo-";
+    Random random = new Random(System.currentTimeMillis());
+    List<SpaceBean> beans = new ArrayList<SpaceBean>();
+    for (int i=0 ; i<nbSpacesInt ; i++)
+    {
+      int spaceNum = random.nextInt(nbSpacesMaxInt);
+      SpaceBean spaceBean = new SpaceBean();
+      spaceBean.setDisplayName("Demo Space "+spaceNum);
+      spaceBean.setGroupId("/spaces/"+spacePrefix+spaceNum);
+      spaceBean.setId(spacePrefix+spaceNum);
+      spaceBean.setShortName("Demo Space "+spaceNum);
+      beans.add(spaceBean);
+    }
+    userService.setSpaces(username, beans);
+
+
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"message\": \"OK\", ");
     data.append(" \"user\": \""+ username+"\" ");
     data.append("}");
 
