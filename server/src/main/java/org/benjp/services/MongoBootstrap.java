@@ -132,11 +132,11 @@ public class MongoBootstrap
     notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", "gatling.notifications"));
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
-    index.put("isRead", 1);
-    index.put("type", 1);
-    index.put("category", 1);
     index.put("categoryId", 1);
-    notifications.createIndex(index, notUnique.append("name", "user_1_isRead_1_type_1_category_1_categoryId_1").append("ns", "gatling.notifications"));
+    index.put("category", 1);
+    index.put("type", 1);
+//    index.put("isRead", 1);
+    notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", "gatling.notifications"));
     log.info("### notifications indexes in "+getDB().getName());
 
     DBCollection rooms = getDB().getCollection("room_rooms");

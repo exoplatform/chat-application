@@ -42,7 +42,7 @@ public class NotificationService
     DBCollection coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
-    query.put("isRead", true);
+//    query.put("isRead", true);
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
@@ -72,17 +72,18 @@ public class NotificationService
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
-    query.put("isRead", false);
-    query.put("type", type);
-    query.put("category", category);
-    query.put("categoryId", categoryId);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      doc.put("isRead", true);
-      coll.save(doc, WriteConcern.SAFE);
-    }
+    if (categoryId!=null) query.put("categoryId", categoryId);
+    if (category!=null) query.put("category", category);
+    if (type!=null) query.put("type", type);
+//    query.put("isRead", false);
+    coll.remove(query);
+//    DBCursor cursor = coll.find(query);
+//    while (cursor.hasNext())
+//    {
+//      DBObject doc = cursor.next();
+//      doc.put("isRead", true);
+//      coll.save(doc, WriteConcern.SAFE);
+//    }
 
   }
 
@@ -99,7 +100,7 @@ public class NotificationService
     BasicDBObject query = new BasicDBObject();
 
     query.put("user", user);
-    query.put("isRead", false);
+//    query.put("isRead", false);
     if (type!=null) query.put("type", type);
     if (category!=null) query.put("category", category);
     if (categoryId!=null) query.put("categoryId", categoryId);
@@ -121,7 +122,7 @@ public class NotificationService
   {
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
-    query.put("isRead", false);
+//    query.put("isRead", false);
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }

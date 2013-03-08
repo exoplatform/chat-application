@@ -70,13 +70,19 @@ class PublicChatFullSimulation extends Simulation {
 			.check(regex("""token": "(.+)",""").saveAs("token"))
 		)
     .repeat("10", "cptRoom") {
-      exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(5)+10))  // loop between 250 and 1000
+      exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(200)+500))  // loop between 250 and 1000
       .randomSwitch(
         20 ->
           exec((session:Session) => session.setAttribute("targetUserId", "space-demo-"+scala.math.abs(random.nextInt(100))))
         ,
         80 ->
           exec((session:Session) => session.setAttribute("targetUserId", "user"+scala.math.abs(random.nextInt(500))))
+      )
+      .exec(http("clear notifications")
+        .get("/chatServer/updateUnreadTestMessages")
+        .queryParam("username", "user${userId}")
+        .queryParam("room", "ALL")
+        .queryParam("passphrase", "chat")
       )
       .exec(http("get room")
         .get("/chatServer/getRoom")
@@ -86,15 +92,6 @@ class PublicChatFullSimulation extends Simulation {
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-/*
-      .doIf("${userId}", "1") {
-        exec(session => {
-          println(session)
-          session
-        })
-      }
-*/
-
       .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
@@ -107,7 +104,7 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("message", "This is user gatlin message : ${cpt}")
             )
           ,
-          20 ->
+          25 ->
             exec(http("who is online")
               .get("/chatServer/whoIsOnline")
               .queryParam("user", "user${userId}")
@@ -144,13 +141,21 @@ class PublicChatFullSimulation extends Simulation {
           ,
           5 ->
             exec(http("update unread")
-              .get("/chatServer/updateUnreadMessages")
-              .queryParam("user", "user${userId}")
-              .queryParam("token", "${token}")
+              .get("/chatServer/updateUnreadTestMessages")
+              .queryParam("username", "user${userId}")
               .queryParam("room", "${room}")
+              .queryParam("passphrase", "chat")
             )
           ,
-          50 ->
+          5 ->
+            exec(http("update unread target")
+              .get("/chatServer/updateUnreadTestMessages")
+              .queryParam("username", "${targetUserId}")
+              .queryParam("room", "${room}")
+              .queryParam("passphrase", "chat")
+            )
+          ,
+          40 ->
             exec(http("read message")
               .get("/chatServer/send")
               .queryParam("user", "user${userId}")

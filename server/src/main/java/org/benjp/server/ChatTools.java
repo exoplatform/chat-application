@@ -24,10 +24,7 @@ import juzu.Response;
 import juzu.Route;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
-import org.benjp.services.ChatService;
-import org.benjp.services.MongoBootstrap;
-import org.benjp.services.TokenService;
-import org.benjp.services.UserService;
+import org.benjp.services.*;
 import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -46,6 +43,8 @@ public class ChatTools
   @Inject
   TokenService tokenService;
 
+  @Inject
+  NotificationService notificationService;
 
   @Resource
   @Route("/createDemoUser")
@@ -152,6 +151,36 @@ public class ChatTools
     data.append("}");
 
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/updateUnreadTestMessages")
+  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    if (username == null)
+    {
+      return Response.notFound("{ \"message\": \"username is null\"}");
+    }
+
+    if (room == null)
+    {
+      return Response.notFound("{ \"message\": \"room is null\"}");
+    }
+
+    if (username.startsWith(ChatService.SPACE_PREFIX))
+      return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+
+    if (!room.equals("ALL"))
+      notificationService.setNotificationsAsRead(username, "chat", "room", room);
+    else
+      notificationService.setNotificationsAsRead(username, null, null, null);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
