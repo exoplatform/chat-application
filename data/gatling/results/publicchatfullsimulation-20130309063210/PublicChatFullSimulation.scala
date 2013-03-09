@@ -41,7 +41,7 @@ class PublicChatFullSimulation extends Simulation {
       .queryParam("passphrase", "chat")
     )
     .pause(500 milliseconds)
-		.repeat(600, "userId") {
+		.repeat(500, "userId") {
 			exec(http("create user")
 				.get("/chatServer/createDemoUser")
 				.queryParam("username", "user${userId}")
@@ -69,7 +69,7 @@ class PublicChatFullSimulation extends Simulation {
 						//  "token": "45b2b",
 			.check(regex("""token": "(.+)",""").saveAs("token"))
 		)
-    .repeat("10", "cptRoom") {
+    .repeat("20", "cptRoom") {
       exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(200)+500))  // loop between 250 and 1000
       .randomSwitch(
         20 ->
@@ -77,12 +77,6 @@ class PublicChatFullSimulation extends Simulation {
         ,
         80 ->
           exec((session:Session) => session.setAttribute("targetUserId", "user"+scala.math.abs(random.nextInt(500))))
-      )
-      .exec(http("clear notifications")
-        .get("/chatServer/updateUnreadTestMessages")
-        .queryParam("username", "user${userId}")
-        .queryParam("room", "ALL")
-        .queryParam("passphrase", "chat")
       )
       .exec(http("get room")
         .get("/chatServer/getRoom")
@@ -92,7 +86,8 @@ class PublicChatFullSimulation extends Simulation {
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-      .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
+      .during( 10 minutes , "cpt") { // loop between 250 and 1000
+//      .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
             exec(http("send message")
@@ -104,7 +99,7 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("message", "This is user gatlin message : ${cpt}")
             )
           ,
-          25 ->
+          24 ->
             exec(http("who is online")
               .get("/chatServer/whoIsOnline")
               .queryParam("user", "user${userId}")
@@ -114,6 +109,14 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("withSpaces", "true")
               .queryParam("withPublic", "true")
               .queryParam("isAdmin", "false")
+            )
+          ,
+          1 ->
+            exec(http("clear notifications")
+              .get("/chatServer/updateUnreadTestMessages")
+              .queryParam("username", "user${userId}")
+              .queryParam("room", "ALL")
+              .queryParam("passphrase", "chat")
             )
           ,
           1 ->
@@ -164,13 +167,13 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("room", "${room}")
             )
         )
-        .pause(200 milliseconds, 400 milliseconds)
+        .pause(200 milliseconds, 600 milliseconds)
       }
 
     }
 
 	setUp(
 		scnInit.users(1).protocolConfig(httpConf)
-    , scnSendMessages.users(500).ramp(50).delay(5).protocolConfig(httpConf)
+    , scnSendMessages.users(500).ramp(250).delay(5).protocolConfig(httpConf)
 		)
 }
