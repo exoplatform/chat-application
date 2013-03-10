@@ -1,0 +1,37 @@
+================================================================================
+2013-03-09 16:07:54                                               12258s elapsed
+---- Scenario : Messages -------------------------------------------------------
+Users  : [#################################################################]100%
+          waiting:0     / running:0     / done:500  
+---- Scenario : Init -----------------------------------------------------------
+Users  : [#################################################################]100%
+          waiting:0     / running:0     / done:1    
+---- Requests ------------------------------------------------------------------
+> server init                                                OK=1      KO=0     
+> drop db                                                    OK=1      KO=0     
+> init db                                                    OK=1      KO=0     
+> ensure indexes                                             OK=1      KO=0     
+> create user                                                OK=500    KO=0     
+> create spaces                                              OK=500    KO=0     
+> get token                                                  OK=500    KO=0     
+> get room                                                   OK=2500   KO=0     
+> send message                                               OK=1750482 KO=1     
+> update unread                                              OK=435835 KO=1     
+> who is online                                              OK=2099092 KO=4     
+> read message                                               OK=3498873 KO=9     
+> set status                                                 OK=86893  KO=3     
+> update unread target                                       OK=436809 KO=0     
+> clear notifications                                        OK=86896  KO=0     
+> toggle favorite                                            OK=87552  KO=0     
+> get status                                                 OK=262296 KO=1     
+================================================================================
+
+
+{ "users": 500,  "rooms": 2091,  "messages": 1750482,  "notifications": env. 10502892,  "notificationsUnread": 65280}
+
+
+Simulation finished.
+Simulation successful.
+Generating reports...
+Reports generated in 0s.
+Please open the following file : /Users/benjamin/servers/third-parties/gatling-charts-highcharts-1.4.3/results/publicchatfullsimulation-20130309124334/index.html
