@@ -54,8 +54,10 @@ public class MongoBootstrap
   }
 
   public void close() {
-    if (m!=null)
-      m.close();
+    try {
+      if (m!=null)
+        m.close();
+    } catch (NullPointerException e) {}
   }
 
   public void dropDB(String dbName)

@@ -28,6 +28,17 @@ var jq171 = jQuery.noConflict(true);
 
 
     function initUserProfile() {
+      $(".uiCompanyNavigations > li")
+        .children()
+        .filter(function() {
+          if ($(this).attr("href") == "/portal/intranet/chat") {
+            $(this).css("width", "95%");
+            var html = '<i class="uiChatIcon"></i>Chat';
+            html += '<span id="chat-notification" style="float: right; display: none;"></span>';
+            $(this).html(html);
+          }
+        })
+
       $.getJSON(jzInitUserProfile, function(data){
         console.log("Profile Update : "+data.msg);
         token = data.token;

@@ -1,5 +1,11 @@
 package org.benjp.model;
 
+import org.benjp.utils.MessageDigester;
+import org.benjp.utils.PropertyManager;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class RoomsBean {
@@ -18,7 +24,6 @@ public class RoomsBean {
   {
     StringBuffer sb = new StringBuffer();
     sb.append("{");
-    sb.append("\"timestamp\": \""+System.currentTimeMillis()+"\",");
     sb.append("\"rooms\": [");
     boolean first=true;
     for (RoomBean roomBean:this.getRooms()) {
@@ -31,7 +36,10 @@ public class RoomsBean {
       sb.append(roomBean.toJSON());
 
     }
-    sb.append("]}");
+    sb.append("],");
+    sb.append("\"md5\": \"").append(MessageDigester.getHash(sb.toString())).append("\",");
+    sb.append("\"timestamp\": \""+System.currentTimeMillis()+"\"");
+    sb.append("}");
 
 
     return sb.toString();

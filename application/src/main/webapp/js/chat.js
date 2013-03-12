@@ -531,9 +531,9 @@ $(document).ready(function(){
           "isAdmin": isAdmin,
           "timestamp": new Date().getTime()
         }, function(response){
-          var rooms = TAFFY(response.rooms);
-          var tmpMD5 = calcMD5(rooms().stringify());
+          var tmpMD5 = response.md5;
           if (tmpMD5 !== whoIsOnlineMD5) {
+            var rooms = TAFFY(response.rooms);
             whoIsOnlineMD5 = tmpMD5;
             isLoaded = true;
             hidePanel(".chat-error-panel");
@@ -558,6 +558,33 @@ $(document).ready(function(){
                   identifier: "messages"
                 });
               }
+              oldNotif = totalNotif;
+            } else if (window.webkitNotifications!==undefined) {
+              totalNotif = 0;
+              $('span.room-total').each(function(index) {
+                totalNotif = parseInt(totalNotif,10) + parseInt($(this).attr("data"),10);
+              });
+              if (totalNotif>oldNotif && profileStatus !== "donotdisturb" && profileStatus !== "offline") {
+
+                var havePermission = window.webkitNotifications.checkPermission();
+                if (havePermission == 0) {
+                  // 0 is PERMISSION_ALLOWED
+                  var notification = window.webkitNotifications.createNotification(
+                    '/chat/img/chat.png',
+                    'Chat notification!',
+                    'You have new message'
+                  );
+
+                  notification.onclick = function () {
+                    window.open("http://stackoverflow.com/a/13328397/1269037");
+                    notification.close();
+                  }
+                  notification.show();
+                } else {
+                  window.webkitNotifications.requestPermission();
+                }
+              }
+
               oldNotif = totalNotif;
             }
 
@@ -622,7 +649,12 @@ $(document).ready(function(){
       firstLoad = false;
     }
 
-    if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
+    if (isDesktopView()) {
+      var $targetUser = $("#users-online-"+targetUser);
+      $targetUser.addClass("info");
+      $(".room-total").removeClass("room-total-white");
+      $targetUser.find(".room-total").addClass("room-total-white");
+    }
 
 
     $('.users-online').on("click", function() {
@@ -890,7 +922,12 @@ $(document).ready(function(){
     //console.log("TARGET::"+targetUser+" ; ISADMIN::"+isAdmin);
     if (targetUser!==undefined) {
       $(".users-online").removeClass("info");
-      if (isDesktopView()) $("#users-online-"+targetUser).addClass("info");
+      if (isDesktopView()) {
+        var $targetUser = $("#users-online-"+targetUser);
+        $targetUser.addClass("info");
+        $(".room-total").removeClass("room-total-white");
+        $targetUser.find(".room-total").addClass("room-total-white");
+      }
 
       $.ajax({
         url: jzChatGetRoom,

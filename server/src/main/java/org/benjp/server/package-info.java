@@ -18,8 +18,6 @@
  */
 
 @Application (defaultController = ChatServer.class)
-@Portlet
 package org.benjp.server;
 
 import juzu.Application;
-import juzu.plugin.portlet.Portlet;

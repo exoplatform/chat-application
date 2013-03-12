@@ -3,10 +3,9 @@
 #chat-application
 {
   height: @height;
-  background-color: @backgroundColor;
   padding-left: 1px;
   min-width: @width;
-  width: @width;
+  padding: 20px;
 
   div, td
   {
@@ -35,7 +34,6 @@
 
 .label-user {
   display: block;
-  width: (@width - 310);
   margin-top: 5px;
   float: left;
   line-height: 20px;
@@ -54,7 +52,6 @@
 {
 	height: (@height - 105 - @heightBar);
 	overflow-y: scroll;
-	width: @widthMessages;
 }
 
 #msg
@@ -65,7 +62,7 @@
   padding: 5px;
   width: (@widthMessages - 44);
   float: left;
-  height: 40px;
+  height: 52px;
 }
 
 .sh_container {
@@ -82,6 +79,5 @@
   height: (@height - 44);
 	overflow-y: scroll;
   border: 1px solid @colorBorder;
-  width: @widthUsers;
   cursor: default;
 }

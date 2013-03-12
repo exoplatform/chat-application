@@ -12,17 +12,6 @@
        <name>juzu.run_mode</name>
        <value>prod</value>
      </init-param>
-     <init-param>
-       <name>juzu.src_path</name>
-       <value>/Users/benjamin/git/chat/application/src/main/java</value>
-     </init-param>
-     <init-param>
-       <name>juzu.inject</name>
-       <value>weld</value>
-       <!--
-       <value>spring</value>
-       -->
-     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -49,13 +38,6 @@
        <name>juzu.run_mode</name>
        <value>prod</value>
      </init-param>
-     <init-param>
-       <name>juzu.inject</name>
-       <value>weld</value>
-       <!--
-       <value>spring</value>
-       -->
-     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -74,10 +56,6 @@
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
-     </init-param>
-     <init-param>
-       <name>juzu.inject</name>
-       <value>weld</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
