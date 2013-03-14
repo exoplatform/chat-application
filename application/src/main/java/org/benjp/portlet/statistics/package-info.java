@@ -23,7 +23,7 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/jquery-1.9.1.min.js", id = "jquery"),
+                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
                 @Script(src = "js/stats.js", depends = "jquery")
         },
         stylesheets = {

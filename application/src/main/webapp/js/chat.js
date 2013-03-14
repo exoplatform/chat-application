@@ -625,7 +625,7 @@ $(document).ready(function(){
       }
       out += '</td>';
       out += '<td>';
-      if (Math.abs(room.unreadTotal)>0) {
+      if (Math.round(room.unreadTotal)>0) {
         out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
       }
       out += '</td>';

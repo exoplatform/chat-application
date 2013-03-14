@@ -40,9 +40,9 @@ var jq171 = jQuery.noConflict(true);
         })
 
       $.getJSON(jzInitUserProfile, function(data){
-        console.log("Profile Update : "+data.msg);
+        //console.log("Profile Update : "+data.msg);
         token = data.token;
-        console.log("Token : "+data.token);
+        //console.log("Token : "+data.token);
 
         notifEventURL = jzNotification+'?user='+username+'&token='+token;
         notifEventInt = window.clearInterval(notifEventInt);
@@ -54,7 +54,7 @@ var jq171 = jQuery.noConflict(true);
         refreshStatus();
       })
       .error(function(response){
-        console.log("error::"+response);
+        //console.log("error::"+response);
         //retry in 3 sec
         setTimeout(initUserProfile, 3000);
       });
@@ -66,7 +66,7 @@ var jq171 = jQuery.noConflict(true);
         $.getJSON(notifEventURL, function(data) {
           if(oldNotifTotal!=data.total){
             var total = data.total;
-            console.log('Notif :: '+total);
+            //console.log('Notif :: '+total);
             var $chatNotification = $("#chat-notification");
             if (total>0) {
               $chatNotification.html('<span class="notif-total">'+total+'</span>');
@@ -123,7 +123,7 @@ var jq171 = jQuery.noConflict(true);
 
     $("a.chat-status").click(function(){
       var status = $(this).attr("status");
-      console.log("setStatus :: "+status);
+      //console.log("setStatus :: "+status);
 
       $.ajax({
         url: jzSetStatus,
@@ -133,7 +133,7 @@ var jq171 = jQuery.noConflict(true);
                 },
 
         success: function(response){
-          console.log("SUCCESS:setStatus::"+response);
+          //console.log("SUCCESS:setStatus::"+response);
           changeStatus(response);
           $(".MenuItemContainer").css('display', 'none');
         },
