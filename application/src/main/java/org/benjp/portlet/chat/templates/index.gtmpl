@@ -102,7 +102,7 @@
       		</span>
         </span>
         <div style="display: block;margin-left: 45px;margin-right: 11px;">
-          <textarea type="text" name="text" id="msg" autocomplete="off" rows="2" style="width: 100%;"></textarea>
+          <textarea type="text" name="text" id="msg" autocomplete="off"></textarea>
         </div>
       </div>
     </div>
