@@ -75,13 +75,13 @@
     </div>
   </div>
   <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
-    <div id="chat-users" class="wikiBox">
+    <div id="chat-users" class="uiBox">
       <span>&nbsp;</span>
     </div>
   </div>
   <% } %>
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
-    <div class="wikiBox">
+    <div class="uiBox">
       <div class="room-mobile no-user-selection">
         <a class="btn-rooms"><span class="icon-chevron-left"></span></a>
         <span class="room-name"></span>

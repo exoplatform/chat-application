@@ -17,7 +17,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Juzu Framework Version -->
-    <juzu.version>0.6.0-beta18</juzu.version>
+    <juzu.version>0.6.0-cr1</juzu.version>
 
     <project.output.directory>/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.3-MOD/tomcat-bundle/webapps</project.output.directory>
 

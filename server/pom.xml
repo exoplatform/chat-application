@@ -12,7 +12,7 @@
   <groupId>org.benjp.chat</groupId>
   <artifactId>server</artifactId>
   <version>0.7-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <name>Chat Server</name>
 
@@ -30,21 +30,25 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-bom-core</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-less</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-upload</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Other Dependencies -->
@@ -132,7 +136,7 @@
 
   </dependencies>
 
-  <build>
+  <!--build>
     <finalName>chatServer</finalName>
     <plugins>
 
@@ -178,6 +182,36 @@
       </plugin>
 
     </plugins>
-  </build>
+  </build-->
 
+  <build>
+    <finalName>chatServer</finalName>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <packagingExcludes>
+            WEB-INF/lib/aopalliance-*.jar,
+            WEB-INF/lib/c3p0-*.jar,
+            WEB-INF/lib/cdi-api-*.jar,
+            WEB-INF/lib/commons-lang3-*.jar,
+            WEB-INF/lib/commons-juzu-4.0.0-*.jar,
+            WEB-INF/lib/groovy-all-*.jar,
+            WEB-INF/lib/guava-*.jar,
+            WEB-INF/lib/guice-*.jar,
+            WEB-INF/lib/javassist-*.jar,
+            WEB-INF/lib/javax.servlet-api-*.jar,
+            WEB-INF/lib/jboss-interceptors-*.jar,
+            WEB-INF/lib/jsr250-*.jar,
+            WEB-INF/lib/jsr305-*.jar,
+            WEB-INF/lib/portlet-api-*.jar,
+            WEB-INF/lib/quartz-*.jar,
+            WEB-INF/lib/servlet-api-*.jar,
+            WEB-INF/lib/slf4j-*.jar
+          </packagingExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

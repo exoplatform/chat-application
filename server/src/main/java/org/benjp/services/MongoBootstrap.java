@@ -60,6 +60,12 @@ public class MongoBootstrap
     } catch (NullPointerException e) {}
   }
 
+  public void initialize() {
+    this.close();
+    this.m = null;
+    this.mongo();
+  }
+
   public void dropDB(String dbName)
   {
     log.info("---- Dropping DB "+dbName);

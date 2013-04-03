@@ -24,7 +24,10 @@ import juzu.Response;
 import juzu.Route;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
-import org.benjp.services.*;
+import org.benjp.services.ChatService;
+import org.benjp.services.NotificationService;
+import org.benjp.services.TokenService;
+import org.benjp.services.UserService;
 import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;

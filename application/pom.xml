@@ -33,32 +33,38 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-bom-core</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-less</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-upload</artifactId>
       <version>${juzu.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Other Dependencies -->
@@ -92,7 +98,7 @@
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
+      <version>4.0.0-RC1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -109,6 +115,7 @@
             WEB-INF/lib/c3p0-*.jar,
             WEB-INF/lib/cdi-api-*.jar,
             WEB-INF/lib/commons-lang3-*.jar,
+            WEB-INF/lib/commons-juzu-4.0.0-*.jar,
             WEB-INF/lib/groovy-all-*.jar,
             WEB-INF/lib/guava-*.jar,
             WEB-INF/lib/guice-*.jar,
