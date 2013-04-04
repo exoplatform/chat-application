@@ -8,6 +8,7 @@
   data-chat-interval-users="<%=chatIntervalUsers%>"
   data-public-mode="<%=publicMode%>"
   data-view="<%=view%>"
+  data-fullscreen="<%=fullscreen%>"
 
   data-label-panel-error1="&{benjp.chat.panel.error1}"
   data-label-panel-error2="&{benjp.chat.panel.error2}"

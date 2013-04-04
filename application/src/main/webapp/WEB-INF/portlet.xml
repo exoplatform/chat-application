@@ -24,7 +24,12 @@
      <portlet-preferences>
        <preference>
          <name>view</name>
-         <value>responsive</value>
+         <value>normal</value>
+         <read-only>false</read-only>
+       </preference>
+       <preference>
+         <name>fullscreen</name>
+         <value>false</value>
          <read-only>false</read-only>
        </preference>
      </portlet-preferences>

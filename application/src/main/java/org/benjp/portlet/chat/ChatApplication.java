@@ -94,6 +94,8 @@ public class ChatApplication
     if (!"normal".equals(view) && !"responsive".equals(view) && !"public".equals(view))
       view = "responsive";
 
+    String fullscreen = portletPreferences.getValue("fullscreen", "false");
+
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
@@ -101,6 +103,7 @@ public class ChatApplication
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
             .set("publicMode", isPublic)
             .set("view", view)
+            .set("fullscreen", fullscreen)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withStylesheets("chat-"+view);

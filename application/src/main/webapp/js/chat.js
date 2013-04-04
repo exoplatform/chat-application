@@ -21,6 +21,7 @@ $(document).ready(function(){
   var chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
   var chatPublicMode = $chatApplication.attr("data-public-mode");
   var chatView = $chatApplication.attr("data-view");
+  var chatFullscreen = $chatApplication.attr("data-fullscreen");
   var isPublic = (chatPublicMode == "true" && chatView == "public");
 
   var labelPanelError1 = $chatApplication.attr("data-label-panel-error1");
@@ -73,6 +74,10 @@ $(document).ready(function(){
   var whoIsOnlineMD5 = 0;
 
   $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
+
+  if (chatFullscreen == "true") {
+    $("#PlatformAdminToolbarContainer").css("display", "none");
+  }
 
   function checkViewportStatus() {
     return ($(".btn-mobile").css("display")!=="none");
