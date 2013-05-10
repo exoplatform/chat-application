@@ -88,6 +88,25 @@
         <a class="btn-rooms"><span class="icon-chevron-left"></span></a>
         <span class="room-name"></span>
       </div>
+      <div class="room-detail" id="room-detail">
+
+        <span class="room-detail-avatar">
+          <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
+            <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
+              <img class="avatar-image target-avatar-image" src='/chat/img/Avatar.gif;' width="30px" height="30px" style="width:30px; height:30px;">
+            </a>
+          </div>
+        </span>
+
+        <span class="target-user-fullname room-detail-fullname">
+         &nbsp;
+        </span>
+
+        <span class="room-detail-button">
+          <button type="button" class="btn btn-primary pull-right btn-weemo" title="Video Call">Video Call</button>
+        </span>
+
+      </div>
       <div id="chats"></div>
 
       <div class="chat-message">

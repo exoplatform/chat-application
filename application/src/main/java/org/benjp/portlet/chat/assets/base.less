@@ -129,9 +129,37 @@ tr.info td {
   position: relative;
   background-color: @colorBgLight;
   border-top: 1px solid @colorBorderGrey;
-  border-bottom: 1px solid @colorBorderGrey;
   height: @heightMessage;
 }
+.room-detail
+{
+  position: relative;
+  background-color: @colorBgLight;
+  border-bottom: 1px solid @colorBorderGrey;
+  height: @heightRoomDetail;
+  display: none;
+}
+
+.room-detail-button {
+  float: right;
+  margin-top: 15px;
+  margin-right: 15px;
+}
+
+.room-detail-fullname {
+  float: left;
+  padding-left: 10px;
+  line-height: 61px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.room-detail-avatar {
+  float: left;
+  margin-top: 8px;
+  margin-left: 10px;
+}
+
 .room-inactive
 {
   color: #D0D0D0;

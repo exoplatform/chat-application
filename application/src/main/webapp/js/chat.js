@@ -84,6 +84,7 @@ $(document).ready(function(){
     $("#PlatformAdminToolbarContainer").css("display", "none");
   }
 
+
   function checkViewportStatus() {
     return ($(".btn-mobile").css("display")!=="none");
   }
@@ -166,16 +167,6 @@ $(document).ready(function(){
         return;
       }
 //      console.log("*"+msg+"*");
-      if (msg==="/call\n") {
-        var obj = new Object ();
-        obj.uri = "weemo"+targetUser;
-        obj.key = weemoKey;
-        obj.displayNameToCall = fullname;
-        weemoVideoCall.lucl_sm ("createCall", obj);
-        $(this).val("");
-
-        return;
-      }
       var im = messages.length;
       messages[im] = {"user": username,
         "fullname": "You",
@@ -418,6 +409,18 @@ $(document).ready(function(){
     }
   }
 
+  function createWeemoCall() {
+    var obj = new Object ();
+    obj.uri = "weemo"+targetUser;
+    obj.key = weemoKey;
+    obj.displayNameToCall = fullname;
+    weemoVideoCall.lucl_sm ("createCall", obj);
+
+  }
+
+  $(".btn-weemo").on("click", function() {
+    createWeemoCall();
+  });
 
 
   function maintainSession() {
@@ -696,6 +699,7 @@ $(document).ready(function(){
     if (value && firstLoad) {
       //console.log("firstLoad with user : *"+value+"*");
       targetUser = value;
+      targetFullname = jzGetParam("lastFullName"+username);
       if (username!==ANONIM_USER) {
         loadRoom();
       }
@@ -882,7 +886,7 @@ $(document).ready(function(){
             out += "</span></div>";
           if (message.user != username) {
             out += "<div class='msgln-odd'>";
-            out += "<span style='position:relative; padding-right:9px;top:8px'>";
+            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
             if (isPublic)
               out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
             else
@@ -895,7 +899,7 @@ $(document).ready(function(){
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
             out += "<div class='msgln'>";
-            out += "<span style='margin-left:40px;'>";
+            out += "<span style='margin-left:50px;'>";
             //out += "<span style='float:left; '>&nbsp;</span>";
             out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           }
@@ -904,7 +908,7 @@ $(document).ready(function(){
         {
           out += "<hr style='margin:0px;'>";
         }
-        out += "<div style='margin-left:40px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
+        out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
           "<span class='invisible-text'> [</span>"+
           "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
           "<span class='invisible-text'>]</span></div>"+
@@ -982,6 +986,19 @@ $(document).ready(function(){
         $targetUser.find(".room-total").addClass("room-total-white");
       }
 
+      if (targetUser.indexOf("space-")===-1) {
+        $("#chats").css("height", ($("#chat-users").css("height").substring(0,3)-122)+"px" );
+        $("#room-detail").css("display", "block");
+        $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+targetUser);
+        $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+targetUser+"/soc:profile/soc:avatar");
+        $(".target-user-fullname").text(targetFullname);
+      }
+      else {
+        $("#chats").css("height", ($("#chat-users").css("height").substring(0,3)-61)+"px" );
+        $("#room-detail").css("display", "none");
+      }
+
+
       $.ajax({
         url: jzChatGetRoom,
         data: {"targetUser": targetUser,
@@ -1000,6 +1017,7 @@ $(document).ready(function(){
           chatEventURL = jzChatSend+'?room='+room+'&user='+username+'&token='+token+'&event=0';
 
           jzStoreParam("lastUser"+username, targetUser, 60000);
+          jzStoreParam("lastFullName"+username, targetFullname, 60000);
           jzStoreParam("lastTS"+username, "0");
           chatEventInt = window.clearInterval(chatEventInt);
           chatEventInt = setInterval(refreshChat, chatIntervalChat);
