@@ -9,6 +9,7 @@
   data-public-mode="<%=publicMode%>"
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
+  data-weemo-key="<%=weemoKey%>"
 
   data-label-panel-error1="&{benjp.chat.panel.error1}"
   data-label-panel-error2="&{benjp.chat.panel.error2}"

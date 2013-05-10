@@ -45,6 +45,7 @@ public class PropertyManager {
   public static final String PROPERTY_CRON_NOTIF_CLEANUP = "chatCronNotifCleanup";
   public static final String PROPERTY_PUBLIC_MODE = "publicMode";
   public static final String PROPERTY_PUBLIC_ADMIN_GROUP = "publicAdminGroup";
+  public static final String PROPERTY_WEEMO_KEY = "weemoKey";
 
 
   public static String getProperty(String key)
@@ -85,6 +86,7 @@ public class PropertyManager {
         properties.setProperty(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
         properties.setProperty(PROPERTY_PUBLIC_MODE, "false");
         properties.setProperty(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
+        properties.setProperty(PROPERTY_WEEMO_KEY, "");
       }
     }
     return properties;

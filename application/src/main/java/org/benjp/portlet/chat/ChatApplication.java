@@ -86,6 +86,7 @@ public class ChatApplication
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
+    String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
 
     String fullname = (fullname_==null)?remoteUser_:fullname_;
 
@@ -104,6 +105,7 @@ public class ChatApplication
             .set("publicMode", isPublic)
             .set("view", view)
             .set("fullscreen", fullscreen)
+            .set("weemoKey", chatWeemoKey)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withStylesheets("chat-"+view);

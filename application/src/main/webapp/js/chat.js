@@ -10,6 +10,7 @@ $(document).ready(function(){
   var ANONIM_USER = "__anonim_";
   var SUPPORT_USER = "__support_";
   var isAdmin = false;
+  var weemoVideoCall;
 
   var $chatApplication = $("#chat-application");
   var username = $chatApplication.attr("data-username");
@@ -22,6 +23,7 @@ $(document).ready(function(){
   var chatPublicMode = $chatApplication.attr("data-public-mode");
   var chatView = $chatApplication.attr("data-view");
   var chatFullscreen = $chatApplication.attr("data-fullscreen");
+  var weemoKey = $chatApplication.attr("data-weemo-key");
   var isPublic = (chatPublicMode == "true" && chatView == "public");
 
   var labelPanelError1 = $chatApplication.attr("data-label-panel-error1");
@@ -59,6 +61,9 @@ $(document).ready(function(){
   var old = '';
   var chatEventSource;
   var targetUser;
+  var fullname;
+  var targetFullname;
+
   var chatEventURL;
   var chatEventInt;
   var chatOnlineInt;
@@ -158,6 +163,17 @@ $(document).ready(function(){
       //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
       if(!msg)
       {
+        return;
+      }
+//      console.log("*"+msg+"*");
+      if (msg==="/call\n") {
+        var obj = new Object ();
+        obj.uri = "weemo"+targetUser;
+        obj.key = weemoKey;
+        obj.displayNameToCall = fullname;
+        weemoVideoCall.lucl_sm ("createCall", obj);
+        $(this).val("");
+
         return;
       }
       var im = messages.length;
@@ -303,13 +319,13 @@ $(document).ready(function(){
     if (filter == ":aboutme" || filter == ":about me") {
       showAboutPanel();
     }
-    if (filter.indexOf(":")===-1) {
-      userFilter = filter;
+    if (filter.indexOf("@")!==0) {
+      highlight = filter;
+      showMessages();
+    } else {
+      userFilter = filter.substr(1, filter.length-1);
       filterInt = clearTimeout(filterInt);
       filterInt = setTimeout(refreshWhoIsOnline, 500);
-    } else {
-      highlight = filter.substr(1, filter.length-1);
-      showMessages();
     }
   });
 
@@ -351,11 +367,14 @@ $(document).ready(function(){
         $chatApplication.attr("data-token", token);
         var $labelUser = $(".label-user");
         $labelUser.text(data.fullname);
+        fullname = data.fullname;
         if (data.isAdmin == "true") {
           $(".filter-public").css("display", "inline-block");
           $(".filter-empty").css("display", "none");
         }
         isAdmin = (data.isAdmin=="true");
+        initCall(username, fullname);
+
 
         refreshWhoIsOnline();
         notifStatusInt = window.clearInterval(notifStatusInt);
@@ -371,6 +390,35 @@ $(document).ready(function(){
 
   }
   initChatProfile();
+
+  function initCall($uid, $name) {
+//    console.log("INIT VIDEO WITH : "+$uid+" : "+$name);
+//    var $uid = $("#uid").val();
+//    var $name = $("#name").val();
+    weemoVideoCall = new Lucl("weemo"+$uid, weemoKey, $name);
+    weemoVideoCall.debug = true;
+    weemoVideoCall.lucl_sm("connect");
+
+    /* Local connection to the WeemoDriver */
+    weemoVideoCall.luclOkAction = function () {
+      console.log ("eXo : Video Driver local connection ok");
+    }
+    /* Connection to the Weemo Video Cloud */
+    weemoVideoCall.mgmtOkAction = function () {
+      console.log ("eXo : Weemo Cloud connection ok");
+    }
+    /* Function to handle the user connection*/
+    weemoVideoCall.sipOkAction = function () {
+      console.log ("eXo : Initialization complete");
+//      $("#call").prop('disabled', false);
+    }
+
+    weemoVideoCall.onCallCreated= function() {
+      console.log ("eXo : Call created");
+    }
+  }
+
+
 
   function maintainSession() {
     $.ajax({
@@ -479,7 +527,7 @@ $(document).ready(function(){
 
         if (isPublic) {
           targetUser = SUPPORT_USER;
-          fullname = labelSupportFullname;
+          targetFullname = labelSupportFullname;
         }
 
         loadRoom();
@@ -664,24 +712,24 @@ $(document).ready(function(){
 
     $('.users-online').on("click", function() {
       targetUser = $(".room-link:first",this).attr("user-data");
-      fullname = $(".room-link:first",this).attr("data-fullname");
+      targetFullname = $(".room-link:first",this).attr("data-fullname");
       loadRoom();
       if (isMobileView()) {
         $(".right-chat").css("display", "block");
         $(".left-chat").css("display", "none");
-        $(".room-name").html(fullname);
+        $(".room-name").html(targetFullname);
       }
     });
 
 
     $('.room-link').on("click", function() {
       targetUser = $(this).attr("user-data");
-      fullname = $(this).attr("data-fullname");
+      targetFullname = $(this).attr("data-fullname");
       loadRoom();
       if (isMobileView()) {
         $(".right-chat").css("display", "block");
         $(".left-chat").css("display", "none");
-        $(".room-name").html(fullname);
+        $(".room-name").html(targetFullname);
       }
     });
 

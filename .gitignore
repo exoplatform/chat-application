@@ -8,3 +8,5 @@ application/src/main/resources/rebel.xml
 
 release.properties
 *.releaseBackup
+
+data/chat-single-local.properties

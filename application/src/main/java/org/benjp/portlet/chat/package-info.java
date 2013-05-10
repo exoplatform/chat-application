@@ -37,7 +37,9 @@
                 @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),
                 @Script(src = "js/sh_javascript.min.js"),
-                @Script(src = "js/sh_css.min.js")
+                @Script(src = "js/sh_css.min.js"),
+                @Script(src = "js/BrowserDetect-0.1.js", depends = {"jquery"}, id = "browser-detect" ),
+                @Script(src = "js/Weemo.js", depends = {"jquery", "browser-detect"} )
         },
         stylesheets = {
                 //@Stylesheet(src = "/org/benjp/assets/bootstrap/assets/bootstrap.css", location = AssetLocation.APPLICATION),
