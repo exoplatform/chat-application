@@ -103,7 +103,7 @@
         </span>
 
         <span class="room-detail-button">
-          <button type="button" class="btn btn-primary pull-right btn-weemo" title="Video Call">Video Call</button>
+          <a type="button" class="btn btn-primary pull-right btn-weemo disabled" title="Video Call">Video Call</a>
         </span>
 
       </div>

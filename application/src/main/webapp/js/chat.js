@@ -383,39 +383,41 @@ $(document).ready(function(){
   initChatProfile();
 
   function initCall($uid, $name) {
-//    console.log("INIT VIDEO WITH : "+$uid+" : "+$name);
-//    var $uid = $("#uid").val();
-//    var $name = $("#name").val();
-    weemoVideoCall = new Lucl("weemo"+$uid, weemoKey, $name);
-    weemoVideoCall.debug = true;
-    weemoVideoCall.lucl_sm("connect");
+    if (weemoKey!=="") {
+      weemoVideoCall = new Lucl("weemo"+$uid, weemoKey, $name);
+      weemoVideoCall.debug = true;
+      weemoVideoCall.lucl_sm("connect");
 
-    /* Local connection to the WeemoDriver */
-    weemoVideoCall.luclOkAction = function () {
-      console.log ("eXo : Video Driver local connection ok");
-    }
-    /* Connection to the Weemo Video Cloud */
-    weemoVideoCall.mgmtOkAction = function () {
-      console.log ("eXo : Weemo Cloud connection ok");
-    }
-    /* Function to handle the user connection*/
-    weemoVideoCall.sipOkAction = function () {
-      console.log ("eXo : Initialization complete");
-//      $("#call").prop('disabled', false);
-    }
+      /* Local connection to the WeemoDriver */
+      weemoVideoCall.luclOkAction = function () {
+        console.log ("eXo : Video Driver local connection ok");
+      }
+      /* Connection to the Weemo Video Cloud */
+      weemoVideoCall.mgmtOkAction = function () {
+        console.log ("eXo : Weemo Cloud connection ok");
+      }
+      /* Function to handle the user connection*/
+      weemoVideoCall.sipOkAction = function () {
+        console.log ("eXo : Initialization complete");
+        $(".btn-weemo").removeClass('disabled');
+      }
 
-    weemoVideoCall.onCallCreated= function() {
-      console.log ("eXo : Call created");
+      weemoVideoCall.onCallCreated= function() {
+        console.log ("eXo : Call created");
+      }
+    } else {
+      $(".btn-weemo").css('display', 'none');
     }
   }
 
   function createWeemoCall() {
-    var obj = new Object ();
-    obj.uri = "weemo"+targetUser;
-    obj.key = weemoKey;
-    obj.displayNameToCall = fullname;
-    weemoVideoCall.lucl_sm ("createCall", obj);
-
+    if (weemoKey!=="") {
+      var obj = new Object ();
+      obj.uri = "weemo"+targetUser;
+      obj.key = weemoKey;
+      obj.displayNameToCall = fullname;
+      weemoVideoCall.lucl_sm ("createCall", obj);
+    }
   }
 
   $(".btn-weemo").on("click", function() {
