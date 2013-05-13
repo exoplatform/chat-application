@@ -41,6 +41,7 @@ public class MongoBootstrap
         options.connectionsPerHost = 200;
         options.connectTimeout = 60000;
         options.threadsAllowedToBlockForConnectionMultiplier = 10;
+        options.autoConnectRetry = true;
         String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
         int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
         m = new Mongo(new ServerAddress(host, port), options);
