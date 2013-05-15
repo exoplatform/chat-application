@@ -22,6 +22,7 @@
       <groupId>org.benjp.chat</groupId>
       <artifactId>server</artifactId>
       <version>0.7-SNAPSHOT</version>
+      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
