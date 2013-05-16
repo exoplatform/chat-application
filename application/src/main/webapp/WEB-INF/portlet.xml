@@ -20,6 +20,7 @@
      <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
      <portlet-info>
        <title>Chat Application</title>
+       <keywords>Chat</keywords>
      </portlet-info>
      <portlet-preferences>
        <preference>
@@ -51,6 +52,7 @@
      <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
      <portlet-info>
        <title>Chat Notification Application</title>
+       <keywords>Chat</keywords>
      </portlet-info>
    </portlet>
 
@@ -70,6 +72,7 @@
      <resource-bundle>locale.portlet.chat.Resource</resource-bundle>
      <portlet-info>
        <title>Chat Statistics Application</title>
+       <keywords>Chat</keywords>
      </portlet-info>
    </portlet>
 
