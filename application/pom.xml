@@ -1,34 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.benjp</groupId>
-    <artifactId>chat</artifactId>
-    <version>0.7-SNAPSHOT</version>
-  </parent>
-
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.benjp.chat</groupId>
+  <parent>
+    <artifactId>chat-extension</artifactId>
+    <groupId>org.exoplatform.addons.chat</groupId>
+    <version>0.7.0-SNAPSHOT</version>
+  </parent>
   <artifactId>application</artifactId>
-  <version>0.7-SNAPSHOT</version>
   <packaging>war</packaging>
-
   <name>Chat Application</name>
-
   <dependencies>
-
     <!-- Application dependencies-->
     <dependency>
-      <groupId>org.benjp.chat</groupId>
+      <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>server</artifactId>
-      <version>0.7-SNAPSHOT</version>
+      <version>${project.version}</version>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
       <version>1</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
@@ -39,8 +32,8 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <classifier>sources</classifier>
       <version>${juzu.version}</version>
+      <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -67,7 +60,6 @@
       <version>${juzu.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <!-- Other Dependencies -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -103,7 +95,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
   <build>
     <finalName>chat</finalName>
     <plugins>
@@ -111,8 +102,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.3</version>
         <configuration>
-          <packagingExcludes>
-            WEB-INF/lib/aopalliance-*.jar,
+          <packagingExcludes>WEB-INF/lib/aopalliance-*.jar,
             WEB-INF/lib/c3p0-*.jar,
             WEB-INF/lib/cdi-api-*.jar,
             WEB-INF/lib/commons-lang3-*.jar,
@@ -128,8 +118,7 @@
             WEB-INF/lib/portlet-api-*.jar,
             WEB-INF/lib/quartz-*.jar,
             WEB-INF/lib/servlet-api-*.jar,
-            WEB-INF/lib/slf4j-*.jar
-          </packagingExcludes>
+            WEB-INF/lib/slf4j-*.jar</packagingExcludes>
         </configuration>
       </plugin>
     </plugins>
