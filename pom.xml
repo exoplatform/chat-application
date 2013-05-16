@@ -1,31 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.benjp</groupId>
-  <artifactId>chat</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>addons-parent-pom</artifactId>
+    <groupId>org.exoplatform.addons</groupId>
+    <version>2</version>
+    <relativePath />
+  </parent>
+  <groupId>org.exoplatform.addons.chat</groupId>
+  <artifactId>chat-application</artifactId>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <name>Chat Application/Server</name>
+  <name>Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
-
-
-  <properties>
-
-    <!-- Encoding -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <!-- Juzu Framework Version -->
-    <juzu.version>0.6.0</juzu.version>
-
-    <project.output.directory>/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.3-MOD/tomcat-bundle/webapps</project.output.directory>
-
-    <maven.compiler.target>1.6</maven.compiler.target>
-    <maven.compiler.source>1.6</maven.compiler.source>
-
-  </properties>
-
   <developers>
     <developer>
       <id>benjamin.paillereau</id>
@@ -36,16 +23,87 @@
       </roles>
     </developer>
   </developers>
-
-  <scm>
-    <connection>scm:git:git://github.com/benjp/chat.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/benjp/chat.git</developerConnection>
-    <url>https://github.com/benjp/chat</url>
-  </scm>
-
   <modules>
     <module>server</module>
     <module>application</module>
   </modules>
-
+  <scm>
+    <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
+    <developerConnection>scm:git:git@github.com:exo-addons/chat-application.git</developerConnection>
+    <url>https://github.com/exo-addons/chat-application</url>
+  </scm>
+  <properties>
+    <!-- 3rd party libraries versions -->
+    <commons-lang3.version>3.1</commons-lang3.version>
+    <exoplatform.version>4.0.0</exoplatform.version>
+    <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
+    <juzu.version>0.6.0</juzu.version>
+    <mongodb-java-driver.version>2.11.1</mongodb-java-driver.version>
+    <!-- **************************************** -->
+    <!-- Jenkins Settings -->
+    <!-- **************************************** -->
+    <jenkins.job.name>chat-application-master-ci</jenkins.job.name>
+    <!-- **************************************** -->
+    <!-- Other Settings -->
+    <!-- **************************************** -->
+    <project.output.directory>/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.3-MOD/tomcat-bundle/webapps</project.output.directory>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>${javax.enterprise.cdi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+      <!-- Import versions from platform project -->
+      <dependency>
+        <groupId>org.exoplatform.platform</groupId>
+        <artifactId>platform</artifactId>
+        <version>${exoplatform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-bom-core</artifactId>
+        <version>${juzu.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-core</artifactId>
+        <version>${juzu.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-core</artifactId>
+        <version>${juzu.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-less</artifactId>
+        <version>${juzu.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-portlet</artifactId>
+        <version>${juzu.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-upload</artifactId>
+        <version>${juzu.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+        <version>${mongodb-java-driver.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
