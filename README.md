@@ -7,7 +7,7 @@ This Chat application comes with a client project (/application) and a server pr
 Server can run on the same Java Application Server but as it's a near to real time application and can process a lot of data, it's recommended to use the Chat Server as a standalone application on another AS.
 Thus, Chat Client portlets will run on an eXo Platform based App Server, where the Chat Server can run on a standard tomcat installation.
 
-![alt text](https://raw.github.com/benjp/chat/master/data/screenshots/01-overview.png "Overview")
+<img src="https://raw.github.com/benjp/chat/master/data/screenshots/chat-platform4-retina.png" alt="eXo Chat Overview on Platform 4" width="800">
 
 I wrote some blog posts on this app and technologies I use to build it, you can find them here :
 - [eXo Platform Add-Ons: Chat in Space](http://blog.exoplatform.com/2012/12/11/exo-platform-add-ons-chat-in-space)
