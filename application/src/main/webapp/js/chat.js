@@ -10,7 +10,7 @@ $(document).ready(function(){
   var ANONIM_USER = "__anonim_";
   var SUPPORT_USER = "__support_";
   var isAdmin = false;
-  var weemoVideoCall;
+  var weemo;
 
   var $chatApplication = $("#chat-application");
   var username = $chatApplication.attr("data-username");
@@ -384,27 +384,34 @@ $(document).ready(function(){
 
   function initCall($uid, $name) {
     if (weemoKey!=="") {
-      weemoVideoCall = new Lucl("weemo"+$uid, weemoKey, $name);
-      weemoVideoCall.debug = true;
-      weemoVideoCall.lucl_sm("connect");
+      weemo = new Weemo(); // Creating a Weemo object instance
+      weemo.setMode("debug"); // Activate debugging in browser's log console
+      weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
+      weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
+      weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
+      weemo.setApikey(weemoKey); // Configure your Api Key
+      weemo.setUid("weemo"+$uid); // Configure your UID
+      weemo.setDisplayname($name); // Configure the display name
+      weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
 
-      /* Local connection to the WeemoDriver */
-      weemoVideoCall.luclOkAction = function () {
-        console.log ("eXo : Video Driver local connection ok");
-      }
-      /* Connection to the Weemo Video Cloud */
-      weemoVideoCall.mgmtOkAction = function () {
-        console.log ("eXo : Weemo Cloud connection ok");
-      }
-      /* Function to handle the user connection*/
-      weemoVideoCall.sipOkAction = function () {
-        console.log ("eXo : Initialization complete");
-        $(".btn-weemo").removeClass('disabled');
+      weemo.onConnectionHandler = function(message, code) {
+        if(window.console)
+          console.log("Connection Handler : " + message + ' ' + code);
+        switch(message) {
+          case 'connectedWeemoDriver':
+            weemo.connectToTheCloud();
+            break;
+          case 'sipOk':
+            $(".btn-weemo").removeClass('disabled');
+            break;
+        }
       }
 
-      weemoVideoCall.onCallCreated= function() {
-        console.log ("eXo : Call created");
-      }
+      weemo.onWeemoDriverNotStarted = function(downloadUrl) {
+        modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
+        modal.show();
+      };
+
     } else {
       $(".btn-weemo").css('display', 'none');
     }
@@ -412,11 +419,13 @@ $(document).ready(function(){
 
   function createWeemoCall() {
     if (weemoKey!=="") {
-      var obj = new Object ();
-      obj.uri = "weemo"+targetUser;
-      obj.key = weemoKey;
-      obj.displayNameToCall = fullname;
-      weemoVideoCall.lucl_sm ("createCall", obj);
+
+      var uidToCall = "weemo"+targetUser;
+      var displaynameToCall=fullname;
+      var type="internal";
+
+      weemo.createCall(uidToCall, type, displaynameToCall);
+
     }
   }
 
