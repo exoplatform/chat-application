@@ -4,7 +4,8 @@
   data-chat-page="<%=chatPage%>"
   data-chat-server-url="<%=chatServerURL%>"
   data-chat-interval-notif="<%=chatIntervalNotif%>"
-  data-chat-interval-status="<%=chatIntervalStatus%>" >
+  data-chat-interval-status="<%=chatIntervalStatus%>"
+  style="display: none;">
   <!--li class="UITab NormalToolbarTab">
     <a class="ArrowIcon TBIcon" href="#" style="padding:0px;">
       <span class="chat-status">

@@ -26,6 +26,8 @@
   <modules>
     <module>server</module>
     <module>application</module>
+    <module>config</module>
+    <module>extension</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>

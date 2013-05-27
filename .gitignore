@@ -5,8 +5,12 @@ server/target/*
 application/target/*
 chat-mongohq.properties
 application/src/main/resources/rebel.xml
+config/target/*
+extension/target/*
 
 release.properties
 *.releaseBackup
 
 data/chat-single-local.properties
+
+copie.sh
