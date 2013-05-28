@@ -397,12 +397,25 @@ $(document).ready(function(){
         if(type==="call" && ( status==="active" || status==="terminated" ))
         {
           console.log("Call Handler : " + type + ": " + status);
+          ts = Math.round(new Date().getTime() / 1000);
+/*
+          var time=0;
+          var stime = "";
+          if (status==="active") {
+            jzStoreParam("weemoCallHandler", ts, 600000)
+          } else if (status==="terminated") {
+            tsold = Math.round(jzGetParam("weemoCallHandler"));
+            time = ts-tsold;
+            stime = ":"+time;
+          }
+*/
+
           $.ajax({
             url: jzChatSend,
             data: {"user": username,
               "targetUser": targetUser,
               "room": room,
-              "message": "Call "+status,
+              "message": "Call "+status+":"+ts,
               "token": token,
               "timestamp": new Date().getTime(),
               "isSystem": "true"
@@ -939,13 +952,58 @@ $(document).ready(function(){
             out += "<hr style='margin: 0'>";
           out += "<div class='msgln-odd'>";
           out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-          if (message.message==="Call active")
+          var msgP1 = message.message;
+          var msgP2 = "";
+          if (msgP1.indexOf(":")>-1) {
+            msgP2 = msgP1.substr(msgP1.indexOf(":")+1, msgP1.length-msgP1.indexOf(":"));
+            msgP1 = msgP1.substr(0, msgP1.indexOf(":"));
+          }
+
+          if (msgP1==="Call active") {
             out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
-          else
+            if (msgP2!=="") {
+              jzStoreParam("weemoCallHandler", msgP2, 600000)
+            }
+          } else {
             out += "<img src='/chat/img/2x/call-off.png' width='30px' style='width:30px;'>";
+          }
           out += "</span>";
           out += "<span>";
-          out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+message.message+"</b>";
+          out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+msgP1+"</b>";
+
+          if (msgP1!=="Call active" && msgP2!=="") {
+            var tsold = Math.round(jzGetParam("weemoCallHandler"));
+            var time = Math.round(msgP2)-tsold;
+            var hours = Math.floor(time / 3600);
+            time -= hours * 3600;
+            var minutes = Math.floor(time / 60);
+            time -= minutes * 60;
+            var seconds = parseInt(time % 60, 10);
+            var stime = "<span class=\"msg-time\">";
+            if (hours>0) {
+              if (hours===1)
+                stime += hours+ " hour ";
+              else
+                stime += hours+ " hours ";
+            }
+            if (minutes>0) {
+              if (minutes===1)
+                stime += minutes+ " minute ";
+              else
+                stime += minutes+ " minutes ";
+            }
+            if (seconds>0) {
+              if (seconds===1)
+                stime += seconds+ " second";
+              else
+                stime += seconds+ " seconds";
+            }
+            stime += "</span>";
+            out += stime;
+          }
+
+
+
           message.message = "";
           //out += "<span style='float:left; '>&nbsp;</span>";
           out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
