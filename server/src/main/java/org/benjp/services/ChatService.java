@@ -45,7 +45,7 @@ public class ChatService
     return ConnectionManager.getInstance().getDB();
   }
 
-  public void write(String message, String user, String room)
+  public void write(String message, String user, String room, String isSystem)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
@@ -59,6 +59,7 @@ public class ChatService
     doc.put("message", message);
     doc.put("time", new Date());
     doc.put("timestamp", System.currentTimeMillis());
+    doc.put("isSystem", isSystem);
 
     coll.insert(doc);
   }
@@ -150,7 +151,8 @@ public class ChatService
         sb.append("\"fullname\": \"").append(fullname).append("\",");
         sb.append("\"email\": \"").append(email).append("\",");
         sb.append("\"date\": \"").append(date).append("\",");
-        sb.append("\"message\": \"").append(dbo.get("message")).append("\"}");
+        sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
+        sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
         first = false;
       }
 

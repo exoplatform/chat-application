@@ -38,7 +38,7 @@ cp "$PROPERTIES" $PLF_TOMCAT_DIRECTORY/conf/chat.properties
 cp application/target/chat.war $PLF_TOMCAT_DIRECTORY/webapps/chat.war
 
 ### EXTENSION
-mvn clean install -Dmaven.test.skip=true -pl config
-cp config/target/chat-extension-config-0.7.0-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
-mvn clean install -Dmaven.test.skip=true -pl extension
-cp extension/target/chat-extension.war $PLF_TOMCAT_DIRECTORY/webapps/
+#mvn clean install -Dmaven.test.skip=true -pl config
+#cp config/target/chat-extension-config-0.7.0-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
+#mvn clean install -Dmaven.test.skip=true -pl extension
+#cp extension/target/chat-extension.war $PLF_TOMCAT_DIRECTORY/webapps/

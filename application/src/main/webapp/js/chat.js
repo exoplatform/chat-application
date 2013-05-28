@@ -181,7 +181,8 @@ $(document).ready(function(){
           "room": room,
           "message": msg,
           "token": token,
-          "timestamp": new Date().getTime()
+          "timestamp": new Date().getTime(),
+          "isSystem": "false"
         },
 
         success:function(response){
@@ -389,6 +390,41 @@ $(document).ready(function(){
       var type="internal";
 
       weemo.createCall(uidToCall, type, displaynameToCall);
+
+
+      weemo.onCallHandler = function(type, status)
+      {
+        if(type==="call" && ( status==="active" || status==="terminated" ))
+        {
+          console.log("Call Handler : " + type + ": " + status);
+          $.ajax({
+            url: jzChatSend,
+            data: {"user": username,
+              "targetUser": targetUser,
+              "room": room,
+              "message": "Call "+status,
+              "token": token,
+              "timestamp": new Date().getTime(),
+              "isSystem": "true"
+            },
+
+            success:function(response){
+              //console.log("success");
+              refreshChat();
+            },
+
+            error:function (xhr, status, error){
+
+            }
+
+          });
+
+
+        }
+      }
+
+
+
 
     }
   }
@@ -855,43 +891,74 @@ $(document).ready(function(){
       for (im=0 ; im<messages.length ; im++) {
         message = messages[im];
 
-        if (prevUser != message.user)
+        if (message.isSystem!=="true")
         {
-          if (prevUser !== "")
-            out += "</span></div>";
-          if (message.user != username) {
-            out += "<div class='msgln-odd'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            if (isPublic)
-              out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
-            else
-              out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            if (isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+labelSupportFullname+"</a><span class='invisible-text'> : </span><br/>";
-            else
+          if (prevUser != message.user)
+          {
+            if (prevUser !== "")
+              out += "</span></div>";
+            if (message.user != username) {
+              out += "<div class='msgln-odd'>";
+              out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
+              if (isPublic)
+                out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
+              else
+                out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
+              out += "</span>";
+              out += "<span>";
+              if (isPublic)
+                out += "<span class='invisible-text'>- </span><a href='#'>"+labelSupportFullname+"</a><span class='invisible-text'> : </span><br/>";
+              else
+                out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+            } else {
+              out += "<div class='msgln'>";
+              out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
+              out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
+              out += "</span>";
+              out += "<span>";
+              //out += "<span style='float:left; '>&nbsp;</span>";
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-          } else {
-            out += "<div class='msgln'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            //out += "<span style='float:left; '>&nbsp;</span>";
-            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+            }
           }
+          else
+          {
+            out += "<hr style='margin:0px;'>";
+          }
+          out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
+            "<span class='invisible-text'> [</span>"+
+            "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
+            "<span class='invisible-text'>]</span></div>"+
+            "<div style='clear:both;'></div>";
+          prevUser = message.user;
         }
         else
         {
-          out += "<hr style='margin:0px;'>";
+          if (prevUser !== "")
+            out += "</span></div>";
+          if (prevUser !== "__system")
+            out += "<hr style='margin: 0'>";
+          out += "<div class='msgln-odd'>";
+          out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
+          if (message.message==="Call active")
+            out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
+          else
+            out += "<img src='/chat/img/2x/call-off.png' width='30px' style='width:30px;'>";
+          out += "</span>";
+          out += "<span>";
+          out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+message.message+"</b>";
+          message.message = "";
+          //out += "<span style='float:left; '>&nbsp;</span>";
+          out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
+            "<span class='invisible-text'> [</span>"+
+            "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
+            "<span class='invisible-text'>]</span></div>"+
+            "<div style='clear:both;'></div>";
+          out += "</span></div>";
+          out += "<hr style='margin: 0'>";
+          out += "<div><span>";
+          prevUser = "__system";
+
         }
-        out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
-          "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
-          "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
-        prevUser = message.user;
       }
     }
     var $chats = $("#chats");
