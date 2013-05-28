@@ -10,7 +10,6 @@ $(document).ready(function(){
   var ANONIM_USER = "__anonim_";
   var SUPPORT_USER = "__support_";
   var isAdmin = false;
-  var weemo;
 
   var $chatApplication = $("#chat-application");
   var username = $chatApplication.attr("data-username");
@@ -364,7 +363,7 @@ $(document).ready(function(){
           $(".filter-empty").css("display", "none");
         }
         isAdmin = (data.isAdmin=="true");
-        initCall(username, fullname);
+        //initCall(username, fullname);
 
 
         refreshWhoIsOnline();
@@ -381,41 +380,6 @@ $(document).ready(function(){
 
   }
   initChatProfile();
-
-  function initCall($uid, $name) {
-    if (weemoKey!=="") {
-      weemo = new Weemo(); // Creating a Weemo object instance
-      weemo.setMode("debug"); // Activate debugging in browser's log console
-      weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
-      weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
-      weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
-      weemo.setApikey(weemoKey); // Configure your Api Key
-      weemo.setUid("weemo"+$uid); // Configure your UID
-      weemo.setDisplayname($name); // Configure the display name
-      weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
-
-      weemo.onConnectionHandler = function(message, code) {
-        if(window.console)
-          console.log("Connection Handler : " + message + ' ' + code);
-        switch(message) {
-          case 'connectedWeemoDriver':
-            weemo.connectToTheCloud();
-            break;
-          case 'sipOk':
-            $(".btn-weemo").removeClass('disabled');
-            break;
-        }
-      }
-
-      weemo.onWeemoDriverNotStarted = function(downloadUrl) {
-        modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
-        modal.show();
-      };
-
-    } else {
-      $(".btn-weemo").css('display', 'none');
-    }
-  }
 
   function createWeemoCall() {
     if (weemoKey!=="") {
@@ -910,7 +874,10 @@ $(document).ready(function(){
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
             out += "<div class='msgln'>";
-            out += "<span style='margin-left:50px;'>";
+            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
+            out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
+            out += "</span>";
+            out += "<span>";
             //out += "<span style='float:left; '>&nbsp;</span>";
             out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           }

@@ -31,7 +31,9 @@
         scripts = {
                 @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/notif.js", depends = {"jquery","juzu-utils"})
+                @Script(src = "js/Weemo.js", depends = "jquery", id = "weemo" ),
+                @Script(src = "js/Modal.js", depends = "weemo"),
+                @Script(src = "js/notif.js", depends = {"jquery","juzu-utils", "weemo"})
         },
         stylesheets = {
                 @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)

@@ -71,11 +71,13 @@ public class NotificationApplication
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
+    String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
 
     index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
+            .set("weemoKey", chatWeemoKey)
             .render();
   }
 

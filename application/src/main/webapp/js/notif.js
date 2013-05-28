@@ -5,6 +5,7 @@ var console = console || {
 };
 
 var jq171 = jQuery.noConflict(true);
+var weemo;
 
 (function($) {
 
@@ -17,6 +18,7 @@ var jq171 = jQuery.noConflict(true);
     var chatServerURL = $notificationApplication.attr("data-chat-server-url");
     var chatIntervalNotif = $notificationApplication.attr("data-chat-interval-notif");
     var chatIntervalStatus = $notificationApplication.attr("data-chat-interval-status");
+    var weemoKey = $notificationApplication.attr("data-weemo-key");
     var jzInitUserProfile = $notificationApplication.jzURL("NotificationApplication.initUserProfile");
     var jzNotification = chatServerURL+"/notification";
     var jzGetStatus = chatServerURL+"/getStatus";
@@ -43,6 +45,8 @@ var jq171 = jQuery.noConflict(true);
         //console.log("Profile Update : "+data.msg);
         token = data.token;
         //console.log("Token : "+data.token);
+        var fullname = username;
+        initCall(username, fullname);
 
         notifEventURL = jzNotification+'?user='+username+'&token='+token;
         notifEventInt = window.clearInterval(notifEventInt);
@@ -60,6 +64,47 @@ var jq171 = jQuery.noConflict(true);
       });
     }
     initUserProfile();
+
+    function initCall($uid, $name) {
+      if (weemoKey!=="") {
+        weemo = new Weemo(); // Creating a Weemo object instance
+        weemo.setMode("debug"); // Activate debugging in browser's log console
+        weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
+        weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
+        weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
+        weemo.setApikey(weemoKey); // Configure your Api Key
+        weemo.setUid("weemo"+$uid); // Configure your UID
+
+        //weemo.setDisplayname($name); // Configure the display name
+        weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
+
+        weemo.onConnectionHandler = function(message, code) {
+          if(window.console)
+            console.log("Connection Handler : " + message + ' ' + code);
+          switch(message) {
+            case 'connectedWeemoDriver':
+              weemo.connectToTheCloud();
+              break;
+            case 'sipOk':
+              $(".btn-weemo").removeClass('disabled');
+              var fn = $(".label-user").text();
+              if (fn!=="") {
+                weemo.setDisplayname(fn); // Configure the display name
+              }
+              break;
+          }
+        }
+
+        weemo.onWeemoDriverNotStarted = function(downloadUrl) {
+          modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
+          modal.show();
+        };
+
+      } else {
+        $(".btn-weemo").css('display', 'none');
+      }
+    }
+
 
     function refreshNotif() {
       if ( ! $("span.chat-status").hasClass("chat-status-offline-black") ) {
