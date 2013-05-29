@@ -78,6 +78,7 @@ $(document).ready(function(){
   var whoIsOnlineMD5 = 0;
   var callOwner=false;
   var messageWeemo, uidToCall, displaynameToCall, callType, callActive=false;
+  var isSystemMessage;
 
   $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
@@ -168,11 +169,18 @@ $(document).ready(function(){
         return;
       }
 //      console.log("*"+msg+"*");
+      isSystemMessage = (msg.indexOf("/")===0) ;
+
+      if (isSystemMessage) {
+        msg = msg.replace("/me", fullname);
+      }
+
       var im = messages.length;
       messages[im] = {"user": username,
         "fullname": "You",
         "date": "pending",
-        "message": msg};
+        "message": msg,
+        "isSystem": isSystemMessage};
       showMessages();
       document.getElementById("msg").value = '';
 
@@ -184,7 +192,7 @@ $(document).ready(function(){
           "message": msg,
           "token": token,
           "timestamp": new Date().getTime(),
-          "isSystem": "false"
+          "isSystem": isSystemMessage
         },
 
         success:function(response){
@@ -989,7 +997,9 @@ $(document).ready(function(){
           }
           out += "</span>";
           out += "<span>";
+          if (msgArray.length===1) out+="<center>";
           out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+msgArray[0]+"</b>";
+          if (msgArray.length===1) out+="</center>";
 
           if (msgArray[0]==="Call terminated" && msgArray.length>1) {
             var tsold = Math.round(jzGetParam("weemoCallHandler"));
