@@ -103,8 +103,10 @@
         </span>
 
         <span class="room-detail-button">
-          <a type="button" class="btn btn-primary pull-right btn-weemo" title="Make a Video Call">
+          <a type="button" class="btn btn-primary pull-right btn-weemo disabled" title="Make a Video Call">
             <i class="icon-facetime-video icon-white"></i> Call</a>
+          <a type="button" class="btn btn-danger pull-right btn-weemo-conf disabled" title="Join a Conference">
+            <i class="icon-facetime-video icon-white"></i> Join</a>
         </span>
 
       </div>

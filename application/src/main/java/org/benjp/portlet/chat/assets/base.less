@@ -133,7 +133,7 @@ tr.info td {
 }
 .room-detail
 {
-  position: relative;
+  position: block;
   background-color: @colorBgLight;
   border-bottom: 1px solid @colorBorderGrey;
   height: @heightRoomDetail;
@@ -326,3 +326,28 @@ hr
   border-top: dotted 1px @colorBgLight;
 }
 
+.btn-danger {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #da4f49;
+  background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#bd362f));
+  background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: linear-gradient(to bottom, #ee5f5b, #bd362f);
+  background-repeat: repeat-x;
+  border-color: #bd362f #bd362f #802420;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffbd362f', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:active, .btn-danger.active, .btn-danger.disabled, .btn-danger[disabled] {
+  color: #ffffff;
+  background-color: #bd362f;
+  background-image: -moz-linear-gradient(top, #cd463f, #bd362f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cd463f), to(#bd362f));
+  background-image: -webkit-linear-gradient(top, #cd463f, #bd362f);
+  background-image: -o-linear-gradient(top, #cd463f, #bd362f);
+  background-image: linear-gradient(to bottom, #cd463f, #bd362f);
+}

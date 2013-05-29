@@ -67,6 +67,7 @@ var weemo;
 
     function initCall($uid, $name) {
       if (weemoKey!=="") {
+        $(".btn-weemo-conf").css('display', 'none');
         weemo = new Weemo(); // Creating a Weemo object instance
         weemo.setMode("debug"); // Activate debugging in browser's log console
         weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)

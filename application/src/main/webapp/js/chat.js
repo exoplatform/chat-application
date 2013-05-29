@@ -76,6 +76,8 @@ $(document).ready(function(){
   var keydown = -1;
   var profileStatus = "offline";
   var whoIsOnlineMD5 = 0;
+  var callOwner=false;
+  var messageWeemo, uidToCall, displaynameToCall, callType, callActive=false;
 
   $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
@@ -385,65 +387,84 @@ $(document).ready(function(){
   function createWeemoCall() {
     if (weemoKey!=="") {
 
-      var uidToCall = "weemo"+targetUser;
-      var displaynameToCall=fullname;
-      var type="internal";
-
-      weemo.createCall(uidToCall, type, displaynameToCall);
+      if (targetUser.indexOf("space-")===-1) {
+        uidToCall = "weemo"+targetUser;
+        displaynameToCall=fullname;
+        callType="internal";
+      } else {
+        uidToCall = weemo.getUid();
+        displaynameToCall = weemo.getDisplayname();
+        callType = "host";
+      }
+      callOwner = true;
+      callActive = false;
+      weemo.createCall(uidToCall, callType, displaynameToCall);
 
 
       weemo.onCallHandler = function(type, status)
       {
-        if(type==="call" && ( status==="active" || status==="terminated" ))
+        if(callOwner && type==="call" && ( status==="active" || status==="terminated" ))
         {
           console.log("Call Handler : " + type + ": " + status);
           ts = Math.round(new Date().getTime() / 1000);
-/*
-          var time=0;
-          var stime = "";
-          if (status==="active") {
-            jzStoreParam("weemoCallHandler", ts, 600000)
-          } else if (status==="terminated") {
-            tsold = Math.round(jzGetParam("weemoCallHandler"));
-            time = ts-tsold;
-            stime = ":"+time;
+
+          if (status === "terminated") callOwner = false;
+
+          if (callType==="internal" || status==="terminated") {
+            messageWeemo = "Call "+status+"&"+ts;
+          } else if (callType==="host") {
+            messageWeemo = "Call "+status+"&"+ts+"&"+uidToCall+"&"+displaynameToCall;
           }
-*/
 
-          $.ajax({
-            url: jzChatSend,
-            data: {"user": username,
-              "targetUser": targetUser,
-              "room": room,
-              "message": "Call "+status+":"+ts,
-              "token": token,
-              "timestamp": new Date().getTime(),
-              "isSystem": "true"
-            },
-
-            success:function(response){
-              //console.log("success");
-              refreshChat();
-            },
-
-            error:function (xhr, status, error){
-
-            }
-
-          });
+          if (status==="active" && callActive) return; //Call already active, no need to push a new message
+          if (status==="terminated" && !callActive) return; //Terminate a non started call, no message needed
 
 
+          if (status==="active") callActive = true;
+          else if (status==="terminated") callActive = false;
+
+          if (callType!=="attendee") {
+            $.ajax({
+              url: jzChatSend,
+              data: {"user": username,
+                "targetUser": targetUser,
+                "room": room,
+                "message": messageWeemo,
+                "token": token,
+                "timestamp": new Date().getTime(),
+                "isSystem": "true"
+              },
+
+              success:function(response){
+                //console.log("success");
+                refreshChat();
+              },
+
+              error:function (xhr, status, error){
+
+              }
+
+            });
+          }
         }
       }
-
-
-
+    }
+  }
+  function joinWeemoCall() {
+    if (weemoKey!=="") {
+      callType = "attendee";
+      callOwner = false;
+      weemo.createCall(uidToCall, callType, displaynameToCall);
 
     }
   }
 
   $(".btn-weemo").on("click", function() {
     createWeemoCall();
+  });
+
+  $(".btn-weemo-conf").on("click", function() {
+    joinWeemoCall();
   });
 
 
@@ -952,28 +973,27 @@ $(document).ready(function(){
             out += "<hr style='margin: 0'>";
           out += "<div class='msgln-odd'>";
           out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-          var msgP1 = message.message;
-          var msgP2 = "";
-          if (msgP1.indexOf(":")>-1) {
-            msgP2 = msgP1.substr(msgP1.indexOf(":")+1, msgP1.length-msgP1.indexOf(":"));
-            msgP1 = msgP1.substr(0, msgP1.indexOf(":"));
-          }
+          var msgArray = message.message.split("&");
 
-          if (msgP1==="Call active") {
+          if (msgArray[0]==="Call active") {
             out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
-            if (msgP2!=="") {
-              jzStoreParam("weemoCallHandler", msgP2, 600000)
+            if (msgArray.length>1) {
+              jzStoreParam("weemoCallHandler", msgArray[1], 600000)
             }
-          } else {
+            $(".btn-weemo").addClass('disabled');
+          } else if (msgArray[0]==="Call terminated") {
             out += "<img src='/chat/img/2x/call-off.png' width='30px' style='width:30px;'>";
+            $(".btn-weemo").removeClass('disabled');
+          } else {
+            out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
           }
           out += "</span>";
           out += "<span>";
-          out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+msgP1+"</b>";
+          out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+msgArray[0]+"</b>";
 
-          if (msgP1!=="Call active" && msgP2!=="") {
+          if (msgArray[0]==="Call terminated" && msgArray.length>1) {
             var tsold = Math.round(jzGetParam("weemoCallHandler"));
-            var time = Math.round(msgP2)-tsold;
+            var time = Math.round(msgArray[1])-tsold;
             var hours = Math.floor(time / 3600);
             time -= hours * 3600;
             var minutes = Math.floor(time / 60);
@@ -1002,10 +1022,22 @@ $(document).ready(function(){
             out += stime;
           }
 
+          if (msgArray.length===4) {
+            uidToCall = msgArray[2];
+            displaynameToCall = msgArray[3];
+            $(".btn-weemo").css("display", "none");
+            $(".btn-weemo-conf").css("display", "block");
+            if (msgArray[2]!=="weemo"+username)
+              $(".btn-weemo-conf").removeClass("disabled");
+            else
+              $(".btn-weemo-conf").addClass("disabled");
+          } else {
+            $(".btn-weemo").css("display", "block");
+            $(".btn-weemo-conf").css("display", "none");
+          }
 
 
           message.message = "";
-          //out += "<span style='float:left; '>&nbsp;</span>";
           out += "<div style='margin-left:50px;'><span style='float:left'>"+messageBeautifier(message.message)+"</span>" +
             "<span class='invisible-text'> [</span>"+
             "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
@@ -1089,16 +1121,17 @@ $(document).ready(function(){
         $targetUser.find(".room-total").addClass("room-total-white");
       }
 
+      $("#room-detail").css("display", "block");
+      $(".target-user-fullname").text(targetFullname);
       if (targetUser.indexOf("space-")===-1) {
-        $("#chats").css("height", ($("#chat-users").css("height").substring(0,3)-122)+"px" );
-        $("#room-detail").css("display", "block");
         $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+targetUser);
         $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+targetUser+"/soc:profile/soc:avatar");
-        $(".target-user-fullname").text(targetFullname);
       }
-      else {
-        $("#chats").css("height", ($("#chat-users").css("height").substring(0,3)-61)+"px" );
-        $("#room-detail").css("display", "none");
+      else
+      {
+        var spaceName = targetFullname.toLowerCase().replace(" ", "_");
+        $(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
+        $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
       }
 
 
