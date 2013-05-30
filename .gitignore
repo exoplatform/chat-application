@@ -7,6 +7,10 @@ chat-mongohq.properties
 application/src/main/resources/rebel.xml
 config/target/*
 extension/target/*
+exo-addons-chat-extension/target/*
+exo-addons-chat-extension-config/target/*
+exo-addons-chat-extension-pkg/target/*
+
 
 release.properties
 *.releaseBackup
