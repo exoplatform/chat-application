@@ -26,8 +26,9 @@
   <modules>
     <module>server</module>
     <module>application</module>
-    <module>config</module>
-    <module>extension</module>
+    <module>exo-addons-chat-extension-config</module>
+    <module>exo-addons-chat-extension</module>
+    <module>exo-addons-chat-extension-pkg</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
@@ -61,6 +62,50 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>application</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>application</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>exo-addons-chat-extension</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>exo-addons-chat-extension-config</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>exo-addons-chat-extension-pkg</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>server</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>server</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <!-- Import versions from platform project -->
       <dependency>

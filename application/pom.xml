@@ -22,7 +22,6 @@
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>server</artifactId>
-      <version>${project.version}</version>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
