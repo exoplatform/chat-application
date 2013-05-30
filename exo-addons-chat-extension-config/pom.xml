@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2009 eXo Platform SAS.
@@ -18,21 +19,15 @@
     02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
     <version>0.7.0-SNAPSHOT</version>
   </parent>
-	
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>exo-chat-extension</artifactId>
-  <packaging>war</packaging>
-  <name>eXo Chat Extension</name>
-  <description>eXo Chat Extension</description>
-  
-  <build>  
-    <finalName>chat-extension</finalName>
-  </build>
+  <artifactId>exo-addons-chat-extension-config</artifactId>
+  <packaging>jar</packaging>
+  <name>eXo Addons - Chat Extension Configuration</name>
+  <description>eXo Chat Extension Configuration</description>
 </project>
