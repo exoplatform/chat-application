@@ -173,6 +173,22 @@ $(document).ready(function(){
 
       if (isSystemMessage) {
         msg = msg.replace("/me", fullname);
+
+        if (msg.indexOf("/call")===0) {
+          createWeemoCall();
+          document.getElementById("msg").value = '';
+          return;
+        } else if (msg.indexOf("/join")===0) {
+          joinWeemoCall();
+          document.getElementById("msg").value = '';
+          return;
+        } else if (msg.indexOf("/terminate")===0) {
+          document.getElementById("msg").value = '';
+          ts = Math.round(new Date().getTime() / 1000);
+          msg = "Call terminated&"+ts;
+          callOwner = false;
+          callActive = false;
+        }
       }
 
       var im = messages.length;
@@ -708,37 +724,41 @@ $(document).ready(function(){
 
   function showRooms(rooms) {
 
+    var roomPrevUser = "";
     var out = '<table class="table">';
     var fav=null;
     rooms().order("isFavorite desc, unreadTotal desc, escapedFullname logical").each(function (room) {
 //      console.log("info = "+room.user+" :"+fav+":"+ room.isFavorite);
-      if (fav==null && room.isFavorite=="true") fav="";
-      else if (fav=="" && room.isFavorite=="false") fav="border-top:1px solid #CCC;";
-      else if (fav=="border-top:1px solid #CCC;") fav=" ";
+      if (room.user!==roomPrevUser) {
+        if (fav==null && room.isFavorite=="true") fav="";
+        else if (fav=="" && room.isFavorite=="false") fav="border-top:1px solid #CCC;";
+        else if (fav=="border-top:1px solid #CCC;") fav=" ";
 
-      out += '<tr id="users-online-'+room.user+'" class="users-online" style="'+fav+'">';
-      out += '<td class="td-status">';
-      out += '<span class="';
-      if (room.isFavorite == "true") {
-        out += 'user-favorite';
-      } else {
-        out += 'user-status';
+        out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online" style="'+fav+'">';
+        out += '<td class="td-status">';
+        out += '<span class="';
+        if (room.isFavorite == "true") {
+          out += 'user-favorite';
+        } else {
+          out += 'user-status';
+        }
+        out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
+        out += '</td>';
+        out +=  '<td>';
+        if (room.isActive=="true") {
+          out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
+        } else {
+          out += '<span class="room-inactive">'+room.user+'</span>';
+        }
+        out += '</td>';
+        out += '<td>';
+        if (Math.round(room.unreadTotal)>0) {
+          out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+        }
+        out += '</td>';
+        out += '</tr>';
+        roomPrevUser = room.user;
       }
-      out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
-      out += '</td>';
-      out +=  '<td>';
-      if (room.isActive=="true") {
-        out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
-      } else {
-        out += '<span class="room-inactive">'+room.user+'</span>';
-      }
-      out += '</td>';
-      out += '<td>';
-      if (Math.round(room.unreadTotal)>0) {
-        out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
-      }
-      out += '</td>';
-      out += '</tr>';
     });
     out += '</table>';
 
@@ -760,7 +780,7 @@ $(document).ready(function(){
     }
 
     if (isDesktopView()) {
-      var $targetUser = $("#users-online-"+targetUser);
+      var $targetUser = $("#users-online-"+targetUser.replace(".", "-"));
       $targetUser.addClass("info");
       $(".room-total").removeClass("room-total-white");
       $targetUser.find(".room-total").addClass("room-total-white");
@@ -1125,7 +1145,7 @@ $(document).ready(function(){
     if (targetUser!==undefined) {
       $(".users-online").removeClass("info");
       if (isDesktopView()) {
-        var $targetUser = $("#users-online-"+targetUser);
+        var $targetUser = $("#users-online-"+targetUser.replace(".", "-"));
         $targetUser.addClass("info");
         $(".room-total").removeClass("room-total-white");
         $targetUser.find(".room-total").addClass("room-total-white");
