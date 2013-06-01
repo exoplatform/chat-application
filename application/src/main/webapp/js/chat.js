@@ -779,7 +779,7 @@ $(document).ready(function(){
       firstLoad = false;
     }
 
-    if (isDesktopView()) {
+    if (isDesktopView() && targetUser!==undefined) {
       var $targetUser = $("#users-online-"+targetUser.replace(".", "-"));
       $targetUser.addClass("info");
       $(".room-total").removeClass("room-total-white");
