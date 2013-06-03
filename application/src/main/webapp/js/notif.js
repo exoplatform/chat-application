@@ -28,7 +28,6 @@ var jq171 = jQuery.noConflict(true);
 
     // WEEMO : INIT CALL CALLBACK
     var startWeemo = function(username, fullname) {
-      console.log("startWeemo Callback : "+username+" : "+fullname);
       weemoExtension.initCall(username, fullname);
     }
 
@@ -74,6 +73,10 @@ function ChatNotification() {
 
 }
 
+/**
+ * Init Notifications variables
+ * @param options
+ */
 ChatNotification.prototype.initOptions = function(options) {
   this.token = options.token;
   this.username = options.username;
@@ -85,6 +88,9 @@ ChatNotification.prototype.initOptions = function(options) {
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
 };
 
+/**
+ * Create the User Interface in the Intranet DOM
+ */
 ChatNotification.prototype.initUserInterface = function() {
   $(".uiCompanyNavigations > li")
     .children()
@@ -99,7 +105,7 @@ ChatNotification.prototype.initUserInterface = function() {
 };
 /**
  * Init Chat User Profile
- * @param callback : allows you to call a function when the profile is initiated.
+ * @param callback : allows you to call an async callback function(username, fullname) when the profile is initiated.
  */
 ChatNotification.prototype.initUserProfile = function(callback) {
 
@@ -113,7 +119,10 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 //      console.log("Token : "+data.token);
 
       var fullname = this.username; //setting fullname with username from that point
-      callback(this.username, fullname);
+
+      if (typeof callback === "function") {
+        callback(this.username, fullname);
+      }
 
       //this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
       this.notifEventInt = window.clearInterval(this.notifEventInt);
@@ -199,8 +208,8 @@ ChatNotification.prototype.refreshStatus = function() {
 
 
 /**
- *
- * @constructor
+ * Change the current status
+ * @param status : the new status : available, donotdisturb, invisible, away or offline
  */
 ChatNotification.prototype.changeStatus = function(status) {
   var $spanStatus = $("span.chat-status");
@@ -287,6 +296,15 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     $(".btn-weemo").css('display', 'none');
   }
 }
+
+
+/**
+ ##################                           ##################
+ ##################                           ##################
+ ##################   HACK                    ##################
+ ##################                           ##################
+ ##################                           ##################
+ */
 
 
 
