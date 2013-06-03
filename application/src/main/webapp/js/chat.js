@@ -22,7 +22,7 @@ $(document).ready(function(){
   var chatPublicMode = $chatApplication.attr("data-public-mode");
   var chatView = $chatApplication.attr("data-view");
   var chatFullscreen = $chatApplication.attr("data-fullscreen");
-  var weemoKey = $chatApplication.attr("data-weemo-key");
+//  var weemoKey = $chatApplication.attr("data-weemo-key");
   var isPublic = (chatPublicMode == "true" && chatView == "public");
 
   var labelPanelError1 = $chatApplication.attr("data-label-panel-error1");
@@ -409,7 +409,7 @@ $(document).ready(function(){
   initChatProfile();
 
   function createWeemoCall() {
-    if (weemoKey!=="") {
+    if (weemoExtension.weemoKey!=="") {
 
       if (targetUser.indexOf("space-")===-1) {
         uidToCall = "weemo"+targetUser;
@@ -422,10 +422,10 @@ $(document).ready(function(){
       }
       callOwner = true;
       callActive = false;
-      weemo.createCall(uidToCall, callType, displaynameToCall);
+      weemoExtension.weemo.createCall(uidToCall, callType, displaynameToCall);
 
 
-      weemo.onCallHandler = function(type, status)
+      weemoExtension.weemo.onCallHandler = function(type, status)
       {
         if(callOwner && type==="call" && ( status==="active" || status==="terminated" ))
         {
@@ -475,10 +475,10 @@ $(document).ready(function(){
     }
   }
   function joinWeemoCall() {
-    if (weemoKey!=="") {
+    if (weemoExtension.weemoKey!=="") {
       callType = "attendee";
       callOwner = false;
-      weemo.createCall(uidToCall, callType, displaynameToCall);
+      weemoExtension.weemo.createCall(uidToCall, callType, displaynameToCall);
 
     }
   }
