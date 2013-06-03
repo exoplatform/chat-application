@@ -155,7 +155,7 @@ ChatNotification.prototype.refreshNotif = function() {
     success: function(data){
       if(this.oldNotifTotal!=data.total){
         var total = data.total;
-        console.log('refreshNotif :: '+total);
+        //console.log('refreshNotif :: '+total);
         var $chatNotification = $("#chat-notification");
         if (total>0) {
           $chatNotification.html('<span class="notif-total">'+total+'</span>');
@@ -271,8 +271,8 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     this.weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
 
     this.weemo.onConnectionHandler = function(message, code) {
-      if(window.console)
-        console.log("Connection Handler : " + message + ' ' + code);
+//      if(window.console)
+//        console.log("Connection Handler : " + message + ' ' + code);
       switch(message) {
         case 'connectedWeemoDriver':
           this.connectToTheCloud();
