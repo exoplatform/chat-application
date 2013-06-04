@@ -1,4 +1,4 @@
-// GLOBALE VARIABLES
+// GLOBAL VARIABLES
 var weemoExtension = new WeemoExtension();
 var chatNotification = new ChatNotification();
 
@@ -245,6 +245,13 @@ ChatNotification.prototype.changeStatus = function(status) {
 function WeemoExtension() {
   this.weemoKey = "";
   this.weemo = new Weemo();
+
+  this.callOwner = false;
+  this.callActive = false;
+  this.callType = "";
+
+  this.uidToCall = "";
+  this.displaynameToCall = "";
 }
 
 WeemoExtension.prototype.setKey = function(weemoKey) {
@@ -260,7 +267,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="") {
     $(".btn-weemo-conf").css('display', 'none');
     //this.weemo = new Weemo(); // Creating a Weemo object instance
-    //weemo.setMode("debug"); // Activate debugging in browser's log console
+    this.weemo.setMode("debug"); // Activate debugging in browser's log console
     this.weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
     this.weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
     this.weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
@@ -296,6 +303,45 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     $(".btn-weemo").css('display', 'none');
   }
 }
+
+/**
+ *
+ */
+WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
+
+  if (this.weemoKey!=="") {
+
+    if (targetUser.indexOf("space-")===-1) {
+      this.uidToCall = "weemo"+targetUser;
+      this.displaynameToCall = fullname;
+      this.callType = "internal";
+    } else {
+      this.uidToCall = this.weemo.getUid();
+      this.displaynameToCall = this.weemo.getDisplayname();
+      this.callType = "host";
+    }
+    this.callOwner = true;
+    this.callActive = false;
+    this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
+
+  }
+
+}
+
+/**
+ *
+ */
+WeemoExtension.prototype.joinWeemoCall = function() {
+  if (this.weemoKey!=="") {
+    this.callType = "attendee";
+    this.callOwner = false;
+    this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
+
+  }
+
+}
+
+
 
 
 /**
