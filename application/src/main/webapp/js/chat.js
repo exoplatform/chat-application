@@ -1458,7 +1458,7 @@ $(document).ready(function(){
     var child = $("span:first",this);
     if (child.hasClass("filter-on")) {
       child.removeClass("filter-on").addClass("filter-off");
-      if (!isAdmin) {
+      if (!chatApplication.isAdmin) {
         if ($(this).hasClass("filter-user")) {
           $(".filter-space span:first-child").removeClass("filter-off").addClass("filter-on");
         } else {
@@ -1468,7 +1468,7 @@ $(document).ready(function(){
     } else {
       child.removeClass("filter-off").addClass("filter-on");
     }
-    chatApplication.refreshWhoIsOnline(chatApplication);
+    chatApplication.refreshWhoIsOnline();
   });
 
 

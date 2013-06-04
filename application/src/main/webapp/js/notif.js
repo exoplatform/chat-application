@@ -1,6 +1,6 @@
 // GLOBAL VARIABLES
-var weemoExtension = new WeemoExtension();
 var chatNotification = new ChatNotification();
+var weemoExtension = new WeemoExtension();
 
 var jq171 = jQuery.noConflict(true);
 (function($) {
@@ -103,6 +103,9 @@ ChatNotification.prototype.initUserInterface = function() {
       }
     });
 };
+ChatNotification.prototype.updateNotifEventURL = function() {
+  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
+}
 /**
  * Init Chat User Profile
  * @param callback : allows you to call an async callback function(username, fullname) when the profile is initiated.
@@ -124,7 +127,6 @@ ChatNotification.prototype.initUserProfile = function(callback) {
         callback(this.username, fullname);
       }
 
-      //this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
       this.notifEventInt = window.clearInterval(this.notifEventInt);
       this.notifEventInt = setInterval($.proxy(this.refreshNotif, this), this.chatIntervalNotif);
       this.refreshNotif();
@@ -135,7 +137,7 @@ ChatNotification.prototype.initUserProfile = function(callback) {
     },
     error: function () {
       //retry in 3 sec
-      setTimeout(this.initUserProfile, 3000);
+      setTimeout($.proxy(this.initUserProfile, this), 3000);
     }
   });
 
@@ -148,6 +150,7 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 ChatNotification.prototype.refreshNotif = function() {
 //  if ( ! $("span.chat-status").hasClass("chat-status-offline-black") ) {
 //  console.log("refreshNotif :: URL="+this.notifEventURL);
+  this.updateNotifEventURL();
   $.ajax({
     url: this.notifEventURL,
     dataType: "json",
@@ -267,7 +270,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="") {
     $(".btn-weemo-conf").css('display', 'none');
     //this.weemo = new Weemo(); // Creating a Weemo object instance
-    this.weemo.setMode("debug"); // Activate debugging in browser's log console
+    //this.weemo.setMode("debug"); // Activate debugging in browser's log console
     this.weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
     this.weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
     this.weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
