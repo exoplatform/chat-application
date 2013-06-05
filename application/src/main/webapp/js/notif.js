@@ -35,12 +35,12 @@ var jq171 = jQuery.noConflict(true);
     chatNotification.initUserProfile(startWeemo);
 
 
+
+
+
   });
 
 })(jq171);
-
-
-
 
 
 /**
@@ -70,7 +70,6 @@ function ChatNotification() {
   this.chatIntervalStatus = "";
 
   this.oldNotifTotal = "";
-
 }
 
 /**
@@ -103,9 +102,11 @@ ChatNotification.prototype.initUserInterface = function() {
       }
     });
 };
+
 ChatNotification.prototype.updateNotifEventURL = function() {
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
-}
+};
+
 /**
  * Init Chat User Profile
  * @param callback : allows you to call an async callback function(username, fullname) when the profile is initiated.
@@ -207,7 +208,7 @@ ChatNotification.prototype.refreshStatus = function() {
       this.changeStatus("offline");
     }
   });
-}
+};
 
 
 /**
@@ -229,7 +230,7 @@ ChatNotification.prototype.changeStatus = function(status) {
   $spanStatusChat.removeClass("chat-status-away");
   $spanStatusChat.removeClass("chat-status-offline");
   $spanStatusChat.addClass("chat-status-"+status);
-}
+};
 
 
 /**
@@ -290,7 +291,10 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
         case 'sipOk':
           $(".btn-weemo").removeClass('disabled');
           var fn = $(".label-user").text();
-          if (fn!=="") {
+          var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+          if (fullname!=="") {
+            this.setDisplayname(fullname); // Configure the display name
+          } else if (fn!=="") {
             this.setDisplayname(fn); // Configure the display name
           }
           break;
@@ -305,13 +309,13 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   } else {
     $(".btn-weemo").css('display', 'none');
   }
-}
+};
 
 /**
  *
  */
 WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
-
+  console.log(targetUser+" : "+fullname+" : "+this.weemoKey);
   if (this.weemoKey!=="") {
 
     if (targetUser.indexOf("space-")===-1) {
@@ -329,7 +333,7 @@ WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
 
   }
 
-}
+};
 
 /**
  *
@@ -342,10 +346,35 @@ WeemoExtension.prototype.joinWeemoCall = function() {
 
   }
 
-}
+};
+
+WeemoExtension.prototype.attachWeemoToPopups = function() {
+  $('#tiptip_content').bind('DOMNodeInserted', function() {
+    var $uiAction = $(".uiAction", this).first();
+    if ($uiAction !== undefined && $uiAction.html() !== undefined) {
+      //console.log("uiAction bind on weemoCallOverlay");
+      var username = "";
+      var attr = $uiAction.children(".connect:first").attr("data-action");
+      if (attr.indexOf(":")>0) {
+        username = attr.substr(attr.indexOf(":")+1, attr.length-attr.indexOf(":"));
+      }
+      if ($uiAction.has(".weemoCallOverlay").size()===0) {
+        $uiAction.append("<div class='btn weemoCallOverlay' data-username='"+username+"'>Call</div>");
+        $(".weemoCallOverlay").on("click", function() {
+          console.log("weemo button clicked");
+          var targetUser = $(this).attr("data-username");
+          var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+          weemoExtension.createWeemoCall(targetUser, fullname);
+        });
+
+      }
+    }
+  });
+
+};
 
 
-
+setTimeout(weemoExtension.attachWeemoToPopups, 2000);
 
 /**
  ##################                           ##################
