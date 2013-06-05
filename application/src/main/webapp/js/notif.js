@@ -315,7 +315,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
  *
  */
 WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
-  console.log(targetUser+" : "+fullname+" : "+this.weemoKey);
+  //console.log(targetUser+" : "+fullname+" : "+this.weemoKey);
   if (this.weemoKey!=="") {
 
     if (targetUser.indexOf("space-")===-1) {
@@ -350,25 +350,48 @@ WeemoExtension.prototype.joinWeemoCall = function() {
 
 WeemoExtension.prototype.attachWeemoToPopups = function() {
   $('#tiptip_content').bind('DOMNodeInserted', function() {
+    var username = "";
+    var addStyle = "";
+    var $uiElement;
+    var $uiDetail = $('#tiptip_content').children('#tipName').children(".detail").children(".name").children("a");
+    if ($uiDetail !== undefined) {
+      var href = $uiDetail.attr("href");
+      if (href !== undefined) {
+        username = href.substr(href.indexOf("/activities/")+12);
+      }
+    }
+
+    var $uiMessage = $('#connectMessge', this);
+    if ($uiMessage !== undefined) {
+      $uiElement = $uiMessage;
+    }
+
     var $uiAction = $(".uiAction", this).first();
     if ($uiAction !== undefined && $uiAction.html() !== undefined) {
       //console.log("uiAction bind on weemoCallOverlay");
-      var username = "";
       var attr = $uiAction.children(".connect:first").attr("data-action");
-      if (attr.indexOf(":")>0) {
-        username = attr.substr(attr.indexOf(":")+1, attr.length-attr.indexOf(":"));
+      if (attr !== undefined) {
+        if (attr.indexOf(":")>0) {
+          if (attr.indexOf("Disconnect:")>-1)
+            addStyle = "margin-top:8px;";
+          username = attr.substr(attr.indexOf(":")+1, attr.length-attr.indexOf(":"));
+        }
       }
-      if ($uiAction.has(".weemoCallOverlay").size()===0) {
-        $uiAction.append("<div class='btn weemoCallOverlay' data-username='"+username+"'>Call</div>");
-        $(".weemoCallOverlay").on("click", function() {
-          console.log("weemo button clicked");
-          var targetUser = $(this).attr("data-username");
-          var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
-          weemoExtension.createWeemoCall(targetUser, fullname);
-        });
-
-      }
+      $uiElement = $uiAction;
     }
+
+    if (username !== "" && $uiElement.has(".weemoCallOverlay").size()===0) {
+      $uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
+      $(".weemoCallOverlay").on("click", function() {
+        //console.log("weemo button clicked");
+        var targetUser = $(this).attr("data-username");
+        var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+        weemoExtension.createWeemoCall(targetUser, fullname);
+      });
+
+    }
+
+
   });
 
 };
