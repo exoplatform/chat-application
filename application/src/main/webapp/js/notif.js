@@ -304,6 +304,12 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     this.weemo.onWeemoDriverNotStarted = function(downloadUrl) {
       var modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
       modal.show();
+      $(".weemo_modal_box").css("top", "42px");
+      var $weemo_inner_modal_box = $(".weemo_inner_modal_box");
+      $weemo_inner_modal_box.css("text-align", "center");
+      $weemo_inner_modal_box.css("padding", "25px");
+      $weemo_inner_modal_box.css("font-size", "18px");
+      $weemo_inner_modal_box.children("h2").css("font-size", "24px");
     };
 
   } else {
@@ -381,7 +387,11 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
     }
 
     if (username !== "" && $uiElement.has(".weemoCallOverlay").size()===0) {
-      $uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
+      var out = '<a type="button" class="btn weemoCallOverlay" title="Make a Video Call"';
+          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">'
+          out += '<i class="icon-facetime-video"></i> Call</a>';
+      //$uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
+      $uiElement.append(out);
       $(".weemoCallOverlay").on("click", function() {
         //console.log("weemo button clicked");
         var targetUser = $(this).attr("data-username");
