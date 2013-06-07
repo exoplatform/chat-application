@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import org.benjp.jobs.NotificationCleanupJob;
+import org.benjp.listener.ConnectionManager;
 import org.benjp.utils.PropertyManager;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -69,6 +70,7 @@ public class SchedulerService
 
       log.info("Scheduler Started");
 
+      ConnectionManager.getInstance().ensureIndexes();
 
     } catch (SchedulerException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
