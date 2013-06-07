@@ -41,6 +41,7 @@ public class UserService
   public static final String STATUS_DONOTDISTURB = "donotdisturb";
   public static final String STATUS_AWAY = "away";
   public static final String STATUS_INVISIBLE = "invisible";
+  public static final String STATUS_OFFLINE = "offline";
   public static final String STATUS_NONE = "none";
   public static final String STATUS_SPACE = "space";
 

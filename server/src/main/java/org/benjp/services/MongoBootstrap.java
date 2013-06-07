@@ -163,6 +163,10 @@ public class MongoBootstrap
     index.put("token", 1);
     tokens.createIndex(index, unique.append("name", "user_1_token_1").append("ns", "chat.tokens"));
     index = new BasicDBObject();
+    index.put("user", 1);
+    index.put("validity", -1);
+    tokens.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", "chat.tokens"));
+    index = new BasicDBObject();
     index.put("validity", -1);
     index.put("isDemoUser", 1);
     tokens.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", "chat.tokens"));

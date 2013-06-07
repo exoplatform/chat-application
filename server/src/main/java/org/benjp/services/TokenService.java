@@ -141,6 +141,16 @@ public class TokenService
     return users;
   }
 
+  public boolean isUserOnline(String user)
+  {
+    DBCollection coll = db().getCollection(M_TOKENS);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
+    DBCursor cursor = coll.find(query);
+    return cursor.hasNext();
+  }
+
   public boolean isDemoUser(String user)
   {
     return user.startsWith(ANONIM_USER);

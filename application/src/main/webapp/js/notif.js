@@ -29,6 +29,7 @@ var jq171 = jQuery.noConflict(true);
     // WEEMO : INIT CALL CALLBACK
     var startWeemo = function(username, fullname) {
       weemoExtension.initCall(username, fullname);
+      weemoExtension.attachWeemoToPopups();
     }
 
     // CHAT NOTIFICATION : START WEEMO ON SUCCESS
@@ -210,6 +211,33 @@ ChatNotification.prototype.refreshStatus = function() {
   });
 };
 
+/**
+ * Gets target user status
+ * @param targetUser
+ */
+ChatNotification.prototype.getStatus = function(targetUser, callback) {
+//  console.log("refreshStatus :: URL="+this.jzGetStatus);
+  $.ajax({
+    url: this.jzGetStatus,
+    data: {
+      "user": this.username,
+      "token": this.token,
+      "targetUser": targetUser
+    },
+    context: this,
+    success: function(response){
+      if (typeof callback === "function") {
+        callback(targetUser, response);
+      }
+    },
+    error: function(response){
+      if (typeof callback === "function") {
+        callback(targetUser, "offline");
+      }
+    }
+  });
+};
+
 
 /**
  * Change the current status
@@ -355,6 +383,11 @@ WeemoExtension.prototype.joinWeemoCall = function() {
 };
 
 WeemoExtension.prototype.attachWeemoToPopups = function() {
+  var checkTiptip = $('#tiptip_content').html();
+  if (checkTiptip === undefined) {
+    setTimeout($.proxy(this.attachWeemoToPopups, this), 250);
+    return;
+  }
   $('#tiptip_content').bind('DOMNodeInserted', function() {
     var username = "";
     var addStyle = "";
@@ -387,27 +420,38 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
     }
 
     if (username !== "" && $uiElement.has(".weemoCallOverlay").size()===0) {
-      var out = '<a type="button" class="btn weemoCallOverlay" title="Make a Video Call"';
-          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">'
+      var out = '<a type="button" class="btn weemoCallOverlay disabled" title="Make a Video Call"';
+          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
           out += '<i class="icon-facetime-video"></i> Call</a>';
       //$uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
       $uiElement.append(out);
       $(".weemoCallOverlay").on("click", function() {
-        //console.log("weemo button clicked");
-        var targetUser = $(this).attr("data-username");
-        var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
-        weemoExtension.createWeemoCall(targetUser, fullname);
+        if (!$(this).hasClass("disabled")) {
+          //console.log("weemo button clicked");
+          var targetUser = $(this).attr("data-username");
+          var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+          weemoExtension.createWeemoCall(targetUser, fullname);
+        }
       });
 
-    }
+      function cbGetStatus(targetUser, status) {
+        //console.log("Status :: target="+targetUser+" : status="+status);
+        if (status !== "offline") {
+          var $weemoBtn = $(".weemoCallOverlay");
+          if ($weemoBtn.attr("data-username") == targetUser) {
+            $weemoBtn.removeClass("disabled");
+          }
+        }
+      }
+      chatNotification.getStatus(username, cbGetStatus);
 
+
+    }
 
   });
 
 };
 
-
-setTimeout(weemoExtension.attachWeemoToPopups, 2000);
 
 /**
  ##################                           ##################

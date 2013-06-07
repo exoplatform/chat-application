@@ -246,7 +246,7 @@ public class ChatServer
 
   @Resource
   @Route("/getStatus")
-  public Response.Content getStatus(String user, String token)
+  public Response.Content getStatus(String user, String token, String targetUser)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -255,8 +255,19 @@ public class ChatServer
     String status = UserService.STATUS_INVISIBLE;
     try
     {
-      status = userService.getStatus(user);
-      tokenService.updateValidity(user, token);
+      if (targetUser!=null)
+      {
+        boolean online = tokenService.isUserOnline(targetUser);
+        if (online)
+          status = userService.getStatus(targetUser);
+        else
+          status = UserService.STATUS_OFFLINE;
+      }
+      else
+      {
+        status = userService.getStatus(user);
+        tokenService.updateValidity(user, token);
+      }
     }
     catch (Exception e)
     {
