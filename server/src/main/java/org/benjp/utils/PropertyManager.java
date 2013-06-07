@@ -28,6 +28,7 @@ public class PropertyManager {
 
   private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
 
+  public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_SERVER_HOST = "dbServerHost";
   public static final String PROPERTY_SERVER_PORT = "dbServerPort";
   public static final String PROPERTY_DB_NAME = "dbName";
@@ -69,26 +70,38 @@ public class PropertyManager {
       }
       catch (Exception e)
       {
-        properties.setProperty(PROPERTY_SERVER_HOST, "localhost");
-        properties.setProperty(PROPERTY_SERVER_PORT, "27017");
-        properties.setProperty(PROPERTY_DB_NAME, "chat");
-        properties.setProperty(PROPERTY_DB_AUTHENTICATION, "false");
-        properties.setProperty(PROPERTY_DB_USER, "");
-        properties.setProperty(PROPERTY_DB_PASSWORD, "");
-        properties.setProperty(PROPERTY_CHAT_SERVER_URL, "/chatServer");
-        properties.setProperty(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
-        properties.setProperty(PROPERTY_INTERVAL_CHAT, "3000");
-        properties.setProperty(PROPERTY_INTERVAL_SESSION, "60000");
-        properties.setProperty(PROPERTY_INTERVAL_STATUS, "15000");
-        properties.setProperty(PROPERTY_INTERVAL_NOTIF, "3000");
-        properties.setProperty(PROPERTY_INTERVAL_USERS, "5000");
-        properties.setProperty(PROPERTY_PASSPHRASE, "chat");
-        properties.setProperty(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
-        properties.setProperty(PROPERTY_PUBLIC_MODE, "false");
-        properties.setProperty(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
-        properties.setProperty(PROPERTY_WEEMO_KEY, "");
       }
+
+      overridePropertyIfNotSet(PROPERTY_SERVER_HOST, "localhost");
+      overridePropertyIfNotSet(PROPERTY_SERVER_PORT, "27017");
+      overridePropertyIfNotSet(PROPERTY_DB_NAME, "chat");
+      overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
+      overridePropertyIfNotSet(PROPERTY_DB_USER, "");
+      overridePropertyIfNotSet(PROPERTY_DB_PASSWORD, "");
+      overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_URL, "/chatServer");
+      overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "3000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_STATUS, "15000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_NOTIF, "3000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_USERS, "5000");
+      overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
+      overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
+      overridePropertyIfNotSet(PROPERTY_PUBLIC_MODE, "false");
+      overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
+      overridePropertyIfNotSet(PROPERTY_WEEMO_KEY, "");
     }
     return properties;
+  }
+
+  private static void overridePropertyIfNotSet(String key, String value) {
+    if (properties().getProperty(key)==null)
+    {
+      properties().setProperty(key, value);
+    }
+    if (System.getProperty(PROPERTY_SYSTEM_PREFIX+key)!=null) {
+      properties().setProperty(key, System.getProperty(PROPERTY_SYSTEM_PREFIX+key));
+    }
+
   }
 }
