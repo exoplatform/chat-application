@@ -30,6 +30,7 @@ var jq171 = jQuery.noConflict(true);
     var startWeemo = function(username, fullname) {
       weemoExtension.initCall(username, fullname);
       weemoExtension.attachWeemoToPopups();
+      weemoExtension.attachWeemoToConnections();
     }
 
     // CHAT NOTIFICATION : START WEEMO ON SUCCESS
@@ -452,6 +453,38 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
 
 };
 
+WeemoExtension.prototype.attachWeemoToConnections = function() {
+  if (window.location.href.indexOf("/portal/intranet/connexions")==-1) return;
+
+  var $uiPeople = $('#UIAllPeople');
+  if ($uiPeople.html() === undefined) {
+    setTimeout($.proxy(this.attachWeemoToConnections, this), 250);
+    return;
+  }
+
+  function cbGetConnectionStatus(targetUser, status) {
+    //console.log("Status :: target="+targetUser+" : status="+status);
+    if (status !== "offline") {
+      var $weemoBtn = $("#weemoCall-"+targetUser.replace(".", "-"));
+      if ($weemoBtn.attr("data-username") == targetUser) {
+        $weemoBtn.removeClass("disabled");
+      }
+    }
+  }
+
+  $(".contentBox", "#UIAllPeople").each(function() {
+    var username = $(this).children(".spaceTitle").children("a").first().attr("href");
+    username = username.substring(username.lastIndexOf("/")+1);
+
+    var html = $(this).html();
+    html += '<a type="button" class="btn weemoCallOverlay pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call" data-username="'+username+'" style="margin-left:5px;"><i class="icon-facetime-video"></i> Call</a>';
+    $(this).html(html);
+
+    chatNotification.getStatus(username, cbGetConnectionStatus);
+
+  });
+
+};
 
 /**
  ##################                           ##################
