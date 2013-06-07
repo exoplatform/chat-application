@@ -136,7 +136,7 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 
       this.statusEventInt = window.clearInterval(this.statusEventInt);
       this.statusEventInt = setInterval($.proxy(this.refreshStatus, this), this.chatIntervalStatus);
-      //this.refreshStatus();
+      this.refreshStatus();
     },
     error: function () {
       //retry in 3 sec
