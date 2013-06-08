@@ -7,6 +7,7 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-chat-interval-users="<%=chatIntervalUsers%>"
   data-public-mode="<%=publicMode%>"
+  data-public-mode-enabled="<%=publicModeEnabled%>"
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
   data-weemo-key="<%=weemoKey%>"
@@ -41,7 +42,7 @@
 <% if (!"public".equals(view)) { %>
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
     <a class="btn btn-mobile"><span class="icon-user"></span></a>
-    <span class="menu-standard">
+    <span class="menu-standard" style="float: left;">
       <span class="avatar-user">
         <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
           <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/benjamin" data-original-title="">
@@ -56,15 +57,17 @@
         <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
         <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
       </span>
-      <label style="margin-top: 5px; margin-bottom: 0px;">
+      <label style="margin-top: 5px; margin-bottom: 0px;float: left;">
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
       </label>
-      <span class="filter-empty"></span>
-      <input class="span2" id="chat-search" type="text" style="float: right;margin-top:5px;">
-      <span class="add-on" style="float: right;margin-top:5px;"><i class="icon-search"></i></span>
-      <span class="filter filter-space" style="float: right;margin-top:9px;"><span class="filter-on"></span></span>
-      <span class="filter filter-user" style="float: right;margin-top:9px;"><span class="filter-on"></span></span>
-      <span class="filter filter-public" style="display: none;float: right;margin-top:9px;"><span class="filter-off"></span></span>
+    </span>
+    <span class="menu-standard" style="float:right;">
+      <span class="filter filter-public" style="display: none;margin-top:9px;"><span class="filter-off"></span></span>
+      <span class="filter filter-user" style="margin-top:9px;"><span class="filter-on"></span></span>
+      <span class="filter filter-space" style="margin-top:9px;"><span class="filter-on"></span></span>
+      <span class="add-on" style="margin-top:5px;"><i class="icon-search"></i></span>
+      <input class="span2" id="chat-search" type="text" style="margin:5px 5px 0 0;">
+      <!--span class="filter-empty"></span-->
     </span>
   </div>
   <div class="menu-mobile">

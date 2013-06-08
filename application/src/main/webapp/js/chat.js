@@ -17,7 +17,8 @@ $(document).ready(function(){
   chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
   chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
 
-  var chatPublicMode = $chatApplication.attr("data-public-mode");
+  chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
+  var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
   var chatView = $chatApplication.attr("data-view");
   var chatFullscreen = $chatApplication.attr("data-fullscreen");
   chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
@@ -299,6 +300,7 @@ function ChatApplication() {
   this.labels = new JuzuLabels();
   this.weemoExtension = "";
   this.isPublic = false;
+  this.publicModeEnabled = false;
 
   this.room = "";
   this.username = "";
@@ -367,7 +369,7 @@ ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
       console.log("Call Handler : " + type + ": " + status);
       ts = Math.round(new Date().getTime() / 1000);
 
-      if (status === "terminated") thiss.weemoExtension.callOwner = false;
+      if (status === "terminated") thiss.weemoExtension.setCallOwner(false);
 
       if (thiss.weemoExtension.callType==="internal" || status==="terminated") {
         messageWeemo = "Call "+status+"&"+ts;
@@ -379,8 +381,8 @@ ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
       if (status==="terminated" && !thiss.weemoExtension.callActive) return; //Terminate a non started call, no message needed
 
 
-      if (status==="active") thiss.weemoExtension.callActive = true;
-      else if (status==="terminated") thiss.weemoExtension.callActive = false;
+      if (status==="active") thiss.weemoExtension.setCallActive(true);
+      else if (status==="terminated") thiss.weemoExtension.setCallActive(false);
 
       if (thiss.weemoExtension.callType!=="attendee") {
         $.ajax({
@@ -545,7 +547,7 @@ ChatApplication.prototype.initChatProfile = function() {
         $chatApplication.attr("data-token", this.token);
         var $labelUser = $(".label-user");
         $labelUser.text(data.fullname);
-        if (data.isAdmin == "true") {
+        if (this.publicModeEnabled && data.isAdmin == "true") {
           $(".filter-public").css("display", "inline-block");
           $(".filter-empty").css("display", "none");
         }
@@ -706,8 +708,8 @@ ChatApplication.prototype.showMessages = function(msgs) {
         }
 
         if (msgArray.length===4) {
-          this.weemoExtension.uidToCall = msgArray[2];
-          this.weemoExtension.displaynameToCall = msgArray[3];
+          this.weemoExtension.setUidToCall(msgArray[2]);
+          this.weemoExtension.setDisplaynameToCall(msgArray[3]);
           $(".btn-weemo").css("display", "none");
           $(".btn-weemo-conf").css("display", "block");
           if (msgArray[2]!=="weemo"+this.username)
@@ -996,7 +998,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
             if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
               window.fluid.showGrowlNotification({
                 title: this.labels.get("label-title"),
-                description: this.labels.get("label-new-message"),
+                description: this.labels.get("label-new-messages"),
                 priority: 1,
                 sticky: false,
                 identifier: "messages"
@@ -1016,8 +1018,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
                 // 0 is PERMISSION_ALLOWED
                 var notification = window.webkitNotifications.createNotification(
                   '/chat/img/chat.png',
-                  'Chat notification!',
-                  'You have new message'
+                  this.labels.get("label-title"),
+                  this.labels.get("label-new-messages")
                 );
 
                 notification.onclick = function () {
@@ -1317,19 +1319,19 @@ ChatApplication.prototype.setStatus = function(status, callback) {
 };
 
 ChatApplication.prototype.setStatusAvailable = function() {
-  this.setStatus("available");
+  chatApplication.setStatus("available");
 };
 
 ChatApplication.prototype.setStatusAway = function() {
-  this.setStatus("away");
+  chatApplication.setStatus("away");
 };
 
 ChatApplication.prototype.setStatusDoNotDisturb = function() {
-  this.setStatus("donotdisturb");
+  chatApplication.setStatus("donotdisturb");
 };
 
 ChatApplication.prototype.setStatusInvisible = function() {
-  this.setStatus("invisible");
+  chatApplication.setStatus("invisible");
 };
 
 /**
@@ -1357,8 +1359,8 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       document.getElementById("msg").value = '';
       ts = Math.round(new Date().getTime() / 1000);
       msg = "Call terminated&"+ts;
-      this.weemoExtension.callOwner = false;
-      this.weemoExtension.callActive = false;
+      this.weemoExtension.setCallOwner(false);
+      this.weemoExtension.setCallActive(false);
     }
   }
 

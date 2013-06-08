@@ -279,16 +279,42 @@ function WeemoExtension() {
   this.weemoKey = "";
   this.weemo = new Weemo();
 
-  this.callOwner = false;
-  this.callActive = false;
-  this.callType = "";
+  this.callOwner = jzGetParam("callOwner", false);
+  this.callActive = jzGetParam("callActive", false);
+  this.callType = jzGetParam("callType", "");
 
-  this.uidToCall = "";
-  this.displaynameToCall = "";
+  this.uidToCall = jzGetParam("uidToCall", "");
+  this.displaynameToCall = jzGetParam("displaynameToCall", "");
 }
 
 WeemoExtension.prototype.setKey = function(weemoKey) {
   this.weemoKey = weemoKey;
+  jzStoreParam("weemoKey", weemoKey);
+};
+
+WeemoExtension.prototype.setCallOwner = function(callOwner) {
+  this.callOwner = callOwner;
+  jzStoreParam("callOwner", callOwner);
+};
+
+WeemoExtension.prototype.setCallType = function(callType) {
+  this.callType = callType;
+  jzStoreParam("callType", callType);
+};
+
+WeemoExtension.prototype.setCallActive = function(callActive) {
+  this.callActive = callActive;
+  jzStoreParam("callActive", callActive);
+};
+
+WeemoExtension.prototype.setUidToCall = function(uidToCall) {
+  this.uidToCall = uidToCall;
+  jzStoreParam("uidToCall", uidToCall);
+};
+
+WeemoExtension.prototype.setDisplaynameToCall = function(displaynameToCall) {
+  this.displaynameToCall = displaynameToCall;
+  jzStoreParam("displaynameToCall", displaynameToCall);
 };
 
 /**

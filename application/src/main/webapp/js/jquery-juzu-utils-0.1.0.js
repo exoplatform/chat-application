@@ -1,4 +1,4 @@
-  jzGetParam = function(key) {
+  jzGetParam = function(key, defaultValue) {
     var ts  = localStorage.getItem(key+"TS");
     var val = localStorage.getItem(key);
     if (!ts) ts=-1;
@@ -9,7 +9,7 @@
       return val;
     }
 
-    return undefined;
+    return defaultValue;
   };
 
   jzStoreParam = function(key, value, expire) {
