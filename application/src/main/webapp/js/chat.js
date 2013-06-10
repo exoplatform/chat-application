@@ -228,8 +228,7 @@ $(document).ready(function(){
 
 
   $(".btn-weemo").on("click", function() {
-    weemoExtension.createWeemoCall(chatApplication.targetUser,
-      chatApplication.fullname);
+    chatApplication.createWeemoCall();
   });
 
   $(".btn-weemo-conf").on("click", function() {
@@ -359,57 +358,6 @@ ChatApplication.prototype.setJuzuLabelsElement = function(element) {
  */
 ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
   this.weemoExtension = weemoExtension;
-
-  var thiss = this;
-  var messageWeemo = "";
-  this.weemoExtension.weemo.onCallHandler = function(type, status)
-  {
-    if(thiss.weemoExtension.callOwner && type==="call" && ( status==="active" || status==="terminated" ))
-    {
-      console.log("Call Handler : " + type + ": " + status);
-      ts = Math.round(new Date().getTime() / 1000);
-
-      if (status === "terminated") thiss.weemoExtension.setCallOwner(false);
-
-      if (thiss.weemoExtension.callType==="internal" || status==="terminated") {
-        messageWeemo = "Call "+status+"&"+ts;
-      } else if (thiss.weemoExtension.callType==="host") {
-        messageWeemo = "Call "+status+"&"+ts+"&"+thiss.weemoExtension.uidToCall+"&"+thiss.weemoExtension.displaynameToCall;
-      }
-
-      if (status==="active" && thiss.weemoExtension.callActive) return; //Call already active, no need to push a new message
-      if (status==="terminated" && !thiss.weemoExtension.callActive) return; //Terminate a non started call, no message needed
-
-
-      if (status==="active") thiss.weemoExtension.setCallActive(true);
-      else if (status==="terminated") thiss.weemoExtension.setCallActive(false);
-
-      if (thiss.weemoExtension.callType!=="attendee") {
-        $.ajax({
-          url: thiss.jzChatSend,
-          data: {"user": thiss.username,
-            "targetUser": thiss.targetUser,
-            "room": thiss.room,
-            "message": messageWeemo,
-            "token": thiss.token,
-            "timestamp": new Date().getTime(),
-            "isSystem": "true"
-          },
-
-          success:function(response){
-            //console.log("success");
-            thiss.refreshChat();
-          },
-
-          error:function (xhr, status, error){
-
-          }
-
-        });
-      }
-    }
-  }
-
 };
 
 
@@ -1334,6 +1282,22 @@ ChatApplication.prototype.setStatusInvisible = function() {
   chatApplication.setStatus("invisible");
 };
 
+ChatApplication.prototype.createWeemoCall = function() {
+  console.log("targetUser : "+chatApplication.targetUser);
+  console.log("fullname   : "+chatApplication.fullname);
+
+  var chatMessage = {
+    "url" : chatApplication.jzChatSend,
+    "user" : chatApplication.username,
+    "targetUser" : chatApplication.targetUser,
+    "room" : chatApplication.room,
+    "token" : chatApplication.token
+  };
+  weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.fullname, chatMessage);
+
+  //this.weemoExtension.createWeemoCall(this.targetUser, this.fullname);
+};
+
 /**
  * Send message to server
  * @param msg : the msg to send
@@ -1348,7 +1312,8 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     msg = msg.replace("/me", this.fullname);
 
     if (msg.indexOf("/call")===0) {
-      this.weemoExtension.createWeemoCall();
+      this.createWeemoCall();
+
       document.getElementById("msg").value = '';
       return;
     } else if (msg.indexOf("/join")===0) {

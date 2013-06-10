@@ -285,36 +285,69 @@ function WeemoExtension() {
 
   this.uidToCall = jzGetParam("uidToCall", "");
   this.displaynameToCall = jzGetParam("displaynameToCall", "");
+
+  this.chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
+}
+
+WeemoExtension.prototype.log = function() {
+  console.log("callOwner         :: "+this.callOwner);
+  console.log("callActive        :: "+this.callActive);
+  console.log("callType          :: "+this.callType);
+  console.log("uidToCall         :: "+this.uidToCall);
+  console.log("displayNameToCall :: "+this.displaynameToCall);
+  console.log("chatMessage       :: "+this.chatMessage);
 }
 
 WeemoExtension.prototype.setKey = function(weemoKey) {
   this.weemoKey = weemoKey;
-  jzStoreParam("weemoKey", weemoKey);
+  jzStoreParam("weemoKey", weemoKey, 14400); // timeout = 60 sec * 60 min * 4 hours = 14400 sec
 };
 
 WeemoExtension.prototype.setCallOwner = function(callOwner) {
   this.callOwner = callOwner;
-  jzStoreParam("callOwner", callOwner);
+  jzStoreParam("callOwner", callOwner, 14400);
 };
 
 WeemoExtension.prototype.setCallType = function(callType) {
   this.callType = callType;
-  jzStoreParam("callType", callType);
+  jzStoreParam("callType", callType, 14400);
 };
 
 WeemoExtension.prototype.setCallActive = function(callActive) {
   this.callActive = callActive;
-  jzStoreParam("callActive", callActive);
+  jzStoreParam("callActive", callActive, 14400);
 };
 
 WeemoExtension.prototype.setUidToCall = function(uidToCall) {
   this.uidToCall = uidToCall;
-  jzStoreParam("uidToCall", uidToCall);
+  jzStoreParam("uidToCall", uidToCall, 14400);
 };
 
 WeemoExtension.prototype.setDisplaynameToCall = function(displaynameToCall) {
   this.displaynameToCall = displaynameToCall;
-  jzStoreParam("displaynameToCall", displaynameToCall);
+  jzStoreParam("displaynameToCall", displaynameToCall, 14400);
+};
+/**
+ * A JSON Object like :
+ * { "url" : url,
+ *   "user" : user,
+ *   "targetUser" : targetUser,
+ *   "room" : room,
+ *   "token" : token
+ * }
+ * @param chatMessage
+ */
+WeemoExtension.prototype.setChatMessage = function(chatMessage) {
+  this.chatMessage = chatMessage;
+  jzStoreParam("chatMessage", JSON.stringify(chatMessage), 14400);
+};
+
+WeemoExtension.prototype.hasChatMessage = function() {
+  return (this.chatMessage.url !== undefined);
+};
+
+WeemoExtension.prototype.initChatMessage = function() {
+  this.setChatMessage({});
 };
 
 /**
@@ -336,6 +369,13 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     //weemo.setDisplayname($name); // Configure the display name
     this.weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
 
+
+    /**
+     * Weemo Driver On Connection Javascript Handler
+     *
+     * @param message
+     * @param code
+     */
     this.weemo.onConnectionHandler = function(message, code) {
 //      if(window.console)
 //        console.log("Connection Handler : " + message + ' ' + code);
@@ -356,6 +396,11 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       }
     }
 
+    /**
+     * Weemo Driver On Driver Started Javascript Handler
+     *
+     * @param downloadUrl
+     */
     this.weemo.onWeemoDriverNotStarted = function(downloadUrl) {
       var modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
       modal.show();
@@ -367,6 +412,73 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       $weemo_inner_modal_box.children("h2").css("font-size", "24px");
     };
 
+
+    /**
+     * Weemo Driver On Call Javascript Handler
+     *
+     * @param type
+     * @param status
+     */
+    this.weemo.onCallHandler = function(type, status)
+    {
+      console.log("WEEMO:onCallHandler::"+type+":"+status);
+      var messageWeemo = "";
+      if(weemoExtension.callOwner && type==="call" && ( status==="active" || status==="terminated" ))
+      {
+        console.log("Call Handler : " + type + ": " + status);
+        ts = Math.round(new Date().getTime() / 1000);
+
+        if (status === "terminated") weemoExtension.setCallOwner(false);
+
+        if (weemoExtension.callType==="internal" || status==="terminated") {
+          messageWeemo = "Call "+status+"&"+ts;
+        } else if (weemoExtension.callType==="host") {
+          messageWeemo = "Call "+status+"&"+ts+"&"+weemoExtension.uidToCall+"&"+weemoExtension.displaynameToCall;
+        }
+
+        if (status==="active" && weemoExtension.callActive) return; //Call already active, no need to push a new message
+        if (status==="terminated" && !weemoExtension.callActive) return; //Terminate a non started call, no message needed
+
+
+        if (status==="active") weemoExtension.setCallActive(true);
+        else if (status==="terminated") weemoExtension.setCallActive(false);
+
+        if (weemoExtension.callType!=="attendee") {
+          if (weemoExtension.hasChatMessage()) {
+            console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
+            $.ajax({
+              url: weemoExtension.chatMessage.url,
+              data: {"user": weemoExtension.chatMessage.user,
+                "targetUser": weemoExtension.chatMessage.targetUser,
+                "room": weemoExtension.chatMessage.room,
+                "message": messageWeemo,
+                "token": weemoExtension.chatMessage.token,
+                "timestamp": new Date().getTime(),
+                "isSystem": "true"
+              },
+              success:function(response){
+                //console.log("success");
+                try {
+                  if (chatApplication !== undefined) {
+                    chatApplication.refreshChat();
+                  }
+                } catch(err) {
+                  //nothing to do, we're outside chat page
+                }
+              },
+              error:function (xhr, status, error){
+              }
+            });
+
+            if (status==="terminated") {
+              weemoExtension.initChatMessage();
+            }
+          }
+        }
+      }
+    }
+
+
   } else {
     $(".btn-weemo").css('display', 'none');
   }
@@ -375,21 +487,25 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 /**
  *
  */
-WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
+WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname, chatMessage) {
   //console.log(targetUser+" : "+fullname+" : "+this.weemoKey);
   if (this.weemoKey!=="") {
 
-    if (targetUser.indexOf("space-")===-1) {
-      this.uidToCall = "weemo"+targetUser;
-      this.displaynameToCall = fullname;
-      this.callType = "internal";
-    } else {
-      this.uidToCall = this.weemo.getUid();
-      this.displaynameToCall = this.weemo.getDisplayname();
-      this.callType = "host";
+    if (chatMessage !== undefined) {
+      this.setChatMessage(chatMessage);
     }
-    this.callOwner = true;
-    this.callActive = false;
+
+    if (targetUser.indexOf("space-")===-1) {
+      this.setUidToCall("weemo"+targetUser);
+      this.setDisplaynameToCall(fullname);
+      this.setCallType("internal");
+    } else {
+      this.setUidToCall(this.weemo.getUid());
+      this.setDisplaynameToCall(this.weemo.getDisplayname());
+      this.setCallType("host");
+    }
+    this.setCallOwner(true);
+    this.setCallActive(false);
     this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
 
   }
@@ -401,8 +517,8 @@ WeemoExtension.prototype.createWeemoCall = function(targetUser, fullname) {
  */
 WeemoExtension.prototype.joinWeemoCall = function() {
   if (this.weemoKey!=="") {
-    this.callType = "attendee";
-    this.callOwner = false;
+    this.setCallType("attendee");
+    this.setCallOwner(false);
     this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
 
   }
