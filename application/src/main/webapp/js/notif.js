@@ -598,7 +598,7 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
 WeemoExtension.prototype.attachWeemoToConnections = function() {
   if (window.location.href.indexOf("/portal/intranet/connexions")==-1) return;
 
-  var $uiPeople = $('#UIAllPeople');
+  var $uiPeople = $('.uiTabInPage').first();
   if ($uiPeople.html() === undefined) {
     setTimeout($.proxy(this.attachWeemoToConnections, this), 250);
     return;
@@ -614,7 +614,7 @@ WeemoExtension.prototype.attachWeemoToConnections = function() {
     }
   }
 
-  $(".contentBox", "#UIAllPeople").each(function() {
+  $(".contentBox", ".uiTabInPage").each(function() {
     var username = $(this).children(".spaceTitle").children("a").first().attr("href");
     username = username.substring(username.lastIndexOf("/")+1);
 
