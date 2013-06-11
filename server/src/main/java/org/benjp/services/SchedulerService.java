@@ -70,7 +70,12 @@ public class SchedulerService
 
       log.info("Scheduler Started");
 
-      ConnectionManager.getInstance().ensureIndexes();
+      try {
+        ConnectionManager.getInstance().ensureIndexes();
+        log.info("MongoDB Indexes Up to Date");
+      } catch (Exception e) {
+        log.severe("MongoDB Indexes couldn't be created during startup. Chat Extension may be unstable!");
+      }
 
     } catch (SchedulerException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

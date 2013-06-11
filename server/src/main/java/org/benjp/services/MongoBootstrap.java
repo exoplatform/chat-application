@@ -127,6 +127,8 @@ public class MongoBootstrap
 
   public void ensureIndexes()
   {
+    String dbName = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
+    this.getDB();
     log.info("### ensureIndexes in "+getDB().getName());
     BasicDBObject unique = new BasicDBObject();
     unique.put("unique", true);
@@ -137,45 +139,45 @@ public class MongoBootstrap
 
     DBCollection notifications = getDB().getCollection("notifications");
     notifications.dropIndexes();
-    notifications.createIndex(new BasicDBObject("user", 1), notUnique.append("name", "user_1").append("ns", "chat.notifications"));
-    notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", "chat.notifications"));
+    notifications.createIndex(new BasicDBObject("user", 1), notUnique.append("name", "user_1").append("ns", dbName+".notifications"));
+    notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", dbName+".notifications"));
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
     index.put("categoryId", 1);
     index.put("category", 1);
     index.put("type", 1);
 //    index.put("isRead", 1);
-    notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", "chat.notifications"));
+    notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", dbName+".notifications"));
     log.info("### notifications indexes in "+getDB().getName());
 
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.dropIndexes();
-    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", "chat.room_rooms"));
-    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", "chat.room_rooms"));
+    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName+".room_rooms"));
+    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+".room_rooms"));
     log.info("### rooms indexes in "+getDB().getName());
 
     DBCollection tokens = getDB().getCollection("tokens");
     tokens.dropIndexes();
-    tokens.createIndex(new BasicDBObject("token", 1), unique.append("name", "token_1").append("ns", "chat.tokens"));
-    tokens.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", "chat.tokens"));
+    tokens.createIndex(new BasicDBObject("token", 1), unique.append("name", "token_1").append("ns", dbName+".tokens"));
+    tokens.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", dbName+".tokens"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("token", 1);
-    tokens.createIndex(index, unique.append("name", "user_1_token_1").append("ns", "chat.tokens"));
+    tokens.createIndex(index, unique.append("name", "user_1_token_1").append("ns", dbName+".tokens"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("validity", -1);
-    tokens.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", "chat.tokens"));
+    tokens.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", dbName+".tokens"));
     index = new BasicDBObject();
     index.put("validity", -1);
     index.put("isDemoUser", 1);
-    tokens.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", "chat.tokens"));
+    tokens.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", dbName+".tokens"));
     log.info("### tokens indexes in "+getDB().getName());
 
     DBCollection users = getDB().getCollection("users");
     users.dropIndexes();
-    users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", "chat.users"));
-    users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", "chat.users"));
+    users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", dbName+".users"));
+    users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", dbName+".users"));
     log.info("### users indexes in "+getDB().getName());
 
     log.info("### Indexes creation completed in "+getDB().getName());
