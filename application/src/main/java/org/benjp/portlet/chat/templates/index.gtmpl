@@ -62,12 +62,26 @@
       </label>
     </span>
     <span class="menu-standard" style="float:right;">
-      <span class="filter filter-public" style="display: none;margin-top:9px;"><span class="filter-off"></span></span>
-      <span class="filter filter-user" style="margin-top:9px;"><span class="filter-on"></span></span>
-      <span class="filter filter-space" style="margin-top:9px;"><span class="filter-on"></span></span>
-      <span class="add-on" style="margin-top:5px;"><i class="icon-search"></i></span>
-      <input class="span2" id="chat-search" type="text" style="margin:5px 5px 0 0;">
-      <!--span class="filter-empty"></span-->
+      <label style="vertical-align: bottom;padding-right: 7px;">Filters</label>
+      <ul class="btn-group containerMoreItem" style="padding-right: 100px;margin-top: 6px;">
+        <li class="btn filter filter-offline active">
+          <a href="#">Offline</a>
+        </li>
+        <li class="btn filter filter-public" style="display: none">
+          <a href="#">Offline</a>
+        </li>
+        <li class="btn filter filter-user">
+          <a href="#">Users</a>
+        </li>
+        <li class="btn filter filter-space">
+          <a href="#">Spaces</a>
+        </li>
+      </ul>
+
+      <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;">
+        <div onclick="event.cancelBubble=true;"><input class="span3" id="chat-search" type="text" ></div>
+      </div>
+
     </span>
   </div>
   <div class="menu-mobile">

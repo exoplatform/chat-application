@@ -195,19 +195,7 @@ $(document).ready(function(){
   });
 
   $(".filter").on("click", function() {
-    var child = $("span:first",this);
-    if (child.hasClass("filter-on")) {
-      child.removeClass("filter-on").addClass("filter-off");
-      if (!chatApplication.isAdmin) {
-        if ($(this).hasClass("filter-user")) {
-          $(".filter-space span:first-child").removeClass("filter-off").addClass("filter-on");
-        } else {
-          $(".filter-user span:first-child").removeClass("filter-off").addClass("filter-on");
-        }
-      }
-    } else {
-      child.removeClass("filter-off").addClass("filter-on");
-    }
+    $(this).toggleClass("active");
     chatApplication.refreshWhoIsOnline();
   });
 
@@ -898,14 +886,16 @@ ChatApplication.prototype.getStatusLabel = function(status) {
  * Refresh Who Is Online : server call
  */
 ChatApplication.prototype.refreshWhoIsOnline = function() {
-  var withSpaces = $(".filter-space span:first-child").hasClass("filter-on");
-  var withUsers = $(".filter-user span:first-child").hasClass("filter-on");
-  var withPublic = $(".filter-public span:first-child").hasClass("filter-on");
+  var withSpaces = !$(".filter-space").first().hasClass("active");
+  var withUsers = !$(".filter-user").first().hasClass("active");
+  var withPublic = !$(".filter-public").first().hasClass("active");
+  var withOffline = !$(".filter-offline").first().hasClass("active");
 
   if (this.username.indexOf(this.ANONIM_USER)>-1) {
     withUsers = true;
     withSpaces = true;
     withPublic = false;
+    withOffline = false;
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
@@ -918,6 +908,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
         "withSpaces": withSpaces,
         "withUsers": withUsers,
         "withPublic": withPublic,
+        "withOffline": withOffline,
         "isAdmin": this.isAdmin,
         "timestamp": new Date().getTime()},
       context: this,
@@ -929,7 +920,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
           this.isLoaded = true;
           this.hidePanel(".chat-error-panel");
           this.hidePanel(".chat-sync-panel");
-          this.showRooms(rooms)
+          this.showRooms(rooms);
 
           this.jQueryForUsersTemplate();
 

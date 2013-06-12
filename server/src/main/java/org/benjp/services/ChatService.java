@@ -272,30 +272,38 @@ public class ChatService
 
   public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
+    return getRooms(user, filter, withUsers, withSpaces, withPublic, true, isAdmin, notificationService, userService, tokenService);
+  }
+  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
+  {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user);
 
     if (withUsers || (isAdmin && withPublic) )
     {
       Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
-      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
-      if (isAdmin)
-        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
+      if (withOffline)
+      {
+        rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
+        if (isAdmin)
+          rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
 
-      for (RoomBean roomBean:rooms) {
-        String targetUser = roomBean.getUser();
-        UserBean targetUserBean = userService.getUser(targetUser);
-        roomBean.setFullname(targetUserBean.getFullname());
-        roomBean.setFavorite(userBean.isFavorite(targetUser));
-        if (availableUsers.contains(targetUser))
-        {
-          roomBean.setAvailableUser(true);
-          roomBean.setStatus(targetUserBean.getStatus());
-          availableUsers.remove(targetUser);
-        }
-        else
-        {
-          roomBean.setAvailableUser(false);
+        for (RoomBean roomBean:rooms) {
+          String targetUser = roomBean.getUser();
+          UserBean targetUserBean = userService.getUser(targetUser);
+          roomBean.setFullname(targetUserBean.getFullname());
+          roomBean.setFavorite(userBean.isFavorite(targetUser));
+          if (availableUsers.contains(targetUser))
+          {
+            roomBean.setAvailableUser(true);
+            roomBean.setStatus(targetUserBean.getStatus());
+            availableUsers.remove(targetUser);
+          }
+          else
+          {
+            roomBean.setAvailableUser(false);
+          }
+
         }
 
       }
@@ -309,7 +317,11 @@ public class ChatService
         roomBean.setStatus(availableUserBean.getStatus());
         roomBean.setAvailableUser(true);
         roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
-        rooms.add(roomBean);
+        String status = roomBean.getStatus();
+        if (withOffline || (!withOffline && !UserService.STATUS_INVISIBLE.equals(roomBean.getStatus()) && !UserService.STATUS_OFFLINE.equals(roomBean.getStatus())))
+        {
+          rooms.add(roomBean);
+        }
       }
     }
 
