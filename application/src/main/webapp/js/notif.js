@@ -287,6 +287,8 @@ function WeemoExtension() {
   this.displaynameToCall = jzGetParam("displaynameToCall", "");
 
   this.chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
+
+  this.isConnected = false;
 }
 
 WeemoExtension.prototype.log = function() {
@@ -384,6 +386,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           this.connectToTheCloud();
           break;
         case 'sipOk':
+          weemoExtension.isConnected = true;
           $(".btn-weemo").removeClass('disabled');
           var fn = $(".label-user").text();
           var fullname = $("#UIUserPlatformToolBarPortlet > a:first").text().trim();

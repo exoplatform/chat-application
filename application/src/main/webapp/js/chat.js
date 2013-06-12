@@ -216,11 +216,13 @@ $(document).ready(function(){
 
 
   $(".btn-weemo").on("click", function() {
-    chatApplication.createWeemoCall();
+    if (!$(this).hasClass("disabled"))
+      chatApplication.createWeemoCall();
   });
 
   $(".btn-weemo-conf").on("click", function() {
-    weemoExtension.joinWeemoCall();
+    if (!$(this).hasClass("disabled"))
+      weemoExtension.joinWeemoCall();
   });
 
 
@@ -1071,6 +1073,9 @@ ChatApplication.prototype.loadRoom = function() {
         this.room = response;
         var $msg = $('#msg');
         $msg.removeAttr("disabled");
+        if (this.weemoExtension.isConnected) {
+          $(".btn-weemo").removeClass('disabled');
+        }
         if (this.isDesktopView()) $msg.focus();
         this.chatEventURL = this.jzChatSend+'?room='+this.room+'&user='+this.username+'&token='+this.token+'&event=0';
 
