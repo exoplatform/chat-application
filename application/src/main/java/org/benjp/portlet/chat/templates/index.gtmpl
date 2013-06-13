@@ -70,7 +70,7 @@
           <a href="#">Offline</a>
         </li>
         <li class="btn filter filter-public" style="display: none">
-          <a href="#">Offline</a>
+          <a href="#">Public</a>
         </li>
         <li class="btn filter filter-user">
           <a href="#">Users</a>
