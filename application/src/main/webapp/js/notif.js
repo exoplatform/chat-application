@@ -626,11 +626,16 @@ WeemoExtension.prototype.attachWeemoToConnections = function() {
     var username = $(this).children(".spaceTitle").children("a").first().attr("href");
     username = username.substring(username.lastIndexOf("/")+1);
 
-    var html = $(this).html();
-    html += '<a type="button" class="btn weemoCallOverlay pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call" data-username="'+username+'" style="margin-left:5px;"><i class="icon-facetime-video"></i> Call</a>';
-    $(this).html(html);
+    var $uiActionWeemo = $(".weemoCallOverlay", this).first();
+    if ($uiActionWeemo !== undefined && $uiActionWeemo.html() == undefined) {
+      var html = $(this).html();
+      html += '<a type="button" class="btn weemoCallOverlay pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call" data-username="'+username+'" style="margin-left:5px;"><i class="icon-facetime-video"></i> Call</a>';
+      $(this).html(html);
 
-    chatNotification.getStatus(username, cbGetConnectionStatus);
+      chatNotification.getStatus(username, cbGetConnectionStatus);
+
+    }
+
 
   });
 
