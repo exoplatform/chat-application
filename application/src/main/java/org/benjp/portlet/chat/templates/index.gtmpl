@@ -62,6 +62,8 @@
       </label>
     </span>
     <span class="menu-standard" style="float:right;">
+      <a type="button" class="btn btn-weemo-download" title="Install Weemo Driver" href="#">
+        <i class="icon-download-alt"></i> Install Weemo</a>
       <label style="padding-right: 7px;float: left; line-height: 38px; margin: 0">Filters</label>
       <ul class="btn-group containerMoreItem" style="padding-right: 100px;margin-top: 6px;float: left;">
         <li class="btn filter filter-offline active">

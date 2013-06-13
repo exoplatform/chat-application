@@ -405,6 +405,10 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
      * @param downloadUrl
      */
     this.weemo.onWeemoDriverNotStarted = function(downloadUrl) {
+      var $btnDownload = $(".btn-weemo-download");
+      $btnDownload.attr("href", downloadUrl);
+      $btnDownload.css("display", "inline-block");
+/*
       var modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
       modal.show();
       $(".weemo_modal_box").css("top", "42px");
@@ -413,6 +417,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       $weemo_inner_modal_box.css("padding", "25px");
       $weemo_inner_modal_box.css("font-size", "18px");
       $weemo_inner_modal_box.children("h2").css("font-size", "24px");
+*/
     };
 
 
