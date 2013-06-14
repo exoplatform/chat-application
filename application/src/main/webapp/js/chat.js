@@ -1280,7 +1280,7 @@ ChatApplication.prototype.setStatusInvisible = function() {
 
 ChatApplication.prototype.createWeemoCall = function() {
   console.log("targetUser : "+chatApplication.targetUser);
-  console.log("fullname   : "+chatApplication.targetFullname);
+  console.log("targetFullname   : "+chatApplication.targetFullname);
 
   var chatMessage = {
     "url" : chatApplication.jzChatSend,
