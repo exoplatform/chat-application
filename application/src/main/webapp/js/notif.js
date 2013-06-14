@@ -406,8 +406,13 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
      */
     this.weemo.onWeemoDriverNotStarted = function(downloadUrl) {
       var $btnDownload = $(".btn-weemo-download");
-      $btnDownload.attr("href", downloadUrl);
       $btnDownload.css("display", "inline-block");
+      if (navigator.platform === "Linux") {
+        $btnDownload.addClass("disabled");
+        $btnDownload.attr("title", "Weemo is not yet compatible with Linux OS.");
+      } else {
+        $btnDownload.attr("href", downloadUrl);
+      }
 /*
       var modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
       modal.show();
