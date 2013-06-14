@@ -1280,7 +1280,7 @@ ChatApplication.prototype.setStatusInvisible = function() {
 
 ChatApplication.prototype.createWeemoCall = function() {
   console.log("targetUser : "+chatApplication.targetUser);
-  console.log("fullname   : "+chatApplication.fullname);
+  console.log("targetFullname   : "+chatApplication.targetFullname);
 
   var chatMessage = {
     "url" : chatApplication.jzChatSend,
@@ -1289,7 +1289,7 @@ ChatApplication.prototype.createWeemoCall = function() {
     "room" : chatApplication.room,
     "token" : chatApplication.token
   };
-  weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.fullname, chatMessage);
+  weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
 
   //this.weemoExtension.createWeemoCall(this.targetUser, this.fullname);
 };
