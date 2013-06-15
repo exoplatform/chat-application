@@ -1007,6 +1007,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
       } else {
         out += 'user-status';
       }
+      if (room.status === "space") {
+        out += ' user-space-front';
+      }
       out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
       out += '</td>';
       out +=  '<td>';

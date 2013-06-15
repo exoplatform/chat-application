@@ -106,6 +106,22 @@
     background-size: 16px 16px;
   }
 
+  .user-space-front {
+    .background('2x/mask-space.png');
+    background-size: 16px 16px;
+  }
+
+  .user-status:hover .user-space-front:hover {
+    .background('2x/mask-star.png');
+    background-size: 16px 16px;
+  }
+
+  .user-favorite:hover .user-space-front:hover {
+    .background('2x/mask-dot.png');
+    background-size: 16px 16px;
+  }
+
+
   .icon(@name) {
     .background('2x/icon-@{name}.png');
     background-size: 16px 16px;

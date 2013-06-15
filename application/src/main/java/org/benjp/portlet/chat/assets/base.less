@@ -230,6 +230,22 @@ tr.info td {
   .background('mask-dot.png');
 }
 
+.user-space-front {
+  .background('mask-space.png');
+  width: 16px;
+  display: block;
+  height: 16px;
+  float: left;
+}
+
+.user-status:hover .user-space-front:hover {
+  .background('mask-star.png');
+}
+
+.user-favorite:hover .user-space-front:hover {
+  .background('mask-dot.png');
+}
+
 .user-status(@colorParam) {
   background-color: @colorParam;
   margin: 2px;
