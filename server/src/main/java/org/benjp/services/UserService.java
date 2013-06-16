@@ -35,7 +35,7 @@ public class UserService
 {
 
   private static final String M_USERS_COLLECTION = "users";
-  private static final String M_SPACES_COLLECTION = "spaces";
+  public static final String M_SPACES_COLLECTION = "spaces";
 
   public static final String STATUS_AVAILABLE = "available";
   public static final String STATUS_DONOTDISTURB = "donotdisturb";
@@ -208,6 +208,10 @@ public class UserService
       spaceBean.setDisplayName(doc.get("displayName").toString());
       spaceBean.setGroupId(doc.get("groupId").toString());
       spaceBean.setShortName(doc.get("shortName").toString());
+      if (doc.containsField("timestamp"))
+      {
+        spaceBean.setTimestamp(((Long)doc.get("timestamp")).longValue());
+      }
     }
 
     return spaceBean;

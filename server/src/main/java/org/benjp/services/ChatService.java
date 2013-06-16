@@ -62,6 +62,8 @@ public class ChatService
     doc.put("isSystem", isSystem);
 
     coll.insert(doc);
+
+    this.updateRoomTimestamp(room);
   }
 
 
@@ -163,6 +165,45 @@ public class ChatService
     return sb.toString();
   }
 
+  private void updateRoomTimestamp(String room)
+  {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", new ObjectId(room));
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      if (dbo.containsField("space"))
+      {  //space room, we set timestamp in the collection spaces
+        String spaceId = dbo.get("space").toString();
+        //removing "space-" prefix
+        if (spaceId.indexOf("space-")>-1)
+        {
+          spaceId = spaceId.substring(6);
+        }
+        DBCollection colls = db().getCollection(UserService.M_SPACES_COLLECTION);
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", spaceId);
+        DBCursor cursors = colls.find(query);
+        if (cursors.hasNext())
+        {
+          DBObject doc = cursors.next();
+          doc.put("timestamp", System.currentTimeMillis());
+          colls.save(doc, WriteConcern.NONE);
+        }
+      }
+      else
+      {  //users room, we set directly in rooms_room
+        dbo.put("timestamp", System.currentTimeMillis());
+        coll.save(dbo, WriteConcern.NONE);
+      }
+    }
+
+  }
+
   public String getSpaceRoom(String space)
   {
     String room = null;
@@ -237,6 +278,10 @@ public class ChatService
     {
       DBObject dbo = cursor.next();
       roomId = ((ObjectId)dbo.get("_id")).toString();
+      long timestamp = -1;
+      if (dbo.containsField("timestamp")) {
+        timestamp = ((Long)dbo.get("timestamp")).longValue();
+      }
       List<String> users = ((List<String>)dbo.get("users"));
       users.remove(user);
       if (users.size()>0 && !user.equals(users.get(0)))
@@ -249,6 +294,7 @@ public class ChatService
           roomBean.setRoom(roomId);
           roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
           roomBean.setUser(users.get(0));
+          roomBean.setTimestamp(timestamp);
           rooms.add(roomBean);
         }
       }
@@ -342,6 +388,7 @@ public class ChatService
         roomBeanS.setUser(SPACE_PREFIX+space.getId());
         roomBeanS.setFullname(space.getDisplayName());
         roomBeanS.setStatus(UserService.STATUS_SPACE);
+        roomBeanS.setTimestamp(space.getTimestamp());
         roomBeanS.setAvailableUser(true);
         roomBeanS.setSpace(true);
         roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));

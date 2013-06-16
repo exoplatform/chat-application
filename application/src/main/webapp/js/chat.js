@@ -992,7 +992,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   var roomPrevUser = "";
   var out = '<table class="table">';
   var fav=null;
-  rooms().order("isFavorite desc, unreadTotal desc, escapedFullname logical").each(function (room) {
+  rooms().order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
 //      console.log("info = "+room.user+" :"+fav+":"+ room.isFavorite);
     if (room.user!==roomPrevUser) {
       if (fav==null && room.isFavorite=="true") fav="";

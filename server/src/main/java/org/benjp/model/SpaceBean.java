@@ -25,6 +25,7 @@ public class SpaceBean
   String displayName;
   String groupId;
   String shortName;
+  long timestamp = -1;
 
   public String getId() {
     return id;
@@ -56,5 +57,13 @@ public class SpaceBean
 
   public void setShortName(String shortName) {
     this.shortName = shortName;
+  }
+
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
   }
 }

@@ -32,6 +32,7 @@ public class RoomBean implements Comparable<RoomBean>
   String status = UserService.STATUS_INVISIBLE;
   boolean isSpace = false;
   boolean isFavorite = false;
+  long timestamp = -1;
 
   public String getUser() {
     return user;
@@ -105,7 +106,13 @@ public class RoomBean implements Comparable<RoomBean>
     isFavorite = favorite;
   }
 
+  public long getTimestamp() {
+    return timestamp;
+  }
 
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
+  }
 
   @Override
   public int compareTo(RoomBean roomBean) {
@@ -124,6 +131,7 @@ public class RoomBean implements Comparable<RoomBean>
     sb.append("\"room\": \""+this.getRoom()+"\",");
     sb.append("\"status\": \""+this.getStatus()+"\",");
     sb.append("\"user\": \""+this.getUser()+"\",");
+    sb.append("\"timestamp\": "+this.getTimestamp()+",");
     sb.append("\"unreadTotal\": \""+this.getUnreadTotal()+"\",");
     sb.append("\"isActive\": \""+this.isActive()+"\",");
     sb.append("\"isAvailableUser\": \""+this.isAvailableUser()+"\",");
