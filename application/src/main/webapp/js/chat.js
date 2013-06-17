@@ -196,6 +196,8 @@ $(document).ready(function(){
 
   $(".filter").on("click", function() {
     $(this).toggleClass("active");
+    var type = $(this).attr("data-type");
+    jzStoreParam("chat.button."+type, !$(this).hasClass("active"), 172800); //stored for 2 days
     chatApplication.refreshWhoIsOnline();
   });
 
@@ -444,6 +446,15 @@ ChatApplication.prototype.initStatusChat = function() {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
+  if (jzGetParam("chat.button.space", "true") === "false")
+    $(".filter-space").addClass("active");
+  if (jzGetParam("chat.button.user", "true") === "false")
+    $(".filter-user").addClass("active");
+  if (jzGetParam("chat.button.offline", "false") === "false")
+    $(".filter-offline").addClass("active");
+  if (jzGetParam("chat.button.public", "false") === "false")
+    $(".filter-public").addClass("active");
+
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
   this.chatOnlineInt = setInterval($.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
   this.refreshWhoIsOnline(this);
@@ -888,16 +899,16 @@ ChatApplication.prototype.getStatusLabel = function(status) {
  * Refresh Who Is Online : server call
  */
 ChatApplication.prototype.refreshWhoIsOnline = function() {
-  var withSpaces = !$(".filter-space").first().hasClass("active");
-  var withUsers = !$(".filter-user").first().hasClass("active");
-  var withPublic = !$(".filter-public").first().hasClass("active");
-  var withOffline = !$(".filter-offline").first().hasClass("active");
+  var withSpaces = jzGetParam("chat.button.space", "true");
+  var withUsers = jzGetParam("chat.button.user", "true");
+  var withPublic = jzGetParam("chat.button.public", "false");
+  var withOffline = jzGetParam("chat.button.offline", "false");
 
   if (this.username.indexOf(this.ANONIM_USER)>-1) {
-    withUsers = true;
-    withSpaces = true;
-    withPublic = false;
-    withOffline = false;
+    withUsers = "true";
+    withSpaces = "true";
+    withPublic = "false";
+    withOffline = "false";
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
