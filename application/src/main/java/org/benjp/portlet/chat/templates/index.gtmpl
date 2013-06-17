@@ -124,7 +124,7 @@
         <span class="room-detail-button">
           <a type="button" class="btn btn-primary pull-right btn-weemo disabled" title="Make a Video Call">
             <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.call}</a>
-          <a type="button" class="btn btn-danger pull-right btn-weemo-conf disabled" title="Join a Conference">
+          <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" title="Join a Conference">
             <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.join}</a>
         </span>
 
