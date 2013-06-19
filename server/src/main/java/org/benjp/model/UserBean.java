@@ -82,4 +82,21 @@ public class UserBean
     }
     return false;
   }
+
+  public String toJSON()
+  {
+    StringBuffer sb = new StringBuffer();
+
+    sb.append("{");
+
+    sb.append("\"name\": \""+this.getName()+"\",");
+    sb.append("\"email\": \""+this.getEmail()+"\",");
+    sb.append("\"status\": \""+this.getStatus()+"\",");
+    sb.append("\"fullname\": \""+this.getFullname()+"\"");
+
+    sb.append("}");
+
+    return sb.toString();
+  }
+
 }

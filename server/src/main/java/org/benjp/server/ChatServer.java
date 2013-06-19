@@ -22,6 +22,8 @@ package org.benjp.server;
 import juzu.*;
 import juzu.template.Template;
 import org.benjp.model.RoomsBean;
+import org.benjp.model.UserBean;
+import org.benjp.model.UsersBean;
 import org.benjp.services.*;
 import org.benjp.model.RoomBean;
 import org.benjp.utils.PropertyManager;
@@ -296,6 +298,22 @@ public class ChatServer
     }
     return Response.ok(status);
   }
+
+  @Resource
+  @Route("/users")
+  public Response.Content getUsers(String user, String token, String space)
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    List<UserBean> users = userService.getUsers(space);
+    UsersBean usersBean = new UsersBean();
+    usersBean.setUsers(users);
+    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
 
   @Resource
   @Route("/statistics")

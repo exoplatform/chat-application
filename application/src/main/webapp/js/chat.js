@@ -32,6 +32,7 @@ $(document).ready(function(){
   chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
   chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
   chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
+  chatApplication.jzUsers = chatServerURL+"/users";
   chatApplication.room = "<%=room%>";
 
   chatApplication.initChat();
@@ -309,6 +310,7 @@ function ChatApplication() {
   this.jzGetStatus = "";
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
+  this.jzUsers = "";
   this.highlight = "";    //not set
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
@@ -524,6 +526,29 @@ ChatApplication.prototype.maintainSession = function() {
     },
     error: function(response){
       this.chatSessionInt = clearInterval(this.chatSessionInt);
+    }
+  });
+};
+
+/**
+ * Get the users of the space
+ *
+ * @param spaceId : the ID of the space
+ * @param callback : return the json users data list as a parameter of the callback function
+ */
+ChatApplication.prototype.getUsers = function(spaceId, callback) {
+  $.ajax({
+    url: this.jzUsers,
+    data: {"space": spaceId,
+      "user": this.username,
+      "token": this.token
+    },
+    dataType: "json",
+    context: this,
+    success: function(response){
+      if (typeof callback === "function") {
+        callback(response);
+      }
     }
   });
 };

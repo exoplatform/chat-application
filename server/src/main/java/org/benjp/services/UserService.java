@@ -241,6 +241,31 @@ public class UserService
     return spaces;
   }
 
+  public List<UserBean> getUsers(String spaceId)
+  {
+    //removing "space-" prefix
+    if (spaceId.indexOf("space-")>-1)
+    {
+      spaceId = spaceId.substring(6);
+    }
+    List<UserBean> users = new ArrayList<UserBean>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("spaces", spaceId);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      UserBean userBean = new UserBean();
+      userBean.setName(doc.get("user").toString());
+      userBean.setFullname(doc.get("fullname").toString());
+      userBean.setEmail(doc.get("email").toString());
+      userBean.setStatus(doc.get("status").toString());
+      users.add(userBean);
+    }
+    return users;
+  }
+
   public String setStatus(String user, String status)
   {
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
