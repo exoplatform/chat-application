@@ -309,6 +309,13 @@ public class ChatServer
     }
 
     List<UserBean> users = userService.getUsers(space);
+    for (UserBean userBean:users)
+    {
+      boolean online = tokenService.isUserOnline(userBean.getName());
+      if (!online) userBean.setStatus(UserService.STATUS_OFFLINE);
+    }
+
+
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
     return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
