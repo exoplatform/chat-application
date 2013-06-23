@@ -1028,6 +1028,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   var roomPrevUser = "";
   var out = '<table class="table">';
   var fav=null;
+  var first = true;
   rooms().order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
 //      console.log("info = "+room.user+" :"+fav+":"+ room.isFavorite);
     if (room.user!==roomPrevUser) {
@@ -1036,7 +1037,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
       else if (fav=="border-top:1px solid #CCC;") fav=" ";
 
       out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online" style="'+fav+'">';
-      out += '<td class="td-status">';
+      out += '<td class="td-status"';
+      if (first)
+        out += ' style="-webkit-border-radius: 3px 0 0 0;-moz-border-radius: 3px 0 0 0; border-radius: 3px 0 0 0;">';
+      else
+        out += '>';
       out += '<span class="';
       if (room.isFavorite == "true") {
         out += 'user-favorite';
@@ -1055,13 +1060,17 @@ ChatApplication.prototype.showRooms = function(rooms) {
         out += '<span class="room-inactive">'+room.user+'</span>';
       }
       out += '</td>';
-      out += '<td>';
+      if (first)
+        out += '<td style="-webkit-border-radius: 0 3px 0 0;-moz-border-radius: 0 3px 0 0; border-radius: 0 3px 0 0;">';
+      else
+        out += '<td>';
       if (Math.round(room.unreadTotal)>0) {
         out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
       }
       out += '</td>';
       out += '</tr>';
       roomPrevUser = room.user;
+      first = false;
     }
   });
   out += '</table>';
