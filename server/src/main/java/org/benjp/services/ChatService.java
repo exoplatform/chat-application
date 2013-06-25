@@ -24,7 +24,7 @@ import org.benjp.listener.ConnectionManager;
 import org.benjp.model.RoomBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
-import org.bson.types.ObjectId;
+import org.benjp.utils.MessageDigester;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -170,7 +170,7 @@ public class ChatService
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", new ObjectId(room));
+    basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
     if (cursor.hasNext())
@@ -204,30 +204,6 @@ public class ChatService
 
   }
 
-  public String getSpaceRoom(String space)
-  {
-    String room = null;
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
-
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("space", space);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
-    {
-      DBObject dbo = cursor.next();
-      room = ((ObjectId)dbo.get("_id")).toString();
-    }
-    else
-    {
-      coll.insert(basicDBObject);
-      room = getSpaceRoom(space);
-      ensureIndexInRoom(room);
-    }
-
-    return room;
-  }
-
   private void ensureIndexInRoom(String room)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
@@ -238,26 +214,61 @@ public class ChatService
     coll.remove(doc);
   }
 
+  private String getRoomId(String space)
+  {
+    ArrayList<String> spaces = new ArrayList<String>();
+    spaces.add("1-space-room");
+    spaces.add(space);
+    return getRoomId(spaces);
+  }
+
+  private String getRoomId(List<String> users)
+  {
+    Collections.sort(users);
+    StringBuilder sb = new StringBuilder();
+    for (String user:users)
+    {
+      sb.append(user).append(";");
+    }
+
+    String roomId = MessageDigester.getHash(sb.toString());
+    return roomId;
+  }
+
+  public String getSpaceRoom(String space)
+  {
+    String room = getRoomId(space);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (!cursor.hasNext())
+    {
+      basicDBObject.put("space", space);
+      coll.insert(basicDBObject);
+      ensureIndexInRoom(room);
+    }
+
+    return room;
+  }
+
 
   public String getRoom(List<String> users)
   {
     Collections.sort(users);
-    String room = null;
+    String room = getRoomId(users);
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("users", users);
+    basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
+    if (!cursor.hasNext())
     {
-      DBObject dbo = cursor.next();
-      room = ((ObjectId)dbo.get("_id")).toString();
-    }
-    else
-    {
+      basicDBObject.put("users", users);
       WriteResult wr = coll.insert(basicDBObject);
-      room = getRoom(users);
       ensureIndexInRoom(room);
     }
 
@@ -277,7 +288,7 @@ public class ChatService
     while (cursor.hasNext())
     {
       DBObject dbo = cursor.next();
-      roomId = ((ObjectId)dbo.get("_id")).toString();
+      roomId = dbo.get("_id").toString();
       long timestamp = -1;
       if (dbo.containsField("timestamp")) {
         timestamp = ((Long)dbo.get("timestamp")).longValue();
@@ -447,7 +458,7 @@ public class ChatService
     while (cursor.hasNext())
     {
       DBObject dbo = cursor.next();
-      String roomId = ((ObjectId)dbo.get("_id")).toString();
+      String roomId = dbo.get("_id").toString();
       DBCollection collr = db().getCollection(M_ROOM_PREFIX+roomId);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
