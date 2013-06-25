@@ -1350,7 +1350,7 @@ ChatApplication.prototype.createWeemoCall = function() {
 ChatApplication.prototype.sendMessage = function(msg, callback) {
 
 
-  var isSystemMessage = (msg.indexOf("/")===0) ;
+  var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
 
   if (isSystemMessage) {
     msg = msg.replace("/me", this.fullname);

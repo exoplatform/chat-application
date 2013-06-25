@@ -49,10 +49,12 @@ public class ChatService
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
+    message = message.replaceAll("&", "&#38");
     message = message.replaceAll("<", "&lt;");
     message = message.replaceAll(">", "&gt;");
     message = message.replaceAll("\"", "&quot;");
     message = message.replaceAll("\n", "<br/>");
+    message = message.replaceAll("\\\\", "&#92");
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);
