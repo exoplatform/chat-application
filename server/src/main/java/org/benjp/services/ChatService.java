@@ -30,6 +30,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Named("chatService")
 @ApplicationScoped
@@ -39,6 +40,8 @@ public class ChatService
   private static final String M_ROOMS_COLLECTION = "rooms";
 
   public static final String SPACE_PREFIX = "space-";
+
+  private static Logger log = Logger.getLogger("ChatService");
 
   private DB db()
   {
@@ -248,9 +251,13 @@ public class ChatService
     DBCursor cursor = coll.find(basicDBObject);
     if (!cursor.hasNext())
     {
-      basicDBObject.put("space", space);
-      coll.insert(basicDBObject);
-      ensureIndexInRoom(room);
+      try {
+        basicDBObject.put("space", space);
+        coll.insert(basicDBObject);
+        ensureIndexInRoom(room);
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
     }
 
     return room;
@@ -269,9 +276,13 @@ public class ChatService
     DBCursor cursor = coll.find(basicDBObject);
     if (!cursor.hasNext())
     {
-      basicDBObject.put("users", users);
-      WriteResult wr = coll.insert(basicDBObject);
-      ensureIndexInRoom(room);
+      try {
+        basicDBObject.put("users", users);
+        coll.insert(basicDBObject);
+        ensureIndexInRoom(room);
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
     }
 
     return room;
