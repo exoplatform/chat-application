@@ -127,9 +127,8 @@ public class MongoBootstrap
 
   public void ensureIndexes()
   {
-    String dbName = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    this.getDB();
-    log.info("### ensureIndexes in "+getDB().getName());
+    String dbName = this.getDB().getName();
+    log.info("### ensureIndexes in "+dbName);
     BasicDBObject unique = new BasicDBObject();
     unique.put("unique", true);
     unique.put("background", true);

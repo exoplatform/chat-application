@@ -18,3 +18,5 @@ release.properties
 data/chat-single-local.properties
 
 copie.sh
+
+cache/data
