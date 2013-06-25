@@ -139,9 +139,6 @@ public class ChatApplication
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_);
 
-        // Set user's Spaces in the DB
-        saveSpaces(remoteUser_);
-
         if ("true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE)))
         {
           Collection ms = organizationService_.getMembershipHandler().findMembershipsByUserAndGroup(remoteUser_, PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_ADMIN_GROUP));
@@ -163,6 +160,11 @@ public class ChatApplication
         profileInitialized_ = false;
         return Response.notFound("Error during init, try later");
       }
+    }
+    if (!UserService.ANONIM_USER.equals(remoteUser_))
+    {
+      // Set user's Spaces in the DB
+      saveSpaces(remoteUser_);
     }
 
     return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");

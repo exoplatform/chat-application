@@ -164,11 +164,15 @@ public class UserService
       else
       {
         DBObject doc = cursor.next();
-        doc.put("_id", bean.getId());
-        doc.put("displayName", bean.getDisplayName());
-        doc.put("groupId", bean.getGroupId());
-        doc.put("shortName", bean.getShortName());
-        coll.save(doc);
+        String displayName = doc.get("displayName").toString();
+        if (!bean.getDisplayName().equals(displayName))
+        {
+          doc.put("_id", bean.getId());
+          doc.put("displayName", bean.getDisplayName());
+          doc.put("groupId", bean.getGroupId());
+          doc.put("shortName", bean.getShortName());
+          coll.save(doc);
+        }
       }
 
 
