@@ -1483,7 +1483,7 @@ ChatApplication.prototype.showLoginPanel = function() {
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version 0.6-SNAPSHOT (build 130625)<br><br>";
+  about += "Version 0.6-SNAPSHOT (build 13062520)<br><br>";
   about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
