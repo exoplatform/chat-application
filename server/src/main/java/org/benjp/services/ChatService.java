@@ -50,6 +50,11 @@ public class ChatService
 
   public void write(String message, String user, String room, String isSystem)
   {
+    write(message, user, room, isSystem, null);
+  }
+
+  public void write(String message, String user, String room, String isSystem, String options)
+  {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
     message = message.replaceAll("&", "&#38");
@@ -65,6 +70,14 @@ public class ChatService
     doc.put("time", new Date());
     doc.put("timestamp", System.currentTimeMillis());
     doc.put("isSystem", isSystem);
+    if (options!=null)
+    {
+      options = options.replaceAll("<", "&lt;");
+      options = options.replaceAll(">", "&gt;");
+      options = options.replaceAll("\"", "&quot;");
+      options = options.replaceAll("\\\\", "&#92");
+      doc.put("options", options);
+    }
 
     coll.insert(doc);
 
@@ -159,6 +172,14 @@ public class ChatService
         sb.append("\"email\": \"").append(email).append("\",");
         sb.append("\"date\": \"").append(date).append("\",");
         sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
+        if (dbo.containsField("options"))
+        {
+          sb.append("\"options\": \"").append(dbo.get("options")).append("\",");
+        }
+        else
+        {
+          sb.append("\"options\": \"\",");
+        }
         sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
         first = false;
       }

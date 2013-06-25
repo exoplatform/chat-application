@@ -630,15 +630,22 @@ ChatApplication.prototype.showMessages = function(msgs) {
           out += "<hr style='margin: 0'>";
         out += "<div class='msgln-odd'>";
         out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-        var msgArray = message.message.split("&");
+        var optionsArray = [];
+        // Legacy test
+        if (message.message.indexOf("&")>0) {
+          message.message = message.message.substring(0, message.message.indexOf("&"));
+          optionsArray = [new Date().getTime()];
+        }
+        // end of legacy test
+        if (message.options !== "") optionsArray = message.options.split("&");
 
-        if (msgArray[0]==="Call active") {
+        if (message.message==="Call active") {
           out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
-          if (msgArray.length>1) {
-            jzStoreParam("weemoCallHandler", msgArray[1], 600000)
+          if (optionsArray.length>0) {
+            jzStoreParam("weemoCallHandler", optionsArray[0], 600000)
           }
           $(".btn-weemo").addClass('disabled');
-        } else if (msgArray[0]==="Call terminated") {
+        } else if (message.message==="Call terminated") {
           out += "<img src='/chat/img/2x/call-off.png' width='30px' style='width:30px;'>";
           $(".btn-weemo").removeClass('disabled');
         } else {
@@ -646,13 +653,13 @@ ChatApplication.prototype.showMessages = function(msgs) {
         }
         out += "</span>";
         out += "<span>";
-        if (msgArray.length===1) out+="<center>";
-        out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+msgArray[0]+"</b>";
-        if (msgArray.length===1) out+="</center>";
+        if (optionsArray.length===0) out+="<center>";
+        out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+message.message+"</b>";
+        if (optionsArray.length===0) out+="</center>";
 
-        if (msgArray[0]==="Call terminated" && msgArray.length>1) {
+        if (message.message==="Call terminated" && optionsArray.length>0) {
           var tsold = Math.round(jzGetParam("weemoCallHandler"));
-          var time = Math.round(msgArray[1])-tsold;
+          var time = Math.round(optionsArray[0])-tsold;
           var hours = Math.floor(time / 3600);
           time -= hours * 3600;
           var minutes = Math.floor(time / 60);
@@ -681,12 +688,12 @@ ChatApplication.prototype.showMessages = function(msgs) {
           out += stime;
         }
 
-        if (msgArray.length===4) {
-          this.weemoExtension.setUidToCall(msgArray[2]);
-          this.weemoExtension.setDisplaynameToCall(msgArray[3]);
+        if (optionsArray.length===3) {
+          this.weemoExtension.setUidToCall(optionsArray[1]);
+          this.weemoExtension.setDisplaynameToCall(optionsArray[2]);
           $(".btn-weemo").css("display", "none");
           $(".btn-weemo-conf").css("display", "block");
-          if (msgArray[2]!=="weemo"+this.username)
+          if (optionsArray[1]!=="weemo"+this.username)
             $(".btn-weemo-conf").removeClass("disabled");
           else
             $(".btn-weemo-conf").addClass("disabled");
@@ -1351,13 +1358,13 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
 
 
   var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
+  var options = "";
 
   if (isSystemMessage) {
-    msg = msg.replace("/me", this.fullname);
-
-    if (msg.indexOf("/call")===0) {
+    if (msg.indexOf("/me")===0) {
+      msg = msg.replace("/me", this.fullname);
+    } else if (msg.indexOf("/call")===0) {
       this.createWeemoCall();
-
       document.getElementById("msg").value = '';
       return;
     } else if (msg.indexOf("/join")===0) {
@@ -1367,9 +1374,14 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     } else if (msg.indexOf("/terminate")===0) {
       document.getElementById("msg").value = '';
       ts = Math.round(new Date().getTime() / 1000);
-      msg = "Call terminated&"+ts;
+      msg = "Call terminated";
+      options = ts;
       this.weemoExtension.setCallOwner(false);
       this.weemoExtension.setCallActive(false);
+    } else {
+      //this is not a supported system message
+      document.getElementById("msg").value = '';
+      return;
     }
   }
 
@@ -1378,6 +1390,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     "fullname": "You",
     "date": "pending",
     "message": msg,
+    "options": options,
     "isSystem": isSystemMessage};
   this.showMessages();
   document.getElementById("msg").value = '';
@@ -1388,6 +1401,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       "targetUser": this.targetUser,
       "room": this.room,
       "message": msg,
+      "options": options,
       "token": this.token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage

@@ -93,7 +93,7 @@ public class ChatServer
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String token, String targetUser, String message, String room, String event, String isSystem) throws IOException
+  public Response.Content send(String user, String token, String targetUser, String message, String room, String event, String isSystem, String options) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -106,7 +106,7 @@ public class ChatServer
       {
 //        System.out.println(user + "::" + message + "::" + room);
         if (isSystem==null) isSystem="false";
-        chatService.write(message, user, room, isSystem);
+        chatService.write(message, user, room, isSystem, options);
         String content = "New message from "+user+" : "+((message.length()>15)?message.substring(0,14)+"...":message);
 
         if (!targetUser.startsWith(ChatService.SPACE_PREFIX))
