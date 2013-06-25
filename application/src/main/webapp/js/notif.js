@@ -436,7 +436,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     {
       console.log("WEEMO:onCallHandler::"+type+":"+status);
       var messageWeemo = "";
-      var optionsWeemo = "";
+      var optionsWeemo = {};
       if(weemoExtension.callOwner && type==="call" && ( status==="active" || status==="terminated" ))
       {
         console.log("Call Handler : " + type + ": " + status);
@@ -446,10 +446,12 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 
         if (weemoExtension.callType==="internal" || status==="terminated") {
           messageWeemo = "Call "+status;
-          optionsWeemo = ts;
+          optionsWeemo.timestamp = ts;
         } else if (weemoExtension.callType==="host") {
           messageWeemo = "Call "+status;
-          optionsWeemo = ts+"&"+weemoExtension.uidToCall+"&"+weemoExtension.displaynameToCall;
+          optionsWeemo.timestamp = ts;
+          optionsWeemo.uidToCall = weemoExtension.uidToCall;
+          optionsWeemo.displaynameToCall = weemoExtension.displaynameToCall;
         }
 
         if (status==="active" && weemoExtension.callActive) return; //Call already active, no need to push a new message
@@ -468,7 +470,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
                 "targetUser": weemoExtension.chatMessage.targetUser,
                 "room": weemoExtension.chatMessage.room,
                 "message": messageWeemo,
-                "options": optionsWeemo,
+                "options": JSON.stringify(optionsWeemo),
                 "token": weemoExtension.chatMessage.token,
                 "timestamp": new Date().getTime(),
                 "isSystem": "true"

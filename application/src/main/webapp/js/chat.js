@@ -630,19 +630,21 @@ ChatApplication.prototype.showMessages = function(msgs) {
           out += "<hr style='margin: 0'>";
         out += "<div class='msgln-odd'>";
         out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-        var optionsArray = [];
+        var options = {};
         // Legacy test
         if (message.message.indexOf("&")>0) {
           message.message = message.message.substring(0, message.message.indexOf("&"));
-          optionsArray = [new Date().getTime()];
+          options.timestamp = new Date().getTime();
         }
         // end of legacy test
-        if (message.options !== "") optionsArray = message.options.split("&");
+        if (typeof message.options == "object")
+          options = message.options;
+        var nbOptions = Object.keys(options).length;
 
         if (message.message==="Call active") {
           out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
-          if (optionsArray.length>0) {
-            jzStoreParam("weemoCallHandler", optionsArray[0], 600000)
+          if (options.timestamp!==undefined) {
+            jzStoreParam("weemoCallHandler", options.timestamp, 600000)
           }
           $(".btn-weemo").addClass('disabled');
         } else if (message.message==="Call terminated") {
@@ -653,13 +655,13 @@ ChatApplication.prototype.showMessages = function(msgs) {
         }
         out += "</span>";
         out += "<span>";
-        if (optionsArray.length===0) out+="<center>";
+        if (nbOptions===0) out+="<center>";
         out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+message.message+"</b>";
-        if (optionsArray.length===0) out+="</center>";
+        if (nbOptions===0) out+="</center>";
 
-        if (message.message==="Call terminated" && optionsArray.length>0) {
+        if (message.message==="Call terminated" && nbOptions>0) {
           var tsold = Math.round(jzGetParam("weemoCallHandler"));
-          var time = Math.round(optionsArray[0])-tsold;
+          var time = Math.round(options.timestamp)-tsold;
           var hours = Math.floor(time / 3600);
           time -= hours * 3600;
           var minutes = Math.floor(time / 60);
@@ -688,12 +690,12 @@ ChatApplication.prototype.showMessages = function(msgs) {
           out += stime;
         }
 
-        if (optionsArray.length===3) {
-          this.weemoExtension.setUidToCall(optionsArray[1]);
-          this.weemoExtension.setDisplaynameToCall(optionsArray[2]);
+        if (nbOptions===3) {
+          this.weemoExtension.setUidToCall(options.uidToCall);
+          this.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
           $(".btn-weemo").css("display", "none");
           $(".btn-weemo-conf").css("display", "block");
-          if (optionsArray[1]!=="weemo"+this.username)
+          if (options.uidToCall!=="weemo"+this.username)
             $(".btn-weemo-conf").removeClass("disabled");
           else
             $(".btn-weemo-conf").addClass("disabled");
@@ -1358,7 +1360,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
 
 
   var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
-  var options = "";
+  var options = {};
 
   if (isSystemMessage) {
     if (msg.indexOf("/me")===0) {
@@ -1375,7 +1377,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       document.getElementById("msg").value = '';
       ts = Math.round(new Date().getTime() / 1000);
       msg = "Call terminated";
-      options = ts;
+      options.timestamp = ts;
       this.weemoExtension.setCallOwner(false);
       this.weemoExtension.setCallActive(false);
     } else {
@@ -1401,7 +1403,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       "targetUser": this.targetUser,
       "room": this.room,
       "message": msg,
-      "options": options,
+      "options": JSON.stringify(options),
       "token": this.token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage

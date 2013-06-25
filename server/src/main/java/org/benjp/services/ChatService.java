@@ -74,8 +74,8 @@ public class ChatService
     {
       options = options.replaceAll("<", "&lt;");
       options = options.replaceAll(">", "&gt;");
-      options = options.replaceAll("\"", "&quot;");
-      options = options.replaceAll("\\\\", "&#92");
+//      options = options.replaceAll("\"", "&quot;");
+//      options = options.replaceAll("\\\\", "&#92");
       doc.put("options", options);
     }
 
@@ -174,7 +174,11 @@ public class ChatService
         sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
         if (dbo.containsField("options"))
         {
-          sb.append("\"options\": \"").append(dbo.get("options")).append("\",");
+          String options = dbo.get("options").toString();
+          if (options.startsWith("{"))
+            sb.append("\"options\": ").append(options).append(",");
+          else
+            sb.append("\"options\": \"").append(options).append("\",");
         }
         else
         {
