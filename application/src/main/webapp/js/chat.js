@@ -1127,7 +1127,7 @@ ChatApplication.prototype.loadRoom = function() {
         if (this.isDesktopView()) $msg.focus();
         this.chatEventURL = this.jzChatSend+'?room='+this.room+'&user='+this.username+'&token='+this.token+'&event=0';
 
-        jzStoreParam("lastUser"+this.username, this.targetUser, 60000);
+        jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
         jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
         jzStoreParam("lastTS"+this.username, "0");
         this.chatEventInt = window.clearInterval(this.chatEventInt);
@@ -1182,7 +1182,7 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
  * jQuery bindings on dom elements created by Who Is Online methods
  */
 ChatApplication.prototype.jQueryForUsersTemplate = function() {
-  var value = jzGetParam("lastUser"+this.username);
+  var value = jzGetParam("lastUsername"+this.username);
   var thiss = this;
 
   if (value && this.firstLoad) {
@@ -1466,8 +1466,8 @@ ChatApplication.prototype.showLoginPanel = function() {
 };
 
 ChatApplication.prototype.showAboutPanel = function() {
-  var about = "eXo Community Chat<br>";
-  about += "Version 0.6-SNAPSHOT<br><br>";
+  var about = "eXo Chat<br>";
+  about += "Version 0.6-SNAPSHOT (build 130625)<br><br>";
   about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
