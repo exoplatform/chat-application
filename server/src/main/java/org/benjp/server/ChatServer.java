@@ -93,7 +93,7 @@ public class ChatServer
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String token, String targetUser, String message, String room, String event, String isSystem, String options) throws IOException
+  public Response.Content send(String user, String token, String targetUser, String message, String room, String event, String isSystem, String options, String isTextOnly) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -130,7 +130,7 @@ public class ChatServer
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
 
-    String data = chatService.read(room, userService);
+    String data = chatService.read(room, userService, "true".equals(isTextOnly));
     if (event!=null && event.equals("1"))
     {
       data = "id: "+System.currentTimeMillis()+"\n"+"data: "+data+"\n\n";

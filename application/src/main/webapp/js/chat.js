@@ -228,6 +228,9 @@ $(document).ready(function(){
       weemoExtension.joinWeemoCall();
   });
 
+  $(".text-modal-close").on("click", function() {
+    $('#text-modal').modal('hide');
+  });
 
   if (window.fluid!==undefined) {
     chatApplication.activateMaintainSession();
@@ -1319,6 +1322,29 @@ ChatApplication.prototype.setStatus = function(status, callback) {
 
 };
 
+ChatApplication.prototype.showAsText = function() {
+  $.ajax({
+    url: this.chatEventURL,
+    data: {
+      "isTextOnly": "true"},
+    context: this,
+
+    success: function(response){
+      //console.log("SUCCESS:setStatus::"+response);
+      $("#text-modal-area").html(response);
+      $('#text-modal-area').on("click", function() {
+        this.select();
+      });
+      $('#text-modal').modal({"backdrop": false});
+
+    },
+    error: function(response){
+    }
+
+  });
+
+};
+
 ChatApplication.prototype.setStatusAvailable = function() {
   chatApplication.setStatus("available");
 };
@@ -1380,6 +1406,10 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.timestamp = ts;
       this.weemoExtension.setCallOwner(false);
       this.weemoExtension.setCallActive(false);
+    } else if (msg.indexOf("/export")===0) {
+      this.showAsText();
+      document.getElementById("msg").value = '';
+      return;
     } else {
       //this is not a supported system message
       document.getElementById("msg").value = '';

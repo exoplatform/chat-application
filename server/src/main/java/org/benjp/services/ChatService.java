@@ -87,6 +87,11 @@ public class ChatService
 
   public String read(String room, UserService userService)
   {
+    return read(room, userService, false);
+  }
+
+  public String read(String room, UserService userService, boolean isTextOnly)
+  {
     StringBuffer sb = new StringBuffer();
 
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
@@ -106,11 +111,15 @@ public class ChatService
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
 
-    DBCursor cursor = coll.find(query).sort(sort).limit(200);
+    int limit = (isTextOnly)?2000:200;
+    DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     String prevUser = "";
     if (!cursor.hasNext())
     {
-      sb.append("{\"messages\": []}");
+      if (isTextOnly)
+        sb.append("no messages");
+      else
+        sb.append("{\"messages\": []}");
     }
     else
     {
@@ -131,9 +140,12 @@ public class ChatService
         }
         listdbo.add(0, dbo);
       }
-      sb.append("{\"room\": \"").append(room).append("\",");
-      sb.append("\"timestamp\": \"").append(mostRecentTimestamp).append("\",");
-      sb.append("\"messages\": [");
+      if (!isTextOnly)
+      {
+        sb.append("{\"room\": \"").append(room).append("\",");
+        sb.append("\"timestamp\": \"").append(mostRecentTimestamp).append("\",");
+        sb.append("\"messages\": [");
+      }
       boolean first = true;
       for(DBObject dbo:listdbo)
       {
@@ -154,7 +166,7 @@ public class ChatService
           if (dbo.containsField("time"))
           {
             Date date1 = (Date)dbo.get("time");
-            if (date1.before(today))
+            if (date1.before(today) || isTextOnly)
               date = formatterDate.format(date1);
             else
               date = formatter.format(date1);
@@ -163,32 +175,55 @@ public class ChatService
         }
         catch (Exception e)
         {
-          e.printStackTrace();
+          log.info("Message Date Format Error : "+e.getMessage());
         }
 
-        if (!first)sb.append(",");
-        sb.append("{\"user\": \"").append(user).append("\",");
-        sb.append("\"fullname\": \"").append(fullname).append("\",");
-        sb.append("\"email\": \"").append(email).append("\",");
-        sb.append("\"date\": \"").append(date).append("\",");
-        sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
-        if (dbo.containsField("options"))
+        if (isTextOnly)
         {
-          String options = dbo.get("options").toString();
-          if (options.startsWith("{"))
-            sb.append("\"options\": ").append(options).append(",");
+          sb.append("[").append(date).append("] ");
+          String message = dbo.get("message").toString();
+          if ("true".equals(dbo.get("isSystem")))
+          {
+            sb.append("System Message: ");
+            if (message.endsWith("<br/>")) message = message.substring(0, message.length()-5);
+            sb.append(message).append("\n");
+          }
           else
-            sb.append("\"options\": \"").append(options).append("\",");
+          {
+            sb.append(fullname).append(": ");
+            message = message.replaceAll("<br/>", "\n");
+            sb.append(message);
+          }
         }
         else
         {
-          sb.append("\"options\": \"\",");
+          if (!first)sb.append(",");
+          sb.append("{\"user\": \"").append(user).append("\",");
+          sb.append("\"fullname\": \"").append(fullname).append("\",");
+          sb.append("\"email\": \"").append(email).append("\",");
+          sb.append("\"date\": \"").append(date).append("\",");
+          sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
+          if (dbo.containsField("options"))
+          {
+            String options = dbo.get("options").toString();
+            if (options.startsWith("{"))
+              sb.append("\"options\": ").append(options).append(",");
+            else
+              sb.append("\"options\": \"").append(options).append("\",");
+          }
+          else
+          {
+            sb.append("\"options\": \"\",");
+          }
+          sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
         }
-        sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
+
         first = false;
       }
-
-      sb.append("]}");
+      if (!isTextOnly)
+      {
+        sb.append("]}");
+      }
 
     }
 
