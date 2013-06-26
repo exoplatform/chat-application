@@ -455,9 +455,11 @@ ChatApplication.prototype.initChat = function() {
   $(".btn-home-responsive").on("click", function() {
     var $leftNavigationTDContainer = $(".LeftNavigationTDContainer");
     if ($leftNavigationTDContainer.css("display")==="none") {
-      $leftNavigationTDContainer.css("display", "table-cell")
+      $leftNavigationTDContainer.animate({width: 'show'});
+//      $leftNavigationTDContainer.css("display", "table-cell")
     } else {
-      $leftNavigationTDContainer.css("display", "none")
+      $leftNavigationTDContainer.animate({width: 'hide'});
+//      $leftNavigationTDContainer.css("display", "none")
     }
   });
 
