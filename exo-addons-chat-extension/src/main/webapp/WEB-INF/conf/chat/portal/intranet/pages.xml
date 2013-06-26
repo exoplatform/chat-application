@@ -40,7 +40,7 @@
                </preference>
                <preference>
                   <name>view</name>
-                  <value>normal</value>
+                  <value>responsive</value>
                   <read-only>false</read-only>
                </preference>
             </preferences>

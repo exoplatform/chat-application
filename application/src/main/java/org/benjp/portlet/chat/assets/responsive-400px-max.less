@@ -1,73 +1,72 @@
 @media (max-width: 400px) {
-  @height:                      461px;
+  @height:                      460px;
   @width:                       320px;
   @heightMessage:               60px;
   @heightBar:                   30px;
   @widthUsers:                  320px;
-  @widthMessages:               321px;
+  @widthMessages:               320px;
 
   @import "sized";
   @import "panels";
 
-  #chat-application {
-    padding-left: 0px;
-  }
-  .UIWorkingWorkspace .UIPageBody {
-    padding-top: 0px;
-  }
-  span.filter, .avatar-user, #PlatformAdminToolbarContainer, .right-chat, .menu-standard  {
+  .LeftNavigationTDContainer {
     display: none;
   }
-  .chat-search {
-    width: (@width - 10);
-    padding-bottom: 5px;
-  }
-  .btn-mobile {
-    width: 14px;
-    display: inline-block;
-    margin: 5px 20px 0px 0px;
-    height: 20px;
-  }
-  .btn-rooms {
-    width: 14px;
-    display: inline-block;
-    margin: 5px 0px 0px 0px;
-    height: 20px;
-  }
-  .btn-rooms {
-    padding: 0 10px;
-  }
-  .menu-mobile {
-    width: (@width + 1);
-    background-color: white;
-  }
-  .room-mobile {
-    display: block;
-    height: 30px;
-    background-color: @colorSelectedUser;
-  }
-  .room-name {
-    font-weight: bold;
-    font-size: 12px;
-    font-family: Verdana;
-    vertical-align: middle;
-  }
-  .chat-status-chat {
-    float: initial;
-    display: block;
-    margin: 0;
-    background-color: @colorSelectedUser !important;
-  }
-  .add-on, #chat-search {
-    margin-top: 5px;
-  }
-  #chat-search {
-    width: 227px;
-  }
-  .welcome-panel{
-    text-align: center;
-    margin: auto;
+
+  #NavigationPortlet {
+    display: none;
   }
 
+  #chat-application {
+    min-width: 320px;
+    width: 320px;
+//    padding: 5px;
+    padding: 0;
+
+    .uiGrayLightBox {
+      margin: 0!important;
+      -webkit-border-radius: 0;
+
+      .btn-weemo-download {
+        display: none!important;
+      }
+      .uiSearchInput {
+        display: none;
+      }
+      .containerMoreItem {
+        padding-right: 0px!important;
+      }
+      label {
+        display: none;
+      }
+    }
+
+    .uiBox {
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
+      margin: 0;
+    }
+
+    .uiLeftContainerArea {
+      width: 100%;
+      padding: 0!important;
+
+      #chat-users {
+        margin: 0!important;
+        height: 400px!important;
+      }
+    }
+
+    .uiRightContainerArea {
+      display: none;
+      padding: 0!important;
+      height: 400px!important;
+
+      #chats {
+        height: 275px!important;
+      }
+    }
+  }
 
 }

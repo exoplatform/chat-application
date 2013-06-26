@@ -177,22 +177,9 @@ $(document).ready(function(){
       $menuMobile.css("display", "none");
   });
 
-  $(".btn-rooms").on("click", function() {
-    $(".left-chat").css("display", "block");
-    $(".right-chat").css("display", "none");
-  });
-
-  $(".room-mobile").on("click", function() {
-    $(".left-chat").css("display", "block");
-    $(".right-chat").css("display", "none");
-  });
-
-  $(".msg-help").on("click", function() {
-    chatApplication.showHelpPanel();
-  });
-
-  $(".chat-help-panel").on("click", function() {
-    chatApplication.hidePanel(".chat-help-panel");
+  $(".room-detail-fullname").on("click", function() {
+    $(".uiLeftContainerArea").css("display", "block");
+    $(".uiRightContainerArea").css("display", "none");
   });
 
   $(".filter").on("click", function() {
@@ -459,6 +446,21 @@ ChatApplication.prototype.initChat = function() {
     $(".filter-offline").addClass("active");
   if (jzGetParam("chat.button.public", "false") === "false")
     $(".filter-public").addClass("active");
+
+
+  var homeLinkHtml = $("#HomeLink").html();
+  homeLinkHtml += '<a href="#" class="btn-home-responsive"></a>';
+  $("#HomeLink").html(homeLinkHtml);
+
+  $(".btn-home-responsive").on("click", function() {
+    var $leftNavigationTDContainer = $(".LeftNavigationTDContainer");
+    if ($leftNavigationTDContainer.css("display")==="none") {
+      $leftNavigationTDContainer.css("display", "table-cell")
+    } else {
+      $leftNavigationTDContainer.css("display", "none")
+    }
+  });
+
 
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
   this.chatOnlineInt = setInterval($.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
@@ -753,12 +755,12 @@ ChatApplication.prototype.refreshChat = function() {
             this.showMessages(data.messages);
           }
         }
-        if (this.isDesktopView()) $(".right-chat").css("display", "block");
+//        if (this.isDesktopView()) $(".right-chat").css("display", "block");
         this.hidePanel(".chat-login-panel");
         this.hidePanel(".chat-error-panel");
       },
       error: function() {
-        if (this.isDesktopView()) $(".right-chat").css("display", "none");
+//        if (this.isDesktopView()) $(".right-chat").css("display", "none");
         if ( $(".chat-error-panel").css("display") == "none") {
           this.showLoginPanel();
         } else {
@@ -1232,9 +1234,9 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     thiss.targetFullname = $(this).attr("data-fullname");
     thiss.loadRoom();
     if (thiss.isMobileView()) {
-      $(".right-chat").css("display", "block");
-      $(".left-chat").css("display", "none");
-      $(".room-name").html(thiss.targetFullname);
+      $(".uiRightContainerArea").css("display", "block");
+      $(".uiLeftContainerArea").css("display", "none");
+//      $(".room-name").html(thiss.targetFullname);
     }
   });
 
@@ -1271,7 +1273,7 @@ ChatApplication.prototype.search = function(filter) {
  * @returns {boolean}
  */
 ChatApplication.prototype.checkViewportStatus = function() {
-  return ($(".btn-mobile").css("display")!=="none");
+  return ($("#NavigationPortlet").css("display")==="none");
 };
 
 ChatApplication.prototype.isMobileView = function() {
