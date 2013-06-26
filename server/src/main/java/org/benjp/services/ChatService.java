@@ -36,8 +36,8 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ChatService
 {
-  private static final String M_ROOM_PREFIX = "room_";
-  private static final String M_ROOMS_COLLECTION = "rooms";
+  public static final String M_ROOM_PREFIX = "room_";
+  public static final String M_ROOMS_COLLECTION = "rooms";
 
   public static final String SPACE_PREFIX = "space-";
 

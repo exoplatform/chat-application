@@ -155,6 +155,19 @@ public class MongoBootstrap
     rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+".room_rooms"));
     log.info("### rooms indexes in "+getDB().getName());
 
+    DBCollection coll = getDB().getCollection(ChatService.M_ROOM_PREFIX+ChatService.M_ROOMS_COLLECTION);
+    DBCursor cursor = coll.find();
+    while (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      String roomId = dbo.get("_id").toString();
+      DBCollection collr = getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId);
+      collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+".room_"+roomId));
+      collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+".room_"+roomId));
+      log.info("##### room index in "+roomId);
+    }
+
+
     DBCollection tokens = getDB().getCollection("tokens");
     tokens.dropIndexes();
     tokens.createIndex(new BasicDBObject("token", 1), unique.append("name", "token_1").append("ns", dbName+".tokens"));
