@@ -122,10 +122,10 @@ $(document).ready(function(){
       chatApplication.sendMessage(msg);
 
     }
-    if ( event.which == 13 && keydown == 18 ) {
+    if ( keydown === 18 ) {
       keydown = -1;
     }
-    if ( event.which == 13 && msg.length == 1) {
+    if ( event.which === 13 && msg.length === 1) {
       document.getElementById("msg").value = '';
     }
 
