@@ -651,7 +651,7 @@ ChatApplication.prototype.showMessages = function(msgs) {
         // end of legacy test
         if (typeof message.options == "object")
           options = message.options;
-        var nbOptions = Object.keys(options).length;
+        var nbOptions = this.getObjectSize(options);
 
         if (message.message==="Call active") {
           out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
@@ -873,6 +873,19 @@ ChatApplication.prototype.IsIE8Browser = function() {
   }
   return (rv == 4);
 };
+
+ChatApplication.prototype.getObjectSize = function(obj) {
+  var size = 0;
+  if (this.IsIE8Browser()) {
+    for (prop in obj) {
+      if (obj.hasOwnProperty(prop))
+        size++;
+    }
+  } else {
+    size = Object.keys(options).length
+  }
+  return size;
+}
 
 /**
  * Refresh Current Chat Status
