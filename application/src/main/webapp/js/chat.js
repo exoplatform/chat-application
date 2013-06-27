@@ -882,7 +882,7 @@ ChatApplication.prototype.getObjectSize = function(obj) {
         size++;
     }
   } else {
-    size = Object.keys(options).length
+    size = Object.keys(obj).length
   }
   return size;
 }
@@ -1083,19 +1083,23 @@ ChatApplication.prototype.getSpacesNotif = function() {
 };
 
 ChatApplication.prototype.refreshTotalNotifFilters = function() {
-  var label = "";
+  var css = "room-total-fixed";
+  if ($.browser.mozilla) {
+    css = "room-total-fixed-moz";
+  }
+    var label = "";
   if (this.getOfflineNotif()>0) {
-    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getOfflineNotif()+'</span>';
+    label = '<span class="room-total '+css+'" style="float:right;">'+this.getOfflineNotif()+'</span>';
   }
   $(".filter-offline").html('<a href="#">Offline'+label+'</a>');
   label = "";
   if (this.getOnlineNotif()>0) {
-    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getOnlineNotif()+'</span>';
+    label = '<span class="room-total '+css+'" style="float:right;">'+this.getOnlineNotif()+'</span>';
   }
   $(".filter-user").html('<a href="#">Users'+label+'</a>');
   label = "";
   if (this.getSpacesNotif()>0) {
-    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getSpacesNotif()+'</span>';
+    label = '<span class="room-total '+css+'" style="float:right;">'+this.getSpacesNotif()+'</span>';
   }
   $(".filter-space").html('<a href="#">Spaces'+label+'</a>');
 }
