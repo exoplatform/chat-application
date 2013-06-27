@@ -22,6 +22,7 @@ package org.benjp.services;
 import com.mongodb.*;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.RoomBean;
+import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
 import org.benjp.utils.MessageDigester;
@@ -400,44 +401,51 @@ public class ChatService
     return cursor.hasNext();
   }
 
-  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     return getRooms(user, filter, withUsers, withSpaces, withPublic, true, isAdmin, notificationService, userService, tokenService);
   }
-  public List<RoomBean> getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user);
+    int unreadOffline=0, unreadOnline=0, unreadSpaces=0;
 
-    if (withUsers || (isAdmin && withPublic) )
+    Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+
+    rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
+    if (isAdmin)
+      rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
+
+    for (RoomBean roomBean:rooms)
     {
-      Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+      String targetUser = roomBean.getUser();
+      UserBean targetUserBean = userService.getUser(targetUser);
+      roomBean.setFullname(targetUserBean.getFullname());
+      roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
-      if (isAdmin)
-        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
-
-      for (RoomBean roomBean:rooms)
+      if (availableUsers.contains(targetUser))
       {
-        String targetUser = roomBean.getUser();
-        UserBean targetUserBean = userService.getUser(targetUser);
-        roomBean.setFullname(targetUserBean.getFullname());
-        roomBean.setFavorite(userBean.isFavorite(targetUser));
-
-        if (availableUsers.contains(targetUser))
-        {
-          roomBean.setAvailableUser(true);
-          roomBean.setStatus(targetUserBean.getStatus());
-          availableUsers.remove(targetUser);
-        }
-        else
-        {
-          roomBean.setAvailableUser(false);
-          if (!withOffline) roomsOffline.add(roomBean);
-        }
+        roomBean.setAvailableUser(true);
+        roomBean.setStatus(targetUserBean.getStatus());
+        availableUsers.remove(targetUser);
+        if (roomBean.getUnreadTotal()>0)
+          unreadOnline += roomBean.getUnreadTotal();
       }
+      else
+      {
+        roomBean.setAvailableUser(false);
+        if (!withOffline)
+          roomsOffline.add(roomBean);
+        if (roomBean.getUnreadTotal()>0)
+          unreadOffline += roomBean.getUnreadTotal();
 
+      }
+    }
+
+    if (withUsers)
+    {
       if (!withOffline)
       {
         for (RoomBean roomBean:roomsOffline)
@@ -462,24 +470,30 @@ public class ChatService
         }
       }
     }
-
-    if (withSpaces)
+    else
     {
-      List<SpaceBean> spaces = userService.getSpaces(user);
-      for (SpaceBean space:spaces)
-      {
-        RoomBean roomBeanS = new RoomBean();
-        roomBeanS.setUser(SPACE_PREFIX+space.getId());
-        roomBeanS.setFullname(space.getDisplayName());
-        roomBeanS.setStatus(UserService.STATUS_SPACE);
-        roomBeanS.setTimestamp(space.getTimestamp());
-        roomBeanS.setAvailableUser(true);
-        roomBeanS.setSpace(true);
-        roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
-        roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
-        rooms.add(roomBeanS);
+      rooms = new ArrayList<RoomBean>();
+    }
 
+    List<SpaceBean> spaces = userService.getSpaces(user);
+    for (SpaceBean space:spaces)
+    {
+      RoomBean roomBeanS = new RoomBean();
+      roomBeanS.setUser(SPACE_PREFIX+space.getId());
+      roomBeanS.setFullname(space.getDisplayName());
+      roomBeanS.setStatus(UserService.STATUS_SPACE);
+      roomBeanS.setTimestamp(space.getTimestamp());
+      roomBeanS.setAvailableUser(true);
+      roomBeanS.setSpace(true);
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
+      if (roomBeanS.getUnreadTotal()>0)
+        unreadSpaces += roomBeanS.getUnreadTotal();
+      roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
+      if (withSpaces)
+      {
+        rooms.add(roomBeanS);
       }
+
     }
 
 
@@ -492,7 +506,13 @@ public class ChatService
 
     Collections.sort(finalRooms);
 
-    return finalRooms;
+    RoomsBean roomsBean = new RoomsBean();
+    roomsBean.setRooms(rooms);
+    roomsBean.setUnreadOffline(unreadOffline);
+    roomsBean.setUnreadOnline(unreadOnline);
+    roomsBean.setUnreadSpaces(unreadSpaces);
+
+    return roomsBean;
 
   }
 

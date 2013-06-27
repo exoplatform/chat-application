@@ -326,6 +326,11 @@ function ChatApplication() {
   this.whoIsOnlineMD5 = 0;
   this.totalNotif = 0;
   this.oldNotif = 0;
+
+  this.onlineNotif = 0;
+  this.offlineNotif = 0;
+  this.spacesNotif = 0;
+
 }
 
 /**
@@ -455,10 +460,10 @@ ChatApplication.prototype.initChat = function() {
   $(".btn-home-responsive").on("click", function() {
     var $leftNavigationTDContainer = $(".LeftNavigationTDContainer");
     if ($leftNavigationTDContainer.css("display")==="none") {
-      $leftNavigationTDContainer.animate({width: 'show'});
+      $leftNavigationTDContainer.animate({width: 'show', duration: 200});
 //      $leftNavigationTDContainer.css("display", "table-cell")
     } else {
-      $leftNavigationTDContainer.animate({width: 'hide'});
+      $leftNavigationTDContainer.animate({width: 'hide', duration: 200});
 //      $leftNavigationTDContainer.css("display", "none")
     }
   });
@@ -969,6 +974,10 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
       success: function(response){
         var tmpMD5 = response.md5;
         if (tmpMD5 !== this.whoIsOnlineMD5) {
+          this.setOfflineNotif(response.unreadOffline);
+          this.setOnlineNotif(response.unreadOnline);
+          this.setSpacesNotif(response.unreadSpaces);
+          this.refreshTotalNotifFilters();
           var rooms = TAFFY(response.rooms);
           this.whoIsOnlineMD5 = tmpMD5;
           this.isLoaded = true;
@@ -1035,6 +1044,48 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
     });
   }
 };
+
+ChatApplication.prototype.setOnlineNotif = function(nb) {
+  this.onlineNotif = nb;
+};
+
+ChatApplication.prototype.setOfflineNotif = function(nb) {
+  this.offlineNotif = nb;
+};
+
+ChatApplication.prototype.setSpacesNotif = function(nb) {
+  this.spacesNotif = nb;
+};
+
+ChatApplication.prototype.getOnlineNotif = function() {
+  return this.onlineNotif;
+};
+
+ChatApplication.prototype.getOfflineNotif = function() {
+  return this.offlineNotif;
+};
+
+ChatApplication.prototype.getSpacesNotif = function() {
+  return this.spacesNotif;
+};
+
+ChatApplication.prototype.refreshTotalNotifFilters = function() {
+  var label = "";
+  if (this.getOfflineNotif()>0) {
+    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getOfflineNotif()+'</span>';
+  }
+  $(".filter-offline").html('<a href="#">Offline'+label+'</a>');
+  label = "";
+  if (this.getOnlineNotif()>0) {
+    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getOnlineNotif()+'</span>';
+  }
+  $(".filter-user").html('<a href="#">Users'+label+'</a>');
+  label = "";
+  if (this.getSpacesNotif()>0) {
+    label = '<span class="room-total room-total-fixed" style="float:right;">'+this.getSpacesNotif()+'</span>';
+  }
+  $(".filter-space").html('<a href="#">Spaces'+label+'</a>');
+}
 
 /**
  * Show rooms : convert json to html
@@ -1472,8 +1523,11 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
  */
 
 ChatApplication.prototype.hidePanel = function(panel) {
-  $(panel).css("display", "none");
-  $(panel).html("");
+  var $uiPanel = $(panel);
+  $uiPanel.width($('#chat-application').width()+40);
+  $uiPanel.height($('#chat-application').height());
+  $uiPanel.css("display", "none");
+  $uiPanel.html("");
 };
 
 ChatApplication.prototype.hidePanels = function() {
@@ -1517,14 +1571,16 @@ ChatApplication.prototype.showLoginPanel = function() {
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version 0.6-SNAPSHOT (build 13062520)<br><br>";
-  about += "Designed and Developed by <a href=\"mailto:bpaillereau@gmail.com\">Benjamin Paillereau</a><br>";
+  about += "Version 0.7-SNAPSHOT (build 130627)<br><br>";
+  about += "Designed and Developed by <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
+  about += "for <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform</a><br><br>";
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
   this.hidePanels();
   var $chatAboutPanel = $(".chat-about-panel");
   $chatAboutPanel.html(about);
   $chatAboutPanel.width($('#chat-application').width()+40);
+  $chatAboutPanel.height($('#chat-application').height());
   $chatAboutPanel.css("display", "block");
 
   var thiss = this;

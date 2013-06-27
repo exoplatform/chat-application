@@ -11,6 +11,9 @@ import java.util.List;
 public class RoomsBean {
 
   List<RoomBean> rooms;
+  int unreadOffline = 0;
+  int unreadOnline = 0;
+  int unreadSpaces = 0;
 
   public List<RoomBean> getRooms() {
     return rooms;
@@ -20,10 +23,37 @@ public class RoomsBean {
     this.rooms = rooms;
   }
 
+  public int getUnreadOffline() {
+    return unreadOffline;
+  }
+
+  public void setUnreadOffline(int unreadOffline) {
+    this.unreadOffline = unreadOffline;
+  }
+
+  public int getUnreadOnline() {
+    return unreadOnline;
+  }
+
+  public void setUnreadOnline(int unreadOnline) {
+    this.unreadOnline = unreadOnline;
+  }
+
+  public int getUnreadSpaces() {
+    return unreadSpaces;
+  }
+
+  public void setUnreadSpaces(int unreadSpaces) {
+    this.unreadSpaces = unreadSpaces;
+  }
+
   public String roomsToJSON()
   {
     StringBuffer sb = new StringBuffer();
     sb.append("{");
+    sb.append("\"unreadOffline\": \""+unreadOffline+"\",");
+    sb.append("\"unreadOnline\": \""+unreadOnline+"\",");
+    sb.append("\"unreadSpaces\": \""+unreadSpaces+"\",");
     sb.append("\"rooms\": [");
     boolean first=true;
     for (RoomBean roomBean:this.getRooms()) {
