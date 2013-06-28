@@ -844,6 +844,24 @@ ChatApplication.prototype.messageBeautifier = function(message) {
           w = "<span class='emoticon emoticon-eye-blink'><span class='emoticon-text'>;)</span></span>";
         } else if (w == ":-O" || w==":O") {
           w = "<span class='emoticon emoticon-surprise'><span class='emoticon-text'>:O</span></span>";
+        } else if (w == "(beer)") {
+          w = "<span class='emoticon emoticon-beer'><span class='emoticon-text'>(beer)</span></span>";
+        } else if (w == "(bow)") {
+          w = "<span class='emoticon emoticon-bow'><span class='emoticon-text'>(bow)</span></span>";
+        } else if (w == "(bug)") {
+          w = "<span class='emoticon emoticon-bug'><span class='emoticon-text'>(bug)</span></span>";
+        } else if (w == "(cake)" || w == "(^)") {
+          w = "<span class='emoticon emoticon-cake'><span class='emoticon-text'>(^)</span></span>";
+        } else if (w == "(cash)") {
+          w = "<span class='emoticon emoticon-cash'><span class='emoticon-text'>(cash)</span></span>";
+        } else if (w == "(coffee)") {
+          w = "<span class='emoticon emoticon-coffee'><span class='emoticon-text'>(coffee)</span></span>";
+        } else if (w == "(n)" || w == "(no)") {
+          w = "<span class='emoticon emoticon-no'><span class='emoticon-text'>(no)</span></span>";
+        } else if (w == "(y)" || w == "(yes)") {
+          w = "<span class='emoticon emoticon-yes'><span class='emoticon-text'>(yes)</span></span>";
+        } else if (w == "(star)") {
+          w = "<span class='emoticon emoticon-star'><span class='emoticon-text'>(star)</span></span>";
         } else if (this.highlight.length >1) {
           w = w.replace(eval("/"+this.highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+this.highlight+"</span>");
         }
