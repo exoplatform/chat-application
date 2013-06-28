@@ -1083,23 +1083,19 @@ ChatApplication.prototype.getSpacesNotif = function() {
 };
 
 ChatApplication.prototype.refreshTotalNotifFilters = function() {
-  var css = "room-total-fixed";
-  if ($.browser.mozilla) {
-    css = "room-total-fixed-moz";
-  }
-    var label = "";
+  var label = "";
   if (this.getOfflineNotif()>0) {
-    label = '<span class="room-total '+css+'" style="float:right;">'+this.getOfflineNotif()+'</span>';
+    label = '<span class="room-total room-total-fixed">'+this.getOfflineNotif()+'</span>';
   }
   $(".filter-offline").html('<a href="#">Offline'+label+'</a>');
   label = "";
   if (this.getOnlineNotif()>0) {
-    label = '<span class="room-total '+css+'" style="float:right;">'+this.getOnlineNotif()+'</span>';
+    label = '<span class="room-total room-total-fixed">'+this.getOnlineNotif()+'</span>';
   }
   $(".filter-user").html('<a href="#">Users'+label+'</a>');
   label = "";
   if (this.getSpacesNotif()>0) {
-    label = '<span class="room-total '+css+'" style="float:right;">'+this.getSpacesNotif()+'</span>';
+    label = '<span class="room-total room-total-fixed">'+this.getSpacesNotif()+'</span>';
   }
   $(".filter-space").html('<a href="#">Spaces'+label+'</a>');
 }
