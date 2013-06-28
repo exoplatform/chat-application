@@ -834,7 +834,7 @@ ChatApplication.prototype.messageBeautifier = function(message) {
           }
         } else if (w == ":-)" || w==":)") {
           w = "<span class='emoticon emoticon-smile'><span class='emoticon-text'>:)</span></span>";
-        } else if (w == ":-D" || w==":D") {
+        } else if (w == ":-D" || w==":D" || w==":-d" || w==":d") {
           w = "<span class='emoticon emoticon-big-smile'><span class='emoticon-text'>:D</span></span>";
         } else if (w == ":-|" || w==":|") {
           w = "<span class='emoticon emoticon-no-voice'><span class='emoticon-text'>:|</span></span>";
