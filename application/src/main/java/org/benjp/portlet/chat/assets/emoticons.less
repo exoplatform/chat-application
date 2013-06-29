@@ -1,13 +1,8 @@
-.background-emoticon(@image) {
-  background: url('@{imgEmoticonPath}@{image}') no-repeat 0px 0px;
-  background-size: 16px 16px;
-}
-
 .msg-emoticons-panel {
   background: @colorBgEmoticonPlain;
   background-color: @colorBgEmoticon;
-  min-width: 105px;
-  height: 62px;
+  min-width: 80px;
+  height: 80px;
   padding: 2px 0px 4px 4px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -17,109 +12,125 @@
   bottom: 61px;
   z-index: 5;
 }
-.msg-emoticons {
-  .background-emoticon('smile.png');
-  z-index: 10;
-}
 
 .emoticon {
   display: inline-block;
-  min-width: 15px;
+  min-width: 16px;
   height: 16px;
-  padding: 1px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   font-size: 1px;
 }
 
+.background-emoticon(@left, @top) {
+  background: url('@{imgPath}emoticons.png') no-repeat @left @top;
+  background-size: 128px 64px;
+}
+
+.msg-emoticons {
+  .background-emoticon(-112px, -32px);
+  z-index: 10;
+}
+.msg-button {
+  padding: 0;
+}
+
+
 .emoticon-smile {
-  .background-emoticon('smile.png');
+  .background-emoticon(-112px, -32px);
 }
 .emoticon-big-smile {
-  .background-emoticon('bigsmile.png');
+  .background-emoticon(-48px, 0);
 }
 .emoticon-eye-blink {
-  .background-emoticon('eyeblink.png');
+  .background-emoticon(-112px, -16px);
 }
 .emoticon-no-voice {
-  .background-emoticon('novoice.png');
+  .background-emoticon(-48px, -32px);
 }
 .emoticon-sad {
-  .background-emoticon('sad.png');
+  .background-emoticon(-80px, -32px);
 }
 .emoticon-surprise {
-  .background-emoticon('surprise.png');
+  .background-emoticon(-48px, -48px);
 }
 .emoticon-smile-white {
-  .background-emoticon('smile-white.png');
+  .background-emoticon(-96px, -32px);
 }
 .emoticon-big-smile-white {
-  .background-emoticon('bigsmile-white.png');
+  .background-emoticon(-32px, 0);
 }
 .emoticon-eye-blink-white {
-  .background-emoticon('eyeblink-white.png');
+  .background-emoticon(-96px, -16px);
 }
 .emoticon-no-voice-white {
-  .background-emoticon('novoice-white.png');
+  .background-emoticon(-32px, -32px);
 }
 .emoticon-sad-white {
-  .background-emoticon('sad-white.png');
+  .background-emoticon(-64px, -32px);
 }
 .emoticon-surprise-white {
-  .background-emoticon('surprise-white.png');
+  .background-emoticon(-32px, -48px);
 }
 .emoticon-beer {
-  .background-emoticon('beer.png');
+  .background-emoticon(-16px, 0);
 }
 .emoticon-bow {
-  .background-emoticon('bow.png');
+  .background-emoticon(-80px, 0);
 }
 .emoticon-bug {
-  .background-emoticon('bug.png');
+  .background-emoticon(-112px, 0);
 }
 .emoticon-cake {
-  .background-emoticon('cake.png');
+  .background-emoticon(-16px, -16px);
 }
 .emoticon-cash {
-  .background-emoticon('cash.png');
+  .background-emoticon(-48px, -16px);
 }
 .emoticon-coffee {
-  .background-emoticon('coffee.png');
+  .background-emoticon(-80px, -16px);
 }
 .emoticon-no {
-  .background-emoticon('no.png');
+  .background-emoticon(-16px, -32px);
 }
 .emoticon-star {
-  .background-emoticon('star.png');
+  .background-emoticon(-16px, -48px);
 }
 .emoticon-yes {
-  .background-emoticon('yes.png');
+  .background-emoticon(-112px, -48px);
+}
+.emoticon-tongue {
+  .background-emoticon(-80px, -48px);
 }
 .emoticon-beer-white {
-  .background-emoticon('beer-white.png');
+  .background-emoticon(0, 0);
 }
 .emoticon-bow-white {
-  .background-emoticon('bow-white.png');
+  .background-emoticon(-64px, 0);
 }
 .emoticon-bug-white {
-  .background-emoticon('bug-white.png');
+  .background-emoticon(-96px, 0);
 }
 .emoticon-cake-white {
-  .background-emoticon('cake-white.png');
+  .background-emoticon(0, -16px);
 }
 .emoticon-cash-white {
-  .background-emoticon('cash-white.png');
+  .background-emoticon(-32px, -16px);
 }
 .emoticon-coffee-white {
-  .background-emoticon('coffee-white.png');
+  .background-emoticon(-64px, -16px);
 }
 .emoticon-no-white {
-  .background-emoticon('no-white.png');
+  .background-emoticon(0, -32px);
 }
 .emoticon-star-white {
-  .background-emoticon('star-white.png');
+  .background-emoticon(0, -48px);
 }
 .emoticon-yes-white {
-  .background-emoticon('yes-white.png');
+  .background-emoticon(-96px, -48px);
+}
+.emoticon-tongue-white {
+  .background-emoticon(-64px, -48px);
 }
 
 .emoticon-text, .invisible-text {

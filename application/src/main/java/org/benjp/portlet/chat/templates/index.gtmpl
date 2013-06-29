@@ -141,19 +141,21 @@
             <span class="emoticon emoticon-sad-white emoticon-btn" data=":(">&nbsp;</span>
             <span class="emoticon emoticon-big-smile-white emoticon-btn" data=":D">&nbsp;</span>
             <span class="emoticon emoticon-eye-blink-white emoticon-btn" data=";)">&nbsp;</span>
-            <span class="emoticon emoticon-surprise-white emoticon-btn" data=":O">&nbsp;</span>
             <br>
+            <span class="emoticon emoticon-surprise-white emoticon-btn" data=":O">&nbsp;</span>
             <span class="emoticon emoticon-no-voice-white emoticon-btn" data=":|">&nbsp;</span>
-            <span class="emoticon emoticon-beer-white emoticon-btn" data="(beer)">&nbsp;</span>
+            <span class="emoticon emoticon-tongue-white emoticon-btn" data=":p">&nbsp;</span>
             <span class="emoticon emoticon-bow-white emoticon-btn" data="(bow)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-yes-white emoticon-btn" data="(y)">&nbsp;</span>
+            <span class="emoticon emoticon-no-white emoticon-btn" data="(n)">&nbsp;</span>
+            <span class="emoticon emoticon-star-white emoticon-btn" data="(star)">&nbsp;</span>
+            <span class="emoticon emoticon-beer-white emoticon-btn" data="(beer)">&nbsp;</span>
+            <br>
             <span class="emoticon emoticon-bug-white emoticon-btn" data="(bug)">&nbsp;</span>
             <span class="emoticon emoticon-cake-white emoticon-btn" data="(cake)">&nbsp;</span>
-            <br>
             <span class="emoticon emoticon-cash-white emoticon-btn" data="(cash)">&nbsp;</span>
             <span class="emoticon emoticon-coffee-white emoticon-btn" data="(coffee)">&nbsp;</span>
-            <span class="emoticon emoticon-no-white emoticon-btn" data="(n)">&nbsp;</span>
-            <span class="emoticon emoticon-yes-white emoticon-btn" data="(y)">&nbsp;</span>
-            <span class="emoticon emoticon-star-white emoticon-btn" data="(star)">&nbsp;</span>
       		</span>
         </span>
         <div style="display: block;margin-left: 45px;margin-right: 11px;">
