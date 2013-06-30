@@ -445,7 +445,7 @@ ChatApplication.prototype.initChat = function() {
 
 
   var homeLinkHtml = $("#HomeLink").html();
-  homeLinkHtml += '<a href="#" class="btn-home-responsive"></a>';
+  homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
   $("#HomeLink").html(homeLinkHtml);
 
   $(".btn-home-responsive").on("click", function() {
