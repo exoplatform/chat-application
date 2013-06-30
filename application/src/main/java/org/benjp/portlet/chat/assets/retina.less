@@ -1,45 +1,10 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
-/*
-  .filter (@image, @paddingLeft) {
-    background-position: 0px 0px;
-    .background(@image);
-    cursor: pointer;
-    padding-left: @paddingLeft;
-    background-size: 19px 19px;
-  }
-
-  .filter-on {
-    .filter('2x/filter-on.png', 19px);
-  }
-
-  .filter-off {
-    .filter('2x/filter-off.png', 19px);
-  }
-
-  .filter-user {
-    .filter('2x/filter-user.png', 0);
-    display: inline-block;
-    font-size: 12px;
-    margin-top: 3px;
-  }
-
-  .filter-space {
-    .filter('2x/filter-space.png', 0);
-    display: inline-block;
-    font-size: 12px;
-    margin-right: 5px;
-  }
-
-  .filter-public {
-    .filter('2x/filter-public.png', 0);
-    display: inline-block;
-    font-size: 12px;
-    margin-right: 5px;
-  }
-  */
-
   @imgEmoticonPath:             "@{imgPath}2x/emoticons.png";
 
+  .background(@left, @top) {
+    background: url('@{imgPath}2x/general.png') no-repeat @left @top;
+    background-size: 96px 66px;
+  }
   .background-emoticon(@left, @top) {
     background: url('@{imgEmoticonPath}') no-repeat @left @top;
     background-size: 128px 64px;
@@ -145,57 +110,47 @@
   .emoticon-tongue-white {
     .background-emoticon(-64px, -48px);
   }
-  .msg-help {
-    .background('2x/help.png');
-    background-size: 16px 16px;
-  }
 
   .user-status {
-    .background('2x/mask-dot.png');
-    background-size: 16px 16px;
+    .background(-64px, 0);
   }
 
   .user-status:hover, .user-favorite {
-    .background('2x/mask-star.png');
-    background-size: 16px 16px;
+    .background(-80px, 0);
   }
 
   .user-favorite:hover {
-    .background('2x/mask-dot.png');
-    background-size: 16px 16px;
+    .background(-64px, 0);
   }
 
   .user-space-front {
-    .background('2x/mask-space.png');
-    background-size: 16px 16px;
+    .background(-64px, -16px);
   }
 
   .user-status:hover .user-space-front:hover {
-    .background('2x/mask-star.png');
-    background-size: 16px 16px;
+    .background(-80px, 0);
   }
 
   .user-favorite:hover .user-space-front:hover {
-    .background('2x/mask-dot.png');
-    background-size: 16px 16px;
+    .background(-64px, 0);
+  }
+
+  .call-on {
+    .background(0, 0);
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 18px;
+  }
+  .call-off {
+    .background(-32px, 0);
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 18px;
   }
 
 
-  .icon(@name) {
-    .background('2x/icon-@{name}.png');
-    background-size: 16px 16px;
-    width: 16px;
-    height: 16px;
-  }
-  .icon-search {
-    .icon('search');
-  }
-  .icon-user {
-    .icon('user');
-  }
-  .icon-chevron-left {
-    .icon('chevron-left');
-  }
 
 }
 

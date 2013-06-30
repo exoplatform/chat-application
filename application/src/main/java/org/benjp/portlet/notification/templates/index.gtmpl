@@ -7,29 +7,4 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
   style="display: none;">
-  <!--li class="UITab NormalToolbarTab">
-    <a class="ArrowIcon TBIcon" href="#" style="padding:0px;">
-      <span class="chat-status">
-        <span id="chat-notification" style="display:none"></span>
-      </span>
-    </a>
-    <ul  style="display: none; min-width: 120px; width: 120px;" class="MenuItemContainer">
-      <li class="MenuItem" style="height:30px;">
-        <a href="#" class="popup-chat chat-icon">&{benjp.chat.open.chat}</a>
-        <hr>
-      </li>
-      <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-available" status="available">&{benjp.chat.available}</a>
-      </li>
-      <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-away" status="away">&{benjp.chat.away}</a>
-      </li>
-      <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</a>
-      </li>
-      <li class="MenuItem">
-        <a href="#" class="chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</a>
-      </li>
-    </ul>
-	</li-->
 </div>

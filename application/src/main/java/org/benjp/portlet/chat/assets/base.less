@@ -5,9 +5,7 @@
   -moz-border-radius: 10px;
   border-radius: 10px;
 }
-.btn-mobile, .menu-mobile, .room-mobile {
-  display: none;
-}
+
 .menu-standard {
   display: inline;
 }
@@ -35,20 +33,33 @@
 }
 
 .chat-status-chat {
-  padding: 0px 2px;
+  padding: 0;
   display: inline-block;
   white-space: nowrap;
   background-position: 0px 0px;
-  margin: 8px 7px 0px 0px;
+  margin: 12px 7px 0px 0px;
   min-width: 17px;
   line-height: 29px;
-  height: 29px;
+  height: 17px;
   cursor: pointer;
   float: left;
 }
 
+.chat-status {
+  padding: 0;
+  display: inline-block;
+  white-space: nowrap;
+  background-position: 0px 0px;
+  min-width: 17px;
+  line-height: 29px;
+  height: 17px;
+  cursor: pointer;
+  float: left;
+  margin-right: 4px;
+}
+
 .chat-menu {
-  padding-left: 27px!important;
+  padding: 4px;
   background-position-y: 7px!important;
 }
 
@@ -62,54 +73,6 @@
   padding-right: 20px;
   width: 30px;
 }
-/*
-.filter (@image, @paddingLeft) {
-  background-position: 0px 0px;
-  .background(@image);
-  cursor: pointer;
-  padding-left: @paddingLeft;
-}
-
-.filter-on {
-  .filter('filter-on.png', 19px);
-}
-
-.filter-off {
-  .filter('filter-off.png', 19px);
-}
-
-.filter-user {
-  .filter('filter-user.png', 0);
-  display: inline-block;
-  font-size: 12px;
-  margin-top: 3px;
-}
-
-.filter-space {
-  .filter('filter-space.png', 0);
-  display: inline-block;
-  font-size: 12px;
-  margin-right: 5px;
-}
-
-.filter-public {
-  .filter('filter-public.png', 0);
-  display: inline-block;
-  font-size: 12px;
-  margin-right: 5px;
-}
-
-.filter-empty {
-  .filter('empty.png', 19px);
-  display: inline-block;
-  font-size: 12px;
-  margin-right: 5px;
-}
-
-.filter-user:hover, .filter-space:hover, .filter-public:hover {
-  background-color: @colorBgLight;
-}
-*/
 .input-prepend input {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -214,18 +177,18 @@ tr.info td {
 }
 
 .user-status {
-  .background('mask-dot.png');
+  .background(-64px, 0);
   width: 16px;
   display: block;
   height: 16px;
   float: left;
 }
 .user-status:hover {
-  .background('mask-star.png');
+  .background(-80px, 0);
 }
 
 .user-favorite{
-  .background('mask-star.png');
+  .background(-80px, 0);
   width: 16px;
   display: block;
   height: 16px;
@@ -233,11 +196,11 @@ tr.info td {
 }
 
 .user-favorite:hover {
-  .background('mask-dot.png');
+  .background(-64px, 0);
 }
 
 .user-space-front {
-  .background('mask-space.png');
+  .background(-64px, -16px);
   width: 16px;
   display: block;
   height: 16px;
@@ -245,11 +208,11 @@ tr.info td {
 }
 
 .user-status:hover .user-space-front:hover {
-  .background('mask-star.png');
+  .background(-80px, 0);
 }
 
 .user-favorite:hover .user-space-front:hover {
-  .background('mask-dot.png');
+  .background(-64px, 0);
 }
 
 .user-status(@colorParam) {
@@ -298,6 +261,21 @@ tr.info td {
   color: @colorNotif;
 }
 
+.call-on {
+  .background(0, 0);
+  width: 32px;
+  height: 32px;
+  float: left;
+  margin-right: 18px;
+}
+.call-off {
+  .background(-32px, 0);
+  width: 32px;
+  height: 32px;
+  float: left;
+  margin-right: 18px;
+}
+
 #msg
 {
   font-size: 12px;
@@ -323,9 +301,6 @@ tr.info td {
 .msg-button:hover {
   opacity:1;
   filter:alpha(opacity=100);
-}
-.msg-help {
-  .background('help.png');
 }
 
 .highlight {
@@ -435,7 +410,7 @@ hr
 
 .btn-home-responsive {
   display: none;
-  .background('home.png');
+  background: url('@{imgPath}home.png') no-repeat 0 0;
   width: 30px;
   height: 25px;
   background-size: 30px 25px;

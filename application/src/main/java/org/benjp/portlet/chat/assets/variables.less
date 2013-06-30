@@ -53,8 +53,9 @@
 @imgPath:                     "/chat/img/";
 @imgEmoticonPath:             "@{imgPath}emoticons/";
 
-.background(@image) {
-  background: url('@{imgPath}@{image}') no-repeat 0px 0px;
+.background(@left, @top) {
+  background: url('@{imgPath}general.png') no-repeat @left @top;
+  background-size: 96px 66px;
 }
 
 

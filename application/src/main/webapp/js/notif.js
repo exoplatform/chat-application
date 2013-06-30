@@ -245,13 +245,6 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
  * @param status : the new status : available, donotdisturb, invisible, away or offline
  */
 ChatNotification.prototype.changeStatus = function(status) {
-  var $spanStatus = jQuery("span.chat-status");
-  $spanStatus.removeClass("chat-status-available-black");
-  $spanStatus.removeClass("chat-status-donotdisturb-black");
-  $spanStatus.removeClass("chat-status-invisible-black");
-  $spanStatus.removeClass("chat-status-away-black");
-  $spanStatus.removeClass("chat-status-offline-black");
-  $spanStatus.addClass("chat-status-"+status+"-black");
   var $spanStatusChat = jQuery("span.chat-status-chat");
   $spanStatusChat.removeClass("chat-status-available");
   $spanStatusChat.removeClass("chat-status-donotdisturb");
@@ -361,7 +354,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="") {
     jQuery(".btn-weemo-conf").css('display', 'none');
     //this.weemo = new Weemo(); // Creating a Weemo object instance
-    this.weemo.setMode("debug"); // Activate debugging in browser's log console
+    this.weemo.setMode("production"); // Activate debugging in browser's log console
     this.weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
     this.weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
     this.weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain

@@ -168,15 +168,6 @@ $(document).ready(function(){
 
   });
 
-
-  $(".btn-mobile").on("click", function() {
-    var $menuMobile = $(".menu-mobile");
-    if ($menuMobile.css("display")==="none")
-      $menuMobile.css("display", "block");
-    else
-      $menuMobile.css("display", "none");
-  });
-
   $(".room-detail-fullname").on("click", function() {
     $(".uiLeftContainerArea").css("display", "block");
     $(".uiRightContainerArea").css("display", "none");
@@ -654,13 +645,13 @@ ChatApplication.prototype.showMessages = function(msgs) {
         var nbOptions = this.getObjectSize(options);
 
         if (message.message==="Call active") {
-          out += "<img src='/chat/img/2x/call-on.png' width='30px' style='width:30px;'>";
+          out += "<span class='call-on'></span>";
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandler", options.timestamp, 600000)
           }
           $(".btn-weemo").addClass('disabled');
         } else if (message.message==="Call terminated") {
-          out += "<img src='/chat/img/2x/call-off.png' width='30px' style='width:30px;'>";
+          out += "<span class='call-off'></span>";
           $(".btn-weemo").removeClass('disabled');
         } else {
           out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
@@ -1578,12 +1569,6 @@ ChatApplication.prototype.showSyncPanel = function() {
     $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
     $chatSyncPanel.css("display", "block");
   }
-};
-
-ChatApplication.prototype.showHelpPanel = function() {
-  this.hidePanels();
-  $(".chat-help-panel").css("display", "block");
-
 };
 
 ChatApplication.prototype.showErrorPanel = function() {

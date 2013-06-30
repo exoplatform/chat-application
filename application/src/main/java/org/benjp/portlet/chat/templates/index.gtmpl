@@ -38,16 +38,14 @@
   <div class="chat-demo-panel" style="display:none;"></div>
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
-  <div class="chat-help-panel" style="display: none;"><span>&nbsp;</span></div>
 <% if (!"public".equals(view)) { %>
   <span class="chat-status-panel" style="display:none;">
-    <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.available}</div>
-    <div class="chat-menu chat-status chat-status-away" status="away">&{benjp.chat.away}</div>
-    <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
-    <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
+    <div class="chat-menu" status="available"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</div>
+    <div class="chat-menu" status="away"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</div>
+    <div class="chat-menu" status="donotdisturb"><i class="chat-status chat-status-donotdisturb"></i>&{benjp.chat.donotdisturb}</div>
+    <div class="chat-menu" status="invisible"><i class="chat-status chat-status-invisible"></i>&{benjp.chat.invisible}</div>
   </span>
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
-    <a class="btn btn-mobile"><span class="icon-user"></span></a>
     <span class="menu-standard" style="float: left;">
       <span class="avatar-user">
         <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
@@ -86,15 +84,6 @@
 
     </span>
   </div>
-  <div class="menu-mobile">
-    <div>
-      <div class="chat-menu chat-status-chat chat-status-invisible chat-status-label">&{benjp.chat.your.status}</div>
-      <div class="chat-menu chat-status chat-status-available" status="available">&{benjp.chat.available}</div>
-      <div class="chat-menu chat-status chat-status-away" status="away">&{benjp.chat.away}</div>
-      <div class="chat-menu chat-status chat-status-donotdisturb" status="donotdisturb">&{benjp.chat.donotdisturb}</div>
-      <div class="chat-menu chat-status chat-status-invisible" status="invisible">&{benjp.chat.invisible}</div>
-    </div>
-  </div>
   <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
     <div id="chat-users" class="uiBox">
       <span>&nbsp;</span>
@@ -103,10 +92,6 @@
   <% } %>
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
     <div class="uiBox">
-      <div class="room-mobile no-user-selection">
-        <a class="btn-rooms"><span class="icon-chevron-left"></span></a>
-        <span class="room-name"></span>
-      </div>
       <div class="room-detail" id="room-detail">
 
         <span class="room-detail-avatar">

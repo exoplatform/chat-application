@@ -8,37 +8,6 @@
 @statusColor:                 #444;
 @iconStatusPath:              "/chat/img/";
 
-#chat-status {
-  color: @statusColor;
-  font-weight: bold;
-  display: block;
-  white-space: nowrap;
-  background-position: 0px 0px;
-  margin: 0px auto;
-  min-width: 15px;
-  text-align: center;
-  zoom: 1;
-  font-size: 11px!important;
-  font-family: verdana;
-  border: 1px solid transparent;
-  border-bottom: none;
-  line-height: 29px;
-  height: 29px;
-  cursor: pointer;
-}
-
-#chat-status:hover {
-  background-color: @backgroundColor;
-  border: 1px solid @borderColor;
-  border-bottom: none;
-  -moz-box-shadow: 1px 0 0 @shadowColor;
-  -webkit-box-shadow: 1px 0 0 @shadowColor;
-  box-shadow: 1px 0 0 @shadowColor;
-  color: @hoverColor;
-  position: relative;
-  z-index: 2;
-}
-
 .notif-total {
   background-color: @notifBackgroundColor;
   color: @notifColor;
@@ -52,62 +21,36 @@
   border-radius: 2px;
 }
 
-.chat-status, .popup-chat {
-  color: @statusColor;
-  font-weight: bold;
-  padding: 0 2px;
-  display: block;
-  white-space: nowrap;
-  background-position: 0px 0px;
-  margin: 0px auto;
-  min-width: 17px;
-  text-align: center;
-  zoom: 1;
-  font-size: 11px!important;
-  font-family: verdana;
-  border: 1px solid transparent;
-  border-bottom: none;
-  line-height: 29px;
-  height: 29px;
-  cursor: pointer;
-  text-align: left;
-  /*padding-left: 25px !important;*/
-}
-
-.chaticonFn (@image:'chat.png') {
-  background:url('@{iconStatusPath}@{image}') no-repeat 3px 4px;
-}
-
 .chat-icon {
-  .chaticonFn();
+  .background(-80px, -16px);
   height: 22px;
 }
 .chat-status-available-black {
-  .chaticonFn('status-available-black.png');
+  .background(0, -49px);
 }
 .chat-status-available {
-  .chaticonFn('status-available.png');
+  .background(0, -32px);
 }
 .chat-status-donotdisturb-black {
-  .chaticonFn('status-donotdisturb-black.png');
+  .background(-34px, -49px);
 }
 .chat-status-donotdisturb {
-  .chaticonFn('status-donotdisturb.png');
+  .background(-34px, -32px);
 }
 .chat-status-away-black {
-  .chaticonFn('status-away-black.png');
+  .background(-17px, -49px);
 }
 .chat-status-away {
-  .chaticonFn('status-away.png');
+  .background(-17px, -32px);
 }
 .chat-status-invisible-black {
-  .chaticonFn('status-invisible-black.png');
+  .background(-51px, -49px);
 }
 .chat-status-invisible {
-  .chaticonFn('status-invisible.png');
+  .background(-51px, -32px);
 }
 .chat-status-offline-black {
-  .chaticonFn('status-offline-black.png');
+  .background(-68px, -49px);
 }
 
 .uiChatIcon {
@@ -116,7 +59,7 @@
   height: 16px;
   line-height: 16px;
   vertical-align: text-top;
-  .background("chat.png");
+  .background(-80px, -16px);
 }
 
 .uiChatIcon:hover {
@@ -125,7 +68,7 @@
   height: 16px;
   line-height: 16px;
   vertical-align: text-top;
-  .background("chat-blue.png");
+  .background(-80px, -32px);
 }
 
 .platform-blue {
