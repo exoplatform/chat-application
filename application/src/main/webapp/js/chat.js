@@ -169,8 +169,10 @@ $(document).ready(function(){
   });
 
   $(".room-detail-fullname").on("click", function() {
-    $(".uiLeftContainerArea").css("display", "block");
-    $(".uiRightContainerArea").css("display", "none");
+    if (chatApplication.isMobileView()) {
+      $(".uiLeftContainerArea").css("display", "block");
+      $(".uiRightContainerArea").css("display", "none");
+    }
   });
 
   $(".filter").on("click", function() {
