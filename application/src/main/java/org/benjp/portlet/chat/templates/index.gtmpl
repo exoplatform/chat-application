@@ -31,6 +31,10 @@
   data-label-no-messages="&{benjp.chat.no.messages}"
   data-label-public-welcome="&{benjp.chat.public.welcome}"
   data-label-support-fullname="&{benjp.chat.support.fullname}"
+  data-label-offline="&{benjp.chat.button.offline}"
+  data-label-users="&{benjp.chat.button.users}"
+  data-label-spaces="&{benjp.chat.button.spaces}"
+  data-label-quote="&{benjp.chat.quote}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

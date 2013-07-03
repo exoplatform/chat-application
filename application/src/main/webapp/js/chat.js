@@ -132,7 +132,6 @@ $(document).ready(function(){
   });
 
 
-
   $(".chat-status-chat").on("click", function() {
     var $chatStatusPanel = $(".chat-status-panel");
     if ($chatStatusPanel.css("display")==="none")
@@ -620,9 +619,10 @@ ChatApplication.prototype.showMessages = function(msgs) {
         {
           out += "<hr style='margin:0px;'>";
         }
-        out += "<div style='margin-left:50px;'><span style='float:left'>"+this.messageBeautifier(message.message)+"</span>" +
+        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+this.messageBeautifier(message.message)+"</span>" +
           "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
+          "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>"+message.date+"</span>" +
+          "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'><span style='display: none;' class='msg-data' data-fn='"+message.fullname+"'>"+message.message+"</span><a href='#' class='msg-action-quote'>"+this.labels.get("label-quote")+"</a><!--&nbsp;<a href='#'>Edit</a--></span>" +
           "<span class='invisible-text'>]</span></div>"+
           "<div style='clear:both;'></div>";
         prevUser = message.user;
@@ -728,6 +728,27 @@ ChatApplication.prototype.showMessages = function(msgs) {
   $chats.html('<span>'+out+'</span>');
   sh_highlightDocument();
   $chats.animate({ scrollTop: 20000 }, 'fast');
+
+  $(".msg-text").mouseover(function() {
+    $(".msg-date", this).css("display", "none");
+    $(".msg-actions", this).css("display", "inline-block");
+  });
+
+  $(".msg-text").mouseout(function() {
+    $(".msg-date", this).css("display", "inline-block");
+    $(".msg-actions", this).css("display", "none");
+  });
+
+  $(".msg-action-quote").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgHtml = $uimsg.html();
+    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+    msgHtml = msgHtml.replace(/<br>/g, '\n');
+    var msgFullname = $uimsg.attr("data-fn");
+    $("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+
+  });
+
 };
 
 /**
@@ -794,6 +815,13 @@ ChatApplication.prototype.messageBeautifier = function(message) {
     return msg;
   }
 
+  var quote = "";
+  if (message.indexOf("[quote=")===0) {
+    var iq = message.indexOf("]");
+    quote = "<div class='contentQuote'><b>"+message.substring(7, iq)+":</b><br>";
+    message = message.substr(iq+1);
+  }
+
   var lines = message.split("<br/>");
   var il,l;
   for (il=0 ; il<lines.length ; il++) {
@@ -822,7 +850,7 @@ ChatApplication.prototype.messageBeautifier = function(message) {
             var id = w.substr(31);
             w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
             w += "<span class='invisible-text'>"+link+"</span>";
-          } else {
+          } else if (w.indexOf("[/quote]")===-1) {
             w = "<a href='"+w+"' target='_new'>"+w+"</a>";
           }
         } else if (w == ":-)" || w==":)") {
@@ -867,6 +895,14 @@ ChatApplication.prototype.messageBeautifier = function(message) {
     if (il < lines.length-1) {
       msg += "<br/>";
     }
+  }
+
+  if (quote !== "") {
+    if (msg.indexOf("[/quote]")>0)
+      msg = msg.replace("[/quote]", "</div>");
+    else
+      msg = msg + "</div>";
+    msg = quote + msg;
   }
 
   return msg;
@@ -1100,17 +1136,17 @@ ChatApplication.prototype.refreshTotalNotifFilters = function() {
   if (this.getOfflineNotif()>0) {
     label = '<span class="room-total room-total-fixed">'+this.getOfflineNotif()+'</span>';
   }
-  $(".filter-offline").html('<a href="#">Offline'+label+'</a>');
+  $(".filter-offline").html('<a href="#">'+this.labels.get("label-offline")+label+'</a>');
   label = "";
   if (this.getOnlineNotif()>0) {
     label = '<span class="room-total room-total-fixed">'+this.getOnlineNotif()+'</span>';
   }
-  $(".filter-user").html('<a href="#">Users'+label+'</a>');
+  $(".filter-user").html('<a href="#">'+this.labels.get("label-users")+label+'</a>');
   label = "";
   if (this.getSpacesNotif()>0) {
     label = '<span class="room-total room-total-fixed">'+this.getSpacesNotif()+'</span>';
   }
-  $(".filter-space").html('<a href="#">Spaces'+label+'</a>');
+  $(".filter-space").html('<a href="#">'+this.labels.get("label-spaces")+label+'</a>');
 }
 
 /**
