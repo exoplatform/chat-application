@@ -202,6 +202,7 @@ public class ChatService
         {
           sb.append("[").append(date).append("] ");
           String message = dbo.get("message").toString();
+          if (TYPE_DELETED.equals(message)) message = TYPE_DELETED+"\n";
           if ("true".equals(dbo.get("isSystem")))
           {
             sb.append("System Message: ");
