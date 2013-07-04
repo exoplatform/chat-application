@@ -33,6 +33,7 @@ $(document).ready(function(){
   chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
   chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
   chatApplication.jzUsers = chatServerURL+"/users";
+  chatApplication.jzDelete = chatServerURL+"/delete";
   chatApplication.room = "<%=room%>";
 
   chatApplication.initChat();
@@ -293,6 +294,7 @@ function ChatApplication() {
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
   this.jzUsers = "";
+  this.jzDelete = "";
   this.highlight = "";    //not set
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
@@ -421,6 +423,31 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
   });
 
 };
+
+ChatApplication.prototype.deleteMessage = function(id, callback) {
+  $.ajax({
+    url: this.jzDelete,
+    data: {"room": this.room,
+      "user": this.username,
+      "token": this.token,
+      "messageId": id
+    },
+
+    success:function(response){
+      //console.log("success");
+      if (typeof callback === "function") {
+        callback();
+      }
+    },
+
+    error:function (xhr, status, error){
+
+    }
+
+  });
+
+};
+
 
 /**
  * Init Status Chat Loop
@@ -619,11 +646,25 @@ ChatApplication.prototype.showMessages = function(msgs) {
         {
           out += "<hr style='margin:0px;'>";
         }
-        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+this.messageBeautifier(message.message)+"</span>" +
+        var msgtemp = message.message;
+        if (message.type === "DELETED") {
+          msgtemp = "<span class='contentDeleted'>"+this.labels.get("label-deleted")+"</span>";
+        } else {
+          msgtemp = this.messageBeautifier(message.message);
+        }
+        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
           "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>"+message.date+"</span>" +
-          "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'><span style='display: none;' class='msg-data' data-fn='"+message.fullname+"'>"+message.message+"</span><a href='#' class='msg-action-quote'>"+this.labels.get("label-quote")+"</a><!--&nbsp;<a href='#'>Edit</a--></span>" +
-          "<span class='invisible-text'>]</span></div>"+
+          "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>"+message.date+"</span>";
+        if (message.type !== "DELETED") {
+          out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
+            "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
+          if (message.user === this.username) {
+            out += "&nbsp;<a href='#' class='msg-action-delete'>"+this.labels.get("label-delete")+"</a>&nbsp;|";
+          }
+          out += "&nbsp;<a href='#' class='msg-action-quote'>"+this.labels.get("label-quote")+"</a>";
+          out += "</span>";
+        }
+        out += "<span class='invisible-text'>]</span></div>"+
           "<div style='clear:both;'></div>";
         prevUser = message.user;
       }
@@ -730,8 +771,10 @@ ChatApplication.prototype.showMessages = function(msgs) {
   $chats.animate({ scrollTop: 20000 }, 'fast');
 
   $(".msg-text").mouseover(function() {
-    $(".msg-date", this).css("display", "none");
-    $(".msg-actions", this).css("display", "inline-block");
+    if ($(".msg-actions", this).children().length > 0) {
+      $(".msg-date", this).css("display", "none");
+      $(".msg-actions", this).css("display", "inline-block");
+    }
   });
 
   $(".msg-text").mouseout(function() {
@@ -749,12 +792,22 @@ ChatApplication.prototype.showMessages = function(msgs) {
 
   });
 
+  $(".msg-action-delete").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgId = $uimsg.attr("data-id");
+    chatApplication.deleteMessage(msgId, function() {
+      chatApplication.refreshChat(true);
+    });
+    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+
+  });
+
 };
 
 /**
  * Refresh Chat : refresh messages and panels
  */
-ChatApplication.prototype.refreshChat = function() {
+ChatApplication.prototype.refreshChat = function(forceRefresh) {
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
 
@@ -770,7 +823,7 @@ ChatApplication.prototype.refreshChat = function() {
           this.showMessages(data.messages);
         } else {
           var ts = data.timestamp;
-          if (ts != lastTS) {
+          if (ts != lastTS || (forceRefresh === true)) {
             jzStoreParam("lastTS"+this.username, ts, 600);
             //console.log("new data to show");
             this.showMessages(data.messages);

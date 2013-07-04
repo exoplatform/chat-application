@@ -26,6 +26,7 @@ import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
 import org.benjp.utils.MessageDigester;
+import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -41,6 +42,8 @@ public class ChatService
   public static final String M_ROOMS_COLLECTION = "rooms";
 
   public static final String SPACE_PREFIX = "space-";
+
+  public static final String TYPE_DELETED = "DELETED";
 
   private static Logger log = Logger.getLogger("ChatService");
 
@@ -85,6 +88,21 @@ public class ChatService
     this.updateRoomTimestamp(room);
   }
 
+  public void delete(String room, String user, String messageId)
+  {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", new ObjectId(messageId));
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      dbo.put("message", TYPE_DELETED);
+      dbo.put("type", TYPE_DELETED);
+      coll.save(dbo, WriteConcern.NONE);
+    }
+  }
 
   public String read(String room, UserService userService)
   {
@@ -152,6 +170,7 @@ public class ChatService
       {
         String user = dbo.get("user").toString();
         String fullname = "", email = "";
+        String msgId = ((ObjectId)dbo.get("_id")).toString();
         UserBean userBean = users.get(user);
         if (userBean==null)
         {
@@ -199,7 +218,8 @@ public class ChatService
         else
         {
           if (!first)sb.append(",");
-          sb.append("{\"user\": \"").append(user).append("\",");
+          sb.append("{\"id\": \"").append(msgId).append("\",");
+          sb.append("\"user\": \"").append(user).append("\",");
           sb.append("\"fullname\": \"").append(fullname).append("\",");
           sb.append("\"email\": \"").append(email).append("\",");
           sb.append("\"date\": \"").append(date).append("\",");
@@ -216,6 +236,7 @@ public class ChatService
           {
             sb.append("\"options\": \"\",");
           }
+          sb.append("\"type\": \"").append(dbo.get("type")).append("\",");
           sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
         }
 

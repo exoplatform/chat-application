@@ -139,6 +139,26 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/delete")
+  public Response.Content delete(String user, String token, String room, String messageId) throws IOException
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    try
+    {
+      chatService.delete(room, user,  messageId);
+    }
+    catch (Exception e)
+    {
+      return Response.notFound("Oups");
+    }
+    return Response.ok("Updated!");
+
+  }
+
+    @Resource
   @Route("/toggleFavorite")
   public Response.Content toggleFavorite(String user, String token, String targetUser)
   {

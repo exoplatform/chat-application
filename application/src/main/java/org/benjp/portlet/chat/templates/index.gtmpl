@@ -35,6 +35,8 @@
   data-label-users="&{benjp.chat.button.users}"
   data-label-spaces="&{benjp.chat.button.spaces}"
   data-label-quote="&{benjp.chat.quote}"
+  data-label-delete="&{benjp.chat.delete}"
+  data-label-deleted="&{benjp.chat.deleted}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
