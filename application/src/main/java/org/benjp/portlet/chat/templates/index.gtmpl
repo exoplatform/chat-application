@@ -37,6 +37,7 @@
   data-label-quote="&{benjp.chat.quote}"
   data-label-delete="&{benjp.chat.delete}"
   data-label-deleted="&{benjp.chat.deleted}"
+  data-label-edit="&{benjp.chat.edit}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
@@ -170,5 +171,21 @@
   </div>
   <div class="modal-footer">
     <a href="#" class="btn btn-primary text-modal-close">Close</a>
+  </div>
+</div>
+<!-- ################################## -->
+<!-- ######### EDIT MODAL ############ -->
+<!-- ################################## -->
+<div class="modal hide" id="edit-modal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>&{benjp.chat.edit}</h3>
+  </div>
+  <div class="modal-body">
+    <textarea id="edit-modal-area" data-id="---"></textarea>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn edit-modal-cancel">&{benjp.chat.cancel}</a>
+    <a href="#" class="btn btn-primary edit-modal-save">&{benjp.chat.save}</a>
   </div>
 </div>

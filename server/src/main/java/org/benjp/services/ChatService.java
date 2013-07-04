@@ -20,6 +20,7 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import org.apache.commons.lang3.StringUtils;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.RoomBean;
 import org.benjp.model.RoomsBean;
@@ -44,6 +45,7 @@ public class ChatService
   public static final String SPACE_PREFIX = "space-";
 
   public static final String TYPE_DELETED = "DELETED";
+  public static final String TYPE_EDITED = "EDITED";
 
   private static Logger log = Logger.getLogger("ChatService");
 
@@ -61,6 +63,7 @@ public class ChatService
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
+    message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
     message = message.replaceAll("<", "&lt;");
     message = message.replaceAll(">", "&gt;");
@@ -100,6 +103,31 @@ public class ChatService
       DBObject dbo = cursor.next();
       dbo.put("message", TYPE_DELETED);
       dbo.put("type", TYPE_DELETED);
+      coll.save(dbo, WriteConcern.NONE);
+    }
+  }
+
+  public void edit(String room, String user, String messageId, String message)
+  {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
+
+    message = StringUtils.chomp(message);
+    message = message.replaceAll("&", "&#38");
+    message = message.replaceAll("<", "&lt;");
+    message = message.replaceAll(">", "&gt;");
+    message = message.replaceAll("\"", "&quot;");
+    message = message.replaceAll("\n", "<br/>");
+    message = message.replaceAll("\\\\", "&#92");
+
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", new ObjectId(messageId));
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      dbo.put("message", message);
+      dbo.put("type", TYPE_EDITED);
       coll.save(dbo, WriteConcern.NONE);
     }
   }

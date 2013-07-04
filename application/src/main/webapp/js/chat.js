@@ -34,6 +34,7 @@ $(document).ready(function(){
   chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
   chatApplication.jzUsers = chatServerURL+"/users";
   chatApplication.jzDelete = chatServerURL+"/delete";
+  chatApplication.jzEdit = chatServerURL+"/edit";
   chatApplication.room = "<%=room%>";
 
   chatApplication.initChat();
@@ -45,6 +46,8 @@ $(document).ready(function(){
    */
   //needed for #chat text area
   var keydown = -1;
+  //needed for #edit-modal-text area
+  var keydownModal = -1;
   //needed for Fluid Integration
   var labelAvailable = $chatApplication.attr("data-label-available");
   var labelAway = $chatApplication.attr("data-label-away");
@@ -212,6 +215,60 @@ $(document).ready(function(){
     $('#text-modal').modal('hide');
   });
 
+  $(".edit-modal-cancel").on("click", function() {
+    $('#edit-modal').modal('hide');
+    $("#edit-modal-area").val("");
+  });
+
+  $(".edit-modal-save").on("click", function() {
+    var $uitext = $("#edit-modal-area");
+    var id = $uitext.attr("data-id");
+    var message = $uitext.val();
+    $uitext.val("");
+    $('#edit-modal').modal('hide');
+
+    chatApplication.editMessage(id, message, function() {
+      chatApplication.refreshChat(true);
+    });
+
+  });
+
+  $('#edit-modal-area').keydown(function(event) {
+//    console.log("keydown : "+ event.which+" ; "+keydown);
+    if ( event.which == 18 ) {
+      keydownModal = 18;
+    }
+  });
+
+  $('#edit-modal-area').keyup(function(event) {
+    var id = $(this).attr("data-id");
+    var msg = $(this).val();
+//    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+    if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
+      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+      if(!msg)
+      {
+        return;
+      }
+//      console.log("*"+msg+"*");
+      $(this).val("");
+      $('#edit-modal').modal('hide');
+
+      chatApplication.editMessage(id, msg, function() {
+        chatApplication.refreshChat(true);
+      });
+
+    }
+    if ( keydownModal === 18 ) {
+      keydownModal = -1;
+    }
+    if ( event.which === 13 && msg.length === 1) {
+      $(this).val('');
+    }
+
+  });
+
+
   if (window.fluid!==undefined) {
     chatApplication.activateMaintainSession();
   }
@@ -295,6 +352,7 @@ function ChatApplication() {
   this.jzMaintainSession = "";
   this.jzUsers = "";
   this.jzDelete = "";
+  this.jzEdit = "";
   this.highlight = "";    //not set
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
@@ -424,6 +482,12 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
 
 };
 
+/**
+ * Delete the message with id in the room
+ *
+ * @param id
+ * @param callback
+ */
 ChatApplication.prototype.deleteMessage = function(id, callback) {
   $.ajax({
     url: this.jzDelete,
@@ -431,6 +495,38 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
       "user": this.username,
       "token": this.token,
       "messageId": id
+    },
+
+    success:function(response){
+      //console.log("success");
+      if (typeof callback === "function") {
+        callback();
+      }
+    },
+
+    error:function (xhr, status, error){
+
+    }
+
+  });
+
+};
+
+/**
+ * Edit the message with id with a new message
+ *
+ * @param id
+ * @param newMessage
+ * @param callback
+ */
+ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
+  $.ajax({
+    url: this.jzEdit,
+    data: {"room": this.room,
+      "user": this.username,
+      "token": this.token,
+      "messageId": id,
+      "message": newMessage
     },
 
     success:function(response){
@@ -653,13 +749,18 @@ ChatApplication.prototype.showMessages = function(msgs) {
           msgtemp = this.messageBeautifier(message.message);
         }
         out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
-          "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>"+message.date+"</span>";
+          "<span class='invisible-text'> [</span>";
+        out += "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>";
+        if (message.type === "DELETED" || message.type === "EDITED") {
+          out += "<span class='message-changed'></span>";
+        }
+        out += message.date+"</span>";
         if (message.type !== "DELETED") {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === this.username) {
             out += "&nbsp;<a href='#' class='msg-action-delete'>"+this.labels.get("label-delete")+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-edit'>"+this.labels.get("label-edit")+"</a>&nbsp;|";
           }
           out += "&nbsp;<a href='#' class='msg-action-quote'>"+this.labels.get("label-quote")+"</a>";
           out += "</span>";
@@ -799,6 +900,22 @@ ChatApplication.prototype.showMessages = function(msgs) {
       chatApplication.refreshChat(true);
     });
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+
+  });
+
+  $(".msg-action-edit").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgId = $uimsg.attr("data-id");
+    var msgHtml = $uimsg.html();
+    msgHtml = msgHtml.replace(eval("/<br>/g"), "\n");
+
+    $("#edit-modal-area").val(msgHtml);
+    $("#edit-modal-area").attr("data-id", msgId);
+    $('#edit-modal').modal({"backdrop": false});
+
+//    chatApplication.deleteMessage(msgId, function() {
+//      chatApplication.refreshChat(true);
+//    });
 
   });
 

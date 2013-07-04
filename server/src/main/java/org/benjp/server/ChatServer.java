@@ -158,7 +158,27 @@ public class ChatServer
 
   }
 
-    @Resource
+  @Resource
+  @Route("/edit")
+  public Response.Content edit(String user, String token, String room, String messageId, String message) throws IOException
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    try
+    {
+      chatService.edit(room, user,  messageId, message);
+    }
+    catch (Exception e)
+    {
+      return Response.notFound("Oups");
+    }
+    return Response.ok("Updated!");
+
+  }
+
+  @Resource
   @Route("/toggleFavorite")
   public Response.Content toggleFavorite(String user, String token, String targetUser)
   {
