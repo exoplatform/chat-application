@@ -13,6 +13,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.mongodb</groupId>
@@ -21,6 +22,7 @@
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.enterprise</groupId>
@@ -71,23 +73,6 @@
         <configuration>
           <archiveClasses>true</archiveClasses>
           <attachClasses>true</attachClasses>
-          <packagingExcludes>WEB-INF/lib/aopalliance-*.jar,
-            WEB-INF/lib/c3p0-*.jar,
-            WEB-INF/lib/cdi-api-*.jar,
-            WEB-INF/lib/commons-lang3-*.jar,
-            WEB-INF/lib/commons-juzu-4.0.0-*.jar,
-            WEB-INF/lib/groovy-all-*.jar,
-            WEB-INF/lib/guava-*.jar,
-            WEB-INF/lib/guice-*.jar,
-            WEB-INF/lib/javassist-*.jar,
-            WEB-INF/lib/javax.servlet-api-*.jar,
-            WEB-INF/lib/jboss-interceptors-*.jar,
-            WEB-INF/lib/jsr250-*.jar,
-            WEB-INF/lib/jsr305-*.jar,
-            WEB-INF/lib/portlet-api-*.jar,
-            WEB-INF/lib/quartz-*.jar,
-            WEB-INF/lib/servlet-api-*.jar,
-            WEB-INF/lib/slf4j-*.jar</packagingExcludes>
         </configuration>
       </plugin>
     </plugins>
