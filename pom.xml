@@ -25,6 +25,7 @@
   </developers>
   <modules>
     <module>server</module>
+    <module>server-standalone</module>
     <module>application</module>
     <module>exo-addons-chat-extension-config</module>
     <module>exo-addons-chat-extension</module>

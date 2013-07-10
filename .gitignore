@@ -2,6 +2,7 @@ target/*
 *.iml
 .DS_Store
 server/target/*
+server-standalone/target/*
 application/target/*
 chat-mongohq.properties
 application/src/main/resources/rebel.xml
