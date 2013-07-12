@@ -7,4 +7,5 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
   style="display: none;">
+  <audio id="chat-audio-notif" src="/chat/audio/notif.ogg" controls preload="auto" autobuffer style="display: none;"></audio>
 </div>

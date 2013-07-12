@@ -1177,11 +1177,6 @@ ChatApplication.prototype.updateTotal = function() {
   this.totalNotif = Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
 };
 
-ChatApplication.prototype.playNotifSound = function() {
-  var notifSound=document.getElementById("audio-notif");
-  notifSound.play();
-};
-
 ChatApplication.prototype.updateTitle = function() {
   if (this.totalNotif>0) {
     document.title = "Chat ("+this.totalNotif+")";
@@ -1272,9 +1267,6 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
                 window.webkitNotifications.requestPermission();
               }
             }
-          }
-          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-            this.playNotifSound();
           }
           this.oldNotif = this.totalNotif;
           this.updateTitle();

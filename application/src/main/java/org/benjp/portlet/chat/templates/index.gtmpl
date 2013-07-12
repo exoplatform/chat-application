@@ -158,8 +158,6 @@
   </div>
 </div>
 
-<audio id="audio-notif" src="/chat/audio/notif.ogg" controls preload="auto" autobuffer style="display: none;"></audio>
-
 <!-- ################################## -->
 <!-- ######### TEXT MODAL ############ -->
 <!-- ################################## -->

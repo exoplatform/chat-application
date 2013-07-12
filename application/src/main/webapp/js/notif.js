@@ -71,7 +71,8 @@ function ChatNotification() {
   this.statusEventInt = "";
   this.chatIntervalStatus = "";
 
-  this.oldNotifTotal = "";
+  this.oldNotifTotal = 0;
+  this.profileStatus = "offline";
 }
 
 /**
@@ -160,7 +161,7 @@ ChatNotification.prototype.refreshNotif = function() {
     context: this,
     success: function(data){
       if(this.oldNotifTotal!=data.total){
-        var total = data.total;
+        var total = Math.abs(data.total);
         //console.log('refreshNotif :: '+total);
         var $chatNotification = jQuery("#chat-notification");
         if (total>0) {
@@ -170,7 +171,11 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotification.html('<span></span>');
           $chatNotification.css('display', 'none');
         }
-        this.oldNotifTotal = data.total;
+        if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+          this.playNotifSound();
+        }
+
+        this.oldNotifTotal = total;
       }
     },
     error: function(){
@@ -182,12 +187,14 @@ ChatNotification.prototype.refreshNotif = function() {
     }
   });
 
-//  } else {
-//    var $chatNotification = jQuery("#chat-notification");
-//    $chatNotification.html('<span></span>');
-//    $chatNotification.css('display', 'none');
-//    this.oldNotifTotal = -1;
-//  }
+};
+
+/**
+ * Play Notif Sound
+ */
+ChatNotification.prototype.playNotifSound = function() {
+  var notifSound=document.getElementById("chat-audio-notif");
+  notifSound.play();
 };
 
 
@@ -245,6 +252,7 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
  * @param status : the new status : available, donotdisturb, invisible, away or offline
  */
 ChatNotification.prototype.changeStatus = function(status) {
+  this.profileStatus = status;
   var $spanStatusChat = jQuery("span.chat-status-chat");
   $spanStatusChat.removeClass("chat-status-available");
   $spanStatusChat.removeClass("chat-status-donotdisturb");
