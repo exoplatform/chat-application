@@ -33,7 +33,7 @@
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
-    <developerConnection>scm:git:git@github.com:exo-addons/chat-application.git</developerConnection>
+    <developerConnection>scm:git:ssh://git@github.com/exo-addons/chat-application.git</developerConnection>
     <url>https://github.com/exo-addons/chat-application</url>
   </scm>
   <properties>
