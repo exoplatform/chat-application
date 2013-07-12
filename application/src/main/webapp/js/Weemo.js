@@ -35,12 +35,14 @@ Weemo = function() {
   var pwd = '';
   var displayname = '';
   var downloadTimeout = null;
-  var downloadTimeoutValue = 15000;
+  var downloadTimeoutValue = 20000; // 15000
   var pollingTimeout = 16000;
   var messageTimeout = 5000;
   var environment = 'production';
   var downloadUrl = '';
   var websock;
+  var connectionDelay = 0;
+  var connectTimeout = null;
 
   //  Public methods
   this.setUid = function(value) { uid = value; };
@@ -78,9 +80,9 @@ Weemo = function() {
   var sm = function(action, params, data) {
 
     if(data != undefined && data != '') {
-      deb = 'WEEMODRIVER TO BROWSER >>>>> ' + data + ' | STATE = ' + state + ' | ACTION = ' + action;
+      deb = 'WEEMODRIVER TO BROWSER >>>>> ' + data + ' | STATE = ' + state + ' | ACTION = ' + action + ' | TIME = ' + new Date().toLocaleTimeString();
     } else {
-      deb = 'STATE = ' + state + ' | ACTION = ' + action;
+      deb = 'STATE = ' + state + ' | ACTION = ' + action + ' | TIME = ' + new Date().toLocaleTimeString();
     }
     debug(deb);
 
@@ -91,14 +93,21 @@ Weemo = function() {
           switch(action) {
             case 'not_connected':
             case 'connect':
-              if(state == 'RECONNECT' && websock != null && websock != undefined) {
+              connectionDelay += 2000;
+
+              //if(state == 'RECONNECT' && websock != null && websock != undefined) {
+              if(websock != null && websock != undefined) {
                 debug('BROWSER WEBSOCKET READYSTATE : ' + websock.readyState);
 
-                /*websock.onopen = null;
-                 websock.onopen = null;
-                 websock.onopen = null;
-                 websock.onopen = null;*/
+                websock.onopen = null;
+                websock.onclose = null;
+                websock.onmessage = null;
+                websock.onerror = null;
 
+                delete(websock.onopen);
+                delete(websock.onclose);
+                delete(websock.onmessage);
+                delete(websock.onerror);
               }
 
               if(downloadTimeout == null) {
@@ -124,13 +133,15 @@ Weemo = function() {
                       downloadUrl = 'https://download.weemo.com/poc.php?apikey='+apikey+'&domain_name='+domain;
 
                   }
-                  debug('BROWSER >>>>> WeemoDriver not started');
+                  debug('BROWSER >>>>> WeemoDriver not started | TIME : ' + new Date().toLocaleTimeString());
                   if(typeof(self.onWeemoDriverNotStarted) != undefined && typeof(self.onWeemoDriverNotStarted) == 'function') self.onWeemoDriverNotStarted(downloadUrl); }, downloadTimeoutValue);
               }
-              createConnection();
+              connectTimeout = setTimeout(jQuery.proxy(createConnection,this), connectionDelay);
               break;
 
             case 'connected':
+              connectionDelay = 0;
+              clearTimeout(connectTimeout);
               clearTimeout(downloadTimeout);
 
               if(state=='RECONNECT') { state='CONNECTED_WEEMO_DRIVER'; sm('connect'); }
@@ -480,7 +491,7 @@ Weemo = function() {
     if(key=='' || key==undefined || key == null) { key = apikey; }
     if(type == 'host' || type == 'attendee') {
       var mvs = uidToCall.substr(0,4);
-      if(mvs != 'nyc1' && mvs != 'par1') { uidToCall = 'nyc1'+uidToCall; }
+      if(mvs != 'nyc1' && mvs != 'par1' && mvs != 'ldn1') { uidToCall = 'nyc1'+uidToCall; }
     }
     sendMessage('<createcall uid="'+uidToCall+'" apikey="'+key+'" displayname="'+displaynameToCall+'" type="'+type+'"></createcall>');
   };
@@ -525,9 +536,12 @@ Weemo = function() {
           debug('BROWSER TO WEEMODRIVER >>>>>> '+message);
           data = trim(data.x);
           var pos = strpos(data, ":");
-          if(pos !== false) { data = data.substring(pos+1); }
+          if(pos !== false) {
+            var responseId = data.substring(0, pos);
+            data = data.substring(pos+1);
+          }
 
-          if(data != "" && data != undefined) {
+          if(data != "" && data != undefined && responseId != undefined && responseId == myId) {
             try { handleData(data); }
             catch(err) { debug(err); }
           }
@@ -709,11 +723,32 @@ Weemo = function() {
       success: function(data) {
         sm('connected');
 
+        /*if(data != "" && data != undefined) {
+         var pos = strpos(data.x, ":");
+
+
+         if(pos !== false) {
+         responseId = data.x.substring(0, pos);
+         if(window.console) console.log(responseId);
+         data.x = data.x.substring(pos+1);
+         handleData(data.x);
+         }
+
+         polling();
+         }*/
         if(data != "" && data != undefined) {
           var pos = strpos(data.x, ":");
-          if(pos !== false) { data.x = data.x.substring(pos+1); }
-          handleData(data.x);
-          polling();
+          if(pos !== false) {
+            var responseId = data.x.substring(0, pos);
+            if(window.console) console.log(responseId);
+            if(responseId == myId) {
+              data.x = data.x.substring(pos+1);
+              handleData(data.x);
+              polling();
+            }
+          } else {
+            polling();
+          }
         }
       },
       error: function (data, textStatus, errorThrown) {
