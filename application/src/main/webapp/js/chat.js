@@ -1173,6 +1173,11 @@ ChatApplication.prototype.getStatusLabel = function(status) {
   }
 };
 
+ChatApplication.prototype.playNotifSound = function() {
+  var notifSound=document.getElementById("audio-notif");
+  notifSound.play();
+};
+
 /**
  * Refresh Who Is Online : server call
  */
@@ -1219,12 +1224,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
 
           this.jQueryForUsersTemplate();
 
+          this.totalNotif = this.getOfflineNotif()+this.getOnlineNotif()+this.getSpacesNotif();
           if (window.fluid!==undefined) {
-            this.totalNotif = 0;
-            var thisref = this;
-            $('span.room-total').each(function(index) {
-              thisref.totalNotif = parseInt(thisref.totalNotif,10) + parseInt($(this).attr("data"),10);
-            });
             if (this.totalNotif>0)
               window.fluid.dockBadge = this.totalNotif;
             else
@@ -1238,13 +1239,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
                 identifier: "messages"
               });
             }
-            this.oldNotif = this.totalNotif;
           } else if (window.webkitNotifications!==undefined) {
-            this.totalNotif = 0;
-            var thisref = this;
-            $('span.room-total').each(function(index) {
-              thisref.totalNotif = parseInt(thisref.totalNotif,10) + parseInt($(this).attr("data"),10);
-            });
             if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
 
               var havePermission = window.webkitNotifications.checkPermission();
@@ -1265,8 +1260,11 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
                 window.webkitNotifications.requestPermission();
               }
             }
-            this.oldNotif = this.totalNotif;
           }
+          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+            this.playNotifSound();
+          }
+          this.oldNotif = this.totalNotif;
         }
       },
       error: function (response){
