@@ -1173,9 +1173,21 @@ ChatApplication.prototype.getStatusLabel = function(status) {
   }
 };
 
+ChatApplication.prototype.updateTotal = function() {
+  this.totalNotif = Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
+};
+
 ChatApplication.prototype.playNotifSound = function() {
   var notifSound=document.getElementById("audio-notif");
   notifSound.play();
+};
+
+ChatApplication.prototype.updateTitle = function() {
+  if (this.totalNotif>0) {
+    document.title = "Chat ("+this.totalNotif+")";
+  } else {
+    document.title = "Chat";
+  }
 };
 
 /**
@@ -1224,7 +1236,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
 
           this.jQueryForUsersTemplate();
 
-          this.totalNotif = this.getOfflineNotif()+this.getOnlineNotif()+this.getSpacesNotif();
+          this.updateTotal();
           if (window.fluid!==undefined) {
             if (this.totalNotif>0)
               window.fluid.dockBadge = this.totalNotif;
@@ -1265,6 +1277,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
             this.playNotifSound();
           }
           this.oldNotif = this.totalNotif;
+          this.updateTitle();
         }
       },
       error: function (response){
