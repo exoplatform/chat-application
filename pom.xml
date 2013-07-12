@@ -32,9 +32,9 @@
     <module>exo-addons-chat-extension-pkg</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/benjp/chat.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/benjp/chat.git</developerConnection>
-    <url>https://github.com/benjp/chat</url>
+    <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
+    <developerConnection>scm:git:git@github.com:exo-addons/chat-application.git</developerConnection>
+    <url>https://github.com/exo-addons/chat-application</url>
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
