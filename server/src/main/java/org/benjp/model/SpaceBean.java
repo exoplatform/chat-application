@@ -66,4 +66,30 @@ public class SpaceBean
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
   }
+
+  @Override public boolean equals(Object aThat) {
+    if ( this == aThat ) return true;
+    if ( !(aThat instanceof SpaceBean) ) return false;
+    SpaceBean that = (SpaceBean)aThat;
+
+    return  areEqual(this.id, that.id) &&
+              areEqual(this.displayName, that.displayName) &&
+              areEqual(this.groupId, that.groupId) &&
+              areEqual(this.shortName, that.shortName);
+  }
+
+  @Override public int hashCode() {
+    return this.id.hashCode()
+            ^ this.displayName.hashCode()
+            ^ this.groupId.hashCode()
+            ^ this.shortName.hashCode();
+  }
+
+  static public boolean areEqual(Object aThis, Object aThat){
+    return aThis == null ? aThat == null : aThis.equals(aThat);
+  }
+
+  static public boolean areEqual(long aThis, long aThat){
+    return aThis == aThat;
+  }
 }
