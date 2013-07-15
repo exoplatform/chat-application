@@ -20,7 +20,6 @@ public class UserTestCase extends AbstractChatTestCase
   {
     ConnectionManager.getInstance().getDB().getCollection(TokenService.M_TOKENS_COLLECTION).drop();
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
-
   }
 
   @Test
@@ -111,6 +110,58 @@ public class UserTestCase extends AbstractChatTestCase
     ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
 
     assertFalse(ServiceBootstrap.getTokenService().isDemoUser(username));
+
+  }
+
+  @Test
+  public void testFavorites() throws Exception
+  {
+    log.info("UserTestCase.testFavorites");
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
+
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john"));
+
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    assertTrue(ServiceBootstrap.getUserService().isFavorite(username, "john"));
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary"));
+
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john"));
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary"));
+
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    ServiceBootstrap.getUserService().toggleFavorite(username, "mary");
+
+    UserBean user = ServiceBootstrap.getUserService().getUser(username);
+    assertNull(user.getFavorites());
+
+    user = ServiceBootstrap.getUserService().getUser(username, true);
+    assertEquals(2, user.getFavorites().size());
+
+  }
+
+  @Test
+  public void testStatus()
+  {
+    log.info("UserTestCase.testStatus");
+    UserService userService = ServiceBootstrap.getUserService();
+    userService.addUserFullName(username, "Benjamin Paillereau");
+    userService.addUserFullName("john", "John Smith");
+
+    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus(username));
+
+    userService.setStatus(username, UserService.STATUS_DONOTDISTURB);
+    assertEquals(UserService.STATUS_DONOTDISTURB, userService.getStatus(username));
+
+    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus("john"));
+
+    userService.setStatus(username, UserService.STATUS_AWAY);
+    assertEquals(UserService.STATUS_AWAY, userService.getStatus(username));
+
+    userService.setStatus(username, UserService.STATUS_INVISIBLE);
+    assertEquals(UserService.STATUS_INVISIBLE, userService.getStatus(username));
 
   }
 }

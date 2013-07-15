@@ -459,7 +459,7 @@ public class ChatService
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
-    UserBean userBean = userService.getUser(user);
+    UserBean userBean = userService.getUser(user, true);
     int unreadOffline=0, unreadOnline=0, unreadSpaces=0;
 
     Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);

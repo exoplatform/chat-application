@@ -392,8 +392,11 @@ public class UserService
         userBean.setEmail(doc.get("email").toString());
       if (doc.get("status")!=null)
         userBean.setStatus(doc.get("status").toString());
-      if (doc.containsField("favorites")) {
-        userBean.setFavorites ((List<String>) doc.get("favorites"));
+      if (withFavorites)
+      {
+        if (doc.containsField("favorites")) {
+          userBean.setFavorites ((List<String>) doc.get("favorites"));
+        }
       }
     }
 
