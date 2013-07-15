@@ -262,9 +262,12 @@ public class UserService
       DBObject doc = cursor.next();
       UserBean userBean = new UserBean();
       userBean.setName(doc.get("user").toString());
-      userBean.setFullname(doc.get("fullname").toString());
-      userBean.setEmail(doc.get("email").toString());
-      userBean.setStatus(doc.get("status").toString());
+      Object prop = doc.get("fullname");
+      userBean.setFullname((prop!=null)?prop.toString():"");
+      prop = doc.get("email");
+      userBean.setEmail((prop!=null)?prop.toString():"");
+      prop = doc.get("status");
+      userBean.setStatus((prop!=null)?prop.toString():"");
       users.add(userBean);
     }
     return users;
@@ -324,8 +327,8 @@ public class UserService
     if (cursor.hasNext())
     {
       DBObject doc = cursor.next();
-      String isAdmin = doc.get("isSupportAdmin").toString();
-      return (isAdmin!=null && "true".equals(isAdmin));
+      Object isAdmin = doc.get("isSupportAdmin");
+      return (isAdmin!=null && "true".equals(isAdmin.toString()));
     }
     return false;
   }

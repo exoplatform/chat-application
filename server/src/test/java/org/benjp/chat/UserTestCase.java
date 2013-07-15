@@ -164,4 +164,20 @@ public class UserTestCase extends AbstractChatTestCase
     assertEquals(UserService.STATUS_INVISIBLE, userService.getStatus(username));
 
   }
+
+  @Test
+  public void testAdmin()
+  {
+    log.info("UserTestCase.testAdmin");
+    UserService userService = ServiceBootstrap.getUserService();
+    userService.addUserFullName(username, "Benjamin Paillereau");
+    userService.addUserFullName("john", "John Smith");
+
+    assertFalse(userService.isAdmin(username));
+
+    userService.setAsAdmin(username, true);
+
+    assertTrue(userService.isAdmin(username));
+
+  }
 }
