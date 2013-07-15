@@ -34,7 +34,7 @@ import java.util.List;
 public class UserService
 {
 
-  private static final String M_USERS_COLLECTION = "users";
+  public static final String M_USERS_COLLECTION = "users";
   public static final String M_SPACES_COLLECTION = "spaces";
 
   public static final String STATUS_AVAILABLE = "available";

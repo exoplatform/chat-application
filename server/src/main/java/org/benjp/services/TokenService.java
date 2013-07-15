@@ -33,7 +33,7 @@ import java.util.List;
 @ApplicationScoped
 public class TokenService
 {
-  private static final String M_TOKENS = "tokens";
+  public static final String M_TOKENS_COLLECTION = "tokens";
   public static final String ANONIM_USER = "__anonim_";
   private int validity_ = -1;
 
@@ -53,7 +53,7 @@ public class TokenService
 
   public boolean hasUserWithToken(String user, String token)
   {
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -67,7 +67,7 @@ public class TokenService
     {
       //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
       removeUser(user);
-      DBCollection coll = db().getCollection(M_TOKENS);
+      DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
 
       BasicDBObject doc = new BasicDBObject();
       doc.put("_id", token);
@@ -82,7 +82,7 @@ public class TokenService
 
   private void removeUser(String user)
   {
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -95,7 +95,7 @@ public class TokenService
 
   public void updateValidity(String user, String token)
   {
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -111,7 +111,7 @@ public class TokenService
   public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
     ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     if (isAdmin)
@@ -143,7 +143,7 @@ public class TokenService
 
   public boolean isUserOnline(String user)
   {
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
@@ -155,7 +155,7 @@ public class TokenService
   {
     return user.startsWith(ANONIM_USER);
 /*
-    DBCollection coll = db().getCollection(M_TOKENS);
+    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("isDemoUser", true);
@@ -171,7 +171,7 @@ public class TokenService
       validity_ = 25000;
       try
       {
-        validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS)) + 10000;
+        validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY));
       }
       catch (Exception e)
       {

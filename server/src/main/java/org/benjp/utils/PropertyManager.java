@@ -48,6 +48,7 @@ public class PropertyManager {
   public static final String PROPERTY_PUBLIC_MODE = "publicMode";
   public static final String PROPERTY_PUBLIC_ADMIN_GROUP = "publicAdminGroup";
   public static final String PROPERTY_WEEMO_KEY = "weemoKey";
+  public static final String PROPERTY_TOKEN_VALIDITY = "chatTokenValidity";
 
   public static final String PROPERTY_SERVER_TYPE_EMBED = "embed";
   public static final String PROPERTY_SERVER_TYPE_MONGO = "mongo";
@@ -94,6 +95,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_PUBLIC_MODE, "false");
       overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       overridePropertyIfNotSet(PROPERTY_WEEMO_KEY, "");
+      overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "25000");
     }
     return properties;
   }
