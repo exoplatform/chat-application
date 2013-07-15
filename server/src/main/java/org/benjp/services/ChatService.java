@@ -139,7 +139,7 @@ public class ChatService
 
   public String read(String room, UserService userService, boolean isTextOnly)
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
     SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
