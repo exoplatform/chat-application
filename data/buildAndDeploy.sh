@@ -41,6 +41,6 @@ cp application/target/chat.war $PLF_TOMCAT_DIRECTORY/webapps/chat.war
 
 ### EXTENSION
 mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension-config
-cp exo-addons-chat-extension-config/target/exo-addons-chat-extension-config-0.7.0-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
+cp exo-addons-chat-extension-config/target/exo-addons-chat-extension-config-0.7.0-beta2-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
 mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension
 cp exo-addons-chat-extension/target/chat-extension.war $PLF_TOMCAT_DIRECTORY/webapps/

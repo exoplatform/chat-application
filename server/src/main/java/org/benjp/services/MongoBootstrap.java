@@ -20,13 +20,22 @@
 package org.benjp.services;
 
 import com.mongodb.*;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 import org.benjp.utils.PropertyManager;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 public class MongoBootstrap
 {
+  private static MongodExecutable mongodExe;
+  private static MongodProcess mongod;
   private Mongo m;
   private DB db;
   private static Logger log = Logger.getLogger("MongoBootstrap");
@@ -37,6 +46,13 @@ public class MongoBootstrap
     {
       try
       {
+        if (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE)))
+        {
+          log.warning("We will now use MongoDB in Embed Mode...");
+          log.warning("Embed Mode should never be used in Production!");
+          setupEmbedMongo();
+        }
+
         MongoOptions options = new MongoOptions();
         options.connectionsPerHost = 200;
         options.connectTimeout = 60000;
@@ -50,12 +66,19 @@ public class MongoBootstrap
       catch (UnknownHostException e)
       {
       }
+      catch (IOException e)
+      {
+      }
     }
     return m;
   }
 
   public void close() {
     try {
+      if (mongod != null) {
+        mongod.stop();
+        mongodExe.stop();
+      }
       if (m!=null)
         m.close();
     } catch (NullPointerException e) {}
@@ -101,6 +124,21 @@ public class MongoBootstrap
 
     }
     return db;
+  }
+
+  private static Mongo setupEmbedMongo() throws IOException {
+    MongodStarter runtime = MongodStarter.getDefaultInstance();
+    int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
+    mongodExe = runtime.prepare(new MongodConfig(Version.V2_3_0, port, Network.localhostIsIPv6()));
+    mongod = mongodExe.start();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      log.info(e.getMessage());
+    }
+    String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
+
+    return new Mongo(new ServerAddress(host, port));
   }
 
   public void initCappedCollection(String name, int size)
