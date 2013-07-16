@@ -14,9 +14,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ChatTestCase extends AbstractChatTestCase
 {
@@ -114,9 +112,13 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatService.write("foo", "benjamin", roomId, "false");
     String resp = chatService.read(roomId, userService);
+
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     String room = (String)jsonObject.get("room");
     assertEquals(roomId, room);
+
+    String timestamp = (String)jsonObject.get("timestamp");
+    assertNotNull(timestamp);
 
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
@@ -131,6 +133,96 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals("foo", message);
     message = (String)((JSONObject)messages.get(1)).get("message");
     assertEquals("bar", message);
+
+    JSONObject msgJson = (JSONObject)messages.get(0);
+
+    String val = (String)msgJson.get("id");
+    assertNotNull(val);
+    val = (String)msgJson.get("user");
+    assertNotNull(val);
+    val = (String)msgJson.get("fullname");
+    assertNotNull(val);
+    val = (String)msgJson.get("email");
+    assertNotNull(val);
+    val = (String)msgJson.get("date");
+    assertNotNull(val);
+    val = (String)msgJson.get("type");
+    assertNotNull(val);
+    val = (String)msgJson.get("isSystem");
+    assertNotNull(val);
+
+
+  }
+
+  @Test
+  public void testEdit() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId = chatService.getRoom(users);
+
+    chatService.write("foo", "benjamin", roomId, "false");
+    String resp = chatService.read(roomId, userService);
+    JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
+    JSONArray messages = (JSONArray)jsonObject.get("messages");
+    assertEquals(1, messages.size());
+
+    String message = (String)((JSONObject)messages.get(0)).get("message");
+    String id = (String)((JSONObject)messages.get(0)).get("id");
+
+    assertEquals("foo", message);
+
+    chatService.edit(roomId, "benjamin", id, "bar");
+
+    resp = chatService.read(roomId, userService);
+    jsonObject = (JSONObject)JSONValue.parse(resp);
+    messages = (JSONArray)jsonObject.get("messages");
+    assertEquals(1, messages.size());
+
+    String message2 = (String)((JSONObject)messages.get(0)).get("message");
+    String type2 = (String)((JSONObject)messages.get(0)).get("type");
+    String id2 = (String)((JSONObject)messages.get(0)).get("id");
+
+    assertEquals(id, id2);
+    assertEquals("bar", message2);
+    assertEquals(ChatService.TYPE_EDITED, type2);
+
+  }
+
+  @Test
+  public void testDelete() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId = chatService.getRoom(users);
+
+    chatService.write("foo", "benjamin", roomId, "false");
+    chatService.write("bar", "benjamin", roomId, "false");
+    String resp = chatService.read(roomId, userService);
+    JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
+    JSONArray messages = (JSONArray)jsonObject.get("messages");
+    assertEquals(2, messages.size());
+
+    String id = (String)((JSONObject)messages.get(0)).get("id");
+
+    chatService.delete(roomId, "benjamin", id);
+
+    resp = chatService.read(roomId, userService);
+    jsonObject = (JSONObject)JSONValue.parse(resp);
+    messages = (JSONArray)jsonObject.get("messages");
+    assertEquals(2, messages.size());
+
+    String id3 = (String)((JSONObject)messages.get(0)).get("id");
+    String type3 = (String)((JSONObject)messages.get(0)).get("type");
+
+    assertEquals(id, id3);
+    assertEquals(ChatService.TYPE_DELETED, type3);
 
   }
 
