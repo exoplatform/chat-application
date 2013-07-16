@@ -1,10 +1,13 @@
 Chat Application
 ============
 
-eXo Chat uses Async Ajax calls to a Chat server using MongoDB for storage.
-Thanks to [Weemo](http://www.weemo.com) and their powerful cloud solution, it’s even possible to benefit from Video Conferencing and Scree Sharing from within eXo Chat.
+eXo Chat is an Instant Messaging application for eXo Platform 4.
+Thanks to [Weemo](http://www.weemo.com) and their powerful cloud solution, it’s even possible to benefit from Video Conferencing (One to One, Conference) and Screen Sharing from within eXo Chat.
 
-This Chat application comes with a client project (/application) and a server project (/server).
+You can discuss or find more information about eXo Chat in its Community Site :
+- [eXo Chat Space Community|http://community.exoplatform.com/portal/g/:spaces:chat_application/chat_application]
+
+Technically speaking, this Chat application comes with a client project (/application) and a server project (/server). All the Chat data is stored using MongoDB for storage.
 Server can run on the same Java Application Server but as it's a near to real time application and can process a lot of data, it's recommended to use the Chat Server as a standalone application on another AS.
 Thus, Chat Client portlets will run on an eXo Platform based App Server, where the Chat Server can run on a standard tomcat installation.
 
