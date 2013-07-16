@@ -438,23 +438,6 @@ public class ChatService
     return rooms;
   }
 
-  public boolean hasRoom(List<String> users)
-  {
-    Collections.sort(users);
-    String room = null;
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
-
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("users", users);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    return cursor.hasNext();
-  }
-
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
-  {
-    return getRooms(user, filter, withUsers, withSpaces, withPublic, true, isAdmin, notificationService, userService, tokenService);
-  }
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();

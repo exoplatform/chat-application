@@ -2,8 +2,12 @@ package org.benjp.chat;
 
 import org.benjp.chat.bootstrap.ServiceBootstrap;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.model.RoomBean;
+import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.services.ChatService;
+import org.benjp.services.NotificationService;
+import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,7 +30,14 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("john");
     String roomId = ServiceBootstrap.getChatService().getRoom(users);
     ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId).drop();
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("mary");
+    roomId = ServiceBootstrap.getChatService().getRoom(users);
+    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId).drop();
+
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
+
     UserService userService = ServiceBootstrap.getUserService();
     userService.addUserFullName("benjamin", "Benjamin Paillereau");
     userService.addUserEmail("benjamin", "bpaillereau@exoplatform.com");
@@ -34,6 +45,8 @@ public class ChatTestCase extends AbstractChatTestCase
     userService.addUserEmail("john", "john@exoplatform.com");
     userService.addUserFullName("mary", "Mary Williams");
     userService.addUserEmail("mary", "mary@exoplatform.com");
+    userService.addUserFullName("james", "James Potter");
+    userService.addUserEmail("james", "james@exoplatform.com");
   }
 
   @Test
@@ -55,8 +68,11 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("mary");
     String roomId3 = chatService.getRoom(users);
 
+    String roomId4 = chatService.getSpaceRoom("test-space");
+
     assertEquals(roomId, roomId2);
     assertNotEquals(roomId, roomId3);
+    assertNotEquals(roomId, roomId4);
 
   }
 
@@ -223,6 +239,146 @@ public class ChatTestCase extends AbstractChatTestCase
 
     assertEquals(id, id3);
     assertEquals(ChatService.TYPE_DELETED, type3);
+
+  }
+
+  @Test
+  public void testGetExistingRooms() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId1 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("mary");
+    chatService.getRoom(users);
+
+
+    chatService.write("foo", "benjamin", roomId1, "false");
+
+    List<RoomBean> rooms = chatService.getExistingRooms("benjamin", false, false, notificationService, tokenService);
+    assertEquals(2, rooms.size());
+
+    rooms = chatService.getExistingRooms("john", false, false, notificationService, tokenService);
+    assertEquals(1, rooms.size());
+
+    rooms = chatService.getExistingRooms("mary", false, false, notificationService, tokenService);
+    assertEquals(1, rooms.size());
+
+    rooms = chatService.getExistingRooms("james", false, false, notificationService, tokenService);
+    assertEquals(0, rooms.size());
+
+
+
+  }
+
+  @Test
+  public void testGetRooms() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId1 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("mary");
+    String roomId2 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("james");
+    String roomId3 = chatService.getRoom(users);
+
+
+    chatService.write("foo", "benjamin", roomId1, "false");
+    chatService.write("bar", "john", roomId1, "false");
+
+    chatService.write("foo", "benjamin", roomId2, "false");
+    chatService.write("bar", "mary", roomId2, "false");
+
+    chatService.write("foo", "benjamin", roomId3, "false");
+    chatService.write("bar", "james", roomId3, "false");
+
+
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces("benjamin");
+    SpaceBean space = new SpaceBean();
+    space.setDisplayName("Test Space");
+    space.setGroupId("test_space");
+    space.setId("test_space");
+    space.setShortName("Test Space");
+    space.setTimestamp(System.currentTimeMillis());
+    spaces.add(space);
+
+    ServiceBootstrap.getUserService().setSpaces("john", spaces);
+
+    SpaceBean space2 = new SpaceBean();
+    space2.setDisplayName("Test Space 2");
+    space2.setGroupId("test_space_2");
+    space2.setId("test_space_2");
+    space2.setShortName("Test Space 2");
+    space2.setTimestamp(System.currentTimeMillis());
+    spaces.add(space2);
+
+    ServiceBootstrap.getUserService().setSpaces("benjamin", spaces);
+
+
+    String spaceId1 = chatService.getSpaceRoom("test_space");
+    chatService.write("foo", "benjamin", spaceId1, "false");
+
+    String spaceId2 = chatService.getSpaceRoom("test_space_2");
+    chatService.write("foo", "benjamin", spaceId1, "false");
+    chatService.write("foo", "john", spaceId1, "false");
+
+
+    //public RoomsBean getRooms(String user, String filter,
+    //      boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin,
+    //      NotificationService notificationService, UserService userService, TokenService tokenService)
+
+    RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsMaryAll = chatService.getRooms("mary", null,
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+
+    RoomsBean roomsBenUsers = chatService.getRooms("benjamin", null,
+            true, false, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsMaryUsers = chatService.getRooms("mary", null,
+            true, false, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsMarySpaces = chatService.getRooms("mary", null,
+            false, true, false, false, false,
+            notificationService, userService, tokenService);
+
+    Thread.sleep(110);
+
+    RoomsBean roomsBenOffline = chatService.getRooms("benjamin", null,
+            true, false, false, true, false,
+            notificationService, userService, tokenService);
+
+    RoomsBean roomsBenOnline = chatService.getRooms("benjamin", null,
+            true, false, false, false, false,
+            notificationService, userService, tokenService);
+
+    assertEquals(5, roomsBenAll.getRooms().size());
+    assertEquals(3, roomsBenUsers.getRooms().size());
+    assertEquals(3, roomsBenOffline.getRooms().size());
+    assertEquals(0, roomsBenOnline.getRooms().size());
+    assertEquals(1, roomsMaryAll.getRooms().size());
+    assertEquals(0, roomsMarySpaces.getRooms().size());
+    assertEquals(1, roomsMaryUsers.getRooms().size());
 
   }
 
