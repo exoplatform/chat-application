@@ -7,5 +7,9 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
   style="display: none;">
-  <audio id="chat-audio-notif" src="/chat/audio/notif.ogg" controls preload="auto" autobuffer style="display: none;"></audio>
+  <audio id="chat-audio-notif" controls preload="auto" autobuffer style="display: none;">
+    <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
+    <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
+    <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
+  </audio>
 </div>
