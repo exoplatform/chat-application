@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
 @ApplicationScoped
 public class NotificationService
 {
-  private static final String M_NOTIFICATIONS = "notifications";
+  public static final String M_NOTIFICATIONS = "notifications";
 
   private DB db()
   {

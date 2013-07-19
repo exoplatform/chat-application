@@ -7,7 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses(value = {
         UserTestCase.class,
-        SpaceTestCase.class
+        SpaceTestCase.class,
+        ChatTestCase.class,
+        NotificationTestCase.class
 })
 
 
