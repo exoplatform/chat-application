@@ -181,7 +181,7 @@ $(document).ready(function(){
   $(".filter").on("click", function() {
     $(this).toggleClass("active");
     var type = $(this).attr("data-type");
-    jzStoreParam("chat.button."+type, !$(this).hasClass("active"), 172800); //stored for 2 days
+    jzStoreParam("chat.button."+type, $(this).hasClass("active"), 172800); //stored for 2 days
     chatApplication.refreshWhoIsOnline();
   });
 
@@ -558,13 +558,13 @@ ChatApplication.prototype.initStatusChat = function() {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
-  if (jzGetParam("chat.button.space", "true") === "false")
+  if (jzGetParam("chat.button.space", "true") === "true")
     $(".filter-space").addClass("active");
-  if (jzGetParam("chat.button.user", "true") === "false")
+  if (jzGetParam("chat.button.user", "true") === "true")
     $(".filter-user").addClass("active");
-  if (jzGetParam("chat.button.offline", "false") === "false")
+  if (jzGetParam("chat.button.offline", "false") === "true")
     $(".filter-offline").addClass("active");
-  if (jzGetParam("chat.button.public", "false") === "false")
+  if (jzGetParam("chat.button.public", "false") === "true")
     $(".filter-public").addClass("active");
 
 
