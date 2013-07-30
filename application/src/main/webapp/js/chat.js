@@ -776,7 +776,7 @@ ChatApplication.prototype.showMessages = function(msgs) {
         if (prevUser !== "__system")
           out += "<hr style='margin: 0'>";
         out += "<div class='msgln-odd'>";
-        out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
+        out += "<span style='position:relative; padding-right:14px;padding-left:4px;top:8px'>";
         var options = {};
         // Legacy test
         if (message.message.indexOf("&")>0) {
@@ -789,16 +789,16 @@ ChatApplication.prototype.showMessages = function(msgs) {
         var nbOptions = this.getObjectSize(options);
 
         if (message.message==="Call active") {
-          out += "<span class='call-on'></span>";
+          out += "<img class='call-on' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandler", options.timestamp, 600000)
           }
           $(".btn-weemo").addClass('disabled');
         } else if (message.message==="Call terminated") {
-          out += "<span class='call-off'></span>";
+          out += "<img class='call-off' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
           $(".btn-weemo").removeClass('disabled');
         } else {
-          out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
+          out += "<img src='/chat/img/empty.png' width='32px' style='width:32px;'>";
         }
         out += "</span>";
         out += "<span>";
