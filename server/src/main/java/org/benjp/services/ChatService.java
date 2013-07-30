@@ -529,18 +529,22 @@ public class ChatService
 
     }
 
-
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
-    for (RoomBean roomBean:rooms) {
-      String targetUser = roomBean.getFullname();
-      if (filter(targetUser, filter))
-        finalRooms.add(roomBean);
+    if (filter!=null)
+    {
+      for (RoomBean roomBean:rooms) {
+        String targetUser = roomBean.getFullname();
+        if (filter(targetUser, filter))
+          finalRooms.add(roomBean);
+      }
+    }
+    else
+    {
+      finalRooms = rooms;
     }
 
-    Collections.sort(finalRooms);
-
     RoomsBean roomsBean = new RoomsBean();
-    roomsBean.setRooms(rooms);
+    roomsBean.setRooms(finalRooms);
     roomsBean.setUnreadOffline(unreadOffline);
     roomsBean.setUnreadOnline(unreadOnline);
     roomsBean.setUnreadSpaces(unreadSpaces);

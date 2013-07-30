@@ -383,5 +383,102 @@ public class ChatTestCase extends AbstractChatTestCase
 
   }
 
+  @Test
+  public void testGetRoomsFiltered() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId1 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("mary");
+    String roomId2 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("james");
+    String roomId3 = chatService.getRoom(users);
+
+
+    chatService.write("foo", "benjamin", roomId1, "false");
+    chatService.write("bar", "john", roomId1, "false");
+
+    chatService.write("foo", "benjamin", roomId2, "false");
+    chatService.write("bar", "mary", roomId2, "false");
+
+    chatService.write("foo", "benjamin", roomId3, "false");
+    chatService.write("bar", "james", roomId3, "false");
+
+
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces("benjamin");
+    SpaceBean space = new SpaceBean();
+    space.setDisplayName("Test Space");
+    space.setGroupId("test_space");
+    space.setId("test_space");
+    space.setShortName("Test Space");
+    space.setTimestamp(System.currentTimeMillis());
+    spaces.add(space);
+
+    ServiceBootstrap.getUserService().setSpaces("john", spaces);
+
+    SpaceBean space2 = new SpaceBean();
+    space2.setDisplayName("Test Space 2");
+    space2.setGroupId("test_space_2");
+    space2.setId("test_space_2");
+    space2.setShortName("Test Space 2");
+    space2.setTimestamp(System.currentTimeMillis());
+    spaces.add(space2);
+
+    ServiceBootstrap.getUserService().setSpaces("benjamin", spaces);
+
+
+    String spaceId1 = chatService.getSpaceRoom("test_space");
+    chatService.write("foo", "benjamin", spaceId1, "false");
+
+    String spaceId2 = chatService.getSpaceRoom("test_space_2");
+    chatService.write("foo", "benjamin", spaceId2, "false");
+    chatService.write("foo", "john", spaceId2, "false");
+
+    RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+
+    RoomsBean roomsBenTest = chatService.getRooms("benjamin", "Test",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsBenTeSp = chatService.getRooms("benjamin", "Te Sp",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsBenTeSpe = chatService.getRooms("benjamin", "Te Spe",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsBenJohn = chatService.getRooms("benjamin", "john",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsBenJo = chatService.getRooms("benjamin", "Jo",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+    RoomsBean roomsBenMaWi = chatService.getRooms("benjamin", "Ma Wi",
+            true, true, false, true, false,
+            notificationService, userService, tokenService);
+
+    Thread.sleep(110);
+
+    assertEquals(5, roomsBenAll.getRooms().size());
+    assertEquals(2, roomsBenTest.getRooms().size());
+    assertEquals(2, roomsBenTeSp.getRooms().size());
+    assertEquals(0, roomsBenTeSpe.getRooms().size());
+    assertEquals(1, roomsBenJohn.getRooms().size());
+    assertEquals(1, roomsBenJo.getRooms().size());
+    assertEquals(1, roomsBenMaWi.getRooms().size());
+
+  }
+
 
 }
