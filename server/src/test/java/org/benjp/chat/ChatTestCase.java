@@ -108,13 +108,13 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatService.write("foo", "benjamin", roomId, "false");
     String resp = chatService.read(roomId, userService, true);
-    assertEquals(46, resp.length());
-    assertTrue(resp.endsWith("] Benjamin Paillereau: foo"));
+    assertEquals(47, resp.length());
+    assertTrue(resp.endsWith("] Benjamin Paillereau: foo\n"));
 
     chatService.write("bar", "john", roomId, "false");
     resp = chatService.read(roomId, userService, true);
-    assertEquals(83, resp.length());
-    assertTrue(resp.endsWith("] John Smith: bar"));
+    assertEquals(85, resp.length());
+    assertTrue(resp.endsWith("] John Smith: bar\n"));
   }
 
   @Test
@@ -147,14 +147,16 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(2, messages.size());
 
     String message = (String)((JSONObject)messages.get(0)).get("message");
-    assertEquals("foo", message);
-    message = (String)((JSONObject)messages.get(1)).get("message");
     assertEquals("bar", message);
+    message = (String)((JSONObject)messages.get(1)).get("message");
+    assertEquals("foo", message);
 
     JSONObject msgJson = (JSONObject)messages.get(0);
 
     String val = (String)msgJson.get("id");
     assertNotNull(val);
+    Long vall = (Long)msgJson.get("timestamp");
+    assertNotNull(vall);
     val = (String)msgJson.get("user");
     assertNotNull(val);
     val = (String)msgJson.get("fullname");

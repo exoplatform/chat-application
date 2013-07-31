@@ -706,8 +706,10 @@ ChatApplication.prototype.showMessages = function(msgs) {
       out += "<b><center>"+this.labels.get("label-no-messages")+"</center></b>";
     out += "</div>";
   } else {
-    for (im=0 ; im<this.messages.length ; im++) {
-      message = this.messages[im];
+
+    var messages = TAFFY(this.messages);
+    var thiss = this;
+    messages().order("timestamp asec").each(function (message) {
 
       if (message.isSystem!=="true")
       {
@@ -715,17 +717,17 @@ ChatApplication.prototype.showMessages = function(msgs) {
         {
           if (prevUser !== "")
             out += "</span></div>";
-          if (message.user != this.username) {
+          if (message.user != thiss.username) {
             out += "<div class='msgln-odd'>";
             out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            if (this.isPublic)
+            if (thiss.isPublic)
               out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
             else
               out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
             out += "</span>";
             out += "<span>";
-            if (this.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+this.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+            if (thiss.isPublic)
+              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
@@ -744,9 +746,9 @@ ChatApplication.prototype.showMessages = function(msgs) {
         }
         var msgtemp = message.message;
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+this.labels.get("label-deleted")+"</span>";
+          msgtemp = "<span class='contentDeleted'>"+thiss.labels.get("label-deleted")+"</span>";
         } else {
-          msgtemp = this.messageBeautifier(message.message);
+          msgtemp = thiss.messageBeautifier(message.message);
         }
         out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
           "<span class='invisible-text'> [</span>";
@@ -758,11 +760,11 @@ ChatApplication.prototype.showMessages = function(msgs) {
         if (message.type !== "DELETED") {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
-          if (message.user === this.username) {
-            out += "&nbsp;<a href='#' class='msg-action-delete'>"+this.labels.get("label-delete")+"</a>&nbsp;|";
-            out += "&nbsp;<a href='#' class='msg-action-edit'>"+this.labels.get("label-edit")+"</a>&nbsp;|";
+          if (message.user === thiss.username) {
+            out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-edit'>"+thiss.labels.get("label-edit")+"</a>&nbsp;|";
           }
-          out += "&nbsp;<a href='#' class='msg-action-quote'>"+this.labels.get("label-quote")+"</a>";
+          out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
           out += "</span>";
         }
         out += "<span class='invisible-text'>]</span></div>"+
@@ -786,7 +788,7 @@ ChatApplication.prototype.showMessages = function(msgs) {
         // end of legacy test
         if (typeof message.options == "object")
           options = message.options;
-        var nbOptions = this.getObjectSize(options);
+        var nbOptions = thiss.getObjectSize(options);
 
         if (message.message==="Call active") {
           out += "<img class='call-on' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
@@ -838,11 +840,11 @@ ChatApplication.prototype.showMessages = function(msgs) {
         }
 
         if (nbOptions===3) {
-          this.weemoExtension.setUidToCall(options.uidToCall);
-          this.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+          thiss.weemoExtension.setUidToCall(options.uidToCall);
+          thiss.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
           $(".btn-weemo").css("display", "none");
           $(".btn-weemo-conf").css("display", "block");
-          if (options.uidToCall!=="weemo"+this.username)
+          if (options.uidToCall!=="weemo"+thiss.username)
             $(".btn-weemo-conf").removeClass("disabled");
           else
             $(".btn-weemo-conf").addClass("disabled");
@@ -853,7 +855,7 @@ ChatApplication.prototype.showMessages = function(msgs) {
 
 
         message.message = "";
-        out += "<div style='margin-left:50px;'><span style='float:left'>"+this.messageBeautifier(message.message)+"</span>" +
+        out += "<div style='margin-left:50px;'><span style='float:left'>"+thiss.messageBeautifier(message.message)+"</span>" +
           "<span class='invisible-text'> [</span>"+
           "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
           "<span class='invisible-text'>]</span></div>"+
@@ -864,7 +866,8 @@ ChatApplication.prototype.showMessages = function(msgs) {
         prevUser = "__system";
 
       }
-    }
+    });
+
   }
   var $chats = $("#chats");
   $chats.html('<span>'+out+'</span>');
@@ -1800,7 +1803,7 @@ ChatApplication.prototype.showLoginPanel = function() {
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version 0.7-SNAPSHOT (build 130627)<br><br>";
+  about += "Version 0.7.1 (build 130731)<br><br>";
   about += "Designed and Developed by <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
   about += "for <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform</a><br><br>";
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";

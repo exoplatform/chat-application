@@ -27,6 +27,7 @@ import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
 import org.benjp.utils.MessageDigester;
+import org.benjp.utils.PropertyManager;
 import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -48,6 +49,17 @@ public class ChatService
   public static final String TYPE_EDITED = "EDITED";
 
   private static Logger log = Logger.getLogger("ChatService");
+
+  private long readMillis;
+  private int readTotalJson, readTotalTxt;
+
+  public ChatService()
+  {
+    long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
+    readMillis = readDays*24*60*60*1000;
+    readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
+    readTotalTxt = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_TXT));
+  }
 
   private DB db()
   {
@@ -153,14 +165,13 @@ public class ChatService
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
     BasicDBObject query = new BasicDBObject();
-    query.put("timestamp", new BasicDBObject("$gt", System.currentTimeMillis()-7*24*60*60*1000));
+    query.put("timestamp", new BasicDBObject("$gt", System.currentTimeMillis() - readMillis));
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
 
-    int limit = (isTextOnly)?2000:200;
+    int limit = (isTextOnly)?readTotalTxt:readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
-    String prevUser = "";
     if (!cursor.hasNext())
     {
       if (isTextOnly)
@@ -172,33 +183,25 @@ public class ChatService
     {
       Map<String, UserBean> users = new HashMap<String, UserBean>();
 
-      List<DBObject> listdbo = new ArrayList<DBObject>();
-      String mostRecentTimestamp = null;
+      String timestamp, user, fullname, email, msgId, date;
+      boolean first = true;
+
       while (cursor.hasNext())
       {
-        /** sorting and unsorting on cursor doesn't work, we need to reverse using a 2nd loop
-         * not good in term of performance, we should find a better way for this to work with
-         * sorting and limit in the query
-         */
         DBObject dbo = cursor.next();
-        if (mostRecentTimestamp==null)
+        timestamp = dbo.get("timestamp").toString();
+        if (first) //first element (most recent one)
         {
-          mostRecentTimestamp = dbo.get("timestamp").toString();
+          if (!isTextOnly)
+          {
+            sb.append("{\"room\": \"").append(room).append("\",");
+            sb.append("\"timestamp\": \"").append(timestamp).append("\",");
+            sb.append("\"messages\": [");
+          }
         }
-        listdbo.add(0, dbo);
-      }
-      if (!isTextOnly)
-      {
-        sb.append("{\"room\": \"").append(room).append("\",");
-        sb.append("\"timestamp\": \"").append(mostRecentTimestamp).append("\",");
-        sb.append("\"messages\": [");
-      }
-      boolean first = true;
-      for(DBObject dbo:listdbo)
-      {
-        String user = dbo.get("user").toString();
-        String fullname = "", email = "";
-        String msgId = ((ObjectId)dbo.get("_id")).toString();
+
+        user = dbo.get("user").toString();
+        msgId = dbo.get("_id").toString();
         UserBean userBean = users.get(user);
         if (userBean==null)
         {
@@ -208,7 +211,7 @@ public class ChatService
         fullname = userBean.getFullname();
         email = userBean.getEmail();
 
-        String date = "";
+        date = "";
         try
         {
           if (dbo.containsField("time"))
@@ -228,26 +231,29 @@ public class ChatService
 
         if (isTextOnly)
         {
-          sb.append("[").append(date).append("] ");
+          StringBuilder line = new StringBuilder();
+          line.append("[").append(date).append("] ");
           String message = dbo.get("message").toString();
-          if (TYPE_DELETED.equals(message)) message = TYPE_DELETED+"\n";
+          if (TYPE_DELETED.equals(message)) message = TYPE_DELETED;
           if ("true".equals(dbo.get("isSystem")))
           {
-            sb.append("System Message: ");
+            line.append("System Message: ");
             if (message.endsWith("<br/>")) message = message.substring(0, message.length()-5);
-            sb.append(message).append("\n");
+            line.append(message).append("\n");
           }
           else
           {
-            sb.append(fullname).append(": ");
+            line.append(fullname).append(": ");
             message = message.replaceAll("<br/>", "\n");
-            sb.append(message);
+            line.append(message).append("\n");
           }
+          sb.insert(0, line);
         }
         else
         {
           if (!first)sb.append(",");
           sb.append("{\"id\": \"").append(msgId).append("\",");
+          sb.append("\"timestamp\": ").append(timestamp).append(",");
           sb.append("\"user\": \"").append(user).append("\",");
           sb.append("\"fullname\": \"").append(fullname).append("\",");
           sb.append("\"email\": \"").append(email).append("\",");
@@ -271,11 +277,11 @@ public class ChatService
 
         first = false;
       }
+
       if (!isTextOnly)
       {
         sb.append("]}");
       }
-
     }
 
     return sb.toString();
