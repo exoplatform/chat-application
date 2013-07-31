@@ -598,6 +598,7 @@ public class ChatService
       DBCollection collr = db().getCollection(M_ROOM_PREFIX+roomId);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
+//      log.info(roomId+" = "+cursorr.count());
       nb += cursorr.count();
     }
 
