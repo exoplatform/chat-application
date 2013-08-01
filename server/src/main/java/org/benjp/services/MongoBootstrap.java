@@ -119,7 +119,6 @@ public class MongoBootstrap
       initCollection("notifications");
       initCollection("room_rooms");
       initCollection("tokens");
-      initCollection("spaces");
       initCollection("users");
 
     }

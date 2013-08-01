@@ -5,6 +5,7 @@ import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
+import org.benjp.utils.ChatUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,9 +79,11 @@ public class SpaceTestCase extends AbstractChatTestCase
     String user = "benjamin";
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
     SpaceBean space = new SpaceBean();
-    space.setDisplayName("Test Space");
+    String displayName = "Test Space";
+    String id = ChatUtils.getRoomId(displayName);
+    space.setDisplayName(displayName);
     space.setGroupId("test_space");
-    space.setId("test_space");
+    space.setId(id);
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
@@ -98,9 +101,11 @@ public class SpaceTestCase extends AbstractChatTestCase
     String user = "benjamin";
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
     SpaceBean space = new SpaceBean();
-    space.setDisplayName("Test Space");
+    String displayName = "Test Space";
+    String id = ChatUtils.getRoomId(displayName);
+    space.setDisplayName(displayName);
     space.setGroupId("test_space");
-    space.setId("test_space");
+    space.setId(id);
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
@@ -114,9 +119,11 @@ public class SpaceTestCase extends AbstractChatTestCase
     assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getId()).size());
 
     SpaceBean space2 = new SpaceBean();
-    space2.setDisplayName("Test Space 2");
+    String displayName2 = "Test Space 2";
+    String id2 = ChatUtils.getRoomId(displayName2);
+    space2.setDisplayName(displayName2);
     space2.setGroupId("test_space_2");
-    space2.setId("test_space_2");
+    space2.setId(id2);
     space2.setShortName("Test Space 2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);

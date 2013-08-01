@@ -23,6 +23,7 @@ import com.mongodb.*;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
+import org.benjp.utils.ChatUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -35,7 +36,7 @@ public class UserService
 {
 
   public static final String M_USERS_COLLECTION = "users";
-  public static final String M_SPACES_COLLECTION = "spaces";
+  public static final String M_ROOMS_COLLECTION = "room_rooms";
 
   public static final String STATUS_AVAILABLE = "available";
   public static final String STATUS_DONOTDISTURB = "donotdisturb";
@@ -144,18 +145,21 @@ public class UserService
   public void setSpaces(String user, List<SpaceBean> spaces)
   {
     List<String> spaceIds = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_SPACES_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     for (SpaceBean bean:spaces)
     {
-      spaceIds.add(bean.getId());
+      String room = ChatUtils.getRoomId(bean.getDisplayName());
+      spaceIds.add(room);
+
 
       BasicDBObject query = new BasicDBObject();
-      query.put("_id", bean.getId());
+      query.put("_id", room);
       DBCursor cursor = coll.find(query);
       if (!cursor.hasNext())
       {
         BasicDBObject doc = new BasicDBObject();
-        doc.put("_id", bean.getId());
+        doc.put("_id", room);
+        doc.put("space_id", bean.getId());
         doc.put("displayName", bean.getDisplayName());
         doc.put("groupId", bean.getGroupId());
         doc.put("shortName", bean.getShortName());
@@ -167,7 +171,7 @@ public class UserService
         String displayName = doc.get("displayName").toString();
         if (!bean.getDisplayName().equals(displayName))
         {
-          doc.put("_id", bean.getId());
+          doc.put("_id", room);
           doc.put("displayName", bean.getDisplayName());
           doc.put("groupId", bean.getGroupId());
           doc.put("shortName", bean.getShortName());
@@ -200,7 +204,7 @@ public class UserService
   private SpaceBean getSpace(String spaceId)
   {
     SpaceBean spaceBean = null;
-    DBCollection coll = db().getCollection(M_SPACES_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", spaceId);
     DBCursor cursor = coll.find(query);

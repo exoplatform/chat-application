@@ -29,6 +29,7 @@ $(document).ready(function(){
   chatApplication.jzSetStatus = chatServerURL+"/setStatus";
   chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
   chatApplication.jzChatSend = chatServerURL+"/send";
+  chatApplication.jzChatRead = chatServerURL+"/read";
   chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
   chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
   chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
@@ -347,6 +348,7 @@ function ChatApplication() {
   this.jzCreateDemoUser = "";
   this.jzChatUpdateUnreadMessages = "";
   this.jzChatSend = "";
+  this.jzChatRead = "";
   this.jzGetStatus = "";
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
@@ -930,9 +932,11 @@ ChatApplication.prototype.showMessages = function(msgs) {
 ChatApplication.prototype.refreshChat = function(forceRefresh) {
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
+    var lastTS = jzGetParam("lastTS"+this.username);
 
     $.ajax({
       url: this.chatEventURL,
+      data: {"timestamp": lastTS},
       dataType: "json",
       context: this,
       success: function(data) {
@@ -1430,7 +1434,7 @@ ChatApplication.prototype.loadRoom = function() {
           $(".btn-weemo").removeClass('disabled');
         }
         if (this.isDesktopView()) $msg.focus();
-        this.chatEventURL = this.jzChatSend+'?room='+this.room+'&user='+this.username+'&token='+this.token+'&event=0';
+        this.chatEventURL = this.jzChatRead+'?room='+this.room+'&user='+this.username+'&token='+this.token;
 
         jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
         jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);

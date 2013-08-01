@@ -69,7 +69,7 @@ class PublicChatFullSimulation extends Simulation {
 						//  "token": "45b2b",
 			.check(regex("""token": "(.+)",""").saveAs("token"))
 		)
-    .repeat("5", "cptRoom") {
+    .repeat("1", "cptRoom") {
       exec((session:Session) => session.setAttribute("loopMsg", random.nextInt(200)+500))  // loop between 250 and 1000
       .randomSwitch(
         20 ->
@@ -86,7 +86,7 @@ class PublicChatFullSimulation extends Simulation {
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-      .during( 40 minutes , "cpt") { // loop between 250 and 1000
+      .during( 30 minutes , "cpt") { // loop between 250 and 1000
 //      .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
@@ -161,7 +161,7 @@ class PublicChatFullSimulation extends Simulation {
           ,
           40 ->
             exec(http("read message")
-              .get("/chatServer/send")
+              .get("/chatServer/read")
               .queryParam("user", "user${userId}")
               .queryParam("targetUser", "${targetUserId}")
               .queryParam("token", "${token}")
@@ -175,6 +175,6 @@ class PublicChatFullSimulation extends Simulation {
 
 	setUp(
 		scnInit.users(1).protocolConfig(httpConf)
-    , scnSendMessages.users(500).ramp(250).delay(5).protocolConfig(httpConf)
+    , scnSendMessages.users(500).ramp(90).delay(5).protocolConfig(httpConf)
 		)
 }

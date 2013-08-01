@@ -87,11 +87,11 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("john");
     String roomId = chatService.getRoom(users);
 
-    String resp = chatService.read(roomId, userService, false);
+    String resp = chatService.read(roomId, userService, false, null);
     String json = "{\"messages\": []}";
     assertEquals(json, resp);
 
-    resp = chatService.read(roomId, userService, true);
+    resp = chatService.read(roomId, userService, true, null);
     String text = "no messages";
     assertEquals(text, resp);
   }
@@ -107,12 +107,12 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users);
 
     chatService.write("foo", "benjamin", roomId, "false");
-    String resp = chatService.read(roomId, userService, true);
+    String resp = chatService.read(roomId, userService, true, null);
     assertEquals(47, resp.length());
     assertTrue(resp.endsWith("] Benjamin Paillereau: foo\n"));
 
     chatService.write("bar", "john", roomId, "false");
-    resp = chatService.read(roomId, userService, true);
+    resp = chatService.read(roomId, userService, true, null);
     assertEquals(85, resp.length());
     assertTrue(resp.endsWith("] John Smith: bar\n"));
   }

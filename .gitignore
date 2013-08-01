@@ -17,6 +17,7 @@ release.properties
 *.releaseBackup
 
 data/chat-single-local.properties
+data/gatling/results/local/*
 
 copie.sh
 

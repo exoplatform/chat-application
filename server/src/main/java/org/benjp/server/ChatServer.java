@@ -33,10 +33,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
 {
+  Logger log = Logger.getLogger("ChatServer");
 
   @Inject
   @Path("index.gtmpl")
@@ -91,7 +93,7 @@ public class ChatServer
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String token, String targetUser, String message, String room, String event, String isSystem, String options, String isTextOnly) throws IOException
+  public Response.Content send(String user, String token, String targetUser, String message, String room, String isSystem, String options) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -100,7 +102,7 @@ public class ChatServer
     try
     {
       //System.out.println(user + "::" + message + "::" + room);
-      if (message!=null && user!=null)
+      if (message!=null)
       {
 //        System.out.println(user + "::" + message + "::" + room);
         if (isSystem==null) isSystem="false";
@@ -118,7 +120,7 @@ public class ChatServer
           }
         }
 
-        notificationService.setNotificationsAsRead(user, "chat", "room", room);
+        //notificationService.setNotificationsAsRead(user, "chat", "room", room);
       }
 
     }
@@ -128,12 +130,27 @@ public class ChatServer
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
 
-    String data = chatService.read(room, userService, "true".equals(isTextOnly));
-    if (event!=null && event.equals("1"))
+
+    return Response.ok("ok").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/read")
+  public Response.Content read(String user, String token, String room, String fromTimestamp, String isTextOnly) throws IOException
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
     {
-      data = "id: "+System.currentTimeMillis()+"\n"+"data: "+data+"\n\n";
+      return Response.notFound("Petit malin !");
     }
 
+    Long from = null;
+    try {
+      if (fromTimestamp!=null && "".equals(fromTimestamp))
+        from = Long.parseLong(fromTimestamp);
+    } catch (NumberFormatException nfe) {
+      log.info("fromTimestamp is not a valid Long number");
+    }
+    String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
     return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }

@@ -3,15 +3,10 @@
 SCRIPT_LAUNCH_DIR=$(pwd)
 PROJECT_DIR=$(cd $(dirname "$0"); pwd)
 
-#CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.0
-CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.x-SNAPSHOT
+CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.1
 #CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/apache-tomcat-7.0.35
-#CHT_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6/tomcat-bundle
 
-#PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.0
-PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.x-SNAPSHOT
-#PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6/tomcat-bundle
-#PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/eXo-Platform-tomcat-3.5.6-BEN/tomcat-bundle
+PLF_TOMCAT_DIRECTORY=/Users/benjamin/servers/platform-4.0.1
 
 if [ $# = 1 ]
 then
@@ -40,7 +35,7 @@ cp "$PROPERTIES" $PLF_TOMCAT_DIRECTORY/conf/chat.properties
 cp application/target/chat.war $PLF_TOMCAT_DIRECTORY/webapps/chat.war
 
 ### EXTENSION
-mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension-config
-cp exo-addons-chat-extension-config/target/exo-addons-chat-extension-config-0.7.0-beta2-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
-mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension
-cp exo-addons-chat-extension/target/chat-extension.war $PLF_TOMCAT_DIRECTORY/webapps/
+#mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension-config
+#cp exo-addons-chat-extension-config/target/exo-addons-chat-extension-config-0.7.0-beta2-SNAPSHOT.jar $PLF_TOMCAT_DIRECTORY/lib/
+#mvn clean install -Dmaven.test.skip=true -pl exo-addons-chat-extension
+#cp exo-addons-chat-extension/target/chat-extension.war $PLF_TOMCAT_DIRECTORY/webapps/

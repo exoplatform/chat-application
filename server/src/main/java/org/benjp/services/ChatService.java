@@ -26,7 +26,7 @@ import org.benjp.model.RoomBean;
 import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
-import org.benjp.utils.MessageDigester;
+import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
 import org.bson.types.ObjectId;
 
@@ -146,10 +146,10 @@ public class ChatService
 
   public String read(String room, UserService userService)
   {
-    return read(room, userService, false);
+    return read(room, userService, false, null);
   }
 
-  public String read(String room, UserService userService, boolean isTextOnly)
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp)
   {
     StringBuilder sb = new StringBuilder();
 
@@ -165,7 +165,8 @@ public class ChatService
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
 
     BasicDBObject query = new BasicDBObject();
-    query.put("timestamp", new BasicDBObject("$gt", System.currentTimeMillis() - readMillis));
+    long from = (fromTimestamp!=null) ? fromTimestamp : System.currentTimeMillis() - readMillis;
+    query.put("timestamp", new BasicDBObject("$gt", from));
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
@@ -298,30 +299,8 @@ public class ChatService
     if (cursor.hasNext())
     {
       DBObject dbo = cursor.next();
-      if (dbo.containsField("space"))
-      {  //space room, we set timestamp in the collection spaces
-        String spaceId = dbo.get("space").toString();
-        //removing "space-" prefix
-        if (spaceId.indexOf("space-")>-1)
-        {
-          spaceId = spaceId.substring(6);
-        }
-        DBCollection colls = db().getCollection(UserService.M_SPACES_COLLECTION);
-        BasicDBObject query = new BasicDBObject();
-        query.put("_id", spaceId);
-        DBCursor cursors = colls.find(query);
-        if (cursors.hasNext())
-        {
-          DBObject doc = cursors.next();
-          doc.put("timestamp", System.currentTimeMillis());
-          colls.save(doc, WriteConcern.NONE);
-        }
-      }
-      else
-      {  //users room, we set directly in rooms_room
-        dbo.put("timestamp", System.currentTimeMillis());
-        coll.save(dbo, WriteConcern.NONE);
-      }
+      dbo.put("timestamp", System.currentTimeMillis());
+      coll.save(dbo, WriteConcern.NONE);
     }
 
   }
@@ -336,30 +315,9 @@ public class ChatService
     coll.remove(doc);
   }
 
-  private String getRoomId(String space)
-  {
-    ArrayList<String> spaces = new ArrayList<String>();
-    spaces.add("1-space-room");
-    spaces.add(space);
-    return getRoomId(spaces);
-  }
-
-  private String getRoomId(List<String> users)
-  {
-    Collections.sort(users);
-    StringBuilder sb = new StringBuilder();
-    for (String user:users)
-    {
-      sb.append(user).append(";");
-    }
-
-    String roomId = MessageDigester.getHash(sb.toString());
-    return roomId;
-  }
-
   public String getSpaceRoom(String space)
   {
-    String room = getRoomId(space);
+    String room = ChatUtils.getRoomId(space);
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
@@ -384,7 +342,7 @@ public class ChatService
   public String getRoom(List<String> users)
   {
     Collections.sort(users);
-    String room = getRoomId(users);
+    String room = ChatUtils.getRoomId(users);
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
