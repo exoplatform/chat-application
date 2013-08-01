@@ -145,7 +145,7 @@ public class ChatServer
 
     Long from = null;
     try {
-      if (fromTimestamp!=null && "".equals(fromTimestamp))
+      if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
       log.info("fromTimestamp is not a valid Long number");

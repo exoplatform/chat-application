@@ -934,9 +934,9 @@ ChatApplication.prototype.refreshChat = function(forceRefresh) {
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
 
+    //url: this.chatEventURL+"&fromTimestamp="+lastTS,
     $.ajax({
       url: this.chatEventURL,
-      data: {"timestamp": lastTS},
       dataType: "json",
       context: this,
       success: function(data) {
@@ -957,7 +957,7 @@ ChatApplication.prototype.refreshChat = function(forceRefresh) {
         this.hidePanel(".chat-login-panel");
         this.hidePanel(".chat-error-panel");
       },
-      error: function() {
+      error: function(jqXHR, textStatus, errorThrown) {
 //        if (this.isDesktopView()) $(".right-chat").css("display", "none");
         if ( $(".chat-error-panel").css("display") == "none") {
           this.showLoginPanel();

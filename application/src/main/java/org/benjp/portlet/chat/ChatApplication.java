@@ -25,6 +25,7 @@ import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.model.SpaceBean;
+import org.benjp.model.SpaceBeans;
 import org.benjp.services.UserService;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
@@ -131,7 +132,7 @@ public class ChatApplication
       try
       {
         // Generate and store token if doesn't exist yet.
-        token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+        token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
         addUser(remoteUser_, token_);
@@ -147,8 +148,8 @@ public class ChatApplication
 
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
-          fullname_ = ServerBootstrap.getUserService().getUserFullName(remoteUser_);
-          ServerBootstrap.getUserService().setAsAdmin(remoteUser_, isAdmin_);
+          fullname_ = ServerBootstrap.getUserFullName(remoteUser_);
+          ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_);
         }
 
         out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\"}";
@@ -180,12 +181,10 @@ public class ChatApplication
 
     String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-").replace(".", "-");
     remoteUser_ = username;
-    token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+    token_ = ServerBootstrap.getToken(remoteUser_);
     addUser(remoteUser_, token_);
-    UserService userService = ServerBootstrap.getUserService();
-    userService.addUserFullName(username, fullname);
-    userService.addUserEmail(username, email);
-    userService.setAsAdmin(username, false);
+    ServerBootstrap.addUserFullNameAndEmail(username, fullname, email);
+    ServerBootstrap.setAsAdmin(username, false);
     if (!isPublicUser) saveDemoSpace(username);
 
     StringBuffer json = new StringBuffer();
@@ -197,7 +196,7 @@ public class ChatApplication
 
   protected void addUser(String remoteUser, String token)
   {
-    ServerBootstrap.getTokenService().addUser(remoteUser, token);
+    ServerBootstrap.addUser(remoteUser, token);
   }
 
   protected String saveFullNameAndEmail(String username)
@@ -206,15 +205,14 @@ public class ChatApplication
     try
     {
 
-      fullname = ServerBootstrap.getUserService().getUserFullName(username);
+      fullname = ServerBootstrap.getUserFullName(username);
       if (fullname==null)
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         if (user!=null)
         {
           fullname = user.getFirstName()+" "+user.getLastName();
-          ServerBootstrap.getUserService().addUserFullName(username, fullname);
-          ServerBootstrap.getUserService().addUserEmail(username, user.getEmail());
+          ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
         }
       }
 
@@ -232,7 +230,7 @@ public class ChatApplication
     try
     {
 
-      ServerBootstrap.getUserService().setAsAdmin(username, isAdmin);
+      ServerBootstrap.setAsAdmin(username, isAdmin);
 
     }
     catch (Exception e)
@@ -247,7 +245,7 @@ public class ChatApplication
     {
       ListAccess<Space> spacesListAccess = spaceService_.getAccessibleSpacesWithListAccess(username);
       List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
-      List<SpaceBean> beans = new ArrayList<SpaceBean>();
+      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
       for (Space space:spaces)
       {
         SpaceBean spaceBean = new SpaceBean();
@@ -257,7 +255,7 @@ public class ChatApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      ServerBootstrap.getUserService().setSpaces(username, beans);
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
     }
     catch (Exception e)
     {
@@ -270,7 +268,7 @@ public class ChatApplication
   {
     try
     {
-      List<SpaceBean> beans = new ArrayList<SpaceBean>();
+      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
       SpaceBean spaceBean = new SpaceBean();
       spaceBean.setDisplayName("Welcome Space");
       spaceBean.setGroupId("/public");
@@ -278,7 +276,7 @@ public class ChatApplication
       spaceBean.setShortName("welcome_space");
       beans.add(spaceBean);
 
-      ServerBootstrap.getUserService().setSpaces(username, beans);
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
     }
     catch (Exception e)
     {

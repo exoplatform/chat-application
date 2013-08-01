@@ -19,19 +19,23 @@
 
 package org.benjp.server;
 
+import juzu.Action;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.SpaceBean;
+import org.benjp.model.SpaceBeans;
 import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
+import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -132,7 +136,7 @@ public class ChatTools
 
   @Resource
   @Route("/getToken")
-  public Response.Content getToken(String username, String passphrase)
+  public Response.Content getToken(String username, String passphrase, String tokenOnly)
   {
     if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
     {
@@ -147,13 +151,98 @@ public class ChatTools
     String token = tokenService.getToken(username);
 
     StringBuffer data = new StringBuffer();
-    data.append("{");
-    data.append(" \"message\": \"OK\", ");
-    data.append(" \"token\": \""+token+"\", ");
-    data.append(" \"user\": \""+ username+"\" ");
-    data.append("}");
+    if (tokenOnly!=null && "true".equals(tokenOnly))
+    {
+      data.append(token);
+    }
+    else
+    {
+      data.append("{");
+      data.append(" \"message\": \"OK\", ");
+      data.append(" \"token\": \""+token+"\", ");
+      data.append(" \"user\": \""+ username+"\" ");
+      data.append("}");
+    }
 
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/addUser")
+  public Response.Content addUser(String username, String token, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    tokenService.addUser(username, token);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/setAsAdmin")
+  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    userService.setAsAdmin(username, "true".equals(isAdmin));
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/addUserFullNameAndEmail")
+  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    userService.addUserEmail(username, email);
+    userService.addUserFullName(username, fullname);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/setSpaces")
+  public Response.Content setSpaces(String username, String spaces, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    try {
+      SpaceBeans spaceBeans = (SpaceBeans)ChatUtils.fromString(spaces);
+      userService.setSpaces(username, spaceBeans.getSpaces());
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/getUserFullName")
+  public Response.Content getUserFullName(String username, String passphrase)
+  {
+    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    String fullname = userService.getUserFullName(username);
+
+    return Response.ok(fullname).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

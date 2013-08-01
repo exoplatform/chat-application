@@ -8,9 +8,6 @@
     <param-name>juzu.inject</param-name>
     <param-value>guice</param-value>
   </context-param>
-  <listener>
-    <listener-class>org.benjp.listener.ConnectionManager</listener-class>
-  </listener>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>

@@ -19,7 +19,7 @@
 
 package org.benjp.model;
 
-public class SpaceBean
+public class SpaceBean implements java.io.Serializable
 {
   String id;
   String displayName;

@@ -19,19 +19,117 @@
 
 package org.benjp.listener;
 
-import org.benjp.services.TokenService;
-import org.benjp.services.UserService;
+import org.apache.commons.io.IOUtils;
+import org.benjp.model.SpaceBeans;
+import org.benjp.utils.ChatUtils;
+import org.benjp.utils.PropertyManager;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 
 public class ServerBootstrap {
-  private static final UserService userService = new UserService();
-  private static final TokenService tokenService = new TokenService();
 
-  public static UserService getUserService() {
-    return userService;
-  }
-
-  public static TokenService getTokenService()
+  public static String getUserFullName(String username)
   {
-    return tokenService;
+    return callServer("getUserFullName", "username="+username);
   }
+
+  public static void addUser(String username, String token)
+  {
+    callServer("addUser", "username="+username+"&token="+token);
+  }
+
+  public static void setAsAdmin(String username, boolean isAdmin)
+  {
+    callServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin);
+  }
+
+  public static void addUserFullNameAndEmail(String username, String fullname, String email)
+  {
+    callServer("addUserFullNameAndEmail", "username="+username+"&fullname="+fullname+"&email="+email);
+  }
+
+  public static String getToken(String username)
+  {
+    return callServer("getToken", "username="+username+"&tokenOnly=true");
+  }
+
+  public static void setSpaces(String username, SpaceBeans beans)
+  {
+    String params = "username="+username;
+    String serSpaces = "";
+    try {
+      serSpaces = ChatUtils.toString(beans);
+      serSpaces = URLEncoder.encode(serSpaces);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    params += "&spaces="+serSpaces;
+    postServer("setSpaces", params);
+  }
+
+
+
+  private static String callServer(String serviceUri, String params)
+  {
+    String serviceUrl = "http://127.0.0.1:8080"+ PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+            +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
+            +"&"+params;
+    String body = "";
+    try {
+      URL url = new URL(serviceUrl);
+      URLConnection con = url.openConnection();
+      InputStream in = con.getInputStream();
+      String encoding = con.getContentEncoding();
+      encoding = encoding == null ? "UTF-8" : encoding;
+      body = IOUtils.toString(in, encoding);
+      if ("null".equals(body)) body = null;
+    } catch (MalformedURLException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    return body;
+  }
+
+  private static String postServer(String serviceUri, String params)
+  {
+    String serviceUrl = "http://127.0.0.1:8080"+ PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+            +"/"+serviceUri;
+    String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
+    String body = "";
+    OutputStreamWriter writer = null;
+    try {
+      URL url = new URL(serviceUrl);
+      URLConnection con = url.openConnection();
+      con.setDoOutput(true);
+
+      //envoi de la requête
+      writer = new OutputStreamWriter(con.getOutputStream());
+      writer.write(allParams);
+      writer.flush();
+
+      InputStream in = con.getInputStream();
+      String encoding = con.getContentEncoding();
+      encoding = encoding == null ? "UTF-8" : encoding;
+      body = IOUtils.toString(in, encoding);
+      if ("null".equals(body)) body = null;
+
+    } catch (MalformedURLException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+
+    } finally{
+      try{writer.close();}catch(Exception e){}
+    }
+    return body;
+  }
+
+
 }

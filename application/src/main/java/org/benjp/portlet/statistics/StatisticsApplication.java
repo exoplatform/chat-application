@@ -19,26 +19,15 @@
 
 package org.benjp.portlet.statistics;
 
-import juzu.*;
-import juzu.plugin.ajax.Ajax;
-import juzu.request.HttpContext;
+import juzu.Path;
+import juzu.SessionScoped;
+import juzu.View;
 import juzu.request.RenderContext;
 import juzu.template.Template;
-import org.benjp.listener.ServerBootstrap;
-import org.benjp.model.SpaceBean;
 import org.benjp.utils.PropertyManager;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @SessionScoped
 public class StatisticsApplication

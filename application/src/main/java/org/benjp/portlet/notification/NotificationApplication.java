@@ -21,11 +21,11 @@ package org.benjp.portlet.notification;
 
 import juzu.*;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.HttpContext;
 import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.model.SpaceBean;
+import org.benjp.model.SpaceBeans;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -34,7 +34,6 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +90,7 @@ public class NotificationApplication
       try
       {
         // Generate and store token if doesn't exist yet.
-        token_ = ServerBootstrap.getTokenService().getToken(remoteUser_);
+        token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
         addUser(remoteUser_, token_);
@@ -117,25 +116,9 @@ public class NotificationApplication
 
   }
 
-
-/*
-  private String getSessionId(HttpContext httpContext)
-  {
-    for (Cookie cookie:httpContext.getCookies())
-    {
-      if("JSESSIONID".equals(cookie.getName()))
-      {
-        return cookie.getValue();
-      }
-    }
-    return null;
-
-  }
-*/
-
   protected void addUser(String remoteUser, String token)
   {
-    ServerBootstrap.getTokenService().addUser(remoteUser, token);
+    ServerBootstrap.addUser(remoteUser, token);
   }
 
   protected String saveFullNameAndEmail(String username)
@@ -144,13 +127,12 @@ public class NotificationApplication
     try
     {
 
-      fullname = ServerBootstrap.getUserService().getUserFullName(username);
+      fullname = ServerBootstrap.getUserFullName(username);
       if (fullname==null)
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         fullname = user.getFirstName()+" "+user.getLastName();
-        ServerBootstrap.getUserService().addUserFullName(username, fullname);
-        ServerBootstrap.getUserService().addUserEmail(username, user.getEmail());
+        ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
       }
 
 
@@ -168,7 +150,7 @@ public class NotificationApplication
     {
       ListAccess<Space> spacesListAccess = spaceService_.getAccessibleSpacesWithListAccess(username);
       List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
-      List<SpaceBean> beans = new ArrayList<SpaceBean>();
+      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
       for (Space space:spaces)
       {
         SpaceBean spaceBean = new SpaceBean();
@@ -178,7 +160,7 @@ public class NotificationApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      ServerBootstrap.getUserService().setSpaces(username, beans);
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
     }
     catch (Exception e)
     {
