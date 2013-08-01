@@ -77,7 +77,8 @@ public class ServerBootstrap {
 
   private static String callServer(String serviceUri, String params)
   {
-    String serviceUrl = "http://127.0.0.1:8080"+ PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+    String serviceUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE)
+            + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
             +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
             +"&"+params;
     String body = "";
@@ -99,7 +100,8 @@ public class ServerBootstrap {
 
   private static String postServer(String serviceUri, String params)
   {
-    String serviceUrl = "http://127.0.0.1:8080"+ PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+    String serviceUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE)
+            + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
             +"/"+serviceUri;
     String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
     String body = "";
