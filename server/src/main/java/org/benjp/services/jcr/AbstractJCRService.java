@@ -25,11 +25,18 @@ public abstract class AbstractJCRService
   SessionProviderService sessionProviderService_;
 
   static final String TOKEN_NODETYPE = "chat:token";
+  static final String NOTIF_NODETYPE = "chat:notification";
   static final String USER_PROPERTY = "chat:user";
   static final String TIMESTAMP_PROPERTY = "chat:timestamp";
   static final String TOKEN_PROPERTY = "chat:token";
   static final String VALIDITY_PROPERTY = "chat:validity";
   static final String IS_DEMO_USER_PROPERTY = "chat:isdemouser";
+  static final String TYPE_PROPERTY = "chat:type";
+  static final String CATEGORY_PROPERTY = "chat:category";
+  static final String CATEGORY_ID_PROPERTY = "chat:categoryid";
+  static final String CONTENT_PROPERTY = "chat:content";
+  static final String LINK_PROPERTY = "chat:link";
+  static final String IS_READ_PROPERTY = "chat:isread";
 
   public AbstractJCRService()
   {
@@ -63,10 +70,12 @@ public abstract class AbstractJCRService
       }
 
       ExtendedNodeTypeManager nodeTypeManager = (ExtendedNodeTypeManager) session.getWorkspace().getNodeTypeManager();
-      try {
+      try
+      {
         NodeType ntToken = nodeTypeManager.getNodeType(TOKEN_NODETYPE);
 
-      } catch (NoSuchNodeTypeException nsne)
+      }
+      catch (NoSuchNodeTypeException nsne)
       {
         NodeTypeValue chatToken = new NodeTypeValue();
         chatToken.setName(TOKEN_NODETYPE);
@@ -117,6 +126,98 @@ public abstract class AbstractJCRService
 
         nodeTypeManager.registerNodeType(chatToken, ExtendedNodeTypeManager.REPLACE_IF_EXISTS);
       }
+      try
+      {
+        NodeType ntToken = nodeTypeManager.getNodeType(NOTIF_NODETYPE);
+
+      }
+      catch (NoSuchNodeTypeException nsne)
+      {
+        NodeTypeValue chatNotif = new NodeTypeValue();
+        chatNotif.setName(NOTIF_NODETYPE);
+        chatNotif.setMixin(false);
+        List<String> superTypes = new ArrayList<String>();
+        superTypes.add("nt:base");
+        chatNotif.setDeclaredSupertypeNames(superTypes);
+
+        PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
+        userProperty.setMultiple(false);
+        userProperty.setAutoCreate(false);
+        userProperty.setName(USER_PROPERTY);
+        userProperty.setReadOnly(false);
+        userProperty.setRequiredType(PropertyType.STRING);
+        userProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue typeProperty = new PropertyDefinitionValue();
+        typeProperty.setMultiple(false);
+        typeProperty.setAutoCreate(false);
+        typeProperty.setName(TYPE_PROPERTY);
+        typeProperty.setReadOnly(false);
+        typeProperty.setRequiredType(PropertyType.STRING);
+        typeProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue categoryProperty = new PropertyDefinitionValue();
+        categoryProperty.setMultiple(false);
+        categoryProperty.setAutoCreate(false);
+        categoryProperty.setName(CATEGORY_PROPERTY);
+        categoryProperty.setReadOnly(false);
+        categoryProperty.setRequiredType(PropertyType.STRING);
+        categoryProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue categoryIdProperty = new PropertyDefinitionValue();
+        categoryIdProperty.setMultiple(false);
+        categoryIdProperty.setAutoCreate(false);
+        categoryIdProperty.setName(CATEGORY_ID_PROPERTY);
+        categoryIdProperty.setReadOnly(false);
+        categoryIdProperty.setRequiredType(PropertyType.STRING);
+        categoryIdProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue linkProperty = new PropertyDefinitionValue();
+        linkProperty.setMultiple(false);
+        linkProperty.setAutoCreate(false);
+        linkProperty.setName(LINK_PROPERTY);
+        linkProperty.setReadOnly(false);
+        linkProperty.setRequiredType(PropertyType.STRING);
+        linkProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue contentProperty = new PropertyDefinitionValue();
+        contentProperty.setMultiple(false);
+        contentProperty.setAutoCreate(false);
+        contentProperty.setName(CONTENT_PROPERTY);
+        contentProperty.setReadOnly(false);
+        contentProperty.setRequiredType(PropertyType.STRING);
+        contentProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue timestampProperty = new PropertyDefinitionValue();
+        timestampProperty.setMultiple(false);
+        timestampProperty.setAutoCreate(false);
+        timestampProperty.setName(TIMESTAMP_PROPERTY);
+        timestampProperty.setReadOnly(false);
+        timestampProperty.setRequiredType(PropertyType.LONG);
+        timestampProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue isReadProperty = new PropertyDefinitionValue();
+        isReadProperty.setMultiple(false);
+        isReadProperty.setAutoCreate(false);
+        isReadProperty.setName(IS_READ_PROPERTY);
+        isReadProperty.setReadOnly(false);
+        isReadProperty.setRequiredType(PropertyType.BOOLEAN);
+        isReadProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        List<PropertyDefinitionValue> props = new ArrayList<PropertyDefinitionValue>();
+        props.add(userProperty);
+        props.add(typeProperty);
+        props.add(categoryProperty);
+        props.add(categoryIdProperty);
+        props.add(contentProperty);
+        props.add(linkProperty);
+        props.add(timestampProperty);
+        props.add(isReadProperty);
+
+        chatNotif.setDeclaredPropertyDefinitionValues(props);
+
+        nodeTypeManager.registerNodeType(chatNotif, ExtendedNodeTypeManager.REPLACE_IF_EXISTS);
+      }
 
     }
     catch (Exception e)
@@ -143,6 +244,12 @@ public abstract class AbstractJCRService
       if (!rootNode.hasNode("tokens"))
       {
         rootNode.addNode("tokens", "nt:unstructured");
+        session.save();
+      }
+
+      if (!rootNode.hasNode("notifications"))
+      {
+        rootNode.addNode("notifications", "nt:unstructured");
         session.save();
       }
 
