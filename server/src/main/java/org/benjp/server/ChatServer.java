@@ -21,12 +21,14 @@ package org.benjp.server;
 
 import juzu.*;
 import juzu.template.Template;
+import org.benjp.listener.GuiceManager;
 import org.benjp.model.RoomsBean;
 import org.benjp.model.UserBean;
 import org.benjp.model.UsersBean;
-import org.benjp.services.*;
-import org.benjp.model.RoomBean;
-import org.benjp.utils.PropertyManager;
+import org.benjp.services.ChatService;
+import org.benjp.services.NotificationService;
+import org.benjp.services.TokenService;
+import org.benjp.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -48,20 +50,24 @@ public class ChatServer
   @Path("users.gtmpl")
   Template users;
 
-  @Inject
   ChatService chatService;
 
-  @Inject
   UserService userService;
 
-  @Inject
   TokenService tokenService;
 
-  @Inject
   NotificationService notificationService;
 
   @Inject
   ChatTools chatTools;
+
+  public ChatServer()
+  {
+    chatService = GuiceManager.getInstance().getInstance(ChatService.class);
+    userService = GuiceManager.getInstance().getInstance(UserService.class);
+    tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
+    notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+  }
 
   @View
   @Route("/")

@@ -1,6 +1,6 @@
 package org.benjp.listener;
 
-import org.benjp.services.MongoBootstrap;
+import org.benjp.services.mongodb.MongoBootstrap;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

@@ -19,11 +19,11 @@
 
 package org.benjp.server;
 
-import juzu.Action;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.listener.GuiceManager;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.SpaceBeans;
 import org.benjp.services.ChatService;
@@ -34,7 +34,6 @@ import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +43,18 @@ import java.util.Random;
 public class ChatTools
 {
 
-  @Inject
   UserService userService;
 
-  @Inject
   TokenService tokenService;
 
-  @Inject
   NotificationService notificationService;
+
+  public ChatTools()
+  {
+    userService = GuiceManager.getInstance().getInstance(UserService.class);
+    tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
+    notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+  }
 
   @Resource
   @Route("/createDemoUser")

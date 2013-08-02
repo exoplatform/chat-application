@@ -14,6 +14,9 @@
     </filter-mapping>
   -->
   <listener>
+    <listener-class>org.benjp.listener.GuiceManager</listener-class>
+  </listener>
+  <listener>
     <listener-class>org.benjp.listener.ConnectionManager</listener-class>
   </listener>
   <listener>

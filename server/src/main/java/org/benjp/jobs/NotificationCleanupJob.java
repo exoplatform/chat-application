@@ -1,6 +1,7 @@
 package org.benjp.jobs;
 
 import org.benjp.services.NotificationService;
+import org.benjp.services.mongodb.NotificationServiceImpl;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -13,7 +14,7 @@ public class NotificationCleanupJob implements Job
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
     log.info("Job started");
-    NotificationService.cleanupNotifications();
+    NotificationServiceImpl.cleanupNotifications();
     log.info("Job finished");
   }
 }

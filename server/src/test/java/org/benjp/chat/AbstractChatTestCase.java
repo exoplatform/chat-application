@@ -1,6 +1,8 @@
 package org.benjp.chat;
 
+import org.benjp.chat.bootstrap.ServiceBootstrap;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.listener.GuiceManager;
 import org.benjp.utils.PropertyManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,6 +25,9 @@ public class AbstractChatTestCase
 
     ConnectionManager.forceNew();
     ConnectionManager.getInstance().getDB("unittest");
+
+    GuiceManager.forceNew();
+    ServiceBootstrap.forceNew();
   }
 
   @AfterClass

@@ -19,17 +19,25 @@
 
 package org.benjp.chat.bootstrap;
 
+import org.benjp.listener.GuiceManager;
 import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
 
 public class ServiceBootstrap {
-  private static final UserService userService = new UserService();
-  private static final TokenService tokenService = new TokenService();
-  private static final ChatService chatService = new ChatService();
-  private static final NotificationService notificationService = new NotificationService();
+  private static UserService userService;
+  private static TokenService tokenService;
+  private static ChatService chatService;
+  private static NotificationService notificationService;
 
+  public static void forceNew()
+  {
+    chatService = GuiceManager.getInstance().getInstance(ChatService.class);
+    userService = GuiceManager.getInstance().getInstance(UserService.class);
+    tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
+    notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+  }
 
   public static UserService getUserService() {
     return userService;

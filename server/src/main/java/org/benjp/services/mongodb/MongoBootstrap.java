@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.benjp.services;
+package org.benjp.services.mongodb;
 
 import com.mongodb.*;
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -192,13 +192,13 @@ public class MongoBootstrap
     rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+".room_rooms"));
     log.info("### rooms indexes in "+getDB().getName());
 
-    DBCollection coll = getDB().getCollection(ChatService.M_ROOM_PREFIX+ChatService.M_ROOMS_COLLECTION);
+    DBCollection coll = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+ ChatServiceImpl.M_ROOMS_COLLECTION);
     DBCursor cursor = coll.find();
     while (cursor.hasNext())
     {
       DBObject dbo = cursor.next();
       String roomId = dbo.get("_id").toString();
-      DBCollection collr = getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId);
+      DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+roomId);
       collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+".room_"+roomId));
       collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+".room_"+roomId));
       log.info("##### room index in "+roomId);
