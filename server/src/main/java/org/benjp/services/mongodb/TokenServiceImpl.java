@@ -152,16 +152,7 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
   public boolean isDemoUser(String user)
   {
     return user.startsWith(ANONIM_USER);
-/*
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("isDemoUser", true);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
-*/
   }
-
 
   private int getValidity() {
     if (validity_==-1)

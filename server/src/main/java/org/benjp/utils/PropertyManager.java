@@ -29,6 +29,7 @@ public class PropertyManager {
   private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
+  public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
   public static final String PROPERTY_SERVER_TYPE = "dbServerType";
   public static final String PROPERTY_SERVER_HOST = "dbServerHost";
   public static final String PROPERTY_SERVER_PORT = "dbServerPort";
@@ -57,6 +58,9 @@ public class PropertyManager {
   public static final String PROPERTY_SERVER_TYPE_EMBED = "embed";
   public static final String PROPERTY_SERVER_TYPE_MONGO = "mongo";
 
+  public static final String PROPERTY_SERVICE_IMPL_MONGO = "mongo";
+  public static final String PROPERTY_SERVICE_IMPL_JCR = "jcr";
+
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
@@ -80,6 +84,7 @@ public class PropertyManager {
       {
       }
 
+      overridePropertyIfNotSet(PROPERTY_SERVICES_IMPLEMENTATION, PROPERTY_SERVICE_IMPL_MONGO);
       overridePropertyIfNotSet(PROPERTY_SERVER_TYPE, "mongo");
       overridePropertyIfNotSet(PROPERTY_SERVER_HOST, "localhost");
       overridePropertyIfNotSet(PROPERTY_SERVER_PORT, "27017");

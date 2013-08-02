@@ -2,7 +2,9 @@ package org.benjp.listener;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.benjp.services.jcr.JCRModule;
 import org.benjp.services.mongodb.MongoModule;
+import org.benjp.utils.PropertyManager;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -19,7 +21,7 @@ public class GuiceManager implements ServletContextListener
   public void contextInitialized(ServletContextEvent servletContextEvent)
   {
     log.info("INITIALIZING GUICE");
-    injector_ = Guice.createInjector(new MongoModule());
+    GuiceManager.forceNew();
 
   }
 
@@ -38,7 +40,15 @@ public class GuiceManager implements ServletContextListener
   {
     if (injector_==null)
     {
-      injector_ = Guice.createInjector(new MongoModule());
+      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+      {
+        injector_ = Guice.createInjector(new MongoModule());
+      }
+      else
+      {
+        injector_ = Guice.createInjector(new JCRModule());
+      }
+
     }
   }
 }
