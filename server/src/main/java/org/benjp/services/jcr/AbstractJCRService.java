@@ -1,13 +1,9 @@
 package org.benjp.services.jcr;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.core.nodetype.ExtendedNodeTypeManager;
 import org.exoplatform.services.jcr.core.nodetype.NodeTypeValue;
 import org.exoplatform.services.jcr.core.nodetype.PropertyDefinitionValue;
-import org.exoplatform.services.jcr.ext.app.SessionProviderService;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 
 import javax.jcr.*;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
@@ -18,11 +14,6 @@ import java.util.List;
 
 public abstract class AbstractJCRService
 {
-  RepositoryService repositoryService_;
-
-  NodeHierarchyCreator nodeHierarchyCreator_;
-
-  SessionProviderService sessionProviderService_;
 
   static final String TOKEN_NODETYPE = "chat:token";
   static final String NOTIF_NODETYPE = "chat:notification";
@@ -38,26 +29,13 @@ public abstract class AbstractJCRService
   static final String LINK_PROPERTY = "chat:link";
   static final String IS_READ_PROPERTY = "chat:isread";
 
-  public AbstractJCRService()
-  {
-    PortalContainer portalContainer = PortalContainer.getInstance();
-    repositoryService_ = (RepositoryService)portalContainer.getComponentInstanceOfType(RepositoryService.class);
-    nodeHierarchyCreator_ = (NodeHierarchyCreator)portalContainer.getComponentInstanceOfType(NodeHierarchyCreator.class);
-    sessionProviderService_ = (SessionProviderService)portalContainer.getComponentInstanceOfType(SessionProviderService.class);
-  }
-
-  public SessionProvider getUserSessionProvider() {
-    SessionProvider sessionProvider = sessionProviderService_.getSessionProvider(null);
-    return sessionProvider;
-  }
 
   protected void initNodetypes()
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       NamespaceRegistry namespaceRegistry = session.getWorkspace().getNamespaceRegistry();
       try
@@ -220,25 +198,19 @@ public abstract class AbstractJCRService
       }
 
     }
-    catch (Exception e)
+    catch (RepositoryException e)
     {
       e.printStackTrace();
     }
-    finally
-    {
-      sessionProvider.close();
-    }
-
 
   }
 
   protected void initMandatoryNodes()
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node rootNode = session.getRootNode();
       if (!rootNode.hasNode("tokens"))
@@ -256,11 +228,7 @@ public abstract class AbstractJCRService
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
   }

@@ -1,7 +1,7 @@
 package org.benjp.services.jcr;
 
 import org.benjp.services.NotificationService;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.jcr.util.IdGenerator;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -13,15 +13,14 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
 {
   public void addNotification(String user, String type, String category, String categoryId, String content, String link)
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node notifsNode = session.getRootNode().getNode(M_NOTIFICATIONS);
-
-      Node notifNode = notifsNode.addNode(""+System.currentTimeMillis(), NOTIF_NODETYPE);
+      String id = IdGenerator.generate();
+      Node notifNode = notifsNode.addNode(id, NOTIF_NODETYPE);
       notifNode.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());
       notifNode.setProperty(USER_PROPERTY, user);
       notifNode.setProperty(TYPE_PROPERTY, type);
@@ -35,22 +34,17 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
   }
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId)
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
       QueryManager manager = session.getWorkspace().getQueryManager();
 
       StringBuilder statement = new StringBuilder();
@@ -72,18 +66,15 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
       while (nodeIterator.hasNext())
       {
         Node node = nodeIterator.nextNode();
-        node.remove();
+        node.setProperty(IS_READ_PROPERTY, true);
+        node.save();
         session.save();
       }
 
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
   }
@@ -96,17 +87,17 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
   {
     int total = -1;
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
       QueryManager manager = session.getWorkspace().getQueryManager();
 
       StringBuilder statement = new StringBuilder();
 
       statement.append("SELECT * FROM ").append(NOTIF_NODETYPE).append(" WHERE ");
       statement.append(USER_PROPERTY).append(" = '").append(user).append("' ");
+      statement.append(" AND ").append(IS_READ_PROPERTY).append(" = 'false' ");
       if (categoryId!=null)
         statement.append(" AND ").append(CATEGORY_ID_PROPERTY).append(" = '").append(categoryId).append("' ");
       if (category!=null)
@@ -124,11 +115,7 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return total;
@@ -137,11 +124,10 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
   public int getNumberOfNotifications()
   {
     int total = -1;
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
       QueryManager manager = session.getWorkspace().getQueryManager();
 
       StringBuilder statement = new StringBuilder();
@@ -158,11 +144,7 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return total;
@@ -171,11 +153,10 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
   public int getNumberOfUnreadNotifications()
   {
     int total = -1;
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
       QueryManager manager = session.getWorkspace().getQueryManager();
 
       StringBuilder statement = new StringBuilder();
@@ -193,11 +174,7 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return total;

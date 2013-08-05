@@ -3,7 +3,6 @@ package org.benjp.services.jcr;
 import org.benjp.services.TokenService;
 import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -35,11 +34,10 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
   public boolean hasUserWithToken(String user, String token)
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
@@ -52,11 +50,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return false;
@@ -64,42 +58,38 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
   public void addUser(String user, String token)
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
       if (!tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.addNode(user, TOKEN_NODETYPE);
+        session.save();
         tokenNode.setProperty(USER_PROPERTY, user);
         tokenNode.setProperty(TOKEN_PROPERTY, token);
         tokenNode.setProperty(VALIDITY_PROPERTY, System.currentTimeMillis());
         tokenNode.setProperty(IS_DEMO_USER_PROPERTY, user.startsWith(ANONIM_USER));
+        tokenNode.save();
         session.save();
       }
 
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
   }
 
 
   public void updateValidity(String user, String token) {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
@@ -118,11 +108,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
   }
@@ -130,11 +116,10 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
   public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
     ArrayList<String> users = new ArrayList<String>();
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
       QueryManager manager = session.getWorkspace().getQueryManager();
 
       StringBuilder statement = new StringBuilder();
@@ -173,11 +158,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return users;
@@ -185,11 +166,10 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
   public boolean isUserOnline(String user)
   {
-    SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     try
     {
       //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
+      Session session = JCRBootstrap.getSession();
 
       Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
@@ -205,11 +185,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
-    }
-    finally
-    {
-      sessionProvider.close();
+      e.printStackTrace();
     }
 
     return false;
