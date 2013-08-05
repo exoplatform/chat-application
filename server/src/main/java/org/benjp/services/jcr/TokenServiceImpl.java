@@ -39,7 +39,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -63,7 +63,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
       if (!tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.addNode(user, TOKEN_NODETYPE);
@@ -91,7 +91,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -171,7 +171,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode(M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);

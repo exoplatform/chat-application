@@ -18,7 +18,7 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node notifsNode = session.getRootNode().getNode(M_NOTIFICATIONS);
+      Node notifsNode = session.getRootNode().getNode("chat/"+M_NOTIFICATIONS);
       String id = IdGenerator.generate();
       Node notifNode = notifsNode.addNode(id, NOTIF_NODETYPE);
       notifNode.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());

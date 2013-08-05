@@ -17,6 +17,8 @@ public abstract class AbstractJCRService
 
   static final String TOKEN_NODETYPE = "chat:token";
   static final String NOTIF_NODETYPE = "chat:notification";
+  static final String USER_NODETYPE = "chat:user";
+  static final String SPACE_NODETYPE = "chat:space";
   static final String USER_PROPERTY = "chat:user";
   static final String TIMESTAMP_PROPERTY = "chat:timestamp";
   static final String TOKEN_PROPERTY = "chat:token";
@@ -28,6 +30,16 @@ public abstract class AbstractJCRService
   static final String CONTENT_PROPERTY = "chat:content";
   static final String LINK_PROPERTY = "chat:link";
   static final String IS_READ_PROPERTY = "chat:isread";
+  static final String EMAIL_PROPERTY = "chat:email";
+  static final String FAVORITES_PROPERTY = "chat:favorites";
+  static final String FULLNAME_PROPERTY = "chat:fullname";
+  static final String SPACES_PROPERTY = "chat:spaces";
+  static final String STATUS_PROPERTY = "chat:status";
+  static final String IS_SUPPORT_ADMIN_PROPERTY = "chat:issupport";
+  static final String ID_PROPERTY = "chat:id";
+  static final String DISPLAY_NAME_PROPERTY = "chat:displayname";
+  static final String GROUP_ID_PROPERTY = "chat:groupid";
+  static final String SHORT_NAME_PROPERTY = "chat:shortname";
 
 
   protected void initNodetypes()
@@ -197,6 +209,89 @@ public abstract class AbstractJCRService
         nodeTypeManager.registerNodeType(chatNotif, ExtendedNodeTypeManager.REPLACE_IF_EXISTS);
       }
 
+      try
+      {
+        NodeType ntUser = nodeTypeManager.getNodeType(USER_NODETYPE);
+
+      }
+      catch (NoSuchNodeTypeException nsne)
+      {
+        NodeTypeValue chatUser = new NodeTypeValue();
+        chatUser.setName(USER_NODETYPE);
+        chatUser.setMixin(false);
+        List<String> superTypes = new ArrayList<String>();
+        superTypes.add("nt:base");
+        chatUser.setDeclaredSupertypeNames(superTypes);
+
+        PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
+        userProperty.setMultiple(false);
+        userProperty.setAutoCreate(false);
+        userProperty.setName(USER_PROPERTY);
+        userProperty.setReadOnly(false);
+        userProperty.setRequiredType(PropertyType.STRING);
+        userProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue statusProperty = new PropertyDefinitionValue();
+        statusProperty.setMultiple(false);
+        statusProperty.setAutoCreate(false);
+        statusProperty.setName(STATUS_PROPERTY);
+        statusProperty.setReadOnly(false);
+        statusProperty.setRequiredType(PropertyType.STRING);
+        statusProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue spacesProperty = new PropertyDefinitionValue();
+        spacesProperty.setMultiple(true);
+        spacesProperty.setAutoCreate(false);
+        spacesProperty.setName(SPACES_PROPERTY);
+        spacesProperty.setReadOnly(false);
+        spacesProperty.setRequiredType(PropertyType.STRING);
+        spacesProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue favoritesProperty = new PropertyDefinitionValue();
+        favoritesProperty.setMultiple(true);
+        favoritesProperty.setAutoCreate(false);
+        favoritesProperty.setName(FAVORITES_PROPERTY);
+        favoritesProperty.setReadOnly(false);
+        favoritesProperty.setRequiredType(PropertyType.STRING);
+        favoritesProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue emailProperty = new PropertyDefinitionValue();
+        emailProperty.setMultiple(false);
+        emailProperty.setAutoCreate(false);
+        emailProperty.setName(EMAIL_PROPERTY);
+        emailProperty.setReadOnly(false);
+        emailProperty.setRequiredType(PropertyType.STRING);
+        emailProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue fullnameProperty = new PropertyDefinitionValue();
+        fullnameProperty.setMultiple(false);
+        fullnameProperty.setAutoCreate(false);
+        fullnameProperty.setName(FULLNAME_PROPERTY);
+        fullnameProperty.setReadOnly(false);
+        fullnameProperty.setRequiredType(PropertyType.STRING);
+        fullnameProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue isSupport = new PropertyDefinitionValue();
+        isSupport.setMultiple(false);
+        isSupport.setAutoCreate(false);
+        isSupport.setName(IS_SUPPORT_ADMIN_PROPERTY);
+        isSupport.setReadOnly(false);
+        isSupport.setRequiredType(PropertyType.BOOLEAN);
+        isSupport.setOnVersion(OnParentVersionAction.IGNORE);
+
+        List<PropertyDefinitionValue> props = new ArrayList<PropertyDefinitionValue>();
+        props.add(userProperty);
+        props.add(statusProperty);
+        props.add(spacesProperty);
+        props.add(favoritesProperty);
+        props.add(emailProperty);
+        props.add(fullnameProperty);
+        props.add(isSupport);
+
+        chatUser.setDeclaredPropertyDefinitionValues(props);
+
+        nodeTypeManager.registerNodeType(chatUser, ExtendedNodeTypeManager.REPLACE_IF_EXISTS);
+      }
     }
     catch (RepositoryException e)
     {
@@ -213,15 +308,34 @@ public abstract class AbstractJCRService
       Session session = JCRBootstrap.getSession();
 
       Node rootNode = session.getRootNode();
-      if (!rootNode.hasNode("tokens"))
+      if (!rootNode.hasNode("chat"))
       {
-        rootNode.addNode("tokens", "nt:unstructured");
+        rootNode.addNode("chat", "nt:unstructured");
+        session.save();
+      }
+      Node chatNode = rootNode.getNode("chat");
+
+      if (!chatNode.hasNode("tokens"))
+      {
+        chatNode.addNode("tokens", "nt:unstructured");
         session.save();
       }
 
-      if (!rootNode.hasNode("notifications"))
+      if (!chatNode.hasNode("notifications"))
       {
-        rootNode.addNode("notifications", "nt:unstructured");
+        chatNode.addNode("notifications", "nt:unstructured");
+        session.save();
+      }
+
+      if (!chatNode.hasNode("users"))
+      {
+        chatNode.addNode("users", "nt:unstructured");
+        session.save();
+      }
+
+      if (!chatNode.hasNode("room_rooms"))
+      {
+        chatNode.addNode("room_rooms", "nt:unstructured");
         session.save();
       }
 
