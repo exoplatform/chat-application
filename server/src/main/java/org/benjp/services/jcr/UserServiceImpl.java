@@ -49,6 +49,8 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
           favorites.add(targetUser);
 
         userNode.setProperty(FAVORITES_PROPERTY, (String[])favorites.toArray());
+        userNode.save();
+        session.save();
       }
 
     }
@@ -157,7 +159,7 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
 
         if (!roomsNode.hasNode(room))
         {
-          Node roomNode = roomsNode.addNode(room);
+          Node roomNode = roomsNode.addNode(room, ROOM_NODETYPE);
           roomNode.setProperty(ID_PROPERTY, bean.getId());
           roomNode.setProperty(DISPLAY_NAME_PROPERTY, bean.getDisplayName());
           roomNode.setProperty(GROUP_ID_PROPERTY, bean.getGroupId());
