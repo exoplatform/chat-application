@@ -41,17 +41,17 @@ public class ServerBootstrap {
 
   public static void addUser(String username, String token)
   {
-    callServer("addUser", "username="+username+"&token="+token);
+    postServer("addUser", "username="+username+"&token="+token);
   }
 
   public static void setAsAdmin(String username, boolean isAdmin)
   {
-    callServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin);
+    postServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin);
   }
 
   public static void addUserFullNameAndEmail(String username, String fullname, String email)
   {
-    callServer("addUserFullNameAndEmail", "username="+username+"&fullname="+fullname+"&email="+email);
+    postServer("addUserFullNameAndEmail", "username="+username+"&fullname="+fullname+"&email="+email);
   }
 
   public static String getToken(String username)
