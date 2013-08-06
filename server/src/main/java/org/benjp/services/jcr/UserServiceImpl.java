@@ -47,8 +47,13 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
 
         if (!hasAlready)
           favorites.add(targetUser);
-
-        userNode.setProperty(FAVORITES_PROPERTY, (String[])favorites.toArray());
+        String [] favtab = new String[favorites.size()];
+        int i=0;
+        for (String fav:favorites)
+        {
+          favtab[i++] = fav;
+        }
+        userNode.setProperty(FAVORITES_PROPERTY, favtab);
         userNode.save();
         session.save();
       }
