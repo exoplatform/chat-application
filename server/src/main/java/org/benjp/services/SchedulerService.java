@@ -19,7 +19,7 @@
 
 package org.benjp.services;
 
-import org.benjp.jobs.NotificationCleanupJob;
+import org.benjp.services.mongodb.NotificationCleanupJob;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.utils.PropertyManager;
 import org.quartz.*;
@@ -27,7 +27,6 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import static org.quartz.JobBuilder.newJob;
@@ -52,12 +51,22 @@ public class SchedulerService
   {
     SchedulerFactory sf = new StdSchedulerFactory();
     try {
+
       sched = sf.getScheduler();
+      JobDetail notificationCleanupJob;
 
-      JobDetail notificationCleanupJob = newJob(NotificationCleanupJob.class)
-              .withIdentity("notificationCleanupJob", "chatServer")
-              .build();
-
+      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+      {
+        notificationCleanupJob = newJob(org.benjp.services.mongodb.NotificationCleanupJob.class)
+                .withIdentity("notificationCleanupJobMongo", "chatServer")
+                .build();
+      }
+      else
+      {
+        notificationCleanupJob = newJob(org.benjp.services.jcr.NotificationCleanupJob.class)
+                .withIdentity("notificationCleanupJobJCR", "chatServer")
+                .build();
+      }
 
       CronTrigger notificationTrigger = newTrigger()
               .withIdentity("notificationTrigger", "chatServer")
@@ -70,11 +79,14 @@ public class SchedulerService
 
       log.info("Scheduler Started");
 
-      try {
-        ConnectionManager.getInstance().ensureIndexes();
-        log.info("MongoDB Indexes Up to Date");
-      } catch (Exception e) {
-        log.severe("MongoDB Indexes couldn't be created during startup. Chat Extension may be unstable!");
+      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+      {
+        try {
+          ConnectionManager.getInstance().ensureIndexes();
+          log.info("MongoDB Indexes Up to Date");
+        } catch (Exception e) {
+          log.severe("MongoDB Indexes couldn't be created during startup. Chat Extension may be unstable!");
+        }
       }
 
     } catch (SchedulerException e) {

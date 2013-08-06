@@ -48,8 +48,9 @@ public class MongoBootstrap
       {
         if (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE)))
         {
-          log.warning("We will now use MongoDB in Embed Mode...");
-          log.warning("Embed Mode should never be used in Production!");
+          log.warning("WE WILL NOW USE MONGODB IN EMBED MODE...");
+          log.warning("BE AWARE...");
+          log.warning("EMBED MODE SHOULD NEVER BE USED IN PRODUCTION!");
           setupEmbedMongo();
         }
 

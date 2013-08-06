@@ -179,4 +179,21 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
 
     return total;
   }
+
+  public static void cleanupNotifications()
+  {
+/*
+    DBCollection coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
+    query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
+//    query.put("isRead", true);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      coll.remove(doc);
+    }
+*/
+  }
+
 }

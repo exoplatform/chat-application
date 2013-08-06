@@ -64,6 +64,9 @@
       <span class="chat-status-chat chat-status-invisible"></span>
       <label style="margin-top: 5px; margin-bottom: 0;float: left">
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
+        <% if ("DEV".equals(demoMode)) { %>
+        <span class="label-demo">(Demo Mode)</span>
+        <% } %>
       </label>
     </span>
     <span class="menu-standard" style="float:right;">

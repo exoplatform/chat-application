@@ -1,7 +1,5 @@
-package org.benjp.jobs;
+package org.benjp.services.jcr;
 
-import org.benjp.services.NotificationService;
-import org.benjp.services.mongodb.NotificationServiceImpl;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,7 +8,7 @@ import java.util.logging.Logger;
 
 public class NotificationCleanupJob implements Job
 {
-  Logger log = Logger.getLogger("NotificationCleanupJob");
+  Logger log = Logger.getLogger("NotificationJCRCleanupJob");
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
     log.info("Job started");
