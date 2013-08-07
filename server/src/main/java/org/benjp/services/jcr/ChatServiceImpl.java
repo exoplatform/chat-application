@@ -348,7 +348,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
 
       if (!roomsNode.hasNode(room))
       {
-        Node roomNode = roomsNode.addNode(room);
+        Node roomNode = roomsNode.addNode(room, ROOM_NODETYPE);
         roomNode.setProperty(SPACE_PROPERTY, space);
         session.save();
       }
@@ -373,7 +373,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
 
       if (!roomsNode.hasNode(room))
       {
-        Node roomNode = roomsNode.addNode(room);
+        Node roomNode = roomsNode.addNode(room, ROOM_NODETYPE);
         String[] tabu = new String[users.size()];
         int i=0;
         for (String user:users)
@@ -639,7 +639,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
       }
       else
       {
-        node = roomsNode.addNode(room, "nt:unstructured");
+        node = roomsNode.addNode(room, ROOM_NODETYPE);
         session.save();
       }
 
