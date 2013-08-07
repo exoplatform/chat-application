@@ -162,7 +162,7 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
       StringBuilder statement = new StringBuilder();
 
       statement.append("SELECT * FROM ").append(NOTIF_NODETYPE);
-      //statement.append(" WHERE ").append(IS_READ_PROPERTY).append(" = 'false'");
+      statement.append(" WHERE ").append(IS_READ_PROPERTY).append(" = 'false'");
 
       Query query = manager.createQuery(statement.toString(), Query.SQL);
 
@@ -182,18 +182,34 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
 
   public static void cleanupNotifications()
   {
-/*
-    DBCollection coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
-//    query.put("isRead", true);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
+    try
     {
-      DBObject doc = cursor.next();
-      coll.remove(doc);
+      //get info
+      Session session = JCRBootstrap.getSession();
+      QueryManager manager = session.getWorkspace().getQueryManager();
+
+      StringBuilder statement = new StringBuilder();
+
+      statement.append("SELECT * FROM ").append(NOTIF_NODETYPE);
+      statement.append(" WHERE ").append(IS_READ_PROPERTY).append(" = 'true'");
+
+      Query query = manager.createQuery(statement.toString(), Query.SQL);
+
+      NodeIterator nodeIterator = query.execute().getNodes();
+
+      while (nodeIterator.hasNext())
+      {
+        Node node = nodeIterator.nextNode();
+        node.remove();
+        session.save();
+      }
+
     }
-*/
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
   }
 
 }
