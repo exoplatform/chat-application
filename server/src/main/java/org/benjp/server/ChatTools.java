@@ -30,6 +30,7 @@ import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
+import org.benjp.services.jcr.JCRBootstrap;
 import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
 
@@ -287,12 +288,20 @@ public class ChatTools
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    if (db == null)
+    if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
     {
-      return Response.notFound("{ \"message\": \"db is null\"}");
+      if (db == null)
+      {
+        return Response.notFound("{ \"message\": \"db is null\"}");
+      }
+
+      ConnectionManager.getInstance().getDB(db);
+    }
+    else
+    {
+      JCRBootstrap.initChat();
     }
 
-    ConnectionManager.getInstance().getDB(db);
 
     StringBuffer data = new StringBuffer();
     data.append("{");

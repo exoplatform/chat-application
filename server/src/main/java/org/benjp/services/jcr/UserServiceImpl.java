@@ -1,7 +1,9 @@
 package org.benjp.services.jcr;
 
+import org.benjp.model.RoomBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
+import org.benjp.services.ChatService;
 import org.benjp.services.UserService;
 import org.benjp.utils.ChatUtils;
 
@@ -12,6 +14,7 @@ import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserServiceImpl extends AbstractJCRService implements UserService
@@ -159,7 +162,7 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
       Node roomsNode = session.getRootNode().getNode("chat/"+M_ROOMS_COLLECTION);
       for (SpaceBean bean:spaces)
       {
-        String room = ChatUtils.getRoomId(bean.getDisplayName());
+        String room = ChatUtils.getRoomId(bean.getId());
         spaceIds.add(room);
 
         if (!roomsNode.hasNode(room))
@@ -169,6 +172,7 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
           roomNode.setProperty(DISPLAY_NAME_PROPERTY, bean.getDisplayName());
           roomNode.setProperty(GROUP_ID_PROPERTY, bean.getGroupId());
           roomNode.setProperty(SHORT_NAME_PROPERTY, bean.getShortName());
+          roomNode.setProperty(TYPE_PROPERTY, ChatService.TYPE_ROOM_SPACE);
           session.save();
         }
         else
@@ -216,6 +220,123 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     }
   }
 
+  public void addTeamRoom(String user, String teamRoomId) {
+    String[] teamsIds = {teamRoomId};
+    try
+    {
+      Session session = JCRBootstrap.getSession();
+
+      Node usersNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
+      if (usersNode.hasNode(user))
+      {
+        Node userNode = usersNode.getNode(user);
+        if (userNode.hasProperty(TEAMS_PROPERTY))
+        {
+          Value[] values = userNode.getProperty(TEAMS_PROPERTY).getValues();
+          List<String> tlist = new ArrayList<String>();
+          boolean containsTeamRoomId = false;
+          for (Value val:values)
+          {
+            String id = val.getString();
+            if (teamRoomId.equals(id))
+            {
+              containsTeamRoomId = true;
+            }
+            tlist.add(id);
+          }
+          if (!containsTeamRoomId) tlist.add(teamRoomId);
+          String[] ids = new String[tlist.size()];
+          int i=0;
+          for (String id:tlist)
+          {
+            ids[i++] = id;
+          }
+          userNode.setProperty(TEAMS_PROPERTY, ids);
+
+        }
+        else
+        {
+          userNode.setProperty(TEAMS_PROPERTY, teamsIds);
+        }
+        userNode.save();
+        session.save();
+      }
+      else
+      {
+        Node userNode = usersNode.addNode(user, USER_NODETYPE);
+        userNode.setProperty(USER_PROPERTY, user);
+        userNode.setProperty(TEAMS_PROPERTY, teamsIds);
+        session.save();
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  private RoomBean getTeam(String teamId)
+  {
+    RoomBean roomBean = null;
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+      Node roomsNode = session.getRootNode().getNode("chat/" + M_ROOMS_COLLECTION);
+
+      if (roomsNode.hasNode(teamId))
+      {
+        Node roomNode = roomsNode.getNode(teamId);
+        roomBean = new RoomBean();
+        roomBean.setRoom(teamId);
+        roomBean.setUser(roomNode.getProperty(USER_NODETYPE).getString());
+        roomBean.setFullname(roomNode.getProperty(TEAM_PROPERTY).getString());
+
+        if (roomNode.hasProperty(TIMESTAMP_PROPERTY))
+        {
+          roomBean.setTimestamp(roomNode.getProperty(TIMESTAMP_PROPERTY).getLong());
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return roomBean;
+  }
+
+
+  public List<RoomBean> getTeams(String user) {
+    List<RoomBean> rooms = new ArrayList<RoomBean>();
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+
+      Node usersNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
+      if (usersNode.hasNode(user))
+      {
+        Node userNode = usersNode.getNode(user);
+
+        if (userNode.hasProperty(TEAMS_PROPERTY))
+        {
+          Value[] values = userNode.getProperty(TEAMS_PROPERTY).getValues();
+          for (Value val:values)
+          {
+            rooms.add(getTeam(val.getString()));
+          }
+        }
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return rooms;  }
+
   private SpaceBean getSpace(String spaceId)
   {
     SpaceBean spaceBean = null;
@@ -229,7 +350,8 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
       {
         Node roomNode = roomsNode.getNode(spaceId);
         spaceBean = new SpaceBean();
-        spaceBean.setId(spaceId);
+        spaceBean.setId(roomNode.getProperty(ID_PROPERTY).getString());
+        spaceBean.setRoom(spaceId);
         spaceBean.setDisplayName(roomNode.getProperty(DISPLAY_NAME_PROPERTY).getString());
         spaceBean.setGroupId(roomNode.getProperty(GROUP_ID_PROPERTY).getString());
         spaceBean.setShortName(roomNode.getProperty(SHORT_NAME_PROPERTY).getString());
@@ -278,9 +400,9 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
   }
 
   public List<UserBean> getUsers(String spaceId) {
-    if (spaceId.indexOf("space-")>-1)
+    if (spaceId.indexOf(ChatService.SPACE_PREFIX)>-1)
     {
-      spaceId = spaceId.substring(6);
+      spaceId = spaceId.substring(ChatService.SPACE_PREFIX.length());
     }
     List<UserBean> users = new ArrayList<UserBean>();
     try
@@ -508,7 +630,7 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     return userBean;
   }
 
-  public List<String> getUsersFilterBy(String user, String space) {
+  public List<String> getUsersFilterBy(String user, String room, String type) {
     ArrayList<String> users = new ArrayList<String>();
     try
     {
@@ -518,7 +640,10 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
 
       StringBuilder statement = new StringBuilder();
       statement.append("SELECT * FROM ").append(USER_NODETYPE).append(" WHERE ");
-      statement.append(SPACES_PROPERTY).append(" = '").append(space).append("'");
+      if (ChatService.TYPE_ROOM_SPACE.equals(type))
+        statement.append(SPACES_PROPERTY).append(" = '").append(room).append("'");
+      else
+        statement.append(TEAMS_PROPERTY).append(" = '").append(room).append("'");
       Query query = manager.createQuery(statement.toString(), Query.SQL);
       NodeIterator nodeIterator = query.execute().getNodes();
 

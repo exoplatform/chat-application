@@ -36,6 +36,7 @@ $(document).ready(function(){
   chatApplication.jzUsers = chatServerURL+"/users";
   chatApplication.jzDelete = chatServerURL+"/delete";
   chatApplication.jzEdit = chatServerURL+"/edit";
+  chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
   chatApplication.room = "<%=room%>";
 
   chatApplication.initChat();
@@ -202,6 +203,43 @@ $(document).ready(function(){
   }
 
 
+  $(".btn-add-team").on("click", function() {
+    $('#team-modal').modal({"backdrop": false});
+  });
+
+  $(".team-edit-button").on("click", function() {
+    var $uitext = $("#team-modal-name");
+    $uitext.val(chatApplication.targetFullname);
+    $uitext.attr("data-id", chatApplication.targetUser);
+
+    $('#team-modal').modal({"backdrop": false});
+  });
+
+  $(".team-modal-cancel").on("click", function() {
+    $('#team-modal').modal('hide');
+    var $uitext = $("#team-modal-name");
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+  });
+
+  $(".team-modal-save").on("click", function() {
+    var $uitext = $("#team-modal-name");
+    var teamName = $uitext.val();
+    var teamId = $uitext.attr("data-id");
+    $('#team-modal').modal('hide');
+
+    chatApplication.saveTeamRoom(teamName, teamId, function(data) {
+      var teamName = data.name;
+      var roomId = "team-"+data.room;
+      chatApplication.refreshWhoIsOnline(roomId, teamName);
+    });
+
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+
+  });
+
+
   $(".btn-weemo").on("click", function() {
     if (!$(this).hasClass("disabled"))
       chatApplication.createWeemoCall();
@@ -355,6 +393,7 @@ function ChatApplication() {
   this.jzUsers = "";
   this.jzDelete = "";
   this.jzEdit = "";
+  this.jzSaveTeamRoom = "";
   this.highlight = "";    //not set
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
@@ -440,7 +479,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       $(".avatar-image:first").attr("src", gravatar(email));
       this.hidePanels();
 
-      this.refreshWhoIsOnline(this);
+      this.refreshWhoIsOnline();
       this.initStatusChat();
 
       if (this.isPublic) {
@@ -546,6 +585,38 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
 
 };
 
+/**
+ * Saves a Team room for current user
+ *
+ * @param teamName
+ * @param room
+ * @param callback : callback method with roomId as a parameter
+ */
+ChatApplication.prototype.saveTeamRoom = function(teamName, room, callback) {
+  $.ajax({
+    url: this.jzSaveTeamRoom,
+    dataType: "json",
+    data: {"teamName": teamName,
+      "room": room,
+      "user": this.username,
+      "token": this.token
+    },
+
+    success:function(response){
+      //console.log("success");
+      if (typeof callback === "function") {
+        callback(response);
+      }
+    },
+
+    error:function (xhr, status, error){
+
+    }
+
+  });
+
+};
+
 
 /**
  * Init Status Chat Loop
@@ -631,6 +702,11 @@ ChatApplication.prototype.initChatProfile = function() {
           $(".filter-public").css("display", "inline-block");
           $(".filter-empty").css("display", "none");
         }
+/*
+        if (data.isAdmin !== "true") {
+          $(".btn-top-add-actions").css("display", "none");
+        }
+*/
         this.refreshWhoIsOnline(this);
         this.refreshStatusChat();
 
@@ -1195,7 +1271,7 @@ ChatApplication.prototype.updateTitle = function() {
 /**
  * Refresh Who Is Online : server call
  */
-ChatApplication.prototype.refreshWhoIsOnline = function() {
+ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullname) {
   var withSpaces = jzGetParam("chat.button.space", "true");
   var withUsers = jzGetParam("chat.button.user", "true");
   var withPublic = jzGetParam("chat.button.public", "false");
@@ -1223,6 +1299,16 @@ ChatApplication.prototype.refreshWhoIsOnline = function() {
         "timestamp": new Date().getTime()},
       context: this,
       success: function(response){
+        if (targetUser !== undefined && targetFullname !== undefined) {
+          this.targetUser = targetUser;
+          this.targetFullname = targetFullname;
+          jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
+          jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
+          jzStoreParam("lastTS"+this.username, "0");
+          this.firstLoad = true;
+        }
+        console.log("refreshWhoIsOnline : "+this.targetUser+" : "+this.targetFullname);
+
         var tmpMD5 = response.md5;
         if (tmpMD5 !== this.whoIsOnlineMD5) {
           this.setOfflineNotif(response.unreadOffline);
@@ -1403,16 +1489,24 @@ ChatApplication.prototype.loadRoom = function() {
     }
 
     $("#room-detail").css("display", "block");
+    $(".team-button").css("display", "none");
     $(".target-user-fullname").text(this.targetFullname);
-    if (this.targetUser.indexOf("space-")===-1) {
+    if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
+    {
       $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
     }
-    else
+    else if (this.targetUser.indexOf("team-")===-1)
     {
       var spaceName = this.targetFullname.toLowerCase().replace(" ", "_");
       $(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
+    }
+    else
+    {
+      $(".team-button").css("display", "block");
+      $(".target-avatar-link").attr("href", "#");
+      $(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
 
 

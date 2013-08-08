@@ -344,12 +344,11 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node roomsNode = session.getRootNode().getNode("chat/"+M_ROOM_PREFIX+M_ROOMS_COLLECTION);
-
-      if (!roomsNode.hasNode(room))
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (!roomNode.hasProperty(SPACE_PROPERTY))
       {
-        Node roomNode = roomsNode.addNode(room, ROOM_NODETYPE);
         roomNode.setProperty(SPACE_PROPERTY, space);
+        roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_SPACE);
         session.save();
       }
 
@@ -361,6 +360,51 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     return room;
   }
 
+  public String getTeamRoom(String team, String user) {
+    String room = ChatUtils.getRoomId(team, user);
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (!roomNode.hasProperty(TEAM_PROPERTY))
+      {
+        roomNode.setProperty(TEAM_PROPERTY, team);
+        roomNode.setProperty(USER_PROPERTY, user);
+        roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_TEAM);
+        session.save();
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return room;
+  }
+
+  public void setRoomName(String room, String name) {
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (roomNode.hasProperty(TEAM_PROPERTY))
+      {
+        roomNode.setProperty(TEAM_PROPERTY, name);
+        session.save();
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+
   public String getRoom(List<String> users) {
     Collections.sort(users);
     String room = ChatUtils.getRoomId(users);
@@ -368,12 +412,9 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     {
       //get info
       Session session = JCRBootstrap.getSession();
-
-      Node roomsNode = session.getRootNode().getNode("chat/"+M_ROOM_PREFIX+M_ROOMS_COLLECTION);
-
-      if (!roomsNode.hasNode(room))
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (!roomNode.hasProperty(USERS_PROPERTY))
       {
-        Node roomNode = roomsNode.addNode(room, ROOM_NODETYPE);
         String[] tabu = new String[users.size()];
         int i=0;
         for (String user:users)
@@ -381,6 +422,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
           tabu[i++] = user;
         }
         roomNode.setProperty(USERS_PROPERTY, tabu);
+        roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_USER);
         session.save();
       }
 
@@ -524,13 +566,37 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     for (SpaceBean space:spaces)
     {
       RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser(SPACE_PREFIX+space.getId());
+      roomBeanS.setUser(SPACE_PREFIX+space.getRoom());
+      roomBeanS.setRoom(space.getRoom());
       roomBeanS.setFullname(space.getDisplayName());
       roomBeanS.setStatus(org.benjp.services.mongodb.UserServiceImpl.STATUS_SPACE);
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom())));
+      if (roomBeanS.getUnreadTotal()>0)
+        unreadSpaces += roomBeanS.getUnreadTotal();
+      roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
+      if (withSpaces)
+      {
+        rooms.add(roomBeanS);
+      }
+
+    }
+
+    List<RoomBean> teams = userService.getTeams(user);
+    for (RoomBean team:teams)
+    {
+      RoomBean roomBeanS = new RoomBean();
+      roomBeanS.setUser(TEAM_PREFIX + team.getRoom());
+      roomBeanS.setRoom(team.getRoom());
+      roomBeanS.setFullname(team.getFullname());
+      roomBeanS.setStatus(org.benjp.services.mongodb.UserServiceImpl.STATUS_SPACE);
+      roomBeanS.setTimestamp(team.getTimestamp());
+      roomBeanS.setAvailableUser(true);
+      roomBeanS.setSpace(false);
+      roomBeanS.setTeam(true);
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
       if (roomBeanS.getUnreadTotal()>0)
         unreadSpaces += roomBeanS.getUnreadTotal();
       roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
@@ -629,17 +695,24 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
 
   private Node getRoom(String room, Session session)
   {
+    return getRoom(room, session, M_ROOMS_COLLECTION);
+  }
+
+  private Node getRoom(String room, Session session, String path)
+  {
     Node node = null;
     try
     {
-      Node roomsNode = session.getRootNode().getNode("chat/"+M_ROOMS_COLLECTION);
+      Node roomsNode = session.getRootNode().getNode("chat/"+path);
       if (roomsNode.hasNode(room))
       {
         node = roomsNode.getNode(room);
       }
       else
       {
-        node = roomsNode.addNode(room, ROOM_NODETYPE);
+        String nt = ROOM_NODETYPE;
+        if (path.equals(M_ROOMS_COLLECTION)) nt = "nt:unstructured";
+        node = roomsNode.addNode(room, nt);
         session.save();
       }
 

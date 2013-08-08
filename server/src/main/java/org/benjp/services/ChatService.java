@@ -30,6 +30,11 @@ public interface ChatService
   public static final String M_ROOMS_COLLECTION = "rooms";
 
   public static final String SPACE_PREFIX = "space-";
+  public static final String TEAM_PREFIX = "team-";
+
+  public static final String TYPE_ROOM_USER = "u";
+  public static final String TYPE_ROOM_SPACE = "s";
+  public static final String TYPE_ROOM_TEAM = "t";
 
   public static final String TYPE_DELETED = "DELETED";
   public static final String TYPE_EDITED = "EDITED";
@@ -47,6 +52,10 @@ public interface ChatService
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp);
 
   public String getSpaceRoom(String space);
+
+  public String getTeamRoom(String team, String user);
+
+  public void setRoomName(String room, String name);
 
   public String getRoom(List<String> users);
 

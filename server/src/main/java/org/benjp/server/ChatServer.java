@@ -29,6 +29,7 @@ import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
+import org.benjp.utils.ChatUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -115,15 +116,25 @@ public class ChatServer
         chatService.write(message, user, room, isSystem, options);
         String content = "New message from "+user+" : "+((message.length()>15)?message.substring(0,14)+"...":message);
 
-        if (!targetUser.startsWith(ChatService.SPACE_PREFIX))
-          notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
-        else
+        if (targetUser.startsWith(ChatService.SPACE_PREFIX))
         {
-          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()));
+          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
           for (String tuser:users)
           {
             notificationService.addNotification(tuser, "chat", "room", room, content, "/portal/default/chat?room="+room);
           }
+        }
+        else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
+        {
+          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
+          for (String tuser:users)
+          {
+            notificationService.addNotification(tuser, "chat", "room", room, content, "/portal/default/chat?room="+room);
+          }
+        }
+        else
+        {
+          notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
         }
 
         //notificationService.setNotificationsAsRead(user, "chat", "room", room);
@@ -191,7 +202,7 @@ public class ChatServer
     }
     try
     {
-      chatService.edit(room, user,  messageId, message);
+      chatService.edit(room, user, messageId, message);
     }
     catch (Exception e)
     {
@@ -238,6 +249,12 @@ public class ChatServer
 
       }
       else
+      if (targetUser.startsWith(ChatService.TEAM_PREFIX))
+      {
+        room = chatService.getTeamRoom(targetUser, user);
+
+      }
+      else
       {
         String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser.startsWith(UserService.ANONIM_USER))?UserService.SUPPORT_USER:user;
 
@@ -254,6 +271,43 @@ public class ChatServer
       return Response.notFound("No Room yet");
     }
     return Response.ok(room);
+  }
+
+  @Resource
+  @Route("/saveTeamRoom")
+  public Response.Content saveTeamRoom(String user, String token, String teamName, String room)
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    String data = "{}";
+
+    try
+    {
+      if (room==null || "".equals(room) || "---".equals(room))
+      {
+        room = chatService.getTeamRoom(teamName, user);
+        userService.addTeamRoom(user, room);
+      }
+      else
+      {
+        if (room.startsWith(ChatService.TEAM_PREFIX) && room.length()>ChatService.TEAM_PREFIX.length()+1)
+        {
+          room = room.substring(ChatService.TEAM_PREFIX.length());
+        }
+
+        chatService.setRoomName(room, teamName);
+      }
+      data = "{\"name\": \""+teamName+"\", \"room\": \""+room+"\"}";
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("No Room yet");
+    }
+    return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

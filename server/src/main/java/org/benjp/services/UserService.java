@@ -19,6 +19,7 @@
 
 package org.benjp.services;
 
+import org.benjp.model.RoomBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
 
@@ -52,6 +53,10 @@ public interface UserService
 
   public void setSpaces(String user, List<SpaceBean> spaces);
 
+  public void addTeamRoom(String user, String teamRoomId);
+
+  public List<RoomBean> getTeams(String user);
+
   public List<SpaceBean> getSpaces(String user);
 
   public List<UserBean> getUsers(String spaceId);
@@ -70,7 +75,7 @@ public interface UserService
 
   public UserBean getUser(String user, boolean withFavorites);
 
-  public List<String> getUsersFilterBy(String user, String space);
+  public List<String> getUsersFilterBy(String user, String room, String type);
 
   public int getNumberOfUsers();
 

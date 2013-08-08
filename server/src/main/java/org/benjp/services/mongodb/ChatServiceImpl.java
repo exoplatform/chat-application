@@ -325,6 +325,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     {
       try {
         basicDBObject.put("space", space);
+        basicDBObject.put("type", TYPE_ROOM_SPACE);
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
@@ -333,6 +334,45 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     }
 
     return room;
+  }
+
+  public String getTeamRoom(String team, String user) {
+    String room = ChatUtils.getRoomId(team, user);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (!cursor.hasNext())
+    {
+      try {
+        basicDBObject.put("team", team);
+        basicDBObject.put("user", user);
+        basicDBObject.put("type", TYPE_ROOM_TEAM);
+        coll.insert(basicDBObject);
+        ensureIndexInRoom(room);
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
+    }
+
+    return room;
+  }
+
+  public void setRoomName(String room, String name) {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      DBObject dbo = cursor.next();
+      dbo.put("team", name);
+      coll.save(dbo, WriteConcern.NONE);
+    }
   }
 
 
@@ -350,6 +390,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     {
       try {
         basicDBObject.put("users", users);
+        basicDBObject.put("type", TYPE_ROOM_USER);
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
@@ -473,13 +514,37 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     for (SpaceBean space:spaces)
     {
       RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser(SPACE_PREFIX+space.getId());
+      roomBeanS.setUser(SPACE_PREFIX+space.getRoom());
+      roomBeanS.setRoom(space.getRoom());
       roomBeanS.setFullname(space.getDisplayName());
       roomBeanS.setStatus(UserServiceImpl.STATUS_SPACE);
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getId())));
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom())));
+      if (roomBeanS.getUnreadTotal()>0)
+        unreadSpaces += roomBeanS.getUnreadTotal();
+      roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
+      if (withSpaces)
+      {
+        rooms.add(roomBeanS);
+      }
+
+    }
+
+    List<RoomBean> teams = userService.getTeams(user);
+    for (RoomBean team:teams)
+    {
+      RoomBean roomBeanS = new RoomBean();
+      roomBeanS.setUser(TEAM_PREFIX + team.getRoom());
+      roomBeanS.setRoom(team.getRoom());
+      roomBeanS.setFullname(team.getFullname());
+      roomBeanS.setStatus(org.benjp.services.mongodb.UserServiceImpl.STATUS_SPACE);
+      roomBeanS.setTimestamp(team.getTimestamp());
+      roomBeanS.setAvailableUser(true);
+      roomBeanS.setSpace(false);
+      roomBeanS.setTeam(true);
+      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
       if (roomBeanS.getUnreadTotal()>0)
         unreadSpaces += roomBeanS.getUnreadTotal();
       roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));

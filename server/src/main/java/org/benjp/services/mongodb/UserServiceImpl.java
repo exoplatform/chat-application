@@ -21,8 +21,10 @@ package org.benjp.services.mongodb;
 
 import com.mongodb.*;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.model.RoomBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
+import org.benjp.services.ChatService;
 import org.benjp.utils.ChatUtils;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -134,7 +136,7 @@ public class UserServiceImpl implements org.benjp.services.UserService
     DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     for (SpaceBean bean:spaces)
     {
-      String room = ChatUtils.getRoomId(bean.getDisplayName());
+      String room = ChatUtils.getRoomId(bean.getId());
       spaceIds.add(room);
 
 
@@ -149,6 +151,7 @@ public class UserServiceImpl implements org.benjp.services.UserService
         doc.put("displayName", bean.getDisplayName());
         doc.put("groupId", bean.getGroupId());
         doc.put("shortName", bean.getShortName());
+        doc.put("type", ChatService.TYPE_ROOM_SPACE);
         coll.insert(doc);
       }
       else
@@ -187,18 +190,98 @@ public class UserServiceImpl implements org.benjp.services.UserService
     }
   }
 
-  private SpaceBean getSpace(String spaceId)
+  public void addTeamRoom(String user, String teamRoomId) {
+    List<String> teamIds = new ArrayList<String>();
+    teamIds.add(teamRoomId);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      if (doc.containsField("teams"))
+      {
+        List<String> existingTeams = ((List<String>)doc.get("teams"));
+        if (!existingTeams.contains(teamRoomId))
+          existingTeams.add(teamRoomId);
+        doc.put("teams", existingTeams);
+      }
+      else
+      {
+        doc.put("teams", teamIds);
+      }
+      coll.save(doc, WriteConcern.SAFE);
+    }
+    else
+    {
+      BasicDBObject doc = new BasicDBObject();
+      doc.put("_id", user);
+      doc.put("user", user);
+      doc.put("teams", teamIds);
+      coll.insert(doc);
+    }
+  }
+
+  private RoomBean getTeam(String teamId)
+  {
+    RoomBean roomBean = null;
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", teamId);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      roomBean = new RoomBean();
+      roomBean.setRoom(teamId);
+      roomBean.setUser(doc.get("user").toString());
+      roomBean.setFullname(doc.get("team").toString());
+      if (doc.containsField("timestamp"))
+      {
+        roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
+      }
+    }
+
+    return roomBean;
+  }
+
+  public List<RoomBean> getTeams(String user) {
+    List<RoomBean> rooms = new ArrayList<RoomBean>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+
+      List<String> listrooms = ((List<String>)doc.get("teams"));
+      if (listrooms!=null)
+      {
+        for (String room:listrooms)
+        {
+          rooms.add(getTeam(room));
+        }
+      }
+
+    }
+    return rooms;
+  }
+
+  private SpaceBean getSpace(String roomId)
   {
     SpaceBean spaceBean = null;
     DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
-    query.put("_id", spaceId);
+    query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext())
     {
       DBObject doc = cursor.next();
       spaceBean = new SpaceBean();
-      spaceBean.setId(spaceId);
+      spaceBean.setRoom(roomId);
+      spaceBean.setId(doc.get("space_id").toString());
       spaceBean.setDisplayName(doc.get("displayName").toString());
       spaceBean.setGroupId(doc.get("groupId").toString());
       spaceBean.setShortName(doc.get("shortName").toString());
@@ -238,9 +321,9 @@ public class UserServiceImpl implements org.benjp.services.UserService
   public List<UserBean> getUsers(String spaceId)
   {
     //removing "space-" prefix
-    if (spaceId.indexOf("space-")>-1)
+    if (spaceId.indexOf(ChatService.SPACE_PREFIX)>-1)
     {
-      spaceId = spaceId.substring(6);
+      spaceId = spaceId.substring(ChatService.SPACE_PREFIX.length());
     }
     List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
@@ -396,12 +479,15 @@ public class UserServiceImpl implements org.benjp.services.UserService
     return userBean;
   }
 
-  public List<String> getUsersFilterBy(String user, String space)
+  public List<String> getUsersFilterBy(String user, String room, String type)
   {
     ArrayList<String> users = new ArrayList<String>();
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
-    query.put("spaces", space);
+    if (ChatService.TYPE_ROOM_SPACE.equals(type))
+      query.put("spaces", room);
+    else
+      query.put("teams", room);
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {

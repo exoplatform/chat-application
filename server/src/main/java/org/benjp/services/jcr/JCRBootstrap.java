@@ -1,9 +1,12 @@
 package org.benjp.services.jcr;
 
+import org.benjp.listener.GuiceManager;
+import org.benjp.services.NotificationService;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.util.logging.Logger;
@@ -25,8 +28,6 @@ public class JCRBootstrap {
       repositoryService_ = (RepositoryService)portalContainer.getComponentInstanceOfType(RepositoryService.class);
       sessionProviderService_ = (SessionProviderService)portalContainer.getComponentInstanceOfType(SessionProviderService.class);
     }
-
-    sessionProviderService_.getSystemSessionProvider(null);
   }
 
   public static Session getSession()
@@ -41,6 +42,34 @@ public class JCRBootstrap {
     }
 
     return session;
+
+  }
+
+  public static void initChat()
+  {
+    Session session = getSession();
+
+    try {
+      Node rootNode = session.getRootNode();
+      if (rootNode.hasNode("chat"))
+      {
+        Node chatNode = rootNode.getNode("chat");
+        chatNode.remove();
+        session.save();
+
+        NotificationService notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+        if (notificationService instanceof NotificationServiceImpl)
+        {
+          ((NotificationServiceImpl)notificationService).initNodetypes();
+          ((NotificationServiceImpl)notificationService).initMandatoryNodes();
+        }
+
+      }
+
+    } catch (RepositoryException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
 
   }
 

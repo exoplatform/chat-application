@@ -1,6 +1,7 @@
 package org.benjp.utils;
 
 import org.apache.commons.codec.binary.Base64;
+import org.benjp.services.ChatService;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,15 +10,30 @@ import java.util.List;
 
 public class ChatUtils {
 
-  public static String getRoomId(String space)
+  public static String getRoomId(String roomName, String user)
   {
-    if (space.startsWith("space-") && space.length()>7)
-      return space.substring(6);
+    if (roomName.startsWith(ChatService.TEAM_PREFIX) && roomName.length()>ChatService.TEAM_PREFIX.length()+1)
+    {
+      return roomName.substring(ChatService.TEAM_PREFIX.length());
+    }
 
-    ArrayList<String> spaces = new ArrayList<String>();
-    spaces.add("1-space-room");
-    spaces.add(space);
-    return getRoomId(spaces);
+    StringBuilder sb = new StringBuilder();
+    sb.append("1-team-room;").append(user).append(";").append(roomName).append(";");
+
+    return MessageDigester.getHash(sb.toString());
+  }
+
+  public static String getRoomId(String roomName)
+  {
+    if (roomName.startsWith(ChatService.SPACE_PREFIX) && roomName.length()>ChatService.SPACE_PREFIX.length()+1)
+    {
+      return roomName.substring(ChatService.SPACE_PREFIX.length());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("1-space-room;").append(roomName).append(";");
+
+    return MessageDigester.getHash(sb.toString());
   }
 
   public static String getRoomId(List<String> users)

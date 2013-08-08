@@ -80,10 +80,12 @@ public class SpaceTestCase extends AbstractChatTestCase
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
     SpaceBean space = new SpaceBean();
     String displayName = "Test Space";
-    String id = ChatUtils.getRoomId(displayName);
+    String spaceId = "123456789";
+    String room = ChatUtils.getRoomId(spaceId);
     space.setDisplayName(displayName);
     space.setGroupId("test_space");
-    space.setId(id);
+    space.setId(spaceId);
+    space.setRoom(room);
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
@@ -102,10 +104,12 @@ public class SpaceTestCase extends AbstractChatTestCase
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
     SpaceBean space = new SpaceBean();
     String displayName = "Test Space";
-    String id = ChatUtils.getRoomId(displayName);
+    String spaceId = "123456789";
+    String room = ChatUtils.getRoomId(spaceId);
     space.setDisplayName(displayName);
     space.setGroupId("test_space");
-    space.setId(id);
+    space.setId(spaceId);
+    space.setRoom(room);
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
@@ -113,24 +117,26 @@ public class SpaceTestCase extends AbstractChatTestCase
     ServiceBootstrap.getUserService().setSpaces(user, spaces);
     ServiceBootstrap.getUserService().setSpaces("john", spaces);
 
-    assertEquals(2, ServiceBootstrap.getUserService().getUsers(space.getId()).size());
+    assertEquals(2, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
 
     ServiceBootstrap.getUserService().setSpaces("mary", spaces);
-    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getId()).size());
+    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
 
     SpaceBean space2 = new SpaceBean();
     String displayName2 = "Test Space 2";
-    String id2 = ChatUtils.getRoomId(displayName2);
+    String spaceId2 = "129623459876";
+    String room2 = ChatUtils.getRoomId(spaceId2);
     space2.setDisplayName(displayName2);
     space2.setGroupId("test_space_2");
-    space2.setId(id2);
+    space2.setId(spaceId2);
+    space2.setRoom(room2);
     space2.setShortName("Test Space 2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
 
     ServiceBootstrap.getUserService().setSpaces("mary", spaces);
-    assertEquals(1, ServiceBootstrap.getUserService().getUsers(space2.getId()).size());
-    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getId()).size());
+    assertEquals(1, ServiceBootstrap.getUserService().getUsers(space2.getRoom()).size());
+    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
 
   }
 

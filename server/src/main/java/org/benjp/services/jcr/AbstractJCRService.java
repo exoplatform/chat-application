@@ -34,6 +34,8 @@ public abstract class AbstractJCRService
   static final String FAVORITES_PROPERTY = "chat:favorites";
   static final String FULLNAME_PROPERTY = "chat:fullname";
   static final String SPACES_PROPERTY = "chat:spaces";
+  static final String TEAMS_PROPERTY = "chat:teams";
+  static final String TEAM_PROPERTY = "chat:team";
   static final String SPACE_PROPERTY = "chat:space";
   static final String USERS_PROPERTY = "chat:users";
   static final String STATUS_PROPERTY = "chat:status";
@@ -270,6 +272,22 @@ public abstract class AbstractJCRService
         spaceProperty.setRequiredType(PropertyType.STRING);
         spaceProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
+        PropertyDefinitionValue teamProperty = new PropertyDefinitionValue();
+        teamProperty.setMultiple(false);
+        teamProperty.setAutoCreate(false);
+        teamProperty.setName(TEAM_PROPERTY);
+        teamProperty.setReadOnly(false);
+        teamProperty.setRequiredType(PropertyType.STRING);
+        teamProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
+        userProperty.setMultiple(false);
+        userProperty.setAutoCreate(false);
+        userProperty.setName(USER_PROPERTY);
+        userProperty.setReadOnly(false);
+        userProperty.setRequiredType(PropertyType.STRING);
+        userProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
         PropertyDefinitionValue usersProperty = new PropertyDefinitionValue();
         usersProperty.setMultiple(true);
         usersProperty.setAutoCreate(false);
@@ -286,6 +304,14 @@ public abstract class AbstractJCRService
         timestampProperty.setRequiredType(PropertyType.LONG);
         timestampProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
+        PropertyDefinitionValue typeProperty = new PropertyDefinitionValue();
+        typeProperty.setMultiple(false);
+        typeProperty.setAutoCreate(false);
+        typeProperty.setName(TYPE_PROPERTY);
+        typeProperty.setReadOnly(false);
+        typeProperty.setRequiredType(PropertyType.STRING);
+        typeProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
 
         List<PropertyDefinitionValue> props = new ArrayList<PropertyDefinitionValue>();
         props.add(idProperty);
@@ -293,8 +319,11 @@ public abstract class AbstractJCRService
         props.add(groupIdProperty);
         props.add(shortNameProperty);
         props.add(spaceProperty);
+        props.add(teamProperty);
+        props.add(userProperty);
         props.add(usersProperty);
         props.add(timestampProperty);
+        props.add(typeProperty);
 
         chatRoom.setDeclaredPropertyDefinitionValues(props);
 
@@ -339,6 +368,14 @@ public abstract class AbstractJCRService
         spacesProperty.setRequiredType(PropertyType.STRING);
         spacesProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
+        PropertyDefinitionValue teamsProperty = new PropertyDefinitionValue();
+        teamsProperty.setMultiple(true);
+        teamsProperty.setAutoCreate(false);
+        teamsProperty.setName(TEAMS_PROPERTY);
+        teamsProperty.setReadOnly(false);
+        teamsProperty.setRequiredType(PropertyType.STRING);
+        teamsProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
         PropertyDefinitionValue favoritesProperty = new PropertyDefinitionValue();
         favoritesProperty.setMultiple(true);
         favoritesProperty.setAutoCreate(false);
@@ -375,6 +412,7 @@ public abstract class AbstractJCRService
         props.add(userProperty);
         props.add(statusProperty);
         props.add(spacesProperty);
+        props.add(teamsProperty);
         props.add(favoritesProperty);
         props.add(emailProperty);
         props.add(fullnameProperty);

@@ -22,6 +22,7 @@ package org.benjp.model;
 public class SpaceBean implements java.io.Serializable
 {
   String id;
+  String room;
   String displayName;
   String groupId;
   String shortName;
@@ -59,6 +60,14 @@ public class SpaceBean implements java.io.Serializable
     this.shortName = shortName;
   }
 
+  public String getRoom() {
+    return room;
+  }
+
+  public void setRoom(String room) {
+    this.room = room;
+  }
+
   public long getTimestamp() {
     return timestamp;
   }
@@ -73,6 +82,7 @@ public class SpaceBean implements java.io.Serializable
     SpaceBean that = (SpaceBean)aThat;
 
     return  areEqual(this.id, that.id) &&
+              areEqual(this.room, that.room) &&
               areEqual(this.displayName, that.displayName) &&
               areEqual(this.groupId, that.groupId) &&
               areEqual(this.shortName, that.shortName);
@@ -80,6 +90,7 @@ public class SpaceBean implements java.io.Serializable
 
   @Override public int hashCode() {
     return this.id.hashCode()
+            ^ this.room.hashCode()
             ^ this.displayName.hashCode()
             ^ this.groupId.hashCode()
             ^ this.shortName.hashCode();

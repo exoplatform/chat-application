@@ -31,6 +31,7 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   boolean isSpace = false;
+  boolean isTeam = false;
   boolean isFavorite = false;
   long timestamp = -1;
 
@@ -114,6 +115,14 @@ public class RoomBean implements Comparable<RoomBean>
     this.timestamp = timestamp;
   }
 
+  public boolean isTeam() {
+    return isTeam;
+  }
+
+  public void setTeam(boolean team) {
+    isTeam = team;
+  }
+
   @Override
   public int compareTo(RoomBean roomBean) {
     String l = ((isFavorite)?"0":"1")+fullname;
@@ -136,7 +145,8 @@ public class RoomBean implements Comparable<RoomBean>
     sb.append("\"isActive\": \""+this.isActive()+"\",");
     sb.append("\"isAvailableUser\": \""+this.isAvailableUser()+"\",");
     sb.append("\"isFavorite\": \""+this.isFavorite()+"\",");
-    sb.append("\"isSpace\": \""+this.isSpace()+"\"");
+    sb.append("\"isSpace\": \""+this.isSpace()+"\",");
+    sb.append("\"isTeam\": \""+this.isTeam()+"\"");
 
     sb.append("}");
 

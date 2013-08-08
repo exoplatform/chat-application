@@ -88,6 +88,19 @@
         </li>
       </ul>
 
+      <div class="btn-group btn-top-add-actions" style="padding-right: 10px;margin-top: 6px;">
+        <button class="btn dropdown-toggle" style="border-radius:4px;"
+                data-toggle="dropdown"><i class="icon-plus"></i></button>
+        <ul class="dropdown-menu">
+          <li><a href="#" class="btn-add-team"><i class="icon-comment"></i> Team</a></li>
+          <!--li class="divider"></li>
+          <li><a href="#"><i class="icon-calendar"></i> Event</a></li>
+          <li><a href="#"><i class="icon-check"></i> Task</a></li>
+          <li><a href="#"><i class="icon-globe"></i> Link</a></li>
+          <li><a href="#"><i class="icon-file"></i> File</a></li-->
+        </ul>
+      </div>
+
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;float: right;">
         <div onclick="event.cancelBubble=true;"><input class="span3" id="chat-search" type="text" ></div>
       </div>
@@ -121,6 +134,14 @@
             <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.call}</a>
           <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" title="Join a Conference">
             <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.join}</a>
+        </span>
+
+        <span class="team-button">
+	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
+            <li>
+              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)"><i class="uiIconEditPage uiIconLightGray"></i>&nbsp;Edit</div>
+            </li>
+          </ul>
         </span>
 
       </div>
@@ -190,5 +211,21 @@
   <div class="modal-footer">
     <a href="#" class="btn edit-modal-cancel">&{benjp.chat.cancel}</a>
     <a href="#" class="btn btn-primary edit-modal-save">&{benjp.chat.save}</a>
+  </div>
+</div>
+<!-- ################################## -->
+<!-- ######### TEAM MODAL ############ -->
+<!-- ################################## -->
+<div class="modal hide" id="team-modal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Team</h3>
+  </div>
+  <div class="modal-body">
+    <label>What is your team's name?</label><input type="text" id="team-modal-name" data-id="---" value="" />
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn team-modal-cancel">&{benjp.chat.cancel}</a>
+    <a href="#" class="btn btn-primary team-modal-save">&{benjp.chat.save}</a>
   </div>
 </div>
