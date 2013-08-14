@@ -31,6 +31,7 @@ $(document).ready(function(){
   chatApplication.jzChatSend = chatServerURL+"/send";
   chatApplication.jzChatRead = chatServerURL+"/read";
   chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
+  chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
   chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
   chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
   chatApplication.jzUsers = chatServerURL+"/users";
@@ -193,7 +194,102 @@ $(document).ready(function(){
     chatApplication.search(filter);
   });
 
+  $('#team-add-user').keyup(function(event) {
+    if ( event.which === 13 ) { // ENTER
+      $(".team-user").each(function() {
+        if ($(this).hasClass("team-user-selected")) {
+          var name = $(this).attr("data-name");
+          var fullname = $(this).attr("data-fullname");
+          addTeamUserLabel(name, fullname);
+        }
+      });
+    } else if ( event.which === 40 || event.which === 38) { // 40:DOWN || 38:UP
+      var isUp = (event.which === 38);
+      var total = $(".team-user").size();
+      var done = false;
+      $(".team-user").each(function(index) {
+        if (!done && $(this).hasClass("team-user-selected")) {
+          done = true;
+          $(".team-user").removeClass("team-user-selected");
+          if (isUp) {
+            if (index === 0)
+              $(".team-user").last().addClass("team-user-selected");
+            else
+              $(this).prev().addClass("team-user-selected");
+          } else {
+            if (index === total-1)
+              $(".team-user").first().addClass("team-user-selected");
+            else
+              $(this).next().addClass("team-user-selected");
+          }
+        }
+      });
+      return;
+    }
+    var filter = $(this).val();
+    if (filter === "") {
+      var $userResults = $(".team-users-results");
+      $userResults.css("display", "none");
+      $userResults.html("");
+    } else {
+      chatApplication.getAllUsers(filter, function (jsonData) {
+        var users = TAFFY(jsonData.users);
+        var users = users();
+        var $userResults = $(".team-users-results");
+        $userResults.css("display", "none");
+        var html = "";
+        users = users.filter({name:{"!is":chatApplication.username}});
+        $(".team-user-label").each(function() {
+          var name = $(this).attr("data-name");
+          users = users.filter({name:{"!is":name}});
+        });
 
+        users.order("fullname").limit(5).each(function (user, number) {
+          $userResults.css("display", "block");
+          if (user.status == "offline") user.status = "invisible";
+          var classSel = "";
+          if (number === 0) classSel = "team-user-selected"
+          html += "<div class='team-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+          html += "  <span class='team-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+          html += "  <span class='chat-status-team chat-status-"+user.status+"'></span>";
+          html += "  <span class='team-user-fullname'>"+user.fullname+"</span>";
+          html += "  <span class='team-user-name'>"+user.name+"</span>";
+          html += "</div>";
+        });
+        $userResults.html(html);
+
+        $('.team-user').on("mouseover", function() {
+          $(".team-user").removeClass("team-user-selected");
+          $(this).addClass("team-user-selected");
+        });
+
+        $('.team-user').on("click", function() {
+          var name = $(this).attr("data-name");
+          var fullname = $(this).attr("data-fullname");
+          addTeamUserLabel(name, fullname);
+        });
+
+      });
+    }
+  });
+
+  function addTeamUserLabel(name, fullname) {
+    var $usersList = $('.team-users-list');
+    var html = $usersList.html();
+    html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='icon-remove icon-white team-user-remove'></i></span>";
+    $usersList.html(html);
+    var $teamAddUser = $('#team-add-user');
+    $teamAddUser.val("");
+    $teamAddUser.focus();
+    var $userResults = $(".team-users-results");
+    $userResults.css("display", "none");
+    $userResults.html("");
+
+    $(".team-user-remove").on("click", function() {
+      $(this).parent().remove();
+    });
+
+  }
 
   function strip(html)
   {
@@ -204,7 +300,12 @@ $(document).ready(function(){
 
 
   $(".btn-add-team").on("click", function() {
+    var $uitext = $("#team-modal-name");
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+    $(".team-user-label").remove();
     $('#team-modal').modal({"backdrop": false});
+    $uitext.focus();
   });
 
   $(".team-edit-button").on("click", function() {
@@ -212,7 +313,22 @@ $(document).ready(function(){
     $uitext.val(chatApplication.targetFullname);
     $uitext.attr("data-id", chatApplication.targetUser);
 
-    $('#team-modal').modal({"backdrop": false});
+    chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
+      $(".team-user-label").remove();
+
+      var users = TAFFY(jsonData.users);
+      var users = users();
+      users.order("fullname").each(function (user, number) {
+        if (user.name !== chatApplication.username) {
+          addTeamUserLabel(user.name, user.fullname);
+        }
+      });
+
+      $('#team-modal').modal({"backdrop": false});
+      $uitext.focus();
+
+    });
+
   });
 
   $(".team-modal-cancel").on("click", function() {
@@ -228,7 +344,13 @@ $(document).ready(function(){
     var teamId = $uitext.attr("data-id");
     $('#team-modal').modal('hide');
 
-    chatApplication.saveTeamRoom(teamName, teamId, function(data) {
+    var users = chatApplication.username;
+    $(".team-user-label").each(function(index) {
+      var name = $(this).attr("data-name");
+      users += ","+name;
+    });
+
+    chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
       var teamName = data.name;
       var roomId = "team-"+data.room;
       chatApplication.refreshWhoIsOnline(roomId, teamName);
@@ -382,6 +504,7 @@ function ChatApplication() {
   this.jzInitChatProfile = "";
   this.jzWhoIsOnline = "";
   this.jzChatGetRoom = "";
+  this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
   this.jzCreateDemoUser = "";
   this.jzChatUpdateUnreadMessages = "";
@@ -411,6 +534,7 @@ function ChatApplication() {
   this.ANONIM_USER = "__anonim_";
   this.SUPPORT_USER = "__support_";
   this.isAdmin = false;
+  this.isTeamAdmin = false;
 
   this.old = '';
   this.firstLoad = true;
@@ -592,12 +716,13 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
  * @param room
  * @param callback : callback method with roomId as a parameter
  */
-ChatApplication.prototype.saveTeamRoom = function(teamName, room, callback) {
+ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callback) {
   $.ajax({
     url: this.jzSaveTeamRoom,
     dataType: "json",
     data: {"teamName": teamName,
       "room": room,
+      "users": users,
       "user": this.username,
       "token": this.token
     },
@@ -693,6 +818,7 @@ ChatApplication.prototype.initChatProfile = function() {
         this.token = data.token;
         this.fullname = data.fullname;
         this.isAdmin = (data.isAdmin=="true");
+        this.isTeamAdmin = (data.isTeamAdmin=="true");
 
         var $chatApplication = $("#chat-application");
         $chatApplication.attr("data-token", this.token);
@@ -701,6 +827,11 @@ ChatApplication.prototype.initChatProfile = function() {
         if (this.publicModeEnabled && data.isAdmin == "true") {
           $(".filter-public").css("display", "inline-block");
           $(".filter-empty").css("display", "none");
+        }
+        if (!this.isTeamAdmin) {
+          $(".btn-top-add-actions").remove();
+        } else {
+          $(".btn-top-add-actions").css("display", "inline-block");
         }
 /*
         if (data.isAdmin !== "true") {
@@ -741,10 +872,33 @@ ChatApplication.prototype.maintainSession = function() {
  * @param spaceId : the ID of the space
  * @param callback : return the json users data list as a parameter of the callback function
  */
-ChatApplication.prototype.getUsers = function(spaceId, callback) {
+ChatApplication.prototype.getUsers = function(roomId, callback) {
   $.ajax({
     url: this.jzUsers,
-    data: {"space": spaceId,
+    data: {"room": roomId,
+      "user": this.username,
+      "token": this.token
+    },
+    dataType: "json",
+    context: this,
+    success: function(response){
+      if (typeof callback === "function") {
+        callback(response);
+      }
+    }
+  });
+};
+
+/**
+ * Get all users corresponding to filter
+ *
+ * @param filter : the filter (ex: Ben Pa)
+ * @param callback : return the json users data list as a parameter of the callback function
+ */
+ChatApplication.prototype.getAllUsers = function(filter, callback) {
+  $.ajax({
+    url: this.jzUsers,
+    data: {"filter": filter,
       "user": this.username,
       "token": this.token
     },
@@ -801,7 +955,7 @@ ChatApplication.prototype.showMessages = function(msgs) {
             if (thiss.isPublic)
               out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
             else
-              out += "<img onerror=\"this.src=gravatar('"+message.email+"');\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
+              out += "<img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
             out += "</span>";
             out += "<span>";
             if (thiss.isPublic)
@@ -1307,7 +1461,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           jzStoreParam("lastTS"+this.username, "0");
           this.firstLoad = true;
         }
-        console.log("refreshWhoIsOnline : "+this.targetUser+" : "+this.targetFullname);
+//        console.log("refreshWhoIsOnline : "+this.targetUser+" : "+this.targetFullname);
 
         var tmpMD5 = response.md5;
         if (tmpMD5 !== this.whoIsOnlineMD5) {
@@ -1504,7 +1658,25 @@ ChatApplication.prototype.loadRoom = function() {
     }
     else
     {
-      $(".team-button").css("display", "block");
+
+      $.ajax({
+        url: this.jzChatGetCreator,
+        data: {"room": this.targetUser,
+          "user": this.username,
+          "token": this.token
+        },
+        context: this,
+        success: function(response){
+          //console.log("SUCCESS::getRoom::"+response);
+          var creator = response;
+          if (creator === this.username) {
+            $(".team-button").css("display", "block");
+          }
+        },
+        error: function(xhr, status, error){
+          //console.log("ERROR::"+xhr.responseText);
+        }
+      });
       $(".target-avatar-link").attr("href", "#");
       $(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }

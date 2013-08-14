@@ -35,6 +35,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -275,7 +276,7 @@ public class ChatServer
 
   @Resource
   @Route("/saveTeamRoom")
-  public Response.Content saveTeamRoom(String user, String token, String teamName, String room)
+  public Response.Content saveTeamRoom(String user, String token, String teamName, String room, String users)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -299,6 +300,54 @@ public class ChatServer
 
         chatService.setRoomName(room, teamName);
       }
+      if (users!=null && !"".equals(users)) {
+        String[] ausers = users.split(",");
+        List<String> usersNew = Arrays.asList(ausers);
+        List<String> usersToAdd = new ArrayList<String>(usersNew);
+        List<String> usersToRemove = new ArrayList<String>();
+        List<String> usersExisting = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+
+        for (String userExist:usersExisting)
+        {
+          if (!usersNew.contains(userExist))
+          {
+            usersToRemove.add(userExist);
+          }
+          else if (usersNew.contains(userExist))
+          {
+            usersToAdd.remove(userExist);
+          }
+        }
+        if (usersToRemove.size()>0)
+        {
+          userService.removeTeamUsers(room, usersToRemove);
+          StringBuilder sb = new StringBuilder();
+          boolean first = true;
+          for (String usert:usersToRemove)
+          {
+            if (!first) sb.append(" ; ");
+            sb.append(userService.getUserFullName(usert));
+            first = false;
+            notificationService.setNotificationsAsRead(usert, "chat", "room", room);
+          }
+          this.send(user, token, ChatService.TEAM_PREFIX+room, "Users Removed: "+sb.toString(), room, "true", null);
+        }
+        if (usersToAdd.size()>0)
+        {
+          userService.addTeamUsers(room, usersToAdd);
+          StringBuilder sb = new StringBuilder();
+          boolean first = true;
+          for (String usert:usersToAdd)
+          {
+            if (!first) sb.append(" ; ");
+            sb.append(userService.getUserFullName(usert));
+            first = false;
+          }
+          this.send(user, token, ChatService.TEAM_PREFIX+room, "Users Added: "+sb.toString(), room, "true", null);
+        }
+
+      }
+
       data = "{\"name\": \""+teamName+"\", \"room\": \""+room+"\"}";
 
     }
@@ -415,15 +464,45 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/getCreator")
+  public Response.Content getCreator(String user, String token, String room)
+  {
+    String creator = "";
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    try
+    {
+      creator = chatService.getTeamCreator(room);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return Response.notFound("No Status for this User");
+    }
+    return Response.ok(creator);
+  }
+
+  @Resource
   @Route("/users")
-  public Response.Content getUsers(String user, String token, String space)
+  public Response.Content getUsers(String user, String token, String room, String filter)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
 
-    List<UserBean> users = userService.getUsers(space);
+    List<UserBean> users;
+    if (room!=null && !"".equals(room))
+    {
+      users = userService.getUsers(room);
+    }
+    else
+    {
+      users = userService.getUsers(filter, true);
+    }
+
     for (UserBean userBean:users)
     {
       boolean online = tokenService.isUserOnline(userBean.getName());

@@ -276,6 +276,62 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     }
   }
 
+  public void addTeamUsers(String teamRoomId, List<String> users) {
+    for (String user:users)
+    {
+      this.addTeamRoom(user, teamRoomId);
+    }
+  }
+
+  public void removeTeamUsers(String teamRoomId, List<String> users) {
+    try
+    {
+      Session session = JCRBootstrap.getSession();
+      Node usersNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
+
+      for (String user:users)
+      {
+        if (usersNode.hasNode(user))
+        {
+          Node userNode = usersNode.getNode(user);
+          if (userNode.hasProperty(TEAMS_PROPERTY))
+          {
+            Value[] values = userNode.getProperty(TEAMS_PROPERTY).getValues();
+            List<String> tlist = new ArrayList<String>();
+            boolean containsTeamRoomId = false;
+            for (Value val:values)
+            {
+              String id = val.getString();
+              if (teamRoomId.equals(id))
+              {
+                containsTeamRoomId = true;
+              } else {
+                tlist.add(id);
+              }
+            }
+            if (containsTeamRoomId)
+            {
+              String[] ids = new String[tlist.size()];
+              int i=0;
+              for (String id:tlist)
+              {
+                ids[i++] = id;
+              }
+              userNode.setProperty(TEAMS_PROPERTY, ids);
+              userNode.save();
+              session.save();
+            }
+          }
+        }
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
   private RoomBean getTeam(String teamId)
   {
     RoomBean roomBean = null;
@@ -399,10 +455,16 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     return spaces;
   }
 
-  public List<UserBean> getUsers(String spaceId) {
-    if (spaceId.indexOf(ChatService.SPACE_PREFIX)>-1)
+  public List<UserBean> getUsers(String roomId) {
+    //removing "space-" prefix
+    if (roomId.indexOf(ChatService.SPACE_PREFIX)==0)
     {
-      spaceId = spaceId.substring(ChatService.SPACE_PREFIX.length());
+      roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+    }
+    //removing "team-" prefix
+    if (roomId.indexOf(ChatService.TEAM_PREFIX)==0)
+    {
+      roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
     }
     List<UserBean> users = new ArrayList<UserBean>();
     try
@@ -413,7 +475,9 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
 
       StringBuilder statement = new StringBuilder();
       statement.append("SELECT * FROM ").append(USER_NODETYPE).append(" WHERE ");
-      statement.append(SPACES_PROPERTY).append(" = '").append(spaceId).append("'");
+      statement.append(SPACES_PROPERTY).append(" = '").append(roomId).append("'");
+      statement.append(" OR ");
+      statement.append(TEAMS_PROPERTY).append(" = '").append(roomId).append("'");
       Query query = manager.createQuery(statement.toString(), Query.SQL);
       NodeIterator nodeIterator = query.execute().getNodes();
 
@@ -437,6 +501,41 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
 
     return users;
   }
+
+  public List<UserBean> getUsers(String filter, boolean fullBean) {
+    filter = filter.replaceAll(" ", "%");
+    List<UserBean> users = new ArrayList<UserBean>();
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+      QueryManager manager = session.getWorkspace().getQueryManager();
+
+      StringBuilder statement = new StringBuilder();
+      statement.append("SELECT * FROM ").append(USER_NODETYPE).append(" WHERE ");
+      statement.append(FULLNAME_PROPERTY).append(" like '").append(filter).append("%'");
+      Query query = manager.createQuery(statement.toString(), Query.SQL);
+      NodeIterator nodeIterator = query.execute().getNodes();
+
+//      System.out.println(statement.toString()+" : "+nodeIterator.getSize());
+      while (nodeIterator.hasNext())
+      {
+        UserBean userBean = new UserBean();
+        Node userNode = nodeIterator.nextNode();
+        userBean.setName(userNode.getName());
+        userBean.setFullname(userNode.hasProperty(FULLNAME_PROPERTY) ? userNode.getProperty(FULLNAME_PROPERTY).getString() : "");
+        userBean.setEmail(userNode.hasProperty(EMAIL_PROPERTY) ? userNode.getProperty(EMAIL_PROPERTY).getString() : "");
+        userBean.setStatus(userNode.hasProperty(STATUS_PROPERTY) ? userNode.getProperty(STATUS_PROPERTY).getString() : "");
+        users.add(userBean);
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return users;  }
 
   public String setStatus(String user, String status) {
     try
@@ -651,7 +750,7 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
       while (nodeIterator.hasNext())
       {
         Node userNode = nodeIterator.nextNode();
-        if (!user.equals(userNode.getName()))
+        if (user==null || !user.equals(userNode.getName()))
         {
           users.add(userNode.getName());
         }

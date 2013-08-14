@@ -56,6 +56,7 @@ public class ChatApplication
   String remoteUser_ = null;
   String fullname_ = null;
   boolean isAdmin_=false;
+  Boolean isTeamAdmin_ = null;
 
   boolean profileInitialized_ = false;
 
@@ -130,7 +131,7 @@ public class ChatApplication
   @Resource
   public Response.Content initChatProfile()
   {
-    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\"}";
+    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
@@ -150,13 +151,19 @@ public class ChatApplication
           isAdmin_= (ms!=null && ms.size()>0);
         }
 
+        if (isTeamAdmin_==null)
+        {
+          Collection ms = organizationService_.getMembershipHandler().findMembershipsByUserAndGroup(remoteUser_, PropertyManager.getProperty(PropertyManager.PROPERTY_TEAM_ADMIN_GROUP));
+          isTeamAdmin_ = (ms!=null && ms.size()>0);
+        }
+
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
           fullname_ = ServerBootstrap.getUserFullName(remoteUser_);
           ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_);
         }
 
-        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\"}";
+        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
         profileInitialized_ = true;
       }
       catch (Exception e)

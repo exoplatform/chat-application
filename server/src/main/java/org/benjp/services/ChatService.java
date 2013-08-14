@@ -55,6 +55,8 @@ public interface ChatService
 
   public String getTeamRoom(String team, String user);
 
+  public String getTeamCreator(String room);
+
   public void setRoomName(String room, String name);
 
   public String getRoom(List<String> users);

@@ -26,6 +26,7 @@ import org.benjp.model.RoomBean;
 import org.benjp.model.RoomsBean;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.UserBean;
+import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
@@ -358,6 +359,30 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     }
 
     return room;
+  }
+
+  public String getTeamCreator(String room) {
+    if (room.indexOf(ChatService.TEAM_PREFIX)==0)
+    {
+      room = room.substring(ChatService.TEAM_PREFIX.length());
+    }
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+    String creator = "";
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      try {
+        DBObject dbo = cursor.next();
+        creator = dbo.get("user").toString();
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
+    }
+
+    return creator;
   }
 
   public void setRoomName(String room, String name) {

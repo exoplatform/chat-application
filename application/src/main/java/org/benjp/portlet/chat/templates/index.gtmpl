@@ -88,7 +88,7 @@
         </li>
       </ul>
 
-      <div class="btn-group btn-top-add-actions" style="padding-right: 10px;margin-top: 6px;">
+      <div class="btn-group btn-top-add-actions">
         <button class="btn dropdown-toggle" style="border-radius:4px;"
                 data-toggle="dropdown"><i class="icon-plus"></i></button>
         <ul class="dropdown-menu">
@@ -223,6 +223,18 @@
   </div>
   <div class="modal-body">
     <label>What is your team's name?</label><input type="text" id="team-modal-name" data-id="---" value="" />
+    <label>Add people to your team:</label>
+    <div class="team-users-list">
+    </div>
+    <div class="uiSearchForm uiSearchInput team-users-search">
+      <div onclick="event.cancelBubble=true;">
+        <input class="span3" id="team-add-user" type="text" >
+        <label class="team-add-user-label">Ex: "ro" or "Ro Br" to search Robert Bruce</label>
+      </div>
+    </div>
+    <div class="team-users-results" style="display:none;">
+    </div>
+
   </div>
   <div class="modal-footer">
     <a href="#" class="btn team-modal-cancel">&{benjp.chat.cancel}</a>

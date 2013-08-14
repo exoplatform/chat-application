@@ -31,12 +31,15 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @Named("userService")
 @ApplicationScoped
 public class UserServiceImpl implements org.benjp.services.UserService
 {
 
+  Logger log = Logger.getLogger("UserService");
 
   private DB db()
   {
@@ -223,6 +226,40 @@ public class UserServiceImpl implements org.benjp.services.UserService
     }
   }
 
+  public void addTeamUsers(String teamRoomId, List<String> users) {
+    for (String user:users)
+    {
+      log.info("Team Add : "+user);
+      this.addTeamRoom(user, teamRoomId);
+    }
+  }
+
+  public void removeTeamUsers(String teamRoomId, List<String> users) {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    for (String user:users)
+    {
+      log.info("Team Remove : "+user);
+      BasicDBObject query = new BasicDBObject();
+      query.put("user", user);
+      DBCursor cursor = coll.find(query);
+      if (cursor.hasNext())
+      {
+        DBObject doc = cursor.next();
+        if (doc.containsField("teams"))
+        {
+          List<String> teams = (List<String>)doc.get("teams");
+          if (teams.contains(teamRoomId))
+          {
+            teams.remove(teamRoomId);
+            doc.put("teams", teams);
+            coll.save(doc, WriteConcern.SAFE);
+          }
+        }
+      }
+
+    }
+  }
+
   private RoomBean getTeam(String teamId)
   {
     RoomBean roomBean = null;
@@ -318,17 +355,59 @@ public class UserServiceImpl implements org.benjp.services.UserService
     return spaces;
   }
 
-  public List<UserBean> getUsers(String spaceId)
+  public List<UserBean> getUsers(String roomId)
   {
     //removing "space-" prefix
-    if (spaceId.indexOf(ChatService.SPACE_PREFIX)>-1)
+    if (roomId.indexOf(ChatService.SPACE_PREFIX)==0)
     {
-      spaceId = spaceId.substring(ChatService.SPACE_PREFIX.length());
+      roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+    }
+    //removing "team-" prefix
+    if (roomId.indexOf(ChatService.TEAM_PREFIX)==0)
+    {
+      roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
     }
     List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("spaces", spaceId);
+
+    BasicDBObject spaces = new BasicDBObject("spaces", roomId);
+    BasicDBObject teams = new BasicDBObject("teams", roomId);
+    ArrayList<BasicDBObject> orList = new ArrayList<BasicDBObject>();
+    orList.add(spaces);
+    orList.add(teams);
+    BasicDBObject query = new BasicDBObject("$or", orList);
+
+
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      UserBean userBean = new UserBean();
+      userBean.setName(doc.get("user").toString());
+      Object prop = doc.get("fullname");
+      userBean.setFullname((prop!=null)?prop.toString():"");
+      prop = doc.get("email");
+      userBean.setEmail((prop!=null)?prop.toString():"");
+      prop = doc.get("status");
+      userBean.setStatus((prop!=null)?prop.toString():"");
+      users.add(userBean);
+    }
+    return users;
+  }
+
+  public List<UserBean> getUsers(String filter, boolean fullBean) {
+    filter = filter.replaceAll(" ", ".*");
+    List<UserBean> users = new ArrayList<UserBean>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+
+    BasicDBObject un = new BasicDBObject("user", regex);
+    BasicDBObject fn = new BasicDBObject("fullname", regex);
+    ArrayList<BasicDBObject> orList = new ArrayList<BasicDBObject>();
+    orList.add(un);
+    orList.add(fn);
+    BasicDBObject query = new BasicDBObject("$or", orList);
+
     DBCursor cursor = coll.find(query);
     while (cursor.hasNext())
     {
@@ -493,7 +572,7 @@ public class UserServiceImpl implements org.benjp.services.UserService
     {
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
-      if (!user.equals(target))
+      if (user==null || !user.equals(target))
         users.add(target);
     }
 

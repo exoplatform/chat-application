@@ -55,11 +55,17 @@ public interface UserService
 
   public void addTeamRoom(String user, String teamRoomId);
 
+  public void addTeamUsers(String teamRoomId, List<String> users);
+
+  public void removeTeamUsers(String teamRoomId, List<String> users);
+
   public List<RoomBean> getTeams(String user);
 
   public List<SpaceBean> getSpaces(String user);
 
   public List<UserBean> getUsers(String spaceId);
+
+  public List<UserBean> getUsers(String filter, boolean fullBean);
 
   public String setStatus(String user, String status);
 
