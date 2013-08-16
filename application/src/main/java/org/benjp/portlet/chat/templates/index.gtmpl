@@ -139,7 +139,7 @@
         <span class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)"><i class="uiIconEditPage uiIconLightGray"></i>&nbsp;Edit</div>
+              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)"><i class="uiIconEditPage uiIconLightGray"></i>&nbsp;&{benjp.chat.edit}</div>
             </li>
           </ul>
         </span>
@@ -219,17 +219,17 @@
 <div class="modal hide" id="team-modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Team</h3>
+    <h3>&{benjp.chat.team}</h3>
   </div>
   <div class="modal-body">
-    <label>What is your team's name?</label><input type="text" id="team-modal-name" data-id="---" value="" />
-    <label>Add people to your team:</label>
+    <label>&{benjp.chat.team.name}</label><input type="text" id="team-modal-name" data-id="---" value="" />
+    <label>&{benjp.chat.team.people}</label>
     <div class="team-users-list">
     </div>
     <div class="uiSearchForm uiSearchInput team-users-search">
       <div onclick="event.cancelBubble=true;">
         <input class="span3" id="team-add-user" type="text" >
-        <label class="team-add-user-label">Ex: "ro" or "Ro Br" to search Robert Bruce</label>
+        <label class="team-add-user-label">&{benjp.chat.team.help}</label>
       </div>
     </div>
     <div class="team-users-results" style="display:none;">
