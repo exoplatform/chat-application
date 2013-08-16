@@ -37,6 +37,10 @@
   data-label-quote="&{benjp.chat.quote}"
   data-label-delete="&{benjp.chat.delete}"
   data-label-deleted="&{benjp.chat.deleted}"
+  data-label-header-favorites="&{benjp.chat.favorites}"
+  data-label-header-people="&{benjp.chat.people}"
+  data-label-header-spaces="&{benjp.chat.spaces}"
+  data-label-header-teams="&{benjp.chat.teams}"
   data-label-edit="&{benjp.chat.edit}"
 >
 

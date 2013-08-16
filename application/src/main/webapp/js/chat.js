@@ -1520,7 +1520,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
   if (this.showFavorites) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "Favorites";
+  out += chatApplication.labels.get("label-header-favorites");
   out += '<span class="room-total total-favorites"></span>';
   out += "</td></tr>"
 
@@ -1545,7 +1545,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<tr class='header-room header-people'><td colspan='3'>";
   if (this.showPeople) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "People";
+  out += chatApplication.labels.get("label-header-people");
   out += '<span class="room-total total-people"></span>';
   out += "</td></tr>";
 
@@ -1572,7 +1572,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<tr class='header-room header-spaces'><td colspan='3'>";
   if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "Spaces";
+  out += chatApplication.labels.get("label-header-spaces");
   out += '<span class="room-total total-spaces"></span>';
   out += "</td></tr>";
 
@@ -1597,7 +1597,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<tr class='header-room header-teams'><td colspan='3'>";
   if (this.showTeams) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "Teams";
+  out += chatApplication.labels.get("label-header-teams");
   out += '<span class="room-total total-teams"></span>';
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
