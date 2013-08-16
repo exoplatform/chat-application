@@ -181,13 +181,6 @@ $(document).ready(function(){
     }
   });
 
-  $(".filter").on("click", function() {
-    $(this).toggleClass("active");
-    var type = $(this).attr("data-type");
-    jzStoreParam("chat.button."+type, $(this).hasClass("active"), 172800); //stored for 2 days
-    chatApplication.refreshWhoIsOnline();
-  });
-
 
   $('#chat-search').keyup(function(event) {
     var filter = $(this).val();
@@ -299,14 +292,6 @@ $(document).ready(function(){
   }
 
 
-  $(".btn-add-team").on("click", function() {
-    var $uitext = $("#team-modal-name");
-    $uitext.val("");
-    $uitext.attr("data-id", "---");
-    $(".team-user-label").remove();
-    $('#team-modal').modal({"backdrop": false});
-    $uitext.focus();
-  });
 
   $(".team-edit-button").on("click", function() {
     var $uitext = $("#team-modal-name");
@@ -496,6 +481,7 @@ function ChatApplication() {
   this.publicModeEnabled = false;
 
   this.room = "";
+  this.rooms = "";
   this.username = "";
   this.fullname = "";
   this.targetUser = "";
@@ -544,9 +530,11 @@ function ChatApplication() {
   this.totalNotif = 0;
   this.oldNotif = 0;
 
-  this.onlineNotif = 0;
-  this.offlineNotif = 0;
-  this.spacesNotif = 0;
+  this.showFavorites = true;
+  this.showPeople = true;
+  this.showSpaces = true;
+  this.showTeams = true;
+
 
 }
 
@@ -756,15 +744,6 @@ ChatApplication.prototype.initStatusChat = function() {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
-  if (jzGetParam("chat.button.space", "true") === "true")
-    $(".filter-space").addClass("active");
-  if (jzGetParam("chat.button.user", "true") === "true")
-    $(".filter-user").addClass("active");
-  if (jzGetParam("chat.button.offline", "false") === "true")
-    $(".filter-offline").addClass("active");
-  if (jzGetParam("chat.button.public", "false") === "true")
-    $(".filter-public").addClass("active");
-
 
   var homeLinkHtml = $("#HomeLink").html();
   homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
@@ -774,19 +753,34 @@ ChatApplication.prototype.initChat = function() {
     var $leftNavigationTDContainer = $(".LeftNavigationTDContainer");
     if ($leftNavigationTDContainer.css("display")==="none") {
       $leftNavigationTDContainer.animate({width: 'show', duration: 200});
-//      $leftNavigationTDContainer.css("display", "table-cell")
     } else {
       $leftNavigationTDContainer.animate({width: 'hide', duration: 200});
-//      $leftNavigationTDContainer.css("display", "none")
     }
   });
 
+  this.initChatPreferences();
 
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
   this.chatOnlineInt = setInterval($.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
-  this.refreshWhoIsOnline(this);
+  this.refreshWhoIsOnline();
 
   if (this.username!==this.ANONIM_USER) setTimeout($.proxy(this.showSyncPanel, this), 1000);
+};
+
+
+
+/**
+ * Init Chat Preferences
+ */
+ChatApplication.prototype.initChatPreferences = function() {
+  this.showFavorites = true;
+  if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
+  this.showPeople = true;
+  if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
+  this.showSpaces = true;
+  if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
+  this.showTeams = true;
+  if (jzGetParam("chatShowTeams"+this.username) === "false") this.showTeams = false;
 };
 
 /**
@@ -824,21 +818,8 @@ ChatApplication.prototype.initChatProfile = function() {
         $chatApplication.attr("data-token", this.token);
         var $labelUser = $(".label-user");
         $labelUser.text(data.fullname);
-        if (this.publicModeEnabled && data.isAdmin == "true") {
-          $(".filter-public").css("display", "inline-block");
-          $(".filter-empty").css("display", "none");
-        }
-        if (!this.isTeamAdmin) {
-          $(".btn-top-add-actions").remove();
-        } else {
-          $(".btn-top-add-actions").css("display", "inline-block");
-        }
-/*
-        if (data.isAdmin !== "true") {
-          $(".btn-top-add-actions").css("display", "none");
-        }
-*/
-        this.refreshWhoIsOnline(this);
+
+        this.refreshWhoIsOnline();
         this.refreshStatusChat();
 
       },
@@ -1410,8 +1391,8 @@ ChatApplication.prototype.getStatusLabel = function(status) {
   }
 };
 
-ChatApplication.prototype.updateTotal = function() {
-  this.totalNotif = Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
+ChatApplication.prototype.updateTotal = function(total) {
+  this.totalNotif = total;//Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
 };
 
 ChatApplication.prototype.updateTitle = function() {
@@ -1445,10 +1426,6 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
       data: { "user": this.username,
         "token": this.token,
         "filter": this.userFilter,
-        "withSpaces": withSpaces,
-        "withUsers": withUsers,
-        "withPublic": withPublic,
-        "withOffline": withOffline,
         "isAdmin": this.isAdmin,
         "timestamp": new Date().getTime()},
       context: this,
@@ -1465,10 +1442,6 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
 
         var tmpMD5 = response.md5;
         if (tmpMD5 !== this.whoIsOnlineMD5) {
-          this.setOfflineNotif(response.unreadOffline);
-          this.setOnlineNotif(response.unreadOnline);
-          this.setSpacesNotif(response.unreadSpaces);
-          this.refreshTotalNotifFilters();
           var rooms = TAFFY(response.rooms);
           this.whoIsOnlineMD5 = tmpMD5;
           this.isLoaded = true;
@@ -1476,9 +1449,9 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           this.hidePanel(".chat-sync-panel");
           this.showRooms(rooms);
 
-          this.jQueryForUsersTemplate();
 
-          this.updateTotal();
+
+          this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
           if (window.fluid!==undefined) {
             if (this.totalNotif>0)
               window.fluid.dockBadge = this.totalNotif;
@@ -1518,6 +1491,10 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           this.oldNotif = this.totalNotif;
           this.updateTitle();
         }
+        if (this.isTeamAdmin) {
+          $(".btn-top-add-actions").css("display", "inline-block");
+        }
+
       },
       error: function (response){
         //console.log("chat-users :: "+response);
@@ -1527,105 +1504,186 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 };
 
-ChatApplication.prototype.setOnlineNotif = function(nb) {
-  this.onlineNotif = nb;
-};
 
-ChatApplication.prototype.setOfflineNotif = function(nb) {
-  this.offlineNotif = nb;
-};
-
-ChatApplication.prototype.setSpacesNotif = function(nb) {
-  this.spacesNotif = nb;
-};
-
-ChatApplication.prototype.getOnlineNotif = function() {
-  return this.onlineNotif;
-};
-
-ChatApplication.prototype.getOfflineNotif = function() {
-  return this.offlineNotif;
-};
-
-ChatApplication.prototype.getSpacesNotif = function() {
-  return this.spacesNotif;
-};
-
-ChatApplication.prototype.refreshTotalNotifFilters = function() {
-  var label = "";
-  if (this.getOfflineNotif()>0) {
-    label = '<span class="room-total room-total-fixed">'+this.getOfflineNotif()+'</span>';
-  }
-  $(".filter-offline").html('<a href="#">'+this.labels.get("label-offline")+label+'</a>');
-  label = "";
-  if (this.getOnlineNotif()>0) {
-    label = '<span class="room-total room-total-fixed">'+this.getOnlineNotif()+'</span>';
-  }
-  $(".filter-user").html('<a href="#">'+this.labels.get("label-users")+label+'</a>');
-  label = "";
-  if (this.getSpacesNotif()>0) {
-    label = '<span class="room-total room-total-fixed">'+this.getSpacesNotif()+'</span>';
-  }
-  $(".filter-space").html('<a href="#">'+this.labels.get("label-spaces")+label+'</a>');
-}
 
 /**
  * Show rooms : convert json to html
  * @param rooms : a json object
  */
 ChatApplication.prototype.showRooms = function(rooms) {
+  this.rooms = rooms;
   var roomPrevUser = "";
-  var out = '<table class="table">';
-  var fav=null;
-  var first = true;
-  rooms().order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
-//      console.log("info = "+room.user+" :"+fav+":"+ room.isFavorite);
-    if (room.user!==roomPrevUser) {
-      if (fav==null && room.isFavorite=="true") fav="";
-      else if (fav=="" && room.isFavorite=="false") fav="border-top:1px solid #CCC;";
-      else if (fav=="border-top:1px solid #CCC;") fav=" ";
+  var out = '<table class="table list-rooms">';
+  var classArrow;
+  var totalFavorites = 0, totalPeople = 0, totalSpaces = 0, totalTeams = 0;
 
-      out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online" style="'+fav+'">';
-      out += '<td class="td-status"';
-      if (first)
-        out += ' style="-webkit-border-radius: 3px 0 0 0;-moz-border-radius: 3px 0 0 0; border-radius: 3px 0 0 0;">';
-      else
-        out += '>';
-      out += '<span class="';
-      if (room.isFavorite == "true") {
-        out += 'user-favorite';
-      } else {
-        out += 'user-status';
-      }
-      if (room.status === "space") {
-        out += ' user-space-front';
-      }
-      out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
-      out += '</td>';
-      out +=  '<td>';
-      if (room.isActive=="true") {
-        out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
-      } else {
-        out += '<span class="room-inactive">'+room.user+'</span>';
-      }
-      out += '</td>';
-      if (first)
-        out += '<td style="-webkit-border-radius: 0 3px 0 0;-moz-border-radius: 0 3px 0 0; border-radius: 0 3px 0 0;">';
-      else
-        out += '<td>';
-      if (Math.round(room.unreadTotal)>0) {
-        out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
-      }
-      out += '</td>';
-      out += '</tr>';
+  out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
+  if (this.showFavorites) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "Favorites";
+  out += '<span class="room-total total-favorites"></span>';
+  out += "</td></tr>"
+
+  var roomsFavorites = rooms();
+  roomsFavorites = roomsFavorites.filter({isFavorite:{is:"true"}});
+  roomsFavorites.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+//    console.log("FAVORITES : "+room.escapedFullname);
+    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+    if (rhtml !== "") {
       roomPrevUser = room.user;
-      first = false;
+      if (chatApplication.showFavorites) {
+        out += rhtml;
+      } else {
+        if (Math.round(room.unreadTotal)>0) {
+          totalFavorites += Math.round(room.unreadTotal);
+        }
+      }
     }
   });
+
+
+  out += "<tr class='header-room header-people'><td colspan='3'>";
+  if (this.showPeople) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "People";
+  out += '<span class="room-total total-people"></span>';
+  out += "</td></tr>";
+
+  var roomsPeople = rooms();
+  roomsPeople = roomsPeople.filter({status:{"!is":"space"}});
+  roomsPeople = roomsPeople.filter({status:{"!is":"team"}});
+  roomsPeople = roomsPeople.filter({isFavorite:{"!is":"true"}});
+  roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+//    console.log("PEOPLE : "+room.escapedFullname);
+    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+    if (rhtml !== "") {
+      roomPrevUser = room.user;
+      if (chatApplication.showPeople) {
+        out += rhtml;
+      } else {
+        if (Math.round(room.unreadTotal)>0) {
+          totalPeople += Math.round(room.unreadTotal);
+        }
+      }
+    }
+  });
+
+
+  out += "<tr class='header-room header-spaces'><td colspan='3'>";
+  if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "Spaces";
+  out += '<span class="room-total total-spaces"></span>';
+  out += "</td></tr>";
+
+  var roomsSpaces = rooms();
+  roomsSpaces = roomsSpaces.filter({status:{"is":"space"}});
+  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
+  roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+//    console.log("SPACES : "+room.escapedFullname);
+    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+    if (rhtml !== "") {
+      roomPrevUser = room.user;
+      if (chatApplication.showSpaces) {
+        out += rhtml;
+      } else {
+        if (Math.round(room.unreadTotal)>0) {
+          totalSpaces += Math.round(room.unreadTotal);
+        }
+      }
+    }
+  });
+
+  out += "<tr class='header-room header-teams'><td colspan='3'>";
+  if (this.showTeams) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "Teams";
+  out += '<span class="room-total total-teams"></span>';
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
+  out += "</td></tr>";
+
+  var roomsTeams = rooms();
+  roomsTeams = roomsTeams.filter({status:{"is":"team"}});
+  roomsTeams = roomsTeams.filter({isFavorite:{"!is":"true"}});
+  roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+//    console.log("TEAMS : "+room.escapedFullname);
+    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+    if (rhtml !== "") {
+      roomPrevUser = room.user;
+      if (chatApplication.showTeams) {
+        out += rhtml;
+      } else {
+        if (Math.round(room.unreadTotal)>0) {
+          totalTeams += Math.round(room.unreadTotal);
+        }
+      }
+    }
+  });
+
   out += '</table>';
 
   $("#chat-users").html(out);
 
+  this.jQueryForUsersTemplate();
+
+
+  if (chatApplication.isTeamAdmin) {
+    $(".btn-top-add-actions").css("display", "inline-block");
+  }
+
+  if (totalFavorites>0) {
+    $(".total-favorites").html(totalFavorites);
+    $(".total-favorites").css("display", "inline-block");
+  }
+
+  if (totalPeople>0) {
+    $(".total-people").html(totalPeople);
+    $(".total-people").css("display", "inline-block");
+  }
+
+  if (totalSpaces>0) {
+    $(".total-spaces").html(totalSpaces);
+    $(".total-spaces").css("display", "inline-block");
+  }
+
+  if (totalTeams>0) {
+    $(".total-teams").html(totalTeams);
+    $(".total-teams").css("display", "inline-block");
+  }
+
+};
+
+ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
+  var out = "";
+  if (room.user!==roomPrevUser) {
+    out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online">';
+    out += '<td class="td-status">';
+    out += '<span class="';
+    if (room.isFavorite == "true") {
+      out += 'user-favorite';
+    } else {
+      out += 'user-status';
+    }
+    if (room.status === "space" || room.status === "team") {
+      out += ' user-space-front';
+    }
+    out +='" user-data="'+room.user+'"></span><span class="user-'+room.status+'"></span>';
+    out += '</td>';
+    out +=  '<td>';
+    if (room.isActive=="true") {
+      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
+    } else {
+      out += '<span class="room-inactive">'+room.user+'</span>';
+    }
+    out += '</td>';
+    out += '<td>';
+    if (Math.round(room.unreadTotal)>0) {
+      out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+    }
+    out += '</td>';
+    out += '</tr>';
+  }
+  return out;
 };
 
 /**
@@ -1746,7 +1804,7 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     },
     context: this,
     success: function(response){
-      this.refreshWhoIsOnline(this);
+      this.refreshWhoIsOnline();
     },
     error: function(xhr, status, error){
     }
@@ -1776,6 +1834,34 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $(".room-total").removeClass("room-total-white");
     $targetUser.find(".room-total").addClass("room-total-white");
   }
+
+  $(".header-room").on("click", function() {
+    if ($(this).hasClass("header-favorites"))
+      chatApplication.showFavorites = !chatApplication.showFavorites;
+    else if ($(this).hasClass("header-people"))
+      chatApplication.showPeople = !chatApplication.showPeople;
+    else if ($(this).hasClass("header-spaces"))
+      chatApplication.showSpaces = !chatApplication.showSpaces;
+    else if ($(this).hasClass("header-teams"))
+      chatApplication.showTeams = !chatApplication.showTeams;
+
+    jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
+    jzStoreParam("chatShowPeople"+chatApplication.username, chatApplication.showPeople, 600000);
+    jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
+    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+
+    chatApplication.showRooms(chatApplication.rooms);
+
+  });
+
+  $(".btn-add-team").on("click", function() {
+    var $uitext = $("#team-modal-name");
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+    $(".team-user-label").remove();
+    $('#team-modal').modal({"backdrop": false});
+    $uitext.focus();
+  });
 
 
   $('.users-online').on("click", function() {

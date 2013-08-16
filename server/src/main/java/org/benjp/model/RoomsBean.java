@@ -14,6 +14,7 @@ public class RoomsBean {
   int unreadOffline = 0;
   int unreadOnline = 0;
   int unreadSpaces = 0;
+  int unreadTeams = 0;
 
   public List<RoomBean> getRooms() {
     return rooms;
@@ -47,6 +48,14 @@ public class RoomsBean {
     this.unreadSpaces = unreadSpaces;
   }
 
+  public int getUnreadTeams() {
+    return unreadTeams;
+  }
+
+  public void setUnreadTeams(int unreadTeams) {
+    this.unreadTeams = unreadTeams;
+  }
+
   public String roomsToJSON()
   {
     StringBuffer sb = new StringBuffer();
@@ -54,6 +63,7 @@ public class RoomsBean {
     sb.append("\"unreadOffline\": \""+unreadOffline+"\",");
     sb.append("\"unreadOnline\": \""+unreadOnline+"\",");
     sb.append("\"unreadSpaces\": \""+unreadSpaces+"\",");
+    sb.append("\"unreadTeams\": \""+unreadTeams+"\",");
     sb.append("\"rooms\": [");
     boolean first=true;
     for (RoomBean roomBean:this.getRooms()) {

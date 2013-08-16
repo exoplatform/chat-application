@@ -470,7 +470,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user, true);
-    int unreadOffline=0, unreadOnline=0, unreadSpaces=0;
+    int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
 
     Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
 
@@ -542,7 +542,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
       roomBeanS.setUser(SPACE_PREFIX+space.getRoom());
       roomBeanS.setRoom(space.getRoom());
       roomBeanS.setFullname(space.getDisplayName());
-      roomBeanS.setStatus(UserServiceImpl.STATUS_SPACE);
+      roomBeanS.setStatus(UserService.STATUS_SPACE);
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
@@ -564,14 +564,14 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
       roomBeanS.setUser(TEAM_PREFIX + team.getRoom());
       roomBeanS.setRoom(team.getRoom());
       roomBeanS.setFullname(team.getFullname());
-      roomBeanS.setStatus(org.benjp.services.mongodb.UserServiceImpl.STATUS_SPACE);
+      roomBeanS.setStatus(UserService.STATUS_TEAM);
       roomBeanS.setTimestamp(team.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(false);
       roomBeanS.setTeam(true);
       roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
       if (roomBeanS.getUnreadTotal()>0)
-        unreadSpaces += roomBeanS.getUnreadTotal();
+        unreadTeams += roomBeanS.getUnreadTotal();
       roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
       if (withSpaces)
       {
@@ -599,6 +599,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     roomsBean.setUnreadOffline(unreadOffline);
     roomsBean.setUnreadOnline(unreadOnline);
     roomsBean.setUnreadSpaces(unreadSpaces);
+    roomsBean.setUnreadTeams(unreadTeams);
 
     return roomsBean;
 

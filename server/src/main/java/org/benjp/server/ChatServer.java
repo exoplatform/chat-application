@@ -82,20 +82,13 @@ public class ChatServer
   @Route("/whoIsOnline")
   public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces, String withPublic, String withOffline, String isAdmin)
   {
-/*
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-*/
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
 
-    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
-//    return users.with().set("rooms", rooms).ok().withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+//    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
+    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), notificationService, userService, tokenService);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 

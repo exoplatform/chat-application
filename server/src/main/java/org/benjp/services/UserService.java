@@ -38,6 +38,7 @@ public interface UserService
   public static final String STATUS_OFFLINE = "offline";
   public static final String STATUS_NONE = "none";
   public static final String STATUS_SPACE = "space";
+  public static final String STATUS_TEAM = "team";
 
   public static final String ANONIM_USER = "__anonim_";
   public static final String SUPPORT_USER = "__support_";

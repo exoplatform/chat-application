@@ -72,37 +72,9 @@
     <span class="menu-standard" style="float:right;">
       <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
         <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
-      <!--label style="padding-right: 7px;float: left; line-height: 38px; margin: 0">&{benjp.chat.button.filters}</label-->
-      <ul class="btn-group containerMoreItem" style="padding-right: 10px;margin-top: 6px;float: left;">
-        <li class="btn filter filter-offline" data-type="offline">
-          <a href="#">&{benjp.chat.button.offline}</a>
-        </li>
-        <li class="btn filter filter-public" data-type="public" style="display: none">
-          <a href="#">&{benjp.chat.button.public}</a>
-        </li>
-        <li class="btn filter filter-user" data-type="user">
-          <a href="#">&{benjp.chat.button.users}</a>
-        </li>
-        <li class="btn filter filter-space" data-type="space">
-          <a href="#">&{benjp.chat.button.spaces}</a>
-        </li>
-      </ul>
-
-      <div class="btn-group btn-top-add-actions">
-        <button class="btn dropdown-toggle" style="border-radius:4px;"
-                data-toggle="dropdown"><i class="icon-plus"></i></button>
-        <ul class="dropdown-menu">
-          <li><a href="#" class="btn-add-team"><i class="icon-comment"></i> Team</a></li>
-          <!--li class="divider"></li>
-          <li><a href="#"><i class="icon-calendar"></i> Event</a></li>
-          <li><a href="#"><i class="icon-check"></i> Task</a></li>
-          <li><a href="#"><i class="icon-globe"></i> Link</a></li>
-          <li><a href="#"><i class="icon-file"></i> File</a></li-->
-        </ul>
-      </div>
 
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;float: right;">
-        <div onclick="event.cancelBubble=true;"><input class="span3" id="chat-search" type="text" ></div>
+        <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
       </div>
 
     </span>
