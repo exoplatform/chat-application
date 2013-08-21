@@ -2,6 +2,7 @@ var chatApplication = new ChatApplication();
 
 $(document).ready(function(){
 
+
   /**
    * Init Chat
    */
@@ -20,7 +21,7 @@ $(document).ready(function(){
   chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
   var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
   var chatView = $chatApplication.attr("data-view");
-  var chatFullscreen = $chatApplication.attr("data-fullscreen");
+  chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
   chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
   chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
   chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
@@ -67,9 +68,6 @@ $(document).ready(function(){
 
   $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
-  if (chatFullscreen == "true") {
-    $("#PlatformAdminToolbarContainer").css("display", "none");
-  }
 
 
   $.fn.setCursorPosition = function(position){
@@ -136,6 +134,42 @@ $(document).ready(function(){
       document.getElementById("msg").value = '';
     }
 
+  });
+
+
+  $(".meeting-action-link").on("click", function() {
+    var toggleClass = $(this).attr("data-toggle");
+    var roomChatMessage = $( ".chat-message" ).height();
+    var animHeight = 0;
+    if (roomChatMessage<55) {
+      animHeight = 10;
+    }
+    $( ".chat-message" ).animate({height: "+="+animHeight}, {duration: 200});
+    $( "#chats" ).animate({height: "-="+animHeight}, 200, function(){
+      $(".meeting-action-panel").hide();
+      $(".input-with-value").each(function() {
+        $(this).val($(this).attr("data-value"));
+        $(this).addClass("input-default");
+      });
+      $("."+toggleClass).show();
+      $( ".chat-message" ).animate({height: "-=10"}, {duration: 200});
+      $( "#chats" ).animate({height: "+=10"}, {duration: 200});
+    });
+  });
+
+  $(".input-with-value").on("click", function() {
+    if ($(this).hasClass("input-default")) {
+      $(this).val("");
+      $(this).removeClass("input-default");
+    }
+  });
+
+  $(".meeting-close-panel").on("click", function() {
+    $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+    $( "#chats" ).animate({height: "-=10"}, 200, function(){
+      $(".meeting-action-panel").hide();
+      $(".meeting-action-chat-panel").show();
+    });
   });
 
 
@@ -479,6 +513,7 @@ function ChatApplication() {
   this.weemoExtension = "";
   this.isPublic = false;
   this.publicModeEnabled = false;
+  this.chatFullscreen = "false";
 
   this.room = "";
   this.rooms = "";
@@ -730,6 +765,22 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
 
 };
 
+ChatApplication.prototype.resize = function() {
+  if (chatApplication.chatFullscreen == "true") {
+    $("#PlatformAdminToolbarContainer").css("display", "none");
+  }
+
+  var $chatApplication = $("#chat-application");
+  var top = $chatApplication.offset().top;
+  var height = $(window).height();
+  var off = 80;
+  var heightChat = height - top - off;
+
+  $chatApplication.height(heightChat);
+  $("#chats").height(heightChat - 105 - 61);
+  $("#chat-users").height(heightChat - 44);
+
+};
 
 /**
  * Init Status Chat Loop
@@ -756,6 +807,12 @@ ChatApplication.prototype.initChat = function() {
     } else {
       $leftNavigationTDContainer.animate({width: 'hide', duration: 200});
     }
+  });
+
+
+  this.resize();
+  $(window).resize(function() {
+    chatApplication.resize();
   });
 
   this.initChatPreferences();
@@ -1705,11 +1762,15 @@ ChatApplication.prototype.loadRoom = function() {
     $(".target-user-fullname").text(this.targetFullname);
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     {
+//      $(".meeting-actions").css("display", "none");
       $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
     }
     else if (this.targetUser.indexOf("team-")===-1)
     {
+//      $(".meeting-actions").css("display", "inline-block");
+      $(".meeting-action-event").css("display", "block");
+      $(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().replace(" ", "_");
       $(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
@@ -1735,6 +1796,9 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("ERROR::"+xhr.responseText);
         }
       });
+//      $(".meeting-actions").css("display", "inline-block");
+      $(".meeting-action-event").css("display", "none");
+      $(".meeting-action-task").css("display", "none");
       $(".target-avatar-link").attr("href", "#");
       $(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
@@ -1855,6 +1919,10 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
   });
 
   $(".btn-add-team").on("click", function() {
+    chatApplication.showTeams = true;
+    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+    chatApplication.showRooms(chatApplication.rooms);
+
     var $uitext = $("#team-modal-name");
     $uitext.val("");
     $uitext.attr("data-id", "---");

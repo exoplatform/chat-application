@@ -60,8 +60,8 @@
 }
 
 .chat-menu {
-  padding: 4px;
-  background-position-y: 7px!important;
+  padding: 4px 8px;
+  /*background-position-y: 7px!important;*/
 }
 
 .chat-menu:hover {
@@ -224,6 +224,80 @@ tr.info td {
   -webkit-border-radius: 0 0 4px 4px;
   -moz-border-radius: 0 0 4px 4px;
   border-radius: 0 0 4px 4px;
+
+
+  .meeting-actions {
+    margin: 4px 4px 0 0;
+
+    .meeting-action-toggle {
+      padding: 2px 1px 1px 5px;
+    }
+    .meeting-action-link {
+      display: block;
+    }
+
+    .uiIconMiniArrowDown {
+      margin-left: 0;
+    }
+  }
+
+  .meeting-action-panel {
+    padding: 10px;
+    display: none;
+
+    .input-default {
+      color: #CCC;
+    }
+
+    .meeting-close-panel {
+      margin: 0 0 0 10px;
+      padding: 3px 5px;
+    }
+
+    .action-label {
+      padding-left: 10px;
+      line-height: 28px;
+      vertical-align: top;
+    }
+
+    .btn {
+      vertical-align: top;
+    }
+
+    .uiSelectbox {
+      vertical-align: top;
+      width: 85px;
+
+      .selectbox {
+        width: 80px;
+      }
+    }
+
+    .progressBar {
+      width: 400px;
+      float: left;
+
+      .progress {
+        margin: 0;
+        height: 28px;
+      }
+
+      .label {
+        width: 100%;
+        line-height: 28px;
+        text-align: center;
+      }
+
+    }
+
+
+  }
+
+  .meeting-action-chat-panel {
+    padding: 0;
+    display: block;
+  }
+
 }
 .room-detail
 {
