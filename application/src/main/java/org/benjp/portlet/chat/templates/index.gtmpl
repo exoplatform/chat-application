@@ -163,14 +163,14 @@
 
             <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
             <ul class="dropdown-menu pull-right">
-              <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event</a></li>
-              <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task</a></li>
+              <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
+              <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task (Coming Soon)</a></li>
               <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
               <li class="meeting-action-link" data-toggle="meeting-action-file-panel"><a href="#"><i class="icon-file"></i> Upload File</a></li>
               <li class="divider"></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
+              <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
+              <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question (Coming Soon)</a></li>
+              <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand (Coming Soon)</a></li>
             </ul>
           </div>
 
@@ -179,7 +179,7 @@
           </div>
 
         </div>
-
+<!--
         <div class="meeting-action-panel meeting-action-event-panel">
           <input type="text" class="span2 input-with-value" data-value="Event">
           <span class="action-label">from</span>
@@ -305,10 +305,11 @@
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary pull-right"><i class="icon-check icon-white"></i> Post</a>
         </div>
+        -->
         <div class="meeting-action-panel meeting-action-link-panel">
-          <input type="text" class="span7 input-with-value" data-value="ex: http://www.exoplatform.com">
+          <input type="text" class="span7 input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right"><i class="icon-globe icon-white"></i> Share</a>
+          <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
         </div>
         <div class="meeting-action-panel meeting-action-file-panel">
           <div class="progressBar">
@@ -321,6 +322,7 @@
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn"><i class="icon-file"></i> Select manually</a>
         </div>
+        <!--
         <div class="meeting-action-panel meeting-action-flag-panel">
           <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
@@ -336,8 +338,7 @@
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary pull-right"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
         </div>
-
-
+        -->
 
       </div>
     </div>

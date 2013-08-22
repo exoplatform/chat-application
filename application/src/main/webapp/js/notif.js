@@ -459,36 +459,29 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
         if (status==="terminated" && !weemoExtension.callActive) return; //Terminate a non started call, no message needed
 
 
-        if (status==="active") weemoExtension.setCallActive(true);
-        else if (status==="terminated") weemoExtension.setCallActive(false);
+        if (status==="active") {
+          weemoExtension.setCallActive(true);
+          optionsWeemo.type = "call-on";
+        }
+        else if (status==="terminated") {
+          weemoExtension.setCallActive(false);
+          optionsWeemo.type = "call-off";
+        }
 
         if (weemoExtension.callType!=="attendee") {
           if (weemoExtension.hasChatMessage()) {
             console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
-            jQuery.ajax({
-              url: weemoExtension.chatMessage.url,
-              data: {"user": weemoExtension.chatMessage.user,
-                "targetUser": weemoExtension.chatMessage.targetUser,
-                "room": weemoExtension.chatMessage.room,
-                "message": messageWeemo,
-                "options": JSON.stringify(optionsWeemo),
-                "token": weemoExtension.chatMessage.token,
-                "timestamp": new Date().getTime(),
-                "isSystem": "true"
-              },
-              success:function(response){
-                //console.log("success");
-                try {
-                  if (chatApplication !== undefined) {
-                    chatApplication.refreshChat();
-                  }
-                } catch(err) {
-                  //nothing to do, we're outside chat page
-                }
-              },
-              error:function (xhr, status, error){
-              }
-            });
+            if (chatApplication !== undefined) {
+              chatApplication.chatRoom.sendFullMessage(
+                weemoExtension.chatMessage.user,
+                weemoExtension.chatMessage.token,
+                weemoExtension.chatMessage.targetUser,
+                weemoExtension.chatMessage.room,
+                messageWeemo,
+                optionsWeemo,
+                "true"
+              )
+            }
 
             if (status==="terminated") {
               weemoExtension.initChatMessage();

@@ -39,7 +39,7 @@ $(document).ready(function(){
   chatApplication.jzDelete = chatServerURL+"/delete";
   chatApplication.jzEdit = chatServerURL+"/edit";
   chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
-  chatApplication.room = "<%=room%>";
+  chatApplication.room = "";
 
   chatApplication.initChat();
   chatApplication.initChatProfile();
@@ -139,6 +139,9 @@ $(document).ready(function(){
 
   $(".meeting-action-link").on("click", function() {
     var toggleClass = $(this).attr("data-toggle");
+
+    if (toggleClass !== "meeting-action-link-panel" && toggleClass !== "meeting-action-file-panel") return;
+
     var roomChatMessage = $( ".chat-message" ).height();
     var animHeight = 0;
     if (roomChatMessage<55) {
@@ -171,6 +174,31 @@ $(document).ready(function(){
       $(".meeting-action-chat-panel").show();
     });
   });
+
+  $(".share-link-button").on("click", function() {
+    var link = $("#share-link-text").val();
+
+    var options = {
+      type: "type-link",
+      link: link,
+      from: chatApplication.username,
+      fullname: chatApplication.fullname
+    };
+    var msg = "";
+
+    chatApplication.chatRoom.sendMessage(msg, options, "true");
+
+
+
+    $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+    $( "#chats" ).animate({height: "-=10"}, 200, function(){
+      $(".meeting-action-panel").hide();
+      $(".meeting-action-chat-panel").show();
+    });
+
+
+  });
+
 
 
   $(".chat-status-chat").on("click", function() {
@@ -515,6 +543,7 @@ function ChatApplication() {
   this.publicModeEnabled = false;
   this.chatFullscreen = "false";
 
+  this.chatRoom;
   this.room = "";
   this.rooms = "";
   this.username = "";
@@ -538,13 +567,11 @@ function ChatApplication() {
   this.jzDelete = "";
   this.jzEdit = "";
   this.jzSaveTeamRoom = "";
-  this.highlight = "";    //not set
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
   this.chatIntervalUsers = "";
   this.chatIntervalSession = "";
   this.chatIntervalStatus = "";
-  this.chatEventURL  ="";          //NOT SET
 
   this.chatSessionInt = -1; //not set
   this.filterInt;
@@ -796,6 +823,10 @@ ChatApplication.prototype.initStatusChat = function() {
  */
 ChatApplication.prototype.initChat = function() {
 
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.chatIntervalChat, this.isPublic, this.labels);
+  this.chatRoom.onRefresh(this.onRefreshCallback);
+  this.chatRoom.onShowMessages(this.onShowMessagesCallback);
+
   var homeLinkHtml = $("#HomeLink").html();
   homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
   $("#HomeLink").html(homeLinkHtml);
@@ -958,428 +989,8 @@ ChatApplication.prototype.activateMaintainSession = function() {
   this.chatSessionInt = setInterval($.proxy(this.maintainSession, this), this.chatIntervalSession);
 };
 
-/**
- * Show Messages (json to html)
- * @param msgs : json messages data to show
- */
-ChatApplication.prototype.showMessages = function(msgs) {
-  var im, message, out="", prevUser="";
-  if (msgs!==undefined) {
-    this.messages = msgs;
-  }
-
-  if (this.messages.length===0) {
-    out = "<div class='msgln' style='padding:22px 20px;'>";
-    if (this.isPublic)
-      out += "<b><center>"+this.labels.get("label-public-welcome")+"</center></b>";
-    else
-      out += "<b><center>"+this.labels.get("label-no-messages")+"</center></b>";
-    out += "</div>";
-  } else {
-
-    var messages = TAFFY(this.messages);
-    var thiss = this;
-    messages().order("timestamp asec").each(function (message) {
-
-      if (message.isSystem!=="true")
-      {
-        if (prevUser != message.user)
-        {
-          if (prevUser !== "")
-            out += "</span></div>";
-          if (message.user != thiss.username) {
-            out += "<div class='msgln-odd'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            if (thiss.isPublic)
-              out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
-            else
-              out += "<img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
-            else
-              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-          } else {
-            out += "<div class='msgln'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            //out += "<span style='float:left; '>&nbsp;</span>";
-            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-          }
-        }
-        else
-        {
-          out += "<hr style='margin:0px;'>";
-        }
-        var msgtemp = message.message;
-        if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+thiss.labels.get("label-deleted")+"</span>";
-        } else {
-          msgtemp = thiss.messageBeautifier(message.message);
-        }
-        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
-          "<span class='invisible-text'> [</span>";
-        out += "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>";
-        if (message.type === "DELETED" || message.type === "EDITED") {
-          out += "<span class='message-changed'></span>";
-        }
-        out += message.date+"</span>";
-        if (message.type !== "DELETED") {
-          out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
-            "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
-          if (message.user === thiss.username) {
-            out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
-            out += "&nbsp;<a href='#' class='msg-action-edit'>"+thiss.labels.get("label-edit")+"</a>&nbsp;|";
-          }
-          out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
-          out += "</span>";
-        }
-        out += "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
-        prevUser = message.user;
-      }
-      else
-      {
-        if (prevUser !== "")
-          out += "</span></div>";
-        if (prevUser !== "__system")
-          out += "<hr style='margin: 0'>";
-        out += "<div class='msgln-odd'>";
-        out += "<span style='position:relative; padding-right:14px;padding-left:4px;top:8px'>";
-        var options = {};
-        // Legacy test
-        if (message.message.indexOf("&")>0) {
-          message.message = message.message.substring(0, message.message.indexOf("&"));
-          options.timestamp = new Date().getTime();
-        }
-        // end of legacy test
-        if (typeof message.options == "object")
-          options = message.options;
-        var nbOptions = thiss.getObjectSize(options);
-
-        if (message.message==="Call active") {
-          out += "<img class='call-on' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
-          if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandler", options.timestamp, 600000)
-          }
-          $(".btn-weemo").addClass('disabled');
-        } else if (message.message==="Call terminated") {
-          out += "<img class='call-off' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
-          $(".btn-weemo").removeClass('disabled');
-        } else {
-          out += "<img src='/chat/img/empty.png' width='32px' style='width:32px;'>";
-        }
-        out += "</span>";
-        out += "<span>";
-        if (nbOptions===0) out+="<center>";
-        out += "<b style=\"line-height: 12px;vertical-align: bottom;\">"+message.message+"</b>";
-        if (nbOptions===0) out+="</center>";
-
-        if (message.message==="Call terminated" && nbOptions>0) {
-          var tsold = Math.round(jzGetParam("weemoCallHandler"));
-          var time = Math.round(options.timestamp)-tsold;
-          var hours = Math.floor(time / 3600);
-          time -= hours * 3600;
-          var minutes = Math.floor(time / 60);
-          time -= minutes * 60;
-          var seconds = parseInt(time % 60, 10);
-          var stime = "<span class=\"msg-time\">";
-          if (hours>0) {
-            if (hours===1)
-              stime += hours+ " hour ";
-            else
-              stime += hours+ " hours ";
-          }
-          if (minutes>0) {
-            if (minutes===1)
-              stime += minutes+ " minute ";
-            else
-              stime += minutes+ " minutes ";
-          }
-          if (seconds>0) {
-            if (seconds===1)
-              stime += seconds+ " second";
-            else
-              stime += seconds+ " seconds";
-          }
-          stime += "</span>";
-          out += stime;
-        }
-
-        if (nbOptions===3) {
-          thiss.weemoExtension.setUidToCall(options.uidToCall);
-          thiss.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
-          $(".btn-weemo").css("display", "none");
-          $(".btn-weemo-conf").css("display", "block");
-          if (options.uidToCall!=="weemo"+thiss.username)
-            $(".btn-weemo-conf").removeClass("disabled");
-          else
-            $(".btn-weemo-conf").addClass("disabled");
-        } else {
-          $(".btn-weemo").css("display", "block");
-          $(".btn-weemo-conf").css("display", "none");
-        }
 
 
-        message.message = "";
-        out += "<div style='margin-left:50px;'><span style='float:left'>"+thiss.messageBeautifier(message.message)+"</span>" +
-          "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
-          "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
-        out += "</span></div>";
-        out += "<hr style='margin: 0'>";
-        out += "<div><span>";
-        prevUser = "__system";
-
-      }
-    });
-
-  }
-  var $chats = $("#chats");
-  $chats.html('<span>'+out+'</span>');
-  sh_highlightDocument();
-  $chats.animate({ scrollTop: 20000 }, 'fast');
-
-  $(".msg-text").mouseover(function() {
-    if ($(".msg-actions", this).children().length > 0) {
-      $(".msg-date", this).css("display", "none");
-      $(".msg-actions", this).css("display", "inline-block");
-    }
-  });
-
-  $(".msg-text").mouseout(function() {
-    $(".msg-date", this).css("display", "inline-block");
-    $(".msg-actions", this).css("display", "none");
-  });
-
-  $(".msg-action-quote").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
-    var msgHtml = $uimsg.html();
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-    msgHtml = msgHtml.replace(/<br>/g, '\n');
-    var msgFullname = $uimsg.attr("data-fn");
-    $("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
-
-  });
-
-  $(".msg-action-delete").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
-    var msgId = $uimsg.attr("data-id");
-    chatApplication.deleteMessage(msgId, function() {
-      chatApplication.refreshChat(true);
-    });
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-
-  });
-
-  $(".msg-action-edit").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
-    var msgId = $uimsg.attr("data-id");
-    var msgHtml = $uimsg.html();
-    msgHtml = msgHtml.replace(eval("/<br>/g"), "\n");
-
-    $("#edit-modal-area").val(msgHtml);
-    $("#edit-modal-area").attr("data-id", msgId);
-    $('#edit-modal').modal({"backdrop": false});
-
-//    chatApplication.deleteMessage(msgId, function() {
-//      chatApplication.refreshChat(true);
-//    });
-
-  });
-
-};
-
-/**
- * Refresh Chat : refresh messages and panels
- */
-ChatApplication.prototype.refreshChat = function(forceRefresh) {
-  //var thiss = chatApplication;
-  if (this.username !== this.ANONIM_USER) {
-    var lastTS = jzGetParam("lastTS"+this.username);
-
-    //url: this.chatEventURL+"&fromTimestamp="+lastTS,
-    $.ajax({
-      url: this.chatEventURL,
-      dataType: "json",
-      context: this,
-      success: function(data) {
-        var lastTS = jzGetParam("lastTS"+this.username);
-        //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
-        var im, message, out="", prevUser="";
-        if (data.messages.length===0) {
-          this.showMessages(data.messages);
-        } else {
-          var ts = data.timestamp;
-          if (ts != lastTS || (forceRefresh === true)) {
-            jzStoreParam("lastTS"+this.username, ts, 600);
-            //console.log("new data to show");
-            this.showMessages(data.messages);
-          }
-        }
-//        if (this.isDesktopView()) $(".right-chat").css("display", "block");
-        this.hidePanel(".chat-login-panel");
-        this.hidePanel(".chat-error-panel");
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-//        if (this.isDesktopView()) $(".right-chat").css("display", "none");
-        if ( $(".chat-error-panel").css("display") == "none") {
-          this.showLoginPanel();
-        } else {
-          this.hidePanel(".chat-login-panel");
-        }
-      }
-    });
-
-  }
-};
-
-/**
- * HTML Message Beautifier
- *
- * @param message
- * @returns {string} : the html markup
- */
-ChatApplication.prototype.messageBeautifier = function(message) {
-  var msg = "";
-  if (message.indexOf("java:")===0) {
-    msg = "<div class='sh_container '><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
-    return msg;
-  } else if (message.indexOf("html:")===0) {
-    msg = "<div class='sh_container '><pre class='sh_html'>"+message.substr(5, message.length-6)+"</pre></div>";
-    return msg;
-  } else if (message.indexOf("js:")===0) {
-    msg = "<div class='sh_container '><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
-    return msg;
-  } else if (message.indexOf("css:")===0) {
-    msg = "<div class='sh_container '><pre class='sh_css'>"+message.substr(4, message.length-5)+"</pre></div>";
-    return msg;
-  }
-
-  var quote = "";
-  if (message.indexOf("[quote=")===0) {
-    var iq = message.indexOf("]");
-    quote = "<div class='contentQuote'><b>"+message.substring(7, iq)+":</b><br>";
-    message = message.substr(iq+1);
-  }
-
-  var lines = message.split("<br/>");
-  var il,l;
-  for (il=0 ; il<lines.length ; il++) {
-    l = lines[il];
-    if (l.indexOf("google:")===0) {
-      // console.log("*"+l+"* "+l.length);
-      msg += "google:<a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_new'>"+l.substr(7, l.length-7)+"</a> ";
-    } else if (l.indexOf("wolfram:")===0) {
-      // console.log("*"+l+"* "+l.length);
-      msg += "wolfram:<a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_new'>"+l.substr(8, l.length-8)+"</a> ";
-    } else {
-      var tab = l.split(" ");
-      var it,w;
-      for (it=0 ; it<tab.length ; it++) {
-        w = tab[it];
-        if (w.indexOf("google:")===0) {
-          w = "google:<a href='http://www.google.com/search?q="+w.substr(7, w.length-7)+"' target='_new'>"+w.substr(7, w.length-7)+"</a>";
-        } else if (w.indexOf("wolfram:")===0) {
-          w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_new'>"+w.substr(8, w.length-8)+"</a>";
-        } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
-          var link = w;
-          if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
-            w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
-            w += "<span class='invisible-text'>"+link+"</span>";
-          } else if (w.indexOf("http://www.youtube.com/watch?v=")===0 && !this.IsIE8Browser() ) {
-            var id = w.substr(31);
-            w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
-            w += "<span class='invisible-text'>"+link+"</span>";
-          } else if (w.indexOf("[/quote]")===-1) {
-            w = "<a href='"+w+"' target='_new'>"+w+"</a>";
-          }
-        } else if (w == ":-)" || w==":)") {
-          w = "<span class='emoticon emoticon-smile'><span class='emoticon-text'>:)</span></span>";
-        } else if (w == ":-p" || w==":p" || w==":-P" || w==":P") {
-          w = "<span class='emoticon emoticon-tongue'><span class='emoticon-text'>:p</span></span>";
-        } else if (w == ":-D" || w==":D" || w==":-d" || w==":d") {
-          w = "<span class='emoticon emoticon-big-smile'><span class='emoticon-text'>:D</span></span>";
-        } else if (w == ":-|" || w==":|") {
-          w = "<span class='emoticon emoticon-no-voice'><span class='emoticon-text'>:|</span></span>";
-        } else if (w == ":-(" || w==":(") {
-          w = "<span class='emoticon emoticon-sad'><span class='emoticon-text'>:(</span></span>";
-        } else if (w == ";-)" || w==";)") {
-          w = "<span class='emoticon emoticon-eye-blink'><span class='emoticon-text'>;)</span></span>";
-        } else if (w == ":-O" || w==":O") {
-          w = "<span class='emoticon emoticon-surprise'><span class='emoticon-text'>:O</span></span>";
-        } else if (w == "(beer)") {
-          w = "<span class='emoticon emoticon-beer'><span class='emoticon-text'>(beer)</span></span>";
-        } else if (w == "(bow)") {
-          w = "<span class='emoticon emoticon-bow'><span class='emoticon-text'>(bow)</span></span>";
-        } else if (w == "(bug)") {
-          w = "<span class='emoticon emoticon-bug'><span class='emoticon-text'>(bug)</span></span>";
-        } else if (w == "(cake)" || w == "(^)") {
-          w = "<span class='emoticon emoticon-cake'><span class='emoticon-text'>(^)</span></span>";
-        } else if (w == "(cash)") {
-          w = "<span class='emoticon emoticon-cash'><span class='emoticon-text'>(cash)</span></span>";
-        } else if (w == "(coffee)") {
-          w = "<span class='emoticon emoticon-coffee'><span class='emoticon-text'>(coffee)</span></span>";
-        } else if (w == "(n)" || w == "(no)") {
-          w = "<span class='emoticon emoticon-no'><span class='emoticon-text'>(no)</span></span>";
-        } else if (w == "(y)" || w == "(yes)") {
-          w = "<span class='emoticon emoticon-yes'><span class='emoticon-text'>(yes)</span></span>";
-        } else if (w == "(star)") {
-          w = "<span class='emoticon emoticon-star'><span class='emoticon-text'>(star)</span></span>";
-        } else if (this.highlight.length >1) {
-          w = w.replace(eval("/"+this.highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+this.highlight+"</span>");
-        }
-        msg += w+" ";
-      }
-    }
-    // console.log(il + "::" + lines.length);
-    if (il < lines.length-1) {
-      msg += "<br/>";
-    }
-  }
-
-  if (quote !== "") {
-    if (msg.indexOf("[/quote]")>0)
-      msg = msg.replace("[/quote]", "</div>");
-    else
-      msg = msg + "</div>";
-    msg = quote + msg;
-  }
-
-  return msg;
-};
-
-/**
- * Test if IE8
- * @returns {boolean}
- * @constructor
- */
-ChatApplication.prototype.IsIE8Browser = function() {
-  var rv = -1;
-  var ua = navigator.userAgent;
-  var re = new RegExp("Trident\/([0-9]{1,}[\.0-9]{0,})");
-  if (re.exec(ua) != null) {
-    rv = parseFloat(RegExp.$1);
-  }
-  return (rv == 4);
-};
-
-ChatApplication.prototype.getObjectSize = function(obj) {
-  var size = 0;
-  if (this.IsIE8Browser()) {
-    for (prop in obj) {
-      if (obj.hasOwnProperty(prop))
-        size++;
-    }
-  } else {
-    size = Object.keys(obj).length
-  }
-  return size;
-}
 
 /**
  * Refresh Current Chat Status
@@ -1803,43 +1414,86 @@ ChatApplication.prototype.loadRoom = function() {
       $(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
 
-
-    $.ajax({
-      url: this.jzChatGetRoom,
-      data: {"targetUser": this.targetUser,
-        "user": this.username,
-        "token": this.token,
-        "isAdmin": this.isAdmin,
-        "timestamp": new Date().getTime()
-      },
-      context: this,
-      success: function(response){
-        //console.log("SUCCESS::getRoom::"+response);
-        this.room = response;
-        var $msg = $('#msg');
-        $msg.removeAttr("disabled");
-        if (this.weemoExtension.isConnected) {
-          $(".btn-weemo").removeClass('disabled');
-        }
-        if (this.isDesktopView()) $msg.focus();
-        this.chatEventURL = this.jzChatRead+'?room='+this.room+'&user='+this.username+'&token='+this.token;
-
-        jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-        jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-        jzStoreParam("lastTS"+this.username, "0");
-        this.chatEventInt = window.clearInterval(this.chatEventInt);
-        this.chatEventInt = setInterval($.proxy(this.refreshChat, this), this.chatIntervalChat);
-        this.refreshChat();
-
-      },
-
-      error: function(xhr, status, error){
-        //console.log("ERROR::"+xhr.responseText);
+    var thiss = this;
+    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
+      thiss.room = room;
+      var $msg = $('#msg');
+      $msg.removeAttr("disabled");
+      if (thiss.weemoExtension.isConnected) {
+        $(".btn-weemo").removeClass('disabled');
       }
+      if (thiss.isDesktopView()) $msg.focus();
 
     });
+
   }
 };
+
+ChatApplication.prototype.onRefreshCallback = function(code) {
+  if (code === 0) { // SUCCESS
+    chatApplication.hidePanel(".chat-login-panel");
+    chatApplication.hidePanel(".chat-error-panel");
+  } else if (code === 1) { //ERROR
+    if ( $(".chat-error-panel").css("display") == "none") {
+      chatApplication.showLoginPanel();
+    } else {
+      chatApplication.hidePanel(".chat-login-panel");
+    }
+  }
+}
+
+ChatApplication.prototype.onShowMessagesCallback = function(out) {
+
+  var $chats = $("#chats");
+  $chats.html('<span>'+out+'</span>');
+  sh_highlightDocument();
+  $chats.animate({ scrollTop: 20000 }, 'fast');
+
+  $(".msg-text").mouseover(function() {
+    if ($(".msg-actions", this).children().length > 0) {
+      $(".msg-date", this).css("display", "none");
+      $(".msg-actions", this).css("display", "inline-block");
+    }
+  });
+
+  $(".msg-text").mouseout(function() {
+    $(".msg-date", this).css("display", "inline-block");
+    $(".msg-actions", this).css("display", "none");
+  });
+
+  $(".msg-action-quote").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgHtml = $uimsg.html();
+    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+    msgHtml = msgHtml.replace(/<br>/g, '\n');
+    var msgFullname = $uimsg.attr("data-fn");
+    $("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+
+  });
+
+  $(".msg-action-delete").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgId = $uimsg.attr("data-id");
+    chatApplication.deleteMessage(msgId, function() {
+      chatApplication.refreshChat(true);
+    });
+    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+
+  });
+
+  $(".msg-action-edit").on("click", function() {
+    var $uimsg = $(this).siblings(".msg-data");
+    var msgId = $uimsg.attr("data-id");
+    var msgHtml = $uimsg.html();
+    msgHtml = msgHtml.replace(eval("/<br>/g"), "\n");
+
+    $("#edit-modal-area").val(msgHtml);
+    $("#edit-modal-area").attr("data-id", msgId);
+    $('#edit-modal').modal({"backdrop": false});
+
+  });
+
+}
 
 /**
  * Error On Refresh
@@ -1974,8 +1628,8 @@ ChatApplication.prototype.search = function(filter) {
     this.showAboutPanel();
   }
   if (filter.indexOf("@")!==0) {
-    this.highlight = filter;
-    this.showMessages();
+    this.chatRoom.highlight = filter;
+    this.chatRoom.showMessages();
   } else {
     this.userFilter = filter.substr(1, filter.length-1);
     this.filterInt = clearTimeout(this.filterInt);
@@ -2040,24 +1694,14 @@ ChatApplication.prototype.setStatus = function(status, callback) {
 };
 
 ChatApplication.prototype.showAsText = function() {
-  $.ajax({
-    url: this.chatEventURL,
-    data: {
-      "isTextOnly": "true"},
-    context: this,
 
-    success: function(response){
-      //console.log("SUCCESS:setStatus::"+response);
-      $("#text-modal-area").html(response);
-      $('#text-modal-area').on("click", function() {
-        this.select();
-      });
-      $('#text-modal').modal({"backdrop": false});
-
-    },
-    error: function(response){
-    }
-
+  this.chatRoom.showAsText(function(response) {
+    //console.log("SUCCESS:setStatus::"+response);
+    $("#text-modal-area").html(response);
+    $('#text-modal-area').on("click", function() {
+      this.select();
+    });
+    $('#text-modal').modal({"backdrop": false});
   });
 
 };
@@ -2104,73 +1748,36 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
 
   var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
   var options = {};
-
+  var sendMessageToServer = true;
   if (isSystemMessage) {
+    sendMessageToServer = false;
     if (msg.indexOf("/me")===0) {
-      msg = msg.replace("/me", this.fullname);
+//      msg = msg.replace("/me", this.fullname);
+      options.type = "type-me";
+      options.username = this.username;
+      options.fullname = this.fullname;
+      sendMessageToServer = true;
     } else if (msg.indexOf("/call")===0) {
       this.createWeemoCall();
-      document.getElementById("msg").value = '';
-      return;
     } else if (msg.indexOf("/join")===0) {
       this.weemoExtension.joinWeemoCall();
-      document.getElementById("msg").value = '';
-      return;
     } else if (msg.indexOf("/terminate")===0) {
-      document.getElementById("msg").value = '';
       ts = Math.round(new Date().getTime() / 1000);
       msg = "Call terminated";
       options.timestamp = ts;
+      options.type = "call-off";
       this.weemoExtension.setCallOwner(false);
       this.weemoExtension.setCallActive(false);
+      sendMessageToServer = true;
     } else if (msg.indexOf("/export")===0) {
-      this.showAsText();
-      document.getElementById("msg").value = '';
-      return;
-    } else {
-      //this is not a supported system message
-      document.getElementById("msg").value = '';
-      return;
+      this.chatRoom.showAsText();
     }
   }
 
-  var im = this.messages.length;
-  this.messages[im] = {"user": this.username,
-    "fullname": "You",
-    "date": "pending",
-    "message": msg,
-    "options": options,
-    "isSystem": isSystemMessage};
-  this.showMessages();
-  document.getElementById("msg").value = '';
-
-  $.ajax({
-    url: this.jzChatSend,
-    data: {"user": this.username,
-      "targetUser": this.targetUser,
-      "room": this.room,
-      "message": msg,
-      "options": JSON.stringify(options),
-      "token": this.token,
-      "timestamp": new Date().getTime(),
-      "isSystem": isSystemMessage
-    },
-    context: this,
-
-    success:function(response){
-      //console.log("success");
-      this.refreshChat();
-      if (typeof callback === "function") {
-        callback();
-      }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
-  });
-
+  $("#msg").val("");
+  if (sendMessageToServer) {
+    this.chatRoom.sendMessage(msg, options, isSystemMessage, callback);
+  }
 
 };
 
@@ -2263,65 +1870,4 @@ ChatApplication.prototype.showDemoPanel = function() {
     var email = $("#anonim-email").val();
     this.createDemoUser(fullname, email);
   });
-};
-
-
-/**
- ##################                           ##################
- ##################                           ##################
- ##################   JUZU LABELS             ##################
- ##################                           ##################
- ##################                           ##################
- */
-
-/**
- * JuzuLabels allows to store and retrieve html5 data- value from dom elements
- * @constructor
- */
-function JuzuLabels() {
-  this.element = "";
-}
-
-/**
- * Sets the target DOM element
- * @param element
- */
-JuzuLabels.prototype.setElement = function(element) {
-  this.element = element;
-};
-
-/**
- * Get the value
- * @param key
- * @returns {*}
- */
-JuzuLabels.prototype.get = function(key) {
-  var val;
-  if (this.element!=="") {
-    val = $.data(this.element, key);
-    if (val === undefined) {
-      val = this.element.attr("data-"+key);
-      return val;
-    }
-  }
-  return "";
-};
-
-/**
- * Set a value in the DOM using jQuery.data
- * @param key
- * @param value
- */
-JuzuLabels.prototype.set = function(key, value) {
-  if (this.element!=="")
-    $.data(this.element, key, value);
-};
-
-/**
- * Logs what are the available values (only those created by jQuery)
- */
-JuzuLabels.prototype.log = function() {
-  if (this.element!=="") {
-    console.log($.data( this.element ));
-  }
 };
