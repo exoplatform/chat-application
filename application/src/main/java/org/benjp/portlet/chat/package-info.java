@@ -21,6 +21,9 @@
 @Portlet(name="ChatPortlet")
 @Bindings(
         {
+                @Binding(value = org.exoplatform.services.jcr.RepositoryService.class),
+                @Binding(value = org.exoplatform.services.jcr.ext.app.SessionProviderService.class),
+                @Binding(value = org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator.class),
                 @Binding(value = org.exoplatform.services.organization.OrganizationService.class),
                 @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class)
         }
@@ -29,10 +32,12 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
-                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
+//                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
+//                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
+                @Script(src = "js/jquery-juzu-utils-0.1.0.js", id = "jquery"),
+                @Script(src = "js/jquery.filedrop.js", id = "jquery-filedrop", depends = "jquery"),
                 @Script(src = "js/taffy-min.js", id="taffy"),
-                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery","juzu-utils","taffy"} ),
+                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery","jquery-filedrop","taffy"} ),
                 @Script(src = "js/chat.js", depends = {"chat-modules"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),

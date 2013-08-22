@@ -312,15 +312,19 @@
           <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
         </div>
         <div class="meeting-action-panel meeting-action-file-panel">
-          <div class="progressBar">
+          <div class="progressBar" id="dropzone">
             <div class="progress">
               <div class="bar" style="width: 0.0%;"></div>
               <div class="label">Drop your file here</div>
             </div>
           </div>
+          <!--
           <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
+          -->
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
+          <!--
           <a type="button" class="btn"><i class="icon-file"></i> Select manually</a>
+          -->
         </div>
         <!--
         <div class="meeting-action-panel meeting-action-flag-panel">

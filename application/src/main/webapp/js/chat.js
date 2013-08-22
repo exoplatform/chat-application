@@ -1,527 +1,595 @@
+
 var chatApplication = new ChatApplication();
 
-$(document).ready(function(){
+(function($){
 
+  $(document).ready(function(){
 
-  /**
-   * Init Chat
-   */
-  var $chatApplication = $("#chat-application");
-  chatApplication.setJuzuLabelsElement($chatApplication);
-  chatApplication.attachWeemoExtension(weemoExtension);
+    /**
+     * Init Chat
+     */
+    var $chatApplication = $("#chat-application");
+    chatApplication.setJuzuLabelsElement($chatApplication);
+    chatApplication.attachWeemoExtension(weemoExtension);
 
-  chatApplication.username = $chatApplication.attr("data-username");
-  chatApplication.token = $chatApplication.attr("data-token");
-  var chatServerURL = $chatApplication.attr("data-chat-server-url");
-  chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
-  chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
-  chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
-  chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
+    chatApplication.username = $chatApplication.attr("data-username");
+    chatApplication.token = $chatApplication.attr("data-token");
+    var chatServerURL = $chatApplication.attr("data-chat-server-url");
+    chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
+    chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
+    chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
+    chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
 
-  chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
-  var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
-  var chatView = $chatApplication.attr("data-view");
-  chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
-  chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
-  chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
-  chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
-  chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
-  chatApplication.jzGetStatus = chatServerURL+"/getStatus";
-  chatApplication.jzSetStatus = chatServerURL+"/setStatus";
-  chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
-  chatApplication.jzChatSend = chatServerURL+"/send";
-  chatApplication.jzChatRead = chatServerURL+"/read";
-  chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
-  chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
-  chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
-  chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
-  chatApplication.jzUsers = chatServerURL+"/users";
-  chatApplication.jzDelete = chatServerURL+"/delete";
-  chatApplication.jzEdit = chatServerURL+"/edit";
-  chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
-  chatApplication.room = "";
+    chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
+    var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
+    var chatView = $chatApplication.attr("data-view");
+    chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
+    chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
+    chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
+    chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
+    chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
+    chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
+    chatApplication.jzGetStatus = chatServerURL+"/getStatus";
+    chatApplication.jzSetStatus = chatServerURL+"/setStatus";
+    chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
+    chatApplication.jzChatSend = chatServerURL+"/send";
+    chatApplication.jzChatRead = chatServerURL+"/read";
+    chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
+    chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
+    chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
+    chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
+    chatApplication.jzUsers = chatServerURL+"/users";
+    chatApplication.jzDelete = chatServerURL+"/delete";
+    chatApplication.jzEdit = chatServerURL+"/edit";
+    chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
+    chatApplication.room = "";
 
-  chatApplication.initChat();
-  chatApplication.initChatProfile();
+    chatApplication.initChat();
+    chatApplication.initChatProfile();
 
-  /**
-   * Init Global Variables
-   *
-   */
-  //needed for #chat text area
-  var keydown = -1;
-  //needed for #edit-modal-text area
-  var keydownModal = -1;
-  //needed for Fluid Integration
-  var labelAvailable = $chatApplication.attr("data-label-available");
-  var labelAway = $chatApplication.attr("data-label-away");
-  var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
-  var labelInvisible = $chatApplication.attr("data-label-invisible");
-
-  /**
-   ##################                           ##################
-   ##################                           ##################
-   ##################   JQUERY UI EVENTS        ##################
-   ##################                           ##################
-   ##################                           ##################
-   */
-
-  $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
+    /**
+     * Init Global Variables
+     *
+     */
+    //needed for #chat text area
+    var keydown = -1;
+    //needed for #edit-modal-text area
+    var keydownModal = -1;
+    //needed for Fluid Integration
+    var labelAvailable = $chatApplication.attr("data-label-available");
+    var labelAway = $chatApplication.attr("data-label-away");
+    var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
+    var labelInvisible = $chatApplication.attr("data-label-invisible");
 
 
 
-  $.fn.setCursorPosition = function(position){
-    if(this.length === 0) return this;
-    return $(this).setSelection(position, position);
-  };
+    /**
+     ##################                           ##################
+     ##################                           ##################
+     ##################   JQUERY UI EVENTS        ##################
+     ##################                           ##################
+     ##################                           ##################
+     */
 
-  $.fn.setSelection = function(selectionStart, selectionEnd) {
-    if(this.length === 0) return this;
-    input = this[0];
+    $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
-    if (input.createTextRange) {
-      var range = input.createTextRange();
-      range.collapse(true);
-      range.moveEnd('character', selectionEnd);
-      range.moveStart('character', selectionStart);
-      range.select();
-    } else if (input.setSelectionRange) {
-      input.focus();
-      input.setSelectionRange(selectionStart, selectionEnd);
-    }
 
-    return this;
-  };
 
-  $.fn.focusEnd = function(){
-    this.setCursorPosition(this.val().length);
-    return this;
-  };
+    $.fn.setCursorPosition = function(position){
+      if(this.length === 0) return this;
+      return $(this).setSelection(position, position);
+    };
 
-  $(window).unload(function() {
-    chatApplication.hidePanels();
-  });
+    $.fn.setSelection = function(selectionStart, selectionEnd) {
+      if(this.length === 0) return this;
+      input = this[0];
 
-  $('#msg').focus(function() {
-//    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
-    chatApplication.updateUnreadMessages();
-  });
+      if (input.createTextRange) {
+        var range = input.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', selectionEnd);
+        range.moveStart('character', selectionStart);
+        range.select();
+      } else if (input.setSelectionRange) {
+        input.focus();
+        input.setSelectionRange(selectionStart, selectionEnd);
+      }
 
-  $('#msg').keydown(function(event) {
-//    console.log("keydown : "+ event.which+" ; "+keydown);
-    if ( event.which == 18 ) {
-      keydown = 18;
-    }
-  });
+      return this;
+    };
 
-  $('#msg').keyup(function(event) {
-    var msg = $(this).val();
-//    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-    if ( event.which === 13 && keydown !== 18 && msg.length>1) {
-      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-      if(!msg)
-      {
+    $.fn.focusEnd = function(){
+      this.setCursorPosition(this.val().length);
+      return this;
+    };
+
+    $(window).unload(function() {
+      chatApplication.hidePanels();
+    });
+
+    $('#msg').focus(function() {
+  //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
+      chatApplication.updateUnreadMessages();
+    });
+
+    $('#msg').keydown(function(event) {
+  //    console.log("keydown : "+ event.which+" ; "+keydown);
+      if ( event.which == 18 ) {
+        keydown = 18;
+      }
+    });
+
+    $('#msg').keyup(function(event) {
+      var msg = $(this).val();
+  //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+      if ( event.which === 13 && keydown !== 18 && msg.length>1) {
+        //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+        if(!msg)
+        {
+          return;
+        }
+  //      console.log("*"+msg+"*");
+        chatApplication.sendMessage(msg);
+
+      }
+      if ( keydown === 18 ) {
+        keydown = -1;
+      }
+      if ( event.which === 13 && msg.length === 1) {
+        document.getElementById("msg").value = '';
+      }
+
+    });
+
+
+    $(".meeting-action-link").on("click", function() {
+      var toggleClass = $(this).attr("data-toggle");
+
+      if (toggleClass !== "meeting-action-link-panel" && toggleClass !== "meeting-action-file-panel") return;
+
+      var roomChatMessage = $( ".chat-message" ).height();
+      var animHeight = 0;
+      if (roomChatMessage<55) {
+        animHeight = 10;
+      }
+      $( ".chat-message" ).animate({height: "+="+animHeight}, {duration: 200});
+      $( "#chats" ).animate({height: "-="+animHeight}, 200, function(){
+        $(".meeting-action-panel").hide();
+        $(".input-with-value").each(function() {
+          $(this).val($(this).attr("data-value"));
+          $(this).addClass("input-default");
+        });
+        $("."+toggleClass).show();
+        $( ".chat-message" ).animate({height: "-=10"}, {duration: 200});
+        $( "#chats" ).animate({height: "+=10"}, {duration: 200});
+      });
+
+      $(function(){
+
+        $('#dropzone').filedrop({
+//          fallback_id: 'upload_button',   // an identifier of a standard file input element
+          url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
+          paramname: 'userfile',          // POST parameter name used on serverside to reference file
+          data: {
+            room: chatApplication.room
+          },
+          error: function(err, file) {
+            switch(err) {
+              case 'BrowserNotSupported':
+                alert('browser does not support HTML5 drag and drop')
+                break;
+              case 'TooManyFiles':
+                // user uploaded more than 'maxfiles'
+                break;
+              case 'FileTooLarge':
+                // program encountered a file whose size is greater than 'maxfilesize'
+                // FileTooLarge also has access to the file which was too large
+                // use file.name to reference the filename of the culprit file
+                break;
+              case 'FileTypeNotAllowed':
+              // The file type is not in the specified list 'allowedfiletypes'
+              default:
+                break;
+            }
+          },
+          allowedfiletypes: ['image/jpeg','image/png','image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+          maxfiles: 1,
+          maxfilesize: 20,    // max file size in MBs
+          uploadStarted: function(i, file, len){
+            console.log("upload started : "+i+" : "+file+" : "+len);
+            // a file began uploading
+            // i = index => 0, 1, 2, 3, 4 etc
+            // file is the actual file of the index
+            // len = total files user dropped
+          },
+          uploadFinished: function(i, file, response, time) {
+            console.log("upload finished : "+i+" : "+file+" : "+time+" : "+response.status+" : "+response.name);
+            // response is the data you got back from server in JSON format.
+            var msg = response.name;
+            var options = response;
+            options.type = "type-file";
+            chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
+              $("#dropzone").find('.bar').width("0%");
+              $("#dropzone").find('.bar').html("");
+            });
+
+          },
+          progressUpdated: function(i, file, progress) {
+            console.log("progress updated : "+i+" : "+file+" : "+progress);
+            $("#dropzone").find('.bar').width(progress+"%");
+            $("#dropzone").find('.bar').html(progress+"%");
+            // this function is used for large files and updates intermittently
+            // progress is the integer value of file being uploaded percentage to completion
+          }
+        });
+
+      });
+
+
+    });
+
+    $(".input-with-value").on("click", function() {
+      if ($(this).hasClass("input-default")) {
+        $(this).val("");
+        $(this).removeClass("input-default");
+      }
+    });
+
+    $(".meeting-close-panel").on("click", function() {
+      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+      $( "#chats" ).animate({height: "-=10"}, 200, function(){
+        $(".meeting-action-panel").hide();
+        $(".meeting-action-chat-panel").show();
+      });
+    });
+
+    $(".share-link-button").on("click", function() {
+      var link = $("#share-link-text").val();
+
+      var options = {
+        type: "type-link",
+        link: link,
+        from: chatApplication.username,
+        fullname: chatApplication.fullname
+      };
+      var msg = "";
+
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
+
+
+
+      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+      $( "#chats" ).animate({height: "-=10"}, 200, function(){
+        $(".meeting-action-panel").hide();
+        $(".meeting-action-chat-panel").show();
+      });
+
+
+    });
+
+
+
+    $(".chat-status-chat").on("click", function() {
+      var $chatStatusPanel = $(".chat-status-panel");
+      if ($chatStatusPanel.css("display")==="none")
+        $chatStatusPanel.css("display", "inline-block");
+      else
+        $chatStatusPanel.css("display", "none");
+    });
+
+    $("div.chat-menu").click(function(){
+      var status = $(this).attr("status");
+      chatApplication.setStatus(status, function() {
+        $(".chat-status-panel").css('display', 'none');
+      });
+    });
+
+    $(".msg-emoticons").on("click", function() {
+      var $msgEmoticonsPanel = $(".msg-emoticons-panel");
+      if ($msgEmoticonsPanel.css("display")==="none")
+        $msgEmoticonsPanel.css("display", "inline-block");
+      else
+        $msgEmoticonsPanel.css("display", "none");
+    });
+
+    $(".emoticon-btn").on("click", function() {
+      var sml = $(this).attr("data");
+      $(".msg-emoticons-panel").css("display", "none");
+      $msg = $('#msg');
+      var val = $msg.val();
+      if (val.charAt(val.length-1)!==' ') val +=" ";
+      val += sml + " ";
+      $msg.val(val);
+      $msg.focusEnd();
+
+    });
+
+    $(".room-detail-fullname").on("click", function() {
+      if (chatApplication.isMobileView()) {
+        $(".uiLeftContainerArea").css("display", "block");
+        $(".uiRightContainerArea").css("display", "none");
+      }
+    });
+
+
+    $('#chat-search').keyup(function(event) {
+      var filter = $(this).val();
+      chatApplication.search(filter);
+    });
+
+    $('#team-add-user').keyup(function(event) {
+      if ( event.which === 13 ) { // ENTER
+        $(".team-user").each(function() {
+          if ($(this).hasClass("team-user-selected")) {
+            var name = $(this).attr("data-name");
+            var fullname = $(this).attr("data-fullname");
+            addTeamUserLabel(name, fullname);
+          }
+        });
+      } else if ( event.which === 40 || event.which === 38) { // 40:DOWN || 38:UP
+        var isUp = (event.which === 38);
+        var total = $(".team-user").size();
+        var done = false;
+        $(".team-user").each(function(index) {
+          if (!done && $(this).hasClass("team-user-selected")) {
+            done = true;
+            $(".team-user").removeClass("team-user-selected");
+            if (isUp) {
+              if (index === 0)
+                $(".team-user").last().addClass("team-user-selected");
+              else
+                $(this).prev().addClass("team-user-selected");
+            } else {
+              if (index === total-1)
+                $(".team-user").first().addClass("team-user-selected");
+              else
+                $(this).next().addClass("team-user-selected");
+            }
+          }
+        });
         return;
       }
-//      console.log("*"+msg+"*");
-      chatApplication.sendMessage(msg);
+      var filter = $(this).val();
+      if (filter === "") {
+        var $userResults = $(".team-users-results");
+        $userResults.css("display", "none");
+        $userResults.html("");
+      } else {
+        chatApplication.getAllUsers(filter, function (jsonData) {
+          var users = TAFFY(jsonData.users);
+          var users = users();
+          var $userResults = $(".team-users-results");
+          $userResults.css("display", "none");
+          var html = "";
+          users = users.filter({name:{"!is":chatApplication.username}});
+          $(".team-user-label").each(function() {
+            var name = $(this).attr("data-name");
+            users = users.filter({name:{"!is":name}});
+          });
 
-    }
-    if ( keydown === 18 ) {
-      keydown = -1;
-    }
-    if ( event.which === 13 && msg.length === 1) {
-      document.getElementById("msg").value = '';
-    }
+          users.order("fullname").limit(5).each(function (user, number) {
+            $userResults.css("display", "block");
+            if (user.status == "offline") user.status = "invisible";
+            var classSel = "";
+            if (number === 0) classSel = "team-user-selected"
+            html += "<div class='team-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+            html += "  <span class='team-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += "  <span class='chat-status-team chat-status-"+user.status+"'></span>";
+            html += "  <span class='team-user-fullname'>"+user.fullname+"</span>";
+            html += "  <span class='team-user-name'>"+user.name+"</span>";
+            html += "</div>";
+          });
+          $userResults.html(html);
 
-  });
+          $('.team-user').on("mouseover", function() {
+            $(".team-user").removeClass("team-user-selected");
+            $(this).addClass("team-user-selected");
+          });
 
+          $('.team-user').on("click", function() {
+            var name = $(this).attr("data-name");
+            var fullname = $(this).attr("data-fullname");
+            addTeamUserLabel(name, fullname);
+          });
 
-  $(".meeting-action-link").on("click", function() {
-    var toggleClass = $(this).attr("data-toggle");
-
-    if (toggleClass !== "meeting-action-link-panel" && toggleClass !== "meeting-action-file-panel") return;
-
-    var roomChatMessage = $( ".chat-message" ).height();
-    var animHeight = 0;
-    if (roomChatMessage<55) {
-      animHeight = 10;
-    }
-    $( ".chat-message" ).animate({height: "+="+animHeight}, {duration: 200});
-    $( "#chats" ).animate({height: "-="+animHeight}, 200, function(){
-      $(".meeting-action-panel").hide();
-      $(".input-with-value").each(function() {
-        $(this).val($(this).attr("data-value"));
-        $(this).addClass("input-default");
-      });
-      $("."+toggleClass).show();
-      $( ".chat-message" ).animate({height: "-=10"}, {duration: 200});
-      $( "#chats" ).animate({height: "+=10"}, {duration: 200});
-    });
-  });
-
-  $(".input-with-value").on("click", function() {
-    if ($(this).hasClass("input-default")) {
-      $(this).val("");
-      $(this).removeClass("input-default");
-    }
-  });
-
-  $(".meeting-close-panel").on("click", function() {
-    $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-    $( "#chats" ).animate({height: "-=10"}, 200, function(){
-      $(".meeting-action-panel").hide();
-      $(".meeting-action-chat-panel").show();
-    });
-  });
-
-  $(".share-link-button").on("click", function() {
-    var link = $("#share-link-text").val();
-
-    var options = {
-      type: "type-link",
-      link: link,
-      from: chatApplication.username,
-      fullname: chatApplication.fullname
-    };
-    var msg = "";
-
-    chatApplication.chatRoom.sendMessage(msg, options, "true");
-
-
-
-    $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-    $( "#chats" ).animate({height: "-=10"}, 200, function(){
-      $(".meeting-action-panel").hide();
-      $(".meeting-action-chat-panel").show();
+        });
+      }
     });
 
-
-  });
-
-
-
-  $(".chat-status-chat").on("click", function() {
-    var $chatStatusPanel = $(".chat-status-panel");
-    if ($chatStatusPanel.css("display")==="none")
-      $chatStatusPanel.css("display", "inline-block");
-    else
-      $chatStatusPanel.css("display", "none");
-  });
-
-  $("div.chat-menu").click(function(){
-    var status = $(this).attr("status");
-    chatApplication.setStatus(status, function() {
-      $(".chat-status-panel").css('display', 'none');
-    });
-  });
-
-  $(".msg-emoticons").on("click", function() {
-    var $msgEmoticonsPanel = $(".msg-emoticons-panel");
-    if ($msgEmoticonsPanel.css("display")==="none")
-      $msgEmoticonsPanel.css("display", "inline-block");
-    else
-      $msgEmoticonsPanel.css("display", "none");
-  });
-
-  $(".emoticon-btn").on("click", function() {
-    var sml = $(this).attr("data");
-    $(".msg-emoticons-panel").css("display", "none");
-    $msg = $('#msg');
-    var val = $msg.val();
-    if (val.charAt(val.length-1)!==' ') val +=" ";
-    val += sml + " ";
-    $msg.val(val);
-    $msg.focusEnd();
-
-  });
-
-  $(".room-detail-fullname").on("click", function() {
-    if (chatApplication.isMobileView()) {
-      $(".uiLeftContainerArea").css("display", "block");
-      $(".uiRightContainerArea").css("display", "none");
-    }
-  });
-
-
-  $('#chat-search').keyup(function(event) {
-    var filter = $(this).val();
-    chatApplication.search(filter);
-  });
-
-  $('#team-add-user').keyup(function(event) {
-    if ( event.which === 13 ) { // ENTER
-      $(".team-user").each(function() {
-        if ($(this).hasClass("team-user-selected")) {
-          var name = $(this).attr("data-name");
-          var fullname = $(this).attr("data-fullname");
-          addTeamUserLabel(name, fullname);
-        }
-      });
-    } else if ( event.which === 40 || event.which === 38) { // 40:DOWN || 38:UP
-      var isUp = (event.which === 38);
-      var total = $(".team-user").size();
-      var done = false;
-      $(".team-user").each(function(index) {
-        if (!done && $(this).hasClass("team-user-selected")) {
-          done = true;
-          $(".team-user").removeClass("team-user-selected");
-          if (isUp) {
-            if (index === 0)
-              $(".team-user").last().addClass("team-user-selected");
-            else
-              $(this).prev().addClass("team-user-selected");
-          } else {
-            if (index === total-1)
-              $(".team-user").first().addClass("team-user-selected");
-            else
-              $(this).next().addClass("team-user-selected");
-          }
-        }
-      });
-      return;
-    }
-    var filter = $(this).val();
-    if (filter === "") {
+    function addTeamUserLabel(name, fullname) {
+      var $usersList = $('.team-users-list');
+      var html = $usersList.html();
+      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='icon-remove icon-white team-user-remove'></i></span>";
+      $usersList.html(html);
+      var $teamAddUser = $('#team-add-user');
+      $teamAddUser.val("");
+      $teamAddUser.focus();
       var $userResults = $(".team-users-results");
       $userResults.css("display", "none");
       $userResults.html("");
-    } else {
-      chatApplication.getAllUsers(filter, function (jsonData) {
+
+      $(".team-user-remove").on("click", function() {
+        $(this).parent().remove();
+      });
+
+    }
+
+    function strip(html)
+    {
+      var tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent||tmp.innerText;
+    }
+
+
+
+    $(".team-edit-button").on("click", function() {
+      var $uitext = $("#team-modal-name");
+      $uitext.val(chatApplication.targetFullname);
+      $uitext.attr("data-id", chatApplication.targetUser);
+
+      chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
+        $(".team-user-label").remove();
+
         var users = TAFFY(jsonData.users);
         var users = users();
-        var $userResults = $(".team-users-results");
-        $userResults.css("display", "none");
-        var html = "";
-        users = users.filter({name:{"!is":chatApplication.username}});
-        $(".team-user-label").each(function() {
-          var name = $(this).attr("data-name");
-          users = users.filter({name:{"!is":name}});
+        users.order("fullname").each(function (user, number) {
+          if (user.name !== chatApplication.username) {
+            addTeamUserLabel(user.name, user.fullname);
+          }
         });
 
-        users.order("fullname").limit(5).each(function (user, number) {
-          $userResults.css("display", "block");
-          if (user.status == "offline") user.status = "invisible";
-          var classSel = "";
-          if (number === 0) classSel = "team-user-selected"
-          html += "<div class='team-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-          html += "  <span class='team-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
-          html += "  <span class='chat-status-team chat-status-"+user.status+"'></span>";
-          html += "  <span class='team-user-fullname'>"+user.fullname+"</span>";
-          html += "  <span class='team-user-name'>"+user.name+"</span>";
-          html += "</div>";
-        });
-        $userResults.html(html);
-
-        $('.team-user').on("mouseover", function() {
-          $(".team-user").removeClass("team-user-selected");
-          $(this).addClass("team-user-selected");
-        });
-
-        $('.team-user').on("click", function() {
-          var name = $(this).attr("data-name");
-          var fullname = $(this).attr("data-fullname");
-          addTeamUserLabel(name, fullname);
-        });
+        $('#team-modal').modal({"backdrop": false});
+        $uitext.focus();
 
       });
-    }
-  });
 
-  function addTeamUserLabel(name, fullname) {
-    var $usersList = $('.team-users-list');
-    var html = $usersList.html();
-    html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='icon-remove icon-white team-user-remove'></i></span>";
-    $usersList.html(html);
-    var $teamAddUser = $('#team-add-user');
-    $teamAddUser.val("");
-    $teamAddUser.focus();
-    var $userResults = $(".team-users-results");
-    $userResults.css("display", "none");
-    $userResults.html("");
-
-    $(".team-user-remove").on("click", function() {
-      $(this).parent().remove();
     });
 
-  }
+    $(".team-modal-cancel").on("click", function() {
+      $('#team-modal').modal('hide');
+      var $uitext = $("#team-modal-name");
+      $uitext.val("");
+      $uitext.attr("data-id", "---");
+    });
 
-  function strip(html)
-  {
-    var tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent||tmp.innerText;
-  }
+    $(".team-modal-save").on("click", function() {
+      var $uitext = $("#team-modal-name");
+      var teamName = $uitext.val();
+      var teamId = $uitext.attr("data-id");
+      $('#team-modal').modal('hide');
 
-
-
-  $(".team-edit-button").on("click", function() {
-    var $uitext = $("#team-modal-name");
-    $uitext.val(chatApplication.targetFullname);
-    $uitext.attr("data-id", chatApplication.targetUser);
-
-    chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-      $(".team-user-label").remove();
-
-      var users = TAFFY(jsonData.users);
-      var users = users();
-      users.order("fullname").each(function (user, number) {
-        if (user.name !== chatApplication.username) {
-          addTeamUserLabel(user.name, user.fullname);
-        }
+      var users = chatApplication.username;
+      $(".team-user-label").each(function(index) {
+        var name = $(this).attr("data-name");
+        users += ","+name;
       });
 
-      $('#team-modal').modal({"backdrop": false});
-      $uitext.focus();
+      chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
+        var teamName = data.name;
+        var roomId = "team-"+data.room;
+        chatApplication.refreshWhoIsOnline(roomId, teamName);
+      });
+
+      $uitext.val("");
+      $uitext.attr("data-id", "---");
 
     });
 
-  });
 
-  $(".team-modal-cancel").on("click", function() {
-    $('#team-modal').modal('hide');
-    var $uitext = $("#team-modal-name");
-    $uitext.val("");
-    $uitext.attr("data-id", "---");
-  });
-
-  $(".team-modal-save").on("click", function() {
-    var $uitext = $("#team-modal-name");
-    var teamName = $uitext.val();
-    var teamId = $uitext.attr("data-id");
-    $('#team-modal').modal('hide');
-
-    var users = chatApplication.username;
-    $(".team-user-label").each(function(index) {
-      var name = $(this).attr("data-name");
-      users += ","+name;
+    $(".btn-weemo").on("click", function() {
+      if (!$(this).hasClass("disabled"))
+        chatApplication.createWeemoCall();
     });
 
-    chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
-      var teamName = data.name;
-      var roomId = "team-"+data.room;
-      chatApplication.refreshWhoIsOnline(roomId, teamName);
+    $(".btn-weemo-conf").on("click", function() {
+      if (!$(this).hasClass("disabled"))
+        weemoExtension.joinWeemoCall();
     });
 
-    $uitext.val("");
-    $uitext.attr("data-id", "---");
-
-  });
-
-
-  $(".btn-weemo").on("click", function() {
-    if (!$(this).hasClass("disabled"))
-      chatApplication.createWeemoCall();
-  });
-
-  $(".btn-weemo-conf").on("click", function() {
-    if (!$(this).hasClass("disabled"))
-      weemoExtension.joinWeemoCall();
-  });
-
-  $(".text-modal-close").on("click", function() {
-    $('#text-modal').modal('hide');
-  });
-
-  $(".edit-modal-cancel").on("click", function() {
-    $('#edit-modal').modal('hide');
-    $("#edit-modal-area").val("");
-  });
-
-  $(".edit-modal-save").on("click", function() {
-    var $uitext = $("#edit-modal-area");
-    var id = $uitext.attr("data-id");
-    var message = $uitext.val();
-    $uitext.val("");
-    $('#edit-modal').modal('hide');
-
-    chatApplication.editMessage(id, message, function() {
-      chatApplication.refreshChat(true);
+    $(".text-modal-close").on("click", function() {
+      $('#text-modal').modal('hide');
     });
 
-  });
+    $(".edit-modal-cancel").on("click", function() {
+      $('#edit-modal').modal('hide');
+      $("#edit-modal-area").val("");
+    });
 
-  $('#edit-modal-area').keydown(function(event) {
-//    console.log("keydown : "+ event.which+" ; "+keydown);
-    if ( event.which == 18 ) {
-      keydownModal = 18;
-    }
-  });
-
-  $('#edit-modal-area').keyup(function(event) {
-    var id = $(this).attr("data-id");
-    var msg = $(this).val();
-//    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-    if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
-      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-      if(!msg)
-      {
-        return;
-      }
-//      console.log("*"+msg+"*");
-      $(this).val("");
+    $(".edit-modal-save").on("click", function() {
+      var $uitext = $("#edit-modal-area");
+      var id = $uitext.attr("data-id");
+      var message = $uitext.val();
+      $uitext.val("");
       $('#edit-modal').modal('hide');
 
-      chatApplication.editMessage(id, msg, function() {
+      chatApplication.editMessage(id, message, function() {
         chatApplication.refreshChat(true);
       });
 
+    });
+
+    $('#edit-modal-area').keydown(function(event) {
+  //    console.log("keydown : "+ event.which+" ; "+keydown);
+      if ( event.which == 18 ) {
+        keydownModal = 18;
+      }
+    });
+
+    $('#edit-modal-area').keyup(function(event) {
+      var id = $(this).attr("data-id");
+      var msg = $(this).val();
+  //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+      if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
+        //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+        if(!msg)
+        {
+          return;
+        }
+  //      console.log("*"+msg+"*");
+        $(this).val("");
+        $('#edit-modal').modal('hide');
+
+        chatApplication.editMessage(id, msg, function() {
+          chatApplication.refreshChat(true);
+        });
+
+      }
+      if ( keydownModal === 18 ) {
+        keydownModal = -1;
+      }
+      if ( event.which === 13 && msg.length === 1) {
+        $(this).val('');
+      }
+
+    });
+
+
+    if (window.fluid!==undefined) {
+      chatApplication.activateMaintainSession();
     }
-    if ( keydownModal === 18 ) {
-      keydownModal = -1;
+
+
+    function initFluidApp() {
+      if (window.fluid!==undefined) {
+        window.fluid.addDockMenuItem(labelAvailable, chatApplication.setStatusAvailable);
+        window.fluid.addDockMenuItem(labelAway, chatApplication.setStatusAway);
+        window.fluid.addDockMenuItem(labelDoNotDisturb, chatApplication.setStatusDoNotDisturb);
+        window.fluid.addDockMenuItem(labelInvisible, chatApplication.setStatusInvisible);
+      }
     }
-    if ( event.which === 13 && msg.length === 1) {
-      $(this).val('');
+    initFluidApp();
+
+
+    function reloadWindow() {
+      var sURL = unescape(window.location.href);
+      //console.log(sURL);
+      window.location.href = sURL;
+      //window.location.reload( false );
     }
+
+    // We change the current history by removing get parameters so they won't be visible in the popup
+    // Having a location bar with ?noadminbar=true is not User Friendly ;-)
+    function removeParametersFromLocation() {
+      var sURL = window.location.href;
+      if (sURL.indexOf("?")>-1) {
+        sURL = sURL.substring(0,sURL.indexOf("?"));
+        window.history.replaceState("#", "Chat", sURL);
+      }
+    }
+
+    //removeParametersFromLocation();
+
+
+    String.prototype.endsWith = function(suffix) {
+      return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+
+
 
   });
 
-
-  if (window.fluid!==undefined) {
-    chatApplication.activateMaintainSession();
-  }
-
-
-  function initFluidApp() {
-    if (window.fluid!==undefined) {
-      window.fluid.addDockMenuItem(labelAvailable, chatApplication.setStatusAvailable);
-      window.fluid.addDockMenuItem(labelAway, chatApplication.setStatusAway);
-      window.fluid.addDockMenuItem(labelDoNotDisturb, chatApplication.setStatusDoNotDisturb);
-      window.fluid.addDockMenuItem(labelInvisible, chatApplication.setStatusInvisible);
-    }
-  }
-  initFluidApp();
-
-
-  function reloadWindow() {
-    var sURL = unescape(window.location.href);
-    //console.log(sURL);
-    window.location.href = sURL;
-    //window.location.reload( false );
-  }
-
-  // We change the current history by removing get parameters so they won't be visible in the popup
-  // Having a location bar with ?noadminbar=true is not User Friendly ;-)
-  function removeParametersFromLocation() {
-    var sURL = window.location.href;
-    if (sURL.indexOf("?")>-1) {
-      sURL = sURL.substring(0,sURL.indexOf("?"));
-      window.history.replaceState("#", "Chat", sURL);
-    }
-  }
-
-  //removeParametersFromLocation();
-
-
-  String.prototype.endsWith = function(suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-  };
-
-
-
-});
-
-
+})(jq183);
 
 /**
  ##################                           ##################
@@ -1817,6 +1885,7 @@ ChatApplication.prototype.showSyncPanel = function() {
 };
 
 ChatApplication.prototype.showErrorPanel = function() {
+  this.rooms = "";
   this.hidePanels();
   //console.log("show-error-panel");
   var $chatErrorPanel = $(".chat-error-panel");

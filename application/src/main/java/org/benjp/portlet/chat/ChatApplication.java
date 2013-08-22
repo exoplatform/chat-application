@@ -22,7 +22,10 @@ package org.benjp.portlet.chat;
 import juzu.*;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
+import juzu.request.ResourceContext;
 import juzu.template.Template;
+import org.apache.commons.fileupload.FileItem;
+import org.benjp.bean.File;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.SpaceBeans;
@@ -68,6 +71,9 @@ public class ChatApplication
 
   @Inject
   Provider<PortletPreferences> providerPreferences;
+
+  @Inject
+  DocumentsData documentsData_;
 
   @Inject
   public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
@@ -181,6 +187,38 @@ public class ChatApplication
 
     return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
+  }
+
+  @Resource
+  @Ajax
+  public Response.Content upload(String room, FileItem userfile, ResourceContext resourceContext) {
+    log.info("file upload in " + room);
+    if (userfile.isFormField())
+    {
+      String fieldName = userfile.getFieldName();
+      if ("room".equals(fieldName))
+      {
+        room = userfile.getString();
+        log.info("room : " + room);
+      }
+    }
+    if (userfile.getFieldName().equals("userfile"))
+    {
+
+      remoteUser_ = resourceContext.getSecurityContext().getRemoteUser();
+      String uuid = documentsData_.storeFile(userfile, remoteUser_, true);
+      File file = documentsData_.getNode(uuid);
+
+      log.info(file.toJSON());
+
+
+      return Response.ok(file.toJSON())
+              .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    }
+
+
+    return Response.ok("{\"status\":\"File has not been uploaded !\"}")
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Ajax

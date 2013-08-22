@@ -176,6 +176,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus+" : "+this.chatEventURL);
         if (typeof this.onRefreshCB === "function") {
           this.onRefreshCB(1);
         }
@@ -395,6 +396,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var text = message.replace("/me", urlProfile);
 
       out += "<center>"+text+"</center>";
+    } else if (options.type ==="type-file") {
+      var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
+      var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
+
+      out += urlFile+size;
     } else if (options.type==="call-off") {
       out += message;
       var tsold = Math.round(jzGetParam("weemoCallHandler"));
