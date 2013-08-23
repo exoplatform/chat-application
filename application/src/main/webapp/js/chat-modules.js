@@ -431,17 +431,17 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     if (options.type ==="type-me") {
       var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_new'>"+options.fullname+"</a>";
       var text = message.replace("/me", urlProfile);
-
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
       var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
       var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
-
       out += urlFile+size;
     } else if (options.type ==="call-join") {
-      out += "I join the meeting";
+      out += "";
+    } else if (options.type ==="call-on") {
+      out += "Meeting started";
     } else if (options.type==="call-off") {
-      out += message;
+      out += "Meeting finished";
       var tsold = Math.round(jzGetParam("weemoCallHandler"));
       var time = Math.round(options.timestamp)-tsold;
       var hours = Math.floor(time / 3600);
@@ -471,9 +471,8 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       stime += "</span>";
       out += stime;
     } else if (options.type==="type-link") {
-      var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_new'>"+options.fullname+"</a>";
       var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
-      out += url+" from "+urlProfile;
+      out += url;
     } else {
       out += message;
     }
