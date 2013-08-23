@@ -164,66 +164,96 @@ var chatApplication = new ChatApplication();
         $( "#chats" ).animate({height: "+=10"}, {duration: 200});
       });
 
-      $(function(){
+      if (toggleClass === "meeting-action-file-panel") {
+        chatApplication.getUsers(chatApplication.targetUser, function (users) {
 
-        $('#dropzone').filedrop({
-//          fallback_id: 'upload_button',   // an identifier of a standard file input element
-          url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
-          paramname: 'userfile',          // POST parameter name used on serverside to reference file
-          data: {
-            room: chatApplication.room
-          },
-          error: function(err, file) {
-            switch(err) {
-              case 'BrowserNotSupported':
-                alert('browser does not support HTML5 drag and drop')
-                break;
-              case 'TooManyFiles':
-                // user uploaded more than 'maxfiles'
-                break;
-              case 'FileTooLarge':
-                // program encountered a file whose size is greater than 'maxfilesize'
-                // FileTooLarge also has access to the file which was too large
-                // use file.name to reference the filename of the culprit file
-                break;
-              case 'FileTypeNotAllowed':
-              // The file type is not in the specified list 'allowedfiletypes'
-              default:
-                break;
+          $(function(){
+
+            var targetUser = chatApplication.targetUser;
+            if (targetUser.indexOf("team-")>-1) {
+              targetUser = users;
             }
-          },
-          allowedfiletypes: ['image/jpeg','image/png','image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
-          maxfiles: 1,
-          maxfilesize: 20,    // max file size in MBs
-          uploadStarted: function(i, file, len){
-            console.log("upload started : "+i+" : "+file+" : "+len);
-            // a file began uploading
-            // i = index => 0, 1, 2, 3, 4 etc
-            // file is the actual file of the index
-            // len = total files user dropped
-          },
-          uploadFinished: function(i, file, response, time) {
-            console.log("upload finished : "+i+" : "+file+" : "+time+" : "+response.status+" : "+response.name);
-            // response is the data you got back from server in JSON format.
-            var msg = response.name;
-            var options = response;
-            options.type = "type-file";
-            chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
-              $("#dropzone").find('.bar').width("0%");
-              $("#dropzone").find('.bar').html("");
+            $('#dropzone').remove();
+            var dropzone = '<div class="progressBar" id="dropzone">'
+                            +'<div class="progress">'
+                              +'<div class="bar" style="width: 0.0%;"></div>'
+                              +'<div class="label">Drop your file here</div>'
+                            +'</div>'
+                          +'</div>';
+            $('#dropzone-container').html(dropzone);
+
+            $('#dropzone').filedrop({
+//          fallback_id: 'upload_button',   // an identifier of a standard file input element
+              url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
+              paramname: 'userfile',          // POST parameter name used on serverside to reference file
+              data: {
+                room: chatApplication.room,
+                targetUser: targetUser,
+                targetFullname: chatApplication.targetFullname
+              },
+              error: function(err, file) {
+                switch(err) {
+                  case 'BrowserNotSupported':
+                    alert('browser does not support HTML5 drag and drop')
+                    break;
+                  case 'TooManyFiles':
+                    // user uploaded more than 'maxfiles'
+                    break;
+                  case 'FileTooLarge':
+                    // program encountered a file whose size is greater than 'maxfilesize'
+                    // FileTooLarge also has access to the file which was too large
+                    // use file.name to reference the filename of the culprit file
+                    break;
+                  case 'FileTypeNotAllowed':
+                  // The file type is not in the specified list 'allowedfiletypes'
+                  default:
+                    break;
+                }
+              },
+              allowedfiletypes: ['image/jpeg','image/png','image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+              maxfiles: 1,
+              maxfilesize: 100,    // max file size in MBs
+              uploadStarted: function(i, file, len){
+                console.log("upload started : "+i+" : "+file+" : "+len);
+                // a file began uploading
+                // i = index => 0, 1, 2, 3, 4 etc
+                // file is the actual file of the index
+                // len = total files user dropped
+              },
+              uploadFinished: function(i, file, response, time) {
+                console.log("upload finished : "+i+" : "+file+" : "+time+" : "+response.status+" : "+response.name);
+                // response is the data you got back from server in JSON format.
+                var msg = response.name;
+                var options = response;
+                options.type = "type-file";
+                options.username = chatApplication.username;
+                options.fullname = chatApplication.fullname;
+                chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
+                  $("#dropzone").find('.bar').width("0%");
+                  $("#dropzone").find('.bar').html("");
+                  $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+                  $( "#chats" ).animate({height: "-=10"}, 200, function(){
+                    $(".meeting-action-panel").hide();
+                    $(".meeting-action-chat-panel").show();
+                  });
+                });
+
+              },
+              progressUpdated: function(i, file, progress) {
+                console.log("progress updated : "+i+" : "+file+" : "+progress);
+                $("#dropzone").find('.bar').width(progress+"%");
+                $("#dropzone").find('.bar').html(progress+"%");
+                // this function is used for large files and updates intermittently
+                // progress is the integer value of file being uploaded percentage to completion
+              }
             });
 
-          },
-          progressUpdated: function(i, file, progress) {
-            console.log("progress updated : "+i+" : "+file+" : "+progress);
-            $("#dropzone").find('.bar').width(progress+"%");
-            $("#dropzone").find('.bar').html(progress+"%");
-            // this function is used for large files and updates intermittently
-            // progress is the integer value of file being uploaded percentage to completion
-          }
-        });
+          });
 
-      });
+
+        }, true);
+
+      }
 
 
     });
@@ -1009,7 +1039,7 @@ ChatApplication.prototype.maintainSession = function() {
  * @param spaceId : the ID of the space
  * @param callback : return the json users data list as a parameter of the callback function
  */
-ChatApplication.prototype.getUsers = function(roomId, callback) {
+ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
   $.ajax({
     url: this.jzUsers,
     data: {"room": roomId,
@@ -1020,7 +1050,22 @@ ChatApplication.prototype.getUsers = function(roomId, callback) {
     context: this,
     success: function(response){
       if (typeof callback === "function") {
-        callback(response);
+        var users = response;
+        if (asString) {
+          var userst = TAFFY(response.users);
+          users = "";
+          userst().each(function (user, number) {
+            if (number>0) users += ",";
+            users += user.name;
+          });
+        }
+
+        callback(users);
+      }
+    },
+    error: function() {
+      if (typeof callback === "function") {
+        callback();
       }
     }
   });

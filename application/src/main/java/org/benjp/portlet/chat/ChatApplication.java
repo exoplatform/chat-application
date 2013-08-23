@@ -29,6 +29,7 @@ import org.benjp.bean.File;
 import org.benjp.listener.ServerBootstrap;
 import org.benjp.model.SpaceBean;
 import org.benjp.model.SpaceBeans;
+import org.benjp.services.ChatService;
 import org.benjp.services.UserService;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
@@ -191,7 +192,7 @@ public class ChatApplication
 
   @Resource
   @Ajax
-  public Response.Content upload(String room, FileItem userfile, ResourceContext resourceContext) {
+  public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, ResourceContext resourceContext) {
     log.info("file upload in " + room);
     if (userfile.isFormField())
     {
@@ -205,8 +206,17 @@ public class ChatApplication
     if (userfile.getFieldName().equals("userfile"))
     {
 
-      remoteUser_ = resourceContext.getSecurityContext().getRemoteUser();
-      String uuid = documentsData_.storeFile(userfile, remoteUser_, true);
+      String uuid = null;
+      if (targetUser.startsWith(ChatService.SPACE_PREFIX))
+      {
+        uuid = documentsData_.storeFile(userfile, targetFullname, false);
+      }
+      else
+      {
+        remoteUser_ = resourceContext.getSecurityContext().getRemoteUser();
+        uuid = documentsData_.storeFile(userfile, remoteUser_, true);
+        documentsData_.setPermission(uuid, targetUser);
+      }
       File file = documentsData_.getNode(uuid);
 
       log.info(file.toJSON());

@@ -397,10 +397,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
 
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
+      var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_new'>"+options.fullname+"</a>";
       var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
       var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
 
-      out += urlFile+size;
+      out += urlFile+" from "+urlProfile+size;
     } else if (options.type==="call-off") {
       out += message;
       var tsold = Math.round(jzGetParam("weemoCallHandler"));

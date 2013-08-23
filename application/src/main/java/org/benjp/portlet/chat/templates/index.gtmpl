@@ -312,12 +312,14 @@
           <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
         </div>
         <div class="meeting-action-panel meeting-action-file-panel">
-          <div class="progressBar" id="dropzone">
-            <div class="progress">
-              <div class="bar" style="width: 0.0%;"></div>
-              <div class="label">Drop your file here</div>
+          <span id="dropzone-container">
+            <div class="progressBar" id="dropzone">
+              <div class="progress">
+                <div class="bar" style="width: 0.0%;"></div>
+                <div class="label">Drop your file here</div>
+              </div>
             </div>
-          </div>
+          </span>
           <!--
           <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
           -->
