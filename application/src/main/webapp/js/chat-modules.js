@@ -21,7 +21,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, chatIntervalChat, isPub
   this.jzChatRead = jzChatRead;//
   this.jzChatSend = jzChatSend;//
   this.jzChatGetRoom = jzChatGetRoom;//
-  this.chatEventURL = "";
+//  this.chatEventURL = "";
   this.chatEventInt = -1;
   this.chatIntervalChat = chatIntervalChat;//
   this.username = "";
@@ -45,8 +45,11 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
   this.token = token;
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
-
-  $.ajax({
+  console.log("username       = "+username);
+  console.log("token          = "+token);
+  console.log("targetUser     = "+targetUser);
+  console.log("targetFullname = "+targetFullname);
+  jQuery.ajax({
     url: this.jzChatGetRoom,
     data: {"targetUser": targetUser,
       "user": username,
@@ -62,12 +65,16 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
         callback(this.id);
       }
 
-      this.chatEventURL = this.jzChatRead+'?room='+this.id+'&user='+this.username+'&token='+this.token;
+//      this.chatEventURL = this.jzChatRead+'?room='+this.id+'&user='+this.username+'&token='+this.token;
       jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
       jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
       jzStoreParam("lastTS"+this.username, "0");
+      console.log("room = "+this.id);
+      console.log("chatEventIntBefore = "+this.chatEventInt);
+//      console.log("chatEventURL = "+this.chatEventURL);
       this.chatEventInt = window.clearInterval(this.chatEventInt);
       this.chatEventInt = setInterval($.proxy(this.refreshChat, this), this.chatIntervalChat);
+      console.log("chatEventIntAfter = "+this.chatEventInt);
       this.refreshChat(false);
 
 
@@ -152,11 +159,20 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
     var lastTS = jzGetParam("lastTS"+this.username);
 
     //url: this.chatEventURL+"&fromTimestamp="+lastTS,
+//    console.log("refreshChat : "+this.chatEventURL);
+    //       this.chatEventURL = this.jzChatRead+'?room='+this.id+'&user='+this.username+'&token='+this.token;
+
     $.ajax({
-      url: this.chatEventURL,
-      dataType: "json",
+      url: this.jzChatRead,
+      data: {
+        room: this.id,
+        user: this.username,
+        token: this.token
+      },
+//      dataType: "json",
       context: this,
-      success: function(data) {
+      success: function(jsontext) {
+        var data = JSON.parse(jsontext);
         var lastTS = jzGetParam("lastTS"+this.username);
         //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
         var im, message, out="", prevUser="";
@@ -176,7 +192,9 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus+" : "+this.chatEventURL);
+        console.log(textStatus);
+        console.log(jqXHR.status);
+        console.log(jqXHR.responseText);
         if (typeof this.onRefreshCB === "function") {
           this.onRefreshCB(1);
         }
@@ -189,9 +207,13 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
 
 ChatRoom.prototype.showAsText = function(callback) {
   $.ajax({
-    url: this.chatEventURL,
+    url: this.jzChatRead,
     data: {
-      "isTextOnly": "true"},
+      room: this.id,
+      user: this.username,
+      token: this.token,
+      isTextOnly: "true"
+    },
     context: this,
 
     success: function(response){
@@ -323,26 +345,41 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
         out += "</span>";
 
-        if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
-          chatApplication.weemoExtension.setUidToCall(options.uidToCall);
-          chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
-          $(".btn-weemo").css("display", "none");
-          $(".btn-weemo-conf").css("display", "block");
-          if (options.uidToCall!=="weemo"+thiss.username)
-            $(".btn-weemo-conf").removeClass("disabled");
-          else
-            $(".btn-weemo-conf").addClass("disabled");
-        } else {
-          $(".btn-weemo").css("display", "block");
-          $(".btn-weemo-conf").css("display", "none");
+        if (options.type !== "call-join") {
+          if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
+            chatApplication.weemoExtension.setUidToCall(options.uidToCall);
+            chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+            $(".btn-weemo").css("display", "none");
+            $(".btn-weemo-conf").css("display", "block");
+            if (options.uidToCall!=="weemo"+thiss.username)
+              $(".btn-weemo-conf").removeClass("disabled");
+            else
+              $(".btn-weemo-conf").addClass("disabled");
+          } else {
+            $(".btn-weemo").css("display", "block");
+            $(".btn-weemo-conf").css("display", "none");
+          }
         }
-        //;
 
         out += "<span>";
-        out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
 
-        out += "<div style='margin-left:50px;'>" +
-          "<span class='invisible-text'> [</span>"+
+        if (options.type === "type-me") {
+          out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
+          out += "<div style='margin-left:50px;'>";
+        } else {
+          if (message.user != thiss.username) {
+            if (thiss.isPublic)
+              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+            else
+              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+          } else {
+            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+          }
+
+          out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
+        }
+
+        out +=  "<span class='invisible-text'> [</span>"+
           "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
           "<span class='invisible-text'>]</span></div>"+
           "<div style='clear:both;'></div>";
@@ -397,11 +434,12 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
 
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
-      var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_new'>"+options.fullname+"</a>";
       var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
       var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
 
-      out += urlFile+" from "+urlProfile+size;
+      out += urlFile+size;
+    } else if (options.type ==="call-join") {
+      out += "I join the meeting";
     } else if (options.type==="call-off") {
       out += message;
       var tsold = Math.round(jzGetParam("weemoCallHandler"));

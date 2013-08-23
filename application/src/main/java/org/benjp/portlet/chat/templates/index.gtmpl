@@ -169,8 +169,8 @@
               <li class="meeting-action-link" data-toggle="meeting-action-file-panel"><a href="#"><i class="icon-file"></i> Upload File</a></li>
               <li class="divider"></li>
               <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question (Coming Soon)</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand (Coming Soon)</a></li>
+              <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
+              <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
             </ul>
           </div>
 
@@ -334,17 +334,17 @@
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</a>
         </div>
+        -->
         <div class="meeting-action-panel meeting-action-question-panel">
-          <input type="text" class="span6 input-with-value" data-value="What is your question?">
+          <input type="text" class="span6 input-with-value" id="question-text" data-value="What is your question?">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right"><i class="icon-question-sign icon-white"></i> Ask</a>
+          <a type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</a>
         </div>
         <div class="meeting-action-panel meeting-action-hand-panel">
-          <input type="text" class="span5 input-with-value" data-value="Optional comment">
+          <input type="text" class="span5 input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
+          <a type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
         </div>
-        -->
 
       </div>
     </div>

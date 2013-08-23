@@ -145,7 +145,7 @@ var chatApplication = new ChatApplication();
     $(".meeting-action-link").on("click", function() {
       var toggleClass = $(this).attr("data-toggle");
 
-      if (toggleClass !== "meeting-action-link-panel" && toggleClass !== "meeting-action-file-panel") return;
+      if (toggleClass === "meeting-action-flag-panel" || toggleClass === "meeting-action-event-panel" || toggleClass === "meeting-action-task-panel") return;
 
       var roomChatMessage = $( ".chat-message" ).height();
       var animHeight = 0;
@@ -210,7 +210,7 @@ var chatApplication = new ChatApplication();
                     break;
                 }
               },
-              allowedfiletypes: ['image/jpeg','image/png','image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+              allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
               maxfiles: 1,
               maxfilesize: 100,    // max file size in MBs
               uploadStarted: function(i, file, len){
@@ -231,11 +231,7 @@ var chatApplication = new ChatApplication();
                 chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
                   $("#dropzone").find('.bar').width("0%");
                   $("#dropzone").find('.bar').html("");
-                  $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-                  $( "#chats" ).animate({height: "-=10"}, 200, function(){
-                    $(".meeting-action-panel").hide();
-                    $(".meeting-action-chat-panel").show();
-                  });
+                  hideMeetingPanel();
                 });
 
               },
@@ -258,6 +254,15 @@ var chatApplication = new ChatApplication();
 
     });
 
+    function hideMeetingPanel() {
+      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
+      $( "#chats" ).animate({height: "-=10"}, 200, function(){
+        $(".meeting-action-panel").hide();
+        $(".meeting-action-chat-panel").show();
+      });
+
+    }
+
     $(".input-with-value").on("click", function() {
       if ($(this).hasClass("input-default")) {
         $(this).val("");
@@ -266,34 +271,64 @@ var chatApplication = new ChatApplication();
     });
 
     $(".meeting-close-panel").on("click", function() {
-      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-      $( "#chats" ).animate({height: "-=10"}, 200, function(){
-        $(".meeting-action-panel").hide();
-        $(".meeting-action-chat-panel").show();
-      });
+      hideMeetingPanel();
     });
 
     $(".share-link-button").on("click", function() {
-      var link = $("#share-link-text").val();
+      var $uiText = $("#share-link-text");
+      var text = $uiText.val();
+      if (text === "" || text === $uiText.attr("data-value")) {
+        return;
+      }
 
       var options = {
         type: "type-link",
-        link: link,
+        link: text,
         from: chatApplication.username,
         fullname: chatApplication.fullname
       };
       var msg = "";
 
       chatApplication.chatRoom.sendMessage(msg, options, "true");
+      hideMeetingPanel();
 
+    });
 
+    $(".raise-hand-button").on("click", function() {
+      var $uiText = $("#raise-hand-comment-text");
+      var text = $uiText.val();
+      if (text === $uiText.attr("data-value")) {
+        text = "";
+      }
 
-      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-      $( "#chats" ).animate({height: "-=10"}, 200, function(){
-        $(".meeting-action-panel").hide();
-        $(".meeting-action-chat-panel").show();
-      });
+      var options = {
+        type: "type-hand",
+        from: chatApplication.username,
+        fullname: chatApplication.fullname
+      };
+      var msg = text;
 
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
+      hideMeetingPanel();
+
+    });
+
+    $(".question-button").on("click", function() {
+      var $uiText = $("#question-text");
+      var text = $uiText.val();
+      if (text === "" || text === $uiText.attr("data-value")) {
+        return;
+      }
+
+      var options = {
+        type: "type-question",
+        from: chatApplication.username,
+        fullname: chatApplication.fullname
+      };
+      var msg = text;
+
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
+      hideMeetingPanel();
 
     });
 
@@ -514,7 +549,7 @@ var chatApplication = new ChatApplication();
 
     $(".btn-weemo-conf").on("click", function() {
       if (!$(this).hasClass("disabled"))
-        weemoExtension.joinWeemoCall();
+        chatApplication.joinWeemoCall();
     });
 
     $(".text-modal-close").on("click", function() {
@@ -534,7 +569,7 @@ var chatApplication = new ChatApplication();
       $('#edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
-        chatApplication.refreshChat(true);
+        chatApplication.chatRoom.refreshChat(true);
       });
 
     });
@@ -561,7 +596,7 @@ var chatApplication = new ChatApplication();
         $('#edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
-          chatApplication.refreshChat(true);
+          chatApplication.chatRoom.refreshChat(true);
         });
 
       }
@@ -1547,11 +1582,13 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
     chatApplication.hidePanel(".chat-login-panel");
     chatApplication.hidePanel(".chat-error-panel");
   } else if (code === 1) { //ERROR
+/*
     if ( $(".chat-error-panel").css("display") == "none") {
       chatApplication.showLoginPanel();
     } else {
       chatApplication.hidePanel(".chat-login-panel");
     }
+*/
   }
 }
 
@@ -1588,7 +1625,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     var $uimsg = $(this).siblings(".msg-data");
     var msgId = $uimsg.attr("data-id");
     chatApplication.deleteMessage(msgId, function() {
-      chatApplication.refreshChat(true);
+      chatApplication.chatRoom.refreshChat(true);
     });
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
 
@@ -1842,6 +1879,7 @@ ChatApplication.prototype.createWeemoCall = function() {
   var chatMessage = {
     "url" : chatApplication.jzChatSend,
     "user" : chatApplication.username,
+    "fullname" : chatApplication.fullname,
     "targetUser" : chatApplication.targetUser,
     "room" : chatApplication.room,
     "token" : chatApplication.token
@@ -1849,6 +1887,21 @@ ChatApplication.prototype.createWeemoCall = function() {
   weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
 
   //this.weemoExtension.createWeemoCall(this.targetUser, this.fullname);
+};
+
+ChatApplication.prototype.joinWeemoCall = function() {
+  console.log("targetUser : "+chatApplication.targetUser);
+  console.log("targetFullname   : "+chatApplication.targetFullname);
+
+  var chatMessage = {
+    "url" : chatApplication.jzChatSend,
+    "user" : chatApplication.username,
+    "fullname" : chatApplication.fullname,
+    "targetUser" : chatApplication.targetUser,
+    "room" : chatApplication.room,
+    "token" : chatApplication.token
+  };
+  weemoExtension.joinWeemoCall(chatMessage);
 };
 
 /**
@@ -1873,7 +1926,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     } else if (msg.indexOf("/call")===0) {
       this.createWeemoCall();
     } else if (msg.indexOf("/join")===0) {
-      this.weemoExtension.joinWeemoCall();
+      this.joinWeemoCall();
     } else if (msg.indexOf("/terminate")===0) {
       ts = Math.round(new Date().getTime() / 1000);
       msg = "Call terminated";
@@ -1883,7 +1936,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       this.weemoExtension.setCallActive(false);
       sendMessageToServer = true;
     } else if (msg.indexOf("/export")===0) {
-      this.chatRoom.showAsText();
+      this.showAsText();
     }
   }
 

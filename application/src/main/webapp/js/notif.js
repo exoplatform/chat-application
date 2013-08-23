@@ -435,10 +435,10 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
      */
     this.weemo.onCallHandler = function(type, status)
     {
-      console.log("WEEMO:onCallHandler::"+type+":"+status);
+      console.log("WEEMO:onCallHandler  ::"+type+":"+status+":"+weemoExtension.callType+":"+weemoExtension.callOwner+":"+weemoExtension.hasChatMessage());
       var messageWeemo = "";
       var optionsWeemo = {};
-      if(weemoExtension.callOwner && type==="call" && ( status==="active" || status==="terminated" ))
+      if(type==="call" && ( status==="active" || status==="terminated" ))
       {
         console.log("Call Handler : " + type + ": " + status);
         ts = Math.round(new Date().getTime() / 1000);
@@ -455,11 +455,19 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           optionsWeemo.displaynameToCall = weemoExtension.displaynameToCall;
         }
 
+
         if (status==="active" && weemoExtension.callActive) return; //Call already active, no need to push a new message
-        if (status==="terminated" && !weemoExtension.callActive) return; //Terminate a non started call, no message needed
+        if (status==="terminated" && (!weemoExtension.callActive || weemoExtension.callType==="attendee")) return; //Terminate a non started call or a joined call, no message needed
 
 
-        if (status==="active") {
+        if (weemoExtension.callType==="attendee" && status==="active") {
+          weemoExtension.setCallActive(true);
+          optionsWeemo.type = "call-join";
+          optionsWeemo.username = weemoExtension.chatMessage.user;
+          optionsWeemo.fullname = weemoExtension.chatMessage.fullname;
+
+        }
+        else if (status==="active") {
           weemoExtension.setCallActive(true);
           optionsWeemo.type = "call-on";
         }
@@ -468,24 +476,23 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           optionsWeemo.type = "call-off";
         }
 
-        if (weemoExtension.callType!=="attendee") {
-          if (weemoExtension.hasChatMessage()) {
-            console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
-            if (chatApplication !== undefined) {
-              chatApplication.chatRoom.sendFullMessage(
-                weemoExtension.chatMessage.user,
-                weemoExtension.chatMessage.token,
-                weemoExtension.chatMessage.targetUser,
-                weemoExtension.chatMessage.room,
-                messageWeemo,
-                optionsWeemo,
-                "true"
-              )
-            }
+        if (weemoExtension.hasChatMessage()) {
 
-            if (status==="terminated") {
-              weemoExtension.initChatMessage();
-            }
+          console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
+          if (chatApplication !== undefined) {
+            chatApplication.chatRoom.sendFullMessage(
+              weemoExtension.chatMessage.user,
+              weemoExtension.chatMessage.token,
+              weemoExtension.chatMessage.targetUser,
+              weemoExtension.chatMessage.room,
+              messageWeemo,
+              optionsWeemo,
+              "true"
+            )
+          }
+
+          if (status==="terminated") {
+            weemoExtension.initChatMessage();
           }
         }
       }
@@ -528,10 +535,14 @@ WeemoExtension.prototype.createWeemoCall = function(targetUser, targetFullname, 
 /**
  *
  */
-WeemoExtension.prototype.joinWeemoCall = function() {
+WeemoExtension.prototype.joinWeemoCall = function(chatMessage) {
   if (this.weemoKey!=="") {
+    if (chatMessage !== undefined) {
+      this.setChatMessage(chatMessage);
+    }
     this.setCallType("attendee");
     this.setCallOwner(false);
+    this.setCallActive(false);
     this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
 
   }

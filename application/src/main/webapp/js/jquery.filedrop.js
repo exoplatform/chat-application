@@ -26,7 +26,7 @@
 var jq183 = jQuery.noConflict(true);
 (function($){
 
-  console.log("FILE DROP " + $().jquery);
+//  console.log("FILE DROP " + $().jquery);
 
   $.event.props.push("dataTransfer");
 
