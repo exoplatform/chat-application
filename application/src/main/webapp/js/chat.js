@@ -504,7 +504,7 @@ var chatApplication = new ChatApplication();
           }
         });
 
-        $('#team-modal').modal({"backdrop": false});
+        jQuery('#team-modal').modal({"backdrop": false});
         $uitext.focus();
 
       });
@@ -512,7 +512,7 @@ var chatApplication = new ChatApplication();
     });
 
     $(".team-modal-cancel").on("click", function() {
-      $('#team-modal').modal('hide');
+      jQuery('#team-modal').modal('hide');
       var $uitext = $("#team-modal-name");
       $uitext.val("");
       $uitext.attr("data-id", "---");
@@ -522,7 +522,7 @@ var chatApplication = new ChatApplication();
       var $uitext = $("#team-modal-name");
       var teamName = $uitext.val();
       var teamId = $uitext.attr("data-id");
-      $('#team-modal').modal('hide');
+      jQuery('#team-modal').modal('hide');
 
       var users = chatApplication.username;
       $(".team-user-label").each(function(index) {
