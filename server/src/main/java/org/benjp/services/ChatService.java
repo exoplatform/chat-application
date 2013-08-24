@@ -51,6 +51,8 @@ public interface ChatService
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp);
 
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp);
+
   public String getSpaceRoom(String space);
 
   public String getTeamRoom(String team, String user);

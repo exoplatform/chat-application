@@ -34,6 +34,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
     chatApplication.jzChatSend = chatServerURL+"/send";
     chatApplication.jzChatRead = chatServerURL+"/read";
+    chatApplication.jzChatSendMeetingNotes = chatServerURL+"/sendMeetingNotes";
     chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
     chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
     chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
@@ -693,6 +694,7 @@ function ChatApplication() {
   this.jzChatUpdateUnreadMessages = "";
   this.jzChatSend = "";
   this.jzChatRead = "";
+  this.jzChatSendMeetingNotes = "";
   this.jzGetStatus = "";
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
@@ -956,7 +958,7 @@ ChatApplication.prototype.initStatusChat = function() {
  */
 ChatApplication.prototype.initChat = function() {
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.chatIntervalChat, this.isPublic, this.labels);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.chatIntervalChat, this.isPublic, this.labels);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
@@ -1643,6 +1645,17 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   });
 
+  $(".send-meeting-notes").on("click", function () {
+    var room = $(this).attr("data-room");
+    var from = $(this).attr("data-from");
+    var to = $(this).attr("data-to");
+    from = Math.round(from)-1;
+    to = Math.round(to)+1;
+    chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
+      console.log(response);
+    });
+  });
+
 }
 
 /**
@@ -1983,6 +1996,7 @@ ChatApplication.prototype.showSyncPanel = function() {
 };
 
 ChatApplication.prototype.showErrorPanel = function() {
+  this.whoIsOnlineMD5 = "";
   this.rooms = "";
   this.hidePanels();
   //console.log("show-error-panel");

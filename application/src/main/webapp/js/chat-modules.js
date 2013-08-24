@@ -12,7 +12,7 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, chatIntervalChat, isPublic, labels) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, chatIntervalChat, isPublic, labels) {
   this.id = "";
 
   this.messages = "";
@@ -21,6 +21,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, chatIntervalChat, isPub
   this.jzChatRead = jzChatRead;//
   this.jzChatSend = jzChatSend;//
   this.jzChatGetRoom = jzChatGetRoom;//
+  this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;//
 //  this.chatEventURL = "";
   this.chatEventInt = -1;
   this.chatIntervalChat = chatIntervalChat;//
@@ -231,6 +232,33 @@ ChatRoom.prototype.showAsText = function(callback) {
 
 };
 
+ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp, callback) {
+  $.ajax({
+    url: this.jzChatSendMeetingNotes,
+    data: {
+      room: room,
+      user: this.username,
+      token: this.token,
+      fromTimestamp: fromTimestamp,
+      toTimestamp: toTimestamp
+    },
+    context: this,
+
+    success: function(response){
+      //console.log("SUCCESS:setStatus::"+response);
+
+      if (typeof callback === "function") {
+        callback(response);
+      }
+
+    },
+    error: function(response){
+    }
+
+  });
+
+};
+
 
 /**
  * Show Messages (json to html)
@@ -336,11 +364,15 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
         if (options.type==="call-on") {
           if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandler", options.timestamp, 600000)
+            jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
+            jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
           }
           $(".btn-weemo").addClass('disabled');
         } else if (options.type==="call-off") {
           $(".btn-weemo").removeClass('disabled');
+          if (options.timestamp!==undefined) {
+            jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
+          }
         }
         out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
         out += "</span>";
@@ -364,6 +396,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "<span>";
 
         if (options.type === "type-me") {
+//        if (options.type === "type-me" || options.type === "call-on" || options.type === "call-off") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
           out += "<div style='margin-left:50px;'>";
         } else {
@@ -442,8 +475,8 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       out += "Meeting started";
     } else if (options.type==="call-off") {
       out += "Meeting finished";
-      var tsold = Math.round(jzGetParam("weemoCallHandler"));
-      var time = Math.round(options.timestamp)-tsold;
+      var tsold = Math.round(jzGetParam("weemoCallHandlerFrom"));
+      var time = Math.round((options.timestamp*1000-tsold)/1000);
       var hours = Math.floor(time / 3600);
       time -= hours * 3600;
       var minutes = Math.floor(time / 60);
@@ -470,6 +503,17 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       }
       stime += "</span>";
       out += stime;
+      var callOwner = jzGetParam("weemoCallHandlerOwner");
+      if (this.username === callOwner) {
+        out += "<br>";
+        out += "<span style='line-height: 22px;display: block;margin-bottom: 10px;'>" +
+          "<a href='#' class='send-meeting-notes' " +
+          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
+          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
+          "data-room='"+this.id+"' " +
+          "data-owner='"+this.username+"'>Send meeting notes</a></span>";
+      }
+
     } else if (options.type==="type-link") {
       var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
       out += url;

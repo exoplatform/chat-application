@@ -19,12 +19,14 @@
 
 package org.benjp.server;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import juzu.*;
 import juzu.template.Template;
 import org.benjp.listener.GuiceManager;
-import org.benjp.model.RoomsBean;
-import org.benjp.model.UserBean;
-import org.benjp.model.UsersBean;
+import org.benjp.model.*;
 import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
@@ -33,10 +35,16 @@ import org.benjp.utils.ChatUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -164,6 +172,52 @@ public class ChatServer
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
     return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/sendMeetingNotes")
+  public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp, String toTimestamp) throws IOException
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    Long from = null;
+    Long to = null;
+    String html = "";
+    try {
+      if (fromTimestamp!=null && !"".equals(fromTimestamp))
+        from = Long.parseLong(fromTimestamp);
+    } catch (NumberFormatException nfe) {
+      log.info("fromTimestamp is not a valid Long number");
+    }
+    try {
+      if (toTimestamp!=null && !"".equals(toTimestamp))
+        to = Long.parseLong(toTimestamp);
+    } catch (NumberFormatException nfe) {
+      log.info("fromTimestamp is not a valid Long number");
+    }
+    String data = chatService.read(room, userService, false, from, to);
+    BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    if (datao.containsField("messages")) {
+      List<UserBean> users = userService.getUsers(room);
+      ReportBean reportBean = new ReportBean();
+      reportBean.fill((BasicDBList) datao.get("messages"), users);
+
+      html = reportBean.getAsHtml();
+
+      ArrayList<String> tos = new ArrayList<String>();
+      tos.add("bpaillereau@exoplatform.com");
+      try {
+        sendMailWithAuth(tos, html.toString(), "Meeting Notes in Public Discussions");
+      } catch (Exception e) {
+        log.info(e.getMessage());
+      }
+
+    }
+
+    return Response.ok(html).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -525,5 +579,47 @@ public class ChatServer
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
+
+  public void sendMailWithAuth(List<String> toList,
+                               String htmlBody, String subject) throws Exception {
+
+    String host = "smtp.gmail.com";
+    String user = "";
+    String password = "";
+    String port = "587";
+
+    Properties props = System.getProperties();
+
+    props.put("mail.smtp.user",user);
+    props.put("mail.smtp.password", password);
+    props.put("mail.smtp.host", host);
+    props.put("mail.smtp.port", port);
+    //props.put("mail.debug", "true");
+    props.put("mail.smtp.auth", "true");
+    props.put("mail.smtp.starttls.enable","true");
+    props.put("mail.smtp.EnableSSL.enable","true");
+
+    Session session = Session.getInstance(props, null);
+    //session.setDebug(true);
+
+    MimeMessage message = new MimeMessage(session);
+    message.setFrom(new InternetAddress(user));
+
+    // To get the array of addresses
+    for (String to: toList) {
+      message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+    }
+
+    message.setSubject(subject);
+    message.setContent(htmlBody, "text/html");
+
+    Transport transport = session.getTransport("smtp");
+    try {
+      transport.connect(host, user, password);
+      transport.sendMessage(message, message.getAllRecipients());
+    } finally {
+      transport.close();
+    }
+  }
 
 }

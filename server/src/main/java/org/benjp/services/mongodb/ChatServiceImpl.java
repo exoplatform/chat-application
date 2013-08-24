@@ -20,6 +20,7 @@
 package org.benjp.services.mongodb;
 
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.benjp.listener.ConnectionManager;
 import org.benjp.model.RoomBean;
@@ -144,11 +145,15 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
 
   public String read(String room, UserService userService)
   {
-    return read(room, userService, false, null);
+    return read(room, userService, false, null, null);
   }
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp)
   {
+    return read(room, userService, false, fromTimestamp, null);
+  }
+
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp) {
     StringBuilder sb = new StringBuilder();
 
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
@@ -164,11 +169,15 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
 
     BasicDBObject query = new BasicDBObject();
     long from = (fromTimestamp!=null) ? fromTimestamp : System.currentTimeMillis() - readMillis;
-    query.put("timestamp", new BasicDBObject("$gt", from));
+    BasicDBObject tsobj = new BasicDBObject("$gt", from);
+    if (toTimestamp!=null)
+    {
+      tsobj.append("$lt", toTimestamp);
+    }
+    query.put("timestamp", tsobj);
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
-
     int limit = (isTextOnly)?readTotalTxt:readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     if (!cursor.hasNext())
@@ -284,6 +293,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     }
 
     return sb.toString();
+
   }
 
   private void updateRoomTimestamp(String room)
