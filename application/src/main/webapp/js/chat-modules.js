@@ -63,7 +63,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
       jzStoreParam("lastTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
-      thiss.chatEventInt = setInterval($.proxy(thiss.refreshChat, this), thiss.chatIntervalChat);
+      thiss.chatEventInt = setInterval($.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
       thiss.refreshChat(false);
     }
   });
@@ -153,7 +153,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
       // handle the response data
       var data = snack.parseJSON(res);
       var lastTS = jzGetParam("lastTS"+thiss.username);
-      //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
+//      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
       if (data.messages.length===0) {
         thiss.showMessages(data.messages);
