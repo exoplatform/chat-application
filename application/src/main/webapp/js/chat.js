@@ -1146,20 +1146,19 @@ ChatApplication.prototype.activateMaintainSession = function() {
  * Refresh Current Chat Status
  */
 ChatApplication.prototype.refreshStatusChat = function() {
-  //var thiss = chatApplication; // TODO : IMPROVE THIS
-  $.ajax({
-    url: this.jzGetStatus,
+  var thiss = this;
+  snack.request({
+    url: thiss.jzGetStatus,
     data: {
-      "user": this.username,
-      "token": this.token,
+      "user": thiss.username,
+      "token": thiss.token,
       "timestamp": new Date().getTime()
-    },
-    context: this,
-    success: function(response){
-      this.changeStatusChat(response);
-    },
-    error: function(response){
-      this.changeStatusChat("offline");
+    }
+  }, function (err, response){
+    if (err) {
+      thiss.changeStatusChat("offline");
+    } else {
+      thiss.changeStatusChat(response);
     }
   });
 
@@ -1664,7 +1663,6 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 ChatApplication.prototype.errorOnRefresh = function() {
   this.isLoaded = true;
   this.hidePanel(".chat-sync-panel");
-  $("#chat-users").html("<span>&nbsp;</span>");
   this.hidePanel(".chat-login-panel");
   this.changeStatusChat("offline");
   this.showErrorPanel();
@@ -1997,7 +1995,6 @@ ChatApplication.prototype.showSyncPanel = function() {
 
 ChatApplication.prototype.showErrorPanel = function() {
   this.whoIsOnlineMD5 = "";
-  this.rooms = "";
   this.hidePanels();
   //console.log("show-error-panel");
   var $chatErrorPanel = $(".chat-error-panel");

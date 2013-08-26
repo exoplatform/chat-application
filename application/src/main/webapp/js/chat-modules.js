@@ -14,25 +14,21 @@
  */
 function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, chatIntervalChat, isPublic, labels) {
   this.id = "";
-
   this.messages = "";
-
-
-  this.jzChatRead = jzChatRead;//
-  this.jzChatSend = jzChatSend;//
-  this.jzChatGetRoom = jzChatGetRoom;//
-  this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;//
-//  this.chatEventURL = "";
+  this.jzChatRead = jzChatRead;
+  this.jzChatSend = jzChatSend;
+  this.jzChatGetRoom = jzChatGetRoom;
+  this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.chatEventInt = -1;
-  this.chatIntervalChat = chatIntervalChat;//
+  this.chatIntervalChat = chatIntervalChat;
   this.username = "";
   this.token = "";
   this.targetUser = "";
   this.targetFullname = "";
-  this.isPublic = isPublic;//
-  this.labels = labels;//
+  this.isPublic = isPublic;
+  this.labels = labels;
 
-  this.ANONIM_USER = "__anonim_";//
+  this.ANONIM_USER = "__anonim_";
 
   this.onRefreshCB;
   this.onShowMessagesCB;
@@ -46,47 +42,31 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
   this.token = token;
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
-  console.log("username       = "+username);
-  console.log("token          = "+token);
-  console.log("targetUser     = "+targetUser);
-  console.log("targetFullname = "+targetFullname);
-  jQuery.ajax({
-    url: this.jzChatGetRoom,
+
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatGetRoom,
     data: {"targetUser": targetUser,
       "user": username,
       "token": token,
       "isAdmin": isAdmin
-    },
-    context: this,
-    success: function(response){
-      //console.log("SUCCESS::getRoom::"+response);
-      this.id = response;
+    }
+  }, function (err, response){
+    if (!err) {
+      thiss.id = response;
 
       if (typeof callback === "function") {
-        callback(this.id);
+        callback(thiss.id);
       }
 
-//      this.chatEventURL = this.jzChatRead+'?room='+this.id+'&user='+this.username+'&token='+this.token;
-      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-      jzStoreParam("lastTS"+this.username, "0");
-      console.log("room = "+this.id);
-      console.log("chatEventIntBefore = "+this.chatEventInt);
-//      console.log("chatEventURL = "+this.chatEventURL);
-      this.chatEventInt = window.clearInterval(this.chatEventInt);
-      this.chatEventInt = setInterval($.proxy(this.refreshChat, this), this.chatIntervalChat);
-      console.log("chatEventIntAfter = "+this.chatEventInt);
-      this.refreshChat(false);
-
-
-    },
-
-    error: function(xhr, status, error){
-      //console.log("ERROR::"+xhr.responseText);
+      jzStoreParam("lastUsername"+thiss.username, thiss.targetUser, 60000);
+      jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
+      jzStoreParam("lastTS"+thiss.username, "0");
+      thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
+      thiss.chatEventInt = setInterval($.proxy(thiss.refreshChat, this), thiss.chatIntervalChat);
+      thiss.refreshChat(false);
     }
-
   });
-
 
 };
 
@@ -118,8 +98,9 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     "isSystem": isSystemMessage};
   this.showMessages();
 
-  $.ajax({
-    url: this.jzChatSend,
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatSend,
     data: {"user": user,
       "targetUser": targetUser,
       "room": room,
@@ -128,24 +109,15 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "token": token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage
-    },
-    context: this,
-
-    success:function(response){
-      //console.log("success");
-      this.refreshChat();
+    }
+  }, function (err, response){
+    if (!err) {
+      thiss.refreshChat();
       if (typeof callback === "function") {
         callback();
       }
-    },
-
-    error:function (xhr, status, error){
-
     }
-
   });
-
-
 
 };
 
@@ -159,102 +131,90 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
 
-    //url: this.chatEventURL+"&fromTimestamp="+lastTS,
-//    console.log("refreshChat : "+this.chatEventURL);
-    //       this.chatEventURL = this.jzChatRead+'?room='+this.id+'&user='+this.username+'&token='+this.token;
-
-    $.ajax({
+    var thiss = this;
+    snack.request({
       url: this.jzChatRead,
       data: {
         room: this.id,
         user: this.username,
         token: this.token
-      },
-//      dataType: "json",
-      context: this,
-      success: function(jsontext) {
-        var data = JSON.parse(jsontext);
-        var lastTS = jzGetParam("lastTS"+this.username);
-        //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
-        var im, message, out="", prevUser="";
-        if (data.messages.length===0) {
-          this.showMessages(data.messages);
-        } else {
-          var ts = data.timestamp;
-          if (ts != lastTS || (forceRefresh === true)) {
-            jzStoreParam("lastTS"+this.username, ts, 600);
-            //console.log("new data to show");
-            this.showMessages(data.messages);
-          }
         }
+      }, function (err, res){
+      // check for an error
+      if (err) {
+        alert('Bah! ' + err + ' error!')
+        if (typeof thiss.onRefreshCB === "function") {
+          thiss.onRefreshCB(1);
+        }
+        return;
+      }
 
-        if (typeof this.onRefreshCB === "function") {
-          this.onRefreshCB(0);
-        }
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus);
-        console.log(jqXHR.status);
-        console.log(jqXHR.responseText);
-        if (typeof this.onRefreshCB === "function") {
-          this.onRefreshCB(1);
+
+      // handle the response data
+      var data = snack.parseJSON(res);
+      var lastTS = jzGetParam("lastTS"+thiss.username);
+      //console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
+      var im, message, out="", prevUser="";
+      if (data.messages.length===0) {
+        thiss.showMessages(data.messages);
+      } else {
+        var ts = data.timestamp;
+        if (ts != lastTS || (forceRefresh === true)) {
+          jzStoreParam("lastTS"+thiss.username, ts, 600);
+          //console.log("new data to show");
+          thiss.showMessages(data.messages);
         }
       }
-    });
+
+      if (typeof thiss.onRefreshCB === "function") {
+        thiss.onRefreshCB(0);
+      }
+
+
+    })
 
   }
 };
 
 
 ChatRoom.prototype.showAsText = function(callback) {
-  $.ajax({
-    url: this.jzChatRead,
+
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatRead,
     data: {
-      room: this.id,
-      user: this.username,
-      token: this.token,
+      room: thiss.id,
+      user: thiss.username,
+      token: thiss.token,
       isTextOnly: "true"
-    },
-    context: this,
-
-    success: function(response){
-      //console.log("SUCCESS:setStatus::"+response);
-
+    }
+  }, function (err, response){
+    if (!err) {
       if (typeof callback === "function") {
         callback(response);
       }
-
-    },
-    error: function(response){
     }
-
   });
 
 };
 
 ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp, callback) {
-  $.ajax({
-    url: this.jzChatSendMeetingNotes,
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatSendMeetingNotes,
     data: {
       room: room,
-      user: this.username,
-      token: this.token,
+      user: thiss.username,
+      token: thiss.token,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp
-    },
-    context: this,
-
-    success: function(response){
-      //console.log("SUCCESS:setStatus::"+response);
-
+    }
+  }, function (err, response){
+    if (!err) {
       if (typeof callback === "function") {
         callback(response);
       }
-
-    },
-    error: function(response){
     }
-
   });
 
 };

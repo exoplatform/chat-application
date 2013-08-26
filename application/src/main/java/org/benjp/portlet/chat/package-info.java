@@ -32,9 +32,8 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-//                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
-//                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/jquery-juzu-utils-0.1.0.js", id = "jquery"),
+                @Script(src = "js/snack-min.js", id = "jquery"),
+                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
                 @Script(src = "js/jquery.filedrop.js", id = "jquery-filedrop", depends = "jquery"),
                 @Script(src = "js/taffy-min.js", id="taffy"),
                 @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery","jquery-filedrop","taffy"} ),

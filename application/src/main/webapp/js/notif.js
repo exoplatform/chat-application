@@ -515,7 +515,7 @@ WeemoExtension.prototype.createWeemoCall = function(targetUser, targetFullname, 
       this.setChatMessage(chatMessage);
     }
 
-    if (targetUser.indexOf("space-")===-1) {
+    if (targetUser.indexOf("space-")===-1 && targetUser.indexOf("team-")===-1) {
       this.setUidToCall("weemo"+targetUser);
       this.setDisplaynameToCall(targetFullname);
       this.setCallType("internal");
