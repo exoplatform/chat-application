@@ -142,7 +142,6 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
       }, function (err, res){
       // check for an error
       if (err) {
-        alert('Bah! ' + err + ' error!')
         if (typeof thiss.onRefreshCB === "function") {
           thiss.onRefreshCB(1);
         }
