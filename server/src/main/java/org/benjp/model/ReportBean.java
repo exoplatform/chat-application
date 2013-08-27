@@ -145,11 +145,28 @@ public class ReportBean {
     }
   }
 
-  public String getAsHtml()
+  public String getAsHtml(String title)
   {
     StringBuilder html = new StringBuilder();
     html.append("<div style='font-family: Lucida,arial,tahoma;'>");
 
+    html.append("<style>" +
+            ".type-file {" +
+            "background: url('http://demo.exoplatform.net/chat/img/general.png') no-repeat -16px -33px;" +
+            "background-size: 48px 81px;" +
+            "width: 16px;" +
+            "height: 16px;}" +
+            ".type-link {" +
+            "background: url('http://demo.exoplatform.net/chat/img/general.png') no-repeat 0px -33px;" +
+            "background-size: 48px 81px;" +
+            "width: 16px;" +
+            "height: 16px;}" +
+            ".type-question {" +
+            "background: url('http://demo.exoplatform.net/chat/img/general.png') no-repeat -32px -49px;" +
+            "background-size: 48px 81px;" +
+            "width: 16px;" +
+            "height: 16px;}" +
+            "</style>");
     /**
      * Attendees
      */
@@ -169,15 +186,17 @@ public class ReportBean {
     html.append("</span>");
 
     /**
-     * Meeting Notes
+     * Meeting Notes Title
      */
-    html.append("<h2>Meeting Notes</h2>");
-
+    html.append("<h2>").append(title).append("</h2>");
     /**
      * Questions
      */
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
-    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>Questions</div>");
+    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
+    html.append("    <img class='type-question' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Questions</span>");
+    html.append("  </div>");
     for (String question:this.getQuestions())
     {
       html.append("<div style='padding: 4px'>").append(question).append("</div>");
@@ -188,7 +207,10 @@ public class ReportBean {
      * Links
      */
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
-    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>Links</div>");
+    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
+    html.append("    <img class='type-link' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Links</span>");
+    html.append("  </div>");
     for (String link:this.getLinks())
     {
       html.append("<div style='padding: 4px'>");
@@ -201,7 +223,10 @@ public class ReportBean {
      * Files
      */
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
-    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>Files</div>");
+    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
+    html.append("    <img class='type-file' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Files</span>");
+    html.append("  </div>");
     for (FileBean file:this.getFiles())
     {
       html.append("<div style='padding: 4px'>");

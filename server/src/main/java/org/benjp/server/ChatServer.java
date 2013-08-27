@@ -32,6 +32,7 @@ import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
 import org.benjp.utils.ChatUtils;
+import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -41,10 +42,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -205,19 +204,51 @@ public class ChatServer
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
-      html = reportBean.getAsHtml();
-
       ArrayList<String> tos = new ArrayList<String>();
-      tos.add("bpaillereau@exoplatform.com");
+      String senderFullname = user;
+      for (UserBean userBean:users)
+      {
+        if (!"".equals(userBean.getEmail()))
+        {
+          tos.add(userBean.getEmail());
+        }
+        if (user.equals(userBean.getName()))
+        {
+          senderFullname = userBean.getFullname();
+        }
+      }
+
+      String roomName = "";
+      List<SpaceBean> spaces = userService.getSpaces(user);
+      for (SpaceBean spaceBean:spaces)
+      {
+        if (room.equals(spaceBean.getRoom()))
+        {
+          roomName = spaceBean.getDisplayName();
+        }
+      }
+      List<RoomBean> roomBeans = userService.getTeams(user);
+      for (RoomBean roomBean:roomBeans)
+      {
+        if (room.equals(roomBean.getRoom()))
+        {
+          roomName = roomBean.getFullname();
+        }
+      }
+      SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+      String date = formatter.format(new GregorianCalendar().getTime());
+      String title = roomName+" : Meeting Notes ["+date+"]";
+      html = reportBean.getAsHtml(title);
+
       try {
-        sendMailWithAuth(tos, html.toString(), "Meeting Notes in Public Discussions");
+        sendMailWithAuth(senderFullname, tos, html.toString(), title);
       } catch (Exception e) {
         log.info(e.getMessage());
       }
 
     }
 
-    return Response.ok(html).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok("sent").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -580,13 +611,12 @@ public class ChatServer
   }
 
 
-  public void sendMailWithAuth(List<String> toList,
-                               String htmlBody, String subject) throws Exception {
+  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
 
-    String host = "smtp.gmail.com";
-    String user = "";
-    String password = "";
-    String port = "587";
+    String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
+    String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
+    String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
+    String port = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PORT);
 
     Properties props = System.getProperties();
 
@@ -603,7 +633,7 @@ public class ChatServer
     //session.setDebug(true);
 
     MimeMessage message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(user));
+    message.setFrom(new InternetAddress(user, senderFullname));
 
     // To get the array of addresses
     for (String to: toList) {
