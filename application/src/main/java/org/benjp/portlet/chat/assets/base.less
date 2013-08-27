@@ -239,6 +239,28 @@ tr.info td {
     .uiIconMiniArrowDown {
       margin-left: 0;
     }
+
+    .popover {
+      display: none;
+      position: absolute;
+      left: -285px;
+      top: -134px;
+      width: 320px;
+      height: 130px;
+    }
+
+    .popover-title {
+      padding: 8px 10px 8px 14px;
+      line-height: 25px;
+    }
+
+    .arrow {
+      left: 92%;
+    }
+
+    .meeting-action-file-panel {
+      text-align: center;
+    }
   }
 
   .meeting-action-panel {
@@ -247,11 +269,16 @@ tr.info td {
 
     .input-default {
       color: #CCC;
+      width: 100%
     }
 
     .meeting-close-panel {
+/*
       margin: 0 0 0 10px;
       padding: 3px 5px;
+*/
+      margin: 0;
+      padding: 1px 2px 0 2px;
     }
 
     .action-label {
@@ -274,7 +301,7 @@ tr.info td {
     }
 
     .progressBar {
-      width: 400px;
+      width: 280px;
       float: left;
 
       .progress {

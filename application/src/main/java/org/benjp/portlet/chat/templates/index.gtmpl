@@ -131,54 +131,88 @@
 
       <div class="chat-message">
 
-        <div class="meeting-action-panel meeting-action-chat-panel">
-
-          <span class="pull-left" style="padding-left: 20px;">
-            <span class="msg-button msg-emoticons no-user-selection">&nbsp;</span><br>
-          <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
-            <span class="msg-emoticons-panel no-user-selection" style="display:none">
-              <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
-              <span class="emoticon emoticon-sad-white emoticon-btn" data=":(">&nbsp;</span>
-              <span class="emoticon emoticon-big-smile-white emoticon-btn" data=":D">&nbsp;</span>
-              <span class="emoticon emoticon-eye-blink-white emoticon-btn" data=";)">&nbsp;</span>
-              <br>
-              <span class="emoticon emoticon-surprise-white emoticon-btn" data=":O">&nbsp;</span>
-              <span class="emoticon emoticon-no-voice-white emoticon-btn" data=":|">&nbsp;</span>
-              <span class="emoticon emoticon-tongue-white emoticon-btn" data=":p">&nbsp;</span>
-              <span class="emoticon emoticon-bow-white emoticon-btn" data="(bow)">&nbsp;</span>
-              <br>
-              <span class="emoticon emoticon-yes-white emoticon-btn" data="(y)">&nbsp;</span>
-              <span class="emoticon emoticon-no-white emoticon-btn" data="(n)">&nbsp;</span>
-              <span class="emoticon emoticon-star-white emoticon-btn" data="(star)">&nbsp;</span>
-              <span class="emoticon emoticon-beer-white emoticon-btn" data="(beer)">&nbsp;</span>
-              <br>
-              <span class="emoticon emoticon-bug-white emoticon-btn" data="(bug)">&nbsp;</span>
-              <span class="emoticon emoticon-cake-white emoticon-btn" data="(cake)">&nbsp;</span>
-              <span class="emoticon emoticon-cash-white emoticon-btn" data="(cash)">&nbsp;</span>
-              <span class="emoticon emoticon-coffee-white emoticon-btn" data="(coffee)">&nbsp;</span>
-            </span>
+        <span class="pull-left" style="padding-left: 20px;">
+          <span class="msg-button msg-emoticons no-user-selection">&nbsp;</span><br>
+        <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
+          <span class="msg-emoticons-panel no-user-selection" style="display:none">
+            <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
+            <span class="emoticon emoticon-sad-white emoticon-btn" data=":(">&nbsp;</span>
+            <span class="emoticon emoticon-big-smile-white emoticon-btn" data=":D">&nbsp;</span>
+            <span class="emoticon emoticon-eye-blink-white emoticon-btn" data=";)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-surprise-white emoticon-btn" data=":O">&nbsp;</span>
+            <span class="emoticon emoticon-no-voice-white emoticon-btn" data=":|">&nbsp;</span>
+            <span class="emoticon emoticon-tongue-white emoticon-btn" data=":p">&nbsp;</span>
+            <span class="emoticon emoticon-bow-white emoticon-btn" data="(bow)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-yes-white emoticon-btn" data="(y)">&nbsp;</span>
+            <span class="emoticon emoticon-no-white emoticon-btn" data="(n)">&nbsp;</span>
+            <span class="emoticon emoticon-star-white emoticon-btn" data="(star)">&nbsp;</span>
+            <span class="emoticon emoticon-beer-white emoticon-btn" data="(beer)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-bug-white emoticon-btn" data="(bug)">&nbsp;</span>
+            <span class="emoticon emoticon-cake-white emoticon-btn" data="(cake)">&nbsp;</span>
+            <span class="emoticon emoticon-cash-white emoticon-btn" data="(cash)">&nbsp;</span>
+            <span class="emoticon emoticon-coffee-white emoticon-btn" data="(coffee)">&nbsp;</span>
           </span>
+        </span>
 
-          <div class="meeting-actions pull-right dropup">
+        <div class="meeting-actions pull-right dropup">
+          <div class="popover top meeting-action-popup">
+            <div class="arrow">
+            </div>
+            <div class="popover-inner">
+              <h3 class="popover-title">
+                <span class="meeting-action-title"></span>
+                <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
+              </h3>
+              <div class="popover-content meeting-action-content">
+                <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
+                  <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
+                  <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
+                </div>
+                <div class="meeting-action-panel meeting-action-file-panel" data-height="160" data-title="File">
+                  <span id="dropzone-container">
+                    <div class="progressBar" id="dropzone">
+                      <div class="progress">
+                        <div class="bar" style="width: 0.0%;"></div>
+                        <div class="label">Drop your file here</div>
+                      </div>
+                    </div>
+                  </span>
+                  <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
+                  <br>
+                  <a type="button" class="btn"><i class="icon-file"></i> Select manually</a>
+                </div>
+                <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
+                  <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
+                  <a type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</a>
+                </div>
+                <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
+                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
+                  <a type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
+                </div>
 
-            <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
-            <ul class="dropdown-menu pull-right">
-              <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
-              <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task (Coming Soon)</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-file-panel"><a href="#"><i class="icon-file"></i> Upload File</a></li>
-              <li class="divider"></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
-              <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
-            </ul>
+              </div>
+            </div>
           </div>
-
-          <div style="display: block;margin-left: 45px;margin-right: 54px;">
-            <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
-          </div>
-
+          <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
+          <ul class="dropdown-menu pull-right">
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task (Coming Soon)</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel"><a href="#"><i class="icon-file"></i> Upload File</a></li>
+            <li class="divider"></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
+          </ul>
         </div>
+
+        <div style="display: block;margin-left: 45px;margin-right: 54px;">
+          <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
+        </div>
+
 <!--
         <div class="meeting-action-panel meeting-action-event-panel">
           <input type="text" class="span2 input-with-value" data-value="Event">
@@ -305,46 +339,12 @@
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary pull-right"><i class="icon-check icon-white"></i> Post</a>
         </div>
-        -->
-        <div class="meeting-action-panel meeting-action-link-panel">
-          <input type="text" class="span7 input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
-        </div>
-        <div class="meeting-action-panel meeting-action-file-panel">
-          <span id="dropzone-container">
-            <div class="progressBar" id="dropzone">
-              <div class="progress">
-                <div class="bar" style="width: 0.0%;"></div>
-                <div class="label">Drop your file here</div>
-              </div>
-            </div>
-          </span>
-          <!--
-          <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
-          -->
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <!--
-          <a type="button" class="btn"><i class="icon-file"></i> Select manually</a>
-          -->
-        </div>
-        <!--
         <div class="meeting-action-panel meeting-action-flag-panel">
           <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</a>
         </div>
         -->
-        <div class="meeting-action-panel meeting-action-question-panel">
-          <input type="text" class="span6 input-with-value" id="question-text" data-value="What is your question?">
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</a>
-        </div>
-        <div class="meeting-action-panel meeting-action-hand-panel">
-          <input type="text" class="span5 input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
-        </div>
 
       </div>
     </div>

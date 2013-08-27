@@ -143,27 +143,32 @@ var chatApplication = new ChatApplication();
     });
 
 
+
+    $(".meeting-action-toggle").on("click", function() {
+      $(".meeting-action-popup").hide();
+    });
+
     $(".meeting-action-link").on("click", function() {
       var toggleClass = $(this).attr("data-toggle");
 
       if (toggleClass === "meeting-action-flag-panel" || toggleClass === "meeting-action-event-panel" || toggleClass === "meeting-action-task-panel") return;
 
-      var roomChatMessage = $( ".chat-message" ).height();
-      var animHeight = 0;
-      if (roomChatMessage<55) {
-        animHeight = 10;
-      }
-      $( ".chat-message" ).animate({height: "+="+animHeight}, {duration: 200});
-      $( "#chats" ).animate({height: "-="+animHeight}, 200, function(){
-        $(".meeting-action-panel").hide();
-        $(".input-with-value").each(function() {
-          $(this).val($(this).attr("data-value"));
-          $(this).addClass("input-default");
-        });
-        $("."+toggleClass).show();
-        $( ".chat-message" ).animate({height: "-=10"}, {duration: 200});
-        $( "#chats" ).animate({height: "+=10"}, {duration: 200});
+      $(".meeting-action-panel").hide();
+      $(".input-with-value").each(function() {
+        $(this).val($(this).attr("data-value"));
+        $(this).addClass("input-default");
       });
+      var $toggle = $("."+toggleClass);
+      var pheight = $toggle.attr("data-height");
+      var ptitle = $toggle.attr("data-title");
+
+      var $popup = $(".meeting-action-popup");
+      $popup.css("height", pheight+"px");
+      $popup.css("top", (-Math.abs(pheight)-4)+"px");
+      $toggle.show();
+      $(".meeting-action-title").html(ptitle);
+      $popup.show();
+
 
       if (toggleClass === "meeting-action-file-panel") {
         chatApplication.getUsers(chatApplication.targetUser, function (users) {
@@ -256,12 +261,7 @@ var chatApplication = new ChatApplication();
     });
 
     function hideMeetingPanel() {
-      $( ".chat-message" ).animate({height: "+=10"}, {duration: 200});
-      $( "#chats" ).animate({height: "-=10"}, 200, function(){
-        $(".meeting-action-panel").hide();
-        $(".meeting-action-chat-panel").show();
-      });
-
+      $(".meeting-action-popup").css("display", "none");
     }
 
     $(".input-with-value").on("click", function() {
