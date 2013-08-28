@@ -151,7 +151,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp)
   {
-    return read(room, userService, false, fromTimestamp, null);
+    return read(room, userService, isTextOnly, fromTimestamp, null);
   }
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp) {

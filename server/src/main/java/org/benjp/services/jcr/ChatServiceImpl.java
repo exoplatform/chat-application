@@ -160,7 +160,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
   }
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp) {
-    return read(room, userService, false, fromTimestamp, null);
+    return read(room, userService, isTextOnly, fromTimestamp, null);
   }
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp) {
