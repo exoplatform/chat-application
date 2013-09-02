@@ -470,7 +470,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
           "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
           "data-room='"+this.id+"' " +
-          "data-owner='"+this.username+"'>Send meeting notes</a></span>";
+          "data-owner='"+this.username +"' " +
+          "data-id='"+options.timestamp+"' " +
+          ">Send meeting notes</a>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='$(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
+          "</span>";
       }
 
     } else if (options.type==="type-link") {

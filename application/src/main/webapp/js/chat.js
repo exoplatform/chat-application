@@ -1645,14 +1645,31 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   $(".send-meeting-notes").on("click", function () {
-    var room = $(this).attr("data-room");
-    var from = $(this).attr("data-from");
-    var to = $(this).attr("data-to");
-    from = Math.round(from)-1;
-    to = Math.round(to)+1;
-    chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
-      console.log(response);
+    $(this).animate({
+      opacity: "toggle"
+    }, 200, function() {
+      var room = $(this).attr("data-room");
+      var from = $(this).attr("data-from");
+      var to = $(this).attr("data-to");
+      var id = $(this).attr("data-id");
+
+      from = Math.round(from)-1;
+      to = Math.round(to)+1;
+      chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
+        if (response === "sent") {
+          console.log("sent");
+          $("#"+id).animate({
+            opacity: "toggle"
+          }, 200 , function() {
+            $(this).animate({
+              opacity: "toggle"
+            }, 3000);
+          });
+        }
+      });
+
     });
+
   });
 
 }
