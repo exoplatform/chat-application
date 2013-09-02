@@ -8,6 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses(value = {
         UserTestCase.class,
         SpaceTestCase.class,
+        TeamTestCase.class,
         ChatTestCase.class,
         NotificationTestCase.class
 })

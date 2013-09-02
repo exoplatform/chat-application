@@ -3,7 +3,7 @@
 
   .background(@left, @top) {
     background: url('@{imgPath}2x/general.png') no-repeat @left @top;
-    background-size: 96px 66px;
+    background-size: 96px 162px;
   }
   .background-emoticon(@left, @top) {
     background: url('@{imgEmoticonPath}') no-repeat @left @top;
@@ -142,6 +142,46 @@
   }
   .call-off {
     .background(-32px, 0);
+    width: 32px;
+    height: 32px;
+  }
+  .type-link {
+    .background(0, -66px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-file {
+    .background(-32px, -66px);
+    width: 32px;
+    height: 32px;
+  }
+  .call-join {
+    .background(0, -130px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-hand {
+    .background(-32px, -130px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-agenda {
+    .background(-64px, -66px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-task {
+    .background(0, -98px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-event {
+    .background(-32px, -98px);
+    width: 32px;
+    height: 32px;
+  }
+  .type-question {
+    .background(-64px, -98px);
     width: 32px;
     height: 32px;
   }

@@ -156,10 +156,14 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
   }
 
   public String read(String room, UserService userService) {
-    return read(room, userService, false, null);
+    return read(room, userService, false, null, null);
   }
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp) {
+    return read(room, userService, isTextOnly, fromTimestamp, null);
+  }
+
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp) {
     StringBuilder sb = new StringBuilder();
 
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
@@ -181,6 +185,9 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
       statement.append(" jcr:path like '/chat/rooms/").append(room).append("/%' ");
       statement.append(" AND NOT jcr:path like '/chat/rooms/").append(room).append("/%/%' ");
       statement.append(" AND ").append(TIMESTAMP_PROPERTY).append(" > ").append(from);
+      if (toTimestamp!=null) {
+        statement.append(" AND ").append(TIMESTAMP_PROPERTY).append(" < ").append(toTimestamp);
+      }
       statement.append(" ORDER BY chat:timestamp DESC");
       Query query = manager.createQuery(statement.toString(), Query.SQL);
       int limit = (isTextOnly)?readTotalTxt:readTotalJson;

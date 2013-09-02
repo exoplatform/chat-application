@@ -491,7 +491,7 @@ Weemo = function() {
     if(key=='' || key==undefined || key == null) { key = apikey; }
     if(type == 'host' || type == 'attendee') {
       var mvs = uidToCall.substr(0,4);
-      if(mvs != 'nyc1' && mvs != 'par1' && mvs != 'ldn1') { uidToCall = 'nyc1'+uidToCall; }
+      if(mvs != 'nyc1' && mvs != 'par1' && mvs != 'ldn1' && mvs != 'nyc2' && mvs != 'ldn2') { uidToCall = 'nyc2'+uidToCall; }
     }
     sendMessage('<createcall uid="'+uidToCall+'" apikey="'+key+'" displayname="'+displaynameToCall+'" type="'+type+'"></createcall>');
   };

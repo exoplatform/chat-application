@@ -104,6 +104,45 @@ public class UserTestCase extends AbstractChatTestCase
   }
 
   @Test
+  public void testGetUsers() throws Exception
+  {
+    log.info("UserTestCase.testGetUsers");
+    String fullname = ServiceBootstrap.getUserService().getUserFullName(username);
+    assertNull(fullname);
+
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com");
+
+    String token = ServiceBootstrap.getTokenService().getToken("john");
+    ServiceBootstrap.getTokenService().addUser("john", token);
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
+
+    token = ServiceBootstrap.getTokenService().getToken("mary");
+    ServiceBootstrap.getTokenService().addUser("mary", token);
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
+
+    token = ServiceBootstrap.getTokenService().getToken("james");
+    ServiceBootstrap.getTokenService().addUser("james", token);
+    ServiceBootstrap.getUserService().addUserFullName("james", "James Potter");
+
+    int nbUsers = ServiceBootstrap.getUserService().getUsers("", false).size();
+    assertEquals(4, nbUsers);
+
+    int nbJ = ServiceBootstrap.getUserService().getUsers("j", false).size();
+    assertEquals(3, nbJ);
+
+    int nbJame = ServiceBootstrap.getUserService().getUsers("jame", false).size();
+    assertEquals(1, nbJame);
+
+    int nbBePa = ServiceBootstrap.getUserService().getUsers("be pa", false).size();
+    assertEquals(1, nbBePa);
+
+    int nbBePaUC = ServiceBootstrap.getUserService().getUsers("BE PA", false).size();
+    assertEquals(1, nbBePaUC);
+
+  }
+
+  @Test
   public void testDemoUser() throws Exception
   {
     log.info("UserTestCase.testDemoUser");

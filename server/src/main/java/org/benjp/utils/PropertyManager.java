@@ -62,6 +62,11 @@ public class PropertyManager {
   public static final String PROPERTY_SERVICE_IMPL_MONGO = "mongo";
   public static final String PROPERTY_SERVICE_IMPL_JCR = "jcr";
 
+  public static final String PROPERTY_MAIL_HOST = "mailHost";
+  public static final String PROPERTY_MAIL_PORT = "mailPort";
+  public static final String PROPERTY_MAIL_USER = "mailUser";
+  public static final String PROPERTY_MAIL_PASSWORD = "mailPassword";
+
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
@@ -111,6 +116,11 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_READ_DAYS, "30");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
+
+      overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "smtp.gmail.com");
+      overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "587");
+      overridePropertyIfNotSet(PROPERTY_MAIL_USER, "exo");
+      overridePropertyIfNotSet(PROPERTY_MAIL_PASSWORD, "");
     }
     return properties;
   }
