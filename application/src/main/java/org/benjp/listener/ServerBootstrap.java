@@ -23,7 +23,9 @@ import org.apache.commons.io.IOUtils;
 import org.benjp.model.SpaceBeans;
 import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
+import org.exoplatform.portal.webui.util.Util;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -77,7 +79,17 @@ public class ServerBootstrap {
 
   private static String callServer(String serviceUri, String params)
   {
-    String serviceUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE)
+    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+    if ("".equals(serverBase)) {
+      HttpServletRequest request = Util.getPortalRequestContext().getRequest();
+      String scheme = request.getScheme();
+      String serverName = request.getServerName();
+      int serverPort= request.getServerPort();
+      serverBase = scheme+"://"+serverName;
+      if (serverPort!=80) serverBase += ":"+serverPort;
+    }
+
+    String serviceUrl = serverBase
             + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
             +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
             +"&"+params;

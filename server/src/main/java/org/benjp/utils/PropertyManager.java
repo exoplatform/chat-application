@@ -98,7 +98,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
       overridePropertyIfNotSet(PROPERTY_DB_USER, "");
       overridePropertyIfNotSet(PROPERTY_DB_PASSWORD, "");
-      overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "http://127.0.0.1:8080");
+      overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "");
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_URL, "/chatServer");
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "3000");
