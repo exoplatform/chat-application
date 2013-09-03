@@ -1524,6 +1524,7 @@ ChatApplication.prototype.loadRoom = function() {
     {
 //      $(".meeting-actions").css("display", "none");
       $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
+      $(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif;'");
       $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
     }
     else if (this.targetUser.indexOf("team-")===-1)

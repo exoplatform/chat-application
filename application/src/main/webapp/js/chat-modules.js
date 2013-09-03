@@ -254,7 +254,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (thiss.isPublic)
               out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
             else
-              out += "<img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
+              out += "<img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
             out += "</span>";
             out += "<span>";
             if (thiss.isPublic)
