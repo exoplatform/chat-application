@@ -505,7 +505,7 @@ var chatApplication = new ChatApplication();
           }
         });
 
-        jQuery('#team-modal').modal({"backdrop": false});
+        $('.team-modal').modal({"backdrop": false});
         $uitext.focus();
 
       });
@@ -513,7 +513,7 @@ var chatApplication = new ChatApplication();
     });
 
     $(".team-modal-cancel").on("click", function() {
-      jQuery('#team-modal').modal('hide');
+      jQuery('.team-modal').modal('hide');
       var $uitext = $("#team-modal-name");
       $uitext.val("");
       $uitext.attr("data-id", "---");
@@ -523,7 +523,7 @@ var chatApplication = new ChatApplication();
       var $uitext = $("#team-modal-name");
       var teamName = $uitext.val();
       var teamId = $uitext.attr("data-id");
-      jQuery('#team-modal').modal('hide');
+      jQuery('.team-modal').modal('hide');
 
       var users = chatApplication.username;
       $(".team-user-label").each(function(index) {
@@ -554,11 +554,11 @@ var chatApplication = new ChatApplication();
     });
 
     $(".text-modal-close").on("click", function() {
-      $('#text-modal').modal('hide');
+      jQuery('.text-modal').modal('hide');
     });
 
     $(".edit-modal-cancel").on("click", function() {
-      $('#edit-modal').modal('hide');
+      jQuery('.edit-modal').modal('hide');
       $("#edit-modal-area").val("");
     });
 
@@ -567,7 +567,7 @@ var chatApplication = new ChatApplication();
       var id = $uitext.attr("data-id");
       var message = $uitext.val();
       $uitext.val("");
-      $('#edit-modal').modal('hide');
+      jQuery('.edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
         chatApplication.chatRoom.refreshChat(true);
@@ -594,7 +594,7 @@ var chatApplication = new ChatApplication();
         }
   //      console.log("*"+msg+"*");
         $(this).val("");
-        $('#edit-modal').modal('hide');
+        jQuery('.edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
           chatApplication.chatRoom.refreshChat(true);
@@ -1641,7 +1641,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
     $("#edit-modal-area").val(msgHtml);
     $("#edit-modal-area").attr("data-id", msgId);
-    $('#edit-modal').modal({"backdrop": false});
+    $('.edit-modal').modal({"backdrop": false});
 
   });
 
@@ -1760,7 +1760,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uitext.val("");
     $uitext.attr("data-id", "---");
     $(".team-user-label").remove();
-    $('#team-modal').modal({"backdrop": false});
+    $('.team-modal').modal({"backdrop": false});
     $uitext.focus();
   });
 
@@ -1880,7 +1880,7 @@ ChatApplication.prototype.showAsText = function() {
     $('#text-modal-area').on("click", function() {
       this.select();
     });
-    $('#text-modal').modal({"backdrop": false});
+    $('.text-modal').modal({"backdrop": false});
   });
 
 };

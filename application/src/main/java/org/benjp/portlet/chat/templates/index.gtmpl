@@ -354,7 +354,7 @@
 <!-- ################################## -->
 <!-- ######### TEXT MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide" id="text-modal">
+<div class="modal hide text-modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Text Discussion</h3>
@@ -369,7 +369,7 @@
 <!-- ################################## -->
 <!-- ######### EDIT MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide" id="edit-modal">
+<div class="modal hide edit-modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>&{benjp.chat.edit}</h3>
@@ -385,7 +385,7 @@
 <!-- ################################## -->
 <!-- ######### TEAM MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide" id="team-modal">
+<div class="modal hide team-modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>&{benjp.chat.team}</h3>
