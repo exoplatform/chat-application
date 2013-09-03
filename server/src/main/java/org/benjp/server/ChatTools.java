@@ -203,7 +203,7 @@ public class ChatTools
 
   @Resource
   @Route("/addUserFullNameAndEmail")
-  public Response.Content addUserFullNameAndEmail(String username, String b64Fullname, String email, String passphrase)
+  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
   {
     if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
     {
@@ -211,7 +211,7 @@ public class ChatTools
     }
     try {
       userService.addUserEmail(username, email);
-      String fullname = (String)ChatUtils.fromString(b64Fullname);
+      fullname = (String)ChatUtils.fromString(fullname);
       userService.addUserFullName(username, fullname);
     } catch (Exception e) {
       log.info("fullname wasn't serialized : "+e.getMessage());
