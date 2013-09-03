@@ -75,21 +75,10 @@ public class ServerBootstrap {
     postServer("setSpaces", params);
   }
 
-
-
   private static String callServer(String serviceUri, String params)
   {
-    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
-    if ("".equals(serverBase)) {
-      HttpServletRequest request = Util.getPortalRequestContext().getRequest();
-      String scheme = request.getScheme();
-      String serverName = request.getServerName();
-      int serverPort= request.getServerPort();
-      serverBase = scheme+"://"+serverName;
-      if (serverPort!=80) serverBase += ":"+serverPort;
-    }
 
-    String serviceUrl = serverBase
+    String serviceUrl = getServerBase()
             + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
             +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
             +"&"+params;
@@ -112,7 +101,7 @@ public class ServerBootstrap {
 
   private static String postServer(String serviceUri, String params)
   {
-    String serviceUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE)
+    String serviceUrl = getServerBase()
             + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
             +"/"+serviceUri;
     String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
@@ -143,6 +132,22 @@ public class ServerBootstrap {
       try{writer.close();}catch(Exception e){}
     }
     return body;
+  }
+
+  private static String getServerBase()
+  {
+    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+    if ("".equals(serverBase)) {
+      HttpServletRequest request = Util.getPortalRequestContext().getRequest();
+      String scheme = request.getScheme();
+      String serverName = request.getServerName();
+      int serverPort= request.getServerPort();
+      serverBase = scheme+"://"+serverName;
+      if (serverPort!=80) serverBase += ":"+serverPort;
+    }
+
+    return serverBase;
+
   }
 
 
