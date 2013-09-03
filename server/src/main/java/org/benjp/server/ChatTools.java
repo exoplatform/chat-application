@@ -39,10 +39,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatTools
 {
+  Logger log = Logger.getLogger("ChatTools");
 
   UserService userService;
 
@@ -201,15 +203,19 @@ public class ChatTools
 
   @Resource
   @Route("/addUserFullNameAndEmail")
-  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
+  public Response.Content addUserFullNameAndEmail(String username, String b64Fullname, String email, String passphrase)
   {
     if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
-
-    userService.addUserEmail(username, email);
-    userService.addUserFullName(username, fullname);
+    try {
+      userService.addUserEmail(username, email);
+      String fullname = (String)ChatUtils.fromString(b64Fullname);
+      userService.addUserFullName(username, fullname);
+    } catch (Exception e) {
+      log.info("fullname wasn't serialized : "+e.getMessage());
+    }
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }

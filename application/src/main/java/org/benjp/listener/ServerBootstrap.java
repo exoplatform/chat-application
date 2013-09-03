@@ -53,7 +53,11 @@ public class ServerBootstrap {
 
   public static void addUserFullNameAndEmail(String username, String fullname, String email)
   {
-    postServer("addUserFullNameAndEmail", "username="+username+"&fullname="+fullname+"&email="+email);
+    try {
+      postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
   }
 
   public static String getToken(String username)
