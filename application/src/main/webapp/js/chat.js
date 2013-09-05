@@ -1367,10 +1367,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
 
-  var xOffline = ""; if (!chatApplication.showOffline) xOffline="x";
-  var xPeopleHistory = ""; if (chatApplication.showPeopleHistory) xPeopleHistory="x";
-  var xSpacesHistory = ""; if (chatApplication.showSpacesHistory) xSpacesHistory="x";
-  var xTeamsHistory = ""; if (chatApplication.showTeamsHistory) xTeamsHistory="x";
+  var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
+  var xPeopleHistory = ""; if (chatApplication.showPeopleHistory) xPeopleHistory=" btn active";
+  var xSpacesHistory = ""; if (chatApplication.showSpacesHistory) xSpacesHistory=" btn active";
+  var xTeamsHistory = ""; if (chatApplication.showTeamsHistory) xTeamsHistory=" btn active";
 
   /**
    * USERS
@@ -1380,8 +1380,8 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-people");
   out += '<span class="room-total total-people"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='people' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xPeopleHistory+"</i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline' data-type='people' href='javaScript:void(0)'><i class='uiIconGroup uiIconLightGray'>"+xOffline+"</i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1413,7 +1413,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-teams");
   out += '<span class="room-total total-teams"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='team' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xTeamsHistory+"</i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
@@ -1446,7 +1446,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-spaces");
   out += '<span class="room-total total-spaces"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='space' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xSpacesHistory+"</i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
