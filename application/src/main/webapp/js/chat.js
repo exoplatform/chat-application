@@ -729,8 +729,13 @@ function ChatApplication() {
 
   this.showFavorites = true;
   this.showPeople = true;
+  this.showOffline = true;
   this.showSpaces = true;
   this.showTeams = true;
+
+  this.showPeopleHistory = false;
+  this.showSpacesHistory = false;
+  this.showTeamsHistory = false;
 
 
 }
@@ -1000,6 +1005,8 @@ ChatApplication.prototype.initChatPreferences = function() {
   if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
   this.showPeople = true;
   if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
+  this.showOffline = true;
+  if (jzGetParam("chatShowOffline"+this.username) === "false") this.showOffline = false;
   this.showSpaces = true;
   if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
   this.showTeams = true;
@@ -1333,7 +1340,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
   var out = '<table class="table list-rooms">';
   var classArrow;
   var totalFavorites = 0, totalPeople = 0, totalSpaces = 0, totalTeams = 0;
-
+  /**
+   * FAVORITES
+   */
   out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
   if (this.showFavorites) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
@@ -1358,80 +1367,103 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
 
+  var xOffline = ""; if (!chatApplication.showOffline) xOffline="x";
+  var xPeopleHistory = ""; if (chatApplication.showPeopleHistory) xPeopleHistory="x";
+  var xSpacesHistory = ""; if (chatApplication.showSpacesHistory) xSpacesHistory="x";
+  var xTeamsHistory = ""; if (chatApplication.showTeamsHistory) xTeamsHistory="x";
 
+  /**
+   * USERS
+   */
   out += "<tr class='header-room header-people'><td colspan='3'>";
   if (this.showPeople) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-people");
   out += '<span class="room-total total-people"></span>';
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='people' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xPeopleHistory+"</i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline' data-type='people' href='javaScript:void(0)'><i class='uiIconGroup uiIconLightGray'>"+xOffline+"</i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
   roomsPeople = roomsPeople.filter({status:{"!is":"space"}});
   roomsPeople = roomsPeople.filter({status:{"!is":"team"}});
   roomsPeople = roomsPeople.filter({isFavorite:{"!is":"true"}});
-  roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+  roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("PEOPLE : "+room.escapedFullname);
-    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
-    if (rhtml !== "") {
-      roomPrevUser = room.user;
-      if (chatApplication.showPeople) {
-        out += rhtml;
-      } else {
-        if (Math.round(room.unreadTotal)>0) {
-          totalPeople += Math.round(room.unreadTotal);
+    if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
+      var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+      if (rhtml !== "") {
+        roomPrevUser = room.user;
+        if (chatApplication.showPeople && (chatApplication.showOffline || (!chatApplication.showOffline && room.status!=="invisible"))) {
+          out += rhtml;
+        } else {
+          if (Math.round(room.unreadTotal)>0) {
+            totalPeople += Math.round(room.unreadTotal);
+          }
         }
       }
     }
   });
 
-
-  out += "<tr class='header-room header-spaces'><td colspan='3'>";
-  if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += chatApplication.labels.get("label-header-spaces");
-  out += '<span class="room-total total-spaces"></span>';
-  out += "</td></tr>";
-
-  var roomsSpaces = rooms();
-  roomsSpaces = roomsSpaces.filter({status:{"is":"space"}});
-  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
-  roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
-//    console.log("SPACES : "+room.escapedFullname);
-    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
-    if (rhtml !== "") {
-      roomPrevUser = room.user;
-      if (chatApplication.showSpaces) {
-        out += rhtml;
-      } else {
-        if (Math.round(room.unreadTotal)>0) {
-          totalSpaces += Math.round(room.unreadTotal);
-        }
-      }
-    }
-  });
-
+  /**
+   * TEAMS
+   */
   out += "<tr class='header-room header-teams'><td colspan='3'>";
   if (this.showTeams) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-teams");
   out += '<span class="room-total total-teams"></span>';
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='team' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xTeamsHistory+"</i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
   roomsTeams = roomsTeams.filter({status:{"is":"team"}});
   roomsTeams = roomsTeams.filter({isFavorite:{"!is":"true"}});
-  roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+  roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("TEAMS : "+room.escapedFullname);
-    var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
-    if (rhtml !== "") {
-      roomPrevUser = room.user;
-      if (chatApplication.showTeams) {
-        out += rhtml;
-      } else {
-        if (Math.round(room.unreadTotal)>0) {
-          totalTeams += Math.round(room.unreadTotal);
+    if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
+      var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+      if (rhtml !== "") {
+        roomPrevUser = room.user;
+        if (chatApplication.showTeams) {
+          out += rhtml;
+        } else {
+          if (Math.round(room.unreadTotal)>0) {
+            totalTeams += Math.round(room.unreadTotal);
+          }
+        }
+      }
+    }
+  });
+
+
+  /**
+   * SPACES
+   */
+  out += "<tr class='header-room header-spaces'><td colspan='3'>";
+  if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += chatApplication.labels.get("label-header-spaces");
+  out += '<span class="room-total total-spaces"></span>';
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history' data-type='space' href='javaScript:void(0)'><i class='uiIconClock uiIconLightGray'>"+xSpacesHistory+"</i></div></li></ul>";
+  out += "</td></tr>";
+
+  var roomsSpaces = rooms();
+  roomsSpaces = roomsSpaces.filter({status:{"is":"space"}});
+  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
+  roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+//    console.log("SPACES : "+room.escapedFullname);
+    if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
+      var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
+      if (rhtml !== "") {
+        roomPrevUser = room.user;
+        if (chatApplication.showSpaces) {
+          out += rhtml;
+        } else {
+          if (Math.round(room.unreadTotal)>0) {
+            totalSpaces += Math.round(room.unreadTotal);
+          }
         }
       }
     }
@@ -1762,6 +1794,33 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $(".team-user-label").remove();
     $('.team-modal').modal({"backdrop": false});
     $uitext.focus();
+  });
+
+  $(".btn-history").on("click", function() {
+    var type = $(this).attr("data-type");
+    if (type === "people") {
+      chatApplication.showPeople = true;
+      chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
+      jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+    } else if (type === "space") {
+      chatApplication.showSpaces = true;
+      chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
+      jzStoreParam("chatShowSpaces"+chatApplication.username, true, 600000);
+    } else if (type === "team") {
+      chatApplication.showTeams = true;
+      chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
+      jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
+    }
+    chatApplication.showRooms(chatApplication.rooms);
+
+  });
+
+  $(".btn-offline").on("click", function() {
+    chatApplication.showPeople = true;
+    jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+    chatApplication.showOffline = !chatApplication.showOffline;
+    jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
+    chatApplication.showRooms(chatApplication.rooms);
   });
 
 
