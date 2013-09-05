@@ -729,7 +729,7 @@ function ChatApplication() {
 
   this.showFavorites = true;
   this.showPeople = true;
-  this.showOffline = true;
+  this.showOffline = false;
   this.showSpaces = true;
   this.showTeams = true;
 
@@ -1005,8 +1005,8 @@ ChatApplication.prototype.initChatPreferences = function() {
   if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
   this.showPeople = true;
   if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
-  this.showOffline = true;
-  if (jzGetParam("chatShowOffline"+this.username) === "false") this.showOffline = false;
+  this.showOffline = false;
+  if (jzGetParam("chatShowOffline"+this.username) === "true") this.showOffline = true;
   this.showSpaces = true;
   if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
   this.showTeams = true;
