@@ -23,7 +23,7 @@
  * 	See README at project homepage
  *
  */
-var jq183 = jQuery.noConflict(true);
+//var jq183 = jQuery.noConflict(true);
 (function($){
 
 //  console.log("FILE DROP " + $().jquery);
@@ -513,4 +513,5 @@ var jq183 = jQuery.noConflict(true);
   } catch (e) {}
 
 
-})(jq183);
+//})(jq183);
+})(jqchat);

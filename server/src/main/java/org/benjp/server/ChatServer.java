@@ -138,7 +138,7 @@ public class ChatServer
           notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
         }
 
-        //notificationService.setNotificationsAsRead(user, "chat", "room", room);
+        notificationService.setNotificationsAsRead(user, "chat", "room", room);
       }
 
     }

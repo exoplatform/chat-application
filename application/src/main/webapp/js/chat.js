@@ -513,7 +513,7 @@ var chatApplication = new ChatApplication();
     });
 
     $(".team-modal-cancel").on("click", function() {
-      jQuery('.team-modal').modal('hide');
+      $('.team-modal').modal('hide');
       var $uitext = $("#team-modal-name");
       $uitext.val("");
       $uitext.attr("data-id", "---");
@@ -523,7 +523,7 @@ var chatApplication = new ChatApplication();
       var $uitext = $("#team-modal-name");
       var teamName = $uitext.val();
       var teamId = $uitext.attr("data-id");
-      jQuery('.team-modal').modal('hide');
+      $('.team-modal').modal('hide');
 
       var users = chatApplication.username;
       $(".team-user-label").each(function(index) {
@@ -554,11 +554,11 @@ var chatApplication = new ChatApplication();
     });
 
     $(".text-modal-close").on("click", function() {
-      jQuery('.text-modal').modal('hide');
+      $('.text-modal').modal('hide');
     });
 
     $(".edit-modal-cancel").on("click", function() {
-      jQuery('.edit-modal').modal('hide');
+      $('.edit-modal').modal('hide');
       $("#edit-modal-area").val("");
     });
 
@@ -567,7 +567,7 @@ var chatApplication = new ChatApplication();
       var id = $uitext.attr("data-id");
       var message = $uitext.val();
       $uitext.val("");
-      jQuery('.edit-modal').modal('hide');
+      $('.edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
         chatApplication.chatRoom.refreshChat(true);
@@ -594,7 +594,7 @@ var chatApplication = new ChatApplication();
         }
   //      console.log("*"+msg+"*");
         $(this).val("");
-        jQuery('.edit-modal').modal('hide');
+        $('.edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
           chatApplication.chatRoom.refreshChat(true);
@@ -655,7 +655,7 @@ var chatApplication = new ChatApplication();
 
   });
 
-})(jq183);
+})(jqchat);
 
 /**
  ##################                           ##################
@@ -794,7 +794,6 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       this.hidePanels();
 
       this.refreshWhoIsOnline();
-      this.initStatusChat();
 
       if (this.isPublic) {
         this.targetUser = this.SUPPORT_USER;
@@ -950,15 +949,6 @@ ChatApplication.prototype.resize = function() {
 };
 
 /**
- * Init Status Chat Loop
- */
-ChatApplication.prototype.initStatusChat = function() {
-  this.notifStatusInt = window.clearInterval(this.notifStatusInt);
-  this.notifStatusInt = setInterval($.proxy(this.refreshStatusChat, this), this.chatIntervalStatus);
-  this.refreshStatusChat();
-};
-
-/**
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
@@ -1050,7 +1040,7 @@ ChatApplication.prototype.initChatProfile = function() {
         $labelUser.text(data.fullname);
 
         this.refreshWhoIsOnline();
-        this.refreshStatusChat();
+        chatNotification.refreshStatusChat();
 
       },
       error: function (response){
@@ -1146,74 +1136,6 @@ ChatApplication.prototype.activateMaintainSession = function() {
   this.chatSessionInt = setInterval($.proxy(this.maintainSession, this), this.chatIntervalSession);
 };
 
-
-
-
-/**
- * Refresh Current Chat Status
- */
-ChatApplication.prototype.refreshStatusChat = function() {
-  var thiss = this;
-  snack.request({
-    url: thiss.jzGetStatus,
-    data: {
-      "user": thiss.username,
-      "token": thiss.token,
-      "timestamp": new Date().getTime()
-    }
-  }, function (err, response){
-    if (err) {
-      thiss.changeStatusChat("offline");
-    } else {
-      thiss.changeStatusChat(response);
-    }
-  });
-
-};
-
-/**
- * Change Current Chat Status
- * @param status
- */
-ChatApplication.prototype.changeStatusChat = function(status) {
-  this.profileStatus = status;
-  var $statusLabel = $(".chat-status-label");
-  $statusLabel.html(this.labels.get("label-current-status")+" "+this.getStatusLabel(status));
-  var $chatStatus = $("span.chat-status");
-  $chatStatus.removeClass("chat-status-available-black");
-  $chatStatus.removeClass("chat-status-donotdisturb-black");
-  $chatStatus.removeClass("chat-status-invisible-black");
-  $chatStatus.removeClass("chat-status-away-black");
-  $chatStatus.removeClass("chat-status-offline-black");
-  $chatStatus.addClass("chat-status-"+status+"-black");
-  var $chatStatusChat = $(".chat-status-chat");
-  $chatStatusChat.removeClass("chat-status-available");
-  $chatStatusChat.removeClass("chat-status-donotdisturb");
-  $chatStatusChat.removeClass("chat-status-invisible");
-  $chatStatusChat.removeClass("chat-status-away");
-  $chatStatusChat.removeClass("chat-status-offline");
-  $chatStatusChat.addClass("chat-status-"+status);
-};
-
-/**
- * Get Status label
- * @param status : values can be : available, donotdisturb, away or invisible
- * @returns {*}
- */
-ChatApplication.prototype.getStatusLabel = function(status) {
-  switch (status) {
-    case "available":
-      return this.labels.get("label-available");
-    case "donotdisturb":
-      return this.labels.get("label-donotdisturb");
-    case "away":
-      return this.labels.get("label-away");
-    case "invisible":
-      return this.labels.get("label-invisible");
-    case "offline":
-      return "Offline";
-  }
-};
 
 ChatApplication.prototype.updateTotal = function(total) {
   this.totalNotif = total;//Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
@@ -1724,7 +1646,7 @@ ChatApplication.prototype.errorOnRefresh = function() {
   this.isLoaded = true;
   this.hidePanel(".chat-sync-panel");
   this.hidePanel(".chat-login-panel");
-  this.changeStatusChat("offline");
+  chatNotification.changeStatusChat("offline");
   this.showErrorPanel();
 };
 
@@ -1923,14 +1845,14 @@ ChatApplication.prototype.setStatus = function(status, callback) {
 
       success: function(response){
         //console.log("SUCCESS:setStatus::"+response);
-        this.changeStatusChat(response);
+        chatNotification.changeStatusChat(response);
         if (typeof callback === "function") {
           callback(response);
         }
 
       },
       error: function(response){
-        this.changeStatusChat("offline");
+        chatNotification.changeStatusChat("offline");
         if (typeof callback === "function") {
           callback("offline");
         }
