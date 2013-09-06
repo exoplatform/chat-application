@@ -765,8 +765,8 @@ ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
  */
 ChatApplication.prototype.createDemoUser = function(fullname, email) {
 
-  setTimeout($.proxy(this.showSyncPanel, this), 1000);
-  $.ajax({
+  setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
+  jqchat.ajax({
     url:this.jzCreateDemoUser,
     data: {
       "fullname": fullname,
@@ -789,8 +789,8 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       this.labels.set("token", this.token);
 
 
-      $(".label-user").html(fullname);
-      $(".avatar-image:first").attr("src", gravatar(email));
+      jqchat(".label-user").html(fullname);
+      jqchat(".avatar-image:first").attr("src", gravatar(email));
       this.hidePanels();
 
       this.refreshWhoIsOnline();
@@ -813,7 +813,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
  * @param callback
  */
 ChatApplication.prototype.updateUnreadMessages = function(callback) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzChatUpdateUnreadMessages,
     data: {"room": this.room,
       "user": this.username,
@@ -843,7 +843,7 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
  * @param callback
  */
 ChatApplication.prototype.deleteMessage = function(id, callback) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzDelete,
     data: {"room": this.room,
       "user": this.username,
@@ -874,7 +874,7 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
  * @param callback
  */
 ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzEdit,
     data: {"room": this.room,
       "user": this.username,
@@ -906,7 +906,7 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
  * @param callback : callback method with roomId as a parameter
  */
 ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callback) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzSaveTeamRoom,
     dataType: "json",
     data: {"teamName": teamName,
@@ -933,18 +933,18 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
 
 ChatApplication.prototype.resize = function() {
   if (chatApplication.chatFullscreen == "true") {
-    $("#PlatformAdminToolbarContainer").css("display", "none");
+    jqchat("#PlatformAdminToolbarContainer").css("display", "none");
   }
 
-  var $chatApplication = $("#chat-application");
+  var $chatApplication = jqchat("#chat-application");
   var top = $chatApplication.offset().top;
-  var height = $(window).height();
+  var height = jqchat(window).height();
   var off = 80;
   var heightChat = height - top - off;
 
   $chatApplication.height(heightChat);
-  $("#chats").height(heightChat - 105 - 61);
-  $("#chat-users").height(heightChat - 44);
+  jqchat("#chats").height(heightChat - 105 - 61);
+  jqchat("#chat-users").height(heightChat - 44);
 
 };
 
@@ -957,12 +957,12 @@ ChatApplication.prototype.initChat = function() {
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
-  var homeLinkHtml = $("#HomeLink").html();
+  var homeLinkHtml = jqchat("#HomeLink").html();
   homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
-  $("#HomeLink").html(homeLinkHtml);
+  jqchat("#HomeLink").html(homeLinkHtml);
 
-  $(".btn-home-responsive").on("click", function() {
-    var $leftNavigationTDContainer = $(".LeftNavigationTDContainer");
+  jqchat(".btn-home-responsive").on("click", function() {
+    var $leftNavigationTDContainer = jqchat(".LeftNavigationTDContainer");
     if ($leftNavigationTDContainer.css("display")==="none") {
       $leftNavigationTDContainer.animate({width: 'show', duration: 200});
     } else {
@@ -972,17 +972,17 @@ ChatApplication.prototype.initChat = function() {
 
 
   this.resize();
-  $(window).resize(function() {
+  jqchat(window).resize(function() {
     chatApplication.resize();
   });
 
   this.initChatPreferences();
 
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
-  this.chatOnlineInt = setInterval($.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
+  this.chatOnlineInt = setInterval(jqchat.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
   this.refreshWhoIsOnline();
 
-  if (this.username!==this.ANONIM_USER) setTimeout($.proxy(this.showSyncPanel, this), 1000);
+  if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
 };
 
 
@@ -1020,7 +1020,7 @@ ChatApplication.prototype.initChatProfile = function() {
       this.createDemoUser(anonimFullname, anonimEmail);
     }
   } else {
-    $.ajax({
+    jqchat.ajax({
       url: this.jzInitChatProfile,
       dataType: "json",
       context: this,
@@ -1034,9 +1034,9 @@ ChatApplication.prototype.initChatProfile = function() {
         this.isAdmin = (data.isAdmin=="true");
         this.isTeamAdmin = (data.isTeamAdmin=="true");
 
-        var $chatApplication = $("#chat-application");
+        var $chatApplication = jqchat("#chat-application");
         $chatApplication.attr("data-token", this.token);
-        var $labelUser = $(".label-user");
+        var $labelUser = jqchat(".label-user");
         $labelUser.text(data.fullname);
 
         this.refreshWhoIsOnline();
@@ -1045,7 +1045,7 @@ ChatApplication.prototype.initChatProfile = function() {
       },
       error: function (response){
         //retry in 3 sec
-        setTimeout($.proxy(this.initChatProfile, this), 3000);
+        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
       }
     });
   }
@@ -1055,7 +1055,7 @@ ChatApplication.prototype.initChatProfile = function() {
  * Maintain Session : Only on Fluid app context
  */
 ChatApplication.prototype.maintainSession = function() {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzMaintainSession,
     context: this,
     success: function(response){
@@ -1074,7 +1074,7 @@ ChatApplication.prototype.maintainSession = function() {
  * @param callback : return the json users data list as a parameter of the callback function
  */
 ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzUsers,
     data: {"room": roomId,
       "user": this.username,
@@ -1112,7 +1112,7 @@ ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
  * @param callback : return the json users data list as a parameter of the callback function
  */
 ChatApplication.prototype.getAllUsers = function(filter, callback) {
-  $.ajax({
+  jqchat.ajax({
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
@@ -1133,7 +1133,7 @@ ChatApplication.prototype.getAllUsers = function(filter, callback) {
  */
 ChatApplication.prototype.activateMaintainSession = function() {
   this.chatSessionInt = clearInterval(this.chatSessionInt);
-  this.chatSessionInt = setInterval($.proxy(this.maintainSession, this), this.chatIntervalSession);
+  this.chatSessionInt = setInterval(jqchat.proxy(this.maintainSession, this), this.chatIntervalSession);
 };
 
 
@@ -1166,7 +1166,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
-    $.ajax({
+    jqchat.ajax({
       url: this.jzChatWhoIsOnline,
       dataType: "json",
       data: { "user": this.username,
@@ -1238,13 +1238,13 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           this.updateTitle();
         }
         if (this.isTeamAdmin) {
-          $(".btn-top-add-actions").css("display", "inline-block");
+          jqchat(".btn-top-add-actions").css("display", "inline-block");
         }
 
       },
       error: function (response){
         //console.log("chat-users :: "+response);
-        setTimeout($.proxy(this.errorOnRefresh, this), 1000);
+        setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
       }
     });
   }
@@ -1393,43 +1393,43 @@ ChatApplication.prototype.showRooms = function(rooms) {
 
   out += '</table>';
 
-  $("#chat-users").html(out);
+  jqchat("#chat-users").html(out);
 
   this.jQueryForUsersTemplate();
 
   if (roomsPeople.count()<=5) {
-    $(".btn-top-history-people").hide();
+    jqchat(".btn-top-history-people").hide();
   }
   if (roomsTeams.count()<=5) {
-    $(".btn-top-history-teams").hide();
+    jqchat(".btn-top-history-teams").hide();
   }
   if (roomsSpaces.count()<=3) {
-    $(".btn-top-history-spaces").hide();
+    jqchat(".btn-top-history-spaces").hide();
   }
 
 
   if (chatApplication.isTeamAdmin) {
-    $(".btn-top-add-actions").css("display", "inline-block");
+    jqchat(".btn-top-add-actions").css("display", "inline-block");
   }
 
   if (totalFavorites>0) {
-    $(".total-favorites").html(totalFavorites);
-    $(".total-favorites").css("display", "inline-block");
+    jqchat(".total-favorites").html(totalFavorites);
+    jqchat(".total-favorites").css("display", "inline-block");
   }
 
   if (totalPeople>0) {
-    $(".total-people").html(totalPeople);
-    $(".total-people").css("display", "inline-block");
+    jqchat(".total-people").html(totalPeople);
+    jqchat(".total-people").css("display", "inline-block");
   }
 
   if (totalSpaces>0) {
-    $(".total-spaces").html(totalSpaces);
-    $(".total-spaces").css("display", "inline-block");
+    jqchat(".total-spaces").html(totalSpaces);
+    jqchat(".total-spaces").css("display", "inline-block");
   }
 
   if (totalTeams>0) {
-    $(".total-teams").html(totalTeams);
-    $(".total-teams").css("display", "inline-block");
+    jqchat(".total-teams").html(totalTeams);
+    jqchat(".total-teams").css("display", "inline-block");
   }
 
 };
@@ -1473,37 +1473,37 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if (this.targetUser!==undefined) {
-    $(".users-online").removeClass("info");
+    jqchat(".users-online").removeClass("info");
     if (this.isDesktopView()) {
-      var $targetUser = $("#users-online-"+this.targetUser.replace(".", "-"));
+      var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
       $targetUser.addClass("info");
-      $(".room-total").removeClass("room-total-white");
+      jqchat(".room-total").removeClass("room-total-white");
       $targetUser.find(".room-total").addClass("room-total-white");
     }
 
-    $("#room-detail").css("display", "block");
-    $(".team-button").css("display", "none");
-    $(".target-user-fullname").text(this.targetFullname);
+    jqchat("#room-detail").css("display", "block");
+    jqchat(".team-button").css("display", "none");
+    jqchat(".target-user-fullname").text(this.targetFullname);
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     {
-//      $(".meeting-actions").css("display", "none");
-      $(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
-      $(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif;'");
-      $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
+//      jqchat(".meeting-actions").css("display", "none");
+      jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
+      jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif;'");
+      jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
     }
     else if (this.targetUser.indexOf("team-")===-1)
     {
-//      $(".meeting-actions").css("display", "inline-block");
-      $(".meeting-action-event").css("display", "block");
-      $(".meeting-action-task").css("display", "block");
+//      jqchat(".meeting-actions").css("display", "inline-block");
+      jqchat(".meeting-action-event").css("display", "block");
+      jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().replace(" ", "_");
-      $(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
-      $(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
+      jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
+      jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
     }
     else
     {
 
-      $.ajax({
+      jqchat.ajax({
         url: this.jzChatGetCreator,
         data: {"room": this.targetUser,
           "user": this.username,
@@ -1514,27 +1514,27 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
           if (creator === this.username) {
-            $(".team-button").css("display", "block");
+            jqchat(".team-button").css("display", "block");
           }
         },
         error: function(xhr, status, error){
           //console.log("ERROR::"+xhr.responseText);
         }
       });
-//      $(".meeting-actions").css("display", "inline-block");
-      $(".meeting-action-event").css("display", "none");
-      $(".meeting-action-task").css("display", "none");
-      $(".target-avatar-link").attr("href", "#");
-      $(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
+//      jqchat(".meeting-actions").css("display", "inline-block");
+      jqchat(".meeting-action-event").css("display", "none");
+      jqchat(".meeting-action-task").css("display", "none");
+      jqchat(".target-avatar-link").attr("href", "#");
+      jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
 
     var thiss = this;
     this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
       thiss.room = room;
-      var $msg = $('#msg');
+      var $msg = jqchat('#msg');
       $msg.removeAttr("disabled");
       if (thiss.weemoExtension.isConnected) {
-        $(".btn-weemo").removeClass('disabled');
+        jqchat(".btn-weemo").removeClass('disabled');
       }
       if (thiss.isDesktopView()) $msg.focus();
 
@@ -1549,7 +1549,7 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
     chatApplication.hidePanel(".chat-error-panel");
   } else if (code === 1) { //ERROR
 /*
-    if ( $(".chat-error-panel").css("display") == "none") {
+    if ( jqchat(".chat-error-panel").css("display") == "none") {
       chatApplication.showLoginPanel();
     } else {
       chatApplication.hidePanel(".chat-login-panel");
@@ -1560,35 +1560,35 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
 
 ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
-  var $chats = $("#chats");
+  var $chats = jqchat("#chats");
   $chats.html('<span>'+out+'</span>');
   sh_highlightDocument();
   $chats.animate({ scrollTop: 20000 }, 'fast');
 
-  $(".msg-text").mouseover(function() {
-    if ($(".msg-actions", this).children().length > 0) {
-      $(".msg-date", this).css("display", "none");
-      $(".msg-actions", this).css("display", "inline-block");
+  jqchat(".msg-text").mouseover(function() {
+    if (jqchat(".msg-actions", this).children().length > 0) {
+      jqchat(".msg-date", this).css("display", "none");
+      jqchat(".msg-actions", this).css("display", "inline-block");
     }
   });
 
-  $(".msg-text").mouseout(function() {
-    $(".msg-date", this).css("display", "inline-block");
-    $(".msg-actions", this).css("display", "none");
+  jqchat(".msg-text").mouseout(function() {
+    jqchat(".msg-date", this).css("display", "inline-block");
+    jqchat(".msg-actions", this).css("display", "none");
   });
 
-  $(".msg-action-quote").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
+  jqchat(".msg-action-quote").on("click", function() {
+    var $uimsg = jqchat(this).siblings(".msg-data");
     var msgHtml = $uimsg.html();
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
     msgHtml = msgHtml.replace(/<br>/g, '\n');
     var msgFullname = $uimsg.attr("data-fn");
-    $("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
 
   });
 
-  $(".msg-action-delete").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
+  jqchat(".msg-action-delete").on("click", function() {
+    var $uimsg = jqchat(this).siblings(".msg-data");
     var msgId = $uimsg.attr("data-id");
     chatApplication.deleteMessage(msgId, function() {
       chatApplication.chatRoom.refreshChat(true);
@@ -1597,36 +1597,36 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   });
 
-  $(".msg-action-edit").on("click", function() {
-    var $uimsg = $(this).siblings(".msg-data");
+  jqchat(".msg-action-edit").on("click", function() {
+    var $uimsg = jqchat(this).siblings(".msg-data");
     var msgId = $uimsg.attr("data-id");
     var msgHtml = $uimsg.html();
     msgHtml = msgHtml.replace(eval("/<br>/g"), "\n");
 
-    $("#edit-modal-area").val(msgHtml);
-    $("#edit-modal-area").attr("data-id", msgId);
-    $('.edit-modal').modal({"backdrop": false});
+    jqchat("#edit-modal-area").val(msgHtml);
+    jqchat("#edit-modal-area").attr("data-id", msgId);
+    jqchat('.edit-modal').modal({"backdrop": false});
 
   });
 
-  $(".send-meeting-notes").on("click", function () {
-    $(this).animate({
+  jqchat(".send-meeting-notes").on("click", function () {
+    jqchat(this).animate({
       opacity: "toggle"
     }, 200, function() {
-      var room = $(this).attr("data-room");
-      var from = $(this).attr("data-from");
-      var to = $(this).attr("data-to");
-      var id = $(this).attr("data-id");
+      var room = jqchat(this).attr("data-room");
+      var from = jqchat(this).attr("data-from");
+      var to = jqchat(this).attr("data-to");
+      var id = jqchat(this).attr("data-id");
 
       from = Math.round(from)-1;
       to = Math.round(to)+1;
       chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
         if (response === "sent") {
           console.log("sent");
-          $("#"+id).animate({
+          jqchat("#"+id).animate({
             opacity: "toggle"
           }, 200 , function() {
-            $(this).animate({
+            jqchat(this).animate({
               opacity: "toggle"
             }, 3000);
           });
@@ -1656,7 +1656,7 @@ ChatApplication.prototype.errorOnRefresh = function() {
  */
 ChatApplication.prototype.toggleFavorite = function(targetFav) {
   console.log("FAVORITE::"+targetFav);
-  $.ajax({
+  jqchat.ajax({
     url: this.jzChatToggleFavorite,
     data: {"targetUser": targetFav,
       "user": this.username,
@@ -1690,20 +1690,20 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
   }
 
   if (this.isDesktopView() && this.targetUser!==undefined) {
-    var $targetUser = $("#users-online-"+this.targetUser.replace(".", "-"));
+    var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
     $targetUser.addClass("info");
-    $(".room-total").removeClass("room-total-white");
+    jqchat(".room-total").removeClass("room-total-white");
     $targetUser.find(".room-total").addClass("room-total-white");
   }
 
-  $(".header-room").on("click", function() {
-    if ($(this).hasClass("header-favorites"))
+  jqchat(".header-room").on("click", function() {
+    if (jqchat(this).hasClass("header-favorites"))
       chatApplication.showFavorites = !chatApplication.showFavorites;
-    else if ($(this).hasClass("header-people"))
+    else if (jqchat(this).hasClass("header-people"))
       chatApplication.showPeople = !chatApplication.showPeople;
-    else if ($(this).hasClass("header-spaces"))
+    else if (jqchat(this).hasClass("header-spaces"))
       chatApplication.showSpaces = !chatApplication.showSpaces;
-    else if ($(this).hasClass("header-teams"))
+    else if (jqchat(this).hasClass("header-teams"))
       chatApplication.showTeams = !chatApplication.showTeams;
 
     jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
@@ -1715,21 +1715,21 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   });
 
-  $(".btn-add-team").on("click", function() {
+  jqchat(".btn-add-team").on("click", function() {
     chatApplication.showTeams = true;
     jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
     chatApplication.showRooms(chatApplication.rooms);
 
-    var $uitext = $("#team-modal-name");
+    var $uitext = jqchat("#team-modal-name");
     $uitext.val("");
     $uitext.attr("data-id", "---");
-    $(".team-user-label").remove();
-    $('.team-modal').modal({"backdrop": false});
+    jqchat(".team-user-label").remove();
+    jqchat('.team-modal').modal({"backdrop": false});
     $uitext.focus();
   });
 
-  $(".btn-history").on("click", function() {
-    var type = $(this).attr("data-type");
+  jqchat(".btn-history").on("click", function() {
+    var type = jqchat(this).attr("data-type");
     if (type === "people") {
       chatApplication.showPeople = true;
       chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
@@ -1747,7 +1747,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   });
 
-  $(".btn-offline").on("click", function() {
+  jqchat(".btn-offline").on("click", function() {
     chatApplication.showPeople = true;
     jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
     chatApplication.showOffline = !chatApplication.showOffline;
@@ -1756,35 +1756,35 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
   });
 
 
-  $('.users-online').on("click", function() {
-    thiss.targetUser = $(".room-link:first",this).attr("user-data");
-    thiss.targetFullname = $(".room-link:first",this).attr("data-fullname");
+  jqchat('.users-online').on("click", function() {
+    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
+    thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();
     if (thiss.isMobileView()) {
-      $(".right-chat").css("display", "block");
-      $(".left-chat").css("display", "none");
-      $(".room-name").html(thiss.targetFullname);
+      jqchat(".right-chat").css("display", "block");
+      jqchat(".left-chat").css("display", "none");
+      jqchat(".room-name").html(thiss.targetFullname);
     }
   });
 
 
-  $('.room-link').on("click", function() {
-    thiss.targetUser = $(this).attr("user-data");
-    thiss.targetFullname = $(this).attr("data-fullname");
+  jqchat('.room-link').on("click", function() {
+    thiss.targetUser = jqchat(this).attr("user-data");
+    thiss.targetFullname = jqchat(this).attr("data-fullname");
     thiss.loadRoom();
     if (thiss.isMobileView()) {
-      $(".uiRightContainerArea").css("display", "block");
-      $(".uiLeftContainerArea").css("display", "none");
-//      $(".room-name").html(thiss.targetFullname);
+      jqchat(".uiRightContainerArea").css("display", "block");
+      jqchat(".uiLeftContainerArea").css("display", "none");
+//      jqchat(".room-name").html(thiss.targetFullname);
     }
   });
 
-  $('.user-status').on("click", function() {
-    var targetFav = $(this).attr("user-data");
+  jqchat('.user-status').on("click", function() {
+    var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
-  $('.user-favorite').on("click", function() {
-    var targetFav = $(this).attr("user-data");
+  jqchat('.user-favorite').on("click", function() {
+    var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
 };
@@ -1803,7 +1803,7 @@ ChatApplication.prototype.search = function(filter) {
   } else {
     this.userFilter = filter.substr(1, filter.length-1);
     this.filterInt = clearTimeout(this.filterInt);
-    this.filterInt = setTimeout($.proxy(this.refreshWhoIsOnline, this), 500);
+    this.filterInt = setTimeout(jqchat.proxy(this.refreshWhoIsOnline, this), 500);
   }
 };
 
@@ -1812,7 +1812,7 @@ ChatApplication.prototype.search = function(filter) {
  * @returns {boolean}
  */
 ChatApplication.prototype.checkViewportStatus = function() {
-  return ($("#NavigationPortlet").css("display")==="none");
+  return (jqchat("#NavigationPortlet").css("display")==="none");
 };
 
 ChatApplication.prototype.isMobileView = function() {
@@ -1834,7 +1834,7 @@ ChatApplication.prototype.setStatus = function(status, callback) {
   if (status !== undefined) {
     //console.log("setStatus :: "+status);
 
-    $.ajax({
+    jqchat.ajax({
       url: this.jzSetStatus,
       data: { "user": this.username,
         "token": this.token,
@@ -1867,11 +1867,11 @@ ChatApplication.prototype.showAsText = function() {
 
   this.chatRoom.showAsText(function(response) {
     //console.log("SUCCESS:setStatus::"+response);
-    $("#text-modal-area").html(response);
-    $('#text-modal-area').on("click", function() {
+    jqchat("#text-modal-area").html(response);
+    jqchat('#text-modal-area').on("click", function() {
       this.select();
     });
-    $('.text-modal').modal({"backdrop": false});
+    jqchat('.text-modal').modal({"backdrop": false});
   });
 
 };
@@ -1960,7 +1960,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     }
   }
 
-  $("#msg").val("");
+  jqchat("#msg").val("");
   if (sendMessageToServer) {
     this.chatRoom.sendMessage(msg, options, isSystemMessage, callback);
   }
@@ -1978,9 +1978,9 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
  */
 
 ChatApplication.prototype.hidePanel = function(panel) {
-  var $uiPanel = $(panel);
-  $uiPanel.width($('#chat-application').width()+40);
-  $uiPanel.height($('#chat-application').height());
+  var $uiPanel = jqchat(panel);
+  $uiPanel.width(jqchat('#chat-application').width()+40);
+  $uiPanel.height(jqchat('#chat-application').height());
   $uiPanel.css("display", "none");
   $uiPanel.html("");
 };
@@ -1996,7 +1996,7 @@ ChatApplication.prototype.hidePanels = function() {
 ChatApplication.prototype.showSyncPanel = function() {
   if (!this.isLoaded) {
     this.hidePanels();
-    var $chatSyncPanel = $(".chat-sync-panel");
+    var $chatSyncPanel = jqchat(".chat-sync-panel");
     $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
     $chatSyncPanel.css("display", "block");
   }
@@ -2006,7 +2006,7 @@ ChatApplication.prototype.showErrorPanel = function() {
   this.whoIsOnlineMD5 = "";
   this.hidePanels();
   //console.log("show-error-panel");
-  var $chatErrorPanel = $(".chat-error-panel");
+  var $chatErrorPanel = jqchat(".chat-error-panel");
   $chatErrorPanel.html(this.labels.get("label-panel-error1")+"<br/><br/>"+this.labels.get("label-panel-error2"));
   $chatErrorPanel.css("display", "block");
 };
@@ -2014,7 +2014,7 @@ ChatApplication.prototype.showErrorPanel = function() {
 ChatApplication.prototype.showLoginPanel = function() {
   this.hidePanels();
   //console.log("show-login-panel");
-  var $chatLoginPanel = $(".chat-login-panel");
+  var $chatLoginPanel = jqchat(".chat-login-panel");
   $chatLoginPanel.html(this.labels.get("label-panel-login1")+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+this.labels.get("label-panel-login2")+"</a>");
   $chatLoginPanel.css("display", "block");
 };
@@ -2027,23 +2027,23 @@ ChatApplication.prototype.showAboutPanel = function() {
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
   this.hidePanels();
-  var $chatAboutPanel = $(".chat-about-panel");
+  var $chatAboutPanel = jqchat(".chat-about-panel");
   $chatAboutPanel.html(about);
-  $chatAboutPanel.width($('#chat-application').width()+40);
-  $chatAboutPanel.height($('#chat-application').height());
+  $chatAboutPanel.width(jqchat('#chat-application').width()+40);
+  $chatAboutPanel.height(jqchat('#chat-application').height());
   $chatAboutPanel.css("display", "block");
 
   var thiss = this;
-  $("#about-close-btn").on("click", function() {
+  jqchat("#about-close-btn").on("click", function() {
     thiss.hidePanel('.chat-about-panel');
-    $('#chat-search').attr("value", "");
+    jqchat('#chat-search').attr("value", "");
   });
 };
 
 ChatApplication.prototype.showDemoPanel = function() {
   this.hidePanels();
   //console.log("show-demo-panel");
-  var $chatDemoPanel = $(".chat-demo-panel");
+  var $chatDemoPanel = jqchat(".chat-demo-panel");
   var intro = this.labels.get("label-panel-demo");
   if (this.isPublic) intro = this.labels.get("label-panel-public");
   $chatDemoPanel.html(intro+"<br><br><div class='welcome-panel'>" +
@@ -2052,9 +2052,9 @@ ChatApplication.prototype.showDemoPanel = function() {
     "<br><a href='#' id='anonim-save'>"+this.labels.get("label-save-profile")+"</a>");
   $chatDemoPanel.css("display", "block");
 
-  $("#anonim-save").on("click", function() {
-    var fullname = $("#anonim-name").val();
-    var email = $("#anonim-email").val();
+  jqchat("#anonim-save").on("click", function() {
+    var fullname = jqchat("#anonim-name").val();
+    var email = jqchat("#anonim-email").val();
     this.createDemoUser(fullname, email);
   });
 };

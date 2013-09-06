@@ -63,7 +63,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
       jzStoreParam("lastTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
-      thiss.chatEventInt = setInterval($.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
+      thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
       thiss.refreshChat(false);
     }
   });
@@ -326,9 +326,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
             jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
           }
-          $(".btn-weemo").addClass('disabled');
+          jqchat(".btn-weemo").addClass('disabled');
         } else if (options.type==="call-off") {
-          $(".btn-weemo").removeClass('disabled');
+          jqchat(".btn-weemo").removeClass('disabled');
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
@@ -340,15 +340,15 @@ ChatRoom.prototype.showMessages = function(msgs) {
           if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
             chatApplication.weemoExtension.setUidToCall(options.uidToCall);
             chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
-            $(".btn-weemo").css("display", "none");
-            $(".btn-weemo-conf").css("display", "block");
+            jqchat(".btn-weemo").css("display", "none");
+            jqchat(".btn-weemo-conf").css("display", "block");
             if (options.uidToCall!=="weemo"+thiss.username)
-              $(".btn-weemo-conf").removeClass("disabled");
+              jqchat(".btn-weemo-conf").removeClass("disabled");
             else
-              $(".btn-weemo-conf").addClass("disabled");
+              jqchat(".btn-weemo-conf").addClass("disabled");
           } else {
-            $(".btn-weemo").css("display", "block");
-            $(".btn-weemo-conf").css("display", "none");
+            jqchat(".btn-weemo").css("display", "block");
+            jqchat(".btn-weemo-conf").css("display", "none");
           }
         }
 
@@ -473,7 +473,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
           ">Send meeting notes</a>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='$(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
           "</span>";
       }
 
@@ -645,7 +645,7 @@ JuzuLabels.prototype.setElement = function(element) {
 JuzuLabels.prototype.get = function(key) {
   var val;
   if (this.element!=="") {
-    val = $.data(this.element, key);
+    val = jqchat.data(this.element, key);
     if (val === undefined) {
       val = this.element.attr("data-"+key);
       return val;
@@ -661,7 +661,7 @@ JuzuLabels.prototype.get = function(key) {
  */
 JuzuLabels.prototype.set = function(key, value) {
   if (this.element!=="")
-    $.data(this.element, key, value);
+    jqchat.data(this.element, key, value);
 };
 
 /**
@@ -669,6 +669,6 @@ JuzuLabels.prototype.set = function(key, value) {
  */
 JuzuLabels.prototype.log = function() {
   if (this.element!=="") {
-    console.log($.data( this.element ));
+    console.log(jqchat.data( this.element ));
   }
 };
