@@ -513,19 +513,6 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
     var fullname = "";
     var addStyle = "";
     var $uiElement;
-    var $uiDetail = jqchat('#tiptip_content').children('#tipName').children(".detail").children(".name").children("a");
-    if ($uiDetail !== undefined) {
-      var href = $uiDetail.attr("href");
-      if (href !== undefined) {
-        fullname = $uiDetail.html();
-        username = href.substr(href.indexOf("/activities/")+12);
-      }
-    }
-
-    var $uiMessage = jqchat('#connectMessge', this);
-    if ($uiMessage !== undefined) {
-      $uiElement = $uiMessage;
-    }
 
     var $uiAction = jqchat(".uiAction", this).first();
     if ($uiAction !== undefined && $uiAction.html() !== undefined) {
@@ -533,7 +520,12 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
       var attr = $uiAction.children(".connect:first").attr("data-action");
       if (attr !== undefined) {
         var $uiFullname = jqchat('#tiptip_content').children('#tipName').children("tbody").children("tr").children("td").children("a");
-        fullname = $uiFullname.html();
+        $uiFullname.each(function() {
+          var html = $(this).html();
+          if (html.indexOf("/rest/")==-1) {
+            fullname = html;
+          }
+        });
 
         if (attr.indexOf(":")>0) {
           if (attr.indexOf("Disconnect:")>-1)
