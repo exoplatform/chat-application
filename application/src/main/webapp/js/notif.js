@@ -315,7 +315,8 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="") {
     jqchat(".btn-weemo-conf").css('display', 'none');
     //this.weemo = new Weemo(); // Creating a Weemo object instance
-    this.weemo.setMode("production"); // Activate debugging in browser's log console
+    this.weemo.setMode("debug"); // Activate debugging in browser's log console
+//    this.weemo.setMode("production"); // Activate debugging in browser's log console
     this.weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
     this.weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
     this.weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
