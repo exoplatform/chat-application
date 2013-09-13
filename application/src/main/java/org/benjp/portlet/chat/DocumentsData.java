@@ -228,6 +228,10 @@ public class DocumentsData {
         jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
       else if (filename.endsWith(".ods"))
         jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
+      else if (filename.endsWith(".zip"))
+        jcrContent.setProperty("jcr:mimeType", "application/zip");
+      else
+        jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
       session.save();
       uuid = fileNode.getUUID();
     }
