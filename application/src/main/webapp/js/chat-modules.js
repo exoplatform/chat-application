@@ -155,13 +155,13 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
 //      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
       if (data.messages.length===0) {
-        thiss.showMessages(data.messages);
+        thiss.showMessages(data);
       } else {
         var ts = data.timestamp;
         if (ts != lastTS || (forceRefresh === true)) {
           jzStoreParam("lastTS"+thiss.username, ts, 600);
           //console.log("new data to show");
-          thiss.showMessages(data.messages);
+          thiss.showMessages(data);
         }
       }
 
@@ -225,8 +225,10 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
  */
 ChatRoom.prototype.showMessages = function(msgs) {
   var im, message, out="", prevUser="";
+  var timezone = new Date().getTimezoneOffset();
   if (msgs!==undefined) {
-    this.messages = msgs;
+    this.messages = msgs.messages;
+    timezone = msgs.timezone;
   }
 
   if (this.messages.length===0) {
@@ -287,7 +289,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type === "DELETED" || message.type === "EDITED") {
           out += "<span class='message-changed'></span>";
         }
-        out += message.date+"</span>";
+        out += thiss.getDate(timezone, message.timestamp)+"</span>";
         if (message.type !== "DELETED") {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
@@ -355,7 +357,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "<span>";
 
         if (options.type === "type-me") {
-//        if (options.type === "type-me" || options.type === "call-on" || options.type === "call-off") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
           out += "<div style='margin-left:50px;'>";
         } else {
@@ -372,7 +373,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
 
         out +=  "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+message.date+"</span>" +
+          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(timezone, message.timestamp)+"</span>" +
           "<span class='invisible-text'>]</span></div>"+
           "<div style='clear:both;'></div>";
         out += "</span></div>";
@@ -392,6 +393,24 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
 
 };
+
+ChatRoom.prototype.getDate = function(timezoneOffsetServer, timestampServer) {
+  var date = new Date();
+  var timezoneOffsetClient = date.getTimezoneOffset();
+  var offset = timezoneOffsetClient - timezoneOffsetServer;
+  timestampServer = timestampServer + offset*60*1000; // offset in minutes to milliseconds
+  date = new Date(timestampServer);
+  var now = new Date();
+  var sNowDate = now.toLocaleDateString();
+  var sDate = date.toLocaleDateString();
+  var sTime = date.toLocaleTimeString();
+  sTime
+  if (sNowDate !== sDate) {
+    sTime = sDate + " " + sTime;
+  }
+  return sTime;
+
+}
 
 
 ChatRoom.prototype.getObjectSize = function(obj) {

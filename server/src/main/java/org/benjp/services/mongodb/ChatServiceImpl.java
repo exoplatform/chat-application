@@ -205,6 +205,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
           {
             sb.append("{\"room\": \"").append(room).append("\",");
             sb.append("\"timestamp\": \"").append(timestamp).append("\",");
+            sb.append("\"timezone\": \"").append(new Date().getTimezoneOffset()).append("\",");
             sb.append("\"messages\": [");
           }
         }
