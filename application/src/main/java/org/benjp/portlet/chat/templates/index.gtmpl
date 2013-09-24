@@ -81,7 +81,7 @@
       <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
         <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
 
-      <a href="#" class="weemo-migration-link" onclick="javascript:jqchat('.weemo-migration-modal').show();" style="font-size: 13px;line-height: 40px;padding-right: 10px;"><i class="icon-info-sign"></i> Weemo V3 to V4</a>
+      <a href="#" class="weemo-migration-link" onclick="javascript:jqchat('.weemo-migration-modal').show();" style="font-size: 13px;line-height: 40px;padding-right: 10px;float:left;"><i class="icon-info-sign"></i> Weemo V3 to V4</a>
 
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="Tip: use @ with username or space">
         <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
