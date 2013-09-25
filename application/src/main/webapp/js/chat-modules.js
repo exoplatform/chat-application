@@ -225,10 +225,8 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
  */
 ChatRoom.prototype.showMessages = function(msgs) {
   var im, message, out="", prevUser="";
-  var timezone = new Date().getTimezoneOffset();
   if (msgs!==undefined) {
     this.messages = msgs.messages;
-    timezone = msgs.timezone;
   }
 
   if (this.messages.length===0) {
@@ -289,7 +287,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type === "DELETED" || message.type === "EDITED") {
           out += "<span class='message-changed'></span>";
         }
-        out += thiss.getDate(timezone, message.timestamp)+"</span>";
+        out += thiss.getDate(message.timestamp)+"</span>";
         if (message.type !== "DELETED") {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
@@ -373,7 +371,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
 
         out +=  "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(timezone, message.timestamp)+"</span>" +
+          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(message.timestamp)+"</span>" +
           "<span class='invisible-text'>]</span></div>"+
           "<div style='clear:both;'></div>";
         out += "</span></div>";
@@ -394,17 +392,35 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
 };
 
-ChatRoom.prototype.getDate = function(timezoneOffsetServer, timestampServer) {
+ChatRoom.prototype.getDate = function(timestampServer) {
   var date = new Date();
-  var timezoneOffsetClient = date.getTimezoneOffset();
-  var offset = timezoneOffsetClient - timezoneOffsetServer;
-  timestampServer = timestampServer + offset*60*1000; // offset in minutes to milliseconds
-  date = new Date(timestampServer);
+  if (timestampServer !== undefined)
+    date = new Date(timestampServer);
+
   var now = new Date();
   var sNowDate = now.toLocaleDateString();
   var sDate = date.toLocaleDateString();
-  var sTime = date.toLocaleTimeString();
-  sTime
+
+  var sTime = "";
+  var sHours = date.getHours();
+  var sMinutes = date.getMinutes();
+  var timezone = date.getTimezoneOffset();
+
+  var ampm = "";
+  if (timezone>60) {// 12 Hours AM/PM model
+    ampm = "AM";
+    if (sHours>11) {
+      ampm = "PM";
+      sHours -= 12;
+    }
+    if (sHours===0) sHours = 12;
+  }
+  if (sHours<10) sTime = "0";
+  sTime += sHours+":";
+  if (sMinutes<10) sTime += "0";
+  sTime += sMinutes;
+  if (ampm !== "") sTime += " "+ampm;
+
   if (sNowDate !== sDate) {
     sTime = sDate + " " + sTime;
   }
