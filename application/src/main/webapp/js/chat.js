@@ -171,6 +171,11 @@ var chatApplication = new ChatApplication();
 
 
       if (toggleClass === "meeting-action-file-panel") {
+        $("#chat-file-form").attr("action", chatApplication.jzUpload);
+        $("#chat-file-room").val(chatApplication.room);
+        $("#chat-file-target-user").val(chatApplication.targetUser);
+        $("#chat-file-target-fullname").val(chatApplication.targetFullname);
+
         chatApplication.getUsers(chatApplication.targetUser, function (users) {
 
           $(function(){
@@ -332,8 +337,40 @@ var chatApplication = new ChatApplication();
       hideMeetingPanel();
 
     });
+    $('#chat-file-form').ajaxForm({
+      beforeSend: function() {
+        $("#dropzone").find('.bar').width("0%");
+        $("#dropzone").find('.bar').html("0%");
+      },
+      uploadProgress: function(event, position, total, percentComplete) {
+        console.log("progress updated : "+percentComplete);
+        $("#dropzone").find('.bar').width(percentComplete+"%");
+        $("#dropzone").find('.bar').html(percentComplete+"%");
+      },
+      complete: function(xhr) {
+//        console.log(xhr.responseText);
+        var response = $.parseJSON(xhr.responseText);
 
+        var msg = response.name;
+        var options = response;
+        options.type = "type-file";
+        options.username = chatApplication.username;
+        options.fullname = chatApplication.fullname;
+        chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
+          $("#dropzone").find('.bar').width("0%");
+          $("#dropzone").find('.bar').html("");
+          hideMeetingPanel();
+        });
+      }
+    });
 
+    $("#chat-file-file").on("change", function() {
+      $("#chat-file-submit").trigger("click");
+    });
+
+    $('.uiRightContainerArea').on('dragenter', function() {
+      $("#meeting-action-upload-link").trigger("click");
+    });
 
     $(".chat-status-chat").on("click", function() {
       var $chatStatusPanel = $(".chat-status-panel");

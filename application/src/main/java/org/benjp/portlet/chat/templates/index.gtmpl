@@ -173,7 +173,7 @@
                   <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
                   <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
                 </div>
-                <div class="meeting-action-panel meeting-action-file-panel" data-height="160" data-title="File">
+                <div class="meeting-action-panel meeting-action-file-panel" data-height="180" data-title="File">
                   <span id="dropzone-container">
                     <div class="progressBar" id="dropzone">
                       <div class="progress">
@@ -184,7 +184,13 @@
                   </span>
                   <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
                   <br>
-                  <a type="button" class="btn"><i class="icon-file"></i> Select manually</a>
+                  <form action="" id="chat-file-form" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="room" value="---" id="chat-file-room" />
+                    <input type="hidden" name="targetUser" value="---" id="chat-file-target-user" />
+                    <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
+                    <input type="file" name="userfile" style="width:290px; margin: auto;" id="chat-file-file" />
+                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
+                  </form>
                 </div>
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
@@ -203,7 +209,7 @@
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task (Coming Soon)</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-file-panel"><a href="#"><i class="icon-file"></i> Upload File</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="icon-file"></i> Upload File</a></li>
             <li class="divider"></li>
             <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
