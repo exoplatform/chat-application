@@ -175,6 +175,7 @@ var chatApplication = new ChatApplication();
         $("#chat-file-room").val(chatApplication.room);
         $("#chat-file-target-user").val(chatApplication.targetUser);
         $("#chat-file-target-fullname").val(chatApplication.targetFullname);
+        $("#chat-file-file").val("");
 
         chatApplication.getUsers(chatApplication.targetUser, function (users) {
 
@@ -337,6 +338,7 @@ var chatApplication = new ChatApplication();
       hideMeetingPanel();
 
     });
+
     $('#chat-file-form').ajaxForm({
       beforeSend: function() {
         $("#dropzone").find('.bar').width("0%");
@@ -359,13 +361,15 @@ var chatApplication = new ChatApplication();
         chatApplication.chatRoom.sendMessage(msg, options, "true", function() {
           $("#dropzone").find('.bar').width("0%");
           $("#dropzone").find('.bar').html("");
+          $("#chat-file-file").val("");
           hideMeetingPanel();
         });
       }
     });
 
     $("#chat-file-file").on("change", function() {
-      $("#chat-file-submit").trigger("click");
+      if ($(this).val()!=="")
+        $("#chat-file-submit").trigger("click");
     });
 
     $('.uiRightContainerArea').on('dragenter', function() {
