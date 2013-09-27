@@ -22,24 +22,54 @@
 .datepicker:before {
   content: '';
   display: inline-block;
+  /*
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
   border-bottom: 7px solid #ccc;
   border-bottom-color: rgba(0, 0, 0, 0.2);
+  */
+
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 7px solid #ccc;
+  border-left-color: rgba(0, 0, 0, 0.2);
+  border-width: 7px 0 7px 7px;
+
+
   position: absolute;
-  top: -7px;
-  left: 6px;
+  /*top: -7px;
+  left: 6px;*/
+
+  top: 136px;
+  left: 223px;
+
 }
 .datepicker:after {
   content: '';
+  /*
   display: inline-block;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-bottom: 6px solid #ffffff;
+  */
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid #ffffff;
+  border-width: 6px 0 6px 6px;
+
+
   position: absolute;
-  top: -6px;
-  left: 7px;
+  /*top: -6px;
+  left: 7px;*/
+  top: 137px;
+  left: 223px;
+
 }
+
 .datepicker > div {
   display: none;
 }

@@ -471,4 +471,4 @@
 							'</div>'+
 						'</div>';
 
-}( window.jQuery );
+}( jqchat );
