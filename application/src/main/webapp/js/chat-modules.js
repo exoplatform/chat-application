@@ -515,6 +515,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type==="type-link") {
       var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
       out += url;
+    } else if (options.type==="type-task") {
+      var url = options.task+
+        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
+      out += url;
     } else {
       out += message;
     }

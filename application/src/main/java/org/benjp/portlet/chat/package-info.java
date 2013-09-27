@@ -25,7 +25,8 @@
                 @Binding(value = org.exoplatform.services.jcr.ext.app.SessionProviderService.class),
                 @Binding(value = org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator.class),
                 @Binding(value = org.exoplatform.services.organization.OrganizationService.class),
-                @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class)
+                @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class),
+                @Binding(value = org.exoplatform.calendar.service.CalendarService.class)
         }
 )
 

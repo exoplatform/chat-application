@@ -29,6 +29,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
     chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
     chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
+    chatApplication.jzCreateTask = $chatApplication.jzURL("ChatApplication.createTask");
     chatApplication.jzGetStatus = chatServerURL+"/getStatus";
     chatApplication.jzSetStatus = chatServerURL+"/setStatus";
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
@@ -431,14 +432,53 @@ var chatApplication = new ChatApplication();
       chatApplication.search(filter);
     });
 
+    $(".create-task-button").on("click", function() {
+      var username = $("#task-add-user").val();
+      var fullname = $("#task-add-fullname").val();
+      var task = $("#task-add-task").val();
+      var dueDate = $("#task-add-date").val();
+      if (username === "" || fullname === "" || task === "" || dueDate === "") {
+        return;
+      }
+
+      $.ajax({
+        url: chatApplication.jzCreateTask,
+        data: {"username": username,
+          "dueDate": dueDate,
+          "task": task
+        },
+        success:function(response){
+
+          var options = {
+            type: "type-task",
+            username: username,
+            fullname: fullname,
+            dueDate: dueDate,
+            task: task
+          };
+          var msg = task;
+
+          chatApplication.chatRoom.sendMessage(msg, options, "true");
+          hideMeetingPanel();
+
+
+        },
+        error:function (xhr, status, error){
+          console.log("error");
+        }
+      });
+
+    });
+
     $('#task-add-user').keyup(function(event) {
       var prefix = "task";
       var filter = $(this).val();
 
-      searchUsers(filter, prefix, event, function(name, fullname) {
+      searchUsers(filter, prefix, event, true, function(name, fullname) {
         //addTeamUserLabel(name, fullname);
         console.log(name+" : "+fullname);
         $('#task-add-user').val(name);
+        $('#task-add-fullname').val(fullname);
         $(".meeting-action-task-panel").trigger("click");
         setTimeout(hideResults, 100);
       });
@@ -471,14 +511,14 @@ var chatApplication = new ChatApplication();
       var prefix = "team";
       var filter = $(this).val();
 
-      searchUsers(filter, prefix, event, function(name, fullname) {
+      searchUsers(filter, prefix, event, false, function(name, fullname) {
         addTeamUserLabel(name, fullname);
       });
 
 
     });
 
-    function searchUsers(filter, prefix, event, callback) {
+    function searchUsers(filter, prefix, event, withCurrentUser,callback) {
 
       if ( event.which === 13 ) { // ENTER
         $("."+prefix+"-user").each(function() {
@@ -525,7 +565,9 @@ var chatApplication = new ChatApplication();
           var $userResults = $("."+prefix+"-users-results");
           $userResults.css("display", "none");
           var html = "";
-          users = users.filter({name:{"!is":chatApplication.username}});
+          if (!withCurrentUser) {
+            users = users.filter({name:{"!is":chatApplication.username}});
+          }
           $("."+prefix+"-user-label").each(function() {
             var name = $(this).attr("data-name");
             users = users.filter({name:{"!is":name}});
@@ -798,6 +840,8 @@ function ChatApplication() {
   this.jzGetStatus = "";
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
+  this.jzUpload = "";
+  this.jzCreateTask = "";
   this.jzUsers = "";
   this.jzDelete = "";
   this.jzEdit = "";

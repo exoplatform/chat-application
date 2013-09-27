@@ -205,10 +205,11 @@
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="190" data-title="Assign task">
                   <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
+                  <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Due" style="width:130px;" id="task-add-date">
-                  <a type="button" class="btn btn-primary pull-right"><i class="icon-check icon-white"></i> Post</a>
+                  <a type="button" class="btn btn-primary pull-right create-task-button"><i class="icon-check icon-white"></i> Post</a>
                 </div>
 
               </div>

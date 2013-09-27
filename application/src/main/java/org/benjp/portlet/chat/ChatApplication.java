@@ -41,10 +41,9 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SessionScoped
@@ -75,6 +74,10 @@ public class ChatApplication
 
   @Inject
   DocumentsData documentsData_;
+
+  @Inject
+  CalendarService calendarService_;
+
 
   @Inject
   public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
@@ -233,6 +236,27 @@ public class ChatApplication
 
   @Ajax
   @Resource
+  public Response.Content createTask(String username, String dueDate, String task) {
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+    Date today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    try {
+      calendarService_.saveTask(username, task, today, sdf.parse(dueDate+" 23:59"));
+    } catch (ParseException e) {
+      log.info("parse exception during task creation");
+      return Response.notFound("Error during task creation");
+    } catch (Exception e) {
+      log.info("exception during task creation");
+      return Response.notFound("Error during task creation");
+    }
+
+
+    return Response.ok("{\"status\":\"ok\"}")
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+
+  }
+
   public Response.Content createDemoUser(String fullname, String email, String isPublic)
   {
     String out = "created";
