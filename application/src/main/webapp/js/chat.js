@@ -151,7 +151,7 @@ var chatApplication = new ChatApplication();
     $(".meeting-action-link").on("click", function() {
       var toggleClass = $(this).attr("data-toggle");
 
-      if (toggleClass === "meeting-action-flag-panel" || toggleClass === "meeting-action-event-panel" || toggleClass === "meeting-action-task-panel") return;
+      if (toggleClass === "meeting-action-flag-panel" || toggleClass === "meeting-action-event-panel") return;
 
       $(".meeting-action-panel").hide();
       $(".input-with-value").each(function() {
@@ -271,6 +271,13 @@ var chatApplication = new ChatApplication();
     }
 
     $(".input-with-value").on("click", function() {
+      if ($(this).hasClass("input-default")) {
+        $(this).val("");
+        $(this).removeClass("input-default");
+      }
+    });
+
+    $(".input-with-value").on("focus", function() {
       if ($(this).hasClass("input-default")) {
         $(this).val("");
         $(this).removeClass("input-default");
@@ -424,52 +431,102 @@ var chatApplication = new ChatApplication();
       chatApplication.search(filter);
     });
 
+    $('#task-add-user').keyup(function(event) {
+      var prefix = "task";
+      var filter = $(this).val();
+
+      searchUsers(filter, prefix, event, function(name, fullname) {
+        //addTeamUserLabel(name, fullname);
+        console.log(name+" : "+fullname);
+        $('#task-add-user').val(name);
+        $(".meeting-action-task-panel").trigger("click");
+        setTimeout(hideResults, 100);
+      });
+
+    });
+
+    $('#task-add-user').on("blur", function(event) {
+      hideResults();
+    });
+
+    $('#task-add-date').datepicker();
+
+
+    $('#task-add-date').datepicker().on('changeDate', function(ev){
+      $('#task-add-date').datepicker("hide");
+    }).on('show', function(ev){
+        var top = jqchat('.datepicker').position().top - 160;
+        var left = jqchat('.datepicker').position().left - 230;
+        jqchat('.datepicker').css("top", top+"px");
+        jqchat('.datepicker').css("left", left+"px");
+    });
+
+    function hideResults() {
+      var $userResults = $(".task-users-results");
+      $userResults.css("display", "none");
+      $userResults.html("");
+    }
+
     $('#team-add-user').keyup(function(event) {
+      var prefix = "team";
+      var filter = $(this).val();
+
+      searchUsers(filter, prefix, event, function(name, fullname) {
+        addTeamUserLabel(name, fullname);
+      });
+
+
+    });
+
+    function searchUsers(filter, prefix, event, callback) {
+
       if ( event.which === 13 ) { // ENTER
-        $(".team-user").each(function() {
-          if ($(this).hasClass("team-user-selected")) {
+        $("."+prefix+"-user").each(function() {
+          if ($(this).hasClass(prefix+"-user-selected")) {
             var name = $(this).attr("data-name");
             var fullname = $(this).attr("data-fullname");
-            addTeamUserLabel(name, fullname);
+            if (typeof callback === "function") {
+              callback(name, fullname);
+            }
           }
         });
       } else if ( event.which === 40 || event.which === 38) { // 40:DOWN || 38:UP
         var isUp = (event.which === 38);
-        var total = $(".team-user").size();
+        var total = $("."+prefix+"-user").size();
         var done = false;
-        $(".team-user").each(function(index) {
-          if (!done && $(this).hasClass("team-user-selected")) {
+        $("."+prefix+"-user").each(function(index) {
+          if (!done && $(this).hasClass(prefix+"-user-selected")) {
             done = true;
-            $(".team-user").removeClass("team-user-selected");
+            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
             if (isUp) {
               if (index === 0)
-                $(".team-user").last().addClass("team-user-selected");
+                $("."+prefix+"-user").last().addClass(prefix+"-user-selected");
               else
-                $(this).prev().addClass("team-user-selected");
+                $(this).prev().addClass(prefix+"-user-selected");
             } else {
               if (index === total-1)
-                $(".team-user").first().addClass("team-user-selected");
+                $("."+prefix+"-user").first().addClass(prefix+"-user-selected");
               else
-                $(this).next().addClass("team-user-selected");
+                $(this).next().addClass(prefix+"-user-selected");
             }
           }
         });
         return;
       }
-      var filter = $(this).val();
+
       if (filter === "") {
-        var $userResults = $(".team-users-results");
+        var $userResults = $("."+prefix+"-users-results");
         $userResults.css("display", "none");
         $userResults.html("");
       } else {
         chatApplication.getAllUsers(filter, function (jsonData) {
           var users = TAFFY(jsonData.users);
           var users = users();
-          var $userResults = $(".team-users-results");
+          var $userResults = $("."+prefix+"-users-results");
           $userResults.css("display", "none");
           var html = "";
           users = users.filter({name:{"!is":chatApplication.username}});
-          $(".team-user-label").each(function() {
+          $("."+prefix+"-user-label").each(function() {
             var name = $(this).attr("data-name");
             users = users.filter({name:{"!is":name}});
           });
@@ -478,30 +535,32 @@ var chatApplication = new ChatApplication();
             $userResults.css("display", "block");
             if (user.status == "offline") user.status = "invisible";
             var classSel = "";
-            if (number === 0) classSel = "team-user-selected"
-            html += "<div class='team-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-            html += "  <span class='team-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
-            html += "  <span class='chat-status-team chat-status-"+user.status+"'></span>";
-            html += "  <span class='team-user-fullname'>"+user.fullname+"</span>";
-            html += "  <span class='team-user-name'>"+user.name+"</span>";
+            if (number === 0) classSel = prefix+"-user-selected"
+            html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+            html += "  <span class='"+prefix+"-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += "  <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
+            html += "  <span class='"+prefix+"-user-fullname'>"+user.fullname+"</span>";
+            html += "  <span class='"+prefix+"-user-name'>"+user.name+"</span>";
             html += "</div>";
           });
           $userResults.html(html);
 
-          $('.team-user').on("mouseover", function() {
-            $(".team-user").removeClass("team-user-selected");
-            $(this).addClass("team-user-selected");
+          $('.'+prefix+'-user').on("mouseover", function() {
+            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
+            $(this).addClass(prefix+"-user-selected");
           });
 
-          $('.team-user').on("click", function() {
+          $('.'+prefix+'-user').on("click", function() {
             var name = $(this).attr("data-name");
             var fullname = $(this).attr("data-fullname");
-            addTeamUserLabel(name, fullname);
+            if (typeof callback === "function") {
+              callback(name, fullname);
+            }
           });
 
         });
       }
-    });
+    }
 
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');

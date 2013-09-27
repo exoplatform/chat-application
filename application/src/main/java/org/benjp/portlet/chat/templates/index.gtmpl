@@ -203,6 +203,13 @@
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
                   <a type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
                 </div>
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="190" data-title="Assign task">
+                  <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
+                  <div class="task-users-results" style="display:none;"></div>
+                  <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
+                  <input type="text" class="input-with-value" data-value="Due" style="width:130px;" id="task-add-date">
+                  <a type="button" class="btn btn-primary pull-right"><i class="icon-check icon-white"></i> Post</a>
+                </div>
 
               </div>
             </div>
@@ -210,11 +217,11 @@
           <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
-            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task (Coming Soon)</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="icon-file"></i> Upload File</a></li>
             <li class="divider"></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li>
+            <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
             <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
           </ul>
@@ -342,13 +349,6 @@
           <span class="action-label"></span>
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a type="button" class="btn btn-primary  pull-right"><i class="icon-calendar icon-white"></i> Post</a>
-        </div>
-        <div class="meeting-action-panel meeting-action-task-panel">
-          <input type="text" class="span4 input-with-value" data-value="Task">
-          <input type="text" class="span3 input-with-value" data-value="Assignee">
-          <input type="text" class="span2 input-with-value" data-value="Due">
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right"><i class="icon-check icon-white"></i> Post</a>
         </div>
         <div class="meeting-action-panel meeting-action-flag-panel">
           <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">

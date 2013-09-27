@@ -146,7 +146,7 @@
 
 }
 
-.team-users-results {
+.team-users-results, .task-users-results {
   position: fixed;
   margin-top: 5px;
   width: 385px;
@@ -154,10 +154,10 @@
   background-color: white;
   border-radius: 4px;
 
-  .team-user {
+  .team-user, .task-user {
     margin: 5px;
 
-    .chat-status-team {
+    .chat-status-team, .chat-status-task {
       padding: 0;
       display: inline-block;
       margin: 0 2px;
@@ -167,11 +167,11 @@
       vertical-align: middle;
     }
 
-    .team-user-fullname {
+    .team-user-fullname, .task-user-fullname {
       font-weight: bold;
     }
 
-    .team-user-name {
+    .team-user-name, .task-user-name  {
       float: right;
       margin-right: 5px;
       font-style: italic;
@@ -180,12 +180,17 @@
     }
   }
 
-  .team-user-selected {
+  .team-user-selected, .task-user-selected {
     background-color: #EEE;
   }
 
+}
 
-
+.task-users-results {
+  left: 5px;
+  position: absolute;
+  top: 90px;
+  width: 310px;
 }
 
 
