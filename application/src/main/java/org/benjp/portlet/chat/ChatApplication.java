@@ -249,7 +249,7 @@ public class ChatApplication
     today.setHours(0);
     today.setMinutes(0);
     try {
-      calendarService_.saveTask(username, task, today, sdf.parse(dueDate+" 23:59"));
+      calendarService_.saveTask(remoteUser_, username, task, today, sdf.parse(dueDate+" 23:59"));
     } catch (ParseException e) {
       log.info("parse exception during task creation");
       return Response.notFound("Error during task creation");

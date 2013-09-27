@@ -27,32 +27,6 @@ public class CalendarService {
     organizationService_ = organizationService;
   }
 
-/*
-  private void saveEvent(String username, boolean isUserEvent, String calId, String summary,
-                         int day, int fromHour, int fromMin, int toHour, int toMin) throws Exception
-  {
-    CalendarEvent event = new CalendarEvent();
-    event.setCalendarId(calId);
-    event.setSummary(summary);
-    event.setEventType(CalendarEvent.TYPE_EVENT);
-    event.setRepeatType(CalendarEvent.RP_NOREPEAT);
-    event.setPrivate(isUserEvent);
-    java.util.Calendar calendar = java.util.Calendar.getInstance();
-    calendar.setTimeInMillis(calendar.getTime().getTime());
-    calendar.set(java.util.Calendar.DAY_OF_WEEK, day);
-    calendar.set(java.util.Calendar.HOUR_OF_DAY, fromHour);
-    calendar.set(java.util.Calendar.MINUTE, fromMin);
-    event.setFromDateTime(calendar.getTime());
-    calendar.set(java.util.Calendar.HOUR_OF_DAY, toHour);
-    calendar.set(java.util.Calendar.MINUTE, toMin);
-    event.setToDateTime(calendar.getTime());
-    if (isUserEvent)
-      calendarService_.saveUserEvent(username, calId, event, true);
-    else
-      calendarService_.savePublicEvent(calId, event, true);
-  }
-*/
-
   protected void saveEvent(String user, String calName, String summary,
                          Date from, Date to) throws Exception
   {
@@ -67,11 +41,13 @@ public class CalendarService {
       event.setFromDateTime(from);
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
+      event.setTaskDelegator(user);
+      event.setDescription("Created by "+user);
       calendarService_.savePublicEvent(calId, event, true);
     }
   }
 
-  protected void saveTask(String username, String summary,
+  protected void saveTask(String currentUser, String username, String summary,
                          Date from, Date to) throws Exception
   {
     String calId = getFirstCalendarsId(username);
@@ -85,6 +61,8 @@ public class CalendarService {
       task.setFromDateTime(from);
       task.setToDateTime(to);
       task.setPriority(CalendarEvent.PRIORITY_NORMAL);
+      task.setTaskDelegator(currentUser);
+      task.setDescription("Created by "+currentUser+" for "+username);
       calendarService_.saveUserEvent(username, calId, task, true);
     }
   }

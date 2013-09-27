@@ -1753,13 +1753,17 @@ ChatApplication.prototype.loadRoom = function() {
     jqchat(".team-button").css("display", "none");
     jqchat(".target-user-fullname").text(this.targetFullname);
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
+    ////// USER
     {
+      jqchat(".meeting-action-event").css("display", "none");
+      jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif;'");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
     }
     else if (this.targetUser.indexOf("team-")===-1)
+    ////// SPACE
     {
 //      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "block");
@@ -1769,6 +1773,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
     }
     else
+    ////// TEAM
     {
 
       jqchat.ajax({
@@ -1791,7 +1796,7 @@ ChatApplication.prototype.loadRoom = function() {
       });
 //      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "none");
-      jqchat(".meeting-action-task").css("display", "none");
+      jqchat(".meeting-action-task").css("display", "block");
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
