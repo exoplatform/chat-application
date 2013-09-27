@@ -208,8 +208,27 @@
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
-                  <input type="text" class="input-with-value" data-value="Due" style="width:130px;" id="task-add-date">
+                  <input type="text" class="input-with-value" data-value="Due" style="width:130px;" id="task-add-date" data-date="<%=today%>" >
                   <a type="button" class="btn btn-primary pull-right create-task-button"><i class="icon-check icon-white"></i> Post</a>
+                </div>
+                <div class="meeting-action-panel meeting-action-event-panel" data-height="220" data-title="Add event">
+                  <input type="text" class="input-with-value" data-value="Event" id="event-add-summary">
+                  <span class="action-label" style="display: inline-block;width: 40px;">from</span>
+                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:80px;" id="event-add-start-date">
+                  <span class="uiSelectbox">
+                    <select class="selectbox" id="event-add-start-time">
+                      <option value="all-day">All Day</option>
+                    </select>
+                  </span>
+                  <br>
+                  <span class="action-label" style="display: inline-block;width: 40px;">to</span>
+                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:80px;" id="event-add-end-date">
+                  <span class="uiSelectbox">
+                    <select class="selectbox" id="event-add-end-time">
+                      <option value="all-day">All Day</option>
+                    </select>
+                  </span>
+                  <a type="button" class="btn btn-primary pull-right create-event-button"><i class="icon-calendar icon-white"></i> Post</a>
                 </div>
 
               </div>
@@ -217,7 +236,7 @@
           </div>
           <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
-            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event (Coming Soon)</a></li>
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="icon-file"></i> Upload File</a></li>
@@ -232,125 +251,7 @@
           <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
         </div>
 
-<%/*
-        <div class="meeting-action-panel meeting-action-event-panel">
-          <input type="text" class="span2 input-with-value" data-value="Event">
-          <span class="action-label">from</span>
-          <input type="text" onfocus="eXo.webui.UICalendar.init(this,false,&quot;MM/dd/yyyy&quot;,&quot;08/20/2013&quot;,&quot;January,February,March,April,May,June,July,August,September,October,November,December,&quot;);" onkeyup="eXo.webui.UICalendar.show();" name="StartEvent" value="08/20/2013" onclick="event.cancelBubble = true" onkeydown="eXo.webui.UICalendar.onTabOut(event)" style="width:80px;">
-        <span class="uiSelectbox">
-          <select class="selectbox" name="start_time">
-            <option value="all-day">All Day</option>
-            <option value="00:00">12:00 AM</option>
-            <option value="00:30">12:30 AM</option>
-            <option value="01:00">01:00 AM</option>
-            <option value="01:30">01:30 AM</option>
-            <option value="02:00">02:00 AM</option>
-            <option value="02:30">02:30 AM</option>
-            <option value="03:00">03:00 AM</option>
-            <option value="03:30">03:30 AM</option>
-            <option value="04:00">04:00 AM</option>
-            <option value="04:30">04:30 AM</option>
-            <option value="05:00">05:00 AM</option>
-            <option value="05:30">05:30 AM</option>
-            <option value="06:00">06:00 AM</option>
-            <option value="06:30">06:30 AM</option>
-            <option value="07:00">07:00 AM</option>
-            <option value="07:30">07:30 AM</option>
-            <option value="08:00">08:00 AM</option>
-            <option value="08:30">08:30 AM</option>
-            <option value="09:00">09:00 AM</option>
-            <option value="09:30">09:30 AM</option>
-            <option value="10:00">10:00 AM</option>
-            <option value="10:30">10:30 AM</option>
-            <option value="11:00">11:00 AM</option>
-            <option value="11:30">11:30 AM</option>
-            <option value="12:00">12:00 PM</option>
-            <option value="12:30">12:30 PM</option>
-            <option value="13:00">01:00 PM</option>
-            <option value="13:30">01:30 PM</option>
-            <option value="14:00">02:00 PM</option>
-            <option value="14:30">02:30 PM</option>
-            <option value="15:00">03:00 PM</option>
-            <option value="15:30">03:30 PM</option>
-            <option value="16:00">04:00 PM</option>
-            <option value="16:30">04:30 PM</option>
-            <option value="17:00">05:00 PM</option>
-            <option value="17:30">05:30 PM</option>
-            <option value="18:00">06:00 PM</option>
-            <option value="18:30">06:30 PM</option>
-            <option value="19:00">07:00 PM</option>
-            <option value="19:30">07:30 PM</option>
-            <option value="20:00">08:00 PM</option>
-            <option value="20:30">08:30 PM</option>
-            <option value="21:00">09:00 PM</option>
-            <option value="21:30">09:30 PM</option>
-            <option value="22:00">10:00 PM</option>
-            <option value="22:30">10:30 PM</option>
-            <option value="23:00">11:00 PM</option>
-            <option value="23:30">11:30 PM</option>
-            <option value="23:59">11:59 PM</option>
-          </select>
-        </span>
-          <span class="action-label">to</span>
-          <input type="text" onfocus="eXo.webui.UICalendar.init(this,false,&quot;MM/dd/yyyy&quot;,&quot;08/20/2013&quot;,&quot;January,February,March,April,May,June,July,August,September,October,November,December,&quot;);" onkeyup="eXo.webui.UICalendar.show();" name="EndEvent" value="08/20/2013" onclick="event.cancelBubble = true" onkeydown="eXo.webui.UICalendar.onTabOut(event)" style="width:80px;">
-        <span class="uiSelectbox">
-          <select class="selectbox" name="end_time">
-            <option value="all-day">All Day</option>
-            <option value="00:00">12:00 AM</option>
-            <option value="00:30">12:30 AM</option>
-            <option value="01:00">01:00 AM</option>
-            <option value="01:30">01:30 AM</option>
-            <option value="02:00">02:00 AM</option>
-            <option value="02:30">02:30 AM</option>
-            <option value="03:00">03:00 AM</option>
-            <option value="03:30">03:30 AM</option>
-            <option value="04:00">04:00 AM</option>
-            <option value="04:30">04:30 AM</option>
-            <option value="05:00">05:00 AM</option>
-            <option value="05:30">05:30 AM</option>
-            <option value="06:00">06:00 AM</option>
-            <option value="06:30">06:30 AM</option>
-            <option value="07:00">07:00 AM</option>
-            <option value="07:30">07:30 AM</option>
-            <option value="08:00">08:00 AM</option>
-            <option value="08:30">08:30 AM</option>
-            <option value="09:00">09:00 AM</option>
-            <option value="09:30">09:30 AM</option>
-            <option value="10:00">10:00 AM</option>
-            <option value="10:30">10:30 AM</option>
-            <option value="11:00">11:00 AM</option>
-            <option value="11:30">11:30 AM</option>
-            <option value="12:00">12:00 PM</option>
-            <option value="12:30">12:30 PM</option>
-            <option value="13:00">01:00 PM</option>
-            <option value="13:30">01:30 PM</option>
-            <option value="14:00">02:00 PM</option>
-            <option value="14:30">02:30 PM</option>
-            <option value="15:00">03:00 PM</option>
-            <option value="15:30">03:30 PM</option>
-            <option value="16:00">04:00 PM</option>
-            <option value="16:30">04:30 PM</option>
-            <option value="17:00">05:00 PM</option>
-            <option value="17:30">05:30 PM</option>
-            <option value="18:00">06:00 PM</option>
-            <option value="18:30">06:30 PM</option>
-            <option value="19:00">07:00 PM</option>
-            <option value="19:30">07:30 PM</option>
-            <option value="20:00">08:00 PM</option>
-            <option value="20:30">08:30 PM</option>
-            <option value="21:00">09:00 PM</option>
-            <option value="21:30">09:30 PM</option>
-            <option value="22:00">10:00 PM</option>
-            <option value="22:30">10:30 PM</option>
-            <option value="23:00">11:00 PM</option>
-            <option value="23:30">11:30 PM</option>
-            <option value="23:59">11:59 PM</option>
-          </select>
-        </span>
-          <span class="action-label"></span>
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary  pull-right"><i class="icon-calendar icon-white"></i> Post</a>
-        </div>
+        <%/*
         <div class="meeting-action-panel meeting-action-flag-panel">
           <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>

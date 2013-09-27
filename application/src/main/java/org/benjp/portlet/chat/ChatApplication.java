@@ -41,6 +41,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -113,6 +114,11 @@ public class ChatApplication
 
     String fullscreen = portletPreferences.getValue("fullscreen", "false");
 
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+    Date today = Calendar.getInstance().getTime();
+    String todayDate = df.format(today);
+
+
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
@@ -124,6 +130,7 @@ public class ChatApplication
             .set("fullscreen", fullscreen)
             .set("weemoKey", chatWeemoKey)
             .set("demoMode", demoMode)
+            .set("today", todayDate)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withStylesheets("chat-" + view);
@@ -243,6 +250,27 @@ public class ChatApplication
     today.setMinutes(0);
     try {
       calendarService_.saveTask(username, task, today, sdf.parse(dueDate+" 23:59"));
+    } catch (ParseException e) {
+      log.info("parse exception during task creation");
+      return Response.notFound("Error during task creation");
+    } catch (Exception e) {
+      log.info("exception during task creation");
+      return Response.notFound("Error during task creation");
+    }
+
+
+    return Response.ok("{\"status\":\"ok\"}")
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+
+  }
+
+  @Ajax
+  @Resource
+  public Response.Content createEvent(String space, String summary, String startDate, String startTime, String endDate, String endTime) {
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+    try {
+      calendarService_.saveEvent(remoteUser_, space, summary, sdf.parse(startDate+" "+startTime), sdf.parse(endDate+" "+endTime));
+
     } catch (ParseException e) {
       log.info("parse exception during task creation");
       return Response.notFound("Error during task creation");

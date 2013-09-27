@@ -30,6 +30,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
     chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
     chatApplication.jzCreateTask = $chatApplication.jzURL("ChatApplication.createTask");
+    chatApplication.jzCreateEvent = $chatApplication.jzURL("ChatApplication.createEvent");
     chatApplication.jzGetStatus = chatServerURL+"/getStatus";
     chatApplication.jzSetStatus = chatServerURL+"/setStatus";
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
@@ -152,7 +153,7 @@ var chatApplication = new ChatApplication();
     $(".meeting-action-link").on("click", function() {
       var toggleClass = $(this).attr("data-toggle");
 
-      if (toggleClass === "meeting-action-flag-panel" || toggleClass === "meeting-action-event-panel") return;
+      if (toggleClass === "meeting-action-flag-panel") return;
 
       $(".meeting-action-panel").hide();
       $(".input-with-value").each(function() {
@@ -489,17 +490,127 @@ var chatApplication = new ChatApplication();
       hideResults();
     });
 
-    $('#task-add-date').datepicker();
 
-
-    $('#task-add-date').datepicker().on('changeDate', function(ev){
-      $('#task-add-date').datepicker("hide");
+    var taskDate = $('#task-add-date').datepicker({
+      onRender: function(date) {
+        var nowTemp = new Date();
+        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+        return date.valueOf() < now.valueOf() ? 'disabled' : '';
+      }
+    }).on('changeDate', function(ev){
+        taskDate.hide();
     }).on('show', function(ev){
-        var top = jqchat('.datepicker').position().top - 160;
-        var left = jqchat('.datepicker').position().left - 230;
-        jqchat('.datepicker').css("top", top+"px");
-        jqchat('.datepicker').css("left", left+"px");
+        jqchat('.datepicker').each(function (){
+          var top = jqchat(this).position().top - 160;
+          var left = jqchat(this).position().left - 230;
+          jqchat(this).css("top", top+"px");
+          jqchat(this).css("left", left+"px");
+        });
+    }).data('datepicker');
+
+    $(".create-event-button").on("click", function() {
+      var space = chatApplication.targetFullname;
+      var summary = $("#event-add-summary").val();
+      var startDate = $("#event-add-start-date").val();
+      var startTime = $("#event-add-start-time").val();
+      var endDate = $("#event-add-end-date").val();
+      var endTime = $("#event-add-end-time").val();
+      if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "") {
+        return;
+      }
+
+      $.ajax({
+        url: chatApplication.jzCreateEvent,
+        data: {"space": space,
+          "summary": summary,
+          "startDate": startDate,
+          "startTime": startTime,
+          "endDate": endDate,
+          "endTime": endTime
+        },
+        success:function(response){
+
+          var options = {
+            type: "type-event",
+            summary: summary,
+            space: space,
+            startDate: startDate,
+            startTime: startTime,
+            endDate: endDate,
+            endTime: endTime
+          };
+          var msg = summary;
+
+          chatApplication.chatRoom.sendMessage(msg, options, "true");
+          hideMeetingPanel();
+
+
+        },
+        error:function (xhr, status, error){
+          console.log("error");
+        }
+      });
+
     });
+
+
+    var startDate = $('#event-add-start-date').datepicker({
+      onRender: function(date) {
+        var nowTemp = new Date();
+        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+        return date.valueOf() < now.valueOf() ? 'disabled' : '';
+      }
+    }).on('changeDate', function(ev){
+        var newDate = new Date(ev.date);
+        if (ev.date.valueOf() > endDate.date.valueOf()) {
+          endDate.setValue(newDate);
+        }
+        startDate.setValue(newDate);
+        startDate.hide();
+    }).on('show', function(ev){
+      jqchat('.datepicker').each(function (){
+        var top = jqchat(this).position().top - 160;
+        var left = jqchat(this).position().left - 230;
+        jqchat(this).css("top", top+"px");
+        jqchat(this).css("left", left+"px");
+      });
+    }).data('datepicker');
+
+    var endDate = $('#event-add-end-date').datepicker({
+      onRender: function(date) {
+        var nowTemp = new Date();
+        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+        return ( date.valueOf() < now.valueOf() || date.valueOf() < startDate.date.valueOf()) ? 'disabled' : '';
+      }
+    }).on('changeDate', function(ev){
+        endDate.hide();
+    }).on('show', function(ev){
+      jqchat('.datepicker').each(function (){
+        var top = jqchat(this).position().top - 160;
+        var left = jqchat(this).position().left - 230;
+        jqchat(this).css("top", top+"px");
+        jqchat(this).css("left", left+"px");
+      });
+    }).data('datepicker');
+
+    addTimeOptions("#event-add-start-time");
+    addTimeOptions("#event-add-end-time");
+
+    function addTimeOptions(id) {
+      var select = $(id);
+      for (var h=0 ; h<24 ; h++) {
+        for (var m=0 ; m<60 ; m+=30) {
+          var hh = h;
+          var mm = m;
+          if (h<10) hh = "0"+hh;
+          if (m<10) mm = "0"+mm;
+          var time = hh+":"+mm;
+          select.append('<option value="'+time+'">'+time+'</option>');
+
+        }
+      }
+
+    }
 
     function hideResults() {
       var $userResults = $(".task-users-results");
