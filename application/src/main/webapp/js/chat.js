@@ -1770,7 +1770,7 @@ ChatApplication.prototype.loadRoom = function() {
 //      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
-      var spaceName = this.targetFullname.toLowerCase().replace(" ", "_");
+      var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/social-resources/skin/images/ShareImages/SpaceAvtDefault.png';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
