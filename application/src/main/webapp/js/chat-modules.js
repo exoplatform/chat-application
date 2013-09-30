@@ -581,7 +581,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
             var id = w.substr(31);
             w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
             w += "<span class='invisible-text'>"+link+"</span>";
-          } else if (w.indexOf("[/quote]")===-1) {
+          } else if (w.indexOf("[/quote]")===-1 && (w.indexOf("http:")===0 || w.indexOf("https:")===0 || w.indexOf("ftp:")===0) ) {
             w = "<a href='"+w+"' target='_new'>"+w+"</a>";
           }
         } else if (w == ":-)" || w==":)") {
