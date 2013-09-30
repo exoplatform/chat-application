@@ -51,6 +51,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     message = message.replaceAll("\"", "&quot;");
     message = message.replaceAll("\n", "<br/>");
     message = message.replaceAll("\\\\", "&#92");
+    message = message.replaceAll("\t", "  ");
     if (options!=null)
     {
       options = options.replaceAll("<", "&lt;");

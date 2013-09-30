@@ -149,6 +149,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
       }
 
 
+      res = res.split("\t").join(" ");
       // handle the response data
       var data = snack.parseJSON(res);
       var lastTS = jzGetParam("lastTS"+thiss.username);

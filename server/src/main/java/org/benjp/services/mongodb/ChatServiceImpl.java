@@ -80,6 +80,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     message = message.replaceAll("\"", "&quot;");
     message = message.replaceAll("\n", "<br/>");
     message = message.replaceAll("\\\\", "&#92");
+    message = message.replaceAll("\t", "  ");
 
     BasicDBObject doc = new BasicDBObject();
     doc.put("user", user);
