@@ -12,13 +12,14 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, chatIntervalChat, isPublic, labels) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, labels) {
   this.id = "";
   this.messages = "";
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
   this.jzChatGetRoom = jzChatGetRoom;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
+  this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
   this.chatEventInt = -1;
   this.chatIntervalChat = chatIntervalChat;
   this.username = "";
@@ -206,6 +207,30 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
       room: room,
       user: thiss.username,
       token: thiss.token,
+      fromTimestamp: fromTimestamp,
+      toTimestamp: toTimestamp
+    }
+  }, function (err, response){
+    if (!err) {
+      if (typeof callback === "function") {
+        callback(response);
+      }
+    }
+  });
+
+};
+
+ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, callback) {
+  var serverBase = window.location.href.substr(0, 9+window.location.href.substr(9).indexOf("/"));
+
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatGetMeetingNotes,
+    data: {
+      room: room,
+      user: thiss.username,
+      token: thiss.token,
+      serverBase: serverBase,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp
     }
@@ -501,16 +526,24 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var callOwner = jzGetParam("weemoCallHandlerOwner");
       if (this.username === callOwner) {
         out += "<br>";
-        out += "<span style='line-height: 22px;display: block;margin-bottom: 10px;'>" +
-          "<a href='#' class='send-meeting-notes' " +
+        out += "<div style='display: block;margin: 10px 0;'>" +
+          "<a href='#' class='send-meeting-notes meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
           "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
           ">Send meeting notes</a>" +
+          " - " +
+          "<a href='#' class='save-meeting-notes meeting-notes' " +
+          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
+          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
+          "data-room='"+this.id+"' " +
+          "data-owner='"+this.username +"' " +
+          "data-id='"+options.timestamp+"' " +
+          ">Save as Wiki</a>" +
           "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
-          "</span>";
+          "</div>";
       }
 
     } else if (options.type==="type-link") {

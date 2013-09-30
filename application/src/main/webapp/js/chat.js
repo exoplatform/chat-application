@@ -37,6 +37,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatSend = chatServerURL+"/send";
     chatApplication.jzChatRead = chatServerURL+"/read";
     chatApplication.jzChatSendMeetingNotes = chatServerURL+"/sendMeetingNotes";
+    chatApplication.jzChatGetMeetingNotes = chatServerURL+"/getMeetingNotes";
     chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
     chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
     chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
@@ -948,6 +949,7 @@ function ChatApplication() {
   this.jzChatSend = "";
   this.jzChatRead = "";
   this.jzChatSendMeetingNotes = "";
+  this.jzChatGetMeetingNotes = "";
   this.jzGetStatus = "";
   this.jzSetStatus = "";
   this.jzMaintainSession = "";
@@ -1214,7 +1216,7 @@ ChatApplication.prototype.resize = function() {
  */
 ChatApplication.prototype.initChat = function() {
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.chatIntervalChat, this.isPublic, this.labels);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.labels);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
@@ -1897,6 +1899,34 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
       chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
         if (response === "sent") {
           console.log("sent");
+          jqchat("#"+id).animate({
+            opacity: "toggle"
+          }, 200 , function() {
+            jqchat(this).animate({
+              opacity: "toggle"
+            }, 3000);
+          });
+        }
+      });
+
+    });
+
+  });
+
+  jqchat(".save-meeting-notes").on("click", function () {
+    jqchat(this).animate({
+      opacity: "toggle"
+    }, 200, function() {
+      var room = jqchat(this).attr("data-room");
+      var from = jqchat(this).attr("data-from");
+      var to = jqchat(this).attr("data-to");
+      var id = jqchat(this).attr("data-id");
+
+      from = Math.round(from)-1;
+      to = Math.round(to)+1;
+      chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
+        if (response !== "ko") {
+          console.log(response);
           jqchat("#"+id).animate({
             opacity: "toggle"
           }, 200 , function() {

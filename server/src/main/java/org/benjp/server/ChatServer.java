@@ -24,6 +24,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import juzu.*;
+import juzu.request.ResourceContext;
 import juzu.template.Template;
 import org.benjp.listener.GuiceManager;
 import org.benjp.model.*;
@@ -96,7 +97,7 @@ public class ChatServer
 
 //    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
     RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), notificationService, userService, tokenService);
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -149,7 +150,7 @@ public class ChatServer
     }
 
 
-    return Response.ok("ok").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok("ok").withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -170,7 +171,7 @@ public class ChatServer
     }
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
-    return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -249,6 +250,61 @@ public class ChatServer
     }
 
     return Response.ok("sent").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/getMeetingNotes")
+  public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp, String toTimestamp, String serverBase) throws IOException
+  {
+    if (!tokenService.hasUserWithToken(user,  token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    Long from = null;
+    Long to = null;
+    String xwiki = "";
+    try {
+      if (fromTimestamp!=null && !"".equals(fromTimestamp))
+        from = Long.parseLong(fromTimestamp);
+    } catch (NumberFormatException nfe) {
+      log.info("fromTimestamp is not a valid Long number");
+    }
+    try {
+      if (toTimestamp!=null && !"".equals(toTimestamp))
+        to = Long.parseLong(toTimestamp);
+    } catch (NumberFormatException nfe) {
+      log.info("fromTimestamp is not a valid Long number");
+    }
+    String data = chatService.read(room, userService, false, from, to);
+    BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    if (datao.containsField("messages")) {
+      List<UserBean> users = userService.getUsers(room);
+      ReportBean reportBean = new ReportBean();
+      reportBean.fill((BasicDBList) datao.get("messages"), users);
+
+      String roomName = "";
+      List<SpaceBean> spaces = userService.getSpaces(user);
+      for (SpaceBean spaceBean:spaces)
+      {
+        if (room.equals(spaceBean.getRoom()))
+        {
+          roomName = spaceBean.getDisplayName();
+        }
+      }
+      List<RoomBean> roomBeans = userService.getTeams(user);
+      for (RoomBean roomBean:roomBeans)
+      {
+        if (room.equals(roomBean.getRoom()))
+        {
+          roomName = roomBean.getFullname();
+        }
+      }
+      xwiki = reportBean.getAsXWiki(serverBase);
+
+    }
+
+    return Response.ok(xwiki).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -434,7 +490,7 @@ public class ChatServer
       e.printStackTrace();
       return Response.notFound("No Room yet");
     }
-    return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -485,7 +541,7 @@ public class ChatServer
       data += "data: {\"total\": "+totalUnread+"}\n\n";
     }
 
-    return Response.ok(data).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -607,7 +663,7 @@ public class ChatServer
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
 

@@ -145,6 +145,80 @@ public class ReportBean {
     }
   }
 
+  public String getAsXWiki(String serverBase)
+  {
+    StringBuilder xwiki = new StringBuilder();
+
+    xwiki.append("\n{{section}}\n{{column}}\n");
+
+    /**
+     * Questions
+     */
+    xwiki.append("\n=== Questions ===\n");
+    for (String question:this.getQuestions())
+    {
+      xwiki.append(question).append("\n");
+    }
+
+    /**
+     * Links
+     */
+    xwiki.append("\n=== Links ===\n");
+    for (String link:this.getLinks())
+    {
+      xwiki.append("[[").append(link).append("]]").append("\n");
+    }
+
+    /**
+     * Files
+     */
+    xwiki.append("\n=== Files ===\n");
+    for (FileBean file:this.getFiles())
+    {
+      xwiki.append("[[");
+      xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/rest/private")).append("]]");
+      xwiki.append(" (").append(file.getSize()).append(")\n");
+    }
+
+    xwiki.append("\n{{/column}}\n");
+    /**
+     * Attendees
+     */
+    xwiki.append("\n{{column}}\n=== Attendees ===\n{{panel}}\n");
+    for (UserBean userBean:this.getAttendees()) {
+      if ("available".equals(userBean.getStatus()))
+        xwiki.append("(/) ");
+      else
+        xwiki.append("(x)");
+      xwiki.append(" [[").append(userBean.getFullname()).append(">>"+serverBase+"/portal/intranet/profile/").append(userBean.getName()).append("]]\n");
+    }
+    xwiki.append("\n{{/panel}}\n{{/column}}\n{{/section}}\n");
+
+    /**
+     * Discussions
+     */
+    xwiki.append("\n=== Discussions ===\n\n");
+    String prevUser = "";
+    for (MessageBean messageBean:this.getMessages())
+    {
+      xwiki.append("{{span style='padding: 4px; border-bottom: 1px dotted #DDD; width: 500px;display: block;'}}");
+      if (!messageBean.getUser().equals(prevUser))
+      {
+        xwiki.append("{{div style='padding: 4px;color: #CCC;margin:0;'}}");
+        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+messageBean.getUser()+"/soc:profile/soc:avatar||width='30' height='30']] {{/span}}");
+        xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullname()).append("{{/span}}");
+        xwiki.append("{{span style='font-size: smaller;vertical-align: top;'}}").append(messageBean.getDate()).append("{{/span}}");
+        xwiki.append("{{/div}}");
+      }
+      prevUser = messageBean.getUser();
+      xwiki.append("{{div style='padding: 0 4px; margin:0 0 0 40px;vertical-align: top;'}}").append(messageBean.getMessage()).append("{{/div}}");
+      xwiki.append("{{/span}}");
+    }
+
+
+    return xwiki.toString();
+  }
+
   public String getAsHtml(String title)
   {
     StringBuilder html = new StringBuilder();
