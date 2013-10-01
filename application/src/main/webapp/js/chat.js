@@ -1889,13 +1889,14 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".send-meeting-notes").on("click", function () {
+    var $this = $(this);
     jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
-      var room = jqchat(".send-meeting-notes").attr("data-room");
-      var from = jqchat(".send-meeting-notes").attr("data-from");
-      var to = jqchat(".send-meeting-notes").attr("data-to");
-      var id = jqchat(".send-meeting-notes").attr("data-id");
+      var room = $this.attr("data-room");
+      var from = $this.attr("data-from");
+      var to = $this.attr("data-to");
+      var id = $this.attr("data-id");
 
       from = Math.round(from)-1;
       to = Math.round(to)+1;
@@ -1917,13 +1918,14 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".save-meeting-notes").on("click", function () {
+    var $this = $(this);
     jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
-      var room = jqchat(".save-meeting-notes").attr("data-room");
-      var from = jqchat(".save-meeting-notes").attr("data-from");
-      var to = jqchat(".save-meeting-notes").attr("data-to");
-      var id = jqchat(".save-meeting-notes").attr("data-id");
+      var room = $this.attr("data-room");
+      var from = $this.attr("data-from");
+      var to = $this.attr("data-to");
+      var id = $this.attr("data-id");
 
       from = Math.round(from)-1;
       to = Math.round(to)+1;
@@ -1931,6 +1933,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
         if (response !== "ko") {
           console.log(response);
           jqchat.ajax({
+            type: "POST",
             url: chatApplication.jzSaveWiki,
             data: {"targetFullname": chatApplication.targetFullname,
               "content": response

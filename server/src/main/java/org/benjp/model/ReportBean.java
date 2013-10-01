@@ -12,6 +12,8 @@ public class ReportBean {
   List<String> links;
   List<MessageBean> messages;
   List<FileBean> files;
+  List<TaskBean> tasks;
+  List<EventBean> events;
 
   public ReportBean() {
     attendees = new HashMap<String, UserBean>();
@@ -19,6 +21,8 @@ public class ReportBean {
     links = new ArrayList<String>();
     messages = new ArrayList<MessageBean>();
     files = new ArrayList<FileBean>();
+    tasks = new ArrayList<TaskBean>();
+    events = new ArrayList<EventBean>();
   }
 
   public Collection<UserBean> getAttendees() {
@@ -70,6 +74,22 @@ public class ReportBean {
     this.files.add(file);
   }
 
+  public List<TaskBean> getTasks() {
+    return tasks;
+  }
+
+  public void addTask(TaskBean task) {
+    this.tasks.add(task);
+  }
+
+  public List<EventBean> getEvents() {
+    return events;
+  }
+
+  public void addEvent(EventBean event) {
+    this.events.add(event);
+  }
+
   public void fill(BasicDBList messages, List<UserBean> users)
   {
     for (UserBean user:users)
@@ -117,6 +137,27 @@ public class ReportBean {
           {
             msg = "[ Raised his hand ]";
           }
+          else if ("type-task".equals(options.get("type").toString()))
+          {
+            TaskBean task = new TaskBean();
+            task.setAssignee(options.get("fullname").toString());
+            task.setTask(options.get("task").toString());
+            task.setDueDate(options.get("dueDate").toString());
+            task.setUsername(options.get("username").toString());
+            addTask(task);
+            msg = "[ Task \""+options.get("task").toString()+"\" assigned to "+options.get("fullname").toString()+" - due "+options.get("dueDate").toString()+" ]";
+          }
+          else if ("type-event".equals(options.get("type").toString()))
+          {
+            EventBean event = new EventBean();
+            event.setSummary(options.get("summary").toString());
+            event.setStartDate(options.get("startDate").toString());
+            event.setStartTime(options.get("startTime").toString());
+            event.setEndDate(options.get("endDate").toString());
+            event.setEndTime(options.get("endTime").toString());
+            addEvent(event);
+            msg = "[ Event \""+options.get("summary").toString()+"\" from "+options.get("startDate").toString()+" "+options.get("startTime").toString()+" to "+options.get("endDate").toString()+" "+options.get("endTime").toString()+" ]";
+          }
           else if ("call-join".equals(options.get("type").toString()))
           {
             msg = "[ Joined meeting ]";
@@ -154,30 +195,64 @@ public class ReportBean {
     /**
      * Questions
      */
-    xwiki.append("\n=== Questions ===\n");
-    for (String question:this.getQuestions())
-    {
-      xwiki.append(question).append("\n");
+    if (questions.size()>0) {
+      xwiki.append("\n=== Questions ===\n");
+      for (String question:this.getQuestions())
+      {
+        xwiki.append(question).append("\n");
+      }
     }
 
     /**
      * Links
      */
-    xwiki.append("\n=== Links ===\n");
-    for (String link:this.getLinks())
-    {
-      xwiki.append("[[").append(link).append("]]").append("\n");
+    if (links.size()>0) {
+      xwiki.append("\n=== Links ===\n");
+      for (String link:this.getLinks())
+      {
+        xwiki.append("[[").append(link).append("]]").append("\n");
+      }
     }
 
     /**
      * Files
      */
-    xwiki.append("\n=== Files ===\n");
-    for (FileBean file:this.getFiles())
-    {
-      xwiki.append("[[");
-      xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/rest/private")).append("]]");
-      xwiki.append(" (").append(file.getSize()).append(")\n");
+    if (files.size()>0) {
+      xwiki.append("\n=== Files ===\n");
+      for (FileBean file:this.getFiles())
+      {
+        xwiki.append("[[");
+        xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/rest/private")).append("]]");
+        xwiki.append(" (").append(file.getSize()).append(")\n");
+      }
+    }
+
+    /**
+     * Tasks
+     */
+    if (tasks.size()>0) {
+      xwiki.append("\n=== Tasks ===\n");
+      xwiki.append("|= Task |= Assignee |= Due\n");
+      for (TaskBean task:this.getTasks())
+      {
+        xwiki.append("| ").append(task.getTask())
+                .append(" | ").append(task.getAssignee())
+                .append(" | ").append(task.getDueDate()).append(" \n");
+      }
+    }
+
+    /**
+     * Events
+     */
+    if (events.size()>0) {
+      xwiki.append("\n=== Events ===\n");
+      xwiki.append("|= Event |= Start |= End\n");
+      for (EventBean event:this.getEvents())
+      {
+        xwiki.append("| ").append(event.getSummary())
+                .append(" | ").append(event.getStartDate()).append(" ").append(event.getStartTime())
+                .append(" | ").append(event.getEndDate()).append(" ").append(event.getEndTime()).append(" \n");
+      }
     }
 
     xwiki.append("\n{{/column}}\n");
