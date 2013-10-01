@@ -527,7 +527,8 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       if (this.username === callOwner) {
         out += "<br>";
         out += "<div style='display: block;margin: 10px 0;'>" +
-          "<a href='#' class='send-meeting-notes meeting-notes' " +
+          "<span class='meeting-notes'>" +
+          "<a href='#' class='send-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
           "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
           "data-room='"+this.id+"' " +
@@ -535,14 +536,16 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-id='"+options.timestamp+"' " +
           ">Send meeting notes</a>" +
           " - " +
-          "<a href='#' class='save-meeting-notes meeting-notes' " +
+          "<a href='#' class='save-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
           "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
-          "data-id='"+options.timestamp+"' " +
+          "data-id='"+options.timestamp+"2' " +
           ">Save as Wiki</a>" +
+          "</span>" +
           "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>Saved!</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
           "</div>";
       }
 

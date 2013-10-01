@@ -31,6 +31,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
     chatApplication.jzCreateTask = $chatApplication.jzURL("ChatApplication.createTask");
     chatApplication.jzCreateEvent = $chatApplication.jzURL("ChatApplication.createEvent");
+    chatApplication.jzSaveWiki = $chatApplication.jzURL("ChatApplication.saveWiki");
     chatApplication.jzGetStatus = chatServerURL+"/getStatus";
     chatApplication.jzSetStatus = chatServerURL+"/setStatus";
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
@@ -955,6 +956,8 @@ function ChatApplication() {
   this.jzMaintainSession = "";
   this.jzUpload = "";
   this.jzCreateTask = "";
+  this.jzCreateEvent = "";
+  this.jzSaveWiki = "";
   this.jzUsers = "";
   this.jzDelete = "";
   this.jzEdit = "";
@@ -1886,13 +1889,13 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".send-meeting-notes").on("click", function () {
-    jqchat(this).animate({
+    jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
-      var room = jqchat(this).attr("data-room");
-      var from = jqchat(this).attr("data-from");
-      var to = jqchat(this).attr("data-to");
-      var id = jqchat(this).attr("data-id");
+      var room = jqchat(".send-meeting-notes").attr("data-room");
+      var from = jqchat(".send-meeting-notes").attr("data-from");
+      var to = jqchat(".send-meeting-notes").attr("data-to");
+      var id = jqchat(".send-meeting-notes").attr("data-id");
 
       from = Math.round(from)-1;
       to = Math.round(to)+1;
@@ -1902,7 +1905,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
           jqchat("#"+id).animate({
             opacity: "toggle"
           }, 200 , function() {
-            jqchat(this).animate({
+            jqchat(".meeting-notes").animate({
               opacity: "toggle"
             }, 3000);
           });
@@ -1914,26 +1917,39 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".save-meeting-notes").on("click", function () {
-    jqchat(this).animate({
+    jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
-      var room = jqchat(this).attr("data-room");
-      var from = jqchat(this).attr("data-from");
-      var to = jqchat(this).attr("data-to");
-      var id = jqchat(this).attr("data-id");
+      var room = jqchat(".save-meeting-notes").attr("data-room");
+      var from = jqchat(".save-meeting-notes").attr("data-from");
+      var to = jqchat(".save-meeting-notes").attr("data-to");
+      var id = jqchat(".save-meeting-notes").attr("data-id");
 
       from = Math.round(from)-1;
       to = Math.round(to)+1;
       chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
         if (response !== "ko") {
           console.log(response);
-          jqchat("#"+id).animate({
-            opacity: "toggle"
-          }, 200 , function() {
-            jqchat(this).animate({
-              opacity: "toggle"
-            }, 3000);
+          jqchat.ajax({
+            url: chatApplication.jzSaveWiki,
+            data: {"targetFullname": chatApplication.targetFullname,
+              "content": response
+            },
+            context: this,
+            success: function(response){
+              jqchat("#"+id).animate({
+                opacity: "toggle"
+              }, 3000 , function() {
+                jqchat(".meeting-notes").animate({
+                  opacity: "toggle"
+                }, 2000);
+                jqchat("#"+id).hide();
+              });
+            },
+            error: function(xhr, status, error){
+            }
           });
+
         }
       });
 
@@ -2166,6 +2182,9 @@ ChatApplication.prototype.setStatus = function(status, callback) {
   }
 
 };
+ChatApplication.prototype.showHelp = function() {
+  jqchat('.help-modal').modal({"backdrop": false});
+};
 
 ChatApplication.prototype.showAsText = function() {
 
@@ -2261,6 +2280,8 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       sendMessageToServer = true;
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
+    } else if (msg.indexOf("/help")===0) {
+      this.showHelp();
     }
   }
 

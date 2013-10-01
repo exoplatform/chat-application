@@ -81,8 +81,6 @@
       <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
         <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
 
-      <a href="#" class="weemo-migration-link" onclick="javascript:jqchat('.weemo-migration-modal').show();" style="font-size: 13px;line-height: 40px;padding-right: 10px;float:left;"><i class="icon-info-sign"></i> Weemo V3 to V4</a>
-
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="Tip: use @ with username or space">
         <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
       </div>
@@ -326,32 +324,22 @@
 <!-- ################################## -->
 <!-- ######### MIGRATION MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide weemo-migration-modal" style="display:none;">
+<div class="modal hide help-modal" style="display:none;">
   <div class="modal-header">
-    <h3>How to migrate from Weemo V3 to V4?</h3>
+    <h3>How to use Admin Command Line mode?</h3>
   </div>
   <div class="modal-body">
-    As we're using Weemo in Beta phase, you have to migrate manually from V3 to V4. This shouldn't happen in the future as V4 is intended to be a Production Ready release.
-    <h3>Migration steps</h3>
-    <ol>
-      <li>Download then Unzip this file : <a href="https://raw.github.com/exo-addons/chat-application/develop/data/Remove_Weemo_v3.zip" target="_new">Weemo Uninstaller</a></li>
-      <li><i>On Windows:</i>
-        <ol>
-          <li>double click on Remove_Weemo_v3_on_Windows.bat</li>
-        </ol>
-        <i>On Mac OS X:</i>
-        <ol>
-          <li>double click on Remove_Weemo_v3_on_Mac_OSX</li>
-          <li>it will ask you for Administrator privileges, it's normal</li>
-        </ol>
-      </li>
-      <li>Reload eXo Chat page, you should see the "Install Weemo" button after a few seconds</li>
-      <li>Download and install new Weemo Driver, then refresh again.</li>
-      <li><b>Congrats! Hopefully, it's the last time you have to do this</b></li>
-    </ol>
-    <i>Side note : this migration helper will be visible until next week deployment</i>
+    If you're a host or administrator, you have access to specific commands :
+    <ul>
+      <li><b>/me [text]</b>: shows your name followed by the text you write. Ex: /me works from home ;</li>
+      <li><b>/call</b>: starts a one to one or conference call from the current room you're in ;</li>
+      <li><b>/join</b>: join an existing conference call ;</li>
+      <li><b>/terminate</b>: force terminate a call in the Chat - this doesn't close Video process ;</li>
+      <li><b>/export</b>: export current room's history (last 2000 messages by default) with text only format ;</li>
+      <li><b>/help</b>: well, if you're here, you already figured how this one works ;</li>
+    </ul>
   </div>
   <div class="modal-footer">
-    <a href="#" class="btn migration-modal-cancel" onclick="javascript:jqchat('.weemo-migration-modal').hide();">Close</a>
+    <a href="#" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">Close</a>
   </div>
 </div>

@@ -79,6 +79,8 @@ public class ChatApplication
   @Inject
   CalendarService calendarService_;
 
+  @Inject
+  WikiService wikiService_;
 
   @Inject
   public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
@@ -269,7 +271,7 @@ public class ChatApplication
   public Response.Content createEvent(String space, String summary, String startDate, String startTime, String endDate, String endTime) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     try {
-      calendarService_.saveEvent(remoteUser_, space, summary, sdf.parse(startDate+" "+startTime), sdf.parse(endDate+" "+endTime));
+      calendarService_.saveEvent(remoteUser_, space, summary, sdf.parse(startDate + " " + startTime), sdf.parse(endDate + " " + endTime));
 
     } catch (ParseException e) {
       log.info("parse exception during task creation");
@@ -279,6 +281,30 @@ public class ChatApplication
       return Response.notFound("Error during task creation");
     }
 
+
+    return Response.ok("{\"status\":\"ok\"}")
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+
+  }
+
+  @Ajax
+  @Resource
+  public Response.Content saveWiki(String targetFullname, String content) {
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    String group = null, title = null;
+    Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
+    if (spaceBean!=null) // Space use case
+    {
+      group = spaceBean.getGroupId();
+      if (group.startsWith("/")) group = group.substring(1);
+      title = "Meeting "+sdf.format(new Date());
+      wikiService_.createSpacePage(title, content, group);
+    }
+    else // Team use case
+    {
+      title = targetFullname+" Meeting "+sdf.format(new Date());
+      wikiService_.createIntranetPage(title, content);
+    }
 
     return Response.ok("{\"status\":\"ok\"}")
             .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
