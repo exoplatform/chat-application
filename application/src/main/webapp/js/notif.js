@@ -340,6 +340,10 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
         case 'connectedWeemoDriver':
           this.authenticate();
           break;
+        case 'loggedasotheruser':
+          // force weemo to kick previous user and replace it with current one
+          this.authenticate(1);
+          break;
         case 'sipOk':
           weemoExtension.isConnected = true;
           jqchat(".btn-weemo").removeClass('disabled');
