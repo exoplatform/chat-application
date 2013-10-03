@@ -232,6 +232,7 @@ ChatNotification.prototype.changeStatusChat = function(status) {
 function WeemoExtension() {
   this.weemoKey = "";
   this.weemo = new Weemo();
+  this.callObj;
 
   this.callOwner = jzGetParam("callOwner", false);
   this.callActive = jzGetParam("callActive", false);
@@ -314,18 +315,11 @@ WeemoExtension.prototype.initChatMessage = function() {
 WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="") {
     jqchat(".btn-weemo-conf").css('display', 'none');
-    //this.weemo = new Weemo(); // Creating a Weemo object instance
-//    this.weemo.setMode("debug"); // Activate debugging in browser's log console
-    this.weemo.setMode("production"); // Activate debugging in browser's log console
-    this.weemo.setEnvironment("production"); // Set environment  (development, testing, staging, production)
-    this.weemo.setPlatform("p1.weemo.com"); // Set connection platform (by default: "p1.weemo.com")
-    this.weemo.setDomain("weemo-poc.com"); // Chose your domain, for POC all apikey are created for "weemo-poc.com" domain
-    this.weemo.setApikey(this.weemoKey); // Configure your Api Key
-    this.weemo.setUid("weemo"+$uid); // Configure your UID
 
-    //weemo.setDisplayname($name); // Configure the display name
-    this.weemo.connectToWeemoDriver(); // Launches the connection between WeemoDriver and Javascript
-
+    this.weemo.setDebugLevel(1); // Activate debug in JavaScript console
+    this.weemo.setWebAppId(this.weemoKey); // Configure your Web App Identifier (For POC use your Web Application Identifier provided by Weeemo)
+    this.weemo.setToken("weemo"+$uid); // Set user unique identifier
+    this.weemo.initialize(); // Launches the connection between WeemoDriver and Javascript
 
     /**
      * Weemo Driver On Connection Javascript Handler
@@ -338,7 +332,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 //        console.log("Connection Handler : " + message + ' ' + code);
       switch(message) {
         case 'connectedWeemoDriver':
-          this.connectToTheCloud();
+          this.authenticate();
           break;
         case 'sipOk':
           weemoExtension.isConnected = true;
@@ -346,9 +340,9 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           var fn = jqchat(".label-user").text();
           var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
           if (fullname!=="") {
-            this.setDisplayname(fullname); // Configure the display name
+            this.setDisplayName(fullname); // Configure the display name
           } else if (fn!=="") {
-            this.setDisplayname(fn); // Configure the display name
+            this.setDisplayName(fn); // Configure the display name
           }
           break;
       }
@@ -368,16 +362,6 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       } else {
         $btnDownload.attr("href", downloadUrl);
       }
-/*
-      var modal = new Modal('WeemoDriver download', 'Click <a href="'+downloadUrl+'">here</a> to download.');
-      modal.show();
-      jqchat(".weemo_modal_box").css("top", "42px");
-      var $weemo_inner_modal_box = jqchat(".weemo_inner_modal_box");
-      $weemo_inner_modal_box.css("text-align", "center");
-      $weemo_inner_modal_box.css("padding", "25px");
-      $weemo_inner_modal_box.css("font-size", "18px");
-      $weemo_inner_modal_box.children("h2").css("font-size", "24px");
-*/
     };
 
 
@@ -387,8 +371,11 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
      * @param type
      * @param status
      */
-    this.weemo.onCallHandler = function(type, status)
+    this.weemo.onCallHandler = function(callObj, args)
     {
+      weemoExtension.callObj = callObj;
+      var type = args.type;
+      var status = args.status;
       console.log("WEEMO:onCallHandler  ::"+type+":"+status+":"+weemoExtension.callType+":"+weemoExtension.callOwner+":"+weemoExtension.hasChatMessage());
       var messageWeemo = "";
       var optionsWeemo = {};
@@ -434,19 +421,33 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 
           console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
           if (chatApplication !== undefined) {
-            chatApplication.chatRoom.sendFullMessage(
-              weemoExtension.chatMessage.user,
-              weemoExtension.chatMessage.token,
-              weemoExtension.chatMessage.targetUser,
-              weemoExtension.chatMessage.room,
-              messageWeemo,
-              optionsWeemo,
-              "true"
-            )
-          }
+            chatApplication.checkIfMeetingStarted(function(callStatus){
+              if (callStatus === 1 && optionsWeemo.type==="call-on") {
+                // Call is already created, not allowed.
+                weemoExtension.initChatMessage();
+                callObj.hangup();
+                return;
+              }
+              if (callStatus === 0 && optionsWeemo.type==="call-off") {
+                // Call is already terminated, no need to terminate again
+                return;
+              }
 
-          if (status==="terminated") {
-            weemoExtension.initChatMessage();
+              chatApplication.chatRoom.sendFullMessage(
+                weemoExtension.chatMessage.user,
+                weemoExtension.chatMessage.token,
+                weemoExtension.chatMessage.targetUser,
+                weemoExtension.chatMessage.room,
+                messageWeemo,
+                optionsWeemo,
+                "true"
+              )
+
+              if (status==="terminated") {
+                weemoExtension.initChatMessage();
+              }
+
+            });
           }
         }
       }
@@ -474,8 +475,8 @@ WeemoExtension.prototype.createWeemoCall = function(targetUser, targetFullname, 
       this.setDisplaynameToCall(targetFullname);
       this.setCallType("internal");
     } else {
-      this.setUidToCall(this.weemo.getUid());
-      this.setDisplaynameToCall(this.weemo.getDisplayname());
+      this.setUidToCall(this.weemo.getToken());
+      this.setDisplaynameToCall(this.weemo.getDisplayName());
       this.setCallType("host");
     }
     this.setCallOwner(true);

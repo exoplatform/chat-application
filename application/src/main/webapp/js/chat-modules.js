@@ -127,7 +127,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 /**
  * Refresh Chat : refresh messages and panels
  */
-ChatRoom.prototype.refreshChat = function(forceRefresh) {
+ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
@@ -169,6 +169,10 @@ ChatRoom.prototype.refreshChat = function(forceRefresh) {
 
       if (typeof thiss.onRefreshCB === "function") {
         thiss.onRefreshCB(0);
+      }
+
+      if (typeof callback === "function") {
+        callback(data.messages);
       }
 
 

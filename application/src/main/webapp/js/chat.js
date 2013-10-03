@@ -1974,6 +1974,32 @@ ChatApplication.prototype.errorOnRefresh = function() {
 };
 
 /**
+ * return a status if a meeting is started or not :
+ * -1 : no meeting in chat history
+ * 0 : meeting terminated
+ * 1 : obgoing meeting
+ *
+ * @param callback (callStatus)
+ */
+ChatApplication.prototype.checkIfMeetingStarted = function(callback) {
+  chatApplication.chatRoom.refreshChat(true, function(msgs) {
+    var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+    for (var i=0 ; i<msgs.length-1 && callStatus === -1 ; i++) {
+      var msg = msgs[i];
+      var type = msg.options.type;
+      if (type === "call-off") {
+        callStatus = 0;
+      } else if (type === "call-on") {
+        callStatus = 1;
+      }
+    }
+    if (callback !== undefined) {
+      callback(callStatus);
+    }
+  });
+};
+
+/**
  * Toggle Favorite : server call
  * @param targetFav : the user or space to put/remove in favorite
  */
