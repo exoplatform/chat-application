@@ -231,7 +231,15 @@ ChatNotification.prototype.changeStatusChat = function(status) {
  */
 function WeemoExtension() {
   this.weemoKey = "";
-  this.weemo = new Weemo();
+  try {
+    this.weemo = new Weemo();
+  } catch (err) {
+    console.log("WEEMO NOT AVAILABLE YET");
+    this.weemo = undefined;
+    jqchat(".btn-weemo-conf").css('display', 'none');
+    jqchat(".btn-weemo").addClass('disabled');
+
+  }
   this.callObj;
 
   this.callOwner = jzGetParam("callOwner", false);
@@ -319,7 +327,7 @@ WeemoExtension.prototype.hangup = function() {
  * @param $name
  */
 WeemoExtension.prototype.initCall = function($uid, $name) {
-  if (this.weemoKey!=="") {
+  if (this.weemoKey!=="" && this.weemo !== undefined) {
     jqchat(".btn-weemo-conf").css('display', 'none');
 
     this.weemo.setDebugLevel(1); // Activate debug in JavaScript console

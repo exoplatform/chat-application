@@ -358,7 +358,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
           }
           jqchat(".btn-weemo").addClass('disabled');
         } else if (options.type==="call-off") {
-          jqchat(".btn-weemo").removeClass('disabled');
+          if (chatApplication.weemoExtension.isConnected)
+            jqchat(".btn-weemo").removeClass('disabled');
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
@@ -372,7 +373,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
             jqchat(".btn-weemo").css("display", "none");
             jqchat(".btn-weemo-conf").css("display", "block");
-            if (options.uidToCall!=="weemo"+thiss.username)
+            if (options.uidToCall!=="weemo"+thiss.username && chatApplication.weemoExtension.isConnected)
               jqchat(".btn-weemo-conf").removeClass("disabled");
             else
               jqchat(".btn-weemo-conf").addClass("disabled");
