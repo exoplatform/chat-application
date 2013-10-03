@@ -307,6 +307,12 @@ WeemoExtension.prototype.initChatMessage = function() {
   this.setChatMessage({});
 };
 
+WeemoExtension.prototype.hangup = function() {
+  if (this.callObj !== undefined) {
+    this.callObj.hangup();
+  }
+};
+
 /**
  * Init Weemo Call
  * @param $uid

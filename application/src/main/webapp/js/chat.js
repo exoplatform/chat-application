@@ -2307,6 +2307,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       this.weemoExtension.setCallOwner(false);
       this.weemoExtension.setCallActive(false);
       sendMessageToServer = true;
+      this.weemoExtension.hangup();
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {
