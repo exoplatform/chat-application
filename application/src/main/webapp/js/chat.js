@@ -520,6 +520,8 @@ var chatApplication = new ChatApplication();
       if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "") {
         return;
       }
+      if (startTime==="all-day") startTime = "00:00";
+      if (endTime==="all-day") endTime = "23:59";
 
       $.ajax({
         url: chatApplication.jzCreateEvent,
