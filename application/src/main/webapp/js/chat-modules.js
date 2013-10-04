@@ -365,6 +365,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
           }
         }
         out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
+        if (options.type==="type-event") {
+          var day = options.startDate.substr(3, 2);
+          out += "<span style='position: absolute;top: 2px;left: 9px;font-weight: bold;font-size: 20px;color: #848484;'>"+day+"</span>";
+        }
         out += "</span>";
 
         if (options.type !== "call-join") {
