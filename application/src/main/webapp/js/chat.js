@@ -188,6 +188,7 @@ var chatApplication = new ChatApplication();
             var targetUser = chatApplication.targetUser;
             if (targetUser.indexOf("team-")>-1) {
               targetUser = users;
+              $("#chat-file-target-user").val(targetUser);
             }
             $('#dropzone').remove();
             var dropzone = '<div class="progressBar" id="dropzone">'
