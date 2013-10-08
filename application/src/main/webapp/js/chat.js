@@ -489,11 +489,6 @@ var chatApplication = new ChatApplication();
 
     });
 
-    $('#task-add-user').on("blur", function(event) {
-      hideResults();
-    });
-
-
     var taskDate = $('#task-add-date').datepicker({
       onRender: function(date) {
         var nowTemp = new Date();
