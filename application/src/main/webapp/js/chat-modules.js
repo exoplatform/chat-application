@@ -498,6 +498,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
       var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
       out += urlFile+size;
+      var link = options.restPath;
+      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
+        out += "<div><img src=\""+options.restPath+"\" style=\"max-width: 200px;max-height: 160px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+      }
+
     } else if (options.type ==="call-join") {
       out += "";
     } else if (options.type ==="call-on") {
@@ -561,6 +566,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type==="type-link") {
       var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
       out += url;
+      var link = options.link.toLowerCase();
+      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
+        out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 160px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+      }
     } else if (options.type==="type-task") {
       var url = options.task+
         "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
