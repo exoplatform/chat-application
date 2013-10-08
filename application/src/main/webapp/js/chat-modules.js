@@ -500,7 +500,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       out += urlFile+size;
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div><img src=\""+options.restPath+"\" style=\"max-width: 200px;max-height: 160px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+        out += "<div><img src=\""+options.restPath+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
 
     } else if (options.type ==="call-join") {
@@ -568,7 +568,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       out += url;
       var link = options.link.toLowerCase();
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 160px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+        out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
     } else if (options.type==="type-task") {
       var url = options.task+
