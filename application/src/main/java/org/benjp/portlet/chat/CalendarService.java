@@ -2,6 +2,7 @@ package org.benjp.portlet.chat;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 
@@ -27,23 +28,51 @@ public class CalendarService {
     organizationService_ = organizationService;
   }
 
-  protected void saveEvent(String user, String calName, String summary,
+  protected void saveEvent(String user, String calName, String users, String summary,
                          Date from, Date to) throws Exception
   {
-    String calId = getCalendarId(user, calName);
+    if (!"".equals(users)) {
+      String[] participants = users.split(",");
+      for (String participant:participants) {
+        String calId = getFirstCalendarsId(participant);
+        saveEvent(participant, false, participants, calId, calName, summary, from, to);
+      }
+    } else {
+      String calId = getCalendarId(user, calName);
+      saveEvent(user, true, null, calId, calName, summary, from, to);
+    }
+  }
+
+  protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
+                         Date from, Date to) throws Exception
+  {
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
       event.setSummary(summary);
-      event.setEventType(CalendarEvent.TYPE_TASK);
+      event.setEventType(CalendarEvent.TYPE_EVENT);
       event.setRepeatType(CalendarEvent.RP_NOREPEAT);
       event.setPrivate(true);
       event.setFromDateTime(from);
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
       event.setTaskDelegator(user);
-      event.setDescription("Created by "+user);
-      calendarService_.savePublicEvent(calId, event, true);
+      event.setDescription("Created by "+user+" in "+calName);
+      if (isPublic)
+        calendarService_.savePublicEvent(calId, event, true);
+      else {
+        if (participants!=null) {
+          event.setParticipant(participants);
+          String[] participantsStatus = new String[participants.length];
+          for(int i=0 ; i<participants.length ; i++) {
+            participantsStatus[i] = participants[i]+":confirmed";
+          }
+        event.setParticipantStatus(participantsStatus);
+
+        }
+        calendarService_.saveUserEvent(user, calId, event, true);
+//        calendarService_.confirmInvitation("john", "benjamin", "john", Utils.PRIVATE_TYPE, calId, eventId, Utils.ACCEPT);
+      }
     }
   }
 

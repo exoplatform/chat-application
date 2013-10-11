@@ -268,10 +268,10 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createEvent(String space, String summary, String startDate, String startTime, String endDate, String endTime) {
+  public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     try {
-      calendarService_.saveEvent(remoteUser_, space, summary, sdf.parse(startDate + " " + startTime), sdf.parse(endDate + " " + endTime));
+      calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime), sdf.parse(endDate + " " + endTime));
 
     } catch (ParseException e) {
       log.info("parse exception during task creation");

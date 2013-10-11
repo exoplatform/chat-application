@@ -172,7 +172,11 @@ var chatApplication = new ChatApplication();
       $toggle.show();
       $(".meeting-action-title").html(ptitle);
       $popup.show();
-
+      if (toggleClass === "meeting-action-event-panel" && chatApplication.targetUser.indexOf("team-")>-1) {
+        chatApplication.getUsers(chatApplication.targetUser, function (users) {
+          $("#chat-file-target-user").val(users);
+        }, true);
+      }
 
       if (toggleClass === "meeting-action-file-panel") {
         $("#chat-file-form").attr("action", chatApplication.jzUpload);
@@ -518,10 +522,17 @@ var chatApplication = new ChatApplication();
       }
       if (startTime==="all-day") startTime = "00:00";
       if (endTime==="all-day") endTime = "23:59";
+      var users = "";
+      var targetUser = chatApplication.targetUser;
+      if (targetUser.indexOf("team-")>-1) {
+        users = $("#chat-file-target-user").val();
+      }
+
 
       $.ajax({
         url: chatApplication.jzCreateEvent,
         data: {"space": space,
+          "users": users,
           "summary": summary,
           "startDate": startDate,
           "startTime": startTime,
@@ -553,6 +564,13 @@ var chatApplication = new ChatApplication();
 
     });
 
+    $("#event-add-start-time").on("change", function() {
+      var time = $(this).val();
+      var h = Math.round(time.split(":")[0]) + 1;
+      var hh = h;
+      if (h<10) hh = "0"+h;
+      $("#event-add-end-time").val(hh+":"+time.split(":")[1]);
+    });
 
     var startDate = $('#event-add-start-date').datepicker({
       onRender: function(date) {
@@ -1799,7 +1817,7 @@ ChatApplication.prototype.loadRoom = function() {
         }
       });
 //      jqchat(".meeting-actions").css("display", "inline-block");
-      jqchat(".meeting-action-event").css("display", "none");
+      jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
