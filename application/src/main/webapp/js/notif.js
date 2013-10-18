@@ -232,7 +232,7 @@ ChatNotification.prototype.changeStatusChat = function(status) {
 function WeemoExtension() {
   this.weemoKey = "";
   try {
-    this.weemo = new Weemo();
+    this.weemo = new Weemo('', '', 'internal', '', '1');
   } catch (err) {
     console.log("WEEMO NOT AVAILABLE YET");
     this.weemo = undefined;

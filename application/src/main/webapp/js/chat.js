@@ -2392,9 +2392,9 @@ ChatApplication.prototype.showLoginPanel = function() {
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version 0.7.1 (build 130731)<br><br>";
+  about += "Version 0.8.0-CR1 (build 131018)<br><br>";
   about += "Designed and Developed by <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
-  about += "for <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform</a><br><br>";
+  about += "for <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
   about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
   this.hidePanels();

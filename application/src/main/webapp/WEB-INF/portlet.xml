@@ -82,9 +82,19 @@
     <filter-class>org.benjp.portlet.chat.ResponseFilter</filter-class>
     <lifecycle>RENDER_PHASE</lifecycle>
   </filter>
+  <filter>
+    <filter-name>ResponseFilterWeemo</filter-name>
+    <filter-class>org.benjp.portlet.notification.ResponseFilter</filter-class>
+    <lifecycle>RENDER_PHASE</lifecycle>
+  </filter>
+
   <filter-mapping>
     <filter-name>ResponseFilter</filter-name>
     <portlet-name>ChatApplication</portlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ResponseFilterWeemo</filter-name>
+    <portlet-name>ChatNotificationApplication</portlet-name>
   </filter-mapping>
 
 </portlet-app>
