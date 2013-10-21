@@ -4,7 +4,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>v0.8.0-CR1</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
   <artifactId>application</artifactId>
   <packaging>war</packaging>
