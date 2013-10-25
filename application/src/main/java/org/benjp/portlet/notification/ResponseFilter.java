@@ -25,7 +25,7 @@ public class ResponseFilter implements RenderFilter
 
     String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
 
-    if (chatWeemoKey!=null) {
+    if (chatWeemoKey!=null && !"".equals(chatWeemoKey)) {
       Element jQuery1 = response.createElement("script");
       jQuery1.setAttribute("type", "text/javascript");
       jQuery1.setAttribute("src", "https://download.weemo.com/js/webappid/"+chatWeemoKey);
