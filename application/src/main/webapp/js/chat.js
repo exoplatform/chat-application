@@ -1955,7 +1955,22 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
               "content": response
             },
             context: this,
-            success: function(response){
+            dataType: "json",
+            success: function(data){
+              console.log(data.path);
+              if (data.path !== "") {
+                var options = {
+                  type: "type-link",
+                  link: data.path,
+                  from: chatApplication.username,
+                  fullname: chatApplication.fullname
+                };
+                var msg = "Meeting Notes";
+
+                chatApplication.chatRoom.sendMessage(msg, options, "true");
+
+              }
+
               jqchat("#"+id).animate({
                 opacity: "toggle"
               }, 3000 , function() {

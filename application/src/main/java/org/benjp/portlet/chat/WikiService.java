@@ -23,9 +23,9 @@ public class WikiService {
     wikiService_ = wikiService;
   }
 
-  protected void createIntranetPage(String title, String content)
+  protected String createIntranetPage(String title, String content)
   {
-    createOrEditPage("Meeting Notes", title, content, false, null);
+    return createOrEditPage("Meeting Notes", title, content, false, null);
   }
 
   /**
@@ -34,15 +34,16 @@ public class WikiService {
    * @param content
    * @param spaceGroupId : format with spaces/space_group_name
    */
-  protected void createSpacePage(String title, String content, String spaceGroupId)
+  protected String createSpacePage(String title, String content, String spaceGroupId)
   {
-    createOrEditPage("Meeting Notes", title, content, false, spaceGroupId);
+    return createOrEditPage("Meeting Notes", title, content, false, spaceGroupId);
   }
 
-  private void createOrEditPage(String parentTitle, String title, String content, boolean forceNew, String spaceGroupId)
+  private String createOrEditPage(String parentTitle, String title, String content, boolean forceNew, String spaceGroupId)
   {
     String wikiType = PortalConfig.PORTAL_TYPE;
     String wikiOwner = "intranet";
+    String path = "";
 
     if (spaceGroupId != null)
     {
@@ -52,15 +53,6 @@ public class WikiService {
 
     try
     {
-/*
-      if (forceNew && !title.equals("Wiki Home"))
-      {
-        if (wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(title, false)))
-        {
-          wikiService_.deletePage(wikiType, wikiOwner, TitleResolver.getId(title, false));
-        }
-      }
-*/
       if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false)))
       {
         PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
@@ -85,10 +77,23 @@ public class WikiService {
       page.checkin();
       page.checkout();
 
+      if (wikiType.equals(PortalConfig.GROUP_TYPE))
+      {
+        // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
+        path = "/portal/intranet/wiki/"+wikiType+"/"+wikiOwner+"/"+page.getName();
+      }
+      else if (wikiType.equals(PortalConfig.PORTAL_TYPE))
+      {
+        // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
+        path = "/portal/intranet/wiki/"+ page.getName();
+      }
+
+
     } catch (Exception e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
+    return path;
   }
 
 }

@@ -291,22 +291,22 @@ public class ChatApplication
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-    String group = null, title = null;
+    String group = null, title = null, path="";
     Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
     if (spaceBean!=null) // Space use case
     {
       group = spaceBean.getGroupId();
       if (group.startsWith("/")) group = group.substring(1);
       title = "Meeting "+sdf.format(new Date());
-      wikiService_.createSpacePage(title, content, group);
+      path = wikiService_.createSpacePage(title, content, group);
     }
     else // Team use case
     {
       title = targetFullname+" Meeting "+sdf.format(new Date());
-      wikiService_.createIntranetPage(title, content);
+      path = wikiService_.createIntranetPage(title, content);
     }
 
-    return Response.ok("{\"status\":\"ok\"}")
+    return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")
             .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
   }
