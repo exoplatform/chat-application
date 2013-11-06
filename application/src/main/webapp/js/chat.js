@@ -2383,7 +2383,8 @@ ChatApplication.prototype.showSyncPanel = function() {
   if (!this.isLoaded) {
     this.hidePanels();
     var $chatSyncPanel = jqchat(".chat-sync-panel");
-    $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" />");
+    var marginTop = Math.round($chatSyncPanel.height()/2)-32;
+    $chatSyncPanel.html("<img src=\"/chat/img/sync.gif\" width=\"64px\" class=\"chatSync\" style=\"margin-top: "+marginTop+"px;\" />");
     $chatSyncPanel.css("display", "block");
   }
 };
