@@ -305,6 +305,7 @@ public class ChatApplication
       title = targetFullname+" Meeting "+sdf.format(new Date());
       path = wikiService_.createIntranetPage(title, content);
     }
+    path = ServerBootstrap.getServerBase()+path;
 
     return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")
             .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");

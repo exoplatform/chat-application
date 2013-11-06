@@ -138,7 +138,7 @@ public class ServerBootstrap {
     return body;
   }
 
-  private static String getServerBase()
+  public static String getServerBase()
   {
     String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
     if ("".equals(serverBase)) {
