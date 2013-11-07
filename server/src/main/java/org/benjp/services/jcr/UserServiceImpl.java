@@ -503,6 +503,13 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
   }
 
   public List<UserBean> getUsers(String filter, boolean fullBean) {
+    filter = filter.trim();
+    filter = (""+filter.charAt(0)).toUpperCase() + ((filter.length()>1)?filter.substring(1):"");
+    if (filter.indexOf(" ")>-1) {
+      String name = filter.substring(filter.indexOf(" ")+1);
+      name = (""+name.charAt(0)).toUpperCase() + ((name.length()>1)?name.substring(1):"");
+      filter = filter.substring(0, filter.indexOf(" "))+"%"+name;
+    }
     filter = filter.replaceAll(" ", "%");
     List<UserBean> users = new ArrayList<UserBean>();
     try
