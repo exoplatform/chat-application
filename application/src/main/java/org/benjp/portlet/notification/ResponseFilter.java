@@ -28,7 +28,7 @@ public class ResponseFilter implements RenderFilter
     if (chatWeemoKey!=null && !"".equals(chatWeemoKey)) {
       Element jQuery1 = response.createElement("script");
       jQuery1.setAttribute("type", "text/javascript");
-      jQuery1.setAttribute("src", "https://download.weemo.com/js/webappid/"+chatWeemoKey);
+      jQuery1.setAttribute("src", "https://download.weemo.com/js/webappid/"+chatWeemoKey+"/env/ppr");
       response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, jQuery1);
     }
 
