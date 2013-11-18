@@ -537,27 +537,22 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
     var $uiAction = jqchat(".uiAction", this).first();
     if ($uiAction !== undefined && $uiAction.html() !== undefined) {
       //console.log("uiAction bind on weemoCallOverlay");
-      var attr = $uiAction.children(".connect:first").attr("data-action");
-      if (attr !== undefined) {
-        var $uiFullname = jqchat('#tiptip_content').children('#tipName').children("tbody").children("tr").children("td").children("a");
-        $uiFullname.each(function() {
-          var html = $(this).html();
-          if (html.indexOf("/rest/")==-1) {
-            fullname = html;
-          }
-        });
-
-        if (attr.indexOf(":")>0) {
-          if (attr.indexOf("Disconnect:")>-1)
-            addStyle = "margin-top:8px;";
-          username = attr.substr(attr.indexOf(":")+1, attr.length-attr.indexOf(":"));
+      var $uiFullname = jqchat('#tiptip_content').children('#tipName').children("tbody").children("tr").children("td").children("a");
+      $uiFullname.each(function() {
+        var html = $(this).html();
+        if (html.indexOf("/rest/")==-1) {
+          fullname = html;
         }
-      }
+        var href = $(this).attr("href");
+        if (href.indexOf("/portal/intranet/activities/")>-1) {
+          username = href.substr(28);
+        }
+      });
       $uiElement = $uiAction;
     }
 
     if (username !== "" && $uiElement.has(".weemoCallOverlay").size()===0) {
-      var out = '<a type="button" class="btn weemoCallOverlay disabled" title="Make a Video Call"';
+      var out = '<a type="button" class="btn weemoCallOverlay weemoCall-'+username.replace('.', '-')+' disabled" title="Make a Video Call"';
           out += ' data-fullname="'+fullname+'"';
           out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
           out += '<i class="icon-facetime-video"></i> Call</a>';
@@ -575,10 +570,7 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
       function cbGetStatus(targetUser, status) {
         //console.log("Status :: target="+targetUser+" : status="+status);
         if (status !== "offline") {
-          var $weemoBtn = jqchat(".weemoCallOverlay");
-          if ($weemoBtn.attr("data-username") == targetUser) {
-            $weemoBtn.removeClass("disabled");
-          }
+          jqchat(".weemoCall-"+targetUser.replace('.', '-')).removeClass("disabled");
         }
       }
       chatNotification.getStatus(username, cbGetStatus);
@@ -602,10 +594,7 @@ WeemoExtension.prototype.attachWeemoToConnections = function() {
   function cbGetConnectionStatus(targetUser, status) {
     //console.log("Status :: target="+targetUser+" : status="+status);
     if (status !== "offline") {
-      var $weemoBtn = jqchat("#weemoCall-"+targetUser.replace(".", "-"));
-      if ($weemoBtn.attr("data-username") == targetUser) {
-        $weemoBtn.removeClass("disabled");
-      }
+      jqchat(".weemoCall-"+targetUser.replace('.', '-')).removeClass("disabled");
     }
   }
 
@@ -618,7 +607,7 @@ WeemoExtension.prototype.attachWeemoToConnections = function() {
     var $uiActionWeemo = jqchat(".weemoCallOverlay", this).first();
     if ($uiActionWeemo !== undefined && $uiActionWeemo.html() == undefined) {
       var html = jqchat(this).html();
-      html += '<a type="button" class="btn weemoCallOverlay pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call"';
+      html += '<a type="button" class="btn weemoCallOverlay weemoCall-'+username.replace('.', '-')+' pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call"';
       html += ' data-username="'+username+'" data-fullname="'+fullname+'"';
       html += ' style="margin-left:5px;"><i class="icon-facetime-video"></i> Call</a>';
       jqchat(this).html(html);
