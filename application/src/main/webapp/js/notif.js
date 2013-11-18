@@ -345,7 +345,16 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 //      if(window.console)
 //        console.log("Connection Handler : " + message + ' ' + code);
       switch(message) {
+        case 'connectedWebRTC':
         case 'connectedWeemoDriver':
+          var fn = jqchat(".label-user").text();
+          var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+          if (fullname!=="") {
+            this.setDisplayName(fullname); // Configure the display name
+          } else if (fn!=="") {
+            this.setDisplayName(fn); // Configure the display name
+          }
+
           this.authenticate();
           break;
         case 'loggedasotheruser':
@@ -355,13 +364,6 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
         case 'sipOk':
           weemoExtension.isConnected = true;
           jqchat(".btn-weemo").removeClass('disabled');
-          var fn = jqchat(".label-user").text();
-          var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
-          if (fullname!=="") {
-            this.setDisplayName(fullname); // Configure the display name
-          } else if (fn!=="") {
-            this.setDisplayName(fn); // Configure the display name
-          }
           break;
       }
     }
