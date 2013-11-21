@@ -88,15 +88,22 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces, String withPublic, String withOffline, String isAdmin)
+  public Response.Content whoIsOnline(String user, String token, String filter, String isAdmin, String limit)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
+    Integer ilimit = 0;
+    try {
+      if (limit!=null && !"".equals(limit))
+        ilimit = Integer.parseInt(limit);
+    } catch (NumberFormatException nfe) {
+      log.info("limit is not a valid Integer number");
+    }
 
 //    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
-    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), notificationService, userService, tokenService);
+    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit, notificationService, userService, tokenService);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 

@@ -527,12 +527,16 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
   }
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService) {
+    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService);
+  }
+
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user, true);
     int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
 
-    Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+    HashMap<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, limit);
 
     rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
     if (isAdmin)
@@ -545,7 +549,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
       roomBean.setFullname(targetUserBean.getFullname());
       roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-      if (availableUsers.contains(targetUser))
+      if (availableUsers.keySet().contains(targetUser))
       {
         roomBean.setAvailableUser(true);
         roomBean.setStatus(targetUserBean.getStatus());
@@ -574,11 +578,11 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
         }
       }
 
-      for (String availableUser: availableUsers)
+      for (UserBean availableUser: availableUsers.values())
       {
         RoomBean roomBean = new RoomBean();
-        roomBean.setUser(availableUser);
-        UserBean availableUserBean = userService.getUser(availableUser);
+        roomBean.setUser(availableUser.getName());
+        UserBean availableUserBean = userService.getUser(availableUser.getName());
         roomBean.setFullname(availableUserBean.getFullname());
         roomBean.setStatus(availableUserBean.getStatus());
         roomBean.setAvailableUser(true);

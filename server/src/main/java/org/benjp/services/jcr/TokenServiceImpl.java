@@ -1,5 +1,6 @@
 package org.benjp.services.jcr;
 
+import org.benjp.model.UserBean;
 import org.benjp.services.TokenService;
 import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
@@ -10,6 +11,7 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TokenServiceImpl extends AbstractJCRService implements TokenService
@@ -113,9 +115,14 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
   }
 
-  public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
-    ArrayList<String> users = new ArrayList<String>();
+    return getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, 0);
+  }
+
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  {
+    HashMap<String, UserBean> users = new HashMap<String, UserBean>();
     try
     {
       //get info
@@ -150,8 +157,11 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       {
         Node node = nodeIterator.nextNode();
         String target = node.getProperty(USER_PROPERTY).getString();
-        if (!user.equals(target))
-          users.add(target);
+        if (!user.equals(target)) {
+          UserBean userBean = new UserBean();
+          userBean.setName(target);
+          users.put(target, userBean);
+        }
 
       }
 

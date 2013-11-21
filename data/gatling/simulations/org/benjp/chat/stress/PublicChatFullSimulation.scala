@@ -12,7 +12,7 @@ import scala.util.Random;
 class PublicChatFullSimulation extends Simulation {
 
 	val httpConf = httpConfig
-		.baseURL("http://127.0.0.1:8080")
+		.baseURL("http://127.0.0.1:8280")
 		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 		.acceptEncodingHeader("gzip, deflate")
 		.acceptLanguageHeader("fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3")
@@ -86,7 +86,7 @@ class PublicChatFullSimulation extends Simulation {
         .queryParam("isAdmin", "false")
         .check(regex("""(.+)""").saveAs("room"))
       )
-      .during( 30 minutes , "cpt") { // loop between 250 and 1000
+      .during( 10 minutes , "cpt") { // loop between 250 and 1000
 //      .repeat( "${loopMsg}" , "cpt") { // loop between 250 and 1000
         randomSwitch(
           20 ->
@@ -105,10 +105,7 @@ class PublicChatFullSimulation extends Simulation {
               .queryParam("user", "user${userId}")
               .queryParam("token", "${token}")
               .queryParam("filter", "")
-              .queryParam("withUsers", "false")
-              .queryParam("withSpaces", "true")
-              .queryParam("withPublic", "true")
-              .queryParam("withOffline", "false")
+              .queryParam("limit", "20")
               .queryParam("isAdmin", "false")
             )
           ,
