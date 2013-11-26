@@ -19,13 +19,21 @@
 
 package org.benjp.services;
 
+import org.benjp.model.NotificationBean;
+
+import java.util.List;
+
 public interface NotificationService
 {
   public static final String M_NOTIFICATIONS = "notifications";
 
-  public void addNotification(String user, String type, String category, String categoryId, String content, String link);
+  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link);
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId);
+
+  public List<NotificationBean> getUnreadNotifications(String user);
+
+  public List<NotificationBean> getUnreadNotifications(String user, String type, String category, String categoryId);
 
   public int getUnreadNotificationsTotal(String user);
 

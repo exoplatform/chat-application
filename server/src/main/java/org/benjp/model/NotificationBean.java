@@ -20,8 +20,10 @@
 package org.benjp.model;
 
 
+import java.util.List;
+
 public class NotificationBean {
-  private String user, type, info;
+  private String user, from, type, content, link;
   private Long timestamp;
 
   public String getUser() {
@@ -40,12 +42,20 @@ public class NotificationBean {
     this.type = type;
   }
 
-  public String getInfo() {
-    return info;
+  public String getContent() {
+    return content;
   }
 
-  public void setInfo(String info) {
-    this.info = info;
+  public void setContent(String content) {
+    this.content = content;
+  }
+
+  public String getLink() {
+    return link;
+  }
+
+  public void setLink(String link) {
+    this.link = link;
   }
 
   public Long getTimestamp() {
@@ -54,5 +64,51 @@ public class NotificationBean {
 
   public void setTimestamp(Long timestamp) {
     this.timestamp = timestamp;
+  }
+
+  public String getFrom() {
+    return from;
+  }
+
+  public void setFrom(String from) {
+    this.from = from;
+  }
+
+  public String toJSON()
+  {
+    StringBuffer sb = new StringBuffer();
+
+    sb.append("{");
+
+    sb.append("\"user\": \""+this.getUser()+"\",");
+    sb.append("\"type\": \""+this.getType()+"\",");
+    sb.append("\"from\": \""+this.getFrom()+"\",");
+    sb.append("\"content\": \""+this.getContent().replaceAll("\n", "<br/>")+"\",");
+    sb.append("\"link\": \""+this.getLink()+"\",");
+    sb.append("\"timestamp\": "+this.getTimestamp());
+
+    sb.append("}");
+
+    return sb.toString();
+  }
+
+  public static String notificationstoJSON(List<NotificationBean> notificationBeans)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("\"notifications\": [");
+    boolean first=true;
+    for (NotificationBean notificationBean:notificationBeans) {
+      if (!first) {
+        sb.append(",");
+      } else {
+        first=false;
+      }
+
+      sb.append(notificationBean.toJSON());
+
+    }
+    sb.append("]");
+
+    return sb.toString();
   }
 }

@@ -1,5 +1,6 @@
 package org.benjp.services.jcr;
 
+import org.benjp.model.NotificationBean;
 import org.benjp.services.NotificationService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 
@@ -8,10 +9,12 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationServiceImpl  extends AbstractJCRService implements NotificationService
 {
-  public void addNotification(String user, String type, String category, String categoryId, String content, String link)
+  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link)
   {
     try
     {
@@ -77,6 +80,18 @@ public class NotificationServiceImpl  extends AbstractJCRService implements Noti
       e.printStackTrace();
     }
 
+  }
+
+  @Override
+  public List<NotificationBean> getUnreadNotifications(String user) {
+    return getUnreadNotifications(user, null, null, null);
+  }
+
+  @Override
+  public List<NotificationBean> getUnreadNotifications(String user, String type, String category, String categoryId) {
+    List<NotificationBean> notifications = new ArrayList<NotificationBean>();
+
+    return notifications;
   }
 
   public int getUnreadNotificationsTotal(String user)

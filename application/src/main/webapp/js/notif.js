@@ -17,6 +17,7 @@ function ChatNotification() {
   this.jzInitUserProfile = "";
   this.jzNotification = "";
   this.jzGetStatus = "";
+  this.jzSetStatus = "";
 
   this.notifEventURL = "";
   this.notifEventInt = "";
@@ -26,6 +27,8 @@ function ChatNotification() {
 
   this.oldNotifTotal = 0;
   this.profileStatus = "offline";
+
+  this.chatPage = "/portal/intranet/chat";
 }
 
 /**
@@ -38,6 +41,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzInitUserProfile = options.urlInitUserProfile;
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
+  this.jzSetStatus = options.urlSetStatus;
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
@@ -53,7 +57,7 @@ ChatNotification.prototype.initUserInterface = function() {
       if (jqchat(this).attr("href") == "/portal/intranet/chat") {
         jqchat(this).css("width", "95%");
         var html = '<i class="uiChatIcon"></i>Chat';
-        html += '<span id="chat-notification" style="float: right; display: none;"></span>';
+        //html += '<span id="chat-notification" style="float: right; display: none;"></span>';
         jqchat(this).html(html);
       }
     });
@@ -104,6 +108,47 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 /**
  * Refresh Notifications
  */
+ChatNotification.prototype.refreshNotifDetails = function() {
+  if (this.oldNotifTotal>0) {
+    jqchat("#chat-notifications-details").css("display", "initial");
+
+    this.updateNotifEventURL();
+    jqchat.ajax({
+      url: this.notifEventURL+"&withDetails=true",
+      dataType: "json",
+      context: this,
+      success: function(data){
+        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+        var html = '';
+        if (data.notifications.length>0) {
+          for (var inot = data.notifications.length-1 ; inot>=0 ; inot--) {
+            var notif = data.notifications[inot];
+            html += '<li>';
+            html +=   '<a href="'+notif.link+'" target="_chat">';
+            html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'20px\' height=\'20px\'  style="width:20px; height:20px;">';
+            html +=     '<div class="chat-label-status">'+notif.content+'</div>';
+            html +=   '</a>';
+            html += '</li>';
+          }
+          html += '<li class="divider">&nbsp;</li>';
+        }
+        $chatNotificationsDetails.html(html);
+        $chatNotificationsDetails.css("display", "block");
+      },
+      error: function(){
+        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+        $chatNotificationsDetails.html("");
+        $chatNotificationsDetails.css("display", "none");
+      }
+    });
+
+
+  }
+};
+
+/**
+ * Refresh Notifications
+ */
 ChatNotification.prototype.refreshNotif = function() {
 //  if ( ! jqchat("span.chat-status").hasClass("chat-status-offline-black") ) {
 //  console.log("refreshNotif :: URL="+this.notifEventURL);
@@ -123,6 +168,9 @@ ChatNotification.prototype.refreshNotif = function() {
         } else {
           $chatNotification.html('<span></span>');
           $chatNotification.css('display', 'none');
+          var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+          $chatNotificationsDetails.css("display", "none");
+          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">Loading...</span><li class="divider">&nbsp;</li>');
         }
         if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
           this.playNotifSound();
@@ -199,6 +247,45 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
   });
 };
 
+/**
+ * Set Current Status
+ * @param status
+ * @param callback
+ */
+ChatNotification.prototype.setStatus = function(status, callback) {
+
+  if (status !== undefined) {
+    //console.log("setStatus :: "+status);
+
+    jqchat.ajax({
+      url: this.jzSetStatus,
+      data: { "user": this.username,
+        "token": this.token,
+        "status": status,
+        "timestamp": new Date().getTime()
+      },
+      context: this,
+
+      success: function(response){
+        //console.log("SUCCESS:setStatus::"+response);
+        chatNotification.changeStatusChat(response);
+        if (typeof callback === "function") {
+          callback(response);
+        }
+
+      },
+      error: function(response){
+        chatNotification.changeStatusChat("offline");
+        if (typeof callback === "function") {
+          callback("offline");
+        }
+      }
+
+    });
+  }
+
+};
+
 
 /**
  * Change the current status
@@ -215,6 +302,9 @@ ChatNotification.prototype.changeStatusChat = function(status) {
   $chatStatusChat.addClass("chat-status-"+status);
 };
 
+ChatNotification.prototype.openChatPopup = function() {
+  window.open(this.chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=700, height=600");
+};
 
 /**
  ##################                           ##################
@@ -679,6 +769,7 @@ var weemoExtension = new WeemoExtension();
       "urlInitUserProfile": $notificationApplication.jzURL("NotificationApplication.initUserProfile"),
       "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
+      "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status")
     });
@@ -698,6 +789,16 @@ var weemoExtension = new WeemoExtension();
 
     // CHAT NOTIFICATION : START WEEMO ON SUCCESS
     chatNotification.initUserProfile(startWeemo);
+
+    $(".chat-status").on("click", function() {
+      var status = $(this).attr("data-status");
+      chatNotification.setStatus(status);
+    });
+
+    $(".uiNotifChatIcon").on("click", function() {
+      console.log("NEED TO REFRESH NOTIFICATIONS");
+      chatNotification.refreshNotifDetails();
+    });
 
   });
 

@@ -27,7 +27,7 @@
       <title>chat</title>
       <access-permissions>*:/platform/users</access-permissions>
       <edit-permission>*:/platform/administrators</edit-permission>
-      <show-max-window>false</show-max-window>
+      <show-max-window>true</show-max-window>
       <portlet-application>
          <portlet>
             <application-ref>chat</application-ref>
@@ -35,7 +35,7 @@
             <preferences>
                <preference>
                   <name>fullscreen</name>
-                  <value>false</value>
+                  <value>true</value>
                   <read-only>false</read-only>
                </preference>
                <preference>
@@ -50,6 +50,7 @@
       </portlet-application>
    </page>
 
+<!--
    <page>
       <name>fluid</name>
       <title>eXo Chat</title>
@@ -77,5 +78,6 @@
          <show-info-bar>false</show-info-bar>
       </portlet-application>
    </page>
+-->
 
 </page-set>

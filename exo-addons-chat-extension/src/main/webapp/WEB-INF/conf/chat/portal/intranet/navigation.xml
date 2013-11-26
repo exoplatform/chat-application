@@ -29,8 +29,9 @@
     <node>
       <name>chat</name>
       <label xml:lang="en">Chat</label>
-      <visibility>DISPLAYED</visibility>
+      <visibility>HIDDEN</visibility>
       <page-reference>portal::intranet::chat</page-reference>
+<!--
       <node>
         <uri>chat/fluid</uri>
         <name>fluid</name>
@@ -38,6 +39,7 @@
         <visibility>HIDDEN</visibility>
         <page-reference>portal::intranet::fluid</page-reference>
       </node>
+-->
     </node>
   </page-nodes>
 </node-navigation>

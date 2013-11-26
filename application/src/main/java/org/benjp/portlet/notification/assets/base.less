@@ -1,5 +1,5 @@
-//@notifBackgroundColor:        #C00;
-@notifBackgroundColor:        #4f72ac;
+//@notifBackgroundColor:        #4f72ac;
+@notifBackgroundColor:        #B00;
 @notifColor:                  white;
 @backgroundColor:             white;
 @borderColor:                 #DBDBDB;
@@ -13,12 +13,14 @@
   color: @notifColor;
   font-size: 11px;
   font-weight: normal;
-  padding: 3px 6px;
-  line-height: 16px;
-  left: 14px;
+  padding: 1px 4px;
+  line-height: 10px;
+  left: 7px;
   position: relative;
   -moz-border-radius: 2px;
   border-radius: 2px;
+  top: -7px;
+  box-shadow: 1px 2px 1px 0px rgba(35,44,48,0.8);
 }
 
 .chat-icon {
@@ -52,7 +54,23 @@
 .chat-status-offline-black {
   .background(-68px, -49px);
 }
+.chat-status-open {
+  .background(-80px, -16px);
+}
+.chat-label-status {
+  line-height: 21px;
+  vertical-align: top;
+  margin: 0 8px;
+  display: inline-block;
+}
+.chat-status-icon {
+  width: 17px;
+  height: 16px;
+  display: inline-block;
+  margin-top: 2px;
+}
 
+/*
 .uiChatIcon {
   display: inline-block;
   width: 16px;
@@ -70,11 +88,59 @@
   vertical-align: text-top;
   .background(-80px, -32px);
 }
+*/
+
+.uiNotifChatIcon {
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  vertical-align: middle;
+  background: url('@{imgPath}notif-chat-white.png') no-repeat;
+  background-size: 21px;
+}
+
+/*
+.uiNotifMessageIcon {
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  vertical-align: text-top;
+  background: url('@{imgPath}notif-message-white.png') no-repeat;
+  background-size: 21px;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+*/
+.dropdown-menu>li>a:hover>[class^="chat-status"] {
+  background-image: url('@{imgPath}general-white.png');
+}
 
 .platform-blue {
   background-color: #4f72ac;
 }
 
 .ChatNotificationTDContainer {
+  float:right!important;
+}
+
+#chat-notifications-details {
   display: none;
+}
+.chat-notification-loading {
+  padding-left: 10px;
+  line-height: 16px;
+  vertical-align: bottom;
+}
+
+.no-user-selection
+{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
 }
