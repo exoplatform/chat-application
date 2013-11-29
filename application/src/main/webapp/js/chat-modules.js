@@ -28,6 +28,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes,
   this.targetFullname = "";
   this.isPublic = isPublic;
   this.labels = labels;
+  this.miniChat = undefined;
 
   this.ANONIM_USER = "__anonim_";
 
@@ -73,6 +74,14 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
 
 ChatRoom.prototype.onRefresh = function(callback) {
   this.onRefreshCB = callback;
+};
+
+ChatRoom.prototype.setMiniChatDiv = function(elt) {
+  this.miniChat = elt;
+};
+
+ChatRoom.prototype.clearInterval = function() {
+  this.chatEventInt = window.clearInterval(this.chatEventInt);
 };
 
 ChatRoom.prototype.onShowMessages = function(callback) {
@@ -358,8 +367,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
           }
           jqchat(".btn-weemo").addClass('disabled');
         } else if (options.type==="call-off") {
-          if (chatApplication.weemoExtension.isConnected)
-            jqchat(".btn-weemo").removeClass('disabled');
+          if (typeof chatApplication!=="undefined") {
+            if (chatApplication.weemoExtension.isConnected)
+              jqchat(".btn-weemo").removeClass('disabled');
+          }
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
@@ -373,12 +384,16 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
         if (options.type !== "call-join") {
           if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
-            chatApplication.weemoExtension.setUidToCall(options.uidToCall);
-            chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+            if (typeof chatApplication!=="undefined") {
+              chatApplication.weemoExtension.setUidToCall(options.uidToCall);
+              chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+            }
             jqchat(".btn-weemo").css("display", "none");
             jqchat(".btn-weemo-conf").css("display", "block");
-            if (options.uidToCall!=="weemo"+thiss.username && chatApplication.weemoExtension.isConnected)
-              jqchat(".btn-weemo-conf").removeClass("disabled");
+            if (typeof chatApplication!=="undefined") {
+              if (options.uidToCall!=="weemo"+thiss.username && chatApplication.weemoExtension.isConnected)
+                jqchat(".btn-weemo-conf").removeClass("disabled");
+            }
             else
               jqchat(".btn-weemo-conf").addClass("disabled");
           } else {
@@ -769,4 +784,144 @@ JuzuLabels.prototype.log = function() {
   if (this.element!=="") {
     console.log(jqchat.data( this.element ));
   }
+};
+
+
+/**
+ ##################                           ##################
+ ##################                           ##################
+ ##################   MINI CHATROOM           ##################
+ ##################                           ##################
+ ##################                           ##################
+ */
+String.prototype.endsWith = function(suffix) {
+  return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+
+(function($) {
+
+  $(document).ready(function() {
+    //GETTING DOM CONTEXT
+    var $miniChat = $(".mini-chat");
+    $miniChat.each( function(index) {
+      var initialized = $(this).attr("data-init");
+      if (initialized === undefined) {
+        $(this).attr("data-init", "auto");
+        $(this).attr("data-index", index);
+        var $obj = $(this);
+        var urlToken = "/rest/chat/api/1.0/user/token";
+        snack.request({
+          url: urlToken
+        }, function (err, response){
+          if (!err) {
+            var data = snack.parseJSON(response);
+
+            var username = data.username;
+            var token = data.token;
+            $obj.attr("data-username", username);
+            $obj.attr("data-token", token);
+            $obj.html('<div class="title">' +
+              '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
+              '<span class="fullname"></span>' +
+              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="Close Mini Chat"><i class="uiIconClose uiIconLightGray"></i></div>' +
+              '</div>' +
+              '<div class="history"></div>' +
+              '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');
+          }
+        });
+
+
+      }
+    });
+
+  });
+
+})(jqchat);
+
+var miniChats = {};
+
+function showMiniChatPopup(room) {
+  var $miniChat = jqchat(".mini-chat").first();
+  var username = $miniChat.attr("data-username");
+  var token = $miniChat.attr("data-token");
+  var index = $miniChat.attr("data-index");
+
+  var urlRooms = "/chatServer/whoIsOnline";
+  snack.request({
+    url: urlRooms,
+    data: {
+      room: room,
+      user: username,
+      token: token
+    }
+
+  }, function (err, response){
+    if (!err) {
+      var data = snack.parseJSON(response);
+      for (var ir=0 ; ir<data.rooms.length ; ir++) {
+        var cRoom = data.rooms[ir];
+        if (room === cRoom.room) {
+          var targetUser = cRoom.user;
+          var targetFullname = cRoom.escapedFullname;
+          $miniChat.find(".fullname").html(targetFullname);
+          var jzChatRead = "/chatServer/read";
+          var jzChatSend = "/chatServer/send";
+          var jzChatGetRoom = "/chatServer/getRoom";
+          if (miniChats[index] === undefined) {
+            miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
+          }
+          miniChats[index].setMiniChatDiv($miniChat);
+          miniChats[index].onRefresh(function() {
+
+          });
+          miniChats[index].onShowMessages(function(out) {
+            var $chats = this.miniChat.find(".history");
+            $chats.html('<span>'+out+'</span>');
+            $chats.animate({ scrollTop: 20000 }, 'fast');
+
+          });
+          miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
+            $miniChat.find(".message-input").focus();
+          });
+
+        }
+      }
+    }
+  });
+
+  $miniChat.slideDown(200);
+  $miniChat.find(".btn-close").on("click", function(){
+    $miniChat.find(".message-input").val("");
+    miniChats[index].clearInterval();
+    $miniChat.slideUp(200);
+  });
+
+  $miniChat.find(".message-input").keyup(function(event) {
+    var msg = $(this).val();
+//        console.log("keyup : "+event.which + ";"+msg.length);
+    var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
+
+    if ( event.which === 13 && msg.length>1) {
+      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+      if(!msg)
+      {
+        return;
+      }
+      //      console.log("*"+msg+"*");
+      miniChats[index].sendMessage(msg, {}, false, function() {
+//        console.log("message sent : "+msg);
+        $miniChat.find(".message-input").val("");
+      });
+
+    }
+    if ( event.which === 27 && msg.length === 0) {
+      $miniChat.find(".message-input").val("");
+      miniChats[index].clearInterval();
+      $miniChat.slideUp(200);
+    }
+
+  });
+
+
 };

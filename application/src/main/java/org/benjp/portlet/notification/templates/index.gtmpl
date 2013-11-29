@@ -41,6 +41,12 @@
       <a href="<%=chatPage%>" class="notif-chat-open-link" target="_chat"><div class="chat-status-open chat-status-icon"></div><span class="chat-label-status">Open Chat</span></a>
     </li>
   </ul>
-
-
 </div>
+<div class="mini-chat" data-position="right"></div>
+<script type="text/javascript">
+  (function() {
+    var chatMods = document.createElement('script'); chatMods.type = 'text/javascript'; chatMods.async = true;
+    chatMods.src = '/chat/js/chat-modules.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatMods);
+  })();
+</script>

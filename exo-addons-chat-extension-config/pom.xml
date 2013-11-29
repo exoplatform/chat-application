@@ -30,4 +30,27 @@
   <packaging>jar</packaging>
   <name>eXo Addons - Chat Extension Configuration</name>
   <description>eXo Chat Extension Configuration</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>server</artifactId>
+      <classifier>classes</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.ws</groupId>
+      <artifactId>exo.ws.rest.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.security.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

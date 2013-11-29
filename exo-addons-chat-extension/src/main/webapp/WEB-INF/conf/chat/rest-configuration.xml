@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
 <configuration
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
         xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
-  <import>war:/conf/chat/portal-configuration.xml</import>
-  <import>war:/conf/chat/rest-configuration.xml</import>
+  <component>
+    <type>org.exoplatform.addons.chat.api.UserRestService</type>
+  </component>
 
 </configuration>

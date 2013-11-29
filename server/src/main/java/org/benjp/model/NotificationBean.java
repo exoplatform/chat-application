@@ -23,7 +23,7 @@ package org.benjp.model;
 import java.util.List;
 
 public class NotificationBean {
-  private String user, from, type, content, link;
+  private String user, from, type, content, link, category, categoryId;
   private Long timestamp;
 
   public String getUser() {
@@ -74,6 +74,22 @@ public class NotificationBean {
     this.from = from;
   }
 
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public String getCategoryId() {
+    return categoryId;
+  }
+
+  public void setCategoryId(String categoryId) {
+    this.categoryId = categoryId;
+  }
+
   public String toJSON()
   {
     StringBuffer sb = new StringBuffer();
@@ -83,6 +99,8 @@ public class NotificationBean {
     sb.append("\"user\": \""+this.getUser()+"\",");
     sb.append("\"type\": \""+this.getType()+"\",");
     sb.append("\"from\": \""+this.getFrom()+"\",");
+    sb.append("\"category\": \""+this.getCategory()+"\",");
+    sb.append("\"categoryId\": \""+this.getCategoryId()+"\",");
     sb.append("\"content\": \""+this.getContent().replaceAll("\n", "<br/>")+"\",");
     sb.append("\"link\": \""+this.getLink()+"\",");
     sb.append("\"timestamp\": "+this.getTimestamp());

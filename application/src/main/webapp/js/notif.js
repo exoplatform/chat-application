@@ -121,12 +121,15 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         var html = '';
         if (data.notifications.length>0) {
-          for (var inot = data.notifications.length-1 ; inot>=0 ; inot--) {
+          for (var inot = 0 ; inot<data.notifications.length ; inot++) {
             var notif = data.notifications[inot];
             html += '<li>';
-            html +=   '<a href="'+notif.link+'" target="_chat">';
-            html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'20px\' height=\'20px\'  style="width:20px; height:20px;">';
-            html +=     '<div class="chat-label-status">'+notif.content+'</div>';
+            html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
+            html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
+            html +=     '<div class="chat-label-status">';
+            html +=      '<div class="content">'+notif.content+'</div>';
+            html +=      '<div class="timestamp">'+this.getDate(notif.timestamp)+'</div>';
+            html +=     '</div>';
             html +=   '</a>';
             html += '</li>';
           }
@@ -134,6 +137,10 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         }
         $chatNotificationsDetails.html(html);
         $chatNotificationsDetails.css("display", "block");
+        $(".chat-notification-detail").on("click", function(){
+          var id = $(this).attr("data-id");
+          showMiniChatPopup(id);
+        });
       },
       error: function(){
         var $chatNotificationsDetails = jqchat("#chat-notifications-details");
@@ -145,6 +152,42 @@ ChatNotification.prototype.refreshNotifDetails = function() {
 
   }
 };
+
+ChatNotification.prototype.getDate = function(timestampServer) {
+  var date = new Date();
+  if (timestampServer !== undefined)
+    date = new Date(timestampServer);
+
+  var now = new Date();
+  var sNowDate = now.toLocaleDateString();
+  var sDate = date.toLocaleDateString();
+
+  var sTime = "";
+  var sHours = date.getHours();
+  var sMinutes = date.getMinutes();
+  var timezone = date.getTimezoneOffset();
+
+  var ampm = "";
+  if (timezone>60) {// 12 Hours AM/PM model
+    ampm = "AM";
+    if (sHours>11) {
+      ampm = "PM";
+      sHours -= 12;
+    }
+    if (sHours===0) sHours = 12;
+  }
+  if (sHours<10) sTime = "0";
+  sTime += sHours+":";
+  if (sMinutes<10) sTime += "0";
+  sTime += sMinutes;
+  if (ampm !== "") sTime += " "+ampm;
+  if (sNowDate !== sDate) {
+    sTime = sDate + " " + sTime;
+  }
+  return sTime;
+
+}
+
 
 /**
  * Refresh Notifications

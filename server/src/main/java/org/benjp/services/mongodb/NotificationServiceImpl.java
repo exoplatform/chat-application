@@ -116,6 +116,8 @@ public class NotificationServiceImpl implements org.benjp.services.NotificationS
       notificationBean.setUser(user);
       if (doc.containsField("from"))
         notificationBean.setFrom(doc.get("from").toString());
+      notificationBean.setCategory(doc.get("category").toString());
+      notificationBean.setCategoryId(doc.get("categoryId").toString());
       notificationBean.setType(doc.get("type").toString());
       notificationBean.setContent(doc.get("content").toString());
       notificationBean.setLink(doc.get("link").toString());
