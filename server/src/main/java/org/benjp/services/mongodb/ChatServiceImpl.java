@@ -349,6 +349,23 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     return room;
   }
 
+  public String getSpaceRoomByName(String name) {
+    String room = null;
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("shortName", name);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      room = doc.get("_id").toString();
+    }
+
+    return room;
+  }
+
   public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);

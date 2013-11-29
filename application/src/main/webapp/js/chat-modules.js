@@ -835,58 +835,76 @@ String.prototype.endsWith = function(suffix) {
       }
     });
 
+    var spaceUrl = $("div.uiBreadcumbsNavigationPortlet > div.userAvt > img").attr("src");
+    if (spaceUrl !== undefined) {
+      if (spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
+        var spaceName = spaceUrl.substr(73);
+        spaceName = spaceName.substring(0, spaceName.indexOf("/"));
+        $breadcrumbEntry = $("div.uiBreadcumbsNavigationPortlet > div.breadcumbEntry");
+        var html = $breadcrumbEntry.html();
+        html += '<div class="uiActionWithLabel" onclick="javaScript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
+        $breadcrumbEntry.html(html);
+      }
+    }
+
   });
 
 })(jqchat);
 
 var miniChats = {};
 
-function showMiniChatPopup(room) {
+function showMiniChatPopup(room, type) {
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
   var token = $miniChat.attr("data-token");
   var index = $miniChat.attr("data-index");
+  if (type==="room-id") {
+    $miniChat.css("left", "150px");
+    $miniChat.css("top", "-1px");
+    $miniChat.removeClass("full-border-radius");
+  }
+  else if (type==="space-name") {
+    $miniChat.css("left", "5px");
+    $miniChat.css("top", "110px");
+    $miniChat.addClass("full-border-radius");
+  }
 
-  var urlRooms = "/chatServer/whoIsOnline";
+  var urlRooms = "/chatServer/getRoom";
   snack.request({
     url: urlRooms,
     data: {
-      room: room,
+      targetUser: room,
       user: username,
-      token: token
+      token: token,
+      withDetail: true,
+      type: type
     }
 
   }, function (err, response){
     if (!err) {
-      var data = snack.parseJSON(response);
-      for (var ir=0 ; ir<data.rooms.length ; ir++) {
-        var cRoom = data.rooms[ir];
-        if (room === cRoom.room) {
-          var targetUser = cRoom.user;
-          var targetFullname = cRoom.escapedFullname;
-          $miniChat.find(".fullname").html(targetFullname);
-          var jzChatRead = "/chatServer/read";
-          var jzChatSend = "/chatServer/send";
-          var jzChatGetRoom = "/chatServer/getRoom";
-          if (miniChats[index] === undefined) {
-            miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
-          }
-          miniChats[index].setMiniChatDiv($miniChat);
-          miniChats[index].onRefresh(function() {
-
-          });
-          miniChats[index].onShowMessages(function(out) {
-            var $chats = this.miniChat.find(".history");
-            $chats.html('<span>'+out+'</span>');
-            $chats.animate({ scrollTop: 20000 }, 'fast');
-
-          });
-          miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
-            $miniChat.find(".message-input").focus();
-          });
-
-        }
+      var cRoom = snack.parseJSON(response);
+      var targetUser = cRoom.user;
+      var targetFullname = cRoom.escapedFullname;
+      $miniChat.find(".fullname").html(targetFullname);
+      var jzChatRead = "/chatServer/read";
+      var jzChatSend = "/chatServer/send";
+      var jzChatGetRoom = "/chatServer/getRoom";
+      if (miniChats[index] === undefined) {
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
       }
+      miniChats[index].setMiniChatDiv($miniChat);
+      miniChats[index].onRefresh(function() {
+
+      });
+      miniChats[index].onShowMessages(function(out) {
+        var $chats = this.miniChat.find(".history");
+        $chats.html('<span>'+out+'</span>');
+        $chats.animate({ scrollTop: 20000 }, 'fast');
+
+      });
+      miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
+        $miniChat.find(".message-input").focus();
+      });
     }
   });
 

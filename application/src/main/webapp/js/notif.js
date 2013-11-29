@@ -139,7 +139,7 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         $chatNotificationsDetails.css("display", "block");
         $(".chat-notification-detail").on("click", function(){
           var id = $(this).attr("data-id");
-          showMiniChatPopup(id);
+          showMiniChatPopup(id, "room-id");
         });
       },
       error: function(){

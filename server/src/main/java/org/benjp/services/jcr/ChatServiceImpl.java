@@ -368,6 +368,11 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     return room;
   }
 
+  public String getSpaceRoomByName(String name) {
+    String room = null;
+    return room;
+  }
+
   public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
     try

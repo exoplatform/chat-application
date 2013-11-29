@@ -393,7 +393,11 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     }
     return rooms;  }
 
-  private SpaceBean getSpace(String spaceId)
+  public RoomBean getRoom(String user, String roomId) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public SpaceBean getSpace(String roomId)
   {
     SpaceBean spaceBean = null;
     try
@@ -402,12 +406,12 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
       Session session = JCRBootstrap.getSession();
       Node roomsNode = session.getRootNode().getNode("chat/" + M_ROOMS_COLLECTION);
 
-      if (roomsNode.hasNode(spaceId))
+      if (roomsNode.hasNode(roomId))
       {
-        Node roomNode = roomsNode.getNode(spaceId);
+        Node roomNode = roomsNode.getNode(roomId);
         spaceBean = new SpaceBean();
         spaceBean.setId(roomNode.getProperty(ID_PROPERTY).getString());
-        spaceBean.setRoom(spaceId);
+        spaceBean.setRoom(roomId);
         spaceBean.setDisplayName(roomNode.getProperty(DISPLAY_NAME_PROPERTY).getString());
         spaceBean.setGroupId(roomNode.getProperty(GROUP_ID_PROPERTY).getString());
         spaceBean.setShortName(roomNode.getProperty(SHORT_NAME_PROPERTY).getString());

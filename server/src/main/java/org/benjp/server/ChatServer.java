@@ -378,16 +378,31 @@ public class ChatServer
 
   @Resource
   @Route("/getRoom")
-  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin)
+  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin, String withDetail, String type)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
-    String room;
+    String room = targetUser;
+    RoomBean roomBean = null;
     try
     {
-      if (targetUser.startsWith(ChatService.SPACE_PREFIX))
+      if (type != null) {
+        if ("room-id".equals(type))
+        {
+          room = targetUser;
+        }
+        else if ("space-name".equals(type))
+        {
+          room = chatService.getSpaceRoomByName(targetUser);
+        }
+        else if ("space-id".equals(type))
+        {
+          room = ChatUtils.getRoomId(targetUser);
+        }
+      }
+      else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
         room = chatService.getSpaceRoom(targetUser);
 
@@ -407,6 +422,10 @@ public class ChatServer
         users.add(targetUser);
         room = chatService.getRoom(users);
       }
+      if ("true".equals(withDetail))
+      {
+        roomBean = userService.getRoom(user, room);
+      }
       notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)
@@ -414,7 +433,13 @@ public class ChatServer
       e.printStackTrace();
       return Response.notFound("No Room yet");
     }
-    return Response.ok(room);
+    String out = room;
+    if (roomBean!=null)
+    {
+      out = roomBean.toJSON();
+    }
+
+    return Response.ok(out);
   }
 
   @Resource
