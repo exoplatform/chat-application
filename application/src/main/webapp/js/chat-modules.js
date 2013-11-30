@@ -842,7 +842,7 @@ String.prototype.endsWith = function(suffix) {
         spaceName = spaceName.substring(0, spaceName.indexOf("/"));
         $breadcrumbEntry = $("div.uiBreadcumbsNavigationPortlet > div.breadcumbEntry");
         var html = $breadcrumbEntry.html();
-        html += '<div class="uiActionWithLabel" onclick="javaScript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
+        html += '<div class="uiActionWithLabel" onclick="javascript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
         $breadcrumbEntry.html(html);
       }
     }
@@ -903,12 +903,13 @@ function showMiniChatPopup(room, type) {
 
       });
       miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
-        $miniChat.find(".message-input").focus();
       });
     }
   });
 
-  $miniChat.slideDown(200);
+  $miniChat.slideDown(200, function() {
+    $miniChat.find(".message-input").focus();
+  });
   $miniChat.find(".btn-close").on("click", function(){
     $miniChat.find(".message-input").val("");
     miniChats[index].clearInterval();
