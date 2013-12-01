@@ -865,7 +865,7 @@ function showMiniChatPopup(room, type) {
   }
   else if (type==="space-name") {
     $miniChat.css("left", "5px");
-    $miniChat.css("top", "110px");
+    $miniChat.css("top", "113px");
     $miniChat.addClass("full-border-radius");
   }
 

@@ -159,6 +159,35 @@
   border-radius: 5px;
 }
 
+.arrow_box {
+  position: relative;
+  background: #F0F0F0;
+  border: 1px solid #AAA;
+}
+.arrow_box:after, .arrow_box:before {
+  bottom: 100%;
+  left: 33%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow_box:after {
+  border-color: rgba(240, 240, 240, 0);
+  border-bottom-color: #F0F0F0;
+  border-width: 10px;
+  margin-left: -10px;
+}
+.arrow_box:before {
+  border-color: rgba(170, 170, 170, 0);
+  border-bottom-color: #AAA;
+  border-width: 11px;
+  margin-left: -11px;
+}
+
 .mini-chat {
   display: none;
   position: absolute;
