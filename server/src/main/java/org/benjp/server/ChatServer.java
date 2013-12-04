@@ -401,6 +401,13 @@ public class ChatServer
         {
           room = ChatUtils.getRoomId(targetUser);
         }
+        else if ("username".equals(type))
+        {
+          List<String> users = new ArrayList<String>();
+          users.add(user);
+          users.add(targetUser);
+          room = chatService.getRoom(users);
+        }
       }
       else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {

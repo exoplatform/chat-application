@@ -854,6 +854,7 @@ String.prototype.endsWith = function(suffix) {
 var miniChats = {};
 
 function showMiniChatPopup(room, type) {
+  var chatServerUrl = $("#chat-status").attr("data-chat-server-url");
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
   var token = $miniChat.attr("data-token");
@@ -869,9 +870,9 @@ function showMiniChatPopup(room, type) {
     $miniChat.addClass("full-border-radius");
   }
 
-  var urlRooms = "/chatServer/getRoom";
+  var urlRoom = chatServerUrl+"/getRoom";
   snack.request({
-    url: urlRooms,
+    url: urlRoom,
     data: {
       targetUser: room,
       user: username,
@@ -886,9 +887,9 @@ function showMiniChatPopup(room, type) {
       var targetUser = cRoom.user;
       var targetFullname = cRoom.escapedFullname;
       $miniChat.find(".fullname").html(targetFullname);
-      var jzChatRead = "/chatServer/read";
-      var jzChatSend = "/chatServer/send";
-      var jzChatGetRoom = "/chatServer/getRoom";
+      var jzChatRead = chatServerUrl+"/read";
+      var jzChatSend = chatServerUrl+"/send";
+      var jzChatGetRoom = chatServerUrl+"/getRoom";
       if (miniChats[index] === undefined) {
         miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
       }

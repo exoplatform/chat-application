@@ -691,6 +691,9 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
           out += ' data-fullname="'+fullname+'"';
           out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
           out += '<i class="icon-facetime-video"></i> Call</a>';
+          out += '<a type="button" class="btn chatPopupOverlay chatPopup-'+username.replace('.', '-')+' disabled" title="Chat"';
+          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
+          out += '<i class="uiIconForum uiIconLightGray"></i> Chat</a>';
       //$uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
       $uiElement.append(out);
       jqchat(".weemoCallOverlay").on("click", function() {
@@ -702,10 +705,19 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
         }
       });
 
+      jqchat(".chatPopupOverlay").on("click", function() {
+        if (!jqchat(this).hasClass("disabled")) {
+          //console.log("weemo button clicked");
+          var targetUser = jqchat(this).attr("data-username");
+          showMiniChatPopup(targetUser,'username');
+        }
+      });
+
       function cbGetStatus(targetUser, status) {
         //console.log("Status :: target="+targetUser+" : status="+status);
         if (status !== "offline") {
           jqchat(".weemoCall-"+targetUser.replace('.', '-')).removeClass("disabled");
+          jqchat(".chatPopup-"+targetUser.replace('.', '-')).removeClass("disabled");
         }
       }
       chatNotification.getStatus(username, cbGetStatus);
