@@ -1,0 +1,43 @@
+/* Basic styling */
+body {
+	font-family: Verdana, Arial;
+	color: #333;
+}
+
+/* Flexbox boxes */
+/*
+div.blocks, div.blocks > div {
+	display: -webkit-flex;
+	display: flex;
+}
+
+div.blocks {
+	flex-flow: row;
+	-webkit-flex-flow: row;
+}
+
+div.blocks > div {
+	flex-flow: column;
+	-webkit-flex-flow: column;
+	-webkit-flex:1 1 auto;
+	flex:1 1 auto;
+}
+div.blocks > div > * {
+	-webkit-flex:1 1 auto;
+	flex:1 1 auto;
+}
+
+div.blocks > div > :nth-child(2n) {
+	-webkit-flex:1 1 auto;
+	flex:1 1 auto;
+}
+*/
+
+/* Webview styling */
+/*
+webview {
+	border: 1px solid rgb(197, 65, 65);
+}
+*/
+
+

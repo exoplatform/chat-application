@@ -49,4 +49,31 @@
     chatMods.src = '/chat/js/chat-modules.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatMods);
   })();
+
+
+  var fromChromeApp = false;
+  var appWindow, appOrigin;
+  function listenerMessage(event){
+    appWindow = event.source;
+    appOrigin = event.origin;
+    if (event.data==="fromChromeApp") {
+      fromChromeApp = true;
+      if (typeof chatApplication === "object") {
+        chatApplication.resize();
+        jqchat(".btn-app-logout").css("display", "block");
+      }
+    }
+//    console.log("message: "+event.data);
+  }
+  function doSendMessage(msg) {
+    if (appWindow && appOrigin) {
+      appWindow.postMessage(msg, appOrigin);
+    }
+  }
+
+  if (window.addEventListener){
+    addEventListener("message", listenerMessage, false);
+  } else {
+    attachEvent("onmessage", listenerMessage);
+  }
 </script>

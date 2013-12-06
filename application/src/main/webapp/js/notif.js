@@ -132,6 +132,12 @@ ChatNotification.prototype.refreshNotifDetails = function() {
             html +=     '</div>';
             html +=   '</a>';
             html += '</li>';
+            if (fromChromeApp) {
+              if (this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                doSendMessage(notif);
+              }
+            }
+
           }
           html += '<li class="divider">&nbsp;</li>';
         }
@@ -336,6 +342,9 @@ ChatNotification.prototype.setStatus = function(status, callback) {
  */
 ChatNotification.prototype.changeStatusChat = function(status) {
   this.profileStatus = status;
+  if (typeof chatApplication === "object") {
+    chatApplication.profileStatus = status;
+  }
   var $chatStatusChat = $(".chat-status-chat");
   $chatStatusChat.removeClass("chat-status-available");
   $chatStatusChat.removeClass("chat-status-donotdisturb");
@@ -499,7 +508,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           jqchat(".btn-weemo").removeClass('disabled');
           break;
       }
-    }
+    };
 
     /**
      * Weemo Driver On Driver Started Javascript Handler

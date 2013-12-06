@@ -78,6 +78,8 @@
       </label>
     </span>
     <span class="menu-standard pull-right">
+      <a type="button" class="btn btn-app-logout" title="Logout" href="#">
+        <i class="icon-off"></i> Logout</a>
       <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
         <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
 
