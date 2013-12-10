@@ -143,8 +143,8 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         }
         $chatNotificationsDetails.html(html);
         $chatNotificationsDetails.css("display", "block");
-        $(".chat-notification-detail").on("click", function(){
-          var id = $(this).attr("data-id");
+        jqchat(".chat-notification-detail").on("click", function(){
+          var id = jqchat(this).attr("data-id");
           showMiniChatPopup(id, "room-id");
         });
       },
@@ -345,7 +345,7 @@ ChatNotification.prototype.changeStatusChat = function(status) {
   if (typeof chatApplication === "object") {
     chatApplication.profileStatus = status;
   }
-  var $chatStatusChat = $(".chat-status-chat");
+  var $chatStatusChat = jqchat(".chat-status-chat");
   $chatStatusChat.removeClass("chat-status-available");
   $chatStatusChat.removeClass("chat-status-donotdisturb");
   $chatStatusChat.removeClass("chat-status-invisible");
@@ -683,11 +683,11 @@ WeemoExtension.prototype.attachWeemoToPopups = function() {
       //console.log("uiAction bind on weemoCallOverlay");
       var $uiFullname = jqchat('#tiptip_content').children('#tipName').children("tbody").children("tr").children("td").children("a");
       $uiFullname.each(function() {
-        var html = $(this).html();
+        var html = jqchat(this).html();
         if (html.indexOf("/rest/")==-1) {
           fullname = html;
         }
-        var href = $(this).attr("href");
+        var href = jqchat(this).attr("href");
         if (href.indexOf("/portal/intranet/activities/")>-1) {
           username = href.substr(28);
         }

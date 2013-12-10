@@ -854,7 +854,7 @@ String.prototype.endsWith = function(suffix) {
 var miniChats = {};
 
 function showMiniChatPopup(room, type) {
-  var chatServerUrl = $("#chat-status").attr("data-chat-server-url");
+  var chatServerUrl = jqchat("#chat-status").attr("data-chat-server-url");
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
   var token = $miniChat.attr("data-token");
@@ -918,7 +918,7 @@ function showMiniChatPopup(room, type) {
   });
 
   $miniChat.find(".message-input").keyup(function(event) {
-    var msg = $(this).val();
+    var msg = jqchat(this).val();
 //        console.log("keyup : "+event.which + ";"+msg.length);
     var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
 
