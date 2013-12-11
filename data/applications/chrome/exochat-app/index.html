@@ -1,21 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <title>eXo Chat</title>
     <link href="index.css" rel="stylesheet">
+    <script src="titlebar.js"></script>
 </head>
 <body>
-  <div id="domainView" class="blocks" style="display: none">
-    <div>
-      <label>eXo Domain:</label>
-      <input type="text" value="http://www.acme.com" id="domainText">
-      <input type="button" value="Save" id="saveDomainBtn">
+  <div class="topSpaceBar">
+    <a href="#" id="logoutLink">Logout</a>
+  </div>
+
+  <div id="domainView" class="blocks WrapTryOnlinePopup" style="display: none">
+    <div class="BgContent">
+      <div class="LightBoxContent">
+        <div class="FormContact TryOnlinePopup">
+          <h4 class="title">Chat with your colleagues</h4>
+          <p>Start eXo Chat now</p>
+          <!-- UIForm SignUp to eXo Cloud will be added when click the button Try eXo on Pricing sections -->
+          <form class="UIForm" action="javascript:void(0);" method="post" name="cloud-workspaces-profile" id="signupForm">
+            <input class="domain" type="text" name="domain" id="domainText" value="" placeholder="your eXo Intranet Domain">
+            <div id="UIPortalLoginFormAction" class="uiAction">
+              <button class="BtnLearnMore btn-large" id="saveDomainBtn">Join</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="joinCommunity">
+          <span class="or">Or</span>
+          <h4>Join the eXo Community</h4>
+          <p class="des">Discover <strong>eXo Platform 4 in a production environment</strong> with our Community website where you'll find <strong>useful resources and the eXo Platform downloads.</strong></p>
+          <a href="http://community.exoplatform.com/portal/intranet/register" class="linkCreateAcc" target="_blank"><span class="stepBullet">1</span>Create your account</a>
+          <br><br>
+          <a href="#" class="linkCreateAcc" target="_blank" id="joinCommunityBtn"><span class="stepBullet">2</span>Sign in</a>
+
+        </div>
+      </div>
     </div>
+
   </div>
 	<div id="chatView" class="blocks webviews" style="display: none">
     <div>
-      <webview id="wv1" style="width:850px; height:650px;" autosize="true"
+      <webview id="wv1" style="width:850px; height:620px;" autosize="true"
         src=""></webview>
     </div>
   </div>

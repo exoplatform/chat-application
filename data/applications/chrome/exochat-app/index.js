@@ -37,21 +37,35 @@ onload = function() {
 	};
 
 	var wv1 = $('#wv1');
+  addTitlebar("top-titlebar", "images/exo.png", "");
+
 
   function initWebChat() {
     var domainView = $("#domainView");
     var chatView = $("#chatView");
+    var logoutLink = $("#logoutLink");
+
+    chrome.storage.local.get("oldDomain", function(val){
+      var url = val.oldDomain;
+      if (typeof url !== "undefined") {
+        var domainText = $("#domainText");
+        domainText.value = url;
+      }
+    });
 
     chrome.storage.local.get("domain", function(val){
       var url = val.domain;
       if (typeof url === "undefined") {
         chatView.style.display = "none";
+        logoutLink.style.display = "none";
         domainView.style.display = "block";
+        chrome.app.window.current().setBounds({width: 530, height: 475});
       } else {
         chrome.app.window.current().setBounds({width: 870, height: 670});
         wv1.setAttribute("src", url+"/portal/intranet/chat");
         domainView.style.display = "none";
         chatView.style.display = "block";
+        logoutLink.style.display = "inline";
       }
     });
 
@@ -60,6 +74,12 @@ onload = function() {
   function saveDomainBtnClick() {
     var domainText = $("#domainText");
     chrome.storage.local.set({"domain": domainText.value});
+    initWebChat();
+  }
+
+  function saveCommunityDomain() {
+    var domainText = "http://community.exoplatform.com";
+    chrome.storage.local.set({"domain": domainText});
     initWebChat();
   }
 
@@ -72,6 +92,18 @@ onload = function() {
     });
 	}
 
+  function logout() {
+    chrome.storage.local.get("domain", function(val){
+      var url = val.domain;
+      if (typeof url !== "undefined") {
+        wv1.setAttribute("src", url+"/portal/intranet?portal:componentId=UIPortal&portal:action=Logout");
+        chrome.storage.local.set({"oldDomain": url});
+      }
+    });
+
+    chrome.storage.local.remove("domain");
+    initWebChat();
+  }
 
 	// Event handlers for the various notification events
 	function notificationClosed(notID, bByUser) {
@@ -98,6 +130,8 @@ onload = function() {
 	wv1.addEventListener('loadstop', sendInitialMessage);
 
   $("#saveDomainBtn").addEventListener("click", saveDomainBtnClick);
+  $("#joinCommunityBtn").addEventListener("click", saveCommunityDomain);
+  $("#logoutLink").addEventListener("click", logout);
 
 	// set up the event listeners
 	chrome.notifications.onClosed.addListener(notificationClosed);
