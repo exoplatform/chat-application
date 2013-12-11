@@ -148,6 +148,7 @@ var chatApplication = new ChatApplication();
 
 
 
+/*
     $(".btn-app-logout").on("click", function() {
       $.ajax({
         url: "/portal/intranet?portal:componentId=UIPortal&portal:action=Logout",
@@ -159,6 +160,7 @@ var chatApplication = new ChatApplication();
         }
       });
     });
+*/
 
     $(".meeting-action-toggle").on("click", function() {
       $(".meeting-action-popup").hide();

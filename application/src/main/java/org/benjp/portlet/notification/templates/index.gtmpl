@@ -60,7 +60,7 @@
       fromChromeApp = true;
       if (typeof chatApplication === "object") {
         chatApplication.resize();
-        jqchat(".btn-app-logout").css("display", "block");
+        //jqchat(".btn-app-logout").css("display", "block");
       }
     }
 //    console.log("message: "+event.data);
