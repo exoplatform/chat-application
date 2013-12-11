@@ -1231,7 +1231,7 @@ ChatApplication.prototype.resize = function() {
   if (fromChromeApp) {
     $chatApplication.css("padding", "0");
     off = 40;
-    $(".uiBox").css("margin", "0");
+    jqchat(".uiBox").css("margin", "0");
   }
   if (chatApplication.chatFullscreen == "true") {
     jqchat("#PlatformAdminToolbarContainer").css("display", "none");
@@ -1926,7 +1926,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".send-meeting-notes").on("click", function () {
-    var $this = $(this);
+    var $this = jqchat(this);
     jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
@@ -1955,7 +1955,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".save-meeting-notes").on("click", function () {
-    var $this = $(this);
+    var $this = jqchat(this);
     jqchat(".meeting-notes").animate({
       opacity: "toggle"
     }, 200, function() {
