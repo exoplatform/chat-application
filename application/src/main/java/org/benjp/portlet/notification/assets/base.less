@@ -8,6 +8,12 @@
 @statusColor:                 #444;
 @iconStatusPath:              "/chat/img/";
 
+#chat-notification {
+  position: absolute;
+  left: 14px;
+  top: -7px;
+}
+
 .notif-total {
   background-color: @notifBackgroundColor;
   color: @notifColor;
@@ -15,11 +21,8 @@
   font-weight: normal;
   padding: 1px 4px;
   line-height: 10px;
-  left: 7px;
-  position: relative;
   -moz-border-radius: 2px;
   border-radius: 2px;
-  top: -7px;
   box-shadow: 1px 2px 1px 0px rgba(35,44,48,0.8);
 }
 
@@ -106,6 +109,7 @@
   vertical-align: middle;
   background: url('@{imgPath}notif-chat-white.png') no-repeat;
   background-size: 21px;
+  position: relative;
 }
 
 /*
@@ -347,4 +351,21 @@
 
     }
   }
+}
+.weemo-status {
+  position: absolute;
+  left: -8px;
+  top: -3px;
+}
+.weemo-status-not-connected {
+  .weemo(0, 0);
+}
+.weemo-status-connecting {
+  .weemo(-16px, 0);
+}
+.weemo-status-error {
+  .weemo(0, -16px);
+}
+.weemo-status-connected {
+  .weemo(-16px, -16px);
 }

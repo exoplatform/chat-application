@@ -394,6 +394,7 @@ function WeemoExtension() {
   this.chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
 
   this.isConnected = false;
+  this.changeStatus("not-connected");
 }
 
 WeemoExtension.prototype.log = function() {
@@ -463,6 +464,20 @@ WeemoExtension.prototype.hangup = function() {
   }
 };
 
+WeemoExtension.prototype.changeStatus = function(status) {
+  var $weemoStatus = jqchat(".weemo-status");
+  if (typeof status === "undefined") {
+    $weemoStatus.removeClass("weemo-status-connected");
+    return;
+  }
+  $weemoStatus.removeClass("weemo-status-not-connected");
+  $weemoStatus.removeClass("weemo-status-connecting");
+  $weemoStatus.removeClass("weemo-status-error");
+  $weemoStatus.removeClass("weemo-status-connected");
+  $weemoStatus.addClass("weemo-status-"+status);
+
+}
+
 /**
  * Init Weemo Call
  * @param $uid
@@ -496,16 +511,23 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           } else if (fn!=="") {
             this.setDisplayName(fn); // Configure the display name
           }
+          weemoExtension.changeStatus("connecting");
 
           this.authenticate();
-          break;
-        case 'loggedasotheruser':
-          // force weemo to kick previous user and replace it with current one
-          this.authenticate(1);
           break;
         case 'sipOk':
           weemoExtension.isConnected = true;
           jqchat(".btn-weemo").removeClass('disabled');
+          weemoExtension.changeStatus("connected");
+          setTimeout(weemoExtension.changeStatus, 5000);
+          break;
+        case 'loggedasotheruser':
+          // force weemo to kick previous user and replace it with current one
+          this.authenticate(1);
+        case 'sipNok':
+        case 'error':
+        case 'kicked':
+          weemoExtension.changeStatus("error");
           break;
       }
     };

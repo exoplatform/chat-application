@@ -4,6 +4,12 @@
     background: url('@{imgPath}2x/general.png') no-repeat @left @top;
     background-size: 96px 162px;
   }
+  .weemo(@left, @top) {
+    background: url('@{imgPath}2x/weemo-status.png') no-repeat @left @top;
+    background-size: 32px 32px;
+    width: 16px;
+    height: 16px;
+  }
 
   .chat-icon {
     .background(-80px, -16px);
@@ -44,5 +50,17 @@
     background-image: url('@{imgPath}2x/general-white.png');
   }
 
+  .weemo-status-not-connected {
+    .weemo(0, 0);
+  }
+  .weemo-status-connecting {
+    .weemo(-16px, 0);
+  }
+  .weemo-status-error {
+    .weemo(0, -16px);
+  }
+  .weemo-status-connected {
+    .weemo(-16px, -16px);
+  }
 }
 
