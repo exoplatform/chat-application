@@ -394,6 +394,7 @@ function WeemoExtension() {
   this.chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
 
   this.isConnected = false;
+  this.timeoutWeemo = -1;
   this.changeStatus("not-connected");
 }
 
@@ -519,7 +520,8 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           weemoExtension.isConnected = true;
           jqchat(".btn-weemo").removeClass('disabled');
           weemoExtension.changeStatus("connected");
-          setTimeout(weemoExtension.changeStatus, 5000);
+          clearTimeout(weemoExtension.timeoutWeemo);
+          weemoExtension.timeoutWeemo = setTimeout(weemoExtension.changeStatus, 3000);
           break;
         case 'loggedasotheruser':
           // force weemo to kick previous user and replace it with current one
