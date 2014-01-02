@@ -53,9 +53,9 @@
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
     <span class="menu-standard pull-left">
       <span class="avatar-user">
-        <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
+        <div class="activityAvatar avatarCircle" >
           <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/benjamin" data-original-title="">
-            <img class="avatar-image" onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' width='30px' height='30px'  style="width:30px; height:30px;">
+            <img class="avatar-image" onerror="this.src='/chat/img/Avatar.gif;'" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:<%=user%>/soc:profile/soc:avatar' >
           </a>
         </div>
       </span>
@@ -98,15 +98,15 @@
       <div class="room-detail" id="room-detail">
 
         <span class="room-detail-avatar">
-          <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
+          <div class="activityAvatar avatarCircle">
             <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
-              <img class="avatar-image target-avatar-image" src='/chat/img/Avatar.gif;' width="30px" height="30px" style="width:30px; height:30px;">
+              <img class="avatar-image target-avatar-image" src='/chat/img/Avatar.gif;' >
             </a>
           </div>
         </span>
 
         <span class="target-user-fullname room-detail-fullname">
-         &nbsp;
+         <i class="chat-status-chat chat-status-available"></i>&nbsp;
         </span>
 
         <span class="room-detail-button">
@@ -232,7 +232,7 @@
               </div>
             </div>
           </div>
-          <div class="uiActionWithLabel meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
+          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task</a></li>

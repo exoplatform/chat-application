@@ -1,8 +1,7 @@
 .msg-emoticons-panel {
-  background: @colorBgEmoticonPlain;
-  background-color: @colorBgEmoticon;
-  min-width: 80px;
-  height: 80px;
+  background: @white;
+  width: 100px;
+  height: 100px;
   padding: 2px 0px 4px 4px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -11,12 +10,13 @@
   left: 0px;
   bottom: 61px;
   z-index: 5;
+  border: 1px solid #cccccc;
 }
 
 .emoticon {
   display: inline-block;
-  min-width: 16px;
-  height: 16px;
+  width: 21px;
+  height: 21px;
   padding: 0;
   margin: 0;
   font-size: 1px;
@@ -24,12 +24,12 @@
 }
 
 .background-emoticon(@left, @top) {
-  background: url('@{imgPath}emoticons.png') no-repeat @left @top;
-  background-size: 128px 64px;
+  background: url('@{imgPath}uiIconChatEmoticons24x24.png') no-repeat @left @top;
+  background-size: 100px 100px;
 }
 
 .msg-emoticons {
-  .background-emoticon(-112px, -32px);
+  .background-emoticon(0, 0);
   z-index: 10;
 }
 .msg-button {
@@ -37,101 +37,53 @@
 }
 
 
-.emoticon-smile {
-  .background-emoticon(-112px, -32px);
+.emoticon-smile-white, .emoticon-smile {
+  .background-emoticon(0px, 0px);
 }
-.emoticon-big-smile {
-  .background-emoticon(-48px, 0);
+.emoticon-big-smile-white, .emoticon-big-smile {
+  .background-emoticon(-51px, 0);
 }
-.emoticon-eye-blink {
-  .background-emoticon(-112px, -16px);
+.emoticon-eye-blink-white, .emoticon-eye-blink {
+  .background-emoticon(-76px, 0px);
 }
-.emoticon-no-voice {
-  .background-emoticon(-48px, -32px);
+.emoticon-no-voice-white, .emoticon-no-voice {
+  .background-emoticon(-26px, -25px);
 }
-.emoticon-sad {
-  .background-emoticon(-80px, -32px);
+.emoticon-sad-white, .emoticon-sad {
+  .background-emoticon(-26px, 0px);
 }
-.emoticon-surprise {
-  .background-emoticon(-48px, -48px);
+.emoticon-surprise-white, .emoticon-surprise {
+  .background-emoticon(0px, -25px);
 }
-.emoticon-smile-white {
-  .background-emoticon(-96px, -32px);
+.emoticon-beer-white, .emoticon-beer {
+  .background-emoticon(-75px, -50px);
 }
-.emoticon-big-smile-white {
-  .background-emoticon(-32px, 0);
+.emoticon-bow-white, .emoticon-bow {
+  .background-emoticon(-76px, -25px);
 }
-.emoticon-eye-blink-white {
-  .background-emoticon(-96px, -16px);
+.emoticon-bug-white, .emoticon-bug {
+  .background-emoticon(0px, -75px);
 }
-.emoticon-no-voice-white {
-  .background-emoticon(-32px, -32px);
+.emoticon-cake-white, .emoticon-cake {
+  .background-emoticon(-25px, -75px);
 }
-.emoticon-sad-white {
-  .background-emoticon(-64px, -32px);
+.emoticon-cash-white, .emoticon-cash {
+  .background-emoticon(-51px, -75px);
 }
-.emoticon-surprise-white {
-  .background-emoticon(-32px, -48px);
+.emoticon-coffee-white, .emoticon-coffee {
+  .background-emoticon(-75px, -75px);
 }
-.emoticon-beer {
-  .background-emoticon(-16px, 0);
+.emoticon-no-white, .emoticon-no {
+  .background-emoticon(-25px, -50px);
 }
-.emoticon-bow {
-  .background-emoticon(-80px, 0);
+.emoticon-star-white, .emoticon-star {
+  .background-emoticon(-50px, -50px);
 }
-.emoticon-bug {
-  .background-emoticon(-112px, 0);
+.emoticon-yes-white, .emoticon-yes {
+  .background-emoticon(0px, -50px);
 }
-.emoticon-cake {
-  .background-emoticon(-16px, -16px);
-}
-.emoticon-cash {
-  .background-emoticon(-48px, -16px);
-}
-.emoticon-coffee {
-  .background-emoticon(-80px, -16px);
-}
-.emoticon-no {
-  .background-emoticon(-16px, -32px);
-}
-.emoticon-star {
-  .background-emoticon(-16px, -48px);
-}
-.emoticon-yes {
-  .background-emoticon(-112px, -48px);
-}
-.emoticon-tongue {
-  .background-emoticon(-80px, -48px);
-}
-.emoticon-beer-white {
-  .background-emoticon(0, 0);
-}
-.emoticon-bow-white {
-  .background-emoticon(-64px, 0);
-}
-.emoticon-bug-white {
-  .background-emoticon(-96px, 0);
-}
-.emoticon-cake-white {
-  .background-emoticon(0, -16px);
-}
-.emoticon-cash-white {
-  .background-emoticon(-32px, -16px);
-}
-.emoticon-coffee-white {
-  .background-emoticon(-64px, -16px);
-}
-.emoticon-no-white {
-  .background-emoticon(0, -32px);
-}
-.emoticon-star-white {
-  .background-emoticon(0, -48px);
-}
-.emoticon-yes-white {
-  .background-emoticon(-96px, -48px);
-}
-.emoticon-tongue-white {
-  .background-emoticon(-64px, -48px);
+.emoticon-tongue-white, .emoticon-tongue {
+  .background-emoticon(-51px, -25px);
 }
 
 .emoticon-text, .invisible-text {

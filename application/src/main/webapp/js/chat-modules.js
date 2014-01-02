@@ -311,15 +311,16 @@ ChatRoom.prototype.showMessages = function(msgs) {
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
         }
-        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
+		out += "<span class='msg-date pull-right'>";
+        out += "<span class='msg-text'><span >"+msgtemp+"</span>" +
           "<span class='invisible-text'> [</span>";
-        out += "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>";
+        
         if (message.type === "DELETED" || message.type === "EDITED") {
           out += "<span class='message-changed'></span>";
         }
         out += thiss.getDate(message.timestamp)+"</span>";
         if (message.type !== "DELETED") {
-          out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
+          out += "<span style='display:none;' class='msg-actions pull-right'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
             out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
@@ -328,8 +329,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
           out += "</span>";
         }
-        out += "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
+        out += "<span class='invisible-text'>]</span></span>";
         prevUser = message.user;
       }
       else
@@ -337,9 +337,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (prevUser !== "")
           out += "</span></div>";
         if (prevUser !== "__system")
-          out += "<hr style='margin: 0'>";
         out += "<div class='msgln-odd'>";
-        out += "<span style='position:relative; padding-right:14px;padding-left:4px;top:8px'>";
         var options = {};
         // Legacy test
         if (message.message.indexOf("&")>0) {
@@ -364,7 +362,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
         }
-        out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
+
         if (options.type==="type-event") {
           var day = options.startDate.substr(3, 2);
           out += "<span style='position: absolute;top: 2px;left: 9px;font-weight: bold;font-size: 20px;color: #848484;'>"+day+"</span>";
@@ -387,30 +385,30 @@ ChatRoom.prototype.showMessages = function(msgs) {
           }
         }
 
-        out += "<span>";
+        out += "<span class='clearfix'>";
 
         if (options.type === "type-me") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
-          out += "<div style='margin-left:50px;'>";
+          out += "<span style='margin-left:50px;'>";
+		
         } else {
+			out +=  "<div class='pull-left msg-user'>" 
           if (message.user != thiss.username) {
             if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span>";
             else
-              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span>";
           } else {
-            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span>";
           }
-
-          out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
+		  out +=  "</div>" ;
+		  out +=  "<div class='msg-date pull-right'>"+thiss.getDate(message.timestamp)+"</div>" 
+          out += "<div class='msg-text'><span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
         }
 
         out +=  "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(message.timestamp)+"</span>" +
-          "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
+          "<span class='invisible-text'>]</span></span>";
         out += "</span></div>";
-        out += "<hr style='margin: 0'>";
         out += "<div><span>";
         prevUser = "__system";
 
