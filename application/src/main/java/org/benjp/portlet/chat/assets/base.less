@@ -283,9 +283,9 @@ table.list-rooms {
     .popover {
       display: none;
       position: absolute;
-      left: -285px;
+      left: -270px;
       top: -134px;
-      width: 320px;
+      width: 306px;
       height: 130px;
     }
 
@@ -304,7 +304,7 @@ table.list-rooms {
   }
 
   .meeting-action-panel {
-    padding: 10px;
+    padding: 10px 20px;
     display: none;
 
     .input-default {
@@ -322,9 +322,10 @@ table.list-rooms {
     }
 
     .action-label {
-      padding-left: 10px;
+      padding-right: 10px;
       line-height: 28px;
       vertical-align: top;
+      text-align: right;
     }
 
     .btn {
@@ -333,10 +334,11 @@ table.list-rooms {
 
     .uiSelectbox {
       vertical-align: top;
-      width: 85px;
+      width: 90px;
 
       .selectbox {
-        width: 80px;
+        width: 92px;
+        font-size: 12px;
       }
     }
 
@@ -779,14 +781,13 @@ hr
 
 #chats {
 	.msgln{
-		background: url('@{imgPath}emptyChat.png') no-repeat center center;
 		height: 100%;
 		padding: 0px !important;
-		color: @gray;
+		color: @white;
 	}
 	.msgln-odd {
 		padding: 20px 0px;
-		background: #f8f8f8;
+		background: @grayLighter;
 		.msg-text{
 			margin: 0px 60px 0px 110px;
 			word-wrap: break-word;

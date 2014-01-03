@@ -127,7 +127,11 @@
 
       </div>
 
-      <div id="chats"></div>
+      <div id="chats">
+      
+      	<div class="">chat content this here</div>
+      
+      </div>
 
       <div class="chat-message">
 
@@ -162,10 +166,7 @@
             <div class="arrow">
             </div>
             <div class="popover-inner">
-              <h3 class="popover-title">
-                <span class="meeting-action-title"></span>
-                <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-              </h3>
+              
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
                   <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
@@ -210,23 +211,27 @@
                   <a type="button" class="btn btn-primary pull-right create-task-button"><i class="icon-check icon-white"></i> Post</a>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="220" data-title="Add event">
-                  <input type="text" class="input-with-value" data-value="Event" id="event-add-summary">
-                  <span class="action-label" style="display: inline-block;width: 40px;">from</span>
-                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:80px;" id="event-add-start-date">
+                  <input type="text" class="input-with-value" data-value="Event title" id="event-add-summary">
+                  <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
+                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-start-time">
                       <option value="all-day">All Day</option>
                     </select>
                   </span>
                   <br>
-                  <span class="action-label" style="display: inline-block;width: 40px;">to</span>
-                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:80px;" id="event-add-end-date">
+                  <span class="action-label" style="display: inline-block;width: 40px;">To: </span>
+                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-end-time">
                       <option value="all-day">All Day</option>
                     </select>
                   </span>
-                  <a type="button" class="btn btn-primary pull-right create-event-button"><i class="icon-calendar icon-white"></i> Post</a>
+                  <input type="text" class="input-with-value input-default" data-value="Location" id="">
+                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
+                  	<a type="button" class="btn btn-primary create-event-button">Post</a>
+                  	<a type="button" class="btn ">Cancel</a>
+                  </div>
                 </div>
 
               </div>
