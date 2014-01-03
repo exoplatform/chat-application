@@ -207,8 +207,11 @@
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
-                  <input type="text" class="input-with-value" data-value="Due" style="width:130px;" id="task-add-date" data-date="<%=today%>" >
-                  <a type="button" class="btn btn-primary pull-right create-task-button"><i class="icon-check icon-white"></i> Post</a>
+                  <input type="text" class="input-with-value" data-value="Due" id="task-add-date" data-date="<%=today%>" >
+                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
+                  	<a type="button" class="btn btn-primary create-task-button">Post</a>
+                  	<a type="button" class="btn ">Cancel</a>
+                  </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="220" data-title="Add event">
                   <input type="text" class="input-with-value" data-value="Event title" id="event-add-summary">
