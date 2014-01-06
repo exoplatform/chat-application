@@ -245,14 +245,14 @@
           </div>
           <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
-            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="icon-calendar"></i> Add Event</a></li>
-            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="icon-check"></i> Assign Task</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="icon-globe"></i> Share Link</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="icon-file"></i> Upload File</a></li>
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent"></i> Add Event</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask"></i> Assign Task</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconLink"></i> Share Link</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconUpload"></i> Upload File</a></li>
             <li class="divider"></li>
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
-            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="icon-question-sign"></i> Ask a Question</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="icon-hand-up"></i> Raise Hand</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconQuestion"></i> Ask a Question</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand"></i> Raise Hand</a></li>
           </ul>
         </div>
 
