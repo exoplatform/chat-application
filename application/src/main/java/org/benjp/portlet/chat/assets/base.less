@@ -251,10 +251,6 @@ table.list-rooms {
   margin-right: 6px;
 }
 
-#chats {
-  font-size: 12px;
-}
-
 .chat-message
 {
   position: relative;
@@ -805,6 +801,115 @@ hr
 			color: @grayDark;
 		}
 	}
+}
+
+.msRow {
+  @widthOfAvatar:   32px;
+  float: left;
+  width: 100%;
+  clear: both;
+  padding: 10px 0;
+  &.odd {
+    background-color: #f8f8f8;
+  }
+  /* Layout Row Chat */
+  .msContBox {
+      float: left;
+      width: 100%;
+  }
+  .msContBox + .msUserAvatar {
+      float: left;
+      margin-left: -100%;
+      width: 68px;
+  }
+  .msContBox > .inner {
+      margin-left: 68px;
+      margin-right: 20px;
+  }
+  
+  /* Style Row Chat */
+  .msUserAvatar {
+    width: 40px!important;
+    padding-left: 12px;
+    padding-right: 15px;
+    text-align: center;
+  }
+  .msContBox {
+    > .inner {
+      margin-right: 20px;
+    }
+  }
+  .msAvatarLink, .msAvatarLink img {
+    .border-radius(@widthOfAvatar);
+  }
+  .msAvatarLink {
+    width: @widthOfAvatar;
+    background-color: #fff;
+    padding: 3px;
+    border: 1px solid #b2b1b1;
+    display: block;
+    #gradient > .vertical(#ffffff, #f1f1f1);
+    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
+    > img {
+      width: @widthOfAvatar;
+      height: @widthOfAvatar;
+      .box-shadow(0 1px 1px rgba(255,255,255, .1));
+    }
+  }
+  .msLinkInMes {
+    font-weight: bold;
+  }
+  .msTiltleLn {
+    margin-top: -5px;
+    margin-bottom: 10px;
+    .msNameUser {
+      font-weight: bold;
+      color: #999999;
+      &:hover {
+        color: @linkColor;
+      }
+    }
+    .msAction {
+      display: none;
+      color: @linkColor;
+      font-size: 12px;
+      a {
+        font-size: 12px;
+      }
+    } 
+  }
+  .msTimePost {
+    color: #999;
+    font-size: 12px;
+    .msEditMes {
+    }
+  }
+  .msUserMes {
+    margin-right: 130px;
+    .msUserQuote {
+      background-color: #f0f0f0;
+      .border-radius(3px);
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      .msNameUser {
+        color: #333333;
+      }
+    }
+  }
+  .msQuoteCont {
+    font-style: italic;
+    quote {
+      border-left: 5px solid #e0e0e0;
+      padding-left: 15px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+  &:hover {
+    .msAction {
+      display: block;
+    }
+  }
 }
 
 
