@@ -170,7 +170,10 @@
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
                   <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
-                  <a type="button" class="btn btn-primary pull-right share-link-button"><i class="icon-globe icon-white"></i> Share</a>
+                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
+                  	<a type="button" class="btn btn-primary share-link-button">Share</a>
+                  	<a type="button" class="btn ">Cancel</a>
+                  </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="200" data-title="File">
                   <span id="dropzone-container">
