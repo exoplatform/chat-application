@@ -6,9 +6,9 @@
   }
   .weemo(@left, @top) {
     background: url('@{imgPath}2x/weemo-status.png') no-repeat @left @top;
-    background-size: 32px 32px;
-    width: 16px;
-    height: 16px;
+    background-size: 16px 16px;
+    width: 8px;
+    height: 8px;
   }
 
   .chat-icon {
@@ -54,13 +54,13 @@
     .weemo(0, 0);
   }
   .weemo-status-connecting {
-    .weemo(-16px, 0);
+    .weemo(-8px, 0);
   }
   .weemo-status-error {
-    .weemo(0, -16px);
+    .weemo(0, -8px);
   }
   .weemo-status-connected {
-    .weemo(-16px, -16px);
+    .weemo(-8px, -8px);
   }
 }
 
