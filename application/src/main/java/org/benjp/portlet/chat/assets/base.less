@@ -289,6 +289,16 @@ table.list-rooms {
       padding: 8px 10px 8px 14px;
       line-height: 25px;
     }
+    
+    .popover-inner{
+    	.popover-content{
+    		.uiActionBorder{
+    			text-align: right; 
+    			padding: 18px 35px; 
+    			margin: 10px -35px 0;
+    		}
+    	}
+    }
 
     .arrow {
       left: 92%;
@@ -300,7 +310,7 @@ table.list-rooms {
   }
 
   .meeting-action-panel {
-    padding: 10px 20px;
+    padding: 20px 20px;
     display: none;
 
     .input-default {
@@ -342,8 +352,8 @@ table.list-rooms {
     }
 
     .progressBar {
-      width: 280px;
-      float: left;
+      width: 100%;
+      text-align: center;
 
       .progress {
         margin: 0;
@@ -359,6 +369,7 @@ table.list-rooms {
         text-align: center;
         text-transform: uppercase;
         font-size: 18px;
+        padding: 0px;
       }
 
       .bar {

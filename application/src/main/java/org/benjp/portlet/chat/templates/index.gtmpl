@@ -60,8 +60,8 @@
         </div>
       </span>
 
-      <div class="pull-left" style="position: relative;height: 26px;margin: 8px 5px 0 0;">
-        <div class="uiActionWithLabel dropdown" data-toggle="dropdown"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;" data-toggle="tooltip" title="Change your status"></span></div>
+      <div class="pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
+        <div class="actionIcon dropdown" data-toggle="dropdown"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;" data-toggle="tooltip" title="Change your status"></span></div>
         <span class="dropdown-menu chat-status-panel">
           <div class="chat-menu" status="available"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</div>
           <div class="chat-menu" status="away"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</div>
@@ -70,7 +70,7 @@
         </span>
       </div>
 
-      <label class="pull-left" style="margin-top: 5px; margin-bottom: 0;">
+      <label class="pull-left" style="margin-top: 12px;">
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
         <% if ("DEV".equals(demoMode)) { %>
         <span class="label-demo">(Demo Mode)</span>
@@ -78,8 +78,8 @@
       </label>
     </span>
     <span class="menu-standard pull-right">
-      <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
-        <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
+      <button type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}">
+        <i class="icon-download-alt"></i> &{benjp.chat.button.install}</button>
 
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="Tip: use @ with username or space">
         <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
@@ -110,10 +110,10 @@
         </span>
 
         <span class="room-detail-button">
-          <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="Make a Video Call">
-            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.call}</a>
-          <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="Join a Conference">
-            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.join}</a>
+          <button type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="Make a Video Call">
+            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.call}</button>
+          <button type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="Join a Conference">
+            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.join}</button>
         </span>
 
 
@@ -171,8 +171,8 @@
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
                   <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
-                  	<a type="button" class="btn btn-primary share-link-button">Share</a>
-                  	<a type="button" class="btn ">Cancel</a>
+                  	<button type="button" class="btn btn-primary share-link-button">Share</button>
+                  	<button type="button" class="btn ">Cancel</button>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="200" data-title="File">
@@ -184,26 +184,27 @@
                       </div>
                     </div>
                   </span>
-                  <span class="action-label">&nbsp;or&nbsp;&nbsp;</span>
-                  <br>
                   <form action="" id="chat-file-form" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="room" value="---" id="chat-file-room" />
                     <input type="hidden" name="targetUser" value="---" id="chat-file-target-user" />
                     <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
-                    <div class="chat-file-upload btn">
-                      <span>Select Manually</span>
-                      <input type="file" name="userfile" id="chat-file-file" />
-                    </div>
-                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
+                    <div class="uiActionBorder">
+	                    <button class="chat-file-upload btn" type="button">
+	                      <span>Select Manually</span>
+	                      <input type="file" name="userfile" id="chat-file-file" />
+	                    </button>
+	                    <button type="button" class="btn ">Cancel<button>
+	                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
+	                </div>
                   </form>
                 </div>
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
-                  <a type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</a>
+                  <button type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</button>
                 </div>
                 <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
-                  <a type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
+                  <button type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</button>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="190" data-title="Assign task">
                   <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
@@ -211,9 +212,9 @@
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Due" id="task-add-date" data-date="<%=today%>" >
-                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
-                  	<a type="button" class="btn btn-primary create-task-button">Post</a>
-                  	<a type="button" class="btn ">Cancel</a>
+                  <div class="uiActionBorder" >
+                  	<button type="button" class="btn btn-primary create-task-button">Post</button>
+                  	<button type="button" class="btn ">Cancel</button>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="220" data-title="Add event">
@@ -234,16 +235,16 @@
                     </select>
                   </span>
                   <input type="text" class="input-with-value input-default" data-value="Location" id="">
-                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
-                  	<a type="button" class="btn btn-primary create-event-button">Post</a>
-                  	<a type="button" class="btn ">Cancel</a>
+                  <div class="uiActionBorder" >
+                  	<button type="button" class="btn btn-primary create-event-button">Post</button>
+                  	<button type="button" class="btn ">Cancel</button>
                   </div>
                 </div>
 
               </div>
             </div>
           </div>
-          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconComment uiIconLightGray"></i><i class="uiIconMiniArrowDown uiIconLightGray"></i></div>
+          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent"></i> Add Event</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask"></i> Assign Task</a></li>
@@ -253,7 +254,7 @@
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
             <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconQuestion"></i> Ask a Question</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand"></i> Raise Hand</a></li>
-          </ul>
+          </ul>h
         </div>
 
         <div style="display: block;margin-left: 45px;margin-right: 54px;">
@@ -264,7 +265,7 @@
         <div class="meeting-action-panel meeting-action-flag-panel">
           <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</a>
+          <button type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</button>
         </div>
         */%>
 
@@ -351,6 +352,6 @@
     </ul>
   </div>
   <div class="modal-footer">
-    <a href="#" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">Close</a>
+    <button type="button" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">Close</button>
   </div>
 </div>
