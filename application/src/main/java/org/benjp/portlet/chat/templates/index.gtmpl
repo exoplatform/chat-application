@@ -189,11 +189,11 @@
                     <input type="hidden" name="targetUser" value="---" id="chat-file-target-user" />
                     <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
                     <div class="uiActionBorder">
-	                    <button class="chat-file-upload btn" type="button">
+	                    <button class="btn btn-primary chat-file-upload" type="button">
 	                      <span>Select Manually</span>
 	                      <input type="file" name="userfile" id="chat-file-file" />
 	                    </button>
-	                    <button type="button" class="btn ">Cancel<button>
+	                    <button type="button" class="btn ">Cancel</button>
 	                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
 	                </div>
                   </form>
