@@ -839,6 +839,11 @@ hr
   }
   
   /* Style Row Chat */
+  .msUserCont {
+    + .msUserCont {
+      margin-top: 10px;
+    }
+  }
   .msUserAvatar {
     width: 40px!important;
     padding-left: 12px;
@@ -853,8 +858,11 @@ hr
   .msAvatarLink, .msAvatarLink img {
     .border-radius(@widthOfAvatar);
   }
-  .msAvatarLink {
+  .msAvatarLink, .msAvatarLink > img {
     width: @widthOfAvatar;
+    height: @widthOfAvatar;
+  }
+  .msAvatarLink {
     background-color: #fff;
     padding: 3px;
     border: 1px solid #b2b1b1;
@@ -862,8 +870,6 @@ hr
     #gradient > .vertical(#ffffff, #f1f1f1);
     .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
     > img {
-      width: @widthOfAvatar;
-      height: @widthOfAvatar;
       .box-shadow(0 1px 1px rgba(255,255,255, .1));
     }
   }
@@ -880,15 +886,15 @@ hr
         color: @linkColor;
       }
     }
-    .msAction {
-      display: none;
-      color: @linkColor;
-      font-size: 12px;
-      a {
-        font-size: 12px;
-      }
-    } 
   }
+  .msAction {
+    display: none;
+    color: @linkColor;
+    font-size: 12px;
+    a {
+      font-size: 12px;
+    }
+  } 
   .msTimePost {
     color: #999;
     font-size: 12px;
@@ -916,9 +922,13 @@ hr
       margin-bottom: 10px;
     }
   }
-  &:hover {
+
+  .msContBox .msUserCont:hover {
     .msAction {
       display: block;
+    }
+    .msTimePost {
+      display: none;
     }
   }
 }
