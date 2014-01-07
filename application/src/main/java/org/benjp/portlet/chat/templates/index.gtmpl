@@ -200,7 +200,10 @@
                 </div>
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
-                  <button type="button" class="btn btn-primary pull-right question-button"><i class="icon-question-sign icon-white"></i> Ask</button>
+                  <div class="uiActionBorder">
+                  	<button type="button" class="btn btn-primary question-button"><i class="icon-question-sign icon-white"></i> Ask</button>
+                    <button type="button" class="btn ">Cancel<button>
+                  </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
@@ -244,7 +247,7 @@
               </div>
             </div>
           </div>
-          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconLightGray"></i></div>
+          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconChatLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent"></i> Add Event</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask"></i> Assign Task</a></li>
@@ -254,7 +257,7 @@
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
             <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconQuestion"></i> Ask a Question</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand"></i> Raise Hand</a></li>
-          </ul>h
+          </ul>
         </div>
 
         <div style="display: block;margin-left: 45px;margin-right: 54px;">
