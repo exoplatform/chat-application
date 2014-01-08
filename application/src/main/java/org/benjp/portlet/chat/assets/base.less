@@ -815,7 +815,7 @@ hr
 }
 
 .msRow {
-  @widthOfAvatar:   32px;
+  @widthOfAvatar: 32px;
   float: left;
   width: 100%;
   clear: both;
@@ -931,8 +931,61 @@ hr
       display: none;
     }
   }
+  .msMessagesGroup {
+    + .msMessagesGroup {
+      margin-top: 15px;
+    }
+  }
+  .msAttachmentBox {
+    width: 128px;
+    height: 128px;
+    position: relative;
+    margin-top: 5px;
+    > .msAttachFile {
+      line-height: 128px;
+      vertical-align: middle;
+      img {
+        max-width: 128px;
+        max-height: 128px;
+      }
+    }
+    .msActionAttach {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      > .inner {
+        position: absolute;
+        top: 50%;
+        margin-top: -20px;
+        left: 0;
+        text-align: center;
+        width: 100%;
+        
+      }
+      a {
+        color: #fff;
+        &:hover {
+          font-weight: bold;
+          i {
+            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+          }
+        }
+      }
+    }
+    &:hover {
+      .msActionAttach {
+        background-color: rgba(0, 0, 0, 0.1);
+        display: block;
+      }
+    }
+  }
+  .fileSize {
+    color: #999;
+  }
 }
-
 
 /**
  * MODALS
