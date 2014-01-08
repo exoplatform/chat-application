@@ -295,18 +295,20 @@
 <!-- ################################## -->
 <!-- ######### EDIT MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide edit-modal">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>&{benjp.chat.edit}</h3>
+<div class="uiPopup hide edit-modal" style="top:100px;">
+  <div class="popupHeader clearfix">
+	<a class="uiIconClose pull-right" title="Close Window" data-dismiss="modal" aria-hidden="true"></a>
+	<span class="PopupTitle popupTitle">&{benjp.chat.edit}</span>
   </div>
-  <div class="modal-body">
+  
+  <div class="PopupContent popupContent">
     <textarea id="edit-modal-area" data-id="---"></textarea>
+    <div class="uiAction uiActionBorder"> 
+    	<a type="button" href="#" class="btn edit-modal-save">&{benjp.chat.save}</a>
+		<a type="button" href="#" class="btn edit-modal-cancel">&{benjp.chat.cancel}</a>
+	</div>
   </div>
-  <div class="modal-footer">
-    <a href="#" class="btn edit-modal-cancel">&{benjp.chat.cancel}</a>
-    <a href="#" class="btn btn-primary edit-modal-save">&{benjp.chat.save}</a>
-  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
 </div>
 <!-- ################################## -->
 <!-- ######### TEAM MODAL ############ -->
