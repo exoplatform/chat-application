@@ -207,7 +207,10 @@
                 </div>
                 <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
-                  <a href="#" type="button" class="btn btn-primary pull-right raise-hand-button"><i class="icon-hand-up icon-white"></i> Raise your hand</a>
+                  <div class="uiActionBorder" >
+                  	<a href="#" type="button" class="btn btn-primary raise-hand-button">Raise your hand</a>
+                  	<a href="#" type="button" class="btn ">Cancel</a>
+                  </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="190" data-title="Assign task">
                   <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
