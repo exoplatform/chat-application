@@ -97,6 +97,10 @@ table.list-rooms {
     #gradient > .vertical(#5d88ce, #3261ac);
     color: #FFF !important;
   }
+  tr.users-online:last-child {
+    border-bottom: 1px solid #CFCFCF;
+    .box-shadow(0 1px 1px 0 rgba(0, 0, 0, 0.05));
+  }
   .header-room {
     background: #f0f0f0;
     .box-shadow(0 0 3px 0 rgba(0, 0, 0, 0.1));
@@ -105,17 +109,19 @@ table.list-rooms {
       border-top: 1px solid #cfcfcf;
       border-bottom: 1px solid #cfcfcf;
       font-weight: bold;
-      padding: 7px 5px 7px 20px;
+      padding: 7px 5px 7px 19px;
     }
     .room-total {
-      float: right;
+      margin-left: 5px;
       display: none;
       margin-right: 5px;
       margin-top: 2px;
       font-weight: normal;
       background-color: #aaaaaa;
     }
-    
+    .iconDynamic {
+      padding-top: 3px;
+    }
     &:first-child{
       .border-radius(4px 4px 0 0);
     }
@@ -461,22 +467,40 @@ table.list-rooms {
   width: 16px;
   min-width: 16px;
   padding: 8px 17px 8px 20px !important;
+  > i {
+    margin-top: -2px;
+  }
 }
 .users-online {
   td {
     border: 0px !important;
     color: #333;
     font-size: 12px;
-    padding: 5px 5px 5px 0px;
+    padding: 5px 6px 5px 0px;
     vertical-align: middle;
   }
+  .uiIconChatFavorite {
+    display: none;
+  }
+  &:hover {
+    #gradient > .vertical(#f0f0f0, #f8f8f8);
+  }
 }
-.users-online:hover {
-  #gradient > .vertical(#f0f0f0, #f8f8f8);
+
+.users-online.info {
+  .uiIconChatTeam,
+  .user-space {
+    background-image: url("/chat/img/uiIconChatWhite.png");
+  }
+  .uiIconChatFavorite {
+    display: block;
+    margin-right: 1px;
+  }
 }
 
 /* Icon User Status */
-.user-status, .user-favorite, .chat-status-chat, .chat-status {
+.user-available, .user-donotdisturb, .user-away, .user-invisible,
+.chat-status-chat, .chat-status {
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -485,30 +509,27 @@ table.list-rooms {
   background-color: transparent;
   vertical-align: middle;
 }
-.user-status, .chat-status-chat, .chat-status {
-  &.user-available, &.chat-status-available {
+.user-available, .chat-status-available {
+  background-position: 0 0;
+}
+.user-donotdisturb , .chat-status-donotdisturb{
+  background-position: -20px 0;
+}
+.user-away, .chat-status-away {
+  background-position: -40px 0;
+}
+.user-invisible, .chat-status-invisible {
+  background-position: -60px 0;
+}
+.user-team {
+  &.user-available, &.user-donotdisturb, &.user-away, &.user-invisible {
+    background-image: url("/chat/img/uiIconChatLightGray.png");
     background-position: 0 0;
-  }
-  &.user-donotdisturb , &.chat-status-donotdisturb{
-    background-position: -20px 0;
-  }
-  &.user-away, &.chat-status-away {
-    background-position: -40px 0;
-  }
-  &.user-invisible, &.chat-status-invisible {
-    background-position: -60px 0;
-  }
- }
-.user-status{
-  &:hover {
-    background-position: -80px;
-    cursor: pointer;
   }
 }
-.user-favorite {
-  &:hover{
-    background-position: 0 0;
-  }
+.user-space {
+    background-image: url("/chat/img/uiIconChatLightGray.png");
+    background-position: -20px 0;
 }
 
 .user-space-front {
@@ -519,28 +540,13 @@ table.list-rooms {
   float: left;
 }
 
-/*.user-available {
-  .user-status(@colorAvailable);
-}
-.user-donotdisturb {  
-  .user-status(@colorDoNoDisturb);
-}
-.user-away {
-  .user-status(@colorAway);
-}
-.user-invisible, .user-none {
-  .user-status(@colorInvisible);
-}
-.user-space {
-  .user-status(@colorSpace);
-}*/
-.user-team, .user-space {
+/*.user-team, .user-space {
   background-image: url('@{imgPath}uiIconChatLightGray.png');
   &:hover {
      background-image: url("@{imgPath}uiIconChatColor.png");
      background-position: -80px;
   }
-}
+}*/
 
 
 .room-total-fixed {
@@ -558,6 +564,7 @@ table.list-rooms {
   -moz-border-radius: 2px;
   border-radius: 2px;
   text-shadow: 0 0 0;
+  .border-radius(20px);
 }
 
 .room-total-white {

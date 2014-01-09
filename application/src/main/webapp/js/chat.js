@@ -1548,10 +1548,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * FAVORITES
    */
   out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
-  if (this.showFavorites) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  if (this.showFavorites) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconEcmsFavorite uiIconEcmsLightGrey'></i></div></div>";
   out += chatApplication.labels.get("label-header-favorites");
-  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += '<span class="room-total total-favorites">No Favorite</span>';
   out += "</td></tr>"
 
@@ -1581,11 +1581,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * USERS
    */
   out += "<tr class='header-room header-people'><td colspan='3'>";
-  if (this.showPeople) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  if (this.showPeople) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconGroup uiIconLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-people");
   out += '<span class="room-total total-people"></span>';
-  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide offline users'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
@@ -1615,11 +1615,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * TEAMS
    */
   out += "<tr class='header-room header-teams'><td colspan='3'>";
-  if (this.showTeams) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  if (this.showTeams) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconChatTeam uiIconChatLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-teams");
   out += '<span class="room-total total-teams"></span>';
-  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' title='Create a new team'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
@@ -1649,11 +1649,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * SPACES
    */
   out += "<tr class='header-room header-spaces'><td colspan='3'>";
-  if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
+  if (this.showSpaces) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconChatSpace uiIconChatLightGray'></i></div></div>";
   out += chatApplication.labels.get("label-header-spaces");
   out += '<span class="room-total total-spaces"></span>';
-  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
@@ -1736,13 +1736,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     } else {
       out += ' user-status';
     }
-    out +='" user-data="'+room.user+'" data-toggle="tooltip"';
-    if (room.isFavorite == "true") {
-      out += ' title="Remove from favorites"';
-    } else {
-      out += ' title="Add to favorites"';
-    }
-    out += '></i>';
+    out += '"></i>';
     out += '</td>';
     out +=  '<td>';
     if (room.isActive=="true") {
@@ -1754,6 +1748,21 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     out += '<td>';
     if (Math.round(room.unreadTotal)>0) {
       out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+    }
+    else {
+      out+= '<i class="uiIconChatFavorite pull-right';
+      if (room.isFavorite == "true") {
+        out += ' user-favorite';
+      } else {
+        out += ' user-status';
+      }
+      out +='" user-data="'+room.user+'" data-toggle="tooltip"';
+      if (room.isFavorite == "true") {
+        out += ' title="Remove from favorites"';
+      } else {
+        out += ' title="Add to favorites"';
+      }
+      out+= '></i>';
     }
     out += '</td>';
     out += '</tr>';
