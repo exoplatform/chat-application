@@ -106,7 +106,7 @@
         </span>
 
         <span class="target-user-fullname room-detail-fullname">
-         <i class="chat-status-chat chat-status-available"></i>&nbsp;
+        
         </span>
 
         <span class="room-detail-button">
@@ -129,7 +129,7 @@
 
       <div id="chats">
       
-      	<div class="">chat content this here</div>
+      	<div class="noContent"></div>
       
       </div>
 
@@ -201,7 +201,7 @@
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
                   <div class="uiActionBorder">
-                  	<a href="#" type="button" class="btn btn-primary question-button"><i class="icon-question-sign icon-white"></i> Ask</a>
+                  	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>
                     <a href="#" type="button" class="btn ">Cancel<a>
                   </div>
                 </div>
@@ -212,7 +212,7 @@
                   	<a href="#" type="button" class="btn ">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-task-panel" data-height="190" data-title="Assign task">
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
                   <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
@@ -223,7 +223,7 @@
                   	<a href="#" type="button" class="btn ">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-event-panel" data-height="220" data-title="Add event">
+                <div class="meeting-action-panel meeting-action-event-panel" data-height="255" data-title="Add event">
                   <input type="text" class="input-with-value" data-value="Event title" id="event-add-summary">
                   <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
                   <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
