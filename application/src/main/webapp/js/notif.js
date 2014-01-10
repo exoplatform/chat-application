@@ -52,7 +52,7 @@ ChatNotification.prototype.initUserInterface = function() {
     .filter(function() {
       if (jqchat(this).attr("href") == "/portal/intranet/chat") {
         jqchat(this).css("width", "95%");
-        var html = '<i class="uiChatIcon"></i>Chat';
+        var html = '<i class="uiIconChat"></i>Chat';
         html += '<span id="chat-notification" style="float: right; display: none;"></span>';
         jqchat(this).html(html);
       }
