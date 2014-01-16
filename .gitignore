@@ -13,6 +13,7 @@ exo-addons-chat-extension-config/target/*
 exo-addons-chat-extension-pkg/target/*
 
 
+pom.xml.versionsBackup
 release.properties
 *.releaseBackup
 
