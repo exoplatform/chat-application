@@ -97,7 +97,23 @@ table.list-rooms {
     #gradient > .vertical(#5d88ce, #3261ac);
     color: #FFF !important;
   }
-  tr.users-online:last-child {
+  tr.empty {
+    td {
+      text-align: center;
+      color: #999;
+      padding-left: 6px;
+    }
+    &.info {
+      td {
+        background: none;
+        color: #999!important;
+      }
+    }
+    &:hover td {
+      background: #fff;
+    }
+  }
+  tr:last-child {
     border-bottom: 1px solid #CFCFCF;
     .box-shadow(0 1px 1px 0 rgba(0, 0, 0, 0.05));
   }
@@ -110,6 +126,7 @@ table.list-rooms {
       border-bottom: 1px solid #cfcfcf;
       font-weight: bold;
       padding: 7px 5px 7px 19px;
+      height: 20px;
     }
     .room-total {
       margin-left: 5px;
@@ -117,10 +134,11 @@ table.list-rooms {
       margin-right: 5px;
       margin-top: 2px;
       font-weight: normal;
-      background-color: #aaaaaa;
     }
     .iconDynamic {
       padding-top: 3px;
+      padding-bottom: 2px;
+      cursor: pointer;
     }
     &:first-child{
       .border-radius(4px 4px 0 0);
@@ -475,11 +493,13 @@ table.list-rooms {
   td {
     border: 0px !important;
     color: #333;
-    font-size: 12px;
-    padding: 5px 6px 5px 0px;
+    font-size: 13px;
+    height: 20px;
+    padding: 7px 6px 7px 0px;
     vertical-align: middle;
   }
   .uiIconChatFavorite {
+    cursor: pointer;
     display: none;
   }
   &:hover {
