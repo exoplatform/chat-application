@@ -9,6 +9,10 @@
 }
 .menu-standard {
   display: inline;
+  .actionIcon{
+  	padding: 2px;
+  	margin: 0 3px;
+  }
 }
 
 .left-chat
@@ -72,9 +76,6 @@
   /*background-position-y: 7px!important;*/
 }
 
-.chat-menu:hover {
-  background-color: @colorChatMenu;
-}
 
 .btn-top-add-actions {
   padding: 0;
@@ -335,11 +336,14 @@ table.list-rooms {
     display: none;
 
     .input-default {
-      color: #CCC;
       width: 100%
     }
     .input-with-value{
     	width: 100%
+    }
+    .add-task{
+    	background: url("/eXoResources/skin/images/SearchInput/Search.png") no-repeat scroll right -1px #FFFFFF;
+    	padding-right: 24px;
     }
 
     .meeting-close-panel {
@@ -672,7 +676,6 @@ table.list-rooms {
   cursor: pointer;
   display: inline-block;
   float: right;
-  margin-top: 8px;
 }
 .msg-button:hover {
   opacity:1;

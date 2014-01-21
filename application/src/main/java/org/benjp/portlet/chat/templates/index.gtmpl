@@ -61,13 +61,13 @@
       </span>
 
       <div class="pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
-        <div class="actionIcon dropdown" data-toggle="dropdown"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;" data-toggle="tooltip" title="Change your status"></span></div>
-        <span class="dropdown-menu chat-status-panel">
-          <div class="chat-menu" status="available"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</div>
-          <div class="chat-menu" status="away"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</div>
-          <div class="chat-menu" status="donotdisturb"><i class="chat-status chat-status-donotdisturb"></i>&{benjp.chat.donotdisturb}</div>
-          <div class="chat-menu" status="invisible"><i class="chat-status chat-status-invisible"></i>&{benjp.chat.invisible}</div>
-        </span>
+        <div class="actionIcon dropdown" data-toggle="dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="Change your status"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
+        <ul class="dropdown-menu chat-status-panel">
+          <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</a></li>
+          <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</a></li>
+          <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{benjp.chat.donotdisturb}</a></li>
+          <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{benjp.chat.invisible}</a></li>
+        </ul>
       </div>
 
       <label class="pull-left" style="margin-top: 12px;">
@@ -135,8 +135,8 @@
 
       <div class="chat-message">
 
-        <span class="pull-left" style="padding-left: 20px;">
-          <span class="msg-button msg-emoticons no-user-selection" data-toggle="tooltip" title="Show emoticons" data-placement="right">&nbsp;</span><br>
+        <span class="pull-left" style="padding: 8px 0 0 13px;">
+          <span class="actionIcon" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
           <span class="msg-emoticons-panel no-user-selection" style="display:none">
             <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
@@ -169,7 +169,7 @@
               
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
-                  <input type="text" class="input-with-value" id="share-link-text" data-value="ex: http://www.exoplatform.com">
+                  <input type="text" class="input-with-value" id="share-link-text" data-value="e.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">Share</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
@@ -213,11 +213,11 @@
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
-                  <input type="text" class="input-with-value" data-value="Assignee" id="task-add-user" >
+                  <input type="text" class="input-with-value" data-value="Assign to" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
-                  <input type="text" class="input-with-value" data-value="Task" id="task-add-task">
-                  <input type="text" class="input-with-value" data-value="Due" id="task-add-date" data-date="<%=today%>" >
+                  <input type="text" class="input-with-value add-task" data-value="Task title" id="task-add-task">
+                  <input type="text" class="input-with-value" data-value="Due date" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
