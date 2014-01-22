@@ -328,7 +328,7 @@
     </div>
     <div class="uiSearchForm uiSearchInput team-users-search">
       <div onclick="event.cancelBubble=true;">
-        <input class="span3" id="team-add-user" type="text" >
+        <input id="team-add-user" type="text" >
         <label class="team-add-user-label">&{benjp.chat.team.help}</label>
       </div>
     </div>
@@ -337,8 +337,8 @@
 
   </div>
   <div class="modal-footer">
-    <a href="#" class="btn team-modal-cancel">&{benjp.chat.cancel}</a>
     <a href="#" class="btn btn-primary team-modal-save">&{benjp.chat.save}</a>
+    <a href="#" class="btn team-modal-cancel">&{benjp.chat.cancel}</a>
   </div>
 </div>
 <!-- ################################## -->
