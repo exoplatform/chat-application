@@ -1756,7 +1756,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       } else {
         out += ' user-status';
       }
-      out +='" user-data="'+room.user+'" data-toggle="tooltip"';
+      out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
       if (room.isFavorite == "true") {
         out += ' title="Remove from favorites"';
       } else {
