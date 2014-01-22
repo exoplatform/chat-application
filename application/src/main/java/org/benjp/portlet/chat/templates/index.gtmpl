@@ -135,8 +135,8 @@
 
       <div class="chat-message">
 
-        <span class="pull-left" style="padding: 8px 0 0 13px;">
-          <span class="actionIcon" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
+        <span class="pull-left" style="padding: 4px 0 0 18px;">
+          <span class="actionIcon actionIconSmile" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="uiIconChatSmile msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
           <span class="msg-emoticons-panel no-user-selection" style="display:none">
             <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
@@ -169,7 +169,7 @@
               
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
-                  <input type="text" class="input-with-value" id="share-link-text" data-value="e.g: http://www.exoplatform.com">
+                  <input type="text" class="input-with-value" id="share-link-text" placeholder="e.g: http://www.exoplatform.com" data-value="e.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">Share</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
@@ -199,34 +199,34 @@
                   </form>
                 </div>
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
-                  <input type="text" class="input-with-value" id="question-text" data-value="What is your question?">
+                  <input type="text" class="input-with-value" id="question-text" data-value="What is your question?" placeholder="What is your question?">
                   <div class="uiActionBorder">
                   	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>
                     <a href="#" type="button" class="btn ">Cancel<a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
-                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment">
+                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment" placeholder="Optional comment">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary raise-hand-button">Raise your hand</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
-                  <input type="text" class="input-with-value" data-value="Assign to" id="task-add-user" >
+                  <input type="text" class="input-with-value" data-value="Assign to" placeholder="Assign to" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
-                  <input type="text" class="input-with-value add-task" data-value="Task title" id="task-add-task">
-                  <input type="text" class="input-with-value" data-value="Due date" id="task-add-date" data-date="<%=today%>" >
+                  <input type="text" class="input-with-value add-task" data-value="Task title" placeholder="Task title" id="task-add-task">
+                  <input type="text" class="input-with-value" data-value="Due date" placeholder="Due date" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="255" data-title="Add event">
-                  <input type="text" class="input-with-value" data-value="Event title" id="event-add-summary">
+                  <input type="text" class="input-with-value" data-value="Event title" placeholder="Event title" id="event-add-summary">
                   <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
-                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
+                  <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-start-time">
                       <option value="all-day">All Day</option>
@@ -234,13 +234,13 @@
                   </span>
                   <br>
                   <span class="action-label" style="display: inline-block;width: 40px;">To: </span>
-                  <input type="text" data-value="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
+                  <input type="text" data-value="mm/dd/yyyy" placeholder="Event title" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-end-time">
                       <option value="all-day">All Day</option>
                     </select>
                   </span>
-                  <input type="text" class="input-with-value input-default" data-value="Location" id="">
+                  <input type="text" class="input-with-value input-default" data-value="Location" placeholder="Location" id="">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-event-button">Post</a>
                   	<a href="#" type="button" class="btn ">Cancel</a>
@@ -269,7 +269,7 @@
 
         <%/*
         <div class="meeting-action-panel meeting-action-flag-panel">
-          <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?">
+          <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?" placeholder="Topic to be discussed today?" >
           <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
           <a href="#" type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</a>
         </div>
