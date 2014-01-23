@@ -176,12 +176,20 @@ table.list-rooms {
 }
 
 .team-users-list {
-
-  .team-user-label {
-    padding: 3px 4px 4px 6px;
-    margin-right: 6px;
+  .label.team-user-label {
+    background: none repeat scroll 0 0 #E0E8F5;
+    border: 1px solid #3f6fbb;
+    box-shadow: none;
+    color: #224886;
+    font-weight: normal;
+    margin-right: 10px;
+    margin-bottom: 9px;
+    padding: 2px 4px;
+    text-shadow: none;
+    > i {
+      vertical-align: middle;
+    }
   }
-
 }
 .team-users-search {
   margin-top: 5px;
@@ -197,7 +205,7 @@ table.list-rooms {
 
 }
 .team-user-logo, .task-user-logo {
-  margin: 6px 10px 0 0;
+  margin: 7px 10px 0 -100%;
   float: left;
   line-height: 0;
   width: 16px;
@@ -209,28 +217,35 @@ table.list-rooms {
   }
 }
 .team-users-results, .task-users-results {
-  position: fixed;
+  max-height: 173px;
+  overflow: auto;
+  position: absolute;
   margin-top: -36px;
-  width: 315px;
+  min-width: 315px;
   border: 1px solid #ccc;
   background-color: white;
   border-radius: 4px;
   .box-shadow(0 2px 6px 0 rgba(0, 0, 0, .12));
   .border-radius(3px);
+  padding: 7px 0px;
   .team-user, .task-user {
     cursor: pointer;
     height: 30px;
     line-height: 29px;
     padding: 0 10px;
-    &:first-child {
-      .border-top-radius(3px);
-    }
-    &:last-child {
-      .border-bottom-radius(3px);
+    .chat-user-name {
+      float: left;
+      width: 100%;
+      white-space: nowrap;
+      > .inner {
+        margin-left: 26px;
+        margin-right: 26px;
+        display: block;
+      }
     }
     .chat-status-team, .chat-status-task {
       float: right;
-      margin: 7px 0 0 10px;
+      margin: 7px 0 0 -100%;
     }
     .team-user-fullname, .task-user-fullname {
       font-weight: bold;
@@ -241,6 +256,9 @@ table.list-rooms {
   }
 }
 
+.team-users-results {
+  position: fixed;
+}
 .team-user-selected, .task-user-selected {
   #gradient > .vertical(#6289cb, #3862a9);
   .team-user-fullname, .team-user-name, .task-user-fullname, .task-user-name {
@@ -251,7 +269,12 @@ table.list-rooms {
 .meeting-action-panel {
   .task-users-results {
     margin-top: -9px;
-    width: 290px;
+    right: 35px;
+    .task-user {
+      &.task-user-selected {
+        .chat-user-name {color: #fff;}
+      }
+    }
   }
 }
 

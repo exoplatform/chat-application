@@ -708,10 +708,12 @@ var chatApplication = new ChatApplication();
             var classSel = "";
             if (number === 0) classSel = prefix+"-user-selected"
             html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-            html += "  <span class='"+prefix+"-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
-            html += "  <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
+            html += " <span class='chat-user-name'><span class='inner'>";
             html += "  <span class='"+prefix+"-user-fullname'>"+user.fullname+"</span>";
-            html += "  <span class='"+prefix+"-user-name'>"+user.name+"</span>";
+            html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
+            html += " </span></span>";
+            html += "  <span class='"+prefix+"-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
             html += "</div>";
           });
           $userResults.html(html);
@@ -736,7 +738,7 @@ var chatApplication = new ChatApplication();
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');
       var html = $usersList.html();
-      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='icon-remove icon-white team-user-remove'></i></span>";
+      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i></span>";
       $usersList.html(html);
       var $teamAddUser = $('#team-add-user');
       $teamAddUser.val("");
@@ -1587,7 +1589,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += '<span class="room-total total-people"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide offline users'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Show/hide offline users'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1621,7 +1623,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += '<span class="room-total total-teams"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' title='Create a new team'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Create a new team'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
