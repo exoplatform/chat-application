@@ -32,12 +32,6 @@
   <description>eXo Chat Extension Configuration</description>
   <dependencies>
     <dependency>
-      <groupId>org.exoplatform.addons.chat</groupId>
-      <artifactId>server</artifactId>
-      <classifier>classes</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
       <scope>provided</scope>

@@ -1,14 +1,14 @@
 package org.exoplatform.addons.chat.api;
 
 
-import org.benjp.services.UserService;
-import org.benjp.utils.MessageDigester;
-import org.benjp.utils.PropertyManager;
+import org.exoplatform.addons.chat.utils.MessageDigester;
+import org.exoplatform.addons.chat.utils.PropertyManager;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -25,6 +25,8 @@ public class UserRestService implements ResourceContainer
   /** The Constant IF_MODIFIED_SINCE_DATE_FORMAT. */
   protected static final String IF_MODIFIED_SINCE_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
+  public static final String ANONIM_USER = "__anonim_";
+
   public UserRestService()
   {
 
@@ -32,14 +34,20 @@ public class UserRestService implements ResourceContainer
 
   @GET
   @Path("/token/")
-  public Response getToken() throws Exception
+  public Response getToken(@QueryParam("tokenOnly") String tokenOnly) throws Exception
   {
     ConversationState conversationState = ConversationState.getCurrent();
     String userId = conversationState.getIdentity().getUserId();
     String token;
+    CacheControl cacheControl = new CacheControl();
+    cacheControl.setNoCache(true);
+    cacheControl.setNoStore(true);
+    DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
+
+    boolean withTokenOnly = (tokenOnly!=null && "true".equals(tokenOnly));
     if ("__anonim".equals(userId))
     {
-      userId = UserService.ANONIM_USER;
+      userId = ANONIM_USER;
       token = "---";
     } else {
       String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
@@ -47,14 +55,17 @@ public class UserRestService implements ResourceContainer
       token = MessageDigester.getHash(in);
     }
 
+    if (withTokenOnly) {
+      return Response.ok(token, MediaType.TEXT_PLAIN)
+              .cacheControl(cacheControl)
+              .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
+              .build();
+    }
+
     StringBuilder sb = new StringBuilder();
     sb.append("{\"username\":\"").append(userId).append("\",");
     sb.append("\"token\":\"").append(token).append("\"}");
 
-    CacheControl cacheControl = new CacheControl();
-    cacheControl.setNoCache(true);
-    cacheControl.setNoStore(true);
-    DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
     return Response.ok(sb.toString(), MediaType.APPLICATION_JSON)
             .cacheControl(cacheControl)
             .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
