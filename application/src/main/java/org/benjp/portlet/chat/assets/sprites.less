@@ -10,7 +10,21 @@
 .uiIconChatCreateEvent{background-position: -120px 0;}
 .uiIconChatCreateTask{background-position: -140px 0;}
 .uiIconChatEdited{background-position: -160px 0;}
-.uiIconChat{background-position: -180px 0;}
+.uiIconChatChat{background-position: -180px 0;}
+.uiIconChatVideo {background-position: 0 -20px;}
+.uiIconChatMember {background-position: -20px -20px;}
+.uiIconChatClock {background-position: -40px -20px;}
+.uiIconChatArrowDown {background-position: -60px -20px;}
+.uiIconChatArrowRight {background-position: -80px -20px;}
+.uiIconChatSimplePlusMini {background-position: -100px -20px;}
+.uiIconChatLink {background-position: -120px -20px;}
+.uiIconChatCheckin {background-position: -140px -20px;}
+.uiIconChatUpload {background-position: -160px -20px;}
+.uiIconChatDownload {background-position: -180px -20px;}
+.uiIconChatSearch {background-position: 0 -40px;}
+.uiIconChatQuestion {background-position: -20px -40px;}
+.uiIconChatEdit {background-position: -40px -40px;}
+.uiIconChatClose {background-position: -60px -40px;}
 
 // Define Blude Color
 .nav-pills > .active > a > [class^="uiIconChat"], .nav-list > .active > a > [class^="uiIconChat"], .navbar-inverse .nav > .active > a > [class^="uiIconChat"], .btn:hover [class^="uiIconChat"], a:hover [class^="uiIconChat"], .actionIcon.active [class^="uiIconChat"], .nodeSelected:hover [class^="uiIconChat"], [class^="uiIconChat"]:hover, .uiActionBar [class^="uiIconChat"]:hover, .chat-message > .meeting-actions > .actionIcon:hover > i {
@@ -83,11 +97,45 @@
   background-image: url('@{imgPath}uiIconChat32x32White.png');
 }
 
+/* Icon User Status */
+.user-available, .user-donotdisturb, .user-away, .user-invisible,
+.chat-status-chat, .chat-status, .chat-status-team, .chat-status-task {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url("@{imgPath}uiIconChatColor.png");
+  background-repeat: no-repeat;
+  background-color: transparent;
+  vertical-align: middle;
+}
+.user-available, .chat-status-available {
+  background-position: 0 0;
+}
+.user-donotdisturb , .chat-status-donotdisturb{
+  background-position: -20px 0;
+}
+.user-away, .chat-status-away {
+  background-position: -40px 0;
+}
+.user-invisible, .chat-status-invisible {
+  background-position: -60px 0;
+}
+.user-team {
+  &.user-available, &.user-donotdisturb, &.user-away, &.user-invisible {
+    background-image: url("/chat/img/uiIconChatLightGray.png");
+    background-position: 0 0;
+  }
+}
+.user-space {
+    background-image: url("/chat/img/uiIconChatLightGray.png");
+    background-position: -20px 0;
+}
+
 .uiIconChatFavorite {
   background-image: url("/chat/img/uiIconChatColor.png");
   background-position:  -100px 0;
-  &:hover {
+  &:hover, &.hover {
     background-image: url("/chat/img/uiIconChatColor.png");
-    background-position: -80px;
+    background-position: -80px 0;
   }
 }

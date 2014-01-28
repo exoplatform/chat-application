@@ -1,84 +1,113 @@
 .msg-emoticons-panel {
   background: @white;
-  width: 100px;
-  height: 100px;
-  padding: 2px 0px 4px 4px;
+  width: 108px;
+  height: 118px;
+  padding: 10px 10px 0 10px;
   -moz-border-radius: 3px;
   border-radius: 3px;
-  cursor: pointer;
   position: absolute;
-  left: 0px;
-  bottom: 61px;
+  cursor: default;
+  left: 5px;
+  bottom: 65px;
   z-index: 5;
   border: 1px solid #cccccc;
+  .box-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+  &:after,  &:before {
+    display: block;
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 100%;
+  }
+  &:after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 8px solid #fff;
+  }
+  &:before {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 8px solid #CCC;
+    top: 101%;
+  }
+  .emoticon {
+    height: 27px;
+  }
+  .emoticon:hover {
+    cursor: pointer;
+  }
 }
 
 .emoticon {
   display: inline-block;
-  width: 21px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   font-size: 1px;
   vertical-align: top;
+  background-image: url('@{imgPath}uiIconChatEmoticons24x24.png');
+  background-repeat: no-repeat;
+  background-size: 108px 108px;
 }
 
 .background-emoticon(@left, @top) {
-  background: url('@{imgPath}uiIconChatEmoticons24x24.png') no-repeat @left @top;
-  background-size: 100px 100px;
+  background-position: @left @top;
 }
 
 .msg-button {
   padding: 0;
 }
 
-
 .emoticon-smile-white, .emoticon-smile {
   .background-emoticon(0px, 0px);
 }
+.emoticon-sad-white, .emoticon-sad {
+  .background-emoticon(-28px, 0px);
+}
 .emoticon-big-smile-white, .emoticon-big-smile {
-  .background-emoticon(-53px, 0);
+  .background-emoticon(-56px, 0);
 }
 .emoticon-eye-blink-white, .emoticon-eye-blink {
-  .background-emoticon(-79px, 0px);
+  .background-emoticon(-84px, 0px);
+}
+
+.emoticon-surprise-white, .emoticon-surprise {
+  .background-emoticon(0px, -28px);
 }
 .emoticon-no-voice-white, .emoticon-no-voice {
-  .background-emoticon(-27px, -26px);
-}
-.emoticon-sad-white, .emoticon-sad {
-  .background-emoticon(-27px, 0px);
-}
-.emoticon-surprise-white, .emoticon-surprise {
-  .background-emoticon(0px, -26px);
-}
-.emoticon-beer-white, .emoticon-beer {
-  .background-emoticon(-79px, -54px);
-}
-.emoticon-bow-white, .emoticon-bow {
-  .background-emoticon(-79px, -26px);
-}
-.emoticon-bug-white, .emoticon-bug {
-  .background-emoticon(0px, -79px);
-}
-.emoticon-cake-white, .emoticon-cake {
-  .background-emoticon(-25px, -79px);
-}
-.emoticon-cash-white, .emoticon-cash {
-  .background-emoticon(-53px, -79px);
-}
-.emoticon-coffee-white, .emoticon-coffee {
-  .background-emoticon(-79px, -79px);
-}
-.emoticon-no-white, .emoticon-no {
-  .background-emoticon(-25px, -54px);
-}
-.emoticon-star-white, .emoticon-star {
-  .background-emoticon(-52px, -54px);
-}
-.emoticon-yes-white, .emoticon-yes {
-  .background-emoticon(0px, -54px);
+  .background-emoticon(-28px, -28px);
 }
 .emoticon-tongue-white, .emoticon-tongue {
-  .background-emoticon(-53px, -26px);
+  .background-emoticon(-56px, -28px);
+}
+.emoticon-bow-white, .emoticon-bow {
+  .background-emoticon(-84px, -28px);
+}
+
+.emoticon-yes-white, .emoticon-yes {
+  .background-emoticon(0px, -56px);
+}
+.emoticon-no-white, .emoticon-no {
+  .background-emoticon(-25px, -56px);
+}
+.emoticon-star-white, .emoticon-star {
+  .background-emoticon(-55px, -56px);
+}
+.emoticon-beer-white, .emoticon-beer {
+  .background-emoticon(-84px, -56px);
+}
+
+.emoticon-bug-white, .emoticon-bug {
+  .background-emoticon(0px, -84px);
+}
+.emoticon-cake-white, .emoticon-cake {
+  .background-emoticon(-28px, -84px);
+}
+.emoticon-cash-white, .emoticon-cash {
+  .background-emoticon(-56px, -84px);
+}
+.emoticon-coffee-white, .emoticon-coffee {
+  .background-emoticon(-84px, -84px);
 }
 
 .emoticon-text, .invisible-text {

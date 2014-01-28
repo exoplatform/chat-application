@@ -313,7 +313,9 @@ table.list-rooms {
   -webkit-border-radius: 0 0 4px 4px;
   -moz-border-radius: 0 0 4px 4px;
   border-radius: 0 0 4px 4px;
-
+  > .pull-left{
+    padding-left: 11px!important;
+  }
 	.actionIconSmile{
 		padding: 2px;
 	}
@@ -554,40 +556,6 @@ table.list-rooms {
   }
 }
 
-/* Icon User Status */
-.user-available, .user-donotdisturb, .user-away, .user-invisible,
-.chat-status-chat, .chat-status, .chat-status-team, .chat-status-task {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("@{imgPath}uiIconChatColor.png");
-  background-repeat: no-repeat;
-  background-color: transparent;
-  vertical-align: middle;
-}
-.user-available, .chat-status-available {
-  background-position: 0 0;
-}
-.user-donotdisturb , .chat-status-donotdisturb{
-  background-position: -20px 0;
-}
-.user-away, .chat-status-away {
-  background-position: -40px 0;
-}
-.user-invisible, .chat-status-invisible {
-  background-position: -60px 0;
-}
-.user-team {
-  &.user-available, &.user-donotdisturb, &.user-away, &.user-invisible {
-    background-image: url("/chat/img/uiIconChatLightGray.png");
-    background-position: 0 0;
-  }
-}
-.user-space {
-    background-image: url("/chat/img/uiIconChatLightGray.png");
-    background-position: -20px 0;
-}
-
 .user-space-front {
   .background(-64px, -16px);
   width: 16px;
@@ -595,15 +563,6 @@ table.list-rooms {
   height: 16px;
   float: left;
 }
-
-/*.user-team, .user-space {
-  background-image: url('@{imgPath}uiIconChatLightGray.png');
-  &:hover {
-     background-image: url("@{imgPath}uiIconChatColor.png");
-     background-position: -80px;
-  }
-}*/
-
 
 .room-total-fixed {
   margin-left: 5px;
