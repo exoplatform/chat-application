@@ -111,16 +111,16 @@
 
         <span class="room-detail-button">
           <a href="#" type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="Make a Video Call">
-            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.call}</a>
+            <i class="uiIconChatVideo uiIconChatLightGray"></i> &{benjp.chat.button.call}</a>
           <a href="#" type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="Join a Conference">
-            <i class="icon-facetime-video icon-white"></i> &{benjp.chat.button.join}</a>
+            <i class="uiIconChatVideo uiIconChatLightGray"></i> &{benjp.chat.button.join}</a>
         </span>
 
 
         <span class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="Edit team members"><i class="uiIconEditPage uiIconLightGray"></i>&nbsp;&{benjp.chat.edit}</div>
+              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="Edit team members"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{benjp.chat.edit}</div>
             </li>
           </ul>
         </span>
@@ -252,14 +252,14 @@
           </div>
           <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconChatLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
-            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent"></i> Add Event</a></li>
-            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask"></i> Assign Task</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconLink"></i> Share Link</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconUpload"></i> Upload File</a></li>
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> Add Event</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> Assign Task</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> Share Link</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> Upload File</a></li>
             <li class="divider"></li>
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
-            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconQuestion"></i> Ask a Question</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand"></i> Raise Hand</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconChatQuestion uiIconChatLightGray"></i> Ask a Question</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand uiIconChatLightGray"></i> Raise Hand</a></li>
           </ul>
         </div>
 
