@@ -1550,8 +1550,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * FAVORITES
    */
   out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
-  if (this.showFavorites) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconEcmsFavorite uiIconEcmsLightGrey'></i></div></div>";
+  if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatApplication.labels.get("label-header-favorites");
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += '<span class="room-total total-favorites">No Favorite</span>';
@@ -1583,13 +1582,12 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * USERS
    */
   out += "<tr class='header-room header-people'><td colspan='3'>";
-  if (this.showPeople) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconGroup uiIconLightGray'></i></div></div>";
+  if (this.showPeople) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatApplication.labels.get("label-header-people");
   out += '<span class="room-total total-people"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Show/hide offline users'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Show/hide history'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Show/hide offline users'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1617,13 +1615,12 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * TEAMS
    */
   out += "<tr class='header-room header-teams'><td colspan='3'>";
-  if (this.showTeams) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconChatTeam uiIconChatLightGray'></i></div></div>";
+  if (this.showTeams) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatApplication.labels.get("label-header-teams");
   out += '<span class="room-total total-teams"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Create a new team'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='Create a new team'><i class='uiIconChatSimplePlusMini uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
@@ -1651,8 +1648,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
    * SPACES
    */
   out += "<tr class='header-room header-spaces'><td colspan='3'>";
-  if (this.showSpaces) classArrow="uiIconArrowDownMini"; else classArrow = "uiIconArrowRightMini";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='uiIconChatSpace uiIconChatLightGray'></i></div></div>";
+  if (this.showSpaces) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatApplication.labels.get("label-header-spaces");
   out += '<span class="room-total total-spaces"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
