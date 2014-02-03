@@ -564,7 +564,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       console.log("WEEMO:onCallHandler  ::"+type+":"+status+":"+weemoExtension.callType+":"+weemoExtension.callOwner+":"+weemoExtension.hasChatMessage());
       var messageWeemo = "";
       var optionsWeemo = {};
-      if(type==="call" && ( status==="active" || status==="terminated" ))
+      if((type==="call" || type==="webRTCcall") && ( status==="active" || status==="terminated" ))
       {
         console.log("Call Handler : " + type + ": " + status);
         ts = Math.round(new Date().getTime() / 1000);
@@ -638,12 +638,11 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       }
       else if(type==="webRTCcall")
       {
-        if(type == 'webRTCcall' && status == 'proceeding')
+        if(status == 'proceeding')
         {
           console.log('WebRTC call proceeding');
         }
-
-        if(type == 'webRTCcall' && status == 'incoming')
+        else if(status == 'incoming')
         {
           console.log('WebRTC Call incoming');
           console.log(callObj);
@@ -664,10 +663,6 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           {
             callObj.hangup();
           }
-        }
-        if(type == 'webRTCcall' && status == 'active')
-        {
-          console.log('WebRTC call active');
         }
       }
     }
