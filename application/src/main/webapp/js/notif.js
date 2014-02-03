@@ -488,10 +488,17 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
   if (this.weemoKey!=="" && this.weemo !== undefined) {
     jqchat(".btn-weemo-conf").css('display', 'none');
 
-    this.weemo.setDebugLevel(1); // Activate debug in JavaScript console
+    this.weemo.setDebugLevel(4); // Activate debug in JavaScript console
     this.weemo.setWebAppId(this.weemoKey); // Configure your Web App Identifier (For POC use your Web Application Identifier provided by Weeemo)
     this.weemo.setToken("weemo"+$uid); // Set user unique identifier
     this.weemo.initialize(); // Launches the connection between WeemoDriver and Javascript
+    var fn = jqchat(".label-user").text();
+    var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
+    if (fullname!=="") {
+      this.weemo.setDisplayName(fullname); // Configure the display name
+    } else if (fn!=="") {
+      this.weemo.setDisplayName(fn); // Configure the display name
+    }
 
     /**
      * Weemo Driver On Connection Javascript Handler
@@ -505,16 +512,8 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
       switch(message) {
         case 'connectedWebRTC':
         case 'connectedWeemoDriver':
-          var fn = jqchat(".label-user").text();
-          var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
-          if (fullname!=="") {
-            this.setDisplayName(fullname); // Configure the display name
-          } else if (fn!=="") {
-            this.setDisplayName(fn); // Configure the display name
-          }
           weemoExtension.changeStatus("connecting");
-
-          this.authenticate();
+//          this.authenticate();
           break;
         case 'sipOk':
           weemoExtension.isConnected = true;
@@ -635,6 +634,40 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
 
             });
           }
+        }
+      }
+      else if(type==="webRTCcall")
+      {
+        if(type == 'webRTCcall' && status == 'proceeding')
+        {
+          console.log('WebRTC call proceeding');
+        }
+
+        if(type == 'webRTCcall' && status == 'incoming')
+        {
+          console.log('WebRTC Call incoming');
+          console.log(callObj);
+          var confirmStr;
+          if(callObj.dn !== "undefined" && callObj.dn !== undefined)
+          {
+            confirmStr = callObj.dn + ' invites you to video chat';
+          }
+          else
+          {
+            confirmStr = 'A person invites you to video chat';
+          }
+          if (confirm(confirmStr))
+          {
+            callObj.accept();
+          }
+          else
+          {
+            callObj.hangup();
+          }
+        }
+        if(type == 'webRTCcall' && status == 'active')
+        {
+          console.log('WebRTC call active');
         }
       }
     }

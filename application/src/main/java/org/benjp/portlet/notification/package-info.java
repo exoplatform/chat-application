@@ -38,6 +38,7 @@
                 @Script(src = "js/jquery.filedrop.js", id = "filedrop", depends = "notif")
         },
         stylesheets = {
+                @Stylesheet(src = "css/webrtc.css"),
                 @Stylesheet(src = "/org/benjp/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)
         }
 )
