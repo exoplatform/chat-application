@@ -5,6 +5,7 @@
   min-height: 300px;
   left: 10px;
   box-shadow: 1px 3px 7px 1px rgba(35,44,48,0.58);
+  cursor: pointer;
 }
 
 #weemo-remotevideo {
