@@ -581,6 +581,9 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           optionsWeemo.displaynameToCall = weemoExtension.displaynameToCall;
         }
 
+        if(type==="webRTCcall" && status==="active") {
+          addWeemoDragListeners();
+        }
 
         if (status==="active" && weemoExtension.callActive) return; //Call already active, no need to push a new message
         if (status==="terminated" && (!weemoExtension.callActive || weemoExtension.callType==="attendee")) return; //Terminate a non started call or a joined call, no message needed
@@ -920,3 +923,33 @@ var weemoExtension = new WeemoExtension();
 
 })(jqchat);
 
+
+/**
+ * Weemo WebRTC Video Div : support for draggable div video
+ * Call method addWeemoDragListeners() after div #weemo-videobox is created
+ */
+var offX;
+var offY;
+
+function addWeemoDragListeners() {
+  document.getElementById('weemo-videobox').addEventListener('mousedown', mouseDown, false);
+  window.addEventListener('mouseup', mouseUp, false);
+}
+
+function mouseUp() {
+  window.removeEventListener('mousemove', divMove, true);
+}
+
+function mouseDown(e) {
+  var div = document.getElementById('weemo-videobox');
+  offY= e.clientY-parseInt(div.offsetTop);
+  offX= e.clientX-parseInt(div.offsetLeft);
+  window.addEventListener('mousemove', divMove, true);
+}
+
+function divMove(e) {
+  var div = document.getElementById('weemo-videobox');
+  div.style.position = 'absolute';
+  div.style.top = (e.clientY-offY) + 'px';
+  div.style.left = (e.clientX-offX) + 'px';
+}
