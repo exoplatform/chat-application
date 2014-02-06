@@ -206,7 +206,7 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
  */
 ChatNotification.prototype.changeStatusChat = function(status) {
   this.profileStatus = status;
-  var $chatStatusChat = $(".chat-status-chat");
+  var $chatStatusChat = jqchat(".chat-status-chat");
   $chatStatusChat.removeClass("chat-status-available");
   $chatStatusChat.removeClass("chat-status-donotdisturb");
   $chatStatusChat.removeClass("chat-status-invisible");
