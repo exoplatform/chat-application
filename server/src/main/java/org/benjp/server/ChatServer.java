@@ -123,32 +123,35 @@ public class ChatServer
 //        System.out.println(user + "::" + message + "::" + room);
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
-        String content = ((message.length()>30)?message.substring(0,29)+"...":message);
-        String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-
-
-        if (targetUser.startsWith(ChatService.SPACE_PREFIX))
+        if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
         {
-          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
-          for (String tuser:users)
+          String content = ((message.length()>30)?message.substring(0,29)+"...":message);
+          String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
+
+
+          if (targetUser.startsWith(ChatService.SPACE_PREFIX))
           {
-            notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
+            for (String tuser:users)
+            {
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            }
           }
-        }
-        else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-        {
-          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
-          for (String tuser:users)
+          else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
           {
-            notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
+            for (String tuser:users)
+            {
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            }
           }
-        }
-        else
-        {
-          notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room);
-        }
+          else
+          {
+            notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+          }
 
-        notificationService.setNotificationsAsRead(user, "chat", "room", room);
+          notificationService.setNotificationsAsRead(user, "chat", "room", room);
+        }
       }
 
     }
@@ -408,6 +411,10 @@ public class ChatServer
           users.add(targetUser);
           room = chatService.getRoom(users);
         }
+        else if ("external".equals(type))
+        {
+          room = chatService.getExternalRoom(targetUser);
+        }
       }
       else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
@@ -419,6 +426,11 @@ public class ChatServer
       {
         room = chatService.getTeamRoom(targetUser, user);
 
+      }
+      else
+      if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
+      {
+        room = chatService.getExternalRoom(targetUser);
       }
       else
       {

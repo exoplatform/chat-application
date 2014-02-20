@@ -397,6 +397,29 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     return room;
   }
 
+  public String getExternalRoom(String identifier) {
+    String room = ChatUtils.getExternalRoomId(identifier);
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (!roomNode.hasProperty(IDENTIFIER_PROPERTY))
+      {
+        roomNode.setProperty(IDENTIFIER_PROPERTY, identifier);
+        roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_EXTERNAL);
+        session.save();
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return room;
+  }
+
   public String getTeamCreator(String room) {
     if (room.indexOf(ChatService.TEAM_PREFIX)==0)
     {

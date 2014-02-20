@@ -390,6 +390,29 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     return room;
   }
 
+  public String getExternalRoom(String identifier) {
+    String room = ChatUtils.getExternalRoomId(identifier);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (!cursor.hasNext())
+    {
+      try {
+        basicDBObject.put("identifier", identifier);
+        basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
+        coll.insert(basicDBObject);
+        ensureIndexInRoom(room);
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
+    }
+
+    return room;
+  }
+
   public String getTeamCreator(String room) {
     if (room.indexOf(ChatService.TEAM_PREFIX)==0)
     {

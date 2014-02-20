@@ -31,10 +31,12 @@ public interface ChatService
 
   public static final String SPACE_PREFIX = "space-";
   public static final String TEAM_PREFIX = "team-";
+  public static final String EXTERNAL_PREFIX = "external-";
 
   public static final String TYPE_ROOM_USER = "u";
   public static final String TYPE_ROOM_SPACE = "s";
   public static final String TYPE_ROOM_TEAM = "t";
+  public static final String TYPE_ROOM_EXTERNAL = "e";
 
   public static final String TYPE_DELETED = "DELETED";
   public static final String TYPE_EDITED = "EDITED";
@@ -58,6 +60,8 @@ public interface ChatService
   public String getSpaceRoomByName(String name);
 
   public String getTeamRoom(String team, String user);
+
+  public String getExternalRoom(String identifier);
 
   public String getTeamCreator(String room);
 

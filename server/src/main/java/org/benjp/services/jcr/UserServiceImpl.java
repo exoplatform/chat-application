@@ -394,7 +394,64 @@ public class UserServiceImpl extends AbstractJCRService implements UserService
     return rooms;  }
 
   public RoomBean getRoom(String user, String roomId) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    RoomBean roomBean = null;
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+      Node roomsNode = session.getRootNode().getNode("chat/" + M_ROOMS_COLLECTION);
+
+      if (roomsNode.hasNode(roomId))
+      {
+        Node roomNode = roomsNode.getNode(roomId);
+        roomBean = new RoomBean();
+        roomBean.setRoom(roomId);
+        if (roomNode.hasProperty(TIMESTAMP_PROPERTY))
+        {
+          roomBean.setTimestamp(roomNode.getProperty(TIMESTAMP_PROPERTY).getLong());
+        }
+        if (roomNode.hasProperty(TYPE_PROPERTY))
+        {
+          String type = roomNode.getProperty(TYPE_PROPERTY).getString();
+          if ("s".equals(type))
+          {
+            roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
+            roomBean.setFullname(roomNode.getProperty(DISPLAY_NAME_PROPERTY).getString());
+            roomBean.setSpace(true);
+          }
+          else if ("t".equals(type))
+          {
+            roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
+            roomBean.setFullname(roomNode.getProperty(TEAM_PROPERTY).getString());
+            roomBean.setTeam(true);
+          }
+          else if ("u".equals(type))
+          {
+            roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
+            Value[] users = roomNode.getProperty(USERS_PROPERTY).getValues();
+            String targetUser = null;
+            for (Value value:users) {
+              if (!value.getString().equals(user))
+                targetUser = value.getString();
+            }
+            roomBean.setUser(targetUser);
+            roomBean.setFullname(this.getUserFullName(targetUser));
+          }
+          else if ("e".equals(type))
+          {
+            roomBean.setUser(ChatService.EXTERNAL_PREFIX+roomId);
+            roomBean.setFullname(roomNode.getProperty(IDENTIFIER_PROPERTY).getString());
+          }
+        }
+
+      }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return roomBean;
   }
 
   public SpaceBean getSpace(String roomId)

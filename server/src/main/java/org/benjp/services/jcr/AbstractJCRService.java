@@ -38,6 +38,7 @@ public abstract class AbstractJCRService
   static final String TEAM_PROPERTY = "chat:team";
   static final String SPACE_PROPERTY = "chat:space";
   static final String USERS_PROPERTY = "chat:users";
+  static final String IDENTIFIER_PROPERTY = "chat:identifier";
   static final String STATUS_PROPERTY = "chat:status";
   static final String IS_SUPPORT_ADMIN_PROPERTY = "chat:issupport";
   static final String ID_PROPERTY = "chat:id";
@@ -279,6 +280,14 @@ public abstract class AbstractJCRService
         teamProperty.setReadOnly(false);
         teamProperty.setRequiredType(PropertyType.STRING);
         teamProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue identifierProperty = new PropertyDefinitionValue();
+        identifierProperty.setMultiple(false);
+        identifierProperty.setAutoCreate(false);
+        identifierProperty.setName(IDENTIFIER_PROPERTY);
+        identifierProperty.setReadOnly(false);
+        identifierProperty.setRequiredType(PropertyType.STRING);
+        identifierProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
         PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
         userProperty.setMultiple(false);

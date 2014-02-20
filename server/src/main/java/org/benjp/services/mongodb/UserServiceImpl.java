@@ -341,6 +341,11 @@ public class UserServiceImpl implements org.benjp.services.UserService
         roomBean.setUser(targetUser);
         roomBean.setFullname(this.getUserFullName(targetUser));
       }
+      else if ("e".equals(type))
+      {
+        roomBean.setUser(ChatService.EXTERNAL_PREFIX+roomId);
+        roomBean.setFullname(doc.get("identifier").toString());
+      }
     }
 
     return roomBean;
