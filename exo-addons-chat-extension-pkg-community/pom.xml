@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>chat-application</artifactId>
+    <groupId>org.exoplatform.addons.chat</groupId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>exo-addons-chat-extension-pkg-community</artifactId>
+  <packaging>pom</packaging>
+  <name>eXo Addons - Chat Extension Package Community</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>application</artifactId>
+      <type>war</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Chat Application -->
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>exo-addons-chat-extension-community</artifactId>
+      <version>0.9.0-SNAPSHOT</version>
+      <type>war</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>exo-addons-chat-extension-config-community</artifactId>
+      <version>0.9.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>server</artifactId>
+      <type>war</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>package-extension</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/exo-addons-chat-extension.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
