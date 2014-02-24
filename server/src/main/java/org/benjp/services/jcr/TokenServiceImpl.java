@@ -10,9 +10,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class TokenServiceImpl extends AbstractJCRService implements TokenService
 {
@@ -41,7 +39,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -65,10 +63,10 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (!tokensNode.hasNode(user))
       {
-        Node tokenNode = tokensNode.addNode(user, TOKEN_NODETYPE);
+        Node tokenNode = tokensNode.addNode(user, USER_NODETYPE);
         session.save();
         tokenNode.setProperty(USER_PROPERTY, user);
         tokenNode.setProperty(TOKEN_PROPERTY, token);
@@ -93,7 +91,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -131,7 +129,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
       StringBuilder statement = new StringBuilder();
 
-      statement.append("SELECT * FROM ").append(TOKEN_NODETYPE).append(" WHERE ");
+      statement.append("SELECT * FROM ").append(USER_NODETYPE).append(" WHERE ");
       statement.append(VALIDITY_PROPERTY).append(" > ").append(System.currentTimeMillis()-getValidity());
       if (isAdmin)
       {
@@ -181,7 +179,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);

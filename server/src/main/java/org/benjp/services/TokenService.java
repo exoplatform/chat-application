@@ -26,7 +26,6 @@ import java.util.List;
 
 public interface TokenService
 {
-  public static final String M_TOKENS_COLLECTION = "tokens";
   public static final String M_USERS_COLLECTION = "users";
   public static final String ANONIM_USER = "__anonim_";
 

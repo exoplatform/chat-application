@@ -93,9 +93,9 @@ public class MongoBootstrap
 
   public void dropDB(String dbName)
   {
-    log.info("---- Dropping DB "+dbName);
+    log.info("---- Dropping DB " + dbName);
     mongo().dropDatabase(dbName);
-    log.info("-------- DB "+dbName+" dropped!");
+    log.info("-------- DB " + dbName + " dropped!");
 
   }
 
@@ -119,8 +119,8 @@ public class MongoBootstrap
       }
       initCollection("notifications");
       initCollection("room_rooms");
-      initCollection("tokens");
       initCollection("users");
+      dropTokenCollectionIfExists();
 
     }
     return db;
@@ -161,6 +161,14 @@ public class MongoBootstrap
       doc.put("size", size);
     getDB().createCollection(name, doc);
 
+  }
+
+  private void dropTokenCollectionIfExists()
+  {
+    if (getDB().collectionExists("tokens")) {
+      DBCollection tokens = getDB().getCollection("tokens");
+      tokens.drop();
+    }
   }
 
   public void ensureIndexesInRoom(String roomId)
