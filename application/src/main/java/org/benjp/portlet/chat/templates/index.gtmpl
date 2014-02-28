@@ -172,7 +172,7 @@
                   <input type="text" class="input-with-value" id="share-link-text" placeholder="e.g: http://www.exoplatform.com" data-value="e.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">Share</a>
-                  	<a href="#" type="button" class="btn ">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="200" data-title="File">
@@ -193,7 +193,7 @@
 	                      <span>Select Manually</span>
 	                      <input type="file" name="userfile" id="chat-file-file" />
 	                    </a>
-	                    <a href="#" type="button" class="btn ">Cancel</a>
+	                    <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
 	                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
 	                </div>
                   </form>
@@ -202,14 +202,14 @@
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?" placeholder="What is your question?">
                   <div class="uiActionBorder">
                   	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>
-                    <a href="#" type="button" class="btn ">Cancel<a>
+                    <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment" placeholder="Optional comment">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary raise-hand-button">Raise your hand</a>
-                  	<a href="#" type="button" class="btn ">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
@@ -220,7 +220,7 @@
                   <input type="text" class="input-with-value" data-value="Due date" placeholder="Due date" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>
-                  	<a href="#" type="button" class="btn ">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="255" data-title="Add event">
@@ -243,7 +243,7 @@
                   <input type="text" class="input-with-value input-default" data-value="Location" placeholder="Location" id="">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-event-button">Post</a>
-                  	<a href="#" type="button" class="btn ">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
 

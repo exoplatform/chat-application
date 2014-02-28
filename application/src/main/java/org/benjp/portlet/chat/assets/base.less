@@ -330,6 +330,7 @@ table.list-rooms {
       left: -271px;
       top: -134px;
       width: 306px;
+      max-width: none;
       height: 130px;
     }
 
@@ -354,6 +355,14 @@ table.list-rooms {
 
     .meeting-action-file-panel {
       text-align: center;
+    }
+    &.open {
+      + .tooltip {
+        display: none!important;
+      }
+      .dropdown-menu {
+        bottom: 130%;
+      }
     }
   }
 

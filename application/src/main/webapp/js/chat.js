@@ -146,9 +146,16 @@ var chatApplication = new ChatApplication();
 
     });
 
-
+    $(document).on('click.meeting-action-toggle', function(e) {
+      if ($(e.target).closest('.meeting-actions').length == 0 && $('.meeting-action-popup').css('display') == 'none') {
+        $('.meeting-action-toggle').removeClass('active');
+      }
+    });
 
     $(".meeting-action-toggle").on("click", function() {
+      if ($('.meeting-action-popup').css('display') == 'none') {
+        $(this).toggleClass('active');
+      }      
       $(".meeting-action-popup").hide();
     });
 
@@ -409,10 +416,15 @@ var chatApplication = new ChatApplication();
 
     $(".msg-emoticons").on("click", function() {
       var $msgEmoticonsPanel = $(".msg-emoticons-panel");
-      if ($msgEmoticonsPanel.css("display")==="none")
+      if ($msgEmoticonsPanel.css("display")==="none") {
+        $(this).parent().addClass('active');
         $msgEmoticonsPanel.css("display", "inline-block");
-      else
+      }
+
+      else{
         $msgEmoticonsPanel.css("display", "none");
+         $(this).parent().removeClass('active');
+      }
     });
 
     $(".emoticon-btn").on("click", function() {
