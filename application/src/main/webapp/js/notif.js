@@ -121,24 +121,29 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         var html = '';
         if (data.notifications.length>0) {
-          for (var inot = 0 ; inot<data.notifications.length ; inot++) {
-            var notif = data.notifications[inot];
-            html += '<li>';
-            html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
-            html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
-            html +=     '<div class="chat-label-status">';
-            html +=      '<div class="content">'+notif.content+'</div>';
-            html +=      '<div class="timestamp">'+this.getDate(notif.timestamp)+'</div>';
-            html +=     '</div>';
-            html +=   '</a>';
-            html += '</li>';
-            if (fromChromeApp) {
-              if (this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-                doSendMessage(notif);
+          var notifs = TAFFY(data.notifications);
+          var notifs = notifs();
+          var thiss = this;
+          var froms = [];
+          notifs.order("timestamp desc").each(function (notif, number) {
+            if (typeof froms[notif.from] === "undefined") {
+              html += '<li>';
+              html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
+              html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
+              html +=     '<div class="chat-label-status">';
+              html +=      '<div class="content">'+notif.content+'</div>';
+              html +=      '<div class="timestamp">'+thiss.getDate(notif.timestamp)+'</div>';
+              html +=     '</div>';
+              html +=   '</a>';
+              html += '</li>';
+              if (fromChromeApp) {
+                if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
+                  doSendMessage(notif);
+                }
               }
+              froms[notif.from] = 1;
             }
-
-          }
+          });
           html += '<li class="divider">&nbsp;</li>';
         }
         $chatNotificationsDetails.html(html);
