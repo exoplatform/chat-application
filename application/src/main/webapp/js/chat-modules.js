@@ -906,6 +906,7 @@ function showMiniChatPopup(room, type) {
               return;
             }
             //      console.log("*"+msg+"*");
+            jqchat(this).val("");
             miniChats[index].sendMessage(msg, {}, false, function() {
 //        console.log("message sent : "+msg);
               $miniChat.find(".message-input").val("");
