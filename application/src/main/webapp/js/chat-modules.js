@@ -892,6 +892,36 @@ function showMiniChatPopup(room, type) {
       var jzChatGetRoom = chatServerUrl+"/getRoom";
       if (miniChats[index] === undefined) {
         miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
+
+
+        $miniChat.find(".message-input").keyup(function(event) {
+          var msg = jqchat(this).val();
+//        console.log("keyup : "+event.which + ";"+msg.length);
+          var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
+
+          if ( event.which === 13 && msg.length>1) {
+            //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+            if(!msg)
+            {
+              return;
+            }
+            //      console.log("*"+msg+"*");
+            miniChats[index].sendMessage(msg, {}, false, function() {
+//        console.log("message sent : "+msg);
+              $miniChat.find(".message-input").val("");
+            });
+
+          }
+          if ( event.which === 27 && msg.length === 0) {
+            $miniChat.find(".message-input").val("");
+            miniChats[index].clearInterval();
+            $miniChat.slideUp(200);
+          }
+
+        });
+
+
+
       }
       miniChats[index].setMiniChatDiv($miniChat);
       miniChats[index].onRefresh(function() {
@@ -916,32 +946,5 @@ function showMiniChatPopup(room, type) {
     miniChats[index].clearInterval();
     $miniChat.slideUp(200);
   });
-
-  $miniChat.find(".message-input").keyup(function(event) {
-    var msg = jqchat(this).val();
-//        console.log("keyup : "+event.which + ";"+msg.length);
-    var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
-
-    if ( event.which === 13 && msg.length>1) {
-      //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-      if(!msg)
-      {
-        return;
-      }
-      //      console.log("*"+msg+"*");
-      miniChats[index].sendMessage(msg, {}, false, function() {
-//        console.log("message sent : "+msg);
-        $miniChat.find(".message-input").val("");
-      });
-
-    }
-    if ( event.which === 27 && msg.length === 0) {
-      $miniChat.find(".message-input").val("");
-      miniChats[index].clearInterval();
-      $miniChat.slideUp(200);
-    }
-
-  });
-
 
 };
