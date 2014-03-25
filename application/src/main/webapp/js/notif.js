@@ -400,7 +400,7 @@ function WeemoExtension() {
 
   this.isConnected = false;
   this.timeoutWeemo = -1;
-  this.changeStatus("not-connected");
+  //this.changeStatus("not-connected");
 }
 
 WeemoExtension.prototype.log = function() {
@@ -504,7 +504,7 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
     } else if (fn!=="") {
       this.weemo.setDisplayName(fn); // Configure the display name
     }
-
+    this.changeStatus("not-connected");
     /**
      * Weemo Driver On Connection Javascript Handler
      *

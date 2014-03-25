@@ -16,7 +16,7 @@
   <a class="dropdown-toggle" data-toggle="dropdown">
     <!--i class="uiNotifMessageIcon"></i-->
     <div class="uiNotifChatIcon">
-      <div class="weemo-status weemo-status-not-connected"><img src="/chat/img/empty.png" width="8px" height="8px"></div>
+      <div class="weemo-status"><img src="/chat/img/empty.png" width="8px" height="8px"></div>
       <span id="chat-notification" style="float: right; display: none;"></span>
     </div>
   </a>
