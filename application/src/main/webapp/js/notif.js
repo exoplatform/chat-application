@@ -357,6 +357,18 @@ ChatNotification.prototype.changeStatusChat = function(status) {
   $chatStatusChat.removeClass("chat-status-away");
   $chatStatusChat.removeClass("chat-status-offline");
   $chatStatusChat.addClass("chat-status-"+status);
+
+  jqchat(".chat-status-selected").each(function () {
+    var labelStatus = jqchat(this).parent(".chat-status").attr("data-status");
+    if (labelStatus === status) {
+      jqchat(this).html("&#10003;");
+    }
+    else
+    {
+      jqchat(this).html("");
+    }
+  });
+
 };
 
 ChatNotification.prototype.openChatPopup = function() {
@@ -922,6 +934,7 @@ var weemoExtension = new WeemoExtension();
     $(".uiNotifChatIcon").on("click", function() {
       console.log("NEED TO REFRESH NOTIFICATIONS");
       chatNotification.refreshNotifDetails();
+      chatNotification.changeStatusChat(chatNotification.profileStatus);
     });
 
   });

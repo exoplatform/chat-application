@@ -26,16 +26,16 @@
       <li class="divider">&nbsp;</li>
     </div>
     <li>
-      <a href="#" class="chat-status" data-status="available"><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">Available</span></a>
+      <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">Available</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">Do not disturb</span></a>
+      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-selected"></div><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">Do not disturb</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="away"><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">Away</span></a>
+      <a href="#" class="chat-status" data-status="away"><div class="chat-status-selected"></div><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">Away</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">Invisible</span></a>
+      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-selected"></div><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">Invisible</span></a>
     </li>
     <li class="divider">&nbsp;</li>
     <li>
