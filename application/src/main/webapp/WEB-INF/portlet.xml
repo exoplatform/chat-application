@@ -54,6 +54,13 @@
        <title>Chat Notification Application</title>
        <keywords>Chat</keywords>
      </portlet-info>
+     <portlet-preferences>
+       <preference>
+         <name>title</name>
+         <value>---</value>
+         <read-only>false</read-only>
+       </preference>
+     </portlet-preferences>
    </portlet>
 
    <portlet>

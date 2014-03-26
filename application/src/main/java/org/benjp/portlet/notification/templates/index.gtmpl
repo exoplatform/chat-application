@@ -19,6 +19,10 @@
       <div class="weemo-status"><img src="/chat/img/empty.png" width="8px" height="8px"></div>
       <span id="chat-notification" style="float: right; display: none;"></span>
     </div>
+    <% if (!"---".equals(title)) { %>
+    <div class="uiNotifChatTitle"><%=title%></div>
+    <% } %>
+
   </a>
   <ul class="dropdown-menu">
     <div id="chat-notifications-details">
