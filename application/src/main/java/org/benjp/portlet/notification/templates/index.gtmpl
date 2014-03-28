@@ -7,11 +7,13 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
         class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
-  <audio id="chat-audio-notif" controls preload="auto" autobuffer style="display: none;">
-    <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
-    <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
-    <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
-  </audio>
+  <div style="display: none;">
+    <audio id="chat-audio-notif" controls preload="auto" autobuffer>
+      <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
+      <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
+      <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
+    </audio>
+  </div>
 
   <a class="dropdown-toggle" data-toggle="dropdown">
     <!--i class="uiNotifMessageIcon"></i-->
