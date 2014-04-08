@@ -1929,7 +1929,8 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   jqchat(".send-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    jqchat(".meeting-notes").animate({
+    var $meetingNotes =  $this.parent();
+    $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
       var room = $this.attr("data-room");
@@ -1945,7 +1946,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
           jqchat("#"+id).animate({
             opacity: "toggle"
           }, 200 , function() {
-            jqchat(".meeting-notes").animate({
+            $meetingNotes.animate({
               opacity: "toggle"
             }, 3000);
           });
@@ -1958,7 +1959,8 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   jqchat(".save-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    jqchat(".meeting-notes").animate({
+    var $meetingNotes =  $this.parent();
+    $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
       var room = $this.attr("data-room");
@@ -1997,7 +1999,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
               jqchat("#"+id).animate({
                 opacity: "toggle"
               }, 3000 , function() {
-                jqchat(".meeting-notes").animate({
+                $meetingNotes.animate({
                   opacity: "toggle"
                 }, 2000);
                 jqchat("#"+id).hide();
