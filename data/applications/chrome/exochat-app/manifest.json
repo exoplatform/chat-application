@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "eXo Chat",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "icons": {"128": "icon-128.png", "64": "icon-64.png", "32": "icon-32.png", "16": "icon-16.png"},
   "permissions": ["webview", "notifications", "storage", "<all_urls>"],
   "app": {

@@ -62,7 +62,7 @@ onload = function() {
         chrome.app.window.current().setBounds({width: 530, height: 475});
       } else {
         chrome.app.window.current().setBounds({width: 870, height: 670});
-        wv1.setAttribute("src", url+"/portal/intranet/chat");
+        wv1.setAttribute("src", url+"/portal/intranet/chat?utm_campaign=ChatChromeApp&utm_medium=referral&utm_source=ChromeWebstore&utm_content=ChatChromeApp");
         domainView.style.display = "none";
         chatView.style.display = "block";
         logoutLink.style.display = "inline";
