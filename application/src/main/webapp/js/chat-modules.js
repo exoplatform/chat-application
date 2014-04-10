@@ -254,56 +254,77 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
  * @param msgs : json messages data to show
  */
 ChatRoom.prototype.showMessages = function(msgs) {
-  var im, message, out="", prevUser="";
+  var im, message, out="", prevUser="", prevFullName;
   if (msgs!==undefined) {
     this.messages = msgs.messages;
   }
 
   if (this.messages.length===0) {
-    out = "<div class='msgln' style='padding:22px 20px;'>";
-    if (this.isPublic)
+
+    if (this.isPublic) {
+      out = "<div class='msRow' style='padding:22px 20px;'>";
       out += "<b><center>"+this.labels.get("label-public-welcome")+"</center></b>";
+      out += "</div>";
+    }
     else
-      out += "<b><center>"+this.labels.get("label-no-messages")+"</center></b>";
-    out += "</div>";
+      out += "<div class='noMessage'></div>";
   } else {
 
     var messages = TAFFY(this.messages);
     var thiss = this;
-    messages().order("timestamp asec").each(function (message) {
+    messages().order("timestamp asec").each(function (message, i) {
 
       if (message.isSystem!=="true")
       {
         if (prevUser != message.user)
         {
-          if (prevUser !== "")
-            out += "</span></div>";
+          if (prevUser !== "") {
+            out += "        </div>";
+            out += "      </div>";
+            out += "      <div class='msUserAvatar'>";
+          }
           if (message.user != thiss.username) {
-            out += "<div class='msgln-odd'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            if (thiss.isPublic)
-              out += "<img src='/chat/img/support-avatar.png' width='30px' style='width:30px;'>";
-            else
-              out += "<img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+message.user+"/soc:profile/soc:avatar' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
-            else
-              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+            if (prevUser !== "") {
+              if (thiss.isPublic) {
+                out += "    <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+              } else {
+                out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+              }
+              out += "    </div>";
+              out += "  </div>";
+              out += "</div>";
+            }
+            out += "  <div class='msRow odd'>";
+            out += "    <div class='msMessagesGroup clearfix'>";
+            out += "      <div class='msContBox'>";
+            out += "        <div class='inner'>";
+            out += "          <div class='msTiltleLn clearfix'>";
+            if (thiss.isPublic) {
+              out += "          <a class='msNameUser' href='#'>" + thiss.labels.get("label-support-fullname") + "</a>";
+            }
+            else {
+              out += "          <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+            }
+            out += "          </div>";
           } else {
-            out += "<div class='msgln'>";
-            out += "<span style='position:relative; padding-right:16px;padding-left:4px;top:8px'>";
-            out += "<img src='/chat/img/empty.png' width='30px' style='width:30px;'>";
-            out += "</span>";
-            out += "<span>";
-            //out += "<span style='float:left; '>&nbsp;</span>";
-            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+            if (prevUser !== "") {
+              out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+              out += "    </div>";
+              out += "  </div>";
+              out += "</div>";
+            }
+            out += "  <div class='msRow'>";
+            out += "    <div class='msMessagesGroup clearfix'>";
+            out += "      <div class='msContBox'>";
+            out += "        <div class='inner'>";
+            out += "          <div class='msTiltleLn clearfix'>";
+            out += "            <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+            out += "          </div>";
           }
         }
         else
         {
-          out += "<hr style='margin:0px;'>";
+//          out += "<hr style='margin:0px;'>";
         }
         var msgtemp = message.message;
         if (message.type === "DELETED") {
@@ -311,26 +332,42 @@ ChatRoom.prototype.showMessages = function(msgs) {
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
         }
-        out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left'>"+msgtemp+"</span>" +
-          "<span class='invisible-text'> [</span>";
-        out += "<span style='float:right;color:#CCC;font-size:10px' class='msg-date'>";
+        out += "            <div class='msUserCont msg-text clearfix'>";
+        out += "              <div class='msRightInfo pull-right'>";
+        out += "                <div class='msTimePost'>";
         if (message.type === "DELETED" || message.type === "EDITED") {
-          out += "<span class='message-changed'></span>";
+          out += "                <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
-        out += thiss.getDate(message.timestamp)+"</span>";
+        out += "                  <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        out += "                </div>";
         if (message.type !== "DELETED") {
-          out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
-            "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
+          out += "              <div class='msAction msg-actions' style='display:none;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
-            out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
-            out += "&nbsp;<a href='#' class='msg-action-edit'>"+thiss.labels.get("label-edit")+"</a>&nbsp;|";
+            out += "              <a href='#' class='msg-action-edit'>" + thiss.labels.get("label-edit") + "</a>";
+            out += "              <a href='#' class='msg-action-delete'>" + thiss.labels.get("label-delete") + "</a>";
           }
-          out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
-          out += "</span>";
+          out += "                <a href='#' class='msg-action-quote'>" + thiss.labels.get("label-quote") + "</a>";
+          out += "              </div>";
         }
-        out += "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
+        out += "              </div>";
+        out += "              <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+        out += "            </div>";
         prevUser = message.user;
+        prevFullName = message.fullname;
+
+        if (i === (thiss.messages.length -1)) {
+          out += "          </div>";
+          out += "        </div>";
+          out += "        <div class='msUserAvatar'>";
+          if (thiss.isPublic) {
+            out += "        <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+          } else {
+            out += "        <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+          }
+          out += "        </div>";
+          out += "      </div>";
+          out += "    </div>";
+        }
       }
       else
       {
@@ -558,8 +595,8 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-id='"+options.timestamp+"2' " +
           ">Save as Wiki</a>" +
           "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>Saved!</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>ï¿½</button><strong>Sent!</strong> Check your mailbox.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>ï¿½</button><strong>Saved!</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
           "</div>";
       }
 
@@ -770,3 +807,4 @@ JuzuLabels.prototype.log = function() {
     console.log(jqchat.data( this.element ));
   }
 };
+

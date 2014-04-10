@@ -1803,6 +1803,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".meeting-action-event").css("display", "none");
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
@@ -1814,6 +1815,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/social-resources/skin/images/ShareImages/SpaceAvtDefault.png';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
@@ -1843,6 +1845,7 @@ ChatApplication.prototype.loadRoom = function() {
 //      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
@@ -1887,12 +1890,12 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
       jqchat(".msg-date", this).css("display", "none");
-      jqchat(".msg-actions", this).css("display", "inline-block");
+      jqchat(".msg-actions", this).css("display", "");
     }
   });
 
   jqchat(".msg-text").mouseout(function() {
-    jqchat(".msg-date", this).css("display", "inline-block");
+    jqchat(".msg-date", this).css("display", "");
     jqchat(".msg-actions", this).css("display", "none");
   });
 

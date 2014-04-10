@@ -97,7 +97,7 @@
     <div class="uiBox">
       <div class="room-detail" id="room-detail">
 
-        <span class="room-detail-avatar">
+        <span class="room-detail-avatar" style="display:none">
           <div class="activityAvatar avatarCircle">
             <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
               <img class="avatar-image target-avatar-image" src='/chat/img/Avatar.gif;' >
@@ -136,7 +136,7 @@
       <div class="chat-message">
 
         <span class="pull-left" style="padding: 4px 0 0 18px;">
-          <span class="actionIcon actionIconSmile" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="uiIconChatSmile msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
+          <span class="actionIcon actionIconSmile" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="uiIconChatSmile uiIconLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
           <span class="msg-emoticons-panel no-user-selection" style="display:none">
             <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
