@@ -290,7 +290,7 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
     Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
     if (spaceBean!=null) // Space use case

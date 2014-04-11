@@ -19,11 +19,14 @@
 
 package org.benjp.services;
 
+import org.benjp.model.UserBean;
+
+import java.util.HashMap;
 import java.util.List;
 
 public interface TokenService
 {
-  public static final String M_TOKENS_COLLECTION = "tokens";
+  public static final String M_USERS_COLLECTION = "users";
   public static final String ANONIM_USER = "__anonim_";
 
   public String getToken(String user);
@@ -34,7 +37,9 @@ public interface TokenService
 
   public void updateValidity(String user, String token);
 
-  public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin);
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin);
+
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
   public boolean isUserOnline(String user);
 

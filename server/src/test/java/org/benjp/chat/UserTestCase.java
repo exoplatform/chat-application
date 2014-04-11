@@ -18,7 +18,6 @@ public class UserTestCase extends AbstractChatTestCase
   @Before
   public void setUp()
   {
-    ConnectionManager.getInstance().getDB().getCollection(TokenService.M_TOKENS_COLLECTION).drop();
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
   }
 

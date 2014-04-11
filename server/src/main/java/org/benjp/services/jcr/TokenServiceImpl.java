@@ -1,5 +1,6 @@
 package org.benjp.services.jcr;
 
+import org.benjp.model.UserBean;
 import org.benjp.services.TokenService;
 import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
@@ -9,8 +10,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class TokenServiceImpl extends AbstractJCRService implements TokenService
 {
@@ -39,7 +39,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -63,10 +63,10 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (!tokensNode.hasNode(user))
       {
-        Node tokenNode = tokensNode.addNode(user, TOKEN_NODETYPE);
+        Node tokenNode = tokensNode.addNode(user, USER_NODETYPE);
         session.save();
         tokenNode.setProperty(USER_PROPERTY, user);
         tokenNode.setProperty(TOKEN_PROPERTY, token);
@@ -91,7 +91,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);
@@ -113,9 +113,14 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
   }
 
-  public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
-    ArrayList<String> users = new ArrayList<String>();
+    return getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, 0);
+  }
+
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  {
+    HashMap<String, UserBean> users = new HashMap<String, UserBean>();
     try
     {
       //get info
@@ -124,7 +129,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
 
       StringBuilder statement = new StringBuilder();
 
-      statement.append("SELECT * FROM ").append(TOKEN_NODETYPE).append(" WHERE ");
+      statement.append("SELECT * FROM ").append(USER_NODETYPE).append(" WHERE ");
       statement.append(VALIDITY_PROPERTY).append(" > ").append(System.currentTimeMillis()-getValidity());
       if (isAdmin)
       {
@@ -150,8 +155,11 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       {
         Node node = nodeIterator.nextNode();
         String target = node.getProperty(USER_PROPERTY).getString();
-        if (!user.equals(target))
-          users.add(target);
+        if (!user.equals(target)) {
+          UserBean userBean = new UserBean();
+          userBean.setName(target);
+          users.put(target, userBean);
+        }
 
       }
 
@@ -171,7 +179,7 @@ public class TokenServiceImpl extends AbstractJCRService implements TokenService
       //get info
       Session session = JCRBootstrap.getSession();
 
-      Node tokensNode = session.getRootNode().getNode("chat/"+M_TOKENS_COLLECTION);
+      Node tokensNode = session.getRootNode().getNode("chat/"+M_USERS_COLLECTION);
       if (tokensNode.hasNode(user))
       {
         Node tokenNode = tokensNode.getNode(user);

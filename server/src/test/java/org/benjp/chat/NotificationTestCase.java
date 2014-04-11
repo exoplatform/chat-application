@@ -29,8 +29,8 @@ public class NotificationTestCase extends AbstractChatTestCase
     assertEquals(0, tot1);
     assertEquals(0, tot2);
 
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content2", "link");
 
     tot1 = notificationService_.getUnreadNotificationsTotal(user1);
     tot2 = notificationService_.getUnreadNotificationsTotal(user2);
@@ -43,10 +43,10 @@ public class NotificationTestCase extends AbstractChatTestCase
   @Test
   public void testSetAsRead() throws Exception
   {
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content2", "link");
-    notificationService_.addNotification(user2, "type", "cat", "catid", "content", "link");
-    notificationService_.addNotification(user2, "type", "cat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content2", "link");
+    notificationService_.addNotification(user2, user1, "type", "cat", "catid", "content", "link");
+    notificationService_.addNotification(user2, user1, "type", "cat", "catid", "content2", "link");
 
     int tot1 = notificationService_.getUnreadNotificationsTotal(user1);
     int tot2 = notificationService_.getUnreadNotificationsTotal(user2);
@@ -66,12 +66,12 @@ public class NotificationTestCase extends AbstractChatTestCase
   @Test
   public void testSetAsReadByCategory() throws Exception
   {
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content2", "link");
 
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content2", "link");
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content2", "link");
 
     int tot1 = notificationService_.getUnreadNotificationsTotal(user1);
     assertEquals(5, tot1);
@@ -93,12 +93,12 @@ public class NotificationTestCase extends AbstractChatTestCase
   @Test
   public void testTotalByCategory() throws Exception
   {
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "cat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid", "content2", "link");
 
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content", "link");
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content2", "link");
-    notificationService_.addNotification(user1, "type", "othercat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content2", "link");
+    notificationService_.addNotification(user1, user2, "type", "othercat", "catid", "content2", "link");
 
     int total = notificationService_.getUnreadNotificationsTotal(user1);
     int totcat = notificationService_.getUnreadNotificationsTotal(user1, "type", "cat", "catid");

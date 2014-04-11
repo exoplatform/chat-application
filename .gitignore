@@ -11,6 +11,9 @@ extension/target/*
 exo-addons-chat-extension/target/*
 exo-addons-chat-extension-config/target/*
 exo-addons-chat-extension-pkg/target/*
+exo-addons-chat-extension-community/target/*
+exo-addons-chat-extension-config-community/target/*
+exo-addons-chat-extension-pkg-community/target/*
 
 
 release.properties

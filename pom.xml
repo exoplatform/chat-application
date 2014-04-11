@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.9.0</version>
   <packaging>pom</packaging>
   <name>Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
@@ -30,12 +30,15 @@
     <module>exo-addons-chat-extension-config</module>
     <module>exo-addons-chat-extension</module>
     <module>exo-addons-chat-extension-pkg</module>
+    <module>exo-addons-chat-extension-config-community</module>
+    <module>exo-addons-chat-extension-community</module>
+    <module>exo-addons-chat-extension-pkg-community</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/exo-addons/chat-application.git</developerConnection>
     <url>https://github.com/exo-addons/chat-application</url>
-    <tag>v0.8.0</tag>
+    <tag>v0.9.0</tag>
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->

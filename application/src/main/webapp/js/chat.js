@@ -127,7 +127,7 @@ var chatApplication = new ChatApplication();
     $('#msg').keyup(function(event) {
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-      if ( event.which === 13 && keydown !== 18 && msg.length>1) {
+      if ( event.which === 13 && keydown !== 18 && msg.length>=1) {
         //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
         if(!msg)
         {
@@ -147,6 +147,20 @@ var chatApplication = new ChatApplication();
     });
 
 
+
+/*
+    $(".btn-app-logout").on("click", function() {
+      $.ajax({
+        url: "/portal/intranet?portal:componentId=UIPortal&portal:action=Logout",
+        success:function(response){
+          window.location="/portal/intranet/chat";
+        },
+        error:function (xhr, status, error){
+          console.log("error");
+        }
+      });
+    });
+*/
 
     $(".meeting-action-toggle").on("click", function() {
       $(".meeting-action-popup").hide();
@@ -1214,14 +1228,19 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
 };
 
 ChatApplication.prototype.resize = function() {
+  var $chatApplication = jqchat("#chat-application");
+  var off = 80;
+  if (fromChromeApp) {
+    $chatApplication.css("padding", "0");
+    off = 40;
+    jqchat(".uiBox").css("margin", "0");
+  }
   if (chatApplication.chatFullscreen == "true") {
     jqchat("#PlatformAdminToolbarContainer").css("display", "none");
   }
 
-  var $chatApplication = jqchat("#chat-application");
   var top = $chatApplication.offset().top;
   var height = jqchat(window).height();
-  var off = 80;
   var heightChat = height - top - off;
 
   $chatApplication.height(heightChat);
@@ -1480,7 +1499,11 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
 
 
           this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
-          if (window.fluid!==undefined) {
+          if (fromChromeApp) {
+            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+              chatNotification.refreshNotifDetails();
+            }
+          } else if (window.fluid!==undefined) {
             if (this.totalNotif>0)
               window.fluid.dockBadge = this.totalNotif;
             else
@@ -1905,8 +1928,9 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".send-meeting-notes").on("click", function () {
-    var $this = $(this);
-    jqchat(".meeting-notes").animate({
+    var $this = jqchat(this);
+    var $meetingNotes =  $this.parent();
+    $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
       var room = $this.attr("data-room");
@@ -1922,7 +1946,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
           jqchat("#"+id).animate({
             opacity: "toggle"
           }, 200 , function() {
-            jqchat(".meeting-notes").animate({
+            $meetingNotes.animate({
               opacity: "toggle"
             }, 3000);
           });
@@ -1934,8 +1958,9 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".save-meeting-notes").on("click", function () {
-    var $this = $(this);
-    jqchat(".meeting-notes").animate({
+    var $this = jqchat(this);
+    var $meetingNotes =  $this.parent();
+    $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
       var room = $this.attr("data-room");
@@ -1974,7 +1999,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
               jqchat("#"+id).animate({
                 opacity: "toggle"
               }, 3000 , function() {
-                jqchat(".meeting-notes").animate({
+                $meetingNotes.animate({
                   opacity: "toggle"
                 }, 2000);
                 jqchat("#"+id).hide();

@@ -14,13 +14,13 @@ import java.util.List;
 public abstract class AbstractJCRService
 {
 
-  static final String TOKEN_NODETYPE = "chat:token";
   static final String NOTIF_NODETYPE = "chat:notification";
   static final String USER_NODETYPE = "chat:user";
   static final String ROOM_NODETYPE = "chat:room";
   static final String MESSAGE_NODETYPE = "chat:message";
   static final String USER_PROPERTY = "chat:user";
   static final String TIMESTAMP_PROPERTY = "chat:timestamp";
+  static final String FROM_PROPERTY = "chat:from";
   static final String TOKEN_PROPERTY = "chat:token";
   static final String VALIDITY_PROPERTY = "chat:validity";
   static final String IS_DEMO_USER_PROPERTY = "chat:isdemouser";
@@ -38,6 +38,7 @@ public abstract class AbstractJCRService
   static final String TEAM_PROPERTY = "chat:team";
   static final String SPACE_PROPERTY = "chat:space";
   static final String USERS_PROPERTY = "chat:users";
+  static final String IDENTIFIER_PROPERTY = "chat:identifier";
   static final String STATUS_PROPERTY = "chat:status";
   static final String IS_SUPPORT_ADMIN_PROPERTY = "chat:issupport";
   static final String ID_PROPERTY = "chat:id";
@@ -68,62 +69,6 @@ public abstract class AbstractJCRService
       }
 
       ExtendedNodeTypeManager nodeTypeManager = (ExtendedNodeTypeManager) session.getWorkspace().getNodeTypeManager();
-      try
-      {
-        NodeType ntToken = nodeTypeManager.getNodeType(TOKEN_NODETYPE);
-
-      }
-      catch (NoSuchNodeTypeException nsne)
-      {
-        NodeTypeValue chatToken = new NodeTypeValue();
-        chatToken.setName(TOKEN_NODETYPE);
-        chatToken.setMixin(false);
-        List<String> superTypes = new ArrayList<String>();
-        superTypes.add("nt:base");
-        chatToken.setDeclaredSupertypeNames(superTypes);
-
-        PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
-        userProperty.setMultiple(false);
-        userProperty.setAutoCreate(false);
-        userProperty.setName(USER_PROPERTY);
-        userProperty.setReadOnly(false);
-        userProperty.setRequiredType(PropertyType.STRING);
-        userProperty.setOnVersion(OnParentVersionAction.IGNORE);
-
-        PropertyDefinitionValue validityProperty = new PropertyDefinitionValue();
-        validityProperty.setMultiple(false);
-        validityProperty.setAutoCreate(false);
-        validityProperty.setName(VALIDITY_PROPERTY);
-        validityProperty.setReadOnly(false);
-        validityProperty.setRequiredType(PropertyType.LONG);
-        validityProperty.setOnVersion(OnParentVersionAction.IGNORE);
-
-        PropertyDefinitionValue tokenProperty = new PropertyDefinitionValue();
-        tokenProperty.setMultiple(false);
-        tokenProperty.setAutoCreate(false);
-        tokenProperty.setName(TOKEN_PROPERTY);
-        tokenProperty.setReadOnly(false);
-        tokenProperty.setRequiredType(PropertyType.STRING);
-        tokenProperty.setOnVersion(OnParentVersionAction.IGNORE);
-
-        PropertyDefinitionValue demoUserProperty = new PropertyDefinitionValue();
-        demoUserProperty.setMultiple(false);
-        demoUserProperty.setAutoCreate(false);
-        demoUserProperty.setName(IS_DEMO_USER_PROPERTY);
-        demoUserProperty.setReadOnly(false);
-        demoUserProperty.setRequiredType(PropertyType.BOOLEAN);
-        demoUserProperty.setOnVersion(OnParentVersionAction.IGNORE);
-
-        List<PropertyDefinitionValue> props = new ArrayList<PropertyDefinitionValue>();
-        props.add(userProperty);
-        props.add(validityProperty);
-        props.add(tokenProperty);
-        props.add(demoUserProperty);
-
-        chatToken.setDeclaredPropertyDefinitionValues(props);
-
-        nodeTypeManager.registerNodeType(chatToken, ExtendedNodeTypeManager.REPLACE_IF_EXISTS);
-      }
 
       try
       {
@@ -146,6 +91,14 @@ public abstract class AbstractJCRService
         userProperty.setReadOnly(false);
         userProperty.setRequiredType(PropertyType.STRING);
         userProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue fromProperty = new PropertyDefinitionValue();
+        fromProperty.setMultiple(false);
+        fromProperty.setAutoCreate(false);
+        fromProperty.setName(FROM_PROPERTY);
+        fromProperty.setReadOnly(false);
+        fromProperty.setRequiredType(PropertyType.STRING);
+        fromProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
         PropertyDefinitionValue typeProperty = new PropertyDefinitionValue();
         typeProperty.setMultiple(false);
@@ -212,6 +165,7 @@ public abstract class AbstractJCRService
         props.add(linkProperty);
         props.add(timestampProperty);
         props.add(isReadProperty);
+        props.add(fromProperty);
 
         chatNotif.setDeclaredPropertyDefinitionValues(props);
 
@@ -279,6 +233,14 @@ public abstract class AbstractJCRService
         teamProperty.setReadOnly(false);
         teamProperty.setRequiredType(PropertyType.STRING);
         teamProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue identifierProperty = new PropertyDefinitionValue();
+        identifierProperty.setMultiple(false);
+        identifierProperty.setAutoCreate(false);
+        identifierProperty.setName(IDENTIFIER_PROPERTY);
+        identifierProperty.setReadOnly(false);
+        identifierProperty.setRequiredType(PropertyType.STRING);
+        identifierProperty.setOnVersion(OnParentVersionAction.IGNORE);
 
         PropertyDefinitionValue userProperty = new PropertyDefinitionValue();
         userProperty.setMultiple(false);
@@ -408,6 +370,30 @@ public abstract class AbstractJCRService
         isSupport.setRequiredType(PropertyType.BOOLEAN);
         isSupport.setOnVersion(OnParentVersionAction.IGNORE);
 
+        PropertyDefinitionValue validityProperty = new PropertyDefinitionValue();
+        validityProperty.setMultiple(false);
+        validityProperty.setAutoCreate(false);
+        validityProperty.setName(VALIDITY_PROPERTY);
+        validityProperty.setReadOnly(false);
+        validityProperty.setRequiredType(PropertyType.LONG);
+        validityProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue tokenProperty = new PropertyDefinitionValue();
+        tokenProperty.setMultiple(false);
+        tokenProperty.setAutoCreate(false);
+        tokenProperty.setName(TOKEN_PROPERTY);
+        tokenProperty.setReadOnly(false);
+        tokenProperty.setRequiredType(PropertyType.STRING);
+        tokenProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
+        PropertyDefinitionValue demoUserProperty = new PropertyDefinitionValue();
+        demoUserProperty.setMultiple(false);
+        demoUserProperty.setAutoCreate(false);
+        demoUserProperty.setName(IS_DEMO_USER_PROPERTY);
+        demoUserProperty.setReadOnly(false);
+        demoUserProperty.setRequiredType(PropertyType.BOOLEAN);
+        demoUserProperty.setOnVersion(OnParentVersionAction.IGNORE);
+
         List<PropertyDefinitionValue> props = new ArrayList<PropertyDefinitionValue>();
         props.add(userProperty);
         props.add(statusProperty);
@@ -417,6 +403,9 @@ public abstract class AbstractJCRService
         props.add(emailProperty);
         props.add(fullnameProperty);
         props.add(isSupport);
+        props.add(validityProperty);
+        props.add(tokenProperty);
+        props.add(demoUserProperty);
 
         chatUser.setDeclaredPropertyDefinitionValues(props);
 

@@ -6,10 +6,81 @@
   data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
-  style="display: none;">
-  <audio id="chat-audio-notif" controls preload="auto" autobuffer style="display: none;">
-    <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
-    <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
-    <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
-  </audio>
+        class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
+  <div style="display: none;">
+    <audio id="chat-audio-notif" controls preload="auto" autobuffer>
+      <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
+      <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
+      <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
+    </audio>
+  </div>
+
+  <a class="dropdown-toggle" data-toggle="dropdown">
+    <!--i class="uiNotifMessageIcon"></i-->
+    <div class="uiNotifChatIcon">
+      <div class="weemo-status"><img src="/chat/img/empty.png" width="8px" height="8px"></div>
+      <span id="chat-notification" style="float: right; display: none;"></span>
+    </div>
+    <% if (!"---".equals(title)) { %>
+    <div class="uiNotifChatTitle"><%=title%></div>
+    <% } %>
+
+  </a>
+  <ul class="dropdown-menu">
+    <div id="chat-notifications-details">
+      <span class="chat-notification-loading no-user-selection">Loading...</span>
+      <li class="divider">&nbsp;</li>
+    </div>
+    <li>
+      <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">Available</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-selected"></div><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">Do not disturb</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="away"><div class="chat-status-selected"></div><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">Away</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-selected"></div><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">Invisible</span></a>
+    </li>
+    <li class="divider">&nbsp;</li>
+    <li>
+      <a href="<%=chatPage%>" class="notif-chat-open-link" target="_chat"><div class="chat-status-open chat-status-icon"></div><span class="chat-label-status">Open Chat</span></a>
+    </li>
+  </ul>
 </div>
+<div class="mini-chat arrow_box" data-position="right"></div>
+<script type="text/javascript">
+  (function() {
+    var chatMods = document.createElement('script'); chatMods.type = 'text/javascript'; chatMods.async = true;
+    chatMods.src = '/chat/js/chat-modules.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatMods);
+  })();
+
+
+  var fromChromeApp = false;
+  var appWindow, appOrigin;
+  function listenerMessage(event){
+    appWindow = event.source;
+    appOrigin = event.origin;
+    if (event.data==="fromChromeApp") {
+      fromChromeApp = true;
+      if (typeof chatApplication === "object") {
+        chatApplication.resize();
+        //jqchat(".btn-app-logout").css("display", "block");
+      }
+    }
+//    console.log("message: "+event.data);
+  }
+  function doSendMessage(msg) {
+    if (appWindow && appOrigin) {
+      appWindow.postMessage(msg, appOrigin);
+    }
+  }
+
+  if (window.addEventListener){
+    addEventListener("message", listenerMessage, false);
+  } else {
+    attachEvent("onmessage", listenerMessage);
+  }
+</script>

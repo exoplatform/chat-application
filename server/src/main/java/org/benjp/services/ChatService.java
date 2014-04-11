@@ -31,10 +31,12 @@ public interface ChatService
 
   public static final String SPACE_PREFIX = "space-";
   public static final String TEAM_PREFIX = "team-";
+  public static final String EXTERNAL_PREFIX = "external-";
 
   public static final String TYPE_ROOM_USER = "u";
   public static final String TYPE_ROOM_SPACE = "s";
   public static final String TYPE_ROOM_TEAM = "t";
+  public static final String TYPE_ROOM_EXTERNAL = "e";
 
   public static final String TYPE_DELETED = "DELETED";
   public static final String TYPE_EDITED = "EDITED";
@@ -55,7 +57,11 @@ public interface ChatService
 
   public String getSpaceRoom(String space);
 
+  public String getSpaceRoomByName(String name);
+
   public String getTeamRoom(String team, String user);
+
+  public String getExternalRoom(String identifier);
 
   public String getTeamCreator(String room);
 
@@ -66,6 +72,8 @@ public interface ChatService
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService);
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService);
+
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService);
 
   public int getNumberOfRooms();
 

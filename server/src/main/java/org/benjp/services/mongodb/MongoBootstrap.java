@@ -93,9 +93,9 @@ public class MongoBootstrap
 
   public void dropDB(String dbName)
   {
-    log.info("---- Dropping DB "+dbName);
+    log.info("---- Dropping DB " + dbName);
     mongo().dropDatabase(dbName);
-    log.info("-------- DB "+dbName+" dropped!");
+    log.info("-------- DB " + dbName + " dropped!");
 
   }
 
@@ -119,8 +119,8 @@ public class MongoBootstrap
       }
       initCollection("notifications");
       initCollection("room_rooms");
-      initCollection("tokens");
       initCollection("users");
+      dropTokenCollectionIfExists();
 
     }
     return db;
@@ -163,6 +163,30 @@ public class MongoBootstrap
 
   }
 
+  private void dropTokenCollectionIfExists()
+  {
+    if (getDB().collectionExists("tokens")) {
+      DBCollection tokens = getDB().getCollection("tokens");
+      tokens.drop();
+    }
+  }
+
+  public void ensureIndexesInRoom(String roomId)
+  {
+    String dbName = this.getDB().getName();
+    BasicDBObject unique = new BasicDBObject();
+    unique.put("unique", true);
+    unique.put("background", true);
+    BasicDBObject notUnique = new BasicDBObject();
+    notUnique.put("unique", false);
+    notUnique.put("background", true);
+
+    DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+roomId);
+    collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+".room_"+roomId));
+    collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+".room_"+roomId));
+    log.info("##### room index in "+roomId);
+  }
+
   public void ensureIndexes()
   {
     String dbName = this.getDB().getName();
@@ -191,6 +215,7 @@ public class MongoBootstrap
     rooms.dropIndexes();
     rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName+".room_rooms"));
     rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+".room_rooms"));
+    rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName+".room_rooms"));
     log.info("### rooms indexes in "+getDB().getName());
 
     DBCollection coll = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+ ChatServiceImpl.M_ROOMS_COLLECTION);
@@ -206,26 +231,23 @@ public class MongoBootstrap
     }
 
 
-    DBCollection tokens = getDB().getCollection("tokens");
-    tokens.dropIndexes();
-    tokens.createIndex(new BasicDBObject("token", 1), unique.append("name", "token_1").append("ns", dbName+".tokens"));
-    tokens.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", dbName+".tokens"));
+    DBCollection users = getDB().getCollection("users");
+    users.dropIndexes();
+    users.createIndex(new BasicDBObject("token", 1), notUnique.append("name", "token_1").append("ns", dbName + ".users"));
+    users.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", dbName + ".users"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("token", 1);
-    tokens.createIndex(index, unique.append("name", "user_1_token_1").append("ns", dbName+".tokens"));
+    users.createIndex(index, unique.append("name", "user_1_token_1").append("ns", dbName + ".users"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("validity", -1);
-    tokens.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", dbName+".tokens"));
+    users.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", dbName + ".users"));
     index = new BasicDBObject();
     index.put("validity", -1);
     index.put("isDemoUser", 1);
-    tokens.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", dbName+".tokens"));
-    log.info("### tokens indexes in "+getDB().getName());
+    users.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", dbName + ".users"));
 
-    DBCollection users = getDB().getCollection("users");
-    users.dropIndexes();
     users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", dbName+".users"));
     users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", dbName+".users"));
     log.info("### users indexes in "+getDB().getName());

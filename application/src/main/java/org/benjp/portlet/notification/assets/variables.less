@@ -8,12 +8,25 @@
 
 @imgPath:                     "/chat/img/";
 @imgEmoticonPath:             "@{imgPath}emoticons/";
+@colorBgEmoticon:             rgba(0, 0, 0, 0.6);
+@colorBgEmoticonPlain:        rgb(50, 50, 50);
 
 .background(@left, @top) {
   background: url('@{imgPath}general.png') no-repeat @left @top;
   background-size: 96px 162px;
 }
 
+.weemo(@left, @top) {
+  background: url('@{imgPath}weemo-status.png') no-repeat @left @top;
+  background-size: 16px 16px;
+  width: 8px;
+  height: 8px;
+}
+
+
+@backgroundColor:             white;
+@colorBgLight:                #F1F1F1;
+@colorUserLink:               #AAA;
 
 // Grays
 // -------------------------

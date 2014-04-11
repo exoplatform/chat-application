@@ -12,6 +12,7 @@ import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
@@ -35,15 +36,20 @@ public class DocumentsData {
 
   SpaceService spaceService_;
 
+  ListenerService listenerService_;
+
+  public static String FILE_CREATED_ACTIVITY         = "ActivityNotify.event.FileCreated";
+
   public static final String TYPE_DOCUMENT="Documents";
 
   @Inject
-  public DocumentsData(RepositoryService repositoryService, SessionProviderService sessionProviderService, NodeHierarchyCreator nodeHierarchyCreator, SpaceService spaceService)
+  public DocumentsData(RepositoryService repositoryService, SessionProviderService sessionProviderService, NodeHierarchyCreator nodeHierarchyCreator, SpaceService spaceService, ListenerService listenerService)
   {
     repositoryService_ = repositoryService;
     nodeHierarchyCreator_= nodeHierarchyCreator;
     sessionProviderService_ = sessionProviderService;
     spaceService_ = spaceService;
+    listenerService_ = listenerService;
   }
 
   public SessionProvider getUserSessionProvider() {
@@ -234,6 +240,8 @@ public class DocumentsData {
         jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
       session.save();
       uuid = fileNode.getUUID();
+      listenerService_.broadcast(FILE_CREATED_ACTIVITY, null, fileNode);
+
     }
     catch (Exception e)
     {

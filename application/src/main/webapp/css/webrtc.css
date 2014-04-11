@@ -1,0 +1,287 @@
+#weemo-videobox {
+  position: fixed;
+  top: 10px;
+  width: 540px;
+  min-height: 300px;
+  left: 10px;
+  box-shadow: 1px 3px 7px 1px rgba(35,44,48,0.58);
+  cursor: pointer;
+}
+
+#weemo-remotevideo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 99999;
+  width: 540px;
+  background-color: #000;
+  min-height: 300px;
+}
+
+#weemo-selfview {
+  width: 120px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 999999;
+}
+
+#weemo-buttonsbar {
+  position: absolute;
+  z-index: 9999999;
+  width: 152px;
+  height: 32px;
+  bottom: 10px;
+  left: 194px;
+}
+
+#weemo-buttonnopip {
+  background-image: url('https://static.weemo.com/img/pip-528b2a46d637c.png');
+  background-position: 0 -33px;
+  height: 32px;
+  width: 38px;
+  float: left;
+  cursor: pointer;
+}
+
+#weemo-buttonmute {
+  background-image: url('https://static.weemo.com/img/mute-528b2a118b17f.png');
+  background-position: 0 -33px;
+  height: 32px;
+  width: 38px;
+  float: left;
+  cursor: pointer;
+}
+
+#weemo-buttonhangup {
+  background-image: url('https://static.weemo.com/img/Hangup_Wide_Background_Standard_Normal.png');
+  height: 32px;
+  width: 38px;
+  float: left;
+  cursor: pointer;
+}
+
+#weemo-buttonnovideo {
+  background-image: url('https://static.weemo.com/img/no-video.png');
+  background-position: 0 -33px;
+  height: 32px;
+  width: 38px;
+  float: left;
+  cursor: pointer;
+}
+
+#weemo-buttonnovideo.active {
+  background-position: 0 0;
+}
+
+/**
+ * INCOMING CALL
+ */
+
+.incoming-call {
+  width: 320px;
+  height: 90px;
+  background-color: #3e3e3e;
+  color: #FFF;
+  position: fixed;
+  top:10px;
+  left:10px;
+  font-family:Arial;
+  -moz-box-shadow: 0px 5px 10px 0px #000000;
+  -webkit-box-shadow: 0px 5px 10px 0px #000000;
+  -o-box-shadow: 0px 5px 10px 0px #000000;
+  box-shadow: 0px 5px 10px 0px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color=#000000, Direction=180, Strength=10);
+  cursor: move;
+  z-index: 9999;
+}
+
+.incoming-call .picto {
+  width: 60px; /* 50 */
+  height: 37px; /* 26 */
+  background-image: url('https://static.weemo.com/img/incomingcall/incoming.gif');
+  background-color: transparent;
+  position: absolute;
+  top:26.5px;
+  left:28px;
+}
+
+.incoming-call h4.name {
+  color: #FFF;
+  background-color: transparent;
+  position: absolute;
+  top:16px;
+  left:116px;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.incoming-call .button-actions {
+  width: 140px;
+  height:28px;
+  left:116px;
+  position: absolute;
+  bottom: 9px;
+
+}
+
+.incoming-call .button-actions a.video {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/incomingcall/picto-video.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.incoming-call .button-actions a.phone {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/incomingcall/picto-phone.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.incoming-call .button-actions a.ignore {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/incomingcall/picto-ignore.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.incoming-call .button-actions a.hangup {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/incomingcall/picto-hangup.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.incoming-call .button-actions a:hover {
+  border: 1px solid #656565;
+  margin:0;
+}
+
+.incoming-call .button-actions .container {
+  width: 35px;
+  height: 28px;
+  float: left;
+}
+
+/**
+ * OUTGOING CALL
+ */
+
+.outgoing-call {
+  width: 320px;
+  height: 180px;
+  background-color: #3e3e3e;
+  color: #FFF;
+  position: fixed;
+  top:10px;
+  left:10px;
+  font-family:Arial;
+  -moz-box-shadow: 0px 5px 10px 0px #000000;
+  -webkit-box-shadow: 0px 5px 10px 0px #000000;
+  -o-box-shadow: 0px 5px 10px 0px #000000;
+  box-shadow: 0px 5px 10px 0px #000000;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color=#000000, Direction=180, Strength=10);
+  cursor: move;
+  z-index: 9999;
+}
+
+.outgoing-call .picto {
+  width: 100%;
+  height: 30px;
+  background-image: url('https://static.weemo.com/img/incomingcall/outgoing.gif');
+  background-color: transparent;
+  background-position: center;
+  margin-top:60px;
+  background-repeat: no-repeat;
+}
+
+.outgoing-call h4.name {
+  color: #FFF;
+  background-color: transparent;
+  text-align:center;
+  font-size: 16px;
+  font-weight: normal;
+  margin:0;
+  padding:0;
+}
+
+.outgoing-call .button-actions {
+  width: 105px;
+  height:28px;
+  left:107.5px;
+  position: absolute;
+  bottom: 9px;
+}
+
+.outgoing-call .button-actions a.video {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/outgoingcall/video.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.outgoing-call .button-actions a.settings {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/outgoingcall/settings.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.outgoing-call .button-actions a.hangup {
+  width: 34px;
+  height: 27px;
+  background-image: url('https://static.weemo.com/img/outgoingcall/hangup.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: block;
+  margin:1px;
+}
+
+.outgoing-call .button-actions a:hover {
+  border: 1px solid #656565;
+  margin:0;
+}
+
+.outgoing-call .button-actions .container {
+  width: 35px;
+  height: 28px;
+  float: left;
+}
+
+.outgoing-call .logo-weemo {
+  width: 45px;
+  height: 31px;
+  position: absolute;
+  bottom: 6px;
+  left: 2px;
+  background-image: url('https://static.weemo.com/img/outgoingcall/logo-weemo.png');
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
