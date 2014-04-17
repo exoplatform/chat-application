@@ -12,7 +12,7 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, labels) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic) {
   this.id = "";
   this.messages = "";
   this.jzChatRead = jzChatRead;
@@ -27,7 +27,6 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes,
   this.targetUser = "";
   this.targetFullname = "";
   this.isPublic = isPublic;
-  this.labels = labels;
   this.miniChat = undefined;
 
   this.ANONIM_USER = "__anonim_";
@@ -271,9 +270,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
   if (this.messages.length===0) {
     out = "<div class='msgln' style='padding:22px 20px;'>";
     if (this.isPublic)
-      out += "<b><center>"+this.labels.get("label-public-welcome")+"</center></b>";
+      out += "<b><center>"+chatBundleData.benjp_chat_public_welcome+"</center></b>";
     else
-      out += "<b><center>"+this.labels.get("label-no-messages")+"</center></b>";
+      out += "<b><center>"+chatBundleData.benjp_chat_no_messages+"</center></b>";
     out += "</div>";
   } else {
 
@@ -297,7 +296,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "</span>";
             out += "<span>";
             if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.benjp_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
@@ -316,7 +315,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
         var msgtemp = message.message;
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+thiss.labels.get("label-deleted")+"</span>";
+          msgtemp = "<span class='contentDeleted'>"+chatBundleData.benjp_chat_deleted+"</span>";
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
         }
@@ -331,10 +330,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
-            out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
-            out += "&nbsp;<a href='#' class='msg-action-edit'>"+thiss.labels.get("label-edit")+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-delete'>"+chatBundleData.benjp_chat_delete+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-edit'>"+chatBundleData.benjp_chat_edit+"</a>&nbsp;|";
           }
-          out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
+          out += "&nbsp;<a href='#' class='msg-action-quote'>"+chatBundleData.benjp_chat_quote+"</a>";
           out += "</span>";
         }
         out += "<span class='invisible-text'>]</span></div>"+
@@ -410,7 +409,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         } else {
           if (message.user != thiss.username) {
             if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.benjp_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
@@ -729,67 +728,6 @@ ChatRoom.prototype.IsIE8Browser = function() {
 /**
  ##################                           ##################
  ##################                           ##################
- ##################   JUZU LABELS             ##################
- ##################                           ##################
- ##################                           ##################
- */
-
-/**
- * JuzuLabels allows to store and retrieve html5 data- value from dom elements
- * @constructor
- */
-function JuzuLabels() {
-  this.element = "";
-}
-
-/**
- * Sets the target DOM element
- * @param element
- */
-JuzuLabels.prototype.setElement = function(element) {
-  this.element = element;
-};
-
-/**
- * Get the value
- * @param key
- * @returns {*}
- */
-JuzuLabels.prototype.get = function(key) {
-  var val;
-  if (this.element!=="") {
-    val = jqchat.data(this.element, key);
-    if (val === undefined) {
-      val = this.element.attr("data-"+key);
-      return val;
-    }
-  }
-  return "";
-};
-
-/**
- * Set a value in the DOM using jQuery.data
- * @param key
- * @param value
- */
-JuzuLabels.prototype.set = function(key, value) {
-  if (this.element!=="")
-    jqchat.data(this.element, key, value);
-};
-
-/**
- * Logs what are the available values (only those created by jQuery)
- */
-JuzuLabels.prototype.log = function() {
-  if (this.element!=="") {
-    console.log(jqchat.data( this.element ));
-  }
-};
-
-
-/**
- ##################                           ##################
- ##################                           ##################
  ##################   MINI CHATROOM           ##################
  ##################                           ##################
  ##################                           ##################
@@ -891,7 +829,7 @@ function showMiniChatPopup(room, type) {
       var jzChatSend = chatServerUrl+"/send";
       var jzChatGetRoom = chatServerUrl+"/getRoom";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false);
 
 
         $miniChat.find(".message-input").keyup(function(event) {
