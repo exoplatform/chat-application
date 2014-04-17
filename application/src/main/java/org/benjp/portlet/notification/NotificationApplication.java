@@ -58,6 +58,9 @@ public class NotificationApplication
   SpaceService spaceService_;
 
   @Inject
+  BundleService bundleService;
+
+  @Inject
   Provider<PortletPreferences> providerPreferences;
 
   @Inject
