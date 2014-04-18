@@ -21,6 +21,11 @@ public class BundleService {
   public Response.Content getBundle(String target, ResourceContext resourceContext)
   {
     Locale locale = resourceContext.getUserContext().getLocale();
+    ResourceBundle bundle= resourceContext.getApplicationContext().resolveBundle(locale) ;
+    return Response.ok(getBundle(target, bundle, locale)).withMimeType("text/javascript; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  public String getBundle(String target, ResourceBundle bundle, Locale locale) {
     String loc = locale.getCountry()+"_"+locale.getLanguage();
     String out = "";
     if (resourceBundles.containsKey(loc))
@@ -28,8 +33,6 @@ public class BundleService {
       out = resourceBundles.get(loc);
     }
     else {
-      ResourceBundle bundle= resourceContext.getApplicationContext().resolveBundle(locale) ;
-
       StringBuffer sb = new StringBuffer();
       sb.append("var "+target+" = {\"version\":\"0.9.1\"");
       for (String key:bundle.keySet())
@@ -45,8 +48,7 @@ public class BundleService {
       resourceBundles.put(loc, out);
     }
 
-    return Response.ok(out).withMimeType("text/javascript; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return out;
   }
-
 
 }

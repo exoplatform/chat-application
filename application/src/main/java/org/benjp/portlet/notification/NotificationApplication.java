@@ -37,9 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @SessionScoped
 public class NotificationApplication
@@ -58,7 +56,7 @@ public class NotificationApplication
   SpaceService spaceService_;
 
   @Inject
-  BundleService bundleService;
+  BundleService bundleService_;
 
   @Inject
   Provider<PortletPreferences> providerPreferences;
@@ -82,6 +80,9 @@ public class NotificationApplication
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
+    Locale locale = renderContext.getUserContext().getLocale();
+    ResourceBundle bundle= renderContext.getApplicationContext().resolveBundle(locale) ;
+    String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
 
     index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
@@ -89,6 +90,7 @@ public class NotificationApplication
             .set("chatIntervalNotif", chatIntervalNotif)
             .set("weemoKey", chatWeemoKey)
             .set("title", title)
+            .set("messages", messages)
             .render();
   }
 

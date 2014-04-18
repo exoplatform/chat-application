@@ -1,9 +1,5 @@
 <script type="text/javascript">
-  (function() {
-    var chatBundle = document.createElement('script'); chatBundle.type = 'text/javascript'; chatBundle.async = true;
-    chatBundle.src = "@{BundleService.getBundle(target='chatBundleData')}";
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatBundle);
-  })();
+  ${messages}
 </script>
 <div id="chat-status"
   data-username="<%=user%>"

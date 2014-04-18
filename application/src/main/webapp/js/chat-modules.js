@@ -100,7 +100,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 
   var im = this.messages.length;
   this.messages[im] = {"user": this.username,
-    "fullname": "You",
+    "fullname": chatBundleData.benjp_chat_you,
     "date": "pending",
     "message": msg,
     "options": options,
@@ -520,9 +520,9 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type ==="call-join") {
       out += "";
     } else if (options.type ==="call-on") {
-      out += "Meeting started";
+      out += chatBundleData.benjp_chat_meeting_started;
     } else if (options.type==="call-off") {
-      out += "Meeting finished";
+      out += chatBundleData.benjp_chat_meeting_finished;
       var tsold = Math.round(jzGetParam("weemoCallHandlerFrom"));
       var time = Math.round((options.timestamp*1000-tsold)/1000);
       var hours = Math.floor(time / 3600);
@@ -533,21 +533,21 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var stime = "<span class=\"msg-time\" style='font-weight: normal;'>";
       if (hours>0) {
         if (hours===1)
-          stime += hours+ " hour ";
+          stime += hours+ " "+chatBundleData.benjp_chat_hour+" ";
         else
-          stime += hours+ " hours ";
+          stime += hours+ " "+chatBundleData.benjp_chat_hours+" ";
       }
       if (minutes>0) {
         if (minutes===1)
-          stime += minutes+ " minute ";
+          stime += minutes+ " "+chatBundleData.benjp_chat_minute+" ";
         else
-          stime += minutes+ " minutes ";
+          stime += minutes+ " "+chatBundleData.benjp_chat_minutes+" ";
       }
       if (seconds>0) {
         if (seconds===1)
-          stime += seconds+ " second";
+          stime += seconds+ " "+chatBundleData.benjp_chat_second;
         else
-          stime += seconds+ " seconds";
+          stime += seconds+ " "+chatBundleData.benjp_chat_seconds;
       }
       stime += "</span>";
       out += stime;
@@ -562,7 +562,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
-          ">Send meeting notes</a>" +
+          ">"+chatBundleData.benjp_chat_send_notes+"</a>" +
           " - " +
           "<a href='#' class='save-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
@@ -570,10 +570,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"2' " +
-          ">Save as Wiki</a>" +
+          ">"+chatBundleData.benjp_chat_save_wiki+"</a>" +
           "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>Saved!</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.benjp_chat_sent+"</strong> "+chatBundleData.benjp_chat_check_mailbox+"</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.benjp_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.benjp_chat_open_wiki+"</a>.</div>" +
           "</div>";
       }
 
@@ -586,11 +586,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       }
     } else if (options.type==="type-task") {
       var url = options.task+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
+        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_assigned+" <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - "+chatBundleData.benjp_chat_ldue+" <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
       out += url;
     } else if (options.type==="type-event") {
       var url = options.summary+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>from "+options.startDate+" "+options.startTime+" to "+options.endDate+" "+options.endTime+"</div>";
+        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_from+" "+options.startDate+" "+options.startTime+" "+chatBundleData.benjp_chat_to+" "+options.endDate+" "+options.endTime+"</div>";
       out += url;
     } else {
       out += message;
@@ -762,7 +762,7 @@ String.prototype.endsWith = function(suffix) {
             $obj.html('<div class="title">' +
               '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
               '<span class="fullname"></span>' +
-              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="Close Mini Chat"><i class="uiIconClose uiIconLightGray"></i></div>' +
+              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.benjp_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
               '</div>' +
               '<div class="history"></div>' +
               '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');

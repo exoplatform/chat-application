@@ -146,21 +146,6 @@ var chatApplication = new ChatApplication();
     });
 
 
-
-/*
-    $(".btn-app-logout").on("click", function() {
-      $.ajax({
-        url: "/portal/intranet?portal:componentId=UIPortal&portal:action=Logout",
-        success:function(response){
-          window.location="/portal/intranet/chat";
-        },
-        error:function (xhr, status, error){
-          console.log("error");
-        }
-      });
-    });
-*/
-
     $(".meeting-action-toggle").on("click", function() {
       $(".meeting-action-popup").hide();
     });
@@ -211,7 +196,7 @@ var chatApplication = new ChatApplication();
             var dropzone = '<div class="progressBar" id="dropzone">'
                             +'<div class="progress">'
                               +'<div class="bar" style="width: 0.0%;"></div>'
-                              +'<div class="label">Drop your file here</div>'
+                              +'<div class="label">'+chatBundleData.benjp_chat_file_drop+'</div>'
                             +'</div>'
                           +'</div>';
             $('#dropzone-container').html(dropzone);
@@ -228,7 +213,7 @@ var chatApplication = new ChatApplication();
               error: function(err, file) {
                 switch(err) {
                   case 'BrowserNotSupported':
-                    alert('browser does not support HTML5 drag and drop')
+                    alert(chatBundleData.benjp_chat_dnd_support);
                     break;
                   case 'TooManyFiles':
                     // user uploaded more than 'maxfiles'
@@ -1596,8 +1581,8 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatBundleData.benjp_chat_people;
   out += '<span class="room-total total-people"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide offline users'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_users+"'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1629,8 +1614,8 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatBundleData.benjp_chat_teams;
   out += '<span class="room-total total-teams"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' title='Create a new team'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_create_team+"'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
@@ -1662,7 +1647,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += chatBundleData.benjp_chat_spaces;
   out += '<span class="room-total total-spaces"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='Show/hide history'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
@@ -1745,9 +1730,9 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     }
     out +='" user-data="'+room.user+'" data-toggle="tooltip"';
     if (room.isFavorite == "true") {
-      out += ' title="Remove from favorites"';
+      out += ' title="'+chatBundleData.benjp_chat_remove_favorites+'"';
     } else {
-      out += ' title="Add to favorites"';
+      out += ' title="'+chatBundleData.benjp_chat_add_favorites+'"';
     }
     out += '></span><span class="user-'+room.status+'"></span>';
     out += '</td>';
@@ -1979,7 +1964,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
                   from: chatApplication.username,
                   fullname: chatApplication.fullname
                 };
-                var msg = "Meeting Notes";
+                var msg = chatBundleData.benjp_chat_meeting_notes;
 
                 chatApplication.chatRoom.sendMessage(msg, options, "true");
 
@@ -2346,7 +2331,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       this.joinWeemoCall();
     } else if (msg.indexOf("/terminate")===0) {
       ts = Math.round(new Date().getTime() / 1000);
-      msg = "Call terminated";
+      msg = chatBundleData.benjp_chat_call_terminated;
       options.timestamp = ts;
       options.type = "call-off";
       this.weemoExtension.setCallOwner(false);
@@ -2422,11 +2407,11 @@ ChatApplication.prototype.showLoginPanel = function() {
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version 0.8.0-CR1 (build 131018)<br><br>";
-  about += "Designed and Developed by <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
-  about += "for <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
-  about += "Sources available on <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
-  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >Close</a>";
+  about += "Version "+chatBundleData.version+"<br><br>";
+  about += chatBundleData.benjp_chat_designed+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
+  about += chatBundleData.benjp_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
+  about += chatBundleData.benjp_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
+  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData.benjp_chat_close+"</a>";
   this.hidePanels();
   var $chatAboutPanel = jqchat(".chat-about-panel");
   $chatAboutPanel.html(about);
