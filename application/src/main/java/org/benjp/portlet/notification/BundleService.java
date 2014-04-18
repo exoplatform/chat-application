@@ -6,10 +6,13 @@ import juzu.plugin.ajax.Ajax;
 import juzu.request.ResourceContext;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 @ApplicationScoped
 public class BundleService {
@@ -34,7 +37,7 @@ public class BundleService {
     }
     else {
       StringBuffer sb = new StringBuffer();
-      sb.append("var "+target+" = {\"version\":\"0.9.1\"");
+      sb.append("var "+target+" = {\"version\":\""+getVersion()+"\"");
       for (String key:bundle.keySet())
       {
         String value = bundle.getString(key).replaceAll("\"", "\\\\\"");
@@ -49,6 +52,24 @@ public class BundleService {
     }
 
     return out;
+  }
+
+  private static String getVersion()
+  {
+    InputStream inputStream = BundleService.class.getClassLoader().getResourceAsStream("/META-INF/MANIFEST.MF");
+
+    String version = "N/A";
+    try {
+      Manifest manifest = new Manifest(inputStream);
+      Attributes attributes = manifest.getMainAttributes();
+      version = attributes.getValue("Implementation-Version");
+    }
+    catch(Exception e) {
+//      e.printStackTrace();
+      version = "N/A";
+    }
+
+    return version;
   }
 
 }
