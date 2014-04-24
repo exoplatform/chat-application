@@ -281,16 +281,19 @@ ChatRoom.prototype.showMessages = function(msgs) {
           if (prevUser !== "") {
             out += "        </div>";
             out += "      </div>";
-            out += "      <div class='msUserAvatar'>";
+            if (prevUser !== "__system")
+              out += "    <div class='msUserAvatar'>";
           }
           if (message.user != thiss.username) {
             if (prevUser !== "") {
-              if (thiss.isPublic) {
-                out += "    <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
-              } else {
-                out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+              if (prevUser !== "__system") {
+                if (thiss.isPublic) {
+                  out += "  <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+                } else {
+                  out += "  <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+                }
+                out += "  </div>";
               }
-              out += "    </div>";
               out += "  </div>";
               out += "</div>";
             }
@@ -308,8 +311,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "          </div>";
           } else {
             if (prevUser !== "") {
-              out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
-              out += "    </div>";
+              if (prevUser !== "__system") {
+                out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+                out += "  </div>";
+              }
               out += "  </div>";
               out += "</div>";
             }
@@ -371,12 +376,31 @@ ChatRoom.prototype.showMessages = function(msgs) {
       }
       else
       {
-        if (prevUser !== "")
-          out += "</span></div>";
-        if (prevUser !== "__system")
-          out += "<hr style='margin: 0'>";
-        out += "<div class='msgln-odd'>";
-        out += "<span style='position:relative; padding-right:14px;padding-left:4px;top:8px'>";
+        if (prevUser !== "") {
+        //  out += "</span></div>";
+          out += "          </div>";
+          out += "        </div>";
+          if (prevUser !== "__system") {
+            out += "      <div class='msUserAvatar'>";
+            if (thiss.isPublic)
+              out += "      <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+            else
+              out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+            out += "      </div>";
+          }
+          out += "      </div>";
+          out += "    </div>";
+        }
+        out += "      <div class='msRow odd'>";
+        out += "        <div class='msMessagesGroup clearfix'>";
+        out += "          <div class='msContBox'>";
+        out += "            <div class='inner'>";
+        out += "              <div class='msUserCont clearfix'>";
+        out += "                <div class='msRightInfo pull-right'>";
+        out += "                  <div class='msTimePost'>";
+        out += "                    <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        out += "                  </div>";
+        out += "                </div>";
         var options = {};
         // Legacy test
         if (message.message.indexOf("&")>0) {
@@ -401,12 +425,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
         }
-        out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
+//        out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
         if (options.type==="type-event") {
           var day = options.startDate.substr(3, 2);
           out += "<span style='position: absolute;top: 2px;left: 9px;font-weight: bold;font-size: 20px;color: #848484;'>"+day+"</span>";
         }
-        out += "</span>";
+        //out += "</span>";
 
         if (options.type !== "call-join") {
           if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
@@ -424,33 +448,40 @@ ChatRoom.prototype.showMessages = function(msgs) {
           }
         }
 
-        out += "<span>";
+//        out += "<span>";
 
         if (options.type === "type-me") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
           out += "<div style='margin-left:50px;'>";
         } else {
-          if (message.user != thiss.username) {
-            if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
-            else
-              out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-          } else {
-            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-          }
-
-          out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
+//          if (message.user != thiss.username) {
+//            if (thiss.isPublic)
+//              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+//            else
+//              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
+//          } else {
+//            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+//          }
+          out += "              <div class='msUserMes'>" + thiss.messageBeautifier(message.message, options) + "</div>";
+          //out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
         }
 
-        out +=  "<span class='invisible-text'> [</span>"+
-          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(message.timestamp)+"</span>" +
-          "<span class='invisible-text'>]</span></div>"+
-          "<div style='clear:both;'></div>";
-        out += "</span></div>";
-        out += "<hr style='margin: 0'>";
-        out += "<div><span>";
+//        out +=  "<span class='invisible-text'> [</span>"+
+//          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(message.timestamp)+"</span>" +
+//          "<span class='invisible-text'>]</span></div>"+
+//          "<div style='clear:both;'></div>";
+//        out += "</span></div>";
+//        out += "<hr style='margin: 0'>";
+//        out += "<div><span>";
+        out += "            </div>";
         prevUser = "__system";
 
+        if (i === (thiss.messages.length -1)) {
+          out += "          </div>";
+          out += "        </div>";
+          out += "      </div>";
+          out += "    </div>";
+        }
       }
     });
 
@@ -638,12 +669,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     return msg;
   }
 
-  var quote = "";
-  if (message.indexOf("[quote=")===0) {
-    var iq = message.indexOf("]");
-    quote = "<div class='contentQuote'><b>"+message.substring(7, iq)+":</b><br>";
-    message = message.substr(iq+1);
-  }
+
 
   var lines = message.split("<br/>");
   var il,l;
@@ -720,15 +746,34 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     }
   }
 
-  if (quote !== "") {
-    if (msg.indexOf("[/quote]")>0)
-      msg = msg.replace("[/quote]", "</div>");
-    else
-      msg = msg + "</div>";
-    msg = quote + msg;
+  var quote = "";
+  if (msg.indexOf("[quote=")===0) {
+    msg = this.getQuote(msg, msg);
   }
-
   return msg;
+};
+
+/**
+Generate html markup from quote, eg: [quote=xxx] [quote=yyy]information [/quote]comment1[/quote]comment2
+*/
+ChatRoom.prototype.getQuote = function(message, originMessage) {
+  var numQuotes = message.split('[quote=').length - 1;
+  var numOriginQuotes = originMessage.split('[quote=').length - 1;
+  var outermostName = message.substring(message.indexOf('[quote=') + 7, message.indexOf(']'));
+  var outtermostContent = message.substring(message.indexOf(']') + 1, message.lastIndexOf('[/quote]'));
+  var outermostComment = message.substring(message.lastIndexOf('[/quote]') + 8);
+  if (numOriginQuotes === 1) {
+    return "<div class='msUserQuote'><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></div>" + outermostComment;
+  }
+  if (numQuotes > 1) {
+    if (numQuotes === numOriginQuotes) {
+      return "<div class='msUserQuote'><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></div>" + outermostComment;
+    } else {
+      return "<quote><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></quote>" + outermostComment;
+    }
+  } else {
+    return "<quote><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></quote>" + outermostComment;
+  }
 };
 
 /**
