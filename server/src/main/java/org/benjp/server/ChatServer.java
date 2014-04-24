@@ -26,6 +26,7 @@ import com.mongodb.util.JSON;
 import juzu.*;
 import juzu.request.ResourceContext;
 import juzu.template.Template;
+import org.apache.commons.lang.StringUtils;
 import org.benjp.listener.GuiceManager;
 import org.benjp.model.*;
 import org.benjp.services.ChatService;
@@ -455,29 +456,33 @@ public class ChatServer
         if (usersToRemove.size()>0)
         {
           userService.removeTeamUsers(room, usersToRemove);
-          StringBuilder sb = new StringBuilder();
+          StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToRemove)
           {
-            if (!first) sb.append(" ; ");
-            sb.append(userService.getUserFullName(usert));
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(usert));
             first = false;
             notificationService.setNotificationsAsRead(usert, "chat", "room", room);
           }
-          this.send(user, token, ChatService.TEAM_PREFIX+room, "Users Removed: "+sb.toString(), room, "true", null);
+          String removeTeamUserOptions
+                  = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", \"fullname\":\"" + userService.getUserFullName(user) + "\"}";
+          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions);
         }
         if (usersToAdd.size()>0)
         {
           userService.addTeamUsers(room, usersToAdd);
-          StringBuilder sb = new StringBuilder();
+          StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToAdd)
           {
-            if (!first) sb.append(" ; ");
-            sb.append(userService.getUserFullName(usert));
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(usert));
             first = false;
           }
-          this.send(user, token, ChatService.TEAM_PREFIX+room, "Users Added: "+sb.toString(), room, "true", null);
+          String addTeamUserOptions
+                  = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", \"fullname\":\"" + userService.getUserFullName(user) + "\"}";
+          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions);
         }
 
       }

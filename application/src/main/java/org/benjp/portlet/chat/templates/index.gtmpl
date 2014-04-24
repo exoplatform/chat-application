@@ -42,6 +42,7 @@
   data-label-header-spaces="&{benjp.chat.spaces}"
   data-label-header-teams="&{benjp.chat.teams}"
   data-label-edit="&{benjp.chat.edit}"
+  data-label-msg-add-team-user="&{benjp.chat.team.msg.adduser}"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

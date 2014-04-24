@@ -555,6 +555,7 @@ ChatRoom.prototype.getObjectSize = function(obj) {
  */
 ChatRoom.prototype.messageBeautifier = function(message, options) {
   var msg = "";
+  var thiss = this;
   if (options!==undefined) {
     var out = "";
 
@@ -646,6 +647,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var url = options.summary+
         "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>from "+options.startDate+" "+options.startTime+" to "+options.endDate+" "+options.endTime+"</div>";
       out += url;
+    } else if (options.type==="type-add-team-user") {
+      var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
+      out += thiss.labels.get("label-msg-add-team-user").replace("{0}", options.fullname).replace("{1}", users);
+      //out += "<b>" + options.fullname + "</b> added " + users + " to this conversation";
     } else {
       out += message;
     }

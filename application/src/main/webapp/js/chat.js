@@ -724,7 +724,7 @@ var chatApplication = new ChatApplication();
             html += "  <span class='"+prefix+"-user-fullname'>"+user.fullname+"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
             html += " </span></span>";
-            html += "  <span class='"+prefix+"-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
             html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
             html += "</div>";
           });
