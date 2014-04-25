@@ -43,6 +43,8 @@
   data-label-header-teams="&{benjp.chat.teams}"
   data-label-edit="&{benjp.chat.edit}"
   data-label-msg-add-team-user="&{benjp.chat.team.msg.adduser}"
+  data-label-msg-remove-team-user="&{benjp.chat.team.msg.removeuser}"
+
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

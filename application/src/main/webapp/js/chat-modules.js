@@ -651,6 +651,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += thiss.labels.get("label-msg-add-team-user").replace("{0}", options.fullname).replace("{1}", users);
       //out += "<b>" + options.fullname + "</b> added " + users + " to this conversation";
+    } else if (options.type==="type-remove-team-user") {
+      var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
+      out += thiss.labels.get("label-msg-remove-team-user").replace("{0}", options.fullname).replace("{1}", users);
+      //out += "<b>" + options.fullname + "</b> added " + users + " to this conversation";
     } else {
       out += message;
     }
