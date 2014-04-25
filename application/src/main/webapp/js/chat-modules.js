@@ -294,10 +294,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 }
                 out += "  </div>";
               } else {
-                if (prevOptions.type === "type-question") {
-                  out += "  <div class='msUserAvatar'>";
-                  out += "    <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
-                  out += "  </div>";
+                if (prevOptions.type.indexOf("type-") !== -1) {
+                  out += thiss.getActionMeetingStyleClasses(prevOptions.type);
                 }
               }
               out += "  </div>";
@@ -321,10 +319,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
-                if (prevOptions.type === "type-question") {
-                  out += "  <div class='msUserAvatar'>";
-                  out += "    <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
-                  out += "  </div>";
+                if (prevOptions.type.indexOf("type-") !== -1) {
+                  out += thiss.getActionMeetingStyleClasses(prevOptions.type);
                 }
               }
               out += "  </div>";
@@ -400,10 +396,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
-            if (prevOptions.type === "type-question") {
-              out += "      <div class='msUserAvatar'>";
-              out += "        <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
-              out += "      </div>";
+            if (prevOptions.type.indexOf("type-") !== -1) {
+              out += thiss.getActionMeetingStyleClasses(prevOptions.type);
             }
           }
           out += "      </div>";
@@ -498,10 +492,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (i === (thiss.messages.length -1)) {
           out += "          </div>";
           out += "        </div>";
-          if (options.type === "type-question") {
-            out += "      <div class='msUserAvatar'>";
-            out += "        <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
-            out += "      </div>";
+          if (message.options.type.indexOf("type-") !== -1) {
+            out += thiss.getActionMeetingStyleClasses(message.options.type);
           }
           out += "      </div>";
           out += "    </div>";
@@ -517,6 +509,18 @@ ChatRoom.prototype.showMessages = function(msgs) {
   }
 
 
+};
+
+ChatRoom.prototype.getActionMeetingStyleClasses = function(actionType) {
+  var out = "";
+  out += "                <div class='msUserAvatar'>";
+  if ("type-question" === actionType) {
+    out += "                <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+  } else if ("type-hand" === actionType) {
+    out += "                <i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
+  }
+  out += "                </div>";
+  return out;
 };
 
 ChatRoom.prototype.getDate = function(timestampServer) {
@@ -677,7 +681,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += thiss.labels.get("label-msg-remove-team-user").replace("{0}", options.fullname).replace("{1}", users);
-    } else if (options.type==="type-question") {
+    } else if (options.type==="type-question" || options.type==="type-hand") {
       out += "<b>" + message + "</b>";
     } else {
       out += message;
