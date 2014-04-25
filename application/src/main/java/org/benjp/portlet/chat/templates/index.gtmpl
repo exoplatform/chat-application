@@ -202,6 +202,7 @@
                   </form>
                 </div>
                 <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
+                  <strong>&{benjp.chat.panel.question.header}</strong>
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?" placeholder="What is your question?">
                   <div class="uiActionBorder">
                   	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>

@@ -304,6 +304,10 @@ var chatApplication = new ChatApplication();
       hideMeetingPanel();
     });
 
+    $(".btnClosePopup").on("click", function() {
+      hideMeetingPanel();
+    });
+
     $(".share-link-button").on("click", function() {
       var $uiText = $("#share-link-text");
       var text = $uiText.val();

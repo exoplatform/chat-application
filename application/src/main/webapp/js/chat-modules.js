@@ -254,7 +254,7 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
  * @param msgs : json messages data to show
  */
 ChatRoom.prototype.showMessages = function(msgs) {
-  var im, message, out="", prevUser="", prevFullName;
+  var im, message, out="", prevUser="", prevFullName, prevOptions;
   if (msgs!==undefined) {
     this.messages = msgs.messages;
   }
@@ -293,6 +293,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
                   out += "  <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
                 }
                 out += "  </div>";
+              } else {
+                if (prevOptions.type === "type-question") {
+                  out += "  <div class='msUserAvatar'>";
+                  out += "    <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+                  out += "  </div>";
+                }
               }
               out += "  </div>";
               out += "</div>";
@@ -314,6 +320,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
               if (prevUser !== "__system") {
                 out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
+              } else {
+                if (prevOptions.type === "type-question") {
+                  out += "  <div class='msUserAvatar'>";
+                  out += "    <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+                  out += "  </div>";
+                }
               }
               out += "  </div>";
               out += "</div>";
@@ -359,6 +371,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "            </div>";
         prevUser = message.user;
         prevFullName = message.fullname;
+        prevOptions = message.options;
 
         if (i === (thiss.messages.length -1)) {
           out += "          </div>";
@@ -377,7 +390,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
       else
       {
         if (prevUser !== "") {
-        //  out += "</span></div>";
           out += "          </div>";
           out += "        </div>";
           if (prevUser !== "__system") {
@@ -387,6 +399,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
             else
               out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
             out += "      </div>";
+          } else {
+            if (prevOptions.type === "type-question") {
+              out += "      <div class='msUserAvatar'>";
+              out += "        <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+              out += "      </div>";
+            }
           }
           out += "      </div>";
           out += "    </div>";
@@ -475,10 +493,16 @@ ChatRoom.prototype.showMessages = function(msgs) {
 //        out += "<div><span>";
         out += "            </div>";
         prevUser = "__system";
+        prevOptions = message.options;
 
         if (i === (thiss.messages.length -1)) {
           out += "          </div>";
           out += "        </div>";
+          if (options.type === "type-question") {
+            out += "      <div class='msUserAvatar'>";
+            out += "        <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+            out += "      </div>";
+          }
           out += "      </div>";
           out += "    </div>";
         }
@@ -650,11 +674,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type==="type-add-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += thiss.labels.get("label-msg-add-team-user").replace("{0}", options.fullname).replace("{1}", users);
-      //out += "<b>" + options.fullname + "</b> added " + users + " to this conversation";
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += thiss.labels.get("label-msg-remove-team-user").replace("{0}", options.fullname).replace("{1}", users);
-      //out += "<b>" + options.fullname + "</b> added " + users + " to this conversation";
+    } else if (options.type==="type-question") {
+      out += "<b>" + message + "</b>";
     } else {
       out += message;
     }
