@@ -53,6 +53,34 @@ ChatNotification.prototype.initOptions = function(options) {
 };
 
 /**
+ * Create the Translation User Interface in the Intranet DOM
+ */
+ChatNotification.prototype.initTranslationInterface = function() {
+  if (typeof(chatNotification) !== "undefined" && chatNotification.translateKey !== "") {
+
+    jqchat(".uiDefaultActivity").children(".UIForm").children(".boxContainer").children(".contentBox").children("div").children(".heading").children(".author").each(function() {
+      var html = $(this).html();
+      $(this).html(html+ "<span class='translate-action' style='float:right;'>"+chatBundleData.benjp_chat_translate+"</span>");
+    })
+    jqchat(".translate-action").on("click", function() {
+      var $action = jqchat(this);
+      var $desc = jqchat(this).parent().parent().parent().children(".description").first();
+      var dhtml = $desc.html();
+      chatNotification.translate(dhtml, function(output) {
+        if (output !== undefined) {
+          var out = "<span class='transout transgen'>"+ output + "</span><br/><span class='transin transgen'>" + dhtml + "</span>";
+          $desc.html(out);
+//        $desc.html("<i>"+output+"</i>");
+          $action.removeClass("translate-action");
+          $action.addClass("translated");
+          $action.html(chatBundleData.benjp_chat_translated);
+        }
+      });
+    });
+
+  }
+};
+/**
  * Create the User Interface in the Intranet DOM
  */
 ChatNotification.prototype.initUserInterface = function() {
@@ -944,6 +972,7 @@ var weemoExtension = new WeemoExtension();
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
+    chatNotification.initTranslationInterface();
 
     // WEEMO : GETTING AND SETTING KEY
     var weemoKey = $notificationApplication.attr("data-weemo-key");
