@@ -19,9 +19,6 @@ var chatApplication = new ChatApplication();
     chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
     chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
 
-    chatApplication.translateKey = $chatApplication.attr("data-translate-key");
-    chatApplication.translateUrl = $chatApplication.attr("data-translate-url");
-
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
     var chatView = $chatApplication.attr("data-view");
@@ -1013,8 +1010,6 @@ function ChatApplication() {
   this.showSpacesHistory = false;
   this.showTeamsHistory = false;
 
-  this.translateKey = "";
-  this.translateUrl = "";
 }
 
 
@@ -1888,28 +1883,16 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     var $translateAction = jqchat(this);
     var msgHtml = $uimsg.html();
 
-    jqchat.ajax({
-      url: chatApplication.translateUrl,
-      jsonp: "callback",
-      dataType: "jsonp",
-      data: {
-        //"source": "fr",
-        "target": "en",
-        "input": msgHtml,
-        "key": chatApplication.translateKey
-        }
-      })
-      .done(function(data) {
-        var output = data.outputs[0].output;
-        if (output !== undefined) {
-          var out = "<span class='transout'>"+ output + "</span><br/><span class='transin'>" + msgHtml + "</span>";
-          $uimsg.html(out);
-          console.log("success:"+output);
-          $translateAction.remove();
-          var $chats = jqchat("#chats");
-          $chats.scrollTop($chats.scrollTop()+20);
-        }
-      });
+    chatNotification.translate(msgHtml, function(output) {
+      if (output !== undefined) {
+        var out = "<span class='transout'>"+ output + "</span><br/><span class='transin'>" + msgHtml + "</span>";
+        $uimsg.html(out);
+        console.log("success:"+output);
+        $translateAction.remove();
+        var $chats = jqchat("#chats");
+        $chats.scrollTop($chats.scrollTop()+20);
+      }
+    });
 
   });
 

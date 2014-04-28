@@ -9,6 +9,8 @@
   data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-weemo-key="<%=weemoKey%>"
+  data-translate-key="<%=translateKey%>"
+  data-translate-url="<%=translateUrl%>"
         class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
   <div style="display: none;">
     <audio id="chat-audio-notif" controls preload="auto" autobuffer>

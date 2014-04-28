@@ -11,8 +11,6 @@
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
   data-weemo-key="<%=weemoKey%>"
-  data-translate-key="<%=translateKey%>"
-  data-translate-url="<%=translateUrl%>"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
