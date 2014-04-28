@@ -102,6 +102,8 @@ public class ChatApplication
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
     String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
+    String chatTranslateKey = PropertyManager.getProperty(PropertyManager.PROPERTY_TRANSLATE_KEY);
+    String chatTranslateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_TRANSLATE_URL);
     String publicModeEnabled = PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE);
     String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
     String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
@@ -131,6 +133,8 @@ public class ChatApplication
             .set("view", view)
             .set("fullscreen", fullscreen)
             .set("weemoKey", chatWeemoKey)
+            .set("translateKey", chatTranslateKey)
+            .set("translateUrl", chatTranslateUrl)
             .set("demoMode", demoMode)
             .set("today", todayDate)
             .ok()

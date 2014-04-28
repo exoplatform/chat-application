@@ -51,6 +51,8 @@ public class PropertyManager {
   public static final String PROPERTY_PUBLIC_ADMIN_GROUP = "publicAdminGroup";
   public static final String PROPERTY_TEAM_ADMIN_GROUP = "teamAdminGroup";
   public static final String PROPERTY_WEEMO_KEY = "weemoKey";
+  public static final String PROPERTY_TRANSLATE_KEY = "translateKey";
+  public static final String PROPERTY_TRANSLATE_URL = "translateUrl";
   public static final String PROPERTY_TOKEN_VALIDITY = "chatTokenValidity";
   public static final String PROPERTY_READ_DAYS = "chatReadDays";
   public static final String PROPERTY_READ_TOTAL_JSON = "chatReadTotalJson";
@@ -112,6 +114,8 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       overridePropertyIfNotSet(PROPERTY_TEAM_ADMIN_GROUP, "/platform/users");
       overridePropertyIfNotSet(PROPERTY_WEEMO_KEY, "");
+      overridePropertyIfNotSet(PROPERTY_TRANSLATE_KEY, "");
+      overridePropertyIfNotSet(PROPERTY_TRANSLATE_URL, "");
       overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "25000");
       overridePropertyIfNotSet(PROPERTY_READ_DAYS, "30");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");

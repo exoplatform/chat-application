@@ -334,6 +334,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "&nbsp;<a href='#' class='msg-action-edit'>"+chatBundleData.benjp_chat_edit+"</a>&nbsp;|";
           }
           out += "&nbsp;<a href='#' class='msg-action-quote'>"+chatBundleData.benjp_chat_quote+"</a>";
+          if (typeof(chatApplication) !== "undefined" && chatApplication.translateKey !== "") {
+            out += "&nbsp;|&nbsp;<a href='#' class='msg-action-translate'>"+chatBundleData.benjp_chat_translate+"</a>";
+          }
           out += "</span>";
         }
         out += "<span class='invisible-text'>]</span></div>"+
