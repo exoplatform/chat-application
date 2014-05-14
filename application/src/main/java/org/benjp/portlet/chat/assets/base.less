@@ -1082,12 +1082,6 @@ hr
   > div {
     margin-top: 5px;
   }
-  .name {
-    color: @textColor;
-    &:hover {
-      color: @linkColor;
-    }
-  }
 }
 .uiIconChat32x32Event {
   position: relative;
@@ -1102,4 +1096,14 @@ hr
     position: absolute;
     top: 10px;
     .translate(-50%, 0);
+}
+
+.msHoverToLink {
+  color: @textColor;
+  &.bold {
+    font-weight: bold;
+  }
+  &:hover {
+    color: @linkColorHover;
+  }
 }
