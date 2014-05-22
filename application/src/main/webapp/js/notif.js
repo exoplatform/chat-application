@@ -58,6 +58,19 @@ ChatNotification.prototype.initOptions = function(options) {
 ChatNotification.prototype.initTranslationInterface = function() {
   if (typeof(chatNotification) !== "undefined" && chatNotification.translateKey !== "") {
 
+/*
+    jqchat(".uiDefaultActivity").children(".UIForm").children(".boxContainer").children(".contentBox").children("div").children(".description").each(function() {
+      var $desc = jqchat(this);
+      var dhtml = $desc.html();
+      chatNotification.translate(dhtml, function(output) {
+        if (output !== undefined) {
+          var out = "<span class='transout transgen'>"+ output + "</span><br/><span class='transin transgen'>" + dhtml + "</span>";
+          $desc.html(out);
+        }
+      });
+    });
+*/
+
     jqchat(".uiDefaultActivity").children(".UIForm").children(".boxContainer").children(".contentBox").children("div").children(".heading").children(".author").each(function() {
       var html = $(this).html();
       $(this).html(html+ "<span class='translate-action' style='float:right;'>"+chatBundleData.benjp_chat_translate+"</span>");
@@ -70,7 +83,6 @@ ChatNotification.prototype.initTranslationInterface = function() {
         if (output !== undefined) {
           var out = "<span class='transout transgen'>"+ output + "</span><br/><span class='transin transgen'>" + dhtml + "</span>";
           $desc.html(out);
-//        $desc.html("<i>"+output+"</i>");
           $action.removeClass("translate-action");
           $action.addClass("translated");
           $action.html(chatBundleData.benjp_chat_translated);
@@ -295,7 +307,7 @@ ChatNotification.prototype.translate = function(input, callback) {
     dataType: "jsonp",
     data: {
       //"source": "fr",
-      "target": "en",
+      "target": eXo.env.portal.language,
       "input": input,
       "key": chatNotification.translateKey
     }
