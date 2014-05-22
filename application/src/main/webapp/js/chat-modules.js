@@ -12,7 +12,7 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, labels) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic) {
   this.id = "";
   this.messages = "";
   this.jzChatRead = jzChatRead;
@@ -27,7 +27,6 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes,
   this.targetUser = "";
   this.targetFullname = "";
   this.isPublic = isPublic;
-  this.labels = labels;
   this.miniChat = undefined;
 
   this.ANONIM_USER = "__anonim_";
@@ -101,7 +100,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 
   var im = this.messages.length;
   this.messages[im] = {"user": this.username,
-    "fullname": "You",
+    "fullname": chatBundleData.benjp_chat_you,
     "date": "pending",
     "message": msg,
     "options": options,
@@ -271,9 +270,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
   if (this.messages.length===0) {
     out = "<div class='msgln' style='padding:22px 20px;'>";
     if (this.isPublic)
-      out += "<b><center>"+this.labels.get("label-public-welcome")+"</center></b>";
+      out += "<b><center>"+chatBundleData.benjp_chat_public_welcome+"</center></b>";
     else
-      out += "<b><center>"+this.labels.get("label-no-messages")+"</center></b>";
+      out += "<b><center>"+chatBundleData.benjp_chat_no_messages+"</center></b>";
     out += "</div>";
   } else {
 
@@ -297,7 +296,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "</span>";
             out += "<span>";
             if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.benjp_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
@@ -316,7 +315,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
         var msgtemp = message.message;
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+thiss.labels.get("label-deleted")+"</span>";
+          msgtemp = "<span class='contentDeleted'>"+chatBundleData.benjp_chat_deleted+"</span>";
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
         }
@@ -331,10 +330,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "<span style='float:right;color:#CCC;font-size:10px;display:none;' class='msg-actions'>" +
             "<span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
-            out += "&nbsp;<a href='#' class='msg-action-delete'>"+thiss.labels.get("label-delete")+"</a>&nbsp;|";
-            out += "&nbsp;<a href='#' class='msg-action-edit'>"+thiss.labels.get("label-edit")+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-delete'>"+chatBundleData.benjp_chat_delete+"</a>&nbsp;|";
+            out += "&nbsp;<a href='#' class='msg-action-edit'>"+chatBundleData.benjp_chat_edit+"</a>&nbsp;|";
           }
-          out += "&nbsp;<a href='#' class='msg-action-quote'>"+thiss.labels.get("label-quote")+"</a>";
+          out += "&nbsp;<a href='#' class='msg-action-quote'>"+chatBundleData.benjp_chat_quote+"</a>";
           out += "</span>";
         }
         out += "<span class='invisible-text'>]</span></div>"+
@@ -410,7 +409,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         } else {
           if (message.user != thiss.username) {
             if (thiss.isPublic)
-              out += "<span class='invisible-text'>- </span><a href='#'>"+thiss.labels.get("label-support-fullname")+"</a><span class='invisible-text'> : </span><br/>";
+              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.benjp_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
             else
               out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
           } else {
@@ -521,9 +520,9 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type ==="call-join") {
       out += "";
     } else if (options.type ==="call-on") {
-      out += "Meeting started";
+      out += chatBundleData.benjp_chat_meeting_started;
     } else if (options.type==="call-off") {
-      out += "Meeting finished";
+      out += chatBundleData.benjp_chat_meeting_finished;
       var tsold = Math.round(jzGetParam("weemoCallHandlerFrom"));
       var time = Math.round((options.timestamp*1000-tsold)/1000);
       var hours = Math.floor(time / 3600);
@@ -534,21 +533,21 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var stime = "<span class=\"msg-time\" style='font-weight: normal;'>";
       if (hours>0) {
         if (hours===1)
-          stime += hours+ " hour ";
+          stime += hours+ " "+chatBundleData.benjp_chat_hour+" ";
         else
-          stime += hours+ " hours ";
+          stime += hours+ " "+chatBundleData.benjp_chat_hours+" ";
       }
       if (minutes>0) {
         if (minutes===1)
-          stime += minutes+ " minute ";
+          stime += minutes+ " "+chatBundleData.benjp_chat_minute+" ";
         else
-          stime += minutes+ " minutes ";
+          stime += minutes+ " "+chatBundleData.benjp_chat_minutes+" ";
       }
       if (seconds>0) {
         if (seconds===1)
-          stime += seconds+ " second";
+          stime += seconds+ " "+chatBundleData.benjp_chat_second;
         else
-          stime += seconds+ " seconds";
+          stime += seconds+ " "+chatBundleData.benjp_chat_seconds;
       }
       stime += "</span>";
       out += stime;
@@ -563,7 +562,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
-          ">Send meeting notes</a>" +
+          ">"+chatBundleData.benjp_chat_send_notes+"</a>" +
           " - " +
           "<a href='#' class='save-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
@@ -571,10 +570,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"2' " +
-          ">Save as Wiki</a>" +
+          ">"+chatBundleData.benjp_chat_save_wiki+"</a>" +
           "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>Sent!</strong> Check your mailbox.</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>Saved!</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.benjp_chat_sent+"</strong> "+chatBundleData.benjp_chat_check_mailbox+"</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.benjp_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.benjp_chat_open_wiki+"</a>.</div>" +
           "</div>";
       }
 
@@ -587,11 +586,11 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       }
     } else if (options.type==="type-task") {
       var url = options.task+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
+        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_assigned+" <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - "+chatBundleData.benjp_chat_ldue+" <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
       out += url;
     } else if (options.type==="type-event") {
       var url = options.summary+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>from "+options.startDate+" "+options.startTime+" to "+options.endDate+" "+options.endTime+"</div>";
+        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_from+" "+options.startDate+" "+options.startTime+" "+chatBundleData.benjp_chat_to+" "+options.endDate+" "+options.endTime+"</div>";
       out += url;
     } else {
       out += message;
@@ -729,67 +728,6 @@ ChatRoom.prototype.IsIE8Browser = function() {
 /**
  ##################                           ##################
  ##################                           ##################
- ##################   JUZU LABELS             ##################
- ##################                           ##################
- ##################                           ##################
- */
-
-/**
- * JuzuLabels allows to store and retrieve html5 data- value from dom elements
- * @constructor
- */
-function JuzuLabels() {
-  this.element = "";
-}
-
-/**
- * Sets the target DOM element
- * @param element
- */
-JuzuLabels.prototype.setElement = function(element) {
-  this.element = element;
-};
-
-/**
- * Get the value
- * @param key
- * @returns {*}
- */
-JuzuLabels.prototype.get = function(key) {
-  var val;
-  if (this.element!=="") {
-    val = jqchat.data(this.element, key);
-    if (val === undefined) {
-      val = this.element.attr("data-"+key);
-      return val;
-    }
-  }
-  return "";
-};
-
-/**
- * Set a value in the DOM using jQuery.data
- * @param key
- * @param value
- */
-JuzuLabels.prototype.set = function(key, value) {
-  if (this.element!=="")
-    jqchat.data(this.element, key, value);
-};
-
-/**
- * Logs what are the available values (only those created by jQuery)
- */
-JuzuLabels.prototype.log = function() {
-  if (this.element!=="") {
-    console.log(jqchat.data( this.element ));
-  }
-};
-
-
-/**
- ##################                           ##################
- ##################                           ##################
  ##################   MINI CHATROOM           ##################
  ##################                           ##################
  ##################                           ##################
@@ -824,7 +762,7 @@ String.prototype.endsWith = function(suffix) {
             $obj.html('<div class="title">' +
               '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
               '<span class="fullname"></span>' +
-              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="Close Mini Chat"><i class="uiIconClose uiIconLightGray"></i></div>' +
+              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.benjp_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
               '</div>' +
               '<div class="history"></div>' +
               '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');
@@ -891,7 +829,7 @@ function showMiniChatPopup(room, type) {
       var jzChatSend = chatServerUrl+"/send";
       var jzChatGetRoom = chatServerUrl+"/getRoom";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false, new JuzuLabels());
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false);
 
 
         $miniChat.find(".message-input").keyup(function(event) {

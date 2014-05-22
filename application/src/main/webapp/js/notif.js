@@ -224,7 +224,7 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotification.css('display', 'none');
           var $chatNotificationsDetails = jqchat("#chat-notifications-details");
           $chatNotificationsDetails.css("display", "none");
-          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">Loading...</span><li class="divider">&nbsp;</li>');
+          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.benjp_chat_loading+'</span><li class="divider">&nbsp;</li>');
         }
         if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
           this.playNotifSound();
@@ -669,11 +669,11 @@ WeemoExtension.prototype.initCall = function($uid, $name) {
           var confirmStr;
           if(callObj.dn !== "undefined" && callObj.dn !== undefined)
           {
-            confirmStr = callObj.dn + ' invites you to video chat';
+            confirmStr = callObj.dn + ' ' + chatBundleData.benjp_chat_video_invite;
           }
           else
           {
-            confirmStr = 'A person invites you to video chat';
+            confirmStr = chatBundleData.benjp_chat_video_person;
           }
           if (confirm(confirmStr))
           {
