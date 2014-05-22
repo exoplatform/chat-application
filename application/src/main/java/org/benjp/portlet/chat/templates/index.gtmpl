@@ -11,8 +11,6 @@
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
   data-weemo-key="<%=weemoKey%>"
-  data-translate-key="<%=translateKey%>"
-  data-translate-url="<%=translateUrl%>"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
@@ -68,7 +66,7 @@
   <% } %>
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
     <div class="uiBox">
-      <div class="room-detail no-user-selection" id="room-detail">
+      <div class="room-detail" id="room-detail">
 
         <span class="room-detail-avatar">
           <div class="activityAvatar avatarCircle" style="width:30px; height:30px;">
@@ -130,7 +128,7 @@
           </span>
         </span>
 
-        <div class="meeting-actions pull-right dropup  no-user-selection" data-placement="left" data-toggle="tooltip" title="&{benjp.chat.actions.show}">
+        <div class="meeting-actions pull-right dropup" data-placement="left" data-toggle="tooltip" title="&{benjp.chat.actions.show}">
           <div class="popover top meeting-action-popup">
             <div class="arrow">
             </div>

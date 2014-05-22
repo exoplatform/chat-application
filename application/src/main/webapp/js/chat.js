@@ -19,9 +19,6 @@ var chatApplication = new ChatApplication();
     chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
     chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
 
-    chatApplication.translateKey = $chatApplication.attr("data-translate-key");
-    chatApplication.translateUrl = $chatApplication.attr("data-translate-url");
-
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
     var chatView = $chatApplication.attr("data-view");
@@ -1013,8 +1010,7 @@ function ChatApplication() {
   this.showSpacesHistory = false;
   this.showTeamsHistory = false;
 
-  this.translateKey = "";
-  this.translateUrl = "";
+
 }
 
 
@@ -1859,7 +1855,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   var $chats = jqchat("#chats");
   $chats.html('<span>'+out+'</span>');
   sh_highlightDocument();
-  $chats.scrollTop(20000);
+  $chats.animate({ scrollTop: 20000 }, 'fast');
 
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
@@ -1880,36 +1876,6 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     msgHtml = msgHtml.replace(/<br>/g, '\n');
     var msgFullname = $uimsg.attr("data-fn");
     jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
-
-  });
-
-  jqchat(".msg-action-translate").on("click", function() {
-    var $uimsg = jqchat(this).parent().parent().children().first();
-    var $translateAction = jqchat(this);
-    var msgHtml = $uimsg.html();
-
-    jqchat.ajax({
-      url: chatApplication.translateUrl,
-      jsonp: "callback",
-      dataType: "jsonp",
-      data: {
-        //"source": "fr",
-        "target": "en",
-        "input": msgHtml,
-        "key": chatApplication.translateKey
-        }
-      })
-      .done(function(data) {
-        var output = data.outputs[0].output;
-        if (output !== undefined) {
-          var out = "<span class='transout'>"+ output + "</span><br/><span class='transin'>" + msgHtml + "</span>";
-          $uimsg.html(out);
-          console.log("success:"+output);
-          $translateAction.remove();
-          var $chats = jqchat("#chats");
-          $chats.scrollTop($chats.scrollTop()+20);
-        }
-      });
 
   });
 
