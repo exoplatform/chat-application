@@ -77,8 +77,6 @@ public class NotificationApplication
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
     String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
-    String chatTranslateKey = PropertyManager.getProperty(PropertyManager.PROPERTY_TRANSLATE_KEY);
-    String chatTranslateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_TRANSLATE_URL);
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
@@ -91,8 +89,6 @@ public class NotificationApplication
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
             .set("weemoKey", chatWeemoKey)
-            .set("translateKey", chatTranslateKey)
-            .set("translateUrl", chatTranslateUrl)
             .set("title", title)
             .set("messages", messages)
             .render();

@@ -29,9 +29,6 @@ function ChatNotification() {
   this.profileStatus = "offline";
 
   this.chatPage = "/portal/intranet/chat";
-
-  this.translateKey = "";
-  this.translateUrl = "";
 }
 
 /**
@@ -48,8 +45,6 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
-  this.translateKey = options.translateKey;
-  this.translateUrl = options.translateUrl;
 };
 
 /**
@@ -254,32 +249,6 @@ ChatNotification.prototype.refreshNotif = function() {
 ChatNotification.prototype.playNotifSound = function() {
   var notifSound=document.getElementById("chat-audio-notif");
   notifSound.play();
-};
-
-/**
- * Translate
- */
-ChatNotification.prototype.translate = function(input, callback) {
-
-  jqchat.ajax({
-    url: chatNotification.translateUrl,
-    jsonp: "callback",
-    dataType: "jsonp",
-    data: {
-      //"source": "fr",
-      "target": "en",
-      "input": input,
-      "key": chatNotification.translateKey
-    }
-  })
-  .done(function(data) {
-    var output = data.outputs[0].output;
-    if (callback !== undefined) {
-      callback(output);
-    }
-  });
-
-
 };
 
 
@@ -938,9 +907,7 @@ var weemoExtension = new WeemoExtension();
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
-      "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
-      "translateKey": $notificationApplication.attr("data-translate-key"),
-      "translateUrl": $notificationApplication.attr("data-translate-url")
+      "statusInterval": $notificationApplication.attr("data-chat-interval-status")
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
