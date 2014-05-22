@@ -1855,7 +1855,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   var $chats = jqchat("#chats");
   $chats.html('<span>'+out+'</span>');
   sh_highlightDocument();
-  $chats.animate({ scrollTop: 20000 }, 'fast');
+  $chats.scrollTop(20000);
 
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
