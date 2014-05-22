@@ -1588,6 +1588,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+  if (roomsFavorites.count() === 0 && this.showFavorites) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Favorite</td></tr>";
+  }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
   var xPeopleHistory = ""; if (chatApplication.showPeopleHistory) xPeopleHistory=" btn active";
@@ -1626,6 +1629,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+  if (roomsPeople.count() === 0 && this.showPeople) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Connection</td></tr>";
+  }
 
   /**
    * TEAMS
@@ -1659,6 +1665,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
 
+  if (roomsTeams.count() === 0 && this.showTeams) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Team</td></tr>";
+  }
 
   /**
    * SPACES
@@ -1690,6 +1699,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+
+  if (roomsSpaces.count() === 0 && this.showSpaces) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Space</td></tr>";
+  }
 
   out += '</table>';
 
@@ -2476,3 +2489,4 @@ ChatApplication.prototype.showDemoPanel = function() {
     this.createDemoUser(fullname, email);
   });
 };
+
