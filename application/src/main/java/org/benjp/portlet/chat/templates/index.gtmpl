@@ -179,6 +179,7 @@
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="200" data-title="File">
+                  <strong>Upload File</strong>
                   <span id="dropzone-container">
                     <div class="progressBar" id="dropzone">
                       <div class="progress">

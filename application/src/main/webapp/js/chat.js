@@ -411,7 +411,7 @@ var chatApplication = new ChatApplication();
         $chatStatusPanel.css("display", "none");
     });
 
-    $("div.chat-menu").click(function(){
+    $("li.chat-menu").click(function(){
       var status = $(this).attr("status");
       chatApplication.setStatus(status, function() {
         $(".chat-status-panel").css('display', 'none');

@@ -407,7 +407,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";
-        out += "              <div class='msUserCont clearfix'>";
+        //if (prevUser != message.user) {
+          out += "            <div class='msTiltleLn clearfix'>";
+          out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+          out += "            </div>";
+        //}
+        out += "              <div class='msUserCont msg-text clearfix'>";
         out += "                <div class='msRightInfo pull-right'>";
         out += "                  <div class='msTimePost'>";
         out += "                    <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
@@ -518,6 +523,12 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(actionType) {
     out += "                <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
   } else if ("type-hand" === actionType) {
     out += "                <i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
+  } else if ("type-file" === actionType) {
+    out += "                <i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
+  } else if ("type-link" === actionType) {
+    out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
+  } else if ("type-task" === actionType) {
+    out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
   }
   out += "                </div>";
   return out;
@@ -592,12 +603,12 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var text = message.replace("/me", urlProfile);
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
-      var urlFile = "<a href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
-      var size = "<span class=\"msg-time\" style='font-weight: normal;'>("+options.sizeLabel+")</span>";
-      out += urlFile+size;
+      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
+      var size = "<span class=\"fileSize\">("+options.sizeLabel+")</span>";
+      out += urlFile + size;
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div><img src=\""+options.restPath+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='#'><i class='uiIconSearch uiIconWhite'></i> View</a></div><div><a href='#'><i class='uiIconDownload uiIconWhite'></i> Download</a></div></div></div></div>";
       }
 
     } else if (options.type ==="call-join") {
@@ -668,9 +679,18 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
         out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
     } else if (options.type==="type-task") {
-      var url = options.task+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
-      out += url;
+//      var url = options.task+
+//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
+//      out += url;
+        out += "<b>" + options.task + "</b>";
+        out += "<div class='msTimeEvent'>";
+        out += "  <div>";
+        out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To:</span>" + options.fullname;
+        out += "  </div>";
+        out += "  <div>";
+        out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>Due Date:</span> <b>" + options.dueDate + "</b>";
+        out += "  </div>";
+        out += "</div>";
     } else if (options.type==="type-event") {
       var url = options.summary+
         "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>from "+options.startDate+" "+options.startTime+" to "+options.endDate+" "+options.endTime+"</div>";
