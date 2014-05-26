@@ -352,10 +352,7 @@ table.list-rooms {
     .arrow {
       left: 92%;
     }
-
-    .meeting-action-file-panel {
-      text-align: center;
-    }
+    
     &.open {
       + .tooltip {
         display: none!important;
@@ -369,6 +366,12 @@ table.list-rooms {
   .meeting-action-panel {
     padding: 0px 20px 0;
     display: none;
+
+    .actionTitle {
+      display: inline-block;
+      margin-top: 3px;
+      margin-bottom: 5px;
+    }
 
     .input-default {
       width: 100%
@@ -416,7 +419,7 @@ table.list-rooms {
     .progressBar {
       width: 100%;
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 18px;
 
       .progress {
         margin: 0;
@@ -1107,4 +1110,9 @@ hr
   &:hover {
     color: @linkColorHover;
   }
+}
+
+#dropzone-container {
+  display: block;
+  margin-top: 8px;
 }

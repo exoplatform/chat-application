@@ -171,15 +171,16 @@
             <div class="popover-inner">
               
               <div class="popover-content meeting-action-content">
-                <div class="meeting-action-panel meeting-action-link-panel" data-height="140" data-title="Link">
+                <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="Link">
+                  <strong class="actionTitle">Share Link</strong>
                   <input type="text" class="input-with-value" id="share-link-text" placeholder="e.g: http://www.exoplatform.com" data-value="e.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">Share</a>
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-file-panel" data-height="200" data-title="File">
-                  <strong>Upload File</strong>
+                <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="File">
+                  <strong class="actionTitle">Upload File</strong>
                   <span id="dropzone-container">
                     <div class="progressBar" id="dropzone">
                       <div class="progress">
@@ -202,23 +203,24 @@
 	                </div>
                   </form>
                 </div>
-                <div class="meeting-action-panel meeting-action-question-panel" data-height="140" data-title="Question">
-                  <strong>&{benjp.chat.panel.question.header}</strong>
+                <div class="meeting-action-panel meeting-action-question-panel" data-height="157" data-title="Question">
+                  <strong class="actionTitle">&{benjp.chat.panel.question.header}</strong>
                   <input type="text" class="input-with-value" id="question-text" data-value="What is your question?" placeholder="What is your question?">
                   <div class="uiActionBorder">
                   	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>
                     <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-hand-panel" data-height="140" data-title="Raise hand">
+                <div class="meeting-action-panel meeting-action-hand-panel" data-height="157" data-title="Raise hand">
+                  <strong class="actionTitle">Raise hand</strong>
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment" placeholder="Optional comment">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary raise-hand-button">Raise your hand</a>
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
-                  <strong>Assign Task</strong>
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="Assign task">
+                  <strong class="actionTitle">Assign Task</strong>
                   <input type="text" class="input-with-value add-task" data-value="Task title" placeholder="Task title" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Assign to" placeholder="Assign to" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
@@ -229,7 +231,8 @@
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-event-panel" data-height="255" data-title="Add event">
+                <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="Add event">
+                  <strong class="actionTitle">Add Event</strong>
                   <input type="text" class="input-with-value" data-value="Event Title" placeholder="Event Title" id="event-add-summary">
                   <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
                   <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
