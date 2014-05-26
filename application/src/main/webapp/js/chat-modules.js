@@ -295,7 +295,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 out += "  </div>";
               } else {
                 if (prevOptions.type.indexOf("type-") !== -1) {
-                  out += thiss.getActionMeetingStyleClasses(prevOptions.type);
+                  out += thiss.getActionMeetingStyleClasses(prevOptions);
                 }
               }
               out += "  </div>";
@@ -320,7 +320,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 out += "  </div>";
               } else {
                 if (prevOptions.type.indexOf("type-") !== -1) {
-                  out += thiss.getActionMeetingStyleClasses(prevOptions.type);
+                  out += thiss.getActionMeetingStyleClasses(prevOptions);
                 }
               }
               out += "  </div>";
@@ -397,7 +397,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "      </div>";
           } else {
             if (prevOptions.type.indexOf("type-") !== -1) {
-              out += thiss.getActionMeetingStyleClasses(prevOptions.type);
+              out += thiss.getActionMeetingStyleClasses(prevOptions);
             }
           }
           out += "      </div>";
@@ -442,12 +442,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
           }
         }
-//        out += "<img class='"+options.type+"' src='/chat/img/empty.png' width='32px' style='width:32px;'>";
-        if (options.type==="type-event") {
-          var day = options.startDate.substr(3, 2);
-          out += "<span style='position: absolute;top: 2px;left: 9px;font-weight: bold;font-size: 20px;color: #848484;'>"+day+"</span>";
-        }
-        //out += "</span>";
 
         if (options.type !== "call-join") {
           if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
@@ -464,8 +458,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jqchat(".btn-weemo-conf").css("display", "none");
           }
         }
-
-//        out += "<span>";
 
         if (options.type === "type-me") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
@@ -498,7 +490,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "          </div>";
           out += "        </div>";
           if (message.options.type.indexOf("type-") !== -1) {
-            out += thiss.getActionMeetingStyleClasses(message.options.type);
+            out += thiss.getActionMeetingStyleClasses(message.options);
           }
           out += "      </div>";
           out += "    </div>";
@@ -516,7 +508,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
 };
 
-ChatRoom.prototype.getActionMeetingStyleClasses = function(actionType) {
+ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
+  var actionType = options.type;
   var out = "";
   out += "                <div class='msUserAvatar'>";
   if ("type-question" === actionType) {
@@ -529,6 +522,8 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(actionType) {
     out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
   } else if ("type-task" === actionType) {
     out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
+  } else if ("type-event" === actionType) {
+    out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
   }
   out += "                </div>";
   return out;
@@ -679,22 +674,25 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
         out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
     } else if (options.type==="type-task") {
-//      var url = options.task+
-//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>assigned to <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - due <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
-//      out += url;
-        out += "<b>" + options.task + "</b>";
-        out += "<div class='msTimeEvent'>";
-        out += "  <div>";
-        out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To: </span>" + options.fullname;
-        out += "  </div>";
-        out += "  <div>";
-        out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>Due Date:</span> <b>" + options.dueDate + "</b>";
-        out += "  </div>";
-        out += "</div>";
+      out += "<b>" + options.task + "</b>";
+      out += "<div class='msTimeEvent'>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To: </span>" + options.fullname;
+      out += "  </div>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>Due Date:</span> <b>" + options.dueDate + "</b>";
+      out += "  </div>";
+      out += "</div>";
     } else if (options.type==="type-event") {
-      var url = options.summary+
-        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>from "+options.startDate+" "+options.startTime+" to "+options.endDate+" "+options.endTime+"</div>";
-      out += url;
+      out += "<b>" + options.summary + "</b>";
+      out += "<div class='msTimeEvent'>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>From: </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>To: </span><b>" + options.endDate + " " + options.endTime + "</b>";
+      out += "  </div>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.space;
+      out += "  </div>";
+      out += "</div>";
     } else if (options.type==="type-add-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += thiss.labels.get("label-msg-add-team-user").replace("{0}", options.fullname).replace("{1}", users);

@@ -650,18 +650,21 @@ var chatApplication = new ChatApplication();
 
     function addTimeOptions(id) {
       var select = $(id);
-      for (var h=0 ; h<24 ; h++) {
-        for (var m=0 ; m<60 ; m+=30) {
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 30) {
           var hh = h;
           var mm = m;
-          if (h<10) hh = "0"+hh;
-          if (m<10) mm = "0"+mm;
-          var time = hh+":"+mm;
-          select.append('<option value="'+time+'">'+time+'</option>');
-
+          var h12 = h % 12 || 12;
+          var hh12 = h12;
+          var ampm = h < 12 ? "AM" : "PM";
+          if (h < 10) hh = "0" + hh;
+          if (m < 10) mm = "0" + mm;
+          if (h12 < 10) hh12 = "0" + hh12;
+          var time = hh + ":" + mm;
+          var time12 = hh12 + ":" + mm + " " + ampm;
+          select.append('<option value="' + time12 + '">' + time12 + '</option>');
         }
       }
-
     }
 
     function hideResults() {

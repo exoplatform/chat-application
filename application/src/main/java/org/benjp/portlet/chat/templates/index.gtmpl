@@ -230,7 +230,7 @@
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="255" data-title="Add event">
-                  <input type="text" class="input-with-value" data-value="Event title" placeholder="Event title" id="event-add-summary">
+                  <input type="text" class="input-with-value" data-value="Event Title" placeholder="Event Title" id="event-add-summary">
                   <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
                   <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
                   <span class="uiSelectbox">
@@ -240,7 +240,7 @@
                   </span>
                   <br>
                   <span class="action-label" style="display: inline-block;width: 40px;">To: </span>
-                  <input type="text" data-value="mm/dd/yyyy" placeholder="Event title" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
+                  <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-end-time">
                       <option value="all-day">All Day</option>
