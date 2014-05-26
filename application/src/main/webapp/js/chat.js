@@ -160,6 +160,7 @@ var chatApplication = new ChatApplication();
     });
 
     $(".meeting-action-link").on("click", function() {
+      //$(".meeting-action-toggle").removeClass("active");
       var toggleClass = $(this).attr("data-toggle");
 
       if (toggleClass === "meeting-action-flag-panel") return;
@@ -2171,7 +2172,16 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uitext.attr("data-id", "---");
     jqchat(".team-user-label").remove();
     jqchat('.team-modal').modal({"backdrop": false});
+
     $uitext.focus();
+
+
+    // Set form position to screen center
+    var centerTop = (jqchat(window).height() - jqchat(".team-modal").height()) / 2;
+    centerTop = centerTop >= 0 ? centerTop : jqchat(".team-modal").offset().top;
+    var centerLeft = (jqchat(window).width() - jqchat(".team-modal").width()) / 2;
+    centerLeft = centerLeft >= 0 ? centerLeft : jqchat(".team-modal").offset().left;
+    jqchat(".team-modal").offset({top: centerTop, left: centerLeft})
   });
 
   jqchat(".btn-history").on("click", function() {
