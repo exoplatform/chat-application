@@ -502,12 +502,25 @@ var chatApplication = new ChatApplication();
     $('#task-add-user').keyup(function(event) {
       var prefix = "task";
       var filter = $(this).val();
+      if (filter.indexOf(',') !== -1) {
+        var inputUserId = $.trim(filter.substring(filter.lastIndexOf(',') + 1));
+        if (inputUserId.length > 0) filter = inputUserId;
+        else return;
+      }
 
       searchUsers(filter, prefix, event, true, function(name, fullname) {
         //addTeamUserLabel(name, fullname);
         console.log(name+" : "+fullname);
-        $('#task-add-user').val(name);
-        $('#task-add-fullname').val(fullname);
+        var currAddedUser = $.trim($('#task-add-user').val());
+        if (currAddedUser.indexOf(',') !== -1) {
+          $('#task-add-user').val(currAddedUser.substring(0, currAddedUser.lastIndexOf(',')) + ", " + name);
+          var currAddedFullName = $('#task-add-fullname').val().split(',', currAddedUser.split(',').length - 1).join(',');
+          $('#task-add-fullname').val(currAddedFullName + ", " + fullname);
+        } else {
+          $('#task-add-user').val(name);
+          $('#task-add-fullname').val(fullname);
+        }
+
         $(".meeting-action-task-panel").trigger("click");
         setTimeout(hideResults, 100);
       });

@@ -218,10 +218,11 @@
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="217" data-title="Assign task">
+                  <strong>Assign Task</strong>
+                  <input type="text" class="input-with-value add-task" data-value="Task title" placeholder="Task title" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Assign to" placeholder="Assign to" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
-                  <input type="text" class="input-with-value add-task" data-value="Task title" placeholder="Task title" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Due date" placeholder="Due date" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>

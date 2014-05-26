@@ -685,7 +685,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
         out += "<b>" + options.task + "</b>";
         out += "<div class='msTimeEvent'>";
         out += "  <div>";
-        out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To:</span>" + options.fullname;
+        out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To: </span>" + options.fullname;
         out += "  </div>";
         out += "  <div>";
         out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>Due Date:</span> <b>" + options.dueDate + "</b>";
