@@ -445,6 +445,7 @@ var chatApplication = new ChatApplication();
       val += sml + " ";
       $msg.val(val);
       $msg.focusEnd();
+      $(".msg-emoticons").parent().removeClass("active");
 
     });
 
