@@ -63,8 +63,8 @@
         </div>
       </span>
 
-      <div class="pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
-        <div class="actionIcon dropdown" data-toggle="dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="Change your status"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
+      <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
+        <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="Change your status"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
         <ul class="dropdown-menu chat-status-panel">
           <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</a></li>
           <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</a></li>

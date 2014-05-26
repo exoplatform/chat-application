@@ -403,18 +403,23 @@ var chatApplication = new ChatApplication();
       $("#meeting-action-upload-link").trigger("click");
     });
 
-    $(".chat-status-chat").on("click", function() {
+    $(" .chat-status-chat").parent().on("click", function() {
       var $chatStatusPanel = $(".chat-status-panel");
-      if ($chatStatusPanel.css("display")==="none")
+      if ($chatStatusPanel.css("display")==="none") {
         $chatStatusPanel.css("display", "inline-block");
-      else
+        $(this).addClass('active');
+      }
+      else {
         $chatStatusPanel.css("display", "none");
+        $(this).removeClass('active');
+      }
     });
 
     $("li.chat-menu").click(function(){
       var status = $(this).attr("status");
       chatApplication.setStatus(status, function() {
         $(".chat-status-panel").css('display', 'none');
+         $(".chat-status-chat").parent().removeClass('active');
       });
     });
 
