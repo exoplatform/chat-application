@@ -1,0 +1,174 @@
+.msg-emoticons-panel {
+  background: @white;
+  width: 108px;
+  height: 118px;
+  padding: 10px 10px 0 10px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  position: absolute;
+  cursor: default;
+  left: 5px;
+  bottom: 65px;
+  z-index: 5;
+  border: 1px solid #cccccc;
+  .box-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+  &:after,  &:before {
+    display: block;
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 100%;
+  }
+  &:after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 8px solid #fff;
+  }
+  &:before {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 8px solid #CCC;
+    top: 101%;
+  }
+  .emoticon {
+    height: 27px;
+  }
+  .emoticon:hover {
+    cursor: pointer;
+  }
+}
+
+.emoticon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 1px;
+  vertical-align: top;
+  background-image: url('@{imgPath}uiIconChatEmoticons24x24.png');
+  background-repeat: no-repeat;
+  background-size: 108px 108px;
+}
+
+.background-emoticon(@left, @top) {
+  background-position: @left @top;
+}
+
+.msg-button {
+  padding: 0;
+}
+
+.emoticon-smile-white, .emoticon-smile {
+  .background-emoticon(0px, 0px);
+}
+.emoticon-sad-white, .emoticon-sad {
+  .background-emoticon(-28px, 0px);
+}
+.emoticon-big-smile-white, .emoticon-big-smile {
+  .background-emoticon(-56px, 0);
+}
+.emoticon-eye-blink-white, .emoticon-eye-blink {
+  .background-emoticon(-84px, 0px);
+}
+
+.emoticon-surprise-white, .emoticon-surprise {
+  .background-emoticon(0px, -28px);
+}
+.emoticon-no-voice-white, .emoticon-no-voice {
+  .background-emoticon(-28px, -28px);
+}
+.emoticon-tongue-white, .emoticon-tongue {
+  .background-emoticon(-56px, -28px);
+}
+.emoticon-bow-white, .emoticon-bow {
+  .background-emoticon(-84px, -28px);
+}
+
+.emoticon-yes-white, .emoticon-yes {
+  .background-emoticon(0px, -56px);
+}
+.emoticon-no-white, .emoticon-no {
+  .background-emoticon(-25px, -56px);
+}
+.emoticon-star-white, .emoticon-star {
+  .background-emoticon(-55px, -56px);
+}
+.emoticon-beer-white, .emoticon-beer {
+  .background-emoticon(-84px, -56px);
+}
+
+.emoticon-bug-white, .emoticon-bug {
+  .background-emoticon(0px, -84px);
+}
+.emoticon-cake-white, .emoticon-cake {
+  .background-emoticon(-28px, -84px);
+}
+.emoticon-cash-white, .emoticon-cash {
+  .background-emoticon(-56px, -84px);
+}
+.emoticon-coffee-white, .emoticon-coffee {
+  .background-emoticon(-84px, -84px);
+}
+
+.emoticon-text, .invisible-text {
+  font-size: 1px;
+  color: white;
+}
+
+/* Emoticons Animation */
+[class^=uiIconChatGif] {
+  width: 24px;
+  height: 24px;
+  background-repeat: 0;
+  background-color: transparent;
+  vertical-align: text-bottom;
+}
+
+.uiIconChatGifbeer, .uiIconChatGifbeer:hover{
+  background-image: url("/chat/img/emoticons/icon-beer.gif");
+}
+.uiIconChatGifbow, .uiIconChatGifbow:hover{
+  background-image: url("/chat/img/emoticons/icon-bow.gif");
+}
+.uiIconChatGifbug, .uiIconChatGifbug:hover{
+  background-image: url("/chat/img/emoticons/icon-bug.gif");
+}
+.uiIconChatGifcake, .uiIconChatGifcake:hover{
+  background-image: url("/chat/img/emoticons/icon-cake.gif");
+}
+.uiIconChatGifcash, .uiIconChatGifcash:hover{
+  background-image: url("/chat/img/emoticons/icon-cash.gif");
+}
+.uiIconChatGifcoffee, .uiIconChatGifcoffee:hover{
+  background-image: url("/chat/img/emoticons/icon-coffee.gif");
+}
+.uiIconChatGiflaugh, .uiIconChatGiflaugh:hover{
+  background-image: url("/chat/img/emoticons/icon-laugh.gif");
+}
+.uiIconChatGifraise-down, .uiIconChatGifraise-down:hover{
+  background-image: url("/chat/img/emoticons/icon-raise-down.gif");
+}
+.uiIconChatGifraise-up, .uiIconChatGifraise-up:hover{
+  background-image: url("/chat/img/emoticons/icon-raise-up.gif");
+}
+.uiIconChatGifsad, .uiIconChatGifsad:hover{
+  background-image: url("/chat/img/emoticons/icon-sad.gif");
+}
+.uiIconChatGifsmile-with-tongue, .uiIconChatGifsmile-with-tongue:hover{
+  background-image: url("/chat/img/emoticons/icon-smile-with-tongue.gif");
+}
+.uiIconChatGifsmile, .uiIconChatGifsmile:hover{
+  background-image: url("/chat/img/emoticons/icon-smile.gif");
+}
+.uiIconChatGifspeechless, .uiIconChatGifspeechless:hover{
+  background-image: url("/chat/img/emoticons/icon-speechless.gif");
+}
+.uiIconChatGifstar, .uiIconChatGifstar:hover{
+  background-image: url("/chat/img/emoticons/icon-star.gif");
+}
+.uiIconChatGifsurprise, .uiIconChatGifsurprise:hover{
+  background-image: url("/chat/img/emoticons/icon-surprise.gif");
+}
+.uiIconChatGifwink, .uiIconChatGifwink:hover{
+  background-image: url("/chat/img/emoticons/icon-wink.gif");
+}
