@@ -347,12 +347,14 @@ ChatRoom.prototype.showMessages = function(msgs) {
 //          out += "<hr style='margin:0px;'>";
         }
         var msgtemp = message.message;
+        var noEditCssClass = "";
         if (message.type === "DELETED") {
           msgtemp = "<span class='contentDeleted'>"+chatBundleData.benjp_chat_deleted+"</span>";
+          noEditCssClass = "noEdit";
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
         }
-        out += "            <div class='msUserCont msg-text clearfix'>";
+        out += "            <div class='msUserCont msg-text clearfix " + noEditCssClass + "'>";
         out += "              <div class='msRightInfo pull-right'>";
         out += "                <div class='msTimePost'>";
         if (message.type === "DELETED" || message.type === "EDITED") {
@@ -419,7 +421,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
           out += "            </div>";
         //}
-        out += "              <div class='msUserCont msg-text clearfix'>";
+        out += "              <div class='msUserCont noEdit msg-text clearfix'>";
         out += "                <div class='msRightInfo pull-right'>";
         out += "                  <div class='msTimePost'>";
         out += "                    <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
