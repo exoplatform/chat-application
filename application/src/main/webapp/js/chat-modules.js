@@ -783,37 +783,37 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
             w = "<a href='"+w+"' target='_new'>"+w+"</a>";
           }
         } else if (w == ":-)" || w==":)") {
-          w = "<span class='emoticon emoticon-smile'><span class='emoticon-text'>:)</span></span>";
+          w = "<span class='uiIconChatGifsmile'><span class='emoticon-text'>:)</span></span>";
         } else if (w == ":-p" || w==":p" || w==":-P" || w==":P") {
-          w = "<span class='emoticon emoticon-tongue'><span class='emoticon-text'>:p</span></span>";
+          w = "<span class='uiIconChatGifsmile-with-tongue'><span class='emoticon-text'>:p</span></span>";
         } else if (w == ":-D" || w==":D" || w==":-d" || w==":d") {
-          w = "<span class='emoticon emoticon-big-smile'><span class='emoticon-text'>:D</span></span>";
+          w = "<span class='uiIconChatGiflaugh'><span class='emoticon-text'>:D</span></span>";
         } else if (w == ":-|" || w==":|") {
-          w = "<span class='emoticon emoticon-no-voice'><span class='emoticon-text'>:|</span></span>";
+          w = "<span class='uiIconChatGifspeechless'><span class='emoticon-text'>:|</span></span>";
         } else if (w == ":-(" || w==":(") {
-          w = "<span class='emoticon emoticon-sad'><span class='emoticon-text'>:(</span></span>";
+          w = "<span class='uiIconChatGifsad'><span class='emoticon-text'>:(</span></span>";
         } else if (w == ";-)" || w==";)") {
-          w = "<span class='emoticon emoticon-eye-blink'><span class='emoticon-text'>;)</span></span>";
+          w = "<span class='uiIconChatGifwink'><span class='emoticon-text'>;)</span></span>";
         } else if (w == ":-O" || w==":O") {
-          w = "<span class='emoticon emoticon-surprise'><span class='emoticon-text'>:O</span></span>";
+          w = "<span class='uiIconChatGifsurprise'><span class='emoticon-text'>:O</span></span>";
         } else if (w == "(beer)") {
-          w = "<span class='emoticon emoticon-beer'><span class='emoticon-text'>(beer)</span></span>";
+          w = "<span class='uiIconChatGifbeer'><span class='emoticon-text'>(beer)</span></span>";
         } else if (w == "(bow)") {
-          w = "<span class='emoticon emoticon-bow'><span class='emoticon-text'>(bow)</span></span>";
+          w = "<span class='uiIconChatGifbow'><span class='emoticon-text'>(bow)</span></span>";
         } else if (w == "(bug)") {
-          w = "<span class='emoticon emoticon-bug'><span class='emoticon-text'>(bug)</span></span>";
+          w = "<span class='uiIconChatGifbug'><span class='emoticon-text'>(bug)</span></span>";
         } else if (w == "(cake)" || w == "(^)") {
-          w = "<span class='emoticon emoticon-cake'><span class='emoticon-text'>(^)</span></span>";
+          w = "<span class='uiIconChatGifcake'><span class='emoticon-text'>(^)</span></span>";
         } else if (w == "(cash)") {
-          w = "<span class='emoticon emoticon-cash'><span class='emoticon-text'>(cash)</span></span>";
+          w = "<span class='uiIconChatGifcash'><span class='emoticon-text'>(cash)</span></span>";
         } else if (w == "(coffee)") {
-          w = "<span class='emoticon emoticon-coffee'><span class='emoticon-text'>(coffee)</span></span>";
+          w = "<span class='uiIconChatGifcoffee'><span class='emoticon-text'>(coffee)</span></span>";
         } else if (w == "(n)" || w == "(no)") {
-          w = "<span class='emoticon emoticon-no'><span class='emoticon-text'>(no)</span></span>";
+          w = "<span class='uiIconChatGifraise-down'><span class='emoticon-text'>(no)</span></span>";
         } else if (w == "(y)" || w == "(yes)") {
-          w = "<span class='emoticon emoticon-yes'><span class='emoticon-text'>(yes)</span></span>";
+          w = "<span class='uiIconChatGifraise-up'><span class='emoticon-text'>(yes)</span></span>";
         } else if (w == "(star)") {
-          w = "<span class='emoticon emoticon-star'><span class='emoticon-text'>(star)</span></span>";
+          w = "<span class='uiIconChatGifstar'><span class='emoticon-text'>(star)</span></span>";
         } else if (this.highlight.length >1) {
           w = w.replace(eval("/"+this.highlight+"/g"), "<span style='background-color:#FF0;font-weight:bold;'>"+this.highlight+"</span>");
         }
