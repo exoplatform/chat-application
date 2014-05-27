@@ -21,12 +21,14 @@ package org.benjp.services.mongodb;
 
 import com.mongodb.*;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.model.UserBean;
 import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Named("tokenService")
@@ -51,7 +53,7 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
 
   public boolean hasUserWithToken(String user, String token)
   {
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -64,23 +66,37 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
     if (!hasUserWithToken(user, token))
     {
       //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
-      removeUser(user);
-      DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+//      removeUser(user);
+      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
 
-      BasicDBObject doc = new BasicDBObject();
-      doc.put("_id", token);
-      doc.put("user", user);
-      doc.put("token", token);
-      doc.put("validity", System.currentTimeMillis());
-      doc.put("isDemoUser", user.startsWith(ANONIM_USER));
-
-      coll.insert(doc);
+      BasicDBObject query = new BasicDBObject();
+      query.put("user", user);
+      DBCursor cursor = coll.find(query);
+      if (cursor.hasNext())
+      {
+        DBObject doc = cursor.next();
+        doc.put("token", token);
+        doc.put("validity", System.currentTimeMillis());
+        doc.put("isDemoUser", user.startsWith(ANONIM_USER));
+        coll.save(doc, WriteConcern.SAFE);
+      }
+      else
+      {
+        BasicDBObject doc = new BasicDBObject();
+        doc.put("_id", user);
+        doc.put("user", user);
+        doc.put("token", token);
+        doc.put("validity", System.currentTimeMillis());
+        doc.put("isDemoUser", user.startsWith(ANONIM_USER));
+        coll.insert(doc);
+      }
     }
   }
 
+/*
   private void removeUser(String user)
   {
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -90,10 +106,11 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
       coll.remove(doc);
     }
   }
+*/
 
   public void updateValidity(String user, String token)
   {
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -106,10 +123,15 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
     }
   }
 
-  public List<String> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
-    ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+    return getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, 0);
+  }
+
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  {
+    HashMap<String, UserBean> users = new HashMap<String, UserBean>();
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     if (isAdmin)
@@ -127,13 +149,21 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
     {
       query.put("isDemoUser", user.startsWith(ANONIM_USER));
     }
-    DBCursor cursor = coll.find(query);
+    if (limit<0) limit=0;
+    DBCursor cursor = coll.find(query).limit(limit);
     while (cursor.hasNext())
     {
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
-      if (!user.equals(target))
-        users.add(target);
+      if (!user.equals(target)) {
+        UserBean userBean = new UserBean();
+        userBean.setName(target);
+        if (doc.get("fullname")!=null)
+          userBean.setFullname( doc.get("fullname").toString() );
+        if (doc.get("status")!=null)
+          userBean.setStatus(doc.get("status").toString());
+        users.put(target, userBean);
+      }
     }
 
     return users;
@@ -141,7 +171,7 @@ public class TokenServiceImpl implements org.benjp.services.TokenService
 
   public boolean isUserOnline(String user)
   {
-    DBCollection coll = db().getCollection(M_TOKENS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)

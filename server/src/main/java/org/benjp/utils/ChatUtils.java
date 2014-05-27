@@ -36,6 +36,19 @@ public class ChatUtils {
     return MessageDigester.getHash(sb.toString());
   }
 
+  public static String getExternalRoomId(String identifier)
+  {
+    if (identifier.startsWith(ChatService.EXTERNAL_PREFIX) && identifier.length()>ChatService.EXTERNAL_PREFIX.length()+1)
+    {
+      return identifier.substring(ChatService.EXTERNAL_PREFIX.length());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("1-external-room;").append(identifier).append(";");
+
+    return MessageDigester.getHash(sb.toString());
+  }
+
   public static String getRoomId(List<String> users)
   {
     Collections.sort(users);

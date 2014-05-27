@@ -34,10 +34,10 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.portlet.PortletPreferences;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @SessionScoped
 public class NotificationApplication
@@ -56,6 +56,12 @@ public class NotificationApplication
   SpaceService spaceService_;
 
   @Inject
+  BundleService bundleService_;
+
+  @Inject
+  Provider<PortletPreferences> providerPreferences;
+
+  @Inject
   public NotificationApplication(OrganizationService organizationService, SpaceService spaceService)
   {
     organizationService_ = organizationService;
@@ -72,11 +78,19 @@ public class NotificationApplication
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
     String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
 
+    PortletPreferences portletPreferences = providerPreferences.get();
+    String title = portletPreferences.getValue("title", "---");
+    Locale locale = renderContext.getUserContext().getLocale();
+    ResourceBundle bundle= renderContext.getApplicationContext().resolveBundle(locale) ;
+    String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
+
     index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
             .set("weemoKey", chatWeemoKey)
+            .set("title", title)
+            .set("messages", messages)
             .render();
   }
 

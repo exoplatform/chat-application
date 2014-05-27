@@ -3,6 +3,7 @@ package org.benjp.portlet.chat;
 import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.wiki.mow.core.api.wiki.PageImpl;
 import org.exoplatform.wiki.resolver.TitleResolver;
+import org.exoplatform.wiki.service.listener.PageWikiListener;
 import org.xwiki.rendering.syntax.Syntax;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -74,6 +75,7 @@ public class WikiService {
 
       page.getContent().setText(content);
       page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+      page.setMinorEdit(false);
       page.checkin();
       page.checkout();
 
@@ -88,6 +90,9 @@ public class WikiService {
         path = "/portal/intranet/wiki/"+ page.getName();
       }
 
+      //Post Activity
+      wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
+      //wikiService_.postUpdatePage(wikiType, wikiOwner, TitleResolver.getId(title, false), page, PageWikiListener.EDIT_PAGE_CONTENT_AND_TITLE_TYPE);
 
     } catch (Exception e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -65,9 +65,12 @@
 
 .sh_container {
   overflow-x: scroll;
-  width: (@widthMessages - 55);
+  min-width: (@widthMessages - 55);
+  width: 90%;
   background-color: @colorLightText;
 }
 .sh_java, .sh_javascript, .sh_css, .sh_html {
   min-width: (@widthMessages - 55);
+  border: 0;
+  font-style: 10px;
 }

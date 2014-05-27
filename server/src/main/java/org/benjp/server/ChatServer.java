@@ -89,15 +89,22 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String token, String filter, String withUsers, String withSpaces, String withPublic, String withOffline, String isAdmin)
+  public Response.Content whoIsOnline(String user, String token, String filter, String isAdmin, String limit)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
+    Integer ilimit = 0;
+    try {
+      if (limit!=null && !"".equals(limit))
+        ilimit = Integer.parseInt(limit);
+    } catch (NumberFormatException nfe) {
+      log.info("limit is not a valid Integer number");
+    }
 
 //    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
-    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), notificationService, userService, tokenService);
+    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit, notificationService, userService, tokenService);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
@@ -117,30 +124,35 @@ public class ChatServer
 //        System.out.println(user + "::" + message + "::" + room);
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
-        String content = "New message from "+user+" : "+((message.length()>15)?message.substring(0,14)+"...":message);
+        if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
+        {
+          String content = ((message.length()>30)?message.substring(0,29)+"...":message);
+          String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
 
-        if (targetUser.startsWith(ChatService.SPACE_PREFIX))
-        {
-          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
-          for (String tuser:users)
-          {
-            notificationService.addNotification(tuser, "chat", "room", room, content, "/portal/default/chat?room="+room);
-          }
-        }
-        else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-        {
-          List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
-          for (String tuser:users)
-          {
-            notificationService.addNotification(tuser, "chat", "room", room, content, "/portal/default/chat?room="+room);
-          }
-        }
-        else
-        {
-          notificationService.addNotification(targetUser, "chat", "room", room, content, "/portal/default/chat?room="+room);
-        }
 
-        notificationService.setNotificationsAsRead(user, "chat", "room", room);
+          if (targetUser.startsWith(ChatService.SPACE_PREFIX))
+          {
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
+            for (String tuser:users)
+            {
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            }
+          }
+          else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
+          {
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
+            for (String tuser:users)
+            {
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            }
+          }
+          else
+          {
+            notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+          }
+
+          notificationService.setNotificationsAsRead(user, "chat", "room", room);
+        }
       }
 
     }
@@ -370,16 +382,42 @@ public class ChatServer
 
   @Resource
   @Route("/getRoom")
-  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin)
+  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin, String withDetail, String type)
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
-    String room;
+    String room = targetUser;
+    RoomBean roomBean = null;
     try
     {
-      if (targetUser.startsWith(ChatService.SPACE_PREFIX))
+      if (type != null) {
+        if ("room-id".equals(type))
+        {
+          room = targetUser;
+        }
+        else if ("space-name".equals(type))
+        {
+          room = chatService.getSpaceRoomByName(targetUser);
+        }
+        else if ("space-id".equals(type))
+        {
+          room = ChatUtils.getRoomId(targetUser);
+        }
+        else if ("username".equals(type))
+        {
+          List<String> users = new ArrayList<String>();
+          users.add(user);
+          users.add(targetUser);
+          room = chatService.getRoom(users);
+        }
+        else if ("external".equals(type))
+        {
+          room = chatService.getExternalRoom(targetUser);
+        }
+      }
+      else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
         room = chatService.getSpaceRoom(targetUser);
 
@@ -391,6 +429,11 @@ public class ChatServer
 
       }
       else
+      if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
+      {
+        room = chatService.getExternalRoom(targetUser);
+      }
+      else
       {
         String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser.startsWith(UserService.ANONIM_USER))?UserService.SUPPORT_USER:user;
 
@@ -399,6 +442,10 @@ public class ChatServer
         users.add(targetUser);
         room = chatService.getRoom(users);
       }
+      if ("true".equals(withDetail))
+      {
+        roomBean = userService.getRoom(user, room);
+      }
       notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)
@@ -406,7 +453,13 @@ public class ChatServer
       e.printStackTrace();
       return Response.notFound("No Room yet");
     }
-    return Response.ok(room);
+    String out = room;
+    if (roomBean!=null)
+    {
+      out = roomBean.toJSON();
+    }
+
+    return Response.ok(out);
   }
 
   @Resource
@@ -526,20 +579,36 @@ public class ChatServer
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user, String token, String event) throws IOException
+  public Response.Content notification(String user, String token, String event, String withDetails) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
-    int totalUnread = notificationService.getUnreadNotificationsTotal(user);
-
-    if (userService.isAdmin(user))
+    boolean detailed = ("true".equals(withDetails));
+    int totalUnread = 0;
+    List<NotificationBean> notifications = null;
+    if (!detailed)
     {
-      totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
+      // GETTING TOTAL NOTIFICATION WITHOUT DETAILS
+      totalUnread = notificationService.getUnreadNotificationsTotal(user);
+      if (userService.isAdmin(user))
+      {
+        totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
+      }
+    }
+    else {
+      // GETTING ALL NOTIFICATION DETAILS
+      notifications = notificationService.getUnreadNotifications(user);
+      totalUnread = notifications.size();
     }
 
-    String data = "{\"total\": \""+totalUnread+"\"}";
+    String data = "{\"total\": \""+totalUnread+"\"";
+    if (detailed && notifications!=null)
+    {
+      data += ","+NotificationBean.notificationstoJSON(notifications);
+    }
+    data += "}";
     if (event!=null && event.equals("1"))
     {
       data = "id: "+totalUnread+"\n";

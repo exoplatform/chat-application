@@ -21,9 +21,12 @@ package org.benjp.services.mongodb;
 
 import com.mongodb.*;
 import org.benjp.listener.ConnectionManager;
+import org.benjp.model.NotificationBean;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
 @Named("notificationService")
 @ApplicationScoped
@@ -49,12 +52,13 @@ public class NotificationServiceImpl implements org.benjp.services.NotificationS
     }
   }
 
-  public void addNotification(String user, String type, String category, String categoryId, String content, String link)
+  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link)
   {
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
     doc.put("user", user);
+    doc.put("from", from);
     doc.put("type", type);
     doc.put("category", category);
     doc.put("categoryId", categoryId);
@@ -83,6 +87,45 @@ public class NotificationServiceImpl implements org.benjp.services.NotificationS
 //      coll.save(doc, WriteConcern.SAFE);
 //    }
 
+  }
+
+  @Override
+  public List<NotificationBean> getUnreadNotifications(String user) {
+    return getUnreadNotifications(user, null, null, null);
+  }
+
+  @Override
+  public List<NotificationBean> getUnreadNotifications(String user, String type, String category, String categoryId) {
+    List<NotificationBean> notifications = new ArrayList<NotificationBean>();
+
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
+
+    query.put("user", user);
+//    query.put("isRead", false);
+    if (type!=null) query.put("type", type);
+    if (category!=null) query.put("category", category);
+    if (categoryId!=null) query.put("categoryId", categoryId);
+    DBCursor cursor = coll.find(query);
+
+    while (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      NotificationBean notificationBean = new NotificationBean();
+      notificationBean.setTimestamp((Long)doc.get("timestamp"));
+      notificationBean.setUser(user);
+      if (doc.containsField("from"))
+        notificationBean.setFrom(doc.get("from").toString());
+      notificationBean.setCategory(doc.get("category").toString());
+      notificationBean.setCategoryId(doc.get("categoryId").toString());
+      notificationBean.setType(doc.get("type").toString());
+      notificationBean.setContent(doc.get("content").toString());
+      notificationBean.setLink(doc.get("link").toString());
+
+      notifications.add(notificationBean);
+    }
+
+    return notifications;
   }
 
   public int getUnreadNotificationsTotal(String user)

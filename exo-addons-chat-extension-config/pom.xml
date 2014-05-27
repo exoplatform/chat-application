@@ -24,10 +24,27 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>0.8.0-relooking-SNAPSHOT</version>
+    <version>0.9.2-relooking-SNAPSHOT</version>
   </parent>
   <artifactId>exo-addons-chat-extension-config</artifactId>
   <packaging>jar</packaging>
   <name>eXo Addons - Chat Extension Configuration</name>
   <description>eXo Chat Extension Configuration</description>
+  <dependencies>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.ws</groupId>
+      <artifactId>exo.ws.rest.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.security.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

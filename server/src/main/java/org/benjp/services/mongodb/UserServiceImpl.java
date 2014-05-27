@@ -306,6 +306,51 @@ public class UserServiceImpl implements org.benjp.services.UserService
     return rooms;
   }
 
+  public RoomBean getRoom(String user, String roomId) {
+    RoomBean roomBean = new RoomBean();
+    roomBean.setRoom(roomId);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", roomId);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      if (doc.containsField("timestamp"))
+      {
+        roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
+      }
+      String type = doc.get("type").toString();
+      if ("s".equals(type))
+      {
+        roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
+        roomBean.setFullname(doc.get("displayName").toString());
+        roomBean.setSpace(true);
+      }
+      else if ("t".equals(type))
+      {
+        roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
+        roomBean.setFullname(doc.get("team").toString());
+        roomBean.setTeam(true);
+      }
+      else if ("u".equals(type))
+      {
+        List<String> users = ((List<String>)doc.get("users"));
+        users.remove(user);
+        String targetUser = users.get(0);
+        roomBean.setUser(targetUser);
+        roomBean.setFullname(this.getUserFullName(targetUser));
+      }
+      else if ("e".equals(type))
+      {
+        roomBean.setUser(ChatService.EXTERNAL_PREFIX+roomId);
+        roomBean.setFullname(doc.get("identifier").toString());
+      }
+    }
+
+    return roomBean;
+  }
+
   private SpaceBean getSpace(String roomId)
   {
     SpaceBean spaceBean = null;

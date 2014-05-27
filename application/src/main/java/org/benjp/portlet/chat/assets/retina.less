@@ -1,6 +1,5 @@
 /* Fix Retina Display */
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
-  
   /* UI Icons Chat */
   [class^="uiIconChat"] {
     background-image: url('@{imgPath}x2//uiIconChatDarkGray.png');
@@ -125,6 +124,10 @@
   }
   .uiIconChatGifwink, .uiIconChatGifwink:hover{
     background-image: url("/chat/img/emoticons/x2/icon-wink.gif");
+	.background(@left, @top) {
+	  background: url('@{imgPath}2x/general.png') no-repeat @left @top;
+	  background-size: 96px 162px;
+	}
   }
 
   /* Icon User Status */

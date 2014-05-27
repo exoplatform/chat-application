@@ -62,6 +62,8 @@ public interface UserService
 
   public List<RoomBean> getTeams(String user);
 
+  public RoomBean getRoom(String user, String roomId);
+
   public List<SpaceBean> getSpaces(String user);
 
   public List<UserBean> getUsers(String spaceId);

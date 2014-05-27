@@ -368,6 +368,11 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
     return room;
   }
 
+  public String getSpaceRoomByName(String name) {
+    String room = null;
+    return room;
+  }
+
   public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
     try
@@ -381,6 +386,29 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
         roomNode.setProperty(TEAM_PROPERTY, team);
         roomNode.setProperty(USER_PROPERTY, user);
         roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_TEAM);
+        session.save();
+      }
+
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return room;
+  }
+
+  public String getExternalRoom(String identifier) {
+    String room = ChatUtils.getExternalRoomId(identifier);
+    try
+    {
+      //get info
+      Session session = JCRBootstrap.getSession();
+
+      Node roomNode = getRoom(room, session, M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+      if (!roomNode.hasProperty(IDENTIFIER_PROPERTY))
+      {
+        roomNode.setProperty(IDENTIFIER_PROPERTY, identifier);
+        roomNode.setProperty(TYPE_PROPERTY, TYPE_ROOM_EXTERNAL);
         session.save();
       }
 
@@ -527,12 +555,16 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
   }
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService) {
+    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService);
+  }
+
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user, true);
     int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
 
-    Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+    HashMap<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, limit);
 
     rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
     if (isAdmin)
@@ -545,7 +577,7 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
       roomBean.setFullname(targetUserBean.getFullname());
       roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-      if (availableUsers.contains(targetUser))
+      if (availableUsers.keySet().contains(targetUser))
       {
         roomBean.setAvailableUser(true);
         roomBean.setStatus(targetUserBean.getStatus());
@@ -574,11 +606,11 @@ public class ChatServiceImpl extends AbstractJCRService implements ChatService
         }
       }
 
-      for (String availableUser: availableUsers)
+      for (UserBean availableUser: availableUsers.values())
       {
         RoomBean roomBean = new RoomBean();
-        roomBean.setUser(availableUser);
-        UserBean availableUserBean = userService.getUser(availableUser);
+        roomBean.setUser(availableUser.getName());
+        UserBean availableUserBean = userService.getUser(availableUser.getName());
         roomBean.setFullname(availableUserBean.getFullname());
         roomBean.setStatus(availableUserBean.getStatus());
         roomBean.setAvailableUser(true);

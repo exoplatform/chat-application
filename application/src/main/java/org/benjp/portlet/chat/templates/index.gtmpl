@@ -11,40 +11,6 @@
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
   data-weemo-key="<%=weemoKey%>"
-
-  data-label-panel-error1="&{benjp.chat.panel.error1}"
-  data-label-panel-error2="&{benjp.chat.panel.error2}"
-  data-label-panel-login1="&{benjp.chat.panel.login1}"
-  data-label-panel-login2="&{benjp.chat.panel.login2}"
-  data-label-panel-demo="&{benjp.chat.panel.demo}"
-  data-label-panel-public="&{benjp.chat.panel.public}"
-  data-label-display-name="&{benjp.chat.display.name}"
-  data-label-email="&{benjp.chat.email}"
-  data-label-save-profile="&{benjp.chat.save.profile}"
-  data-label-title="&{benjp.chat.title}"
-  data-label-new-messages="&{benjp.chat.new.messages}"
-  data-label-available="&{benjp.chat.available}"
-  data-label-away="&{benjp.chat.away}"
-  data-label-donotdisturb="&{benjp.chat.donotdisturb}"
-  data-label-invisible="&{benjp.chat.invisible}"
-  data-label-current-status="&{benjp.chat.current.status}"
-  data-label-no-messages="&{benjp.chat.no.messages}"
-  data-label-public-welcome="&{benjp.chat.public.welcome}"
-  data-label-support-fullname="&{benjp.chat.support.fullname}"
-  data-label-offline="&{benjp.chat.button.offline}"
-  data-label-users="&{benjp.chat.button.users}"
-  data-label-spaces="&{benjp.chat.button.spaces}"
-  data-label-quote="&{benjp.chat.quote}"
-  data-label-delete="&{benjp.chat.delete}"
-  data-label-deleted="&{benjp.chat.deleted}"
-  data-label-header-favorites="&{benjp.chat.favorites}"
-  data-label-header-people="&{benjp.chat.people}"
-  data-label-header-spaces="&{benjp.chat.spaces}"
-  data-label-header-teams="&{benjp.chat.teams}"
-  data-label-edit="&{benjp.chat.edit}"
-  data-label-msg-add-team-user="&{benjp.chat.team.msg.adduser}"
-  data-label-msg-remove-team-user="&{benjp.chat.team.msg.removeuser}"
-
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
@@ -64,7 +30,7 @@
       </span>
 
       <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
-        <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="Change your status"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
+        <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{benjp.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
         <ul class="dropdown-menu chat-status-panel">
           <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{benjp.chat.available}</a></li>
           <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{benjp.chat.away}</a></li>
@@ -81,13 +47,13 @@
       </label>
     </span>
     <span class="menu-standard pull-right">
-      <a href="#" type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}">
+      <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
+        <i class="icon-off"></i> Logout</a-->
+      <a type="button" class="btn btn-weemo-download" title="&{benjp.chat.button.install}" href="#">
         <i class="icon-download-alt"></i> &{benjp.chat.button.install}</a>
-
-      <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="Tip: use @ with username or space">
+      <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="&{benjp.chat.tip.search}">
         <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
       </div>
-
     </span>
   </div>
   <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
@@ -98,7 +64,7 @@
   <% } %>
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
     <div class="uiBox">
-      <div class="room-detail" id="room-detail">
+      <div class="room-detail no-user-selection" id="room-detail">
 
         <span class="room-detail-avatar" style="display:none">
           <div class="activityAvatar avatarCircle">
@@ -113,9 +79,9 @@
         </span>
 
         <span class="room-detail-button">
-          <a href="#" type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="Make a Video Call">
+          <a href="#" type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{benjp.chat.video.call}">
             <i class="uiIconChatVideo uiIconChatLightGray"></i> &{benjp.chat.button.call}</a>
-          <a href="#" type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="Join a Conference">
+          <a href="#" type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{benjp.chat.video.join}">
             <i class="uiIconChatVideo uiIconChatLightGray"></i> &{benjp.chat.button.join}</a>
         </span>
 
@@ -123,7 +89,7 @@
         <span class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="Edit team members"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{benjp.chat.edit}</div>
+              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{benjp.chat.team.edit}"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{benjp.chat.edit}</div>
             </li>
           </ul>
         </span>
@@ -139,7 +105,7 @@
       <div class="chat-message">
 
         <span class="pull-left" style="padding: 4px 0 0 18px;">
-          <span class="actionIcon actionIconSmile" data-toggle="tooltip" title="Show emoticons" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
+          <span class="actionIcon actionIconSmile" data-toggle="tooltip" title="&{benjp.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
           <span class="msg-emoticons-panel no-user-selection" style="display:none">
             <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
@@ -164,28 +130,28 @@
           </span>
         </span>
 
-        <div class="meeting-actions pull-right dropup" data-placement="left" data-toggle="tooltip" title="Show collaborative actions">
+        <div class="meeting-actions pull-right dropup  no-user-selection" data-placement="left" data-toggle="tooltip" title="&{benjp.chat.actions.show}">
           <div class="popover top meeting-action-popup">
             <div class="arrow">
             </div>
             <div class="popover-inner">
               
               <div class="popover-content meeting-action-content">
-                <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="Link">
+                <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{benjp.chat.link}">
                   <strong class="actionTitle">Share Link</strong>
                   <input type="text" class="input-with-value" id="share-link-text" placeholder="e.g: http://www.exoplatform.com" data-value="e.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
-                  	<a href="#" type="button" class="btn btn-primary share-link-button">Share</a>
+                  	<a href="#" type="button" class="btn btn-primary share-link-button">&{benjp.chat.share}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="File">
+                <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="&{benjp.chat.file}">
                   <strong class="actionTitle">Upload File</strong>
                   <span id="dropzone-container">
                     <div class="progressBar" id="dropzone">
                       <div class="progress">
                         <div class="bar" style="width: 0.0%;"></div>
-                        <div class="label">Drop your file here</div>
+                        <div class="label">&{benjp.chat.file.drop}</div>
                       </div>
                     </div>
                   </span>
@@ -195,40 +161,40 @@
                     <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
                     <div class="uiActionBorder">
 	                    <a href="#" class="btn btn-primary chat-file-upload" type="button">
-	                      <span>Select Manually</span>
+	                      <span>&{benjp.chat.file.manually}</span>
 	                      <input type="file" name="userfile" id="chat-file-file" />
 	                    </a>
 	                    <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
-	                    <input type="submit" value="Select file" id="chat-file-submit" style="display:none" />
+	                    <input type="submit" value="&{benjp.chat.file.select}" id="chat-file-submit" style="display:none" />
 	                </div>
                   </form>
                 </div>
-                <div class="meeting-action-panel meeting-action-question-panel" data-height="157" data-title="Question">
+                <div class="meeting-action-panel meeting-action-question-panel" data-height="157" data-title="&{benjp.chat.question}">
                   <strong class="actionTitle">&{benjp.chat.panel.question.header}</strong>
-                  <input type="text" class="input-with-value" id="question-text" data-value="What is your question?" placeholder="What is your question?">
+                  <input type="text" class="input-with-value" id="question-text" data-value="&{benjp.chat.question.what}" placeholder="&{benjp.chat.question.what}">
                   <div class="uiActionBorder">
-                  	<a href="#" type="button" class="btn btn-primary question-button">Ask</a>
-                    <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
+                  	<a href="#" type="button" class="btn btn-primary question-button">&{benjp.chat.ask}</a>
+                    <a href="#" type="button" class="btn btnClosePopup">&{benjp.chat.cancel}</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-hand-panel" data-height="157" data-title="Raise hand">
-                  <strong class="actionTitle">Raise hand</strong>
-                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="Optional comment" placeholder="Optional comment">
+                <div class="meeting-action-panel meeting-action-hand-panel" data-height="157" data-title="&{benjp.chat.raise.hand}">
+                  <strong class="actionTitle">&{benjp.chat.raise.hand}</strong>
+                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="&{benjp.chat.optional.comment}" placeholder="&{benjp.chat.optional.comment}">
                   <div class="uiActionBorder" >
-                  	<a href="#" type="button" class="btn btn-primary raise-hand-button">Raise your hand</a>
+                  	<a href="#" type="button" class="btn btn-primary raise-hand-button">&{benjp.chat.raise.your}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="Assign task">
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{benjp.chat.assign.task}">
                   <strong class="actionTitle">Assign Task</strong>
-                  <input type="text" class="input-with-value add-task" data-value="Task title" placeholder="Task title" id="task-add-task">
+                  <input type="text" class="input-with-value add-task" data-value="Task Title" placeholder="Task Title" id="task-add-task">
                   <input type="text" class="input-with-value" data-value="Assign to" placeholder="Assign to" id="task-add-user" >
                   <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="Due date" placeholder="Due date" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>
-                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{benjp.chat.cancel}</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="Add event">
@@ -238,37 +204,36 @@
                   <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-start-time">
-                      <option value="all-day">All Day</option>
+                      <option value="all-day">&{benjp.chat.all.day}</option>
                     </select>
                   </span>
                   <br>
-                  <span class="action-label" style="display: inline-block;width: 40px;">To: </span>
+                  <span class="action-label" style="display: inline-block;width: 40px;">&{benjp.chat.to}: </span>
                   <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-end-time">
-                      <option value="all-day">All Day</option>
+                      <option value="all-day">&{benjp.chat.all.day}</option>
                     </select>
                   </span>
                   <input type="text" class="input-with-value input-default" data-value="Location" placeholder="Location" id="">
                   <div class="uiActionBorder" >
-                  	<a href="#" type="button" class="btn btn-primary create-event-button">Post</a>
-                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
+                  	<a href="#" type="button" class="btn btn-primary create-event-button">&{benjp.chat.post}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{benjp.chat.cancel}</a>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
           <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconChatLightGray"></i></div>
           <ul class="dropdown-menu pull-right">
-            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> Add Event</a></li>
-            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> Assign Task</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> Share Link</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> Upload File</a></li>
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{benjp.chat.add.event}</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{benjp.chat.assign.task}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{benjp.chat.share.link}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> &{benjp.chat.upload.file}</a></li>
             <li class="divider"></li>
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
-            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconChatQuestion uiIconChatLightGray"></i> Ask a Question</a></li>
-            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand uiIconChatLightGray"></i> Raise Hand</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconChatQuestion uiIconChatLightGray"></i> &{benjp.chat.ask.question}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand uiIconChatLightGray"></i> &{benjp.chat.raise.hand}</a></li>
           </ul>
         </div>
 
@@ -295,13 +260,13 @@
 <div class="modal hide text-modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Text Discussion</h3>
+    <h3>&{benjp.chat.text.discussion}</h3>
   </div>
   <div class="modal-body">
     <textarea id="text-modal-area"></textarea>
   </div>
   <div class="modal-footer">
-    <a href="#" class="btn btn-primary text-modal-close">Close</a>
+    <a href="#" class="btn btn-primary text-modal-close">&{benjp.chat.close}</a>
   </div>
 </div>
 <!-- ################################## -->
@@ -355,20 +320,20 @@
 <!-- ################################## -->
 <div class="modal hide help-modal" style="display:none;">
   <div class="modal-header">
-    <h3>How to use Admin Command Line mode?</h3>
+    <h3>&{benjp.chat.howto1}</h3>
   </div>
   <div class="modal-body">
-    If you're a host or administrator, you have access to specific commands :
+    &{benjp.chat.howto2}
     <ul>
-      <li><b>/me [text]</b>: shows your name followed by the text you write. Ex: /me works from home ;</li>
-      <li><b>/call</b>: starts a one to one or conference call from the current room you're in ;</li>
-      <li><b>/join</b>: join an existing conference call ;</li>
-      <li><b>/terminate</b>: force terminate a call in the Chat - this doesn't close Video process ;</li>
-      <li><b>/export</b>: export current room's history (last 2000 messages by default) with text only format ;</li>
-      <li><b>/help</b>: well, if you're here, you already figured how this one works ;</li>
+      <li><b>/me [&{benjp.chat.howto3}]</b>: &{benjp.chat.howto4} ;</li>
+      <li><b>/call</b>: &{benjp.chat.howto5} ;</li>
+      <li><b>/join</b>: &{benjp.chat.howto6} ;</li>
+      <li><b>/terminate</b>: &{benjp.chat.howto7} ;</li>
+      <li><b>/export</b>: &{benjp.chat.howto8} ;</li>
+      <li><b>/help</b>: &{benjp.chat.howto9} ;</li>
     </ul>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">Close</button>
+    <button type="button" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">&{benjp.chat.close}</button>
   </div>
 </div>

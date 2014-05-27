@@ -22,6 +22,7 @@ package org.benjp.listener;
 import org.apache.commons.io.IOUtils;
 import org.benjp.model.SpaceBeans;
 import org.benjp.utils.ChatUtils;
+import org.benjp.utils.MessageDigester;
 import org.benjp.utils.PropertyManager;
 import org.exoplatform.portal.webui.util.Util;
 
@@ -62,7 +63,11 @@ public class ServerBootstrap {
 
   public static String getToken(String username)
   {
-    return callServer("getToken", "username="+username+"&tokenOnly=true");
+//    return callServer("getToken", "username="+username+"&tokenOnly=true");
+    String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
+    String in = username+passphrase;
+    String token = MessageDigester.getHash(in);
+    return token;
   }
 
   public static void setSpaces(String username, SpaceBeans beans)

@@ -63,7 +63,7 @@ public class ChatTools
   @Route("/createDemoUser")
   public Response.Content createDemoUser(String username, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -92,7 +92,7 @@ public class ChatTools
   @Route("/createDemoSpaces")
   public Response.Content createDemoSpaces(String username, String nbSpaces, String nbSpacesMax, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -144,7 +144,7 @@ public class ChatTools
   @Route("/getToken")
   public Response.Content getToken(String username, String passphrase, String tokenOnly)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -177,7 +177,7 @@ public class ChatTools
   @Route("/addUser")
   public Response.Content addUser(String username, String token, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -191,7 +191,7 @@ public class ChatTools
   @Route("/setAsAdmin")
   public Response.Content setAsAdmin(String username, String isAdmin, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -205,7 +205,7 @@ public class ChatTools
   @Route("/addUserFullNameAndEmail")
   public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -224,7 +224,7 @@ public class ChatTools
   @Route("/setSpaces")
   public Response.Content setSpaces(String username, String spaces, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -245,7 +245,7 @@ public class ChatTools
   @Route("/getUserFullName")
   public Response.Content getUserFullName(String username, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -259,7 +259,7 @@ public class ChatTools
   @Route("/updateUnreadTestMessages")
   public Response.Content updateUnreadTestMessages(String username, String room, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -289,7 +289,7 @@ public class ChatTools
   @Route("/initDB")
   public Response.Content initDB(String db, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -321,7 +321,7 @@ public class ChatTools
   @Route("/dropDB")
   public Response.Content dropDB(String db, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -345,7 +345,7 @@ public class ChatTools
   @Route("/ensureIndexes")
   public Response.Content ensureIndexes(String db, String passphrase)
   {
-    if (!PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
@@ -370,4 +370,21 @@ public class ChatTools
     return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
+
+  private boolean checkPassphrase(String passphrase)
+  {
+    boolean checkPP = false;
+
+    if (PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
+    {
+      checkPP = true;
+    }
+    if ("".equals(passphrase) || "chat".equals(passphrase))
+    {
+      log.info("ChatServer is not secured! please, change 'chatPassPhrase' property in conf/chat.properties");
+    }
+
+
+    return checkPP;
+  }
 }

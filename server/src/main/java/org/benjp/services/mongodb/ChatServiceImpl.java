@@ -321,7 +321,7 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
     coll.insert(doc);
-    coll.ensureIndex("timestamp");
+    ConnectionManager.getInstance().ensureIndexesInRoom(room);
     coll.remove(doc);
   }
 
@@ -349,6 +349,23 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     return room;
   }
 
+  public String getSpaceRoomByName(String name) {
+    String room = null;
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("shortName", name);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      room = doc.get("_id").toString();
+    }
+
+    return room;
+  }
+
   public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
@@ -363,6 +380,29 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
         basicDBObject.put("team", team);
         basicDBObject.put("user", user);
         basicDBObject.put("type", TYPE_ROOM_TEAM);
+        coll.insert(basicDBObject);
+        ensureIndexInRoom(room);
+      } catch (MongoException me) {
+        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+      }
+    }
+
+    return room;
+  }
+
+  public String getExternalRoom(String identifier) {
+    String room = ChatUtils.getExternalRoomId(identifier);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (!cursor.hasNext())
+    {
+      try {
+        basicDBObject.put("identifier", identifier);
+        basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
@@ -477,14 +517,18 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     return rooms;
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService)
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService) {
+    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService);
+  }
+
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user, true);
     int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
 
-    Collection<String> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin);
+    HashMap<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, limit);
 
     rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
     if (isAdmin)
@@ -493,20 +537,22 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
     for (RoomBean roomBean:rooms)
     {
       String targetUser = roomBean.getUser();
-      UserBean targetUserBean = userService.getUser(targetUser);
-      roomBean.setFullname(targetUserBean.getFullname());
       roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-      if (availableUsers.contains(targetUser))
+      if (availableUsers.keySet().contains(targetUser))
       {
-        roomBean.setAvailableUser(true);
+        UserBean targetUserBean = availableUsers.get(targetUser);
+        roomBean.setFullname(targetUserBean.getFullname());
         roomBean.setStatus(targetUserBean.getStatus());
+        roomBean.setAvailableUser(true);
         availableUsers.remove(targetUser);
         if (roomBean.getUnreadTotal()>0)
           unreadOnline += roomBean.getUnreadTotal();
       }
       else
       {
+        UserBean targetUserBean = userService.getUser(targetUser);
+        roomBean.setFullname(targetUserBean.getFullname());
         roomBean.setAvailableUser(false);
         if (!withOffline)
           roomsOffline.add(roomBean);
@@ -526,13 +572,12 @@ public class ChatServiceImpl implements org.benjp.services.ChatService
         }
       }
 
-      for (String availableUser: availableUsers)
+      for (UserBean availableUser: availableUsers.values())
       {
         RoomBean roomBean = new RoomBean();
-        roomBean.setUser(availableUser);
-        UserBean availableUserBean = userService.getUser(availableUser);
-        roomBean.setFullname(availableUserBean.getFullname());
-        roomBean.setStatus(availableUserBean.getStatus());
+        roomBean.setUser(availableUser.getName());
+        roomBean.setFullname(availableUser.getFullname());
+        roomBean.setStatus(availableUser.getStatus());
         roomBean.setAvailableUser(true);
         roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
         String status = roomBean.getStatus();
