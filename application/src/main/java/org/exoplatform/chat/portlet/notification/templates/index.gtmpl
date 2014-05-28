@@ -31,24 +31,24 @@
   </a>
   <ul class="dropdown-menu">
     <div id="chat-notifications-details">
-      <span class="chat-notification-loading no-user-selection">&{benjp.chat.loading}</span>
+      <span class="chat-notification-loading no-user-selection">&{exoplatform.chat.loading}</span>
       <li class="divider">&nbsp;</li>
     </div>
     <li>
-      <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">&{benjp.chat.available}</span></a>
+      <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.available}</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-selected"></div><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">&{benjp.chat.donotdisturb}</span></a>
+      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-selected"></div><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.donotdisturb}</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="away"><div class="chat-status-selected"></div><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">&{benjp.chat.away}</span></a>
+      <a href="#" class="chat-status" data-status="away"><div class="chat-status-selected"></div><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.away}</span></a>
     </li>
     <li>
-      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-selected"></div><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">&{benjp.chat.invisible}</span></a>
+      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-selected"></div><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.invisible}</span></a>
     </li>
     <li class="divider">&nbsp;</li>
     <li>
-      <a href="<%=chatPage%>" class="notif-chat-open-link" target="_chat"><div class="chat-status-open chat-status-icon"></div><span class="chat-label-status">&{benjp.chat.open.chat}</span></a>
+      <a href="<%=chatPage%>" class="notif-chat-open-link" target="_chat"><div class="chat-status-open chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.open.chat}</span></a>
     </li>
   </ul>
 </div>

@@ -100,7 +100,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 
   var im = this.messages.length;
   this.messages[im] = {"user": this.username,
-    "fullname": chatBundleData.benjp_chat_you,
+    "fullname": chatBundleData.exoplatform_chat_you,
     "date": "pending",
     "message": msg,
     "options": options,
@@ -270,11 +270,11 @@ ChatRoom.prototype.showMessages = function(msgs) {
   if (this.messages.length===0) {
     if (this.isPublic) {
       out = "<div class='msRow' style='padding:22px 20px;'>";
-      out += "<b><center>"+chatBundleData.benjp_chat_public_welcome+"</center></b>";
+      out += "<b><center>"+chatBundleData.exoplatform_chat_public_welcome+"</center></b>";
       out += "</div>";
     }
     else
-      out += "<div class='noMessage'><span class='text'>" + chatBundleData.benjp_chat_no_messages + "</span></div>";
+      out += "<div class='noMessage'><span class='text'>" + chatBundleData.exoplatform_chat_no_messages + "</span></div>";
   } else {
 
     var messages = TAFFY(this.messages);
@@ -314,7 +314,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
             if (thiss.isPublic) {
-              out += "          <a class='msNameUser' href='#'>" + chatBundleData.benjp_chat_support_fullname + "</a>";
+              out += "          <a class='msNameUser' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
             }
             else {
               out += "          <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
@@ -349,7 +349,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         var msgtemp = message.message;
         var noEditCssClass = "";
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+chatBundleData.benjp_chat_deleted+"</span>";
+          msgtemp = "<span class='contentDeleted'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
           noEditCssClass = "noEdit";
         } else {
           msgtemp = thiss.messageBeautifier(message.message);
@@ -365,10 +365,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type !== "DELETED") {
           out += "              <div class='msAction msg-actions' style='display:none;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
-            out += "              <a href='#' class='msg-action-edit'>" + chatBundleData.benjp_chat_edit + "</a>";
-            out += "              <a href='#' class='msg-action-delete'>" + chatBundleData.benjp_chat_delete + "</a>";
+            out += "              <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a>";
+            out += "              <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a>";
           }
-          out += "                <a href='#' class='msg-action-quote'>" + chatBundleData.benjp_chat_quote + "</a>";
+          out += "                <a href='#' class='msg-action-quote'>" + chatBundleData.exoplatform_chat_quote + "</a>";
           out += "              </div>";
         }
         out += "              </div>";
@@ -481,7 +481,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
 // TODO: check to new BD
 //          if (message.user != thiss.username) {
 //            if (thiss.isPublic)
-//              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.benjp_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
+//              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.exoplatform_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
 //            else
 //              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
 //          } else {
@@ -626,9 +626,9 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
     } else if (options.type ==="call-join") {
       out += "";
     } else if (options.type ==="call-on") {
-      out += chatBundleData.benjp_chat_meeting_started;
+      out += chatBundleData.exoplatform_chat_meeting_started;
     } else if (options.type==="call-off") {
-      out += chatBundleData.benjp_chat_meeting_finished;
+      out += chatBundleData.exoplatform_chat_meeting_finished;
       var tsold = Math.round(jzGetParam("weemoCallHandlerFrom"));
       var time = Math.round((options.timestamp*1000-tsold)/1000);
       var hours = Math.floor(time / 3600);
@@ -639,21 +639,21 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var stime = "<span class=\"msg-time\" style='font-weight: normal;'>";
       if (hours>0) {
         if (hours===1)
-          stime += hours+ " "+chatBundleData.benjp_chat_hour+" ";
+          stime += hours+ " "+chatBundleData.exoplatform_chat_hour+" ";
         else
-          stime += hours+ " "+chatBundleData.benjp_chat_hours+" ";
+          stime += hours+ " "+chatBundleData.exoplatform_chat_hours+" ";
       }
       if (minutes>0) {
         if (minutes===1)
-          stime += minutes+ " "+chatBundleData.benjp_chat_minute+" ";
+          stime += minutes+ " "+chatBundleData.exoplatform_chat_minute+" ";
         else
-          stime += minutes+ " "+chatBundleData.benjp_chat_minutes+" ";
+          stime += minutes+ " "+chatBundleData.exoplatform_chat_minutes+" ";
       }
       if (seconds>0) {
         if (seconds===1)
-          stime += seconds+ " "+chatBundleData.benjp_chat_second;
+          stime += seconds+ " "+chatBundleData.exoplatform_chat_second;
         else
-          stime += seconds+ " "+chatBundleData.benjp_chat_seconds;
+          stime += seconds+ " "+chatBundleData.exoplatform_chat_seconds;
       }
       stime += "</span>";
       out += stime;
@@ -668,7 +668,7 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
-          ">"+chatBundleData.benjp_chat_send_notes+"</a>" +
+          ">"+chatBundleData.exoplatform_chat_send_notes+"</a>" +
           " - " +
           "<a href='#' class='save-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
@@ -676,10 +676,10 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"2' " +
-          ">"+chatBundleData.benjp_chat_save_wiki+"</a>" +
+          ">"+chatBundleData.exoplatform_chat_save_wiki+"</a>" +
           "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.benjp_chat_sent + "</strong> " + chatBundleData.benjp_chat_check_mailbox + "</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.benjp_chat_saved + "</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.exoplatform_chat_sent + "</strong> " + chatBundleData.exoplatform_chat_check_mailbox + "</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.exoplatform_chat_saved + "</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
           "</div>";
       }
 
@@ -712,20 +712,20 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       out += "</div>";
     } else if (options.type==="type-add-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.benjp_chat_team_msg_adduser.replace("{0}", options.fullname).replace("{1}", users);
+      out += chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", options.fullname).replace("{1}", users);
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.benjp_chat_team_msg_removeuser.replace("{0}", options.fullname).replace("{1}", users);
+      out += chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", options.fullname).replace("{1}", users);
     } else if (options.type==="type-question" || options.type==="type-hand") {
       out += "<b>" + message + "</b>";
 // TODO review
 //=======
 //      var url = options.task+
-//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_assigned+" <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - "+chatBundleData.benjp_chat_ldue+" <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
+//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.exoplatform_chat_assigned+" <a href='/portal/intranet/profile/"+options.username+"' style='color:#AAA' target='_new'>"+options.fullname+"</a> - "+chatBundleData.exoplatform_chat_ldue+" <span style='color:#ac724f'>"+options.dueDate+"</span></div>";
 //      out += url;
 //    } else if (options.type==="type-event") {
 //      var url = options.summary+
-//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.benjp_chat_from+" "+options.startDate+" "+options.startTime+" "+chatBundleData.benjp_chat_to+" "+options.endDate+" "+options.endTime+"</div>";
+//        "<br><div style='font-weight: normal;color:#AAA;margin-top: 6px;'>"+chatBundleData.exoplatform_chat_from+" "+options.startDate+" "+options.startTime+" "+chatBundleData.exoplatform_chat_to+" "+options.endDate+" "+options.endTime+"</div>";
 //      out += url;
 //>>>>>>> origin/develop
     } else {
@@ -912,7 +912,7 @@ String.prototype.endsWith = function(suffix) {
             $obj.html('<div class="title">' +
               '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
               '<span class="fullname"></span>' +
-              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.benjp_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
+              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.exoplatform_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
               '</div>' +
               '<div class="history"></div>' +
               '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');

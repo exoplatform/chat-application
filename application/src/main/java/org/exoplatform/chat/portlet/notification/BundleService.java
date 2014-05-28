@@ -42,7 +42,7 @@ public class BundleService {
       {
         String value = bundle.getString(key).replaceAll("\"", "\\\\\"");
         String tkey = key.replaceAll("\\.", "_");
-        if (tkey.indexOf("benjp_")==0)
+        if (tkey.indexOf("exoplatform_")==0)
           sb.append(", \""+tkey+"\":\""+value+"\"");
       }
       sb.append("};");
