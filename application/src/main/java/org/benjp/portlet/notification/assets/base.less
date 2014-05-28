@@ -26,90 +26,6 @@
   box-shadow: 1px 2px 1px 0px rgba(35,44,48,0.8);
 }
 
-/*
-.chat-icon {
-  .background(-80px, -16px);
-  height: 22px;
-}
-.chat-status-available-black {
-  .background(0, -49px);
-}
-.chat-status-available {
-  .background(0, -32px);
-}
-.chat-status-donotdisturb-black {
-  .background(-34px, -49px);
-}
-.chat-status-donotdisturb {
-  .background(-34px, -32px);
-}
-.chat-status-away-black {
-  .background(-17px, -49px);
-}
-.chat-status-away {
-  .background(-17px, -32px);
-}
-.chat-status-invisible-black {
-  .background(-51px, -49px);
-}
-.chat-status-invisible {
-  .background(-51px, -32px);
-}
-.chat-status-offline-black {
-  .background(-68px, -49px);
-}
-.chat-status-open {
-  .background(-80px, -16px);
-}
-.chat-label-status {
-  line-height: 21px;
-  vertical-align: top;
-  margin: 0 8px;
-  display: inline-block;
-  .content {
-    line-height: 16px;
-  }
-  .timestamp {
-    line-height: 16px;
-    font-size: 10px;
-    color: #CCC;
-  }
-}
-.chat-status-icon {
-  width: 17px;
-  height: 16px;
-  display: inline-block;
-  margin-top: 2px;
-}
-
-.chat-status-selected {
-  width: 17px;
-  display: inline-block;
-  vertical-align: top;
-  font-size: 16px;
-}
-*/
-
-/*
-.uiChatIcon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  vertical-align: text-top;
-  .background(-80px, -16px);
-}
-
-.uiChatIcon:hover {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  vertical-align: text-top;
-  .background(-80px, -32px);
-}
-*/
-
 .uiNotifChatIcon {
   display: inline-block;
   width: 21px;
@@ -121,24 +37,6 @@
   position: relative;
 }
 
-/*
-.uiNotifMessageIcon {
-  display: inline-block;
-  width: 21px;
-  height: 21px;
-  line-height: 21px;
-  vertical-align: text-top;
-  background: url('@{imgPath}notif-message-white.png') no-repeat;
-  background-size: 21px;
-  vertical-align: middle;
-  margin-right: 10px;
-}
-*/
-/*
-.dropdown-menu>li>a:hover>[class^="chat-status"] {
-  background-image: url('@{imgPath}general-white.png');
-}
-*/
 .platform-blue {
   background-color: #4f72ac;
 }
@@ -386,4 +284,47 @@
 
 .uiNotifChatTitle {
   display: inline-block;
+}
+
+/*  */
+.chat-status-icon {
+	display: inline-block;
+	.square(16px);
+	background-image: url("@{iconStatusPath}/uiIconChatColor.png");
+	background-repeat: no-repeat;
+	background-color: transparent;
+	vertical-align: middle;
+}
+.chat-status-available {
+  background-position: 0 0;
+}
+.chat-status-donotdisturb{
+  background-position: -20px 0;
+}
+.chat-status-away {
+  background-position: -40px 0;
+}
+.chat-status-invisible {
+  background-position: -60px 0;
+}
+
+.chatStatusPortlet {
+	.dropdown-menu {
+		> li {
+			> a {
+				position: relative;
+			}
+		}
+		.chat-label-status {
+			vertical-align: middle;
+		}
+		.chat-status-icon {
+			margin-right: 10px;
+		}
+		.chat-status-selected {
+			position: absolute;
+			right: 6px;
+			top: 5px;
+		}
+	}
 }
