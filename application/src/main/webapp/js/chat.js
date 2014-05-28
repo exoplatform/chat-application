@@ -821,11 +821,7 @@ var chatApplication = new ChatApplication();
         $uitext.focus();
 
         // Set form position to screen center
-        var centerTop = (jqchat(window).height() - jqchat(".team-modal").height()) / 2;
-        centerTop = centerTop >= 0 ? centerTop : jqchat(".team-modal").offset().top;
-        var centerLeft = (jqchat(window).width() - jqchat(".team-modal").width()) / 2;
-        centerLeft = centerLeft >= 0 ? centerLeft : jqchat(".team-modal").offset().left;
-        jqchat(".team-modal").offset({top: centerTop, left: centerLeft})
+        chatApplication.setModalToCenter('.team-modal');
       });
 
     });
@@ -1979,6 +1975,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     jqchat("#edit-modal-area").val(msgHtml);
     jqchat("#edit-modal-area").attr("data-id", msgId);
     jqchat('.edit-modal').modal({"backdrop": false});
+    chatApplication.setModalToCenter('.edit-modal');
 
   });
 
@@ -2082,6 +2079,18 @@ ChatApplication.prototype.errorOnRefresh = function() {
   this.hidePanel(".chat-login-panel");
   chatNotification.changeStatusChat("offline");
   this.showErrorPanel();
+};
+
+ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
+  if (modalFormClass !== undefined) {
+
+    // Set form position to screen center
+    var centerTop = (jqchat(window).height() - jqchat(modalFormClass).height()) / 2;
+    centerTop = centerTop >= 0 ? centerTop : jqchat(modalFormClass).offset().top;
+    var centerLeft = (jqchat(window).width() - jqchat(modalFormClass).width()) / 2;
+    centerLeft = centerLeft >= 0 ? centerLeft : jqchat(modalFormClass).offset().left;
+    jqchat(modalFormClass).offset({top: centerTop, left: centerLeft})
+  }
 };
 
 /**
@@ -2188,13 +2197,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
     $uitext.focus();
 
-
-    // Set form position to screen center
-    var centerTop = (jqchat(window).height() - jqchat(".team-modal").height()) / 2;
-    centerTop = centerTop >= 0 ? centerTop : jqchat(".team-modal").offset().top;
-    var centerLeft = (jqchat(window).width() - jqchat(".team-modal").width()) / 2;
-    centerLeft = centerLeft >= 0 ? centerLeft : jqchat(".team-modal").offset().left;
-    jqchat(".team-modal").offset({top: centerTop, left: centerLeft})
+    chatApplication.setModalToCenter('.team-modal');
   });
 
   jqchat(".btn-history").on("click", function() {
