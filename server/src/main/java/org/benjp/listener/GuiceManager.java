@@ -1,14 +1,14 @@
 package org.benjp.listener;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.benjp.services.jcr.JCRModule;
-import org.benjp.services.mongodb.MongoModule;
-import org.benjp.utils.PropertyManager;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.logging.Logger;
+
+import org.benjp.services.mongodb.MongoModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class GuiceManager implements ServletContextListener
 {
@@ -40,15 +40,8 @@ public class GuiceManager implements ServletContextListener
   {
     if (injector_==null)
     {
-      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
-      {
+//      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
         injector_ = Guice.createInjector(new MongoModule());
-      }
-      else
-      {
-        injector_ = Guice.createInjector(new JCRModule());
-      }
-
     }
   }
 }

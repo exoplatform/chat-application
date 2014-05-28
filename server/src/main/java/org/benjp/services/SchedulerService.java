@@ -55,18 +55,10 @@ public class SchedulerService
       sched = sf.getScheduler();
       JobDetail notificationCleanupJob;
 
-      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
-      {
-        notificationCleanupJob = newJob(org.benjp.services.mongodb.NotificationCleanupJob.class)
-                .withIdentity("notificationCleanupJobMongo", "chatServer")
-                .build();
-      }
-      else
-      {
-        notificationCleanupJob = newJob(org.benjp.services.jcr.NotificationCleanupJob.class)
-                .withIdentity("notificationCleanupJobJCR", "chatServer")
-                .build();
-      }
+//      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+      notificationCleanupJob = newJob(org.benjp.services.mongodb.NotificationCleanupJob.class)
+              .withIdentity("notificationCleanupJobMongo", "chatServer")
+              .build();
 
       CronTrigger notificationTrigger = newTrigger()
               .withIdentity("notificationTrigger", "chatServer")

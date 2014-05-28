@@ -19,9 +19,18 @@
 
 package org.benjp.server;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import javax.enterprise.context.ApplicationScoped;
+
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
+
 import org.benjp.listener.ConnectionManager;
 import org.benjp.listener.GuiceManager;
 import org.benjp.model.SpaceBean;
@@ -30,16 +39,8 @@ import org.benjp.services.ChatService;
 import org.benjp.services.NotificationService;
 import org.benjp.services.TokenService;
 import org.benjp.services.UserService;
-import org.benjp.services.jcr.JCRBootstrap;
 import org.benjp.utils.ChatUtils;
 import org.benjp.utils.PropertyManager;
-
-import javax.enterprise.context.ApplicationScoped;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatTools
@@ -294,20 +295,13 @@ public class ChatTools
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+//    if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
+    if (db == null)
     {
-      if (db == null)
-      {
-        return Response.notFound("{ \"message\": \"db is null\"}");
-      }
-
-      ConnectionManager.getInstance().getDB(db);
-    }
-    else
-    {
-      JCRBootstrap.initChat();
+      return Response.notFound("{ \"message\": \"db is null\"}");
     }
 
+    ConnectionManager.getInstance().getDB(db);
 
     StringBuffer data = new StringBuffer();
     data.append("{");
