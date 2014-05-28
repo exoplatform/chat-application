@@ -312,9 +312,14 @@ table.list-rooms {
 	.actionIconSmile{
 		padding: 2px;
 	}
-	
   .meeting-actions {
     margin: 4px 17px 0 0;
+
+    .tooltip {
+      pointer-events:none;
+      left: -170px!important;
+      top: -5px!important;
+    }
 
     .meeting-action-link {
       display: block;
@@ -338,7 +343,14 @@ table.list-rooms {
       padding: 8px 10px 8px 14px;
       line-height: 25px;
     }
-    
+
+    .meeting-action-toggle{
+      padding: 0;
+      > span {
+        padding: 2px 4px;
+      }
+    }
+
     .popover-inner{
     	.popover-content{
     		.uiActionBorder{
