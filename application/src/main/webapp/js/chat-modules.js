@@ -274,7 +274,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
       out += "</div>";
     }
     else
-      out += "<div class='noMessage'>" + chatBundleData.benjp_chat_no_messages + "</div>";
+      out += "<div class='noMessage'><span class='text'>" + chatBundleData.benjp_chat_no_messages + "</span></div>";
   } else {
 
     var messages = TAFFY(this.messages);

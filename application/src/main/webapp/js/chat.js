@@ -284,6 +284,7 @@ var chatApplication = new ChatApplication();
 
     function hideMeetingPanel() {
       $(".meeting-action-popup").css("display", "none");
+      $(".meeting-action-toggle").removeClass("active");
     }
 
     $(".input-with-value").on("click", function() {

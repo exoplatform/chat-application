@@ -98,7 +98,7 @@
 
       <div id="chats">
       
-      	<div class="noContent"></div>
+      	<div class="noContent"><span class="text">&{benjp.chat.no.conversation}</span></div>
       
       </div>
 
@@ -130,7 +130,7 @@
           </span>
         </span>
 
-        <div class="meeting-actions pull-right dropup  no-user-selection" data-placement="left" data-toggle="tooltip" title="&{benjp.chat.actions.show}">
+        <div class="meeting-actions pull-right dropup  no-user-selection">
           <div class="popover top meeting-action-popup">
             <div class="arrow">
             </div>
@@ -139,7 +139,7 @@
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{benjp.chat.link}">
                   <strong class="actionTitle">Share Link</strong>
-                  <input type="text" class="input-with-value" id="share-link-text" placeholder="e.g: http://www.exoplatform.com" data-value="e.g: http://www.exoplatform.com">
+                  <input type="text" class="input-with-value" id="share-link-text" placeholder="E.g: http://www.exoplatform.com" data-value="E.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">&{benjp.chat.share}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
@@ -224,7 +224,7 @@
               </div>
             </div>
           </div>
-          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><i class="uiIconChatAction uiIconChatLightGray"></i></div>
+          <div class="actionIcon meeting-action-toggle" data-toggle="dropdown"><span data-placement="left" data-toggle="tooltip" title="&{benjp.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{benjp.chat.add.event}</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{benjp.chat.assign.task}</a></li>
