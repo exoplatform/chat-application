@@ -307,7 +307,15 @@
 .chat-status-invisible {
   background-position: -60px 0;
 }
-
+.chat-status-icon.chat-status-open {
+  background-image: url("@{iconStatusPath}/uiIconChatBlue.png");
+  background-position: -180px 0;
+}
+.notif-chat-open-link:hover {
+  .chat-status-open {
+    background-image: url("@{iconStatusPath}/uiIconChatWhite.png");
+  }
+}
 .chatStatusPortlet {
 	.dropdown-menu {
 		> li {
