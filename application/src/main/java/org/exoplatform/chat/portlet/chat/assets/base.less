@@ -245,13 +245,16 @@ table.list-rooms {
       float: right;
       margin: 7px 0 0 -100%;
     }
-    .team-user-fullname, .task-user-fullname {
-      font-weight: bold;
-    }
-    .team-user-name, .task-user-name  {
-      color: #999;
-    }
   }
+}
+.team-user-fullname, .task-user-fullname {
+  font-weight: normal;
+  > b {
+    font-weight: bold;
+  }
+}
+.team-user-name, .task-user-name  {
+  color: #999;
 }
 
 .team-users-results {
