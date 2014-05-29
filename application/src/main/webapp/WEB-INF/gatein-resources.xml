@@ -1,0 +1,30 @@
+<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_resources_1_3 http://www.gatein.org/xml/ns/gatein_resources_1_3"
+                  xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_3">
+    <portlet>
+        <name>ChatApplication</name>
+        <module>
+            <depends>
+                <module>uiMiniCalendar</module>
+            </depends>
+        </module>
+    </portlet>
+    <module>
+        <name>uiMiniCalendar</name>
+        <script>
+            <path>/js/UIMiniCalendar.js</path>
+        </script>
+        <depends>
+            <module>common</module>
+        </depends>
+        <depends>
+            <module>base</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
+        </depends>
+        <depends>
+            <module>I18NMessage</module>
+        </depends>
+    </module>
+</gatein-resources>

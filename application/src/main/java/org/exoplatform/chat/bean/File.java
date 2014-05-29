@@ -47,6 +47,10 @@ public class File implements Comparable<File> {
     return "/rest/jcr/repository/collaboration"+path;
   }
 
+  public String getDownloadLink() {
+    return "/rest/private/contents/download/collaboration" + path;
+  }
+
   public String getPath() {
     return path;
   }
@@ -104,6 +108,7 @@ public class File implements Comparable<File> {
       sb.append("\"owner\": \""+this.getOwner()+"\",");
       sb.append("\"createdDate\": \""+this.getCreatedDate()+"\",");
       sb.append("\"restPath\": \""+this.getRestPath()+"\",");
+      sb.append("\"downloadLink\": \""+this.getDownloadLink()+"\",");
       sb.append("\"uuid\": \""+this.getUuid()+"\",");
       sb.append("\"path\": \""+this.getPath()+"\",");
       sb.append("\"publicUrl\": \""+this.getPublicUrl()+"\",");
