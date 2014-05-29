@@ -47,6 +47,28 @@
 
 #chat-notifications-details {
   display: none;
+  .chat-notification-detail {
+    display: block;
+    img {
+      float: left;
+      margin-right: 10px;
+      margin-top: 4px;
+    }
+    .chat-label-status {
+      overflow: hidden;
+    }
+    .timestamp {
+      font-size: 12px;
+      line-height: 18px;
+      color: #999;
+    }
+    &:hover {
+      color: #fff;
+      .timestamp  {
+        color: #fff;
+      }
+    }
+  }
 }
 .chat-notification-loading {
   padding-left: 10px;
@@ -318,6 +340,7 @@
 }
 .chatStatusPortlet {
 	.dropdown-menu {
+    min-width: 200px;
 		> li {
 			> a {
 				position: relative;
