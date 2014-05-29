@@ -365,8 +365,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type !== "DELETED") {
           out += "              <div class='msAction msg-actions' style='display:none;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"'>"+message.message+"</span>";
           if (message.user === thiss.username) {
-            out += "              <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a>";
-            out += "              <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a>";
+            out += "              <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a> |";
+            out += "              <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a> |";
           }
           out += "                <a href='#' class='msg-action-quote'>" + chatBundleData.exoplatform_chat_quote + "</a>";
           out += "              </div>";
