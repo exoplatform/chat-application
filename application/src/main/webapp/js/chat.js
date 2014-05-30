@@ -780,7 +780,7 @@ var chatApplication = new ChatApplication();
             var name = $(this).attr("data-name");
             users = users.filter({name:{"!is":name}});
           });
-
+          var filterRegExp = new RegExp( "(" + filter + ")" , 'gi' );
           users.order("fullname").limit(5).each(function (user, number) {
             $userResults.css("display", "block");
             if (user.status == "offline") user.status = "invisible";
@@ -788,7 +788,7 @@ var chatApplication = new ChatApplication();
             if (number === 0) classSel = prefix+"-user-selected"
             html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
             html += " <span class='chat-user-name'><span class='inner'>";
-            html += "  <span class='"+prefix+"-user-fullname'>"+user.fullname+"</span>";
+            html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
             html += " </span></span>";
             html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
@@ -1629,7 +1629,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * FAVORITES
    */
-  out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
+  out += "<tr class='header-room header-favorites "+(this.showFavorites ? "open":"") + "'><td colspan='3' style='border-top: 0;'>";
   if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_favorites;
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
@@ -1664,7 +1664,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * USERS
    */
-  out += "<tr class='header-room header-people'><td colspan='3'>";
+  out += "<tr class='header-room header-people "+(this.showPeople ? "open":"") + "'><td colspan='3'>";
   if (this.showPeople) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_people;
   out += '<span class="room-total total-people"></span>';
@@ -1700,7 +1700,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * TEAMS
    */
-  out += "<tr class='header-room header-teams'><td colspan='3'>";
+  out += "<tr class='header-room header-teams "+(this.showTeams ? "open":"") + "'><td colspan='3'>";
   if (this.showTeams) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_teams;
   out += '<span class="room-total total-teams"></span>';
@@ -1736,7 +1736,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * SPACES
    */
-  out += "<tr class='header-room header-spaces'><td colspan='3'>";
+  out += "<tr class='header-room header-spaces "+(this.showSpaces ? "open":"") + "'><td colspan='3'>";
   if (this.showSpaces) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_spaces;
   out += '<span class="room-total total-spaces"></span>';
