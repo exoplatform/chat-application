@@ -29,7 +29,7 @@
 	  selectedDate : null, // Datetime value of input date&time field
 	  months : null,
 	
-	  firstDayOfWeek : 1,// Indecates what the first day of the week is; e.g.,
+	  firstDayOfWeek : 2,// Indecates what the first day of the week is; e.g.,
 	                      // SUNDAY (1) in the U.S, MONDAY (2) in France, TUESDAY
 	                      // (3), etc
 	  weekdays : null,
