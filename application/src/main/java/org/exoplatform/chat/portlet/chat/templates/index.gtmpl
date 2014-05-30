@@ -80,9 +80,9 @@
 
         <span class="room-detail-button">
           <a href="#" type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
-            <i class="uiIconChatVideo uiIconChatLightGray"></i> &{exoplatform.chat.button.call}</a>
+            <i class="uiIconChatVideo uiIconChatWhite"></i> &{exoplatform.chat.button.call}</a>
           <a href="#" type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
-            <i class="uiIconChatVideo uiIconChatLightGray"></i> &{exoplatform.chat.button.join}</a>
+            <i class="uiIconChatVideo uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
         </span>
 
 
