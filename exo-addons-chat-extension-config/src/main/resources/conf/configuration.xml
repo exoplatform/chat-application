@@ -48,6 +48,9 @@
               <value>
                 <string>chat-extension</string>
               </value>
+              <value>
+                <string>Chat</string>
+              </value>
             </collection>
           </field>
           <!-- The name of the target dependency -->
