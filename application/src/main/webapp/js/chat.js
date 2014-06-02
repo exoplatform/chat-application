@@ -471,7 +471,8 @@ var chatApplication = new ChatApplication();
       if (username === "" || fullname === "" || task === "" || dueDate === "") {
         return;
       }
-
+      
+      setActionButtonEnabled('.create-task-button', false);
       $.ajax({
         url: chatApplication.jzCreateTask,
         data: {"username": username,
@@ -491,11 +492,12 @@ var chatApplication = new ChatApplication();
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
           hideMeetingPanel();
-
+          setActionButtonEnabled('.create-task-button', true);
 
         },
         error:function (xhr, status, error){
           console.log("error");
+          setActionButtonEnabled('.create-task-button', true);
         }
       });
 
@@ -529,37 +531,24 @@ var chatApplication = new ChatApplication();
 
     });
 
-//    var taskDate = $('#task-add-date').datepicker({
-//      onRender: function(date) {
-//        var nowTemp = new Date();
-//        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-//        return date.valueOf() < now.valueOf() ? 'disabled' : '';
-//      }
-//    }).on('changeDate', function(ev){
-//        taskDate.hide();
-//    }).on('show', function(ev){
-//        jqchat('.datepicker').each(function (){
-//          var top = jqchat(this).position().top - 160;
-//          var left = jqchat(this).position().left - 230;
-//          jqchat(this).css("top", top+"px");
-//          jqchat(this).css("left", left+"px");
-//        });
-//    }).data('datepicker');
-      var taskAddDate = document.getElementById('task-add-date');
-      taskAddDate.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
-      };
-      taskAddDate.onkeyup=function(){
-        uiMiniCalendar.show();
-      };
-      taskAddDate.onkeydown=function(event){
-        uiMiniCalendar.onTabOut(event);
-      };
-      taskAddDate.onclick=function(event){
-        event.cancelBubble = true;
-      };
+    function setMiniCalendarToDateField(dateFieldId) {
+		  var dateField = document.getElementById(dateFieldId);
+		  dateField.onfocus=function(){
+		    uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
+		  };
+		  dateField.onkeyup=function(){
+		    uiMiniCalendar.show();
+		  };
+		  dateField.onkeydown=function(event){
+		    uiMiniCalendar.onTabOut(event);
+		  };
+		  dateField.onclick=function(event){
+		    event.cancelBubble = true;
+		  };
+    };
+    setMiniCalendarToDateField('task-add-date');
 
-      $(".create-event-button").on("click", function() {
+    $(".create-event-button").on("click", function() {
       var space = chatApplication.targetFullname;
       var summary = $("#event-add-summary").val();
       var startDate = $("#event-add-start-date").val();
@@ -576,7 +565,7 @@ var chatApplication = new ChatApplication();
       if (targetUser.indexOf("team-")>-1) {
         users = $("#chat-file-target-user").val();
       }
-
+      setActionButtonEnabled('.create-event-button', false);
 
       $.ajax({
         url: chatApplication.jzCreateEvent,
@@ -603,15 +592,26 @@ var chatApplication = new ChatApplication();
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
           hideMeetingPanel();
-
+          setActionButtonEnabled('.create-event-button', true);
 
         },
         error:function (xhr, status, error){
           console.log("error");
+          setActionButtonEnabled('.create-event-button', true);
         }
       });
 
     });
+     
+     function setActionButtonEnabled(btnClass, isEnabled) {
+       if (isEnabled) {
+         $(btnClass).css('cursor', "default");
+         $(btnClass).removeAttr('disabled');
+       } else {
+         $(btnClass).css('cursor', "progress");
+         $(btnClass).attr('disabled','disabled');
+       }
+     };
 
     $("#event-add-start-time").on("change", function() {
       var time = $(this).val();
@@ -621,71 +621,8 @@ var chatApplication = new ChatApplication();
       $("#event-add-end-time").val(hh+":"+time.split(":")[1]);
     });
 
-//    var startDate = $('#event-add-start-date').datepicker({
-//      onRender: function(date) {
-//        var nowTemp = new Date();
-//        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-//        return date.valueOf() < now.valueOf() ? 'disabled' : '';
-//      }
-//    }).on('changeDate', function(ev){
-//        var newDate = new Date(ev.date);
-//        if (ev.date.valueOf() > endDate.date.valueOf()) {
-//          endDate.setValue(newDate);
-//        }
-//        startDate.setValue(newDate);
-//        startDate.hide();
-//    }).on('show', function(ev){
-//      jqchat('.datepicker').each(function (){
-//        var top = jqchat(this).position().top - 160;
-//        var left = jqchat(this).position().left - 230;
-//        jqchat(this).css("top", top+"px");
-//        jqchat(this).css("left", left+"px");
-//      });
-//    }).data('datepicker');
-      var taskAddDate = document.getElementById('event-add-start-date');
-      taskAddDate.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
-      };
-      taskAddDate.onkeyup=function(){
-        uiMiniCalendar.show();
-      };
-      taskAddDate.onkeydown=function(event){
-        uiMiniCalendar.onTabOut(event);
-      };
-      taskAddDate.onclick=function(event){
-        event.cancelBubble = true;
-      };
-
-
-//   var endDate = $('#event-add-end-date').datepicker({
-//      onRender: function(date) {
-//        var nowTemp = new Date();
-//        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-//        return ( date.valueOf() < now.valueOf() || date.valueOf() < startDate.date.valueOf()) ? 'disabled' : '';
-//      }
-//    }).on('changeDate', function(ev){
-//        endDate.hide();
-//    }).on('show', function(ev){
-//      jqchat('.datepicker').each(function (){
-//        var top = jqchat(this).position().top - 160;
-//        var left = jqchat(this).position().left - 230;
-//        jqchat(this).css("top", top+"px");
-//        jqchat(this).css("left", left+"px");
-//      });
-//    }).data('datepicker');
-      var taskAddDate = document.getElementById('event-add-end-date');
-      taskAddDate.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
-      };
-      taskAddDate.onkeyup=function(){
-        uiMiniCalendar.show();
-      };
-      taskAddDate.onkeydown=function(event){
-        uiMiniCalendar.onTabOut(event);
-      };
-      taskAddDate.onclick=function(event){
-        event.cancelBubble = true;
-      };
+    setMiniCalendarToDateField('event-add-start-date');
+    setMiniCalendarToDateField('event-add-end-date');
 
     addTimeOptions("#event-add-start-time");
     addTimeOptions("#event-add-end-time");
