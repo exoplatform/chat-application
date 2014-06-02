@@ -76,7 +76,6 @@ public class NotificationApplication
     remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
-    String chatWeemoKey = PropertyManager.getProperty(PropertyManager.PROPERTY_WEEMO_KEY);
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
@@ -88,7 +87,6 @@ public class NotificationApplication
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
-            .set("weemoKey", chatWeemoKey)
             .set("title", title)
             .set("messages", messages)
             .render();

@@ -10,7 +10,6 @@
   data-public-mode-enabled="<%=publicModeEnabled%>"
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
-  data-weemo-key="<%=weemoKey%>"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>
@@ -49,8 +48,6 @@
     <span class="menu-standard pull-right">
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
-      <a type="button" class="btn btn-weemo-download" title="&{exoplatform.chat.button.install}" href="#">
-        <i class="icon-download-alt"></i> &{exoplatform.chat.button.install}</a>
       <div class="uiSearchForm uiSearchInput pull-right" style="margin-top: 6px;" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
         <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
       </div>
@@ -79,10 +76,6 @@
         </span>
 
         <span class="room-detail-button">
-          <a href="#" type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
-            <i class="uiIconChatVideo uiIconChatWhite"></i> &{exoplatform.chat.button.call}</a>
-          <a href="#" type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
-            <i class="uiIconChatVideo uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
         </span>
 
 

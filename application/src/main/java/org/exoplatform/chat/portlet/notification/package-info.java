@@ -33,7 +33,6 @@
                 @Script(src = "js/taffy-min.js", id="taffy"),
                 @Script(src = "js/snack-min.js", id = "snack"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/Modal.js", depends = "jquery"),
                 @Script(src = "js/notif.js", id = "notif", depends = {"jquery", "snack", "juzu-utils", "taffy"}),
                 @Script(src = "js/jquery.filedrop.js", id = "filedrop", depends = "notif")
         },

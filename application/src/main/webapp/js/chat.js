@@ -9,7 +9,6 @@ var chatApplication = new ChatApplication();
      * Init Chat
      */
     var $chatApplication = $("#chat-application");
-    chatApplication.attachWeemoExtension(weemoExtension);
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
@@ -833,17 +832,6 @@ var chatApplication = new ChatApplication();
 
     });
 
-
-    $(".btn-weemo").on("click", function() {
-      if (!$(this).hasClass("disabled"))
-        chatApplication.createWeemoCall();
-    });
-
-    $(".btn-weemo-conf").on("click", function() {
-      if (!$(this).hasClass("disabled"))
-        chatApplication.joinWeemoCall();
-    });
-
     $(".text-modal-close").on("click", function() {
       $('.text-modal').modal('hide');
     });
@@ -962,7 +950,6 @@ var chatApplication = new ChatApplication();
  */
 function ChatApplication() {
   this.isLoaded = false;
-  this.weemoExtension = "";
   this.isPublic = false;
   this.publicModeEnabled = false;
   this.chatFullscreen = "false";
@@ -1034,16 +1021,6 @@ function ChatApplication() {
 
 
 }
-
-
-/**
- * Attach Weemo Extension
- * @param weemoExtension WeemoExtension Object
- */
-ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
-  this.weemoExtension = weemoExtension;
-};
-
 
 /**
  * Create demo user
@@ -1879,9 +1856,6 @@ ChatApplication.prototype.loadRoom = function() {
       thiss.room = room;
       var $msg = jqchat('#msg');
       $msg.removeAttr("disabled");
-      if (thiss.weemoExtension.isConnected) {
-        jqchat(".btn-weemo").removeClass('disabled');
-      }
       if (thiss.isDesktopView()) $msg.focus();
 
     });
@@ -2344,38 +2318,6 @@ ChatApplication.prototype.setStatusInvisible = function() {
   chatApplication.setStatus("invisible");
 };
 
-ChatApplication.prototype.createWeemoCall = function() {
-  console.log("targetUser : "+chatApplication.targetUser);
-  console.log("targetFullname   : "+chatApplication.targetFullname);
-
-  var chatMessage = {
-    "url" : chatApplication.jzChatSend,
-    "user" : chatApplication.username,
-    "fullname" : chatApplication.fullname,
-    "targetUser" : chatApplication.targetUser,
-    "room" : chatApplication.room,
-    "token" : chatApplication.token
-  };
-  weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
-
-  //this.weemoExtension.createWeemoCall(this.targetUser, this.fullname);
-};
-
-ChatApplication.prototype.joinWeemoCall = function() {
-  console.log("targetUser : "+chatApplication.targetUser);
-  console.log("targetFullname   : "+chatApplication.targetFullname);
-
-  var chatMessage = {
-    "url" : chatApplication.jzChatSend,
-    "user" : chatApplication.username,
-    "fullname" : chatApplication.fullname,
-    "targetUser" : chatApplication.targetUser,
-    "room" : chatApplication.room,
-    "token" : chatApplication.token
-  };
-  weemoExtension.joinWeemoCall(chatMessage);
-};
-
 /**
  * Send message to server
  * @param msg : the msg to send
@@ -2395,19 +2337,12 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.username = this.username;
       options.fullname = this.fullname;
       sendMessageToServer = true;
-    } else if (msg.indexOf("/call")===0) {
-      this.createWeemoCall();
-    } else if (msg.indexOf("/join")===0) {
-      this.joinWeemoCall();
     } else if (msg.indexOf("/terminate")===0) {
       ts = Math.round(new Date().getTime() / 1000);
       msg = chatBundleData.exoplatform_chat_call_terminated;
       options.timestamp = ts;
       options.type = "call-off";
-      this.weemoExtension.setCallOwner(false);
-      this.weemoExtension.setCallActive(false);
       sendMessageToServer = true;
-      this.weemoExtension.hangup();
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {

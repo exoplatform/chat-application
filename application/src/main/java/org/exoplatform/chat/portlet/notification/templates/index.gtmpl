@@ -8,7 +8,6 @@
   data-chat-server-url="<%=chatServerURL%>"
   data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
-  data-weemo-key="<%=weemoKey%>"
         class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
   <div style="display: none;">
     <audio id="chat-audio-notif" controls preload="auto" autobuffer>
@@ -21,7 +20,6 @@
   <a class="dropdown-toggle" data-toggle="dropdown">
     <!--i class="uiNotifMessageIcon"></i-->
     <div class="uiNotifChatIcon">
-      <div class="weemo-status"><img src="/chat/img/empty.png" width="8px" height="8px"></div>
       <span id="chat-notification" style="float: right; display: none;"></span>
     </div>
     <% if (!"---".equals(title)) { %>

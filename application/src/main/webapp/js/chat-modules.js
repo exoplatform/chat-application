@@ -438,42 +438,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
           options = message.options;
         var nbOptions = thiss.getObjectSize(options);
 
-        if (options.type==="call-on") {
-          if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
-            jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
-          }
-          jqchat(".btn-weemo").addClass('disabled');
-        } else if (options.type==="call-off") {
-          if (typeof chatApplication!=="undefined") {
-            if (chatApplication.weemoExtension.isConnected)
-              jqchat(".btn-weemo").removeClass('disabled');
-          }
-          if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
-          }
-        }
-
-        if (options.type !== "call-join") {
-          if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
-            if (typeof chatApplication!=="undefined") {
-              chatApplication.weemoExtension.setUidToCall(options.uidToCall);
-              chatApplication.weemoExtension.setDisplaynameToCall(options.displaynameToCall);
-            }
-            jqchat(".btn-weemo").css("display", "none");
-            jqchat(".btn-weemo-conf").css("display", "block");
-            if (typeof chatApplication!=="undefined") {
-              if (options.uidToCall!=="weemo"+thiss.username && chatApplication.weemoExtension.isConnected)
-                jqchat(".btn-weemo-conf").removeClass("disabled");
-            }
-            else
-              jqchat(".btn-weemo-conf").addClass("disabled");
-          } else {
-            jqchat(".btn-weemo").css("display", "block");
-            jqchat(".btn-weemo-conf").css("display", "none");
-          }
-        }
-
         if (options.type === "type-me") {
           out += "<span class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
           out += "<div style='margin-left:50px;'>";
@@ -621,66 +585,6 @@ ChatRoom.prototype.messageBeautifier = function(message, options) {
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
         out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "'><i class='uiIconSearch uiIconWhite'></i> View</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> Download</a></div></div></div></div>";
-      }
-
-    } else if (options.type ==="call-join") {
-      out += "";
-    } else if (options.type ==="call-on") {
-      out += chatBundleData.exoplatform_chat_meeting_started;
-    } else if (options.type==="call-off") {
-      out += chatBundleData.exoplatform_chat_meeting_finished;
-      var tsold = Math.round(jzGetParam("weemoCallHandlerFrom"));
-      var time = Math.round((options.timestamp*1000-tsold)/1000);
-      var hours = Math.floor(time / 3600);
-      time -= hours * 3600;
-      var minutes = Math.floor(time / 60);
-      time -= minutes * 60;
-      var seconds = parseInt(time % 60, 10);
-      var stime = "<span class=\"msg-time\" style='font-weight: normal;'>";
-      if (hours>0) {
-        if (hours===1)
-          stime += hours+ " "+chatBundleData.exoplatform_chat_hour+" ";
-        else
-          stime += hours+ " "+chatBundleData.exoplatform_chat_hours+" ";
-      }
-      if (minutes>0) {
-        if (minutes===1)
-          stime += minutes+ " "+chatBundleData.exoplatform_chat_minute+" ";
-        else
-          stime += minutes+ " "+chatBundleData.exoplatform_chat_minutes+" ";
-      }
-      if (seconds>0) {
-        if (seconds===1)
-          stime += seconds+ " "+chatBundleData.exoplatform_chat_second;
-        else
-          stime += seconds+ " "+chatBundleData.exoplatform_chat_seconds;
-      }
-      stime += "</span>";
-      out += stime;
-      var callOwner = jzGetParam("weemoCallHandlerOwner");
-      if (this.username === callOwner) {
-        out += "<br>";
-        out += "<div style='display: block;margin: 10px 0;'>" +
-          "<span class='meeting-notes'>" +
-          "<a href='#' class='send-meeting-notes' " +
-          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
-          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
-          "data-room='"+this.id+"' " +
-          "data-owner='"+this.username +"' " +
-          "data-id='"+options.timestamp+"' " +
-          ">"+chatBundleData.exoplatform_chat_send_notes+"</a>" +
-          " - " +
-          "<a href='#' class='save-meeting-notes' " +
-          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
-          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
-          "data-room='"+this.id+"' " +
-          "data-owner='"+this.username +"' " +
-          "data-id='"+options.timestamp+"2' " +
-          ">"+chatBundleData.exoplatform_chat_save_wiki+"</a>" +
-          "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.exoplatform_chat_sent + "</strong> " + chatBundleData.exoplatform_chat_check_mailbox + "</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>�</button><strong>" + chatBundleData.exoplatform_chat_saved + "</strong> <a href=\"/portal/intranet/wiki\">Open Wiki application</a>.</div>" +
-          "</div>";
       }
 
     } else if (options.type==="type-link") {
