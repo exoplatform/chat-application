@@ -1930,9 +1930,25 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   });
 
+  jqchat(".msg-action-savenotes").on("click", function() {
+    var $uimsg = jqchat(this).siblings(".msg-data");
+    var msgTimestamp = $uimsg.attr("data-timestamp");
+
+    var options = {
+      type: "type-notes",
+      fromTimestamp: msgTimestamp,
+      fromUser: chatApplication.username,
+      fromFullname: chatApplication.fullname
+    };
+
+    var msg = "";
+
+    chatApplication.chatRoom.sendMessage(msg, options, "true");
+  });
+
   jqchat(".send-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    var $meetingNotes =  $this.parent();
+    var $meetingNotes =  $this.closest(".msMeetingNotes");
     $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
@@ -1962,7 +1978,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   jqchat(".save-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    var $meetingNotes =  $this.parent();
+    var $meetingNotes =  $this.closest(".msMeetingNotes");
     $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
@@ -2449,4 +2465,5 @@ ChatApplication.prototype.showDemoPanel = function() {
     this.createDemoUser(fullname, email);
   });
 };
+
 
