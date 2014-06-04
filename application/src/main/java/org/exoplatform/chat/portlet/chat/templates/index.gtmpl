@@ -77,8 +77,9 @@
 
         <span class="room-detail-button">
         </span>
-
-
+        <div class="msbuttonGroupRecord">
+           <button class="btn msButtonRecord" data-toggle="tooltip" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}"><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
+        </div>
         <span class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>

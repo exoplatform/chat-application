@@ -35,10 +35,15 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes,
   this.onShowMessagesCB;
 
   this.highlight = "";
+
+  this.startMeetingTimestamp = "";
 }
 
 
 ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, callback) {
+  // Reset meeting button status
+  chatApplication.updateMeetingButtonStatus('start');
+
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
@@ -506,7 +511,7 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
     out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
   } else if ("type-event" === actionType) {
     out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
-  } else if ("type-notes" === actionType) {
+  } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
     out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
   }
   out += "                </div>";
@@ -649,7 +654,29 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "  </div>";
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
-        out += "</div>";
+      out += "</div>";
+    } else if (options.type==="type-meeting-start") {
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
+      out += "<p><i class='muted'>" + chatBundleData.exoplatform_chat_meeting_started_message + "</i></p>";
+
+      thiss.startMeetingTimestamp = objMessage.timestamp;
+      chatApplication.updateMeetingButtonStatus('stop');
+    } else if (options.type==="type-meeting-stop") {
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b>";
+      out += "<div class='msMeetingNotes'>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
+      out += "    <a class='send-meeting-notes' href='#' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
+      out += "  </div>";
+      out += "  <div>";
+      out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
+      out += "    <a class='save-meeting-notes' href='#' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
+      out += "  </div>";
+      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
+      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
+      out += "</div>";
+
+      chatApplication.updateMeetingButtonStatus('start');
     } else {
       out += message;
     }

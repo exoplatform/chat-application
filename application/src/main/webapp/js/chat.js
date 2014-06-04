@@ -802,6 +802,20 @@ var chatApplication = new ChatApplication();
 
     });
 
+    $(".msButtonRecord").on("click", function() {
+      var $icon = $(this).children("i");
+
+      var msgType = $icon.hasClass("uiIconChatRecordStart") ? "type-meeting-start" : "type-meeting-stop";
+      var options = {
+        type: msgType,
+        fromUser: chatApplication.username,
+        fromFullname: chatApplication.fullname
+      };
+      var msg = "";
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
+
+    });
+
     $(".team-modal-cancel").on("click", function() {
       $('.team-modal').modal('hide');
       var $uitext = $("#team-modal-name");
@@ -1244,6 +1258,12 @@ ChatApplication.prototype.initChat = function() {
     }
   });
 
+  var $roomDetailButton = jqchat(".room-detail-button");
+  if ($roomDetailButton.children().length === 0) {
+    $roomDetailButton.hide();
+  } else {
+    $roomDetailButton.show();
+  }
 
   this.resize();
   jqchat(window).resize(function() {
@@ -2106,6 +2126,27 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     error: function(xhr, status, error){
     }
   });
+};
+
+/**
+ * Update Meeting Button status
+ *
+ * @param: status: 'start' or 'stop'
+ */
+ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
+  var $icon = jqchat(".msButtonRecord").children("i");
+  if ('start' === status) {
+    $icon.addClass("uiIconChatRecordStart");
+    $icon.removeClass("uiIconChatRecordStop");
+  } else {
+    $icon.addClass("uiIconChatRecordStop");
+    $icon.removeClass("uiIconChatRecordStart");
+  }
+
+  var tooltipText = $icon.hasClass("uiIconChatRecordStart") ? chatBundleData.exoplatform_chat_meeting_start : chatBundleData.exoplatform_chat_meeting_stop;
+  $icon.parent().tooltip('hide')
+    .attr('data-original-title', tooltipText)
+    .tooltip('fixTitle');
 };
 
 /**
