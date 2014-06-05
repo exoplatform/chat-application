@@ -16,35 +16,18 @@
     .background(-80px, -16px);
     height: 22px;
   }
-  .chat-status-available-black {
-    .background(0, -49px);
+  .chat-status-icon {
+    background-image: url("/chat/img/x2/uiIconChatColor.png");
+    background-size: 196px 16px;
   }
-  .chat-status-available {
-    .background(0, -32px);
+  .chat-status-icon.chat-status-open {
+    background-image: url("/chat/img/x2/uiIconChatBlue.png");
+    background-position: -180px 0;
   }
-  .chat-status-donotdisturb-black {
-    .background(-34px, -49px);
-  }
-  .chat-status-donotdisturb {
-    .background(-34px, -32px);
-  }
-  .chat-status-away-black {
-    .background(-17px, -49px);
-  }
-  .chat-status-away {
-    .background(-17px, -32px);
-  }
-  .chat-status-invisible-black {
-    .background(-51px, -49px);
-  }
-  .chat-status-invisible {
-    .background(-51px, -32px);
-  }
-  .chat-status-offline-black {
-    .background(-68px, -49px);
-  }
-  .chat-status-open {
-    .background(-80px, -16px);
+  .notif-chat-open-link:hover {
+    .chat-status-open {
+      background-image: url("/chat/img/x2/uiIconChatWhite.png");
+    }
   }
 
   .dropdown-menu>li>a:hover>[class^="chat-status"] {
