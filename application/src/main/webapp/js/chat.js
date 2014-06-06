@@ -710,7 +710,7 @@ var chatApplication = new ChatApplication();
           $userResults.css("display", "none");
           var html = "";
           if (!withCurrentUser) {
-            users = users.filter({name:{"!is":chatApplication.username}});
+              users = users.filter({name:{"!is":chatApplication.username}});
           }
           $("."+prefix+"-user-label").each(function() {
             var name = $(this).attr("data-name");
@@ -811,9 +811,10 @@ var chatApplication = new ChatApplication();
         fromUser: chatApplication.username,
         fromFullname: chatApplication.fullname
       };
-      var msg = "";
-      chatApplication.chatRoom.sendMessage(msg, options, "true");
 
+      var msg = "";
+
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
     });
 
     $(".team-modal-cancel").on("click", function() {
@@ -2131,16 +2132,16 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
 /**
  * Update Meeting Button status
  *
- * @param: status: 'start' or 'stop'
+ * @param: status: 'started' or 'stoped'
  */
 ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
   var $icon = jqchat(".msButtonRecord").children("i");
-  if ('start' === status) {
-    $icon.addClass("uiIconChatRecordStart");
-    $icon.removeClass("uiIconChatRecordStop");
-  } else {
+  if ('started' === status) {
     $icon.addClass("uiIconChatRecordStop");
     $icon.removeClass("uiIconChatRecordStart");
+  } else {
+    $icon.addClass("uiIconChatRecordStart");
+    $icon.removeClass("uiIconChatRecordStop");
   }
 
   var tooltipText = $icon.hasClass("uiIconChatRecordStart") ? chatBundleData.exoplatform_chat_meeting_start : chatBundleData.exoplatform_chat_meeting_stop;
@@ -2342,6 +2343,7 @@ ChatApplication.prototype.setStatus = function(status, callback) {
   }
 
 };
+
 ChatApplication.prototype.showHelp = function() {
   jqchat('.help-modal').modal({"backdrop": false});
 };

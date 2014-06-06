@@ -41,9 +41,6 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes,
 
 
 ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, callback) {
-  // Reset meeting button status
-  chatApplication.updateMeetingButtonStatus('start');
-
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
@@ -280,8 +277,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
     }
     else
       out += "<div class='noMessage'><span class='text'>" + chatBundleData.exoplatform_chat_no_messages + "</span></div>";
-  } else {
 
+    // Set recorder button to start status
+    chatApplication.updateMeetingButtonStatus('stopped');
+  } else {
     var messages = TAFFY(this.messages);
     var thiss = this;
     messages().order("timestamp asec").each(function (message, i) {
@@ -660,23 +659,23 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<p><i class='muted'>" + chatBundleData.exoplatform_chat_meeting_started_message + "</i></p>";
 
       thiss.startMeetingTimestamp = objMessage.timestamp;
-      chatApplication.updateMeetingButtonStatus('stop');
+      chatApplication.updateMeetingButtonStatus('started');
     } else if (options.type==="type-meeting-stop") {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b>";
+      var isStopedByCurrentUser = (thiss.username === options.fromUser);
       out += "<div class='msMeetingNotes'>";
       out += "  <div>";
       out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='send-meeting-notes' href='#' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
+      out += "    <a class='" + (isStopedByCurrentUser ? "send-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
       out += "  </div>";
       out += "  <div>";
       out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='save-meeting-notes' href='#' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
+      out += "    <a class='" + (isStopedByCurrentUser ? "save-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
       out += "  </div>";
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
       out += "</div>";
-
-      chatApplication.updateMeetingButtonStatus('start');
+      chatApplication.updateMeetingButtonStatus('stopped');
     } else {
       out += message;
     }
