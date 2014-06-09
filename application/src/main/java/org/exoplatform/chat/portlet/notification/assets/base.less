@@ -1,12 +1,12 @@
 //@notifBackgroundColor:        #4f72ac;
 @notifBackgroundColor:        #B00;
-@notifColor:                  white;
-@backgroundColor:             white;
+@notifColor:                  #ffffff;
+@backgroundColor:             #ffffff;
 @borderColor:                 #DBDBDB;
 @shadowColor:                 #E3E3E3;
 @hoverColor:                  #4f72ac;
-@statusColor:                 #444;
-@iconStatusPath:              "/chat/img/";
+@statusColor:                 #444444;
+@imgPath:                     "/chat/img/";
 
 #chat-notification {
   position: absolute;
@@ -282,6 +282,7 @@
     }
   }
 }
+// Weemo Status
 .weemo-status {
   position: absolute;
   left: -8px;
@@ -308,11 +309,11 @@
   display: inline-block;
 }
 
-/*  */
+/* Chat Status */
 .chat-status-icon {
 	display: inline-block;
 	.square(16px);
-	background-image: url("@{iconStatusPath}/uiIconChatColor.png");
+	background-image: url("@{imgPath}/uiIconChatColor.png");
 	background-repeat: no-repeat;
 	background-color: transparent;
 	vertical-align: middle;
@@ -330,13 +331,13 @@
   background-position: -60px 0;
 }
 .chat-status-icon.chat-status-open {
-  background-image: url("@{iconStatusPath}/uiIconChatBlue.png");
+  background-image: url("@{imgPath}/uiIconChatBlue.png");
   background-position: -180px 0;
   background-size: 196px 76px;
 }
 .notif-chat-open-link:hover {
   .chat-status-open {
-    background-image: url("@{iconStatusPath}/uiIconChatWhite.png");
+    background-image: url("@{imgPath}/uiIconChatWhite.png");
     background-size: 196px 76px;
   }
 }

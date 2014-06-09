@@ -1,21 +1,13 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
-  @imgEmoticonPath:             "@{imgPath}2x/emoticons.png";
 
-  .background(@left, @top) {
-    background: url('@{imgPath}2x/general.png') no-repeat @left @top;
-    background-size: 96px 162px;
-  }
   .weemo(@left, @top) {
-    background: url('@{imgPath}2x/weemo-status.png') no-repeat @left @top;
+    background: url('@{imgPath}x2/weemo-status.png') no-repeat @left @top;
     background-size: 16px 16px;
     width: 8px;
     height: 8px;
   }
 
-  .chat-icon {
-    .background(-80px, -16px);
-    height: 22px;
-  }
+  // Chat Status Portlet
   .chat-status-icon {
     background-image: url("/chat/img/x2/uiIconChatColor.png");
     background-size: 196px 16px;
@@ -30,10 +22,7 @@
     }
   }
 
-  .dropdown-menu>li>a:hover>[class^="chat-status"] {
-    background-image: url('@{imgPath}2x/general-white.png');
-  }
-
+  // Weemo Status
   .weemo-status-not-connected {
     .weemo(0, 0);
   }
@@ -47,110 +36,64 @@
     .weemo(-8px, -8px);
   }
 
-  .background-emoticon(@left, @top) {
-    background: url('@{imgEmoticonPath}') no-repeat @left @top;
-    background-size: 128px 64px;
+  /* Emoticons Static */
+  .emoticon {
+    background-image: url('@{imgPath}x2/uiIconChatEmoticons24x24.png');
+    background-size: 108px 108px;
   }
 
-  .msg-emoticons {
-    .background-emoticon(-112px, -32px);
+  /* Emoticons Animation */
+  [class^=uiIconChatGif] {
+    background-size: 24px 24px;
   }
 
-  .emoticon-smile {
-    .background-emoticon(-112px, -32px);
+  .uiIconChatGifbeer, .uiIconChatGifbeer:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-beer.gif");
   }
-  .emoticon-big-smile {
-    .background-emoticon(-48px, 0);
+  .uiIconChatGifbow, .uiIconChatGifbow:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-bow.gif");
   }
-  .emoticon-eye-blink {
-    .background-emoticon(-112px, -16px);
+  .uiIconChatGifbug, .uiIconChatGifbug:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-bug.gif");
   }
-  .emoticon-no-voice {
-    .background-emoticon(-48px, -32px);
+  .uiIconChatGifcake, .uiIconChatGifcake:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-cake.gif");
   }
-  .emoticon-sad {
-    .background-emoticon(-80px, -32px);
+  .uiIconChatGifcash, .uiIconChatGifcash:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-cash.gif");
   }
-  .emoticon-surprise {
-    .background-emoticon(-48px, -48px);
+  .uiIconChatGifcoffee, .uiIconChatGifcoffee:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-coffee.gif");
   }
-  .emoticon-smile-white {
-    .background-emoticon(-96px, -32px);
+  .uiIconChatGiflaugh, .uiIconChatGiflaugh:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-laugh.gif");
   }
-  .emoticon-big-smile-white {
-    .background-emoticon(-32px, 0);
+  .uiIconChatGifraise-down, .uiIconChatGifraise-down:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-raise-down.gif");
   }
-  .emoticon-eye-blink-white {
-    .background-emoticon(-96px, -16px);
+  .uiIconChatGifraise-up, .uiIconChatGifraise-up:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-raise-up.gif");
   }
-  .emoticon-no-voice-white {
-    .background-emoticon(-32px, -32px);
+  .uiIconChatGifsad, .uiIconChatGifsad:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-sad.gif");
   }
-  .emoticon-sad-white {
-    .background-emoticon(-64px, -32px);
+  .uiIconChatGifsmile-with-tongue, .uiIconChatGifsmile-with-tongue:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-smile-with-tongue.gif");
   }
-  .emoticon-surprise-white {
-    .background-emoticon(-32px, -48px);
+  .uiIconChatGifsmile, .uiIconChatGifsmile:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-smile.gif");
   }
-  .emoticon-beer {
-    .background-emoticon(-16px, 0);
+  .uiIconChatGifspeechless, .uiIconChatGifspeechless:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-speechless.gif");
   }
-  .emoticon-bow {
-    .background-emoticon(-80px, 0);
+  .uiIconChatGifstar, .uiIconChatGifstar:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-star.gif");
   }
-  .emoticon-bug {
-    .background-emoticon(-112px, 0);
+  .uiIconChatGifsurprise, .uiIconChatGifsurprise:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-surprise.gif");
   }
-  .emoticon-cake {
-    .background-emoticon(-16px, -16px);
-  }
-  .emoticon-cash {
-    .background-emoticon(-48px, -16px);
-  }
-  .emoticon-coffee {
-    .background-emoticon(-80px, -16px);
-  }
-  .emoticon-no {
-    .background-emoticon(-16px, -32px);
-  }
-  .emoticon-star {
-    .background-emoticon(-16px, -48px);
-  }
-  .emoticon-yes {
-    .background-emoticon(-112px, -48px);
-  }
-  .emoticon-tongue {
-    .background-emoticon(-80px, -48px);
-  }
-  .emoticon-beer-white {
-    .background-emoticon(0, 0);
-  }
-  .emoticon-bow-white {
-    .background-emoticon(-64px, 0);
-  }
-  .emoticon-bug-white {
-    .background-emoticon(-96px, 0);
-  }
-  .emoticon-cake-white {
-    .background-emoticon(0, -16px);
-  }
-  .emoticon-cash-white {
-    .background-emoticon(-32px, -16px);
-  }
-  .emoticon-coffee-white {
-    .background-emoticon(-64px, -16px);
-  }
-  .emoticon-no-white {
-    .background-emoticon(0, -32px);
-  }
-  .emoticon-star-white {
-    .background-emoticon(0, -48px);
-  }
-  .emoticon-yes-white {
-    .background-emoticon(-96px, -48px);
-  }
-  .emoticon-tongue-white {
-    .background-emoticon(-64px, -48px);
+  .uiIconChatGifwink, .uiIconChatGifwink:hover{
+    background-image: url("/chat/img/emoticons/x2/icon-wink.gif");
   }
 }
 
