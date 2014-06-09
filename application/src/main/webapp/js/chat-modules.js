@@ -592,7 +592,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += urlFile + size;
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "'><i class='uiIconSearch uiIconWhite'></i> View</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> Download</a></div></div></div></div>";
+        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> View</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> Download</a></div></div></div></div>";
       }
 
     } else if (options.type==="type-link") {

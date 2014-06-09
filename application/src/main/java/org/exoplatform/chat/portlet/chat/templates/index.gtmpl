@@ -224,7 +224,6 @@
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{exoplatform.chat.assign.task}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{exoplatform.chat.share.link}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> &{exoplatform.chat.upload.file}</a></li>
-            <li class="divider"></li>
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
             <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconChatQuestion uiIconChatLightGray"></i> &{exoplatform.chat.ask.question}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand uiIconChatLightGray"></i> &{exoplatform.chat.raise.hand}</a></li>

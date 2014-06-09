@@ -1790,9 +1790,9 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       }
       out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
       if (room.isFavorite == "true") {
-        out += ' title="Remove from favorites"';
+        out += ' title="' + chatBundleData.exoplatform_chat_remove_favorites + '"';
       } else {
-        out += ' title="Add to favorites"';
+        out += ' title="' + chatBundleData.exoplatform_chat_add_favorites + '"';
       }
       out+= '></i>';
     }
