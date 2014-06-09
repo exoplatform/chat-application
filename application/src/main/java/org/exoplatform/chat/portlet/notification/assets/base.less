@@ -15,26 +15,16 @@
 }
 
 .notif-total {
-  background-color: @notifBackgroundColor;
-  color: @notifColor;
-  font-size: 11px;
-  font-weight: normal;
-  padding: 1px 4px;
-  line-height: 10px;
+  background-color: @linkColor;
+  color: #fff;
+  font-size: 10px;
+  height: 13px;
+  line-height: 13px;
+  padding: 0 3px;
+  font-weight: bold;
   -moz-border-radius: 2px;
   border-radius: 2px;
   box-shadow: 1px 2px 1px 0px rgba(35,44,48,0.8);
-}
-
-.uiNotifChatIcon {
-  display: inline-block;
-  width: 21px;
-  height: 21px;
-  line-height: 21px;
-  vertical-align: middle;
-  background: url('@{imgPath}notif-chat-white.png') no-repeat;
-  background-size: 21px;
-  position: relative;
 }
 
 .platform-blue {
@@ -268,8 +258,6 @@
       margin-top: 4px;
       float: left;
     }
-
-
   }
 
   .message {
@@ -282,6 +270,7 @@
     }
   }
 }
+
 // Weemo Status
 .weemo-status {
   position: absolute;
@@ -359,6 +348,7 @@
 			position: absolute;
 			right: 6px;
 			top: 5px;
+      display: none;
 		}
 	}
 }

@@ -383,6 +383,45 @@ table.list-rooms {
     }
   }
 
+  .msg-emoticons-panel {
+    background: @white;
+    width: 108px;
+    height: 118px;
+    padding: 10px 10px 0 10px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    position: absolute;
+    cursor: default;
+    left: 5px;
+    bottom: 65px;
+    z-index: 5;
+    border: 1px solid #cccccc;
+    .box-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+    &:after,  &:before {
+      display: block;
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 100%;
+    }
+    &:after {
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #fff;
+    }
+    &:before {
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #CCC;
+      top: 101%;
+    }
+    .emoticon {
+      height: 27px;
+    }
+    .emoticon:hover {
+      cursor: pointer;
+    }
+  }
   .meeting-action-panel {
     padding: 0px 20px 0;
     display: none;
@@ -940,21 +979,23 @@ hr
   }
   .msAction {
     cursor: pointer;
-    display: none;
+    visibility: hidden;
     color: @linkColor;
     font-size: 12px;
     a {
       font-size: 12px;
     }
-  } 
+  }
   .msTimePost {
     color: #999;
     font-size: 12px;
+    position: absolute;
+    right: 0;
     .msEditMes {
     }
   }
   .msUserMes {
-    margin-right: 130px;
+    overflow: hidden;
     .msUserQuote {
       background-color: #f0f0f0;
       .border-radius(3px);
@@ -974,10 +1015,14 @@ hr
       margin-bottom: 10px;
     }
   }
-
+  .msRightInfo {
+    margin-left: 10px;
+    text-align: right;
+    position: relative;
+  }
   .msContBox .msUserCont:hover {
     .msAction {
-      display: block;
+      visibility: visible;
     }
     .msTimePost {
       display: none;

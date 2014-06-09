@@ -1909,13 +1909,13 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
       jqchat(".msg-date", this).css("display", "none");
-      jqchat(".msg-actions", this).css("display", "");
+      jqchat(".msg-actions", this).css("visibility", "");
     }
   });
 
   jqchat(".msg-text").mouseout(function() {
     jqchat(".msg-date", this).css("display", "");
-    jqchat(".msg-actions", this).css("display", "none");
+    jqchat(".msg-actions", this).css("visibility", "hide");
   });
 
   jqchat(".msg-action-quote").on("click", function() {
