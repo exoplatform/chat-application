@@ -350,6 +350,8 @@ ChatNotification.prototype.changeStatusChat = function(status) {
   if (typeof chatApplication === "object") {
     chatApplication.profileStatus = status;
   }
+
+  // Update chat status on chatApplication
   var $chatStatusChat = jqchat(".chat-status-chat");
   $chatStatusChat.removeClass("chat-status-available");
   $chatStatusChat.removeClass("chat-status-donotdisturb");
@@ -369,6 +371,13 @@ ChatNotification.prototype.changeStatusChat = function(status) {
     }
   });
 
+  // Update chat status on top navigation
+  var $uiNotifChatIcon = jqchat(".uiNotifChatIcon");
+  $uiNotifChatIcon.removeClass("toggle-status-available");
+  $uiNotifChatIcon.removeClass("toggle-status-away");
+  $uiNotifChatIcon.removeClass("toggle-status-donotdisturb");
+  $uiNotifChatIcon.removeClass("toggle-status-invisible");
+  $uiNotifChatIcon.addClass("toggle-status-" + status);
 };
 
 ChatNotification.prototype.openChatPopup = function() {
@@ -431,6 +440,7 @@ var chatNotification = new ChatNotification();
 
     $(".chat-status").on("click", function() {
       var status = $(this).attr("data-status");
+
       chatNotification.setStatus(status);
     });
 
