@@ -37,10 +37,13 @@
 
 #chat-notifications-details {
   display: none;
+  max-height: 345px;
+  overflow: auto;
   .chat-notification-detail {
     padding: 5px 9px;
     display: block;
     cursor: pointer;
+    min-height: 59px;
     img {
       float: left;
       margin-right: 10px;
@@ -62,7 +65,7 @@
     .team {
       float: right;
       .text-overflow;
-      max-width: 50%;
+      max-width: 45%;
     }
     .text {
       .text-overflow;
