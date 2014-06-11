@@ -38,23 +38,45 @@
 #chat-notifications-details {
   display: none;
   .chat-notification-detail {
+    padding: 5px 9px;
     display: block;
+    cursor: pointer;
     img {
       float: left;
       margin-right: 10px;
       margin-top: 4px;
+      .border-radius(2px);
     }
     .chat-label-status {
       overflow: hidden;
     }
-    .timestamp {
+    .name {
+      font-weight: bold;
+      color: @linkColor;
+    }
+    .timestamp, .team {
       font-size: 12px;
       line-height: 18px;
       color: #999;
     }
+    .team {
+      float: right;
+      .text-overflow;
+      max-width: 50%;
+    }
+    .text {
+      .text-overflow;
+      > i {
+        margin-right: 5px;
+      }
+    }
     &:hover {
+      #gradient > .vertical(#638acd, darken(#638acd, 15%));
       color: #fff;
-      .timestamp  {
+      a {
+        color: #fff;
+      }
+      .timestamp, .team, .name  {
         color: #fff;
       }
     }
@@ -332,7 +354,13 @@
 }
 .chatStatusPortlet {
 	.dropdown-menu {
-    min-width: 200px;
+    width: 255px;
+    &:after {
+      right: 15px!important;
+    }
+    &:before {
+      right: 14px!important;
+    }
 		> li {
 			> a {
 				position: relative;
