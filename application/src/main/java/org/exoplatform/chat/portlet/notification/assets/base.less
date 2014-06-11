@@ -396,3 +396,50 @@
 .chat-button.actionIcon:active,.chat-button.actionIcon:focus {
 	.box-shadow(~'0px 2px 6px 0 rgba(0, 0, 0, 0.15) inset');
 }
+
+//chat and user popover
+
+.connectAction .chatPopupOverlay  .uiIconForum,
+.connectAction  .weemoCallOverlay .icon-facetime-video {
+	background-image: url("@{imgPath}/uiIconChatLightGray.png");
+}
+
+.connectAction .chatPopupOverlay:hover .uiIconForum,
+.connectAction .chatPopupOverlay:active .uiIconForum,
+.connectAction .weemoCallOverlay:hover .icon-facetime-video,
+.connectAction .weemoCallOverlay:active .icon-facetime-video,
+.connectAction  .chatPopupOverlay  .uiIconForum:hover,
+.connectAction  .weemoCallOverlay .icon-facetime-video:hover{
+	background-image: url("@{imgPath}/uiIconChatBlue.png");
+}
+
+.connectAction .btn:first-child {
+	padding: 4px 10px;
+}
+.chatPopupOverlay  .uiIconForum {
+	background-position: -180px 0;
+}
+.weemoCallOverlay .icon-facetime-video {
+	background-position: 0 -20px;
+}
+
+.connectAction { 
+	.weemoCallOverlay,.chatPopupOverlay {
+		margin-top:0px!important;
+	}
+}
+
+.connectAction {
+	padding: 10px 5px;
+}
+
+#tiptip_holder {
+	width:260px!important;
+	max-width:260px!important;
+}
+
+.twice-line {
+	.chatPopupOverlay,.weemoCallOverlay {
+		margin-top:10px!important;
+	}
+}
