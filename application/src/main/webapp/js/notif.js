@@ -125,23 +125,46 @@ ChatNotification.prototype.refreshNotifDetails = function() {
           var notifs = notifs();
           var thiss = this;
           var froms = [];
+          var categoriesList = new Array(); // Only display
           notifs.order("timestamp desc").each(function (notif, number) {
-            if (typeof froms[notif.from] === "undefined") {
-              html += '<li>';
-              html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
-              html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
-              html +=     '<div class="chat-label-status">';
-              html +=      '<div class="content">'+notif.content+'</div>';
-              html +=      '<div class="timestamp">'+thiss.getDate(notif.timestamp)+'</div>';
-              html +=     '</div>';
-              html +=   '</a>';
-              html += '</li>';
-              if (fromChromeApp) {
-                if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
-                  doSendMessage(notif);
-                }
+            console.info("FULL  " + notif.content + " FROM " + notif.categoryId + " OPTIONS " + notif.options);
+            if (jqchat.inArray(notif.categoryId, categoriesList) === -1) {
+              console.info("DISTINCT  " + notif.content + " FROM " + notif.categoryId + " OPTIONS " + notif.options);
+              var content = notif.content;
+              html += '<div href="#" class="chat-notification-detail" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+              html += '  <img width="30px" height="30px" style="width:36px; height:36px;" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
+              html += '  <div class="chat-label-status">';
+              html += '    <div class="content">';
+              html += '      <span class="name" href="#">' + notif.fromFullName + '</span>';
+              html += '      <div class="text">' + content + '</div>';
+              html += '    </div>';
+              html += '    <div class="gray-box">';
+              if (notif.roomDisplayName.trim()) {
+                html += '    <div class="team">' + notif.roomDisplayName + '</div>';
               }
-              froms[notif.from] = 1;
+              html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
+              html += '    </div>';
+              html += '  </div>';
+              html += '</div>';
+
+//              //if (typeof froms[notif.from] === "undefined") {
+//                html += '<li>';
+//                html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
+//                html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
+//                html +=     '<div class="chat-label-status">';
+//                html +=      '<div class="content">'+notif.content+'</div>';
+//                html +=      '<div class="timestamp">'+thiss.getDate(notif.timestamp)+'</div>';
+//                html +=     '</div>';
+//                html +=   '</a>';
+//                html += '</li>';
+//                if (fromChromeApp) {
+//                  if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
+//                    doSendMessage(notif);
+//                  }
+//                }
+//                //froms[notif.from] = 1;
+//             // }
+              categoriesList.push(notif.categoryId);
             }
           });
           html += '<li class="divider">&nbsp;</li>';

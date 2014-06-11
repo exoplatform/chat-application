@@ -22,6 +22,8 @@ package org.exoplatform.chat.services.mongodb;
 import com.mongodb.*;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
+import org.exoplatform.chat.model.RoomBean;
+import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -52,8 +54,13 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     }
   }
 
-  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link)
-  {
+  public void addNotification(String user, String from, String type, String category, String categoryId,
+                              String content, String link) {
+    addNotification(user, from, type, category, categoryId, content, link, null);
+  }
+
+  public void addNotification(String user, String from, String type, String category, String categoryId,
+                              String content, String link, String options) {
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
@@ -63,6 +70,14 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     doc.put("category", category);
     doc.put("categoryId", categoryId);
     doc.put("content", content);
+    if (options != null) {
+      options = options.replaceAll("<", "&lt;");
+      options = options.replaceAll(">", "&gt;");
+      options = options.replaceAll("'", "\"");
+//      options = options.replaceAll("\"", "&quot;");
+//      options = options.replaceAll("\\\\", "&#92");
+      doc.put("options", options);
+    }
     doc.put("link", link);
     doc.put("isRead", false);
 
@@ -90,12 +105,12 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user) {
-    return getUnreadNotifications(user, null, null, null);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService) {
+    return getUnreadNotifications(user, userService, null, null, null);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, String type, String category, String categoryId) {
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId) {
     List<NotificationBean> notifications = new ArrayList<NotificationBean>();
 
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
@@ -114,12 +129,22 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
       NotificationBean notificationBean = new NotificationBean();
       notificationBean.setTimestamp((Long)doc.get("timestamp"));
       notificationBean.setUser(user);
-      if (doc.containsField("from"))
+      if (doc.containsField("from")) {
         notificationBean.setFrom(doc.get("from").toString());
+        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom()).getFullname());
+      }
       notificationBean.setCategory(doc.get("category").toString());
       notificationBean.setCategoryId(doc.get("categoryId").toString());
       notificationBean.setType(doc.get("type").toString());
       notificationBean.setContent(doc.get("content").toString());
+      if (doc.containsField("options"))
+      {
+        notificationBean.setOptions(doc.get("options").toString());
+      }
+      RoomBean roomBean = userService.getRoom(user, categoryId);
+      if (roomBean.isSpace() || roomBean.isTeam()) {
+        notificationBean.setRoomDisplayName(roomBean.getFullname());
+      }
       notificationBean.setLink(doc.get("link").toString());
 
       notifications.add(notificationBean);

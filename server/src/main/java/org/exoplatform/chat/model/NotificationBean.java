@@ -20,10 +20,21 @@
 package org.exoplatform.chat.model;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 public class NotificationBean {
-  private String user, from, type, content, link, category, categoryId;
+  private String user;
+  private String from;
+  private String fromFullName = StringUtils.EMPTY;
+  private String type;
+  private String content;
+  private String link;
+  private String category;
+  private String categoryId;
+  private String options = StringUtils.EMPTY;
+  private String roomDisplayName = StringUtils.EMPTY;
   private Long timestamp;
 
   public String getUser() {
@@ -90,6 +101,30 @@ public class NotificationBean {
     this.categoryId = categoryId;
   }
 
+  public String getOptions() {
+    return options;
+  }
+
+  public void setOptions(String options) {
+    this.options = options;
+  }
+
+  public String getRoomDisplayName() {
+    return roomDisplayName;
+  }
+
+  public void setRoomDisplayName(String roomDisplayName) {
+    this.roomDisplayName = roomDisplayName;
+  }
+
+  public String getFromFullName() {
+    return fromFullName;
+  }
+
+  public void setFromFullName(String fromFullName) {
+    this.fromFullName = fromFullName;
+  }
+
   public String toJSON()
   {
     StringBuffer sb = new StringBuffer();
@@ -99,10 +134,24 @@ public class NotificationBean {
     sb.append("\"user\": \""+this.getUser()+"\",");
     sb.append("\"type\": \""+this.getType()+"\",");
     sb.append("\"from\": \""+this.getFrom()+"\",");
+    sb.append("\"fromFullName\": \""+this.getFromFullName()+"\",");
     sb.append("\"category\": \""+this.getCategory()+"\",");
     sb.append("\"categoryId\": \""+this.getCategoryId()+"\",");
     sb.append("\"content\": \""+this.getContent().replaceAll("\n", "<br/>")+"\",");
     sb.append("\"link\": \""+this.getLink()+"\",");
+    String options = this.getOptions();
+    if (StringUtils.isNotEmpty(this.getOptions()))
+    {
+      if (options.startsWith("{"))
+        sb.append("\"options\": ").append(options).append(",");
+      else
+        sb.append("\"options\": \"").append(options).append("\",");
+    }
+    else
+    {
+      sb.append("\"options\": \"\",");
+    }
+    sb.append("\"roomDisplayName\": \""+this.getRoomDisplayName()+"\",");
     sb.append("\"timestamp\": "+this.getTimestamp());
 
     sb.append("}");

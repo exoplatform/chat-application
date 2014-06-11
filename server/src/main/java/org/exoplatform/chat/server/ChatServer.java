@@ -150,7 +150,7 @@ public class ChatServer
             List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
             for (String tuser:users)
             {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
             }
           }
           else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
@@ -158,12 +158,12 @@ public class ChatServer
             List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
             for (String tuser:users)
             {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
             }
           }
           else
           {
-            notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room);
+            notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
           }
 
           notificationService.setNotificationsAsRead(user, "chat", "room", room);
@@ -594,7 +594,7 @@ public class ChatServer
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user, String token, String event, String withDetails) throws IOException
+  public Response.Content notificatdion(String user, String token, String event, String withDetails) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
@@ -614,7 +614,7 @@ public class ChatServer
     }
     else {
       // GETTING ALL NOTIFICATION DETAILS
-      notifications = notificationService.getUnreadNotifications(user);
+      notifications = notificationService.getUnreadNotifications(user, userService);
       totalUnread = notifications.size();
     }
 

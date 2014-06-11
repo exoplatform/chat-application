@@ -47,7 +47,6 @@
         },
         stylesheets = {
                 @Stylesheet(src = "/org/exoplatform/chat/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
-                @Stylesheet(src = "/org/exoplatform/chat/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION),
                 @Stylesheet(src = "css/sh_style.css"),
                 @Stylesheet(src = "css/datepicker.css")
         }
