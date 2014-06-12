@@ -141,7 +141,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
       {
         notificationBean.setOptions(doc.get("options").toString());
       }
-      RoomBean roomBean = userService.getRoom(user, categoryId);
+      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
       if (roomBean.isSpace() || roomBean.isTeam()) {
         notificationBean.setRoomDisplayName(roomBean.getFullname());
       }

@@ -127,16 +127,55 @@ ChatNotification.prototype.refreshNotifDetails = function() {
           var froms = [];
           var categoriesList = new Array(); // Only display
           notifs.order("timestamp desc").each(function (notif, number) {
-            console.info("FULL  " + notif.content + " FROM " + notif.categoryId + " OPTIONS " + notif.options);
             if (jqchat.inArray(notif.categoryId, categoriesList) === -1) {
-              console.info("DISTINCT  " + notif.content + " FROM " + notif.categoryId + " OPTIONS " + notif.options);
               var content = notif.content;
+              var messageType = notif.options.type;
+
               html += '<div href="#" class="chat-notification-detail" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html += '  <img width="30px" height="30px" style="width:36px; height:36px;" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
               html += '      <span class="name" href="#">' + notif.fromFullName + '</span>';
-              html += '      <div class="text">' + content + '</div>';
+              html += '      <div class="text">';
+
+              // Icon for system message
+              if (messageType == undefined) {
+                if (content.indexOf("http:")===0 || content.indexOf("https:")===0 || content.indexOf("ftp:")===0) {
+                  content = "<a href='#'>" + content + "</a>";
+                }
+              } else {
+                if ("type-question" === messageType) {
+                  html += "       <i class='uiIconChatQuestion uiIconChatLightGray'></i>";
+                } else if ("type-hand" === messageType) {
+                  html += "       <i class='uiIconChatRaiseHand uiIconChatLightGray'></i>";
+                } else if ("type-file" === messageType) {
+                  html += "       <i class='uiIconChatUpload uiIconChatLightGray'></i>";
+                } else if ("type-link" === messageType) {
+                  html += "       <i class='uiIconChatLink uiIconChatLightGray'></i>";
+                } else if ("type-task" === messageType) {
+                  html += "       <i class='uiIconChatCreateTask uiIconChatLightGray'></i>";
+                } else if ("type-event" === messageType) {
+                  html += "       <i class='uiIconChatCreateEvent uiIconChatLightGray'></i>";
+                } else if ("type-notes" === messageType) {
+                  //  html += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+                } else if ("type-meeting-start" === messageType) {
+                  //  html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                } else if ("type-meeting-stop" === messageType) {
+                  //  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                } else if ("type-add-team-user" === messageType) {
+                  content = chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                } else if ("call-join" === messageType) {
+                  html += "       <i class='uiIconChatAddPeopleToMeeting uiIconChatLightGray'></i>";
+                } else if ("call-on" === messageType) {
+                  html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                } else if ("call-off" === messageType) {
+                  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                }
+                content = "<a href='#'>" + content + "</a>";
+              }
+
+              html +=          content;
+              html += '      </div>';
               html += '    </div>';
               html += '    <div class="gray-box">';
               if (notif.roomDisplayName.trim()) {
