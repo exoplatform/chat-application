@@ -131,7 +131,7 @@ ChatNotification.prototype.refreshNotifDetails = function() {
               var content = notif.content;
               var messageType = notif.options.type;
 
-              html += '<div href="#" class="chat-notification-detail" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+              html += '<div class="chat-notification-detail" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html += '  <img width="30px" height="30px" style="width:36px; height:36px;" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
@@ -164,6 +164,8 @@ ChatNotification.prototype.refreshNotifDetails = function() {
                   //  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
                 } else if ("type-add-team-user" === messageType) {
                   content = chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                } else if ("type-remove-team-user" === messageType) {
+                  content = chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
                 } else if ("call-join" === messageType) {
                   html += "       <i class='uiIconChatAddPeopleToMeeting uiIconChatLightGray'></i>";
                 } else if ("call-on" === messageType) {
@@ -186,23 +188,12 @@ ChatNotification.prototype.refreshNotifDetails = function() {
               html += '  </div>';
               html += '</div>';
 
-//              //if (typeof froms[notif.from] === "undefined") {
-//                html += '<li>';
-//                html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
-//                html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
-//                html +=     '<div class="chat-label-status">';
-//                html +=      '<div class="content">'+notif.content+'</div>';
-//                html +=      '<div class="timestamp">'+thiss.getDate(notif.timestamp)+'</div>';
-//                html +=     '</div>';
-//                html +=   '</a>';
-//                html += '</li>';
-//                if (fromChromeApp) {
-//                  if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
-//                    doSendMessage(notif);
-//                  }
-//                }
-//                //froms[notif.from] = 1;
-//             // }
+              if (fromChromeApp) {
+                if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
+                  doSendMessage(notif);
+                }
+              }
+
               categoriesList.push(notif.categoryId);
             }
           });

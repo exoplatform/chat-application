@@ -30,7 +30,6 @@
   <ul class="dropdown-menu">
     <li id="chat-notifications-details">
       <span class="chat-notification-loading no-user-selection">&{exoplatform.chat.loading}</span>
-      <li class="divider">&nbsp;</li>
     </li>
     <li>
       <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.available}</span></a>
