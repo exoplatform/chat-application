@@ -437,6 +437,34 @@ ChatNotification.prototype.openChatPopup = function() {
   window.open(this.chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=700, height=600");
 };
 
+ChatNotification.prototype.attachChatButtonToUserPopup = function() {
+  var $tiptip_content = jqchat("#tiptip_content");
+  if ($tiptip_content.length == 0) {
+    setTimeout(chatNotification.attachChatButtonToUserPopup, 250);
+    return;
+  }
+
+  var $uiAction = jqchat(".uiAction", $tiptip_content);
+  var $btnChat = jqchat(".chatPopupOverlay", $uiAction);
+  if ($uiAction.length > 0 && $btnChat.length === 0) {
+    var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
+    // var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
+    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+
+    // Position of chat button depend on weemo installation
+    var $btnWeemoCall = jqchat(".weemoCallOverlay", $uiAction);
+    if ($btnWeemoCall.length > 0) {
+      var $btnConnect = jqchat(".connect", $uiAction);
+      $btnConnect.wrap("<div></div>");
+      $uiAction.addClass("twice-line");
+    }
+    $uiAction.append(strChatLink);
+  }
+
+  $tiptip_content.one('DOMNodeInserted', function() {
+    chatNotification.attachChatButtonToUserPopup();
+  });
+};
 /**
  ##################                           ##################
  ##################                           ##################
@@ -503,6 +531,8 @@ var chatNotification = new ChatNotification();
       chatNotification.changeStatusChat(chatNotification.profileStatus);
     });
 
+    // Attach chat to user popup
+    chatNotification.attachChatButtonToUserPopup();
   });
 
 })(jqchat);
