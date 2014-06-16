@@ -39,8 +39,9 @@
   display: none;
   max-height: 345px;
   overflow: auto;
+  overflow-x: hidden;
   .chat-notification-detail {
-    padding: 5px 9px;
+    padding: 5px 10px;
     display: block;
     cursor: pointer;
     min-height: 59px;
@@ -59,6 +60,8 @@
     .name {
       font-weight: bold;
       color: @linkColor;
+      .text-overflow;
+      display: block;
     }
     .timestamp, .team {
       font-size: 12px;
