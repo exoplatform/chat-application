@@ -240,7 +240,11 @@ public class DocumentsData {
         jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
       session.save();
       uuid = fileNode.getUUID();
-      listenerService_.broadcast(FILE_CREATED_ACTIVITY, null, fileNode);
+
+      // Broadcast an activity when uploading file in a space conversation
+      if (!isPrivateContext) {
+        listenerService_.broadcast(FILE_CREATED_ACTIVITY, null, fileNode);
+      }
 
     }
     catch (Exception e)

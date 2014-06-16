@@ -480,8 +480,9 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
   }
 
   var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
+  var $changeAvatar = jqchat(".changeAvatar", $breadcumbEntry);
   var $btnChat = jqchat(".chat-button", $breadcumbEntry);
-  if ($breadcumbEntry.length > 0 && $btnChat.length === 0) {
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && $changeAvatar.length === 0) {
     var strChatLink = "<a target='_chat' class='chat-button actionIcon' href='#'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
     $breadcumbEntry.append(strChatLink);
   }
