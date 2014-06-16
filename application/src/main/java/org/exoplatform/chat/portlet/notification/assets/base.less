@@ -44,6 +44,9 @@
     display: block;
     cursor: pointer;
     min-height: 59px;
+    &.even {
+      background-color: #f8f8f8;
+    }
     img {
       float: left;
       margin-right: 10px;
@@ -51,7 +54,7 @@
       .border-radius(2px);
     }
     .chat-label-status {
-      overflow: hidden;
+      margin-left: 46px;
     }
     .name {
       font-weight: bold;
@@ -69,6 +72,7 @@
     }
     .text {
       .text-overflow;
+      max-height: 20px;
       > i {
         margin-right: 5px;
       }
@@ -362,7 +366,8 @@
     top: -8px;
   }
 	.dropdown-menu {
-    width: 255px;
+    max-width: 255px;
+    min-width: 155px;
     &:after {
       right: 15px!important;
     }
