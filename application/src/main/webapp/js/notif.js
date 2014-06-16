@@ -125,13 +125,15 @@ ChatNotification.prototype.refreshNotifDetails = function() {
           var notifs = notifs();
           var thiss = this;
           var froms = [];
-          var categoriesList = new Array(); // Only display
+          var categoryIdList = new Array(); // Only display last unread messages from different conversations
           notifs.order("timestamp desc").each(function (notif, number) {
-            if (jqchat.inArray(notif.categoryId, categoriesList) === -1) {
+            if (jqchat.inArray(notif.categoryId, categoryIdList) === -1) {
               var content = notif.content;
               var messageType = notif.options.type;
+              var evenClass = (categoryIdList.length % 2) ? "even": "";
 
-              html += '<div class="chat-notification-detail" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+
+              html += '<div class="chat-notification-detail ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html += '  <img width="30px" height="30px" style="width:36px; height:36px;" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
@@ -194,12 +196,16 @@ ChatNotification.prototype.refreshNotifDetails = function() {
                 }
               }
 
-              categoriesList.push(notif.categoryId);
+              categoryIdList.push(notif.categoryId);
             }
           });
-          html += '<li class="divider">&nbsp;</li>';
         }
         $chatNotificationsDetails.html(html);
+        if (categoryIdList.length > 0) {
+          $chatNotificationsDetails.next().show();
+        } else {
+          $chatNotificationsDetails.next().hide();
+        }
         $chatNotificationsDetails.css("display", "block");
         jqchat(".chat-notification-detail").on("click", function(){
           var id = jqchat(this).attr("data-id");
