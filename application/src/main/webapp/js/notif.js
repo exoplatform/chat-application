@@ -465,6 +465,25 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
     chatNotification.attachChatButtonToUserPopup();
   });
 };
+
+ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = function() {
+  var $uiBreadcumbsNavigationPortlet = jqchat("#UIBreadCrumbsNavigationPortlet");
+  if ($uiBreadcumbsNavigationPortlet.length == 0) {
+    setTimeout(chatNotification.attachChatButtonBelowLeftNavigationSpaceName, 250);
+    return;
+  }
+
+  var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
+  var $btnChat = jqchat(".chat-button", $breadcumbEntry);
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0) {
+    var strChatLink = "<a target='_chat' class='chat-button actionIcon' href='#'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
+    $breadcumbEntry.append(strChatLink);
+  }
+
+  $uiBreadcumbsNavigationPortlet.one('DOMNodeInserted', function() {
+    chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
+  });
+};
 /**
  ##################                           ##################
  ##################                           ##################
@@ -533,6 +552,9 @@ var chatNotification = new ChatNotification();
 
     // Attach chat to user popup
     chatNotification.attachChatButtonToUserPopup();
+
+    // Attach chat below left navigation space name
+    chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
   });
 
 })(jqchat);
