@@ -264,7 +264,7 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
  * @param msgs : json messages data to show
  */
 ChatRoom.prototype.showMessages = function(msgs) {
-  var im, message, out="", prevUser="", prevFullName, prevOptions;
+  var im, message, out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
   if (msgs!==undefined) {
     this.messages = msgs.messages;
   }
@@ -359,25 +359,35 @@ ChatRoom.prototype.showMessages = function(msgs) {
           msgtemp = thiss.messageBeautifier(message);
         }
         out += "            <div class='msUserCont msg-text clearfix " + noEditCssClass + "'>";
-        out += "              <div class='msRightInfo pull-right'>";
-        out += "                <div class='msTimePost'>";
+
+        msRightInfo = "";
+        msRightInfo += "      <div class='msRightInfo pull-right'>";
+        msRightInfo += "        <div class='msTimePost'>";
         if (message.type === "DELETED" || message.type === "EDITED") {
-          out += "                <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
+          msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
-        out += "                  <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
-        out += "                </div>";
+        msRightInfo += "          <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
-          out += "              <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
-          out += "                <a href='#' class='msg-action-savenotes'>" + chatBundleData.exoplatform_chat_notes + "</a> |";
+          msRightInfo += "      <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
+          msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData.exoplatform_chat_notes + "</a> |";
           if (message.user === thiss.username) {
-            out += "              <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a> |";
-            out += "              <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a> |";
+            msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a> |";
+            msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a> |";
           }
-          out += "                <a href='#' class='msg-action-quote'>" + chatBundleData.exoplatform_chat_quote + "</a>";
-          out += "              </div>";
+          msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData.exoplatform_chat_quote + "</a>";
+          msRightInfo += "       </div>";
         }
-        out += "              </div>";
-        out += "              <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+        msRightInfo += "       </div>";
+        msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+        if (thiss.miniChat === undefined) {
+          out += msRightInfo;
+          out += msUserMes;
+        } else {
+          out += msUserMes;
+          out += msRightInfo;
+        }
+
         out += "            </div>";
         prevUser = message.user;
         prevFullName = message.fullname;
@@ -427,11 +437,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "            </div>";
         //}
         out += "              <div class='msUserCont noEdit msg-text clearfix'>";
-        out += "                <div class='msRightInfo pull-right'>";
-        out += "                  <div class='msTimePost'>";
-        out += "                    <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
-        out += "                  </div>";
-        out += "                </div>";
+        msRightInfo = "";
+        msRightInfo += "         <div class='msRightInfo pull-right'>";
+        msRightInfo += "           <div class='msTimePost'>";
+        msRightInfo += "             <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "           </div>";
+        msRightInfo += "         </div>";
         var options = {};
         // Legacy test
         if (message.message.indexOf("&")>0) {
@@ -443,23 +454,31 @@ ChatRoom.prototype.showMessages = function(msgs) {
           options = message.options;
         var nbOptions = thiss.getObjectSize(options);
 
-        if (options.type === "type-me") {
-          out += "<span class=\"system-event\">"+thiss.messageBeautifier(message, options)+"</span>";
-          out += "<div style='margin-left:50px;'>";
+        msUserMes = "            <div class='msUserMes'>" + thiss.messageBeautifier(message, options) + "</div>";
+        if (thiss.miniChat === undefined) {
+          out += msRightInfo;
+          out += msUserMes;
         } else {
-// TODO: check to new BD
-//          if (message.user != thiss.username) {
-//            if (thiss.isPublic)
-//              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.exoplatform_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
-//            else
-//              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
-//          } else {
-//            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
-//          }
-          out += "              <div class='msUserMes'>" + thiss.messageBeautifier(message, options) + "</div>";
-          //out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
-
+          out += msUserMes;
+          out += msRightInfo;
         }
+
+//        if (options.type === "type-me") {
+//          out += "<span class=\"system-event\">"+thiss.messageBeautifier(message, options)+"</span>";
+//          out += "<div style='margin-left:50px;'>";
+//        } else {
+//// TODO: check to new BD
+////          if (message.user != thiss.username) {
+////            if (thiss.isPublic)
+////              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.exoplatform_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
+////            else
+////              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
+////          } else {
+////            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+////          }
+//          //out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
+//
+//        }
 
 //        out +=  "<span class='invisible-text'> [</span>"+
 //          "<span style='float:right;color:#CCC;font-size:10px'>"+thiss.getDate(message.timestamp)+"</span>" +
@@ -857,13 +876,24 @@ String.prototype.endsWith = function(suffix) {
             var token = data.token;
             $obj.attr("data-username", username);
             $obj.attr("data-token", token);
-            $obj.html('<div class="title">' +
-              '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
-              '<span class="fullname"></span>' +
-              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.exoplatform_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
-              '</div>' +
-              '<div class="history"></div>' +
-              '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');
+            var innerMiniChatHtml = "";
+            innerMiniChatHtml += "<div class='title clearfix'>";
+            innerMiniChatHtml += " <span class='fullname'></span>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Close Mini Chat'><i class='uiIconClose uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel ' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Open Chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel ' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Minimize Mini Chat'><i class='uiIconMinimize uiIconWhite'></i></a>";
+            innerMiniChatHtml += "</div>";
+            innerMiniChatHtml += "<div class='history'>";
+            innerMiniChatHtml += "</div>";
+            innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
+            $obj.html(innerMiniChatHtml);
+//            $obj.html('<div class="title">' +
+//              '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
+//              '<span class="fullname"></span>' +
+//              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.exoplatform_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
+//              '</div>' +
+//              '<div class="history"></div>' +
+//              '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');
           }
         });
 
@@ -871,17 +901,17 @@ String.prototype.endsWith = function(suffix) {
       }
     });
 
-    var spaceUrl = $("div.uiBreadcumbsNavigationPortlet > div.userAvt > img").attr("src");
-    if (spaceUrl !== undefined) {
-      if (spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
-        var spaceName = spaceUrl.substr(73);
-        spaceName = spaceName.substring(0, spaceName.indexOf("/"));
-        $breadcrumbEntry = $("div.uiBreadcumbsNavigationPortlet > div.breadcumbEntry");
-        var html = $breadcrumbEntry.html();
-        html += '<div class="uiActionWithLabel" onclick="javascript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
-        $breadcrumbEntry.html(html);
-      }
-    }
+//    var spaceUrl = $("div.uiBreadcumbsNavigationPortlet > div.userAvt > img").attr("src");
+//    if (spaceUrl !== undefined) {
+//      if (spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
+//        var spaceName = spaceUrl.substr(73);
+//        spaceName = spaceName.substring(0, spaceName.indexOf("/"));
+//        $breadcrumbEntry = $("div.uiBreadcumbsNavigationPortlet > div.breadcumbEntry");
+//        var html = $breadcrumbEntry.html();
+//        html += '<div class="uiActionWithLabel" onclick="javascript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
+//        $breadcrumbEntry.html(html);
+//      }
+//    }
 
   });
 
@@ -967,7 +997,7 @@ function showMiniChatPopup(room, type) {
       miniChats[index].onShowMessages(function(out) {
         var $chats = this.miniChat.find(".history");
         $chats.html('<span>'+out+'</span>');
-        $chats.animate({ scrollTop: 20000 }, 'fast');
+        //$chats.animate({ scrollTop: 20000 }, 'fast');
 
       });
       miniChats[index].init(username, token, targetUser, targetFullname, false, function(){

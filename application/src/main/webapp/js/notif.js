@@ -202,8 +202,10 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         }
         $chatNotificationsDetails.html(html);
         if (categoryIdList.length > 0) {
+          $chatNotificationsDetails.parent().addClass("full-width");
           $chatNotificationsDetails.next().show();
         } else {
+          $chatNotificationsDetails.parent().removeClass("full-width");
           $chatNotificationsDetails.next().hide();
         }
         $chatNotificationsDetails.css("display", "block");
