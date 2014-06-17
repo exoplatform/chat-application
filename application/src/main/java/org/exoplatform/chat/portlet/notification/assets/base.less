@@ -1,6 +1,6 @@
 //@notifBackgroundColor:        #4f72ac;
 @notifBackgroundColor:        #B00;
-@notifColor:                  #ffffff;
+@notifColor:                  #ffffff; 
 @backgroundColor:             #ffffff;
 @borderColor:                 #DBDBDB;
 @shadowColor:                 #E3E3E3;
@@ -104,18 +104,15 @@
 .no-user-selection
 {
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
   -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  .user-select(none);
   user-select: none;
-  cursor: default;
+  cursor: default; 
+    
 }
 
 .full-border-radius {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  .border-radius(5px);
 }
 
 .arrow_box {
@@ -148,49 +145,54 @@
 }
 
 .mini-chat {
-  display: none;
-  position: absolute;
-  left: 150px;
-  top: -1px;
-  width: 300px;
-  background-color: #FFFFFF;
-  -webkit-border-bottom-right-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
+	&.mini-chat-collapse {
+		.history,.message {
+			display: none;
+		}
+	}
+	&.arrow_box:after, &.arrow_box:before {
+		display: none;
+	}
+	display: none;
+	position: fixed;
+	width: 300px;
+	position: fixed;
+	top: auto!important;
+	left: auto!important;
+	bottom: 0;
+	right: 10px;
+	background-color: @white;
+  .border-radius(5px);
   z-index: 1000;
-  box-shadow: 0px 2px 6px 0px rgba(35, 44, 48, 0.5);
-  border: 1px solid #AAA;
+  .box-shadow(0px 2px 6px 0px rgba(35, 44, 48, 0.5));
+  border: 1px solid #ccc;
 
   .title {
-    height: 20px;
-    padding: 5px;
-    width: 290px;
-
+    min-height: 20px;
+	border: 1px solid #3d3d3d;
+    padding: 10px;
+	margin:-1px;
+	.border-top-left-radius(5px);
+  .border-top-right-radius(5px);
+	#gradient > .vertical (#4f4f4f,#474747);
     .fullname {
-      line-height: 24px;
+        line-height: 100%;
       font-weight: bold;
-      padding-left: 5px;
+	  color:@white;
+	  font-size: 14px;
     }
 
     .btn-close {
       float: right;
-      padding: 1px 2px 0px 3px;
-      margin: 0;
     }
   }
 
   .history {
     display: block;
-    height: 300px;
-    width: 288px;
-    margin: 5px;
     background-color: white;
-    overflow-y: scroll;
-    border: 1px solid #E0E0E0;
-
+    overflow: auto;
+	max-height: 300px;
+	height: 300px;
     .msgln
     {
       padding: 3px 12px;
@@ -296,11 +298,11 @@
   }
 
   .message {
-    height: 33px;
-
+    padding:10px;
+	border-top:1px solid #ccc;
     input {
-      width: 290px;
-      margin-left: 5px;
+     width:100%;
+	 margin:0;
 
     }
   }
@@ -469,3 +471,224 @@
 		margin-top:10px!important;
 	}
 }
+
+
+
+/* Chat Area */
+.mini-chat{
+	.uiActionWithLabel {
+		padding: 2px ;
+		line-height: 100%;	
+		border: none;
+		margin-left: 5px; 
+		float: right;
+		&:hover ,&:active,&:focus,&.actived{
+			background:#333333;
+			.box-shadow(none);
+			border: none;
+			.uiIconMinimize ,.uiIconMaximize ,.uiIconClose ,.uiIconPopOut {
+				background-image: url("uiIconsWhite.png")!important;
+			}
+		}
+		
+		
+	}
+	 .notify-info {
+		line-height: 100%;
+		vertical-align: middle;
+		display: inline-block;
+		padding: 0 4px;
+		text-align: center;
+		min-width: 10px;
+		height: 16px;
+		line-height: 16px;
+		color:@white;
+		background: @linkColor;
+		& + .fullname {
+			margin-left: 6px;
+			vertical-align: middle;
+		}
+	  }
+  .msRow{
+    &:first-child {
+      .border-top-radius(3px);
+    }
+    &:last-child {
+      .border-bottom-radius(3px);
+    }
+  }
+}
+.mini-chat .msRow {
+  @widthOfAvatar: 32px;
+  padding: 10px ;
+  &.odd {
+    background-color: #f8f8f8;
+  }
+  /* Layout Row Chat */
+  
+	.msTimeEvent {
+		.to {
+			margin-left: 26px;
+		}
+	}
+ 
+  /* Style Row Chat */
+  .msUserCont {
+    + .msUserCont {
+      margin-top: 5px;
+    }
+  }
+  .msUserAvatar {
+    width: 40px!important;
+    text-align: center;
+	  float: left;
+	  & + .msContBox ,& + .msMessagesGroup{
+		 margin-left: 55px;
+	  }
+	  
+  }
+  .msAvatarLink, .msAvatarLink img {
+    .border-radius(@widthOfAvatar);
+  }
+  .msAvatarLink, .msAvatarLink > img {
+    width: @widthOfAvatar;
+    height: @widthOfAvatar;
+  }
+  .msAvatarLink {
+    background-color: #fff;
+    padding: 3px;
+    border: 1px solid #b2b1b1;
+    display: block;
+    #gradient > .vertical(#ffffff, #f1f1f1);
+    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
+    > img {
+      .box-shadow(0 1px 1px rgba(255,255,255, .1));
+    }
+  }
+  .msLinkInMes {
+    font-weight: bold;
+  }
+  .msTiltleLn {
+    margin-top: -5px;
+    margin-bottom: 10px;
+    .msNameUser {
+      font-weight: bold;
+      color: #999999;
+      &:hover {
+        color: @linkColor;
+      }
+    }
+  }
+  .msAction {
+    cursor: pointer;
+    visibility: hidden;
+    color: @linkColor;
+    font-size: 12px;
+    a {
+      font-size: 12px;
+    }
+  }
+  .msTimePost {
+    color: #999;
+    font-size: 12px;
+	text-align: right
+  }
+  .msUserMes {
+	a {font-weight: bold;}
+    overflow: hidden;
+    .msUserQuote {
+      background-color: #f0f0f0;
+      .border-radius(3px);
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      .msNameUser {
+        color: #333333;
+      }
+    }
+  }
+  .msQuoteCont {
+    font-style: italic;
+    quote {
+      border-left: 5px solid #e0e0e0;
+      padding-left: 15px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+ 
+
+  .msMessagesGroup {
+    + .msMessagesGroup {
+      margin-top: 20px;
+    }
+  }
+  .msAttachmentBox {
+    width: 128px;
+    height: 128px;
+    position: relative;
+    margin-top: 5px;
+    > .msAttachFile {
+      line-height: 128px;
+      vertical-align: middle;
+      img {
+        max-width: 128px;
+        max-height: 128px;
+      }
+    }
+    .msActionAttach {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      > .inner {
+        position: absolute;
+        top: 50%;
+        margin-top: -20px;
+        left: 0;
+        text-align: center;
+        width: 100%;
+        
+      }
+      a {
+        color: #fff;
+        &:hover {
+          font-weight: bold;
+          i {
+            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+          }
+        }
+      }
+    }
+    &:hover {
+      .msActionAttach {
+        background-color: rgba(0, 0, 0, 0.1);
+        display: block;
+      }
+    }
+  }
+  .fileSize, .msTextGray {
+    color: #999;
+  }
+  .msSaveCall {
+    margin-top: 7px;
+  }
+}
+/*
+#chats  .noContent, 
+#chats .noMessage{
+	background: url('@{imgPath}bg-chat.png') no-repeat center center;
+	width: 100%;
+	height: 100%;
+  position: relative;
+  .text {
+    color: #808080;
+    font-size: 14px;
+    font-weight: bold;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    .translate(-50%, -50%);
+  }
+}*/
