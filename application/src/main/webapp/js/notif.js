@@ -182,10 +182,10 @@ ChatNotification.prototype.refreshNotifDetails = function() {
               html += '      </div>';
               html += '    </div>';
               html += '    <div class="gray-box">';
+              html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
               if (notif.roomDisplayName.trim()) {
                 html += '    <div class="team">' + notif.roomDisplayName + '</div>';
               }
-              html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
               html += '    </div>';
               html += '  </div>';
               html += '</div>';

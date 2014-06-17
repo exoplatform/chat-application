@@ -67,11 +67,14 @@
       font-size: 12px;
       line-height: 18px;
       color: #999;
+      .text-overflow;
+    }
+    .timestamp {
+      float: left;
+      width: 100px;
     }
     .team {
-      float: right;
-      .text-overflow;
-      max-width: 45%;
+      text-align: right;
     }
     .text {
       .text-overflow;
@@ -371,6 +374,9 @@
 	.dropdown-menu {
     max-width: 255px;
     min-width: 155px;
+    &.full-width {
+      width: 255px;
+    }
     &:after {
       right: 15px!important;
     }
