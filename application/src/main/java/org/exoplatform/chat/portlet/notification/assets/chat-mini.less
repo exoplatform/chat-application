@@ -290,7 +290,7 @@
 		position: relative;
 	}
 	.dayOnCalendar {
-		color: #999999;
+		color: @grayLight;
 		font-size: 18px;
 		line-height: 100%;
 		font-style: normal;
@@ -299,5 +299,18 @@
 		position: absolute;
 		top: 10px;
 		.translate(-50%, 0);
+	}
+	.notify-info {
+		background-color: @linkColor;
+		color: @white;
+		display: inline-block;
+		font-size: 11px;
+		height: 16px;
+		margin-right: 5px;
+		line-height: 16px;
+		min-width: 10px;
+		padding: 0 4px;
+		text-align: center;
+		vertical-align: middle;
 	}
 }
