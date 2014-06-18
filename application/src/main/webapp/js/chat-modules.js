@@ -12,12 +12,13 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic) {
   this.id = "";
   this.messages = "";
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
   this.jzChatGetRoom = jzChatGetRoom;
+  this.jzChatUpdateUnreadMessages = jzChatUpdateUnreadMessages;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
   this.chatEventInt = -1;
@@ -677,8 +678,10 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
       out += "<p><i class='muted'>" + chatBundleData.exoplatform_chat_meeting_started_message + "</i></p>";
 
-      thiss.startMeetingTimestamp = objMessage.timestamp;
-      chatApplication.updateMeetingButtonStatus('started');
+      if (thiss.miniChat === undefined) {
+        thiss.startMeetingTimestamp = objMessage.timestamp;
+        chatApplication.updateMeetingButtonStatus('started');
+      }
     } else if (options.type==="type-meeting-stop") {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b>";
       var isStopedByCurrentUser = (thiss.username === options.fromUser);
@@ -694,7 +697,9 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
       out += "</div>";
-      chatApplication.updateMeetingButtonStatus('stopped');
+      if (thiss.miniChat === undefined) {
+          chatApplication.updateMeetingButtonStatus('stopped');
+      }
     } else {
       out += message;
     }
@@ -840,7 +845,29 @@ ChatRoom.prototype.IsIE8Browser = function() {
   return (rv == 4);
 };
 
+/**
+ * Update Unread Messages
+ *
+ * @param callback
+ */
+ChatRoom.prototype.updateUnreadMessages = function() {
+  jqchat.ajax({
+    url: this.jzChatUpdateUnreadMessages,
+    data: {"room": this.id,
+      "user": this.username,
+      "token": this.token,
+      "timestamp": new Date().getTime()
+    },
 
+    success:function(response){
+      //console.log("success");
+    },
+
+    error:function (xhr, status, error){
+      //console.log("error");
+    }
+  });
+};
 
 /**
  ##################                           ##################
@@ -878,22 +905,17 @@ String.prototype.endsWith = function(suffix) {
             $obj.attr("data-token", token);
             var innerMiniChatHtml = "";
             innerMiniChatHtml += "<div class='title clearfix'>";
+            innerMiniChatHtml += "<span class='notify-info'></span>";
             innerMiniChatHtml += " <span class='fullname'></span>";
-            innerMiniChatHtml += " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Close Mini Chat'><i class='uiIconClose uiIconWhite'></i></a>";
-            innerMiniChatHtml += " <a class='uiActionWithLabel ' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Open Chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
-            innerMiniChatHtml += " <a class='uiActionWithLabel ' href='javaScript:void(0);' data-toggle='tooltip' title='' data-original-title='Minimize Mini Chat'><i class='uiIconMinimize uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close_minichat + "' ><i class='uiIconClose uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-open-chat' href='javaScript:void(0);' data-toggle='tooltip' title='Open Chat' ><i class='uiIconPopOut uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-toggle='tooltip' title='Minimize' ><i class='uiIconMinimize uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-toggle='tooltip' title='Maximize' ><i class='uiIconMaximize uiIconWhite'></i></a>";
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='history'>";
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
             $obj.html(innerMiniChatHtml);
-//            $obj.html('<div class="title">' +
-//              '<!--span class="avatar"><img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/chat/img/Avatar.gif" width="30px" height="30px"  style="width:30px; height:30px;"></span-->' +
-//              '<span class="fullname"></span>' +
-//              '<div class="uiActionWithLabel btn-close" href="javaScript:void(0)" data-toggle="tooltip" title="" data-original-title="'+chatBundleData.exoplatform_chat_close_minichat+'"><i class="uiIconClose uiIconLightGray"></i></div>' +
-//              '</div>' +
-//              '<div class="history"></div>' +
-//              '<div class="message"><input type="text" name="text" autocomplete="off" class="message-input"/></div>');
           }
         });
 
@@ -919,23 +941,46 @@ String.prototype.endsWith = function(suffix) {
 
 var miniChats = {};
 
+function maximizeMiniChat() {
+  var $miniChat = jqchat(".mini-chat").first();
+  var $history = $miniChat.find(".history");
+
+  $miniChat.find(".btn-mini").show();
+  $miniChat.find(".btn-maxi").hide();
+  $miniChat.find(".notify-info").hide();
+  $history.show("fast");
+  $miniChat.find(".message").show("fast");
+  $history.animate({ scrollTop: 20000 }, 'fast');
+
+  $miniChat.slideDown(200, function() {
+    $miniChat.find(".message-input").focus();
+  });
+};
+
+function minimizeMiniChat() {
+  var $miniChat = jqchat(".mini-chat").first();
+
+  $miniChat.find(".btn-mini").hide();
+  $miniChat.find(".btn-maxi").show();
+  $miniChat.find(".history").slideUp(200);
+  $miniChat.find(".message").slideUp(200);
+};
+
 function showMiniChatPopup(room, type) {
   var chatServerUrl = jqchat("#chat-status").attr("data-chat-server-url");
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
   var token = $miniChat.attr("data-token");
   var index = $miniChat.attr("data-index");
-  if (type==="room-id") {
-    $miniChat.css("left", "150px");
-    $miniChat.css("top", "-1px");
-    $miniChat.removeClass("full-border-radius");
-  }
-  else if (type==="space-name") {
-    $miniChat.css("left", "5px");
-    $miniChat.css("top", "113px");
-    $miniChat.addClass("full-border-radius");
-  }
 
+  if (miniChats[index] !== undefined)
+    miniChats[index].id = "";
+
+  // Display chat
+  maximizeMiniChat();
+  jqchat("[data-toggle='tooltip']").tooltip();
+
+  // Show chat messages
   var urlRoom = chatServerUrl+"/getRoom";
   snack.request({
     url: urlRoom,
@@ -956,9 +1001,9 @@ function showMiniChatPopup(room, type) {
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
       var jzChatGetRoom = chatServerUrl+"/getRoom";
+      var jzChatUpdateUnreadMessages = chatServerUrl+"/updateUnreadMessages";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, "", "", 3000, false);
-
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", 3000, false);
 
         $miniChat.find(".message-input").keyup(function(event) {
           var msg = jqchat(this).val();
@@ -986,32 +1031,49 @@ function showMiniChatPopup(room, type) {
           }
 
         });
-
-
-
       }
       miniChats[index].setMiniChatDiv($miniChat);
       miniChats[index].onRefresh(function() {
 
       });
       miniChats[index].onShowMessages(function(out) {
-        var $chats = this.miniChat.find(".history");
-        $chats.html('<span>'+out+'</span>');
+        var $history = this.miniChat.find(".history");
+        $history.html('<span>'+out+'</span>');
+        var totalMsgs = jqchat(".msUserCont", $history).length;
         //$chats.animate({ scrollTop: 20000 }, 'fast');
 
+        if ($history.is(":hidden")) {
+          $miniChat.find(".notify-info").show();
+          var unreadTotal = totalMsgs - $miniChat.attr("readTotal");
+          if (unreadTotal > 0)
+            $miniChat.find(".notify-info").html(unreadTotal);
+        } else {
+          $miniChat.attr("readTotal", totalMsgs);
+          $miniChat.find(".notify-info").hide();
+        }
       });
       miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
       });
     }
   });
 
-  $miniChat.slideDown(200, function() {
-    $miniChat.find(".message-input").focus();
-  });
+  /************ MINI CHAT event handlers *************/
   $miniChat.find(".btn-close").on("click", function(){
     $miniChat.find(".message-input").val("");
     miniChats[index].clearInterval();
     $miniChat.slideUp(200);
   });
 
+  $miniChat.find(".btn-mini").on("click", function(){
+    minimizeMiniChat();
+  });
+
+  $miniChat.find(".btn-maxi").on("click", function(){
+    maximizeMiniChat();
+  });
+
+  $miniChat.find(".message-input").on("focus", function(){
+    if (miniChats[index].id !== "")
+      miniChats[index].updateUnreadMessages();
+  });
 };
