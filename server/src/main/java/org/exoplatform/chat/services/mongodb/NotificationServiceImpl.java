@@ -20,6 +20,7 @@
 package org.exoplatform.chat.services.mongodb;
 
 import com.mongodb.*;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RoomBean;
@@ -63,6 +64,16 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
                               String content, String link, String options) {
     DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject doc = new BasicDBObject();
+
+    content = StringUtils.chomp(content);
+    content = content.replaceAll("&", "&#38");
+    content = content.replaceAll("<", "&lt;");
+    content = content.replaceAll(">", "&gt;");
+    content = content.replaceAll("\"", "&quot;");
+    content = content.replaceAll("\n", "<br/>");
+    content = content.replaceAll("\\\\", "&#92");
+    content = content.replaceAll("\t", "  ");
+
     doc.put("timestamp", System.currentTimeMillis());
     doc.put("user", user);
     doc.put("from", from);

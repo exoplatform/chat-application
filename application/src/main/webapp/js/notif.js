@@ -109,16 +109,15 @@ ChatNotification.prototype.initUserProfile = function(callback) {
  * Refresh Notifications
  */
 ChatNotification.prototype.refreshNotifDetails = function() {
+  var $chatNotificationsDetails = jqchat("#chat-notifications-details");
   if (this.oldNotifTotal>0) {
-    jqchat("#chat-notifications-details").css("display", "initial");
-
+    $chatNotificationsDetails.css("display", "initial");
     this.updateNotifEventURL();
     jqchat.ajax({
       url: this.notifEventURL+"&withDetails=true",
       dataType: "json",
       context: this,
       success: function(data){
-        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         var html = '';
         if (data.notifications.length>0) {
           var notifs = TAFFY(data.notifications);
@@ -215,13 +214,14 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         });
       },
       error: function(){
-        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         $chatNotificationsDetails.html("");
         $chatNotificationsDetails.css("display", "none");
       }
     });
-
-
+  }
+  else {
+    $chatNotificationsDetails.parent().removeClass("full-width");
+    $chatNotificationsDetails.next().hide();
   }
 };
 

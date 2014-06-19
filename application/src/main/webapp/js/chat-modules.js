@@ -908,7 +908,7 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml += "<span class='notify-info'></span>";
             innerMiniChatHtml += " <span class='fullname'></span>";
             innerMiniChatHtml += " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close_minichat + "' ><i class='uiIconClose uiIconWhite'></i></a>";
-            innerMiniChatHtml += " <a class='uiActionWithLabel btn-open-chat' href='javaScript:void(0);' data-toggle='tooltip' title='Open Chat' ><i class='uiIconPopOut uiIconWhite'></i></a>";
+            innerMiniChatHtml += " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-toggle='tooltip' title='Open Chat' target='_chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
             innerMiniChatHtml += " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-toggle='tooltip' title='Minimize' ><i class='uiIconMinimize uiIconWhite'></i></a>";
             innerMiniChatHtml += " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-toggle='tooltip' title='Maximize' ><i class='uiIconMaximize uiIconWhite'></i></a>";
             innerMiniChatHtml += "</div>";
@@ -1041,7 +1041,7 @@ function showMiniChatPopup(room, type) {
         var $history = this.miniChat.find(".history");
         $history.html('<span>'+out+'</span>');
         var totalMsgs = jqchat(".msUserCont", $history).length;
-        //$chats.animate({ scrollTop: 20000 }, 'fast');
+        $history.animate({ scrollTop: 20000 }, 'fast');
 
         if ($history.is(":hidden")) {
           $miniChat.find(".notify-info").show();

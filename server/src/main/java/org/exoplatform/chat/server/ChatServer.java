@@ -594,7 +594,7 @@ public class ChatServer
 
   @Resource
   @Route("/notification")
-  public Response.Content notificatdion(String user, String token, String event, String withDetails) throws IOException
+  public Response.Content notification(String user, String token, String event, String withDetails) throws IOException
   {
     if (!tokenService.hasUserWithToken(user,  token))
     {
