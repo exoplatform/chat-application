@@ -964,6 +964,7 @@ function minimizeMiniChat() {
   $miniChat.find(".btn-maxi").show();
   $miniChat.find(".history").slideUp(200);
   $miniChat.find(".message").slideUp(200);
+  $miniChat.css("height","auto");
 };
 
 function showMiniChatPopup(room, type) {
