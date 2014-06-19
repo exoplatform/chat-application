@@ -313,7 +313,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow odd'>";
+            out += "  <div class='msRow'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
@@ -338,7 +338,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow'>";
+            out += "  <div class='msRow odd'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
@@ -428,7 +428,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "      </div>";
           out += "    </div>";
         }
-        out += "      <div class='msRow odd'>";
+        out += "      <div class='msRow'>";
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";

@@ -153,6 +153,7 @@ ChatNotification.prototype.refreshNotifDetails = function() {
                   html += "       <i class='uiIconChatUpload uiIconChatLightGray'></i>";
                 } else if ("type-link" === messageType) {
                   html += "       <i class='uiIconChatLink uiIconChatLightGray'></i>";
+                  content = notif.options.link;
                 } else if ("type-task" === messageType) {
                   html += "       <i class='uiIconChatCreateTask uiIconChatLightGray'></i>";
                 } else if ("type-event" === messageType) {
