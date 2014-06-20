@@ -1074,7 +1074,7 @@ function showMiniChatPopup(room, type) {
   });
 
   $miniChat.find(".message-input").on("focus", function(){
-    if (miniChats[index].id !== "")
+    if (miniChats[index] && miniChats[index].id !== "")
       miniChats[index].updateUnreadMessages();
   });
 };

@@ -458,7 +458,7 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
   if ($uiAction.length > 0 && $btnChat.length === 0) {
     var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
     // var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
-    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + " disabled' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
 
     // Position of chat button depend on weemo installation
     var $btnWeemoCall = jqchat(".weemoCallOverlay", $uiAction);
@@ -468,6 +468,20 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
       $uiAction.addClass("twice-line");
     }
     $uiAction.append(strChatLink);
+
+    jqchat(".chatPopupOverlay").on("click", function() {
+      if (!jqchat(this).hasClass("disabled")) {
+        var targetUser = jqchat(this).attr("data-username");
+        showMiniChatPopup(targetUser,'username');
+      }
+    });
+
+    function cbGetStatus(targetUser, status) {
+      if (status !== "offline") {
+        jqchat(".chatPopup-"+targetUser.replace('.', '-')).removeClass("disabled");
+      }
+    }
+    chatNotification.getStatus(toUserName, cbGetStatus);
   }
 
   $tiptip_content.one('DOMNodeInserted', function() {
@@ -483,10 +497,12 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
   }
 
   var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
-  var $changeAvatar = jqchat(".changeAvatar", $breadcumbEntry);
   var $btnChat = jqchat(".chat-button", $breadcumbEntry);
-  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && $changeAvatar.length === 0) {
-    var strChatLink = "<a target='_chat' class='chat-button actionIcon' href='#'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
+  var spaceUrl = jqchat("div.userAvt > img", $uiBreadcumbsNavigationPortlet).attr("src");
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceUrl !== undefined && spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
+    var spaceName = spaceUrl.substr(73);
+    spaceName = spaceName.substring(0, spaceName.indexOf("/"));
+    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceName + "\", \"space-name\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
     $breadcumbEntry.append(strChatLink);
   }
 
