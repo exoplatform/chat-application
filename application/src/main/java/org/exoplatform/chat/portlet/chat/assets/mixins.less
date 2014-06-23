@@ -147,7 +147,7 @@
     #font > #family > .sans-serif-bold;
     #font > .shorthand(@size, @weight, @lineHeight);
   }
-  
+
   .monospace(@size: @baseFontSize, @weight: normal, @lineHeight: @baseLineHeight) {
     #font > #family > .monospace;
     #font > .shorthand(@size, @weight, @lineHeight);
@@ -662,7 +662,7 @@
     }
 
   }
-  
+
 //============== input ================
 
   .input(@gridColumnWidth, @gridGutterWidth) {
@@ -699,18 +699,18 @@
 
 #StatusElements {
   .StatusHover(@startColor : #fff, @endColor : #f1f1f1,@boxShadow: 0 1px 2px 0px rgba(255,255,255,1)){
-    #gradient > .vertical(@startColor,@endColor); 
+    #gradient > .vertical(@startColor,@endColor);
     border: 1px solid @borderColor;
     .border-radius(@borderRadiusSmall);
     .box-shadow(@boxShadow);
     &:active,&:focus {
       .StatusActive();
     }
-  }   
+  }
   .StatusActive(@boxShadow: 0px 2px 6px 0 rgba(0, 0, 0, 0.15) inset) {
     .box-shadow(@boxShadow);
-    border: 1px solid #c7c7c7; 
-    .border-radius(@borderRadiusSmall); 
+    border: 1px solid #c7c7c7;
+    .border-radius(@borderRadiusSmall);
     background-color: #ececec;
   }
 }
@@ -734,23 +734,23 @@
 
 //============== actionIcon================
 .actionContainer() {
-  white-space: nowrap; 
+  white-space: nowrap;
 }
- 
+
 .actionIcon(){
   .uiActionWithLabel;
   padding:2px 4px;
   vertical-align: middle;
   &:active,&:focus,&.active {
     #StatusElements > .StatusActive(0px 0px 10px 0 rgba(0, 0, 0, 0.15) inset);
-  }         
+  }
 }
 
 
 //============== error, noticeEmpty ================
 
 .error() {
-  color: @red; 
+  color: @red;
 }
 .noticeEmpty() {
   color: @red;
@@ -765,7 +765,7 @@
   color: @color;
   #font > .sans-serif-bold(@fonSize,@fontWeight,@lineHeight);
   text-shadow: 0px 0px 1px @shadowColor ;
-} 
+}
 
 .titleWithBorder() {
   position: relative;
@@ -788,7 +788,7 @@
   border: 1px solid @borderColor;
   background: @white;
   margin: 0 0 @baseLineHeight 0;
-  .title {    
+  .title {
     background-color:  @grayWhiteSmoke;
     border-bottom: 1px solid @borderColor;
     .box-shadow(0 1px 2px rgba(13, 13, 13, 0.2));
@@ -855,7 +855,7 @@
   .box-shadow(0px 2px 4px rgba(13px, 13px, 13px, 0.27));
   border: 1px solid #b1b1b1;
   padding: 5px;
-  
+
   img {
     .border-radius(100px);
     .square(@size);
@@ -915,7 +915,7 @@
   border: 1px solid @borderColor;
   padding: 7px;
   display: block;
-  
+
   img {
     .border-radius(4px);
     .square(@size);
@@ -927,7 +927,7 @@
 }
 
 .avatarXLargeWithBorder() {
-  .squareBorderAvatar(120px);   
+  .squareBorderAvatar(120px);
 }
 
 
@@ -937,7 +937,7 @@
   border: 1px solid @borderColor;
   .border-radius(4px);
   .box-shadow(0px 1px 2px rgba(0, 0, 0, 0.08));
-  
+
   .titleBox {
     .border-radius(4px 4px 0px 0px );
     .box-shadow(0px 1px 2px rgba(13, 13, 13, 0.08));
