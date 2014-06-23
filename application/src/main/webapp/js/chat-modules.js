@@ -1066,6 +1066,9 @@ function showMiniChatPopup(room, type) {
   });
 
   $miniChat.find(".btn-mini").on("click", function(){
+    var $history = $miniChat.find(".history");
+    var totalMsgs = jqchat(".msUserCont", $history).length;
+    $miniChat.attr("readTotal", totalMsgs);
     minimizeMiniChat();
   });
 
