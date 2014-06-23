@@ -23,7 +23,9 @@ import com.mongodb.*;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 import org.exoplatform.chat.utils.PropertyManager;
@@ -130,19 +132,15 @@ public class MongoBootstrap
     return db;
   }
 
-  private static Mongo setupEmbedMongo() throws IOException {
+  private static void setupEmbedMongo() throws IOException {
     MongodStarter runtime = MongodStarter.getDefaultInstance();
     int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
-    mongodExe = runtime.prepare(new MongodConfig(Version.V2_3_0, port, Network.localhostIsIPv6()));
+    IMongodConfig mongodConfig = new MongodConfigBuilder()
+            .version(Version.Main.V2_6)
+            .net(new Net(port, Network.localhostIsIPv6()))
+            .build();
+    mongodExe = runtime.prepare(mongodConfig);
     mongod = mongodExe.start();
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      LOG.info(e.getMessage());
-    }
-    String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
-
-    return new Mongo(new ServerAddress(host, port));
   }
 
   public void initCappedCollection(String name, int size)
