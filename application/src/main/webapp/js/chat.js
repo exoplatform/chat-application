@@ -1259,12 +1259,12 @@ ChatApplication.prototype.initChat = function() {
     }
   });
 
-  var $roomDetailButton = jqchat(".room-detail-button");
-  if ($roomDetailButton.children().length === 0) {
-    $roomDetailButton.hide();
-  } else {
-    $roomDetailButton.show();
-  }
+//  var $roomDetailButton = jqchat(".room-detail-button");
+//  if ($roomDetailButton.children().length === 0) {
+//    $roomDetailButton.hide();
+//  } else {
+//    $roomDetailButton.show();
+//  }
 
   this.resize();
   jqchat(window).resize(function() {

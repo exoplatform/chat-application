@@ -421,7 +421,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
-            if (prevOptions.type.indexOf("type-") !== -1) {
+            if (prevOptions.type.indexOf("type-") !== -1 || prevOptions.type.indexOf("call-") !== -1) {
               out += thiss.getActionMeetingStyleClasses(prevOptions);
             }
           }
@@ -532,7 +532,10 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
     out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
   } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
     out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+  } else if ("call-off" === actionType) {
+    out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
   }
+
   out += "                </div>";
   return out;
 };
@@ -700,6 +703,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       if (thiss.miniChat === undefined) {
           chatApplication.updateMeetingButtonStatus('stopped');
       }
+    } else if (options.type==="call-off") {
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
     } else {
       out += message;
     }

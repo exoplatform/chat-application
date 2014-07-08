@@ -75,7 +75,11 @@
         
         </span>
 
-        <span class="room-detail-button">
+        <span class="room-detail-button" style="display:none">
+            <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
+            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.call}</a>
+            <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
+            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.join}</a>
         </span>
         <div class="msbuttonGroupRecord">
            <button class="btn msButtonRecord" data-toggle="tooltip" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}"><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
