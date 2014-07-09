@@ -708,20 +708,33 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
 
     } else if (options.type==="call-off") {
-      var callDurationString = "";
-      var callDuration = objMessage.timestamp - this.startCallTimestamp;
-      var callMinutes = Math.floor(callDuration/(1000*60));
-      var callSeconds = Math.round((callDuration%(1000*60))/1000);
-      callDurationString += "<span class='msTextGray'>"
-      callDurationString += callMinutes;
-      callDurationString += " ";
-      callDurationString += (callMinutes <= 1) ? chatBundleData.exoplatform_chat_minute : chatBundleData.exoplatform_chat_minutes;
-      callDurationString += " ";
-      callDurationString += callSeconds;
-      callDurationString += " ";
-      callDurationString += (callSeconds <= 1) ? chatBundleData.exoplatform_chat_second : chatBundleData.exoplatform_chat_seconds;
-      callDurationString += "</span>"
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b> " + callDurationString;
+      var callDuration = (objMessage.timestamp - this.startCallTimestamp)/1000;
+      var hours = Math.floor(callDuration / 3600);
+      callDuration -= hours * 3600;
+      var minutes = Math.floor(callDuration / 60);
+      callDuration -= minutes * 60;
+      var seconds = parseInt(callDuration % 60, 10);
+      var stime = "<span class='msTextGray'>";
+      if (hours>0) {
+        if (hours===1)
+          stime += hours+ " "+chatBundleData.exoplatform_chat_hour+" ";
+        else
+          stime += hours+ " "+chatBundleData.exoplatform_chat_hours+" ";
+      }
+      if (minutes>0) {
+        if (minutes===1)
+          stime += minutes+ " "+chatBundleData.exoplatform_chat_minute+" ";
+        else
+          stime += minutes+ " "+chatBundleData.exoplatform_chat_minutes+" ";
+      }
+      if (seconds>0) {
+        if (seconds===1)
+          stime += seconds+ " "+chatBundleData.exoplatform_chat_second;
+        else
+          stime += seconds+ " "+chatBundleData.exoplatform_chat_seconds;
+      }
+      stime += "</span>";
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b> " + stime;
     } else if (options.type==="call-proceed") {
       out += "<b>Call coming...</b>";
     } else {
