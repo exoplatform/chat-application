@@ -38,6 +38,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.highlight = "";
 
   this.startMeetingTimestamp = "";
+  this.startCallTimestamp = "";
 }
 
 
@@ -306,9 +307,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 }
                 out += "  </div>";
               } else {
-                if (prevOptions.type.indexOf("type-") !== -1) {
-                  out += thiss.getActionMeetingStyleClasses(prevOptions);
-                }
+                out += thiss.getActionMeetingStyleClasses(prevOptions);
               }
               out += "  </div>";
               out += "</div>";
@@ -331,9 +330,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 out += "    <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
-                if (prevOptions.type.indexOf("type-") !== -1) {
-                  out += thiss.getActionMeetingStyleClasses(prevOptions);
-                }
+                out += thiss.getActionMeetingStyleClasses(prevOptions);
               }
               out += "  </div>";
               out += "</div>";
@@ -421,9 +418,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "      <a class='msAvatarLink' href='#'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
-            if (prevOptions.type.indexOf("type-") !== -1 || prevOptions.type.indexOf("call-") !== -1) {
-              out += thiss.getActionMeetingStyleClasses(prevOptions);
-            }
+            out += thiss.getActionMeetingStyleClasses(prevOptions);
           }
           out += "      </div>";
           out += "    </div>";
@@ -495,9 +490,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (i === (thiss.messages.length -1)) {
           out += "          </div>";
           out += "        </div>";
-          if (message.options.type.indexOf("type-") !== -1) {
-            out += thiss.getActionMeetingStyleClasses(message.options);
-          }
+          out += thiss.getActionMeetingStyleClasses(message.options);
           out += "      </div>";
           out += "    </div>";
         }
@@ -517,26 +510,33 @@ ChatRoom.prototype.showMessages = function(msgs) {
 ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
   var actionType = options.type;
   var out = "";
-  out += "                <div class='msUserAvatar'>";
-  if ("type-question" === actionType) {
-    out += "                <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
-  } else if ("type-hand" === actionType) {
-    out += "                <i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
-  } else if ("type-file" === actionType) {
-    out += "                <i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
-  } else if ("type-link" === actionType) {
-    out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
-  } else if ("type-task" === actionType) {
-    out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
-  } else if ("type-event" === actionType) {
-    out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
-  } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
-    out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
-  } else if ("call-off" === actionType) {
-    out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
+
+  if (actionType.indexOf("type-") !== -1 || actionType.indexOf("call-") !== -1) {
+    out += "                <div class='msUserAvatar'>";
+    if ("type-question" === actionType) {
+      out += "                <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+    } else if ("type-hand" === actionType) {
+      out += "                <i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
+    } else if ("type-file" === actionType) {
+      out += "                <i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
+    } else if ("type-link" === actionType) {
+      out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
+    } else if ("type-task" === actionType) {
+      out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
+    } else if ("type-event" === actionType) {
+      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
+    } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
+      out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+    } else if ("call-on" === actionType) {
+      out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
+    } else if ("call-off" === actionType) {
+      out += "                <i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
+    } else if ("call-proceed" === actionType) {
+      out += "                <i class='uiIconChat32x32AddCall uiIconChat32x32LightGray'></i>";
+    }
+    out += "                </div>";
   }
 
-  out += "                </div>";
   return out;
 };
 
@@ -681,8 +681,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
       out += "<p><i class='muted'>" + chatBundleData.exoplatform_chat_meeting_started_message + "</i></p>";
 
+      thiss.startMeetingTimestamp = objMessage.timestamp;
       if (thiss.miniChat === undefined) {
-        thiss.startMeetingTimestamp = objMessage.timestamp;
         chatApplication.updateMeetingButtonStatus('started');
       }
     } else if (options.type==="type-meeting-stop") {
@@ -703,14 +703,32 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       if (thiss.miniChat === undefined) {
           chatApplication.updateMeetingButtonStatus('stopped');
       }
-    } else if (options.type==="call-off") {
+    } else if (options.type==="call-on") {
+      this.startCallTimestamp = objMessage.timestamp;
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
+
+    } else if (options.type==="call-off") {
+      var callDurationString = "";
+      var callDuration = objMessage.timestamp - this.startCallTimestamp;
+      var callMinutes = Math.floor(callDuration/(1000*60));
+      var callSeconds = Math.round((callDuration%(1000*60))/1000);
+      callDurationString += "<span class='msTextGray'>"
+      callDurationString += callMinutes;
+      callDurationString += " ";
+      callDurationString += (callMinutes <= 1) ? chatBundleData.exoplatform_chat_minute : chatBundleData.exoplatform_chat_minutes;
+      callDurationString += " ";
+      callDurationString += callSeconds;
+      callDurationString += " ";
+      callDurationString += (callSeconds <= 1) ? chatBundleData.exoplatform_chat_second : chatBundleData.exoplatform_chat_seconds;
+      callDurationString += "</span>"
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b> " + callDurationString;
+    } else if (options.type==="call-proceed") {
+      out += "<b>Call coming...</b>";
     } else {
       out += message;
     }
 
     return out;
-
   }
 
 
