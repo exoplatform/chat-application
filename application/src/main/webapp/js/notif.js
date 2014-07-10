@@ -174,10 +174,13 @@ ChatNotification.prototype.refreshNotifDetails = function() {
                   content = chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
                 } else if ("call-join" === messageType) {
                   html += "       <i class='uiIconChatAddPeopleToMeeting uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_joined;
                 } else if ("call-on" === messageType) {
                   html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_started;
                 } else if ("call-off" === messageType) {
                   html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_finished;
                 }
                 content = "<a href='#'>" + content + "</a>";
               }
