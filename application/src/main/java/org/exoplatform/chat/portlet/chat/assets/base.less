@@ -121,6 +121,14 @@ table.list-rooms {
     border-bottom: 1px solid #CFCFCF;
     .box-shadow(0 1px 1px 0 rgba(0, 0, 0, 0.05));
   }
+  .room-link {
+    display: block;
+    max-width: 172px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
   .header-room {
     background: #f0f0f0;
     .box-shadow(0 0 3px 0 rgba(0, 0, 0, 0.1));
@@ -576,12 +584,14 @@ table.list-rooms {
 }
 
 .room-detail-fullname {
-  float: left;
+  overflow: hidden;
+  display: block;
   padding-left: 10px;
   line-height: 61px;
   font-weight: bold;
   font-size: 14px;
   color: #2f5e92;
+  .text-overflow;
 }
 
 .room-detail-avatar {

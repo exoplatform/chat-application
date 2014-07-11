@@ -71,10 +71,6 @@
           </div>
         </span>
 
-        <span class="target-user-fullname room-detail-fullname">
-        
-        </span>
-
         <span class="room-detail-button" style="display:none">
             <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
             <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.call}</a>
@@ -92,12 +88,14 @@
           </ul>
         </span>
 
+        <span class="target-user-fullname room-detail-fullname"></span>
+
       </div>
 
       <div id="chats">
-      
+
       	<div class="noContent"><span class="text">&{exoplatform.chat.no.conversation}</span></div>
-      
+
       </div>
 
       <div class="chat-message">
@@ -133,7 +131,7 @@
             <div class="arrow">
             </div>
             <div class="popover-inner">
-              
+
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{exoplatform.chat.link}">
                   <strong class="actionTitle">Share Link</strong>
@@ -274,10 +272,10 @@
 	<a class="uiIconClose pull-right" title="Close Window" data-dismiss="modal" aria-hidden="true"></a>
 	<span class="PopupTitle popupTitle">&{exoplatform.chat.edit}</span>
   </div>
-  
+
   <div class="PopupContent popupContent">
     <textarea id="edit-modal-area" data-id="---"></textarea>
-    <div class="uiAction uiActionBorder"> 
+    <div class="uiAction uiActionBorder">
     	<a type="button" href="#" class="btn edit-modal-save">&{exoplatform.chat.save}</a>
 		<a type="button" href="#" class="btn edit-modal-cancel">&{exoplatform.chat.cancel}</a>
 	</div>
