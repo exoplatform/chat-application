@@ -449,6 +449,18 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (typeof message.options == "object")
           options = message.options;
         var nbOptions = thiss.getObjectSize(options);
+        
+        if (options.type==="call-on") {
+          if (options.timestamp!==undefined) {
+            jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
+            jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
+          }
+          jqchat(".btn-weemo").addClass('disabled');
+        } else if (options.type==="call-off") {
+          if (options.timestamp!==undefined) {
+            jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
+          }
+        }
 
         msUserMes = "            <div class='msUserMes'>" + thiss.messageBeautifier(message, options) + "</div>";
         if (thiss.miniChat === undefined) {
@@ -459,6 +471,26 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += msRightInfo;
         }
 
+        if (options.type !== "call-join") {
+          if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
+            if (typeof weemoExtension!=="undefined") {
+              weemoExtension.setUidToCall(options.uidToCall);
+              weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+            }
+            jqchat(".btn-weemo").css("display", "none");
+            jqchat(".btn-weemo-conf").css("display", "block");
+            if (typeof weemoExtension!=="undefined") {
+              if (options.uidToCall!=="weemo"+thiss.username && weemoExtension.isConnected)
+                jqchat(".btn-weemo-conf").removeClass("disabled");
+            }
+            else
+              jqchat(".btn-weemo-conf").addClass("disabled");
+          } else {
+            jqchat(".btn-weemo").css("display", "block");
+            jqchat(".btn-weemo-conf").css("display", "none");
+          }
+        }
+        
 //        if (options.type === "type-me") {
 //          out += "<span class=\"system-event\">"+thiss.messageBeautifier(message, options)+"</span>";
 //          out += "<div style='margin-left:50px;'>";
@@ -735,6 +767,32 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       }
       stime += "</span>";
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b> " + stime;
+
+      var callOwner = jzGetParam("weemoCallHandlerOwner");
+      if (thiss.username === callOwner) {
+        out += "<br>";
+        out += "<div style='display: block;margin: 10px 0;'>" +
+          "<span class='meeting-notes'>" +
+          "<a href='#' class='send-meeting-notes' " +
+          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
+          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
+          "data-room='"+this.id+"' " +
+          "data-owner='"+this.username +"' " +
+          "data-id='"+options.timestamp+"' " +
+          ">"+chatBundleData.exoplatform_chat_send_notes+"</a>" +
+          " - " +
+          "<a href='#' class='save-meeting-notes' " +
+          "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
+          "data-to='"+jzGetParam("weemoCallHandlerTo")+"' " +
+          "data-room='"+this.id+"' " +
+          "data-owner='"+this.username +"' " +
+          "data-id='"+options.timestamp+"2' " +
+          ">"+chatBundleData.exoplatform_chat_save_wiki+"</a>" +
+          "</span>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>" +
+          "</div>";
+      }
     } else if (options.type==="call-proceed") {
       out += "<b>Call coming...</b>";
     } else {
