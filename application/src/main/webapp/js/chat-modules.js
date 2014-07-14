@@ -642,7 +642,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var text = message.replace("/me", urlProfile);
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
-      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.name+"</a>";
+      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.name+"</a> ";
       var size = "<span class=\"fileSize\">("+options.sizeLabel+")</span>";
       out += urlFile + size;
       var link = options.restPath;
