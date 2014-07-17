@@ -1763,11 +1763,6 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       out += ' user-status';
     }
     out += '"';
-    if (room.isFavorite == "true") {
-      out += ' title="'+chatBundleData.exoplatform_chat_remove_favorites+'"';
-    } else {
-      out += ' title="'+chatBundleData.exoplatform_chat_add_favorites+'"';
-    }
     out += '></i>';
     out += '</td>';
     out +=  '<td>';
