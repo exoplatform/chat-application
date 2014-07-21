@@ -137,7 +137,9 @@ ChatNotification.prototype.refreshNotifDetails = function() {
 
 
               html += '<div class="chat-notification-detail ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
-              html += '  <img width="30px" height="30px" style="width:36px; height:36px;" onerror="this.src=\'/chat/img/avatar.png;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
+              html +=   '<span class="avatarXSmall">';
+              html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
+              html +=   '</span>';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
               html += '      <span class="name" href="#">' + notif.fromFullName + '</span>';
