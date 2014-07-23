@@ -102,14 +102,14 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  */
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
-  var im = this.messages.length;
-  this.messages[im] = {"user": this.username,
-    "fullname": chatBundleData.exoplatform_chat_you,
-    "date": "pending",
-    "message": msg,
-    "options": options,
-    "isSystem": isSystemMessage};
-  this.showMessages();
+//  var im = this.messages.length;
+//  this.messages[im] = {"user": this.username,
+//    "fullname": chatBundleData.exoplatform_chat_you,
+//    "date": "pending",
+//    "message": msg,
+//    "options": options,
+//    "isSystem": isSystemMessage};
+//  this.showMessages();
 
   var thiss = this;
   snack.request({
@@ -471,7 +471,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += msRightInfo;
         }
 
-        if (options.type !== "call-join") {
+        if (options.type !== "call-join" && (options.type.indexOf('call-') !== -1)) {
           if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
             if (typeof weemoExtension!=="undefined") {
               weemoExtension.setUidToCall(options.uidToCall);
@@ -482,6 +482,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (typeof weemoExtension!=="undefined") {
               if (options.uidToCall!=="weemo"+thiss.username && weemoExtension.isConnected)
                 jqchat(".btn-weemo-conf").removeClass("disabled");
+              else
+                jqchat(".btn-weemo-conf").addClass("disabled");
             }
             else
               jqchat(".btn-weemo-conf").addClass("disabled");

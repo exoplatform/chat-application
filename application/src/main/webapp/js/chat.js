@@ -1829,6 +1829,8 @@ ChatApplication.prototype.loadRoom = function() {
     ////// SPACE
     {
 //      jqchat(".meeting-actions").css("display", "inline-block");
+      jqchat(".btn-weemo").css("display", "block");
+      jqchat(".btn-weemo-conf").css("display", "none");
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
@@ -1840,7 +1842,8 @@ ChatApplication.prototype.loadRoom = function() {
     else
     ////// TEAM
     {
-
+      jqchat(".btn-weemo").css("display", "block");
+      jqchat(".btn-weemo-conf").css("display", "none");
       jqchat.ajax({
         url: this.jzChatGetCreator,
         data: {"room": this.targetUser,
@@ -2397,6 +2400,9 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.timestamp = ts;
       options.type = "call-off";
       sendMessageToServer = true;
+      if (typeof weemoExtension !== 'undefined') {
+        weemoExtension.setCallActive(false);
+      }
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {
