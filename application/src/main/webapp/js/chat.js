@@ -1817,6 +1817,15 @@ ChatApplication.prototype.loadRoom = function() {
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     ////// USER
     {
+      jqchat(".btn-weemo-conf").css("display", "none");
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForUser === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
+
       jqchat(".meeting-action-event").css("display", "none");
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
@@ -1829,8 +1838,15 @@ ChatApplication.prototype.loadRoom = function() {
     ////// SPACE
     {
 //      jqchat(".meeting-actions").css("display", "inline-block");
-      jqchat(".btn-weemo").css("display", "block");
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForGroupCall === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
       jqchat(".btn-weemo-conf").css("display", "none");
+
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
@@ -1842,8 +1858,15 @@ ChatApplication.prototype.loadRoom = function() {
     else
     ////// TEAM
     {
-      jqchat(".btn-weemo").css("display", "block");
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForGroupCall === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
       jqchat(".btn-weemo-conf").css("display", "none");
+
       jqchat.ajax({
         url: this.jzChatGetCreator,
         data: {"room": this.targetUser,
