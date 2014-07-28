@@ -9,7 +9,6 @@ var chatApplication = new ChatApplication();
      * Init Chat
      */
     var $chatApplication = $("#chat-application");
-    chatApplication.attachWeemoExtension(weemoExtension);
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
@@ -145,12 +144,21 @@ var chatApplication = new ChatApplication();
 
     });
 
+    $(document).on('click.meeting-action-toggle', function(e) {
+      if ($(e.target).closest('.meeting-actions').length == 0 && $('.meeting-action-popup').css('display') == 'none') {
+        $('.meeting-action-toggle').removeClass('active');
+      }
+    });
 
     $(".meeting-action-toggle").on("click", function() {
+      if ($('.meeting-action-popup').css('display') == 'none') {
+        $(this).toggleClass('active');
+      }      
       $(".meeting-action-popup").hide();
     });
 
     $(".meeting-action-link").on("click", function() {
+      //$(".meeting-action-toggle").removeClass("active");
       var toggleClass = $(this).attr("data-toggle");
 
       if (toggleClass === "meeting-action-flag-panel") return;
@@ -196,7 +204,7 @@ var chatApplication = new ChatApplication();
             var dropzone = '<div class="progressBar" id="dropzone">'
                             +'<div class="progress">'
                               +'<div class="bar" style="width: 0.0%;"></div>'
-                              +'<div class="label">'+chatBundleData.benjp_chat_file_drop+'</div>'
+                              +'<div class="label">'+chatBundleData.exoplatform_chat_file_drop+'</div>'
                             +'</div>'
                           +'</div>';
             $('#dropzone-container').html(dropzone);
@@ -213,7 +221,7 @@ var chatApplication = new ChatApplication();
               error: function(err, file) {
                 switch(err) {
                   case 'BrowserNotSupported':
-                    alert(chatBundleData.benjp_chat_dnd_support);
+                    alert(chatBundleData.exoplatform_chat_dnd_support);
                     break;
                   case 'TooManyFiles':
                     // user uploaded more than 'maxfiles'
@@ -275,6 +283,7 @@ var chatApplication = new ChatApplication();
 
     function hideMeetingPanel() {
       $(".meeting-action-popup").css("display", "none");
+      $(".meeting-action-toggle").removeClass("active");
     }
 
     $(".input-with-value").on("click", function() {
@@ -292,6 +301,10 @@ var chatApplication = new ChatApplication();
     });
 
     $(".meeting-close-panel").on("click", function() {
+      hideMeetingPanel();
+    });
+
+    $(".btnClosePopup").on("click", function() {
       hideMeetingPanel();
     });
 
@@ -390,27 +403,37 @@ var chatApplication = new ChatApplication();
       $("#meeting-action-upload-link").trigger("click");
     });
 
-    $(".chat-status-chat").on("click", function() {
+    $(" .chat-status-chat").parent().on("click", function() {
       var $chatStatusPanel = $(".chat-status-panel");
-      if ($chatStatusPanel.css("display")==="none")
+      if ($chatStatusPanel.css("display")==="none") {
         $chatStatusPanel.css("display", "inline-block");
-      else
+        $(this).addClass('active');
+      }
+      else {
         $chatStatusPanel.css("display", "none");
+        $(this).removeClass('active');
+      }
     });
 
-    $("div.chat-menu").click(function(){
+    $("li.chat-menu").click(function(){
       var status = $(this).attr("status");
       chatApplication.setStatus(status, function() {
         $(".chat-status-panel").css('display', 'none');
+         $(".chat-status-chat").parent().removeClass('active');
       });
     });
 
     $(".msg-emoticons").on("click", function() {
       var $msgEmoticonsPanel = $(".msg-emoticons-panel");
-      if ($msgEmoticonsPanel.css("display")==="none")
+      if ($msgEmoticonsPanel.css("display")==="none") {
+        $(this).parent().addClass('active');
         $msgEmoticonsPanel.css("display", "inline-block");
-      else
+      }
+
+      else{
         $msgEmoticonsPanel.css("display", "none");
+         $(this).parent().removeClass('active');
+      }
     });
 
     $(".emoticon-btn").on("click", function() {
@@ -422,6 +445,7 @@ var chatApplication = new ChatApplication();
       val += sml + " ";
       $msg.val(val);
       $msg.focusEnd();
+      $(".msg-emoticons").parent().removeClass("active");
 
     });
 
@@ -446,7 +470,8 @@ var chatApplication = new ChatApplication();
       if (username === "" || fullname === "" || task === "" || dueDate === "") {
         return;
       }
-
+      
+      setActionButtonEnabled('.create-task-button', false);
       $.ajax({
         url: chatApplication.jzCreateTask,
         data: {"username": username,
@@ -466,11 +491,12 @@ var chatApplication = new ChatApplication();
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
           hideMeetingPanel();
-
+          setActionButtonEnabled('.create-task-button', true);
 
         },
         error:function (xhr, status, error){
           console.log("error");
+          setActionButtonEnabled('.create-task-button', true);
         }
       });
 
@@ -479,34 +505,47 @@ var chatApplication = new ChatApplication();
     $('#task-add-user').keyup(function(event) {
       var prefix = "task";
       var filter = $(this).val();
+      if (filter.indexOf(',') !== -1) {
+        var inputUserId = $.trim(filter.substring(filter.lastIndexOf(',') + 1));
+        if (inputUserId.length > 0) filter = inputUserId;
+        else return;
+      }
 
       searchUsers(filter, prefix, event, true, function(name, fullname) {
         //addTeamUserLabel(name, fullname);
         console.log(name+" : "+fullname);
-        $('#task-add-user').val(name);
-        $('#task-add-fullname').val(fullname);
+        var currAddedUser = $.trim($('#task-add-user').val());
+        if (currAddedUser.indexOf(',') !== -1) {
+          $('#task-add-user').val(currAddedUser.substring(0, currAddedUser.lastIndexOf(',')) + ", " + name);
+          var currAddedFullName = $('#task-add-fullname').val().split(',', currAddedUser.split(',').length - 1).join(',');
+          $('#task-add-fullname').val(currAddedFullName + ", " + fullname);
+        } else {
+          $('#task-add-user').val(name);
+          $('#task-add-fullname').val(fullname);
+        }
+
         $(".meeting-action-task-panel").trigger("click");
         setTimeout(hideResults, 100);
       });
 
     });
 
-    var taskDate = $('#task-add-date').datepicker({
-      onRender: function(date) {
-        var nowTemp = new Date();
-        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-        return date.valueOf() < now.valueOf() ? 'disabled' : '';
-      }
-    }).on('changeDate', function(ev){
-        taskDate.hide();
-    }).on('show', function(ev){
-        jqchat('.datepicker').each(function (){
-          var top = jqchat(this).position().top - 160;
-          var left = jqchat(this).position().left - 230;
-          jqchat(this).css("top", top+"px");
-          jqchat(this).css("left", left+"px");
-        });
-    }).data('datepicker');
+    function setMiniCalendarToDateField(dateFieldId) {
+		  var dateField = document.getElementById(dateFieldId);
+		  dateField.onfocus=function(){
+		    uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
+		  };
+		  dateField.onkeyup=function(){
+		    uiMiniCalendar.show();
+		  };
+		  dateField.onkeydown=function(event){
+		    uiMiniCalendar.onTabOut(event);
+		  };
+		  dateField.onclick=function(event){
+		    event.cancelBubble = true;
+		  };
+    };
+    setMiniCalendarToDateField('task-add-date');
 
     $(".create-event-button").on("click", function() {
       var space = chatApplication.targetFullname;
@@ -525,7 +564,7 @@ var chatApplication = new ChatApplication();
       if (targetUser.indexOf("team-")>-1) {
         users = $("#chat-file-target-user").val();
       }
-
+      setActionButtonEnabled('.create-event-button', false);
 
       $.ajax({
         url: chatApplication.jzCreateEvent,
@@ -552,15 +591,26 @@ var chatApplication = new ChatApplication();
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
           hideMeetingPanel();
-
+          setActionButtonEnabled('.create-event-button', true);
 
         },
         error:function (xhr, status, error){
           console.log("error");
+          setActionButtonEnabled('.create-event-button', true);
         }
       });
 
     });
+     
+     function setActionButtonEnabled(btnClass, isEnabled) {
+       if (isEnabled) {
+         $(btnClass).css('cursor', "default");
+         $(btnClass).removeAttr('disabled');
+       } else {
+         $(btnClass).css('cursor', "progress");
+         $(btnClass).attr('disabled','disabled');
+       }
+     };
 
     $("#event-add-start-time").on("change", function() {
       var time = $(this).val();
@@ -570,62 +620,29 @@ var chatApplication = new ChatApplication();
       $("#event-add-end-time").val(hh+":"+time.split(":")[1]);
     });
 
-    var startDate = $('#event-add-start-date').datepicker({
-      onRender: function(date) {
-        var nowTemp = new Date();
-        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-        return date.valueOf() < now.valueOf() ? 'disabled' : '';
-      }
-    }).on('changeDate', function(ev){
-        var newDate = new Date(ev.date);
-        if (ev.date.valueOf() > endDate.date.valueOf()) {
-          endDate.setValue(newDate);
-        }
-        startDate.setValue(newDate);
-        startDate.hide();
-    }).on('show', function(ev){
-      jqchat('.datepicker').each(function (){
-        var top = jqchat(this).position().top - 160;
-        var left = jqchat(this).position().left - 230;
-        jqchat(this).css("top", top+"px");
-        jqchat(this).css("left", left+"px");
-      });
-    }).data('datepicker');
-
-    var endDate = $('#event-add-end-date').datepicker({
-      onRender: function(date) {
-        var nowTemp = new Date();
-        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-        return ( date.valueOf() < now.valueOf() || date.valueOf() < startDate.date.valueOf()) ? 'disabled' : '';
-      }
-    }).on('changeDate', function(ev){
-        endDate.hide();
-    }).on('show', function(ev){
-      jqchat('.datepicker').each(function (){
-        var top = jqchat(this).position().top - 160;
-        var left = jqchat(this).position().left - 230;
-        jqchat(this).css("top", top+"px");
-        jqchat(this).css("left", left+"px");
-      });
-    }).data('datepicker');
+    setMiniCalendarToDateField('event-add-start-date');
+    setMiniCalendarToDateField('event-add-end-date');
 
     addTimeOptions("#event-add-start-time");
     addTimeOptions("#event-add-end-time");
 
     function addTimeOptions(id) {
       var select = $(id);
-      for (var h=0 ; h<24 ; h++) {
-        for (var m=0 ; m<60 ; m+=30) {
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 30) {
           var hh = h;
           var mm = m;
-          if (h<10) hh = "0"+hh;
-          if (m<10) mm = "0"+mm;
-          var time = hh+":"+mm;
-          select.append('<option value="'+time+'">'+time+'</option>');
-
+          var h12 = h % 12 || 12;
+          var hh12 = h12;
+          var ampm = h < 12 ? "AM" : "PM";
+          if (h < 10) hh = "0" + hh;
+          if (m < 10) mm = "0" + mm;
+          if (h12 < 10) hh12 = "0" + hh12;
+          var time = hh + ":" + mm;
+          var time12 = hh12 + ":" + mm + " " + ampm;
+          select.append('<option value="' + time12 + '">' + time12 + '</option>');
         }
       }
-
     }
 
     function hideResults() {
@@ -693,23 +710,25 @@ var chatApplication = new ChatApplication();
           $userResults.css("display", "none");
           var html = "";
           if (!withCurrentUser) {
-            users = users.filter({name:{"!is":chatApplication.username}});
+              users = users.filter({name:{"!is":chatApplication.username}});
           }
           $("."+prefix+"-user-label").each(function() {
             var name = $(this).attr("data-name");
             users = users.filter({name:{"!is":name}});
           });
-
+          var filterRegExp = new RegExp( "(" + filter + ")" , 'gi' );
           users.order("fullname").limit(5).each(function (user, number) {
             $userResults.css("display", "block");
             if (user.status == "offline") user.status = "invisible";
             var classSel = "";
             if (number === 0) classSel = prefix+"-user-selected"
             html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-            html += "  <span class='"+prefix+"-user-logo'><img src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
-            html += "  <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
-            html += "  <span class='"+prefix+"-user-fullname'>"+user.fullname+"</span>";
-            html += "  <span class='"+prefix+"-user-name'>"+user.name+"</span>";
+            html += " <span class='chat-user-name'><span class='inner'>";
+            html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
+            html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
+            html += " </span></span>";
+            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
             html += "</div>";
           });
           $userResults.html(html);
@@ -734,7 +753,7 @@ var chatApplication = new ChatApplication();
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');
       var html = $usersList.html();
-      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='icon-remove icon-white team-user-remove'></i></span>";
+      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i></span>";
       $usersList.html(html);
       var $teamAddUser = $('#team-add-user');
       $teamAddUser.val("");
@@ -777,8 +796,25 @@ var chatApplication = new ChatApplication();
         $('.team-modal').modal({"backdrop": false});
         $uitext.focus();
 
+        // Set form position to screen center
+        chatApplication.setModalToCenter('.team-modal');
       });
 
+    });
+
+    $(".msButtonRecord").on("click", function() {
+      var $icon = $(this).children("i");
+
+      var msgType = $icon.hasClass("uiIconChatRecordStart") ? "type-meeting-start" : "type-meeting-stop";
+      var options = {
+        type: msgType,
+        fromUser: chatApplication.username,
+        fromFullname: chatApplication.fullname
+      };
+
+      var msg = "";
+
+      chatApplication.chatRoom.sendMessage(msg, options, "true");
     });
 
     $(".team-modal-cancel").on("click", function() {
@@ -809,17 +845,6 @@ var chatApplication = new ChatApplication();
       $uitext.val("");
       $uitext.attr("data-id", "---");
 
-    });
-
-
-    $(".btn-weemo").on("click", function() {
-      if (!$(this).hasClass("disabled"))
-        chatApplication.createWeemoCall();
-    });
-
-    $(".btn-weemo-conf").on("click", function() {
-      if (!$(this).hasClass("disabled"))
-        chatApplication.joinWeemoCall();
     });
 
     $(".text-modal-close").on("click", function() {
@@ -940,7 +965,6 @@ var chatApplication = new ChatApplication();
  */
 function ChatApplication() {
   this.isLoaded = false;
-  this.weemoExtension = "";
   this.isPublic = false;
   this.publicModeEnabled = false;
   this.chatFullscreen = "false";
@@ -1013,16 +1037,6 @@ function ChatApplication() {
 
 }
 
-
-/**
- * Attach Weemo Extension
- * @param weemoExtension WeemoExtension Object
- */
-ChatApplication.prototype.attachWeemoExtension = function(weemoExtension) {
-  this.weemoExtension = weemoExtension;
-};
-
-
 /**
  * Create demo user
  *
@@ -1061,7 +1075,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
 
       if (this.isPublic) {
         this.targetUser = this.SUPPORT_USER;
-        this.targetFullname = chatBundleData.benjp_chat_support_fullname;
+        this.targetFullname = chatBundleData.exoplatform_chat_support_fullname;
       }
 
       this.loadRoom();
@@ -1228,7 +1242,7 @@ ChatApplication.prototype.resize = function() {
  */
 ChatApplication.prototype.initChat = function() {
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
@@ -1245,6 +1259,12 @@ ChatApplication.prototype.initChat = function() {
     }
   });
 
+//  var $roomDetailButton = jqchat(".room-detail-button");
+//  if ($roomDetailButton.children().length === 0) {
+//    $roomDetailButton.hide();
+//  } else {
+//    $roomDetailButton.show();
+//  }
 
   this.resize();
   jqchat(window).resize(function() {
@@ -1484,8 +1504,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
               window.fluid.dockBadge = "";
             if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
               window.fluid.showGrowlNotification({
-                title: chatBundleData.benjp_chat_title,
-                description: chatBundleData.benjp_chat_new_messages,
+                title: chatBundleData.exoplatform_chat_title,
+                description: chatBundleData.exoplatform_chat_new_messages,
                 priority: 1,
                 sticky: false,
                 identifier: "messages"
@@ -1499,8 +1519,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
                 // 0 is PERMISSION_ALLOWED
                 var notification = window.webkitNotifications.createNotification(
                   '/chat/img/chat.png',
-                  chatBundleData.benjp_chat_title,
-                  chatBundleData.benjp_chat_new_messages
+                  chatBundleData.exoplatform_chat_title,
+                  chatBundleData.exoplatform_chat_new_messages
                 );
 
                 notification.onclick = function () {
@@ -1544,11 +1564,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * FAVORITES
    */
-  out += "<tr class='header-room header-favorites'><td colspan='3' style='border-top: 0;'>";
-  if (this.showFavorites) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += chatBundleData.benjp_chat_favorites;
-  out += '<span class="room-total total-favorites"></span>';
+  out += "<tr class='header-room header-favorites "+(this.showFavorites ? "open":"") + "'><td colspan='3' style='border-top: 0;'>";
+  if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
+  out += chatBundleData.exoplatform_chat_favorites;
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += '<span class="room-total total-favorites">No Favorite</span>';
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
@@ -1567,6 +1587,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+  if (roomsFavorites.count() === 0 && this.showFavorites) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Favorite</td></tr>";
+  }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
   var xPeopleHistory = ""; if (chatApplication.showPeopleHistory) xPeopleHistory=" btn active";
@@ -1576,13 +1599,13 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * USERS
    */
-  out += "<tr class='header-room header-people'><td colspan='3'>";
-  if (this.showPeople) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += chatBundleData.benjp_chat_people;
+  out += "<tr class='header-room header-people "+(this.showPeople ? "open":"") + "'><td colspan='3'>";
+  if (this.showPeople) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
+  out += chatBundleData.exoplatform_chat_people;
   out += '<span class="room-total total-people"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_users+"'><i class='uiIconMembership uiIconLightGray'></i></div></li></ul>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_users + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1605,17 +1628,20 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+  if (roomsPeople.count() === 0 && this.showPeople) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Connection</td></tr>";
+  }
 
   /**
    * TEAMS
    */
-  out += "<tr class='header-room header-teams'><td colspan='3'>";
-  if (this.showTeams) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += chatBundleData.benjp_chat_teams;
+  out += "<tr class='header-room header-teams "+(this.showTeams ? "open":"") + "'><td colspan='3'>";
+  if (this.showTeams) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
+  out += chatBundleData.exoplatform_chat_teams;
   out += '<span class="room-total total-teams"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_create_team+"'><i class='uiIconSimplePlusMini uiIconLightGray'></i></div></li></ul>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='actionIcon btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_create_team + "'><i class='uiIconChatSimplePlusMini uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
@@ -1638,16 +1664,19 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
 
+  if (roomsTeams.count() === 0 && this.showTeams) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Team</td></tr>";
+  }
 
   /**
    * SPACES
    */
-  out += "<tr class='header-room header-spaces'><td colspan='3'>";
-  if (this.showSpaces) classArrow="uiIconArrowDown"; else classArrow = "uiIconArrowRight";
-  out += "<div class='nav pull-left uiDropdownWithIcon'><div class='uiAction'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += chatBundleData.benjp_chat_spaces;
+  out += "<tr class='header-room header-spaces "+(this.showSpaces ? "open":"") + "'><td colspan='3'>";
+  if (this.showSpaces) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
+  out += chatBundleData.exoplatform_chat_spaces;
   out += '<span class="room-total total-spaces"></span>';
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='uiActionWithLabel btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='"+chatBundleData.benjp_chat_show_history+"'><i class='uiIconClock uiIconLightGray'></i></div></li></ul>";
+  out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
@@ -1669,6 +1698,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
       }
     }
   });
+
+  if (roomsSpaces.count() === 0 && this.showSpaces) {
+    out += "<tr class='users-online empty'><td colspan='3'>No Space</td></tr>";
+  }
 
   out += '</table>';
 
@@ -1719,22 +1752,18 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   if (room.user!==roomPrevUser) {
     out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online">';
     out += '<td class="td-status">';
-    out += '<span class="';
-    if (room.isFavorite == "true") {
-      out += 'user-favorite';
-    } else {
-      out += 'user-status';
-    }
+    out += '<i class="';
     if (room.status === "space" || room.status === "team") {
-      out += ' user-space-front';
+      out += 'uiIconChatTeam uiIconChatLightGray';
     }
-    out +='" user-data="'+room.user+'" data-toggle="tooltip"';
+    out += ' user-'+room.status+ '';
     if (room.isFavorite == "true") {
-      out += ' title="'+chatBundleData.benjp_chat_remove_favorites+'"';
+      out += ' user-favorite';
     } else {
-      out += ' title="'+chatBundleData.benjp_chat_add_favorites+'"';
+      out += ' user-status';
     }
-    out += '></span><span class="user-'+room.status+'"></span>';
+    out += '"';
+    out += '></i>';
     out += '</td>';
     out +=  '<td>';
     if (room.isActive=="true") {
@@ -1746,6 +1775,21 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     out += '<td>';
     if (Math.round(room.unreadTotal)>0) {
       out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+    }
+    else {
+      out+= '<i class="uiIconChatFavorite pull-right';
+      if (room.isFavorite == "true") {
+        out += ' user-favorite';
+      } else {
+        out += ' user-status';
+      }
+      out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
+      if (room.isFavorite == "true") {
+        out += ' title="' + chatBundleData.exoplatform_chat_remove_favorites + '"';
+      } else {
+        out += ' title="' + chatBundleData.exoplatform_chat_add_favorites + '"';
+      }
+      out+= '></i>';
     }
     out += '</td>';
     out += '</tr>';
@@ -1773,9 +1817,19 @@ ChatApplication.prototype.loadRoom = function() {
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     ////// USER
     {
+      jqchat(".btn-weemo-conf").css("display", "none");
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForUser === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
+
       jqchat(".meeting-action-event").css("display", "none");
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/Avatar.gif';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
@@ -1784,9 +1838,19 @@ ChatApplication.prototype.loadRoom = function() {
     ////// SPACE
     {
 //      jqchat(".meeting-actions").css("display", "inline-block");
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForGroupCall === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
+      jqchat(".btn-weemo-conf").css("display", "none");
+
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/social-resources/skin/images/ShareImages/SpaceAvtDefault.png';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
@@ -1794,6 +1858,14 @@ ChatApplication.prototype.loadRoom = function() {
     else
     ////// TEAM
     {
+      if (typeof weemoExtension !== 'undefined' && weemoExtension.isTurnOffForGroupCall === 'false') {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".room-detail-button").show();
+      } else {
+        jqchat(".btn-weemo").hide();
+        jqchat(".room-detail-button").hide();
+      }
+      jqchat(".btn-weemo-conf").css("display", "none");
 
       jqchat.ajax({
         url: this.jzChatGetCreator,
@@ -1816,6 +1888,7 @@ ChatApplication.prototype.loadRoom = function() {
 //      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
+      jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
     }
@@ -1825,9 +1898,6 @@ ChatApplication.prototype.loadRoom = function() {
       thiss.room = room;
       var $msg = jqchat('#msg');
       $msg.removeAttr("disabled");
-      if (thiss.weemoExtension.isConnected) {
-        jqchat(".btn-weemo").removeClass('disabled');
-      }
       if (thiss.isDesktopView()) $msg.focus();
 
     });
@@ -1860,13 +1930,13 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
       jqchat(".msg-date", this).css("display", "none");
-      jqchat(".msg-actions", this).css("display", "inline-block");
+      jqchat(".msg-actions", this).css("visibility", "");
     }
   });
 
   jqchat(".msg-text").mouseout(function() {
-    jqchat(".msg-date", this).css("display", "inline-block");
-    jqchat(".msg-actions", this).css("display", "none");
+    jqchat(".msg-date", this).css("display", "");
+    jqchat(".msg-actions", this).css("visibility", "hide");
   });
 
   jqchat(".msg-action-quote").on("click", function() {
@@ -1898,12 +1968,29 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     jqchat("#edit-modal-area").val(msgHtml);
     jqchat("#edit-modal-area").attr("data-id", msgId);
     jqchat('.edit-modal').modal({"backdrop": false});
+    chatApplication.setModalToCenter('.edit-modal');
 
+  });
+
+  jqchat(".msg-action-savenotes").on("click", function() {
+    var $uimsg = jqchat(this).siblings(".msg-data");
+    var msgTimestamp = $uimsg.attr("data-timestamp");
+
+    var options = {
+      type: "type-notes",
+      fromTimestamp: msgTimestamp,
+      fromUser: chatApplication.username,
+      fromFullname: chatApplication.fullname
+    };
+
+    var msg = "";
+
+    chatApplication.chatRoom.sendMessage(msg, options, "true");
   });
 
   jqchat(".send-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    var $meetingNotes =  $this.parent();
+    var $meetingNotes =  $this.closest(".msMeetingNotes");
     $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
@@ -1933,7 +2020,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   jqchat(".save-meeting-notes").on("click", function () {
     var $this = jqchat(this);
-    var $meetingNotes =  $this.parent();
+    var $meetingNotes =  $this.closest(".msMeetingNotes");
     $meetingNotes.animate({
       opacity: "toggle"
     }, 200, function() {
@@ -1964,7 +2051,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
                   from: chatApplication.username,
                   fullname: chatApplication.fullname
                 };
-                var msg = chatBundleData.benjp_chat_meeting_notes;
+                var msg = chatBundleData.exoplatform_chat_meeting_notes;
 
                 chatApplication.chatRoom.sendMessage(msg, options, "true");
 
@@ -2001,6 +2088,18 @@ ChatApplication.prototype.errorOnRefresh = function() {
   this.hidePanel(".chat-login-panel");
   chatNotification.changeStatusChat("offline");
   this.showErrorPanel();
+};
+
+ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
+  if (modalFormClass !== undefined) {
+
+    // Set form position to screen center
+    var centerTop = (jqchat(window).height() - jqchat(modalFormClass).height()) / 2;
+    centerTop = centerTop >= 0 ? centerTop : jqchat(modalFormClass).offset().top;
+    var centerLeft = (jqchat(window).width() - jqchat(modalFormClass).width()) / 2;
+    centerLeft = centerLeft >= 0 ? centerLeft : jqchat(modalFormClass).offset().left;
+    jqchat(modalFormClass).offset({top: centerTop, left: centerLeft})
+  }
 };
 
 /**
@@ -2049,6 +2148,27 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     error: function(xhr, status, error){
     }
   });
+};
+
+/**
+ * Update Meeting Button status
+ *
+ * @param: status: 'started' or 'stoped'
+ */
+ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
+  var $icon = jqchat(".msButtonRecord").children("i");
+  if ('started' === status) {
+    $icon.addClass("uiIconChatRecordStop");
+    $icon.removeClass("uiIconChatRecordStart");
+  } else {
+    $icon.addClass("uiIconChatRecordStart");
+    $icon.removeClass("uiIconChatRecordStop");
+  }
+
+  var tooltipText = $icon.hasClass("uiIconChatRecordStart") ? chatBundleData.exoplatform_chat_meeting_start : chatBundleData.exoplatform_chat_meeting_stop;
+  $icon.parent().tooltip('hide')
+    .attr('data-original-title', tooltipText)
+    .tooltip('fixTitle');
 };
 
 /**
@@ -2104,7 +2224,10 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uitext.attr("data-id", "---");
     jqchat(".team-user-label").remove();
     jqchat('.team-modal').modal({"backdrop": false});
+
     $uitext.focus();
+
+    chatApplication.setModalToCenter('.team-modal');
   });
 
   jqchat(".btn-history").on("click", function() {
@@ -2241,6 +2364,7 @@ ChatApplication.prototype.setStatus = function(status, callback) {
   }
 
 };
+
 ChatApplication.prototype.showHelp = function() {
   jqchat('.help-modal').modal({"backdrop": false});
 };
@@ -2274,38 +2398,6 @@ ChatApplication.prototype.setStatusInvisible = function() {
   chatApplication.setStatus("invisible");
 };
 
-ChatApplication.prototype.createWeemoCall = function() {
-  console.log("targetUser : "+chatApplication.targetUser);
-  console.log("targetFullname   : "+chatApplication.targetFullname);
-
-  var chatMessage = {
-    "url" : chatApplication.jzChatSend,
-    "user" : chatApplication.username,
-    "fullname" : chatApplication.fullname,
-    "targetUser" : chatApplication.targetUser,
-    "room" : chatApplication.room,
-    "token" : chatApplication.token
-  };
-  weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
-
-  //this.weemoExtension.createWeemoCall(this.targetUser, this.fullname);
-};
-
-ChatApplication.prototype.joinWeemoCall = function() {
-  console.log("targetUser : "+chatApplication.targetUser);
-  console.log("targetFullname   : "+chatApplication.targetFullname);
-
-  var chatMessage = {
-    "url" : chatApplication.jzChatSend,
-    "user" : chatApplication.username,
-    "fullname" : chatApplication.fullname,
-    "targetUser" : chatApplication.targetUser,
-    "room" : chatApplication.room,
-    "token" : chatApplication.token
-  };
-  weemoExtension.joinWeemoCall(chatMessage);
-};
-
 /**
  * Send message to server
  * @param msg : the msg to send
@@ -2325,19 +2417,15 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.username = this.username;
       options.fullname = this.fullname;
       sendMessageToServer = true;
-    } else if (msg.indexOf("/call")===0) {
-      this.createWeemoCall();
-    } else if (msg.indexOf("/join")===0) {
-      this.joinWeemoCall();
     } else if (msg.indexOf("/terminate")===0) {
       ts = Math.round(new Date().getTime() / 1000);
-      msg = chatBundleData.benjp_chat_call_terminated;
+      msg = chatBundleData.exoplatform_chat_call_terminated;
       options.timestamp = ts;
       options.type = "call-off";
-      this.weemoExtension.setCallOwner(false);
-      this.weemoExtension.setCallActive(false);
       sendMessageToServer = true;
-      this.weemoExtension.hangup();
+      if (typeof weemoExtension !== 'undefined') {
+        weemoExtension.setCallActive(false);
+      }
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {
@@ -2393,7 +2481,7 @@ ChatApplication.prototype.showErrorPanel = function() {
   this.hidePanels();
   //console.log("show-error-panel");
   var $chatErrorPanel = jqchat(".chat-error-panel");
-  $chatErrorPanel.html(chatBundleData.benjp_chat_panel_error1+"<br/><br/>"+chatBundleData.benjp_chat_panel_error2);
+  $chatErrorPanel.html(chatBundleData.exoplatform_chat_panel_error1+"<br/><br/>"+chatBundleData.exoplatform_chat_panel_error2);
   $chatErrorPanel.css("display", "block");
 };
 
@@ -2401,17 +2489,17 @@ ChatApplication.prototype.showLoginPanel = function() {
   this.hidePanels();
   //console.log("show-login-panel");
   var $chatLoginPanel = jqchat(".chat-login-panel");
-  $chatLoginPanel.html(chatBundleData.benjp_chat_panel_login1+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData.benjp_chat_panel_login2+"</a>");
+  $chatLoginPanel.html(chatBundleData.exoplatform_chat_panel_login1+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData.exoplatform_chat_panel_login2+"</a>");
   $chatLoginPanel.css("display", "block");
 };
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
   about += "Version "+chatBundleData.version+"<br><br>";
-  about += chatBundleData.benjp_chat_designed+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
-  about += chatBundleData.benjp_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
-  about += chatBundleData.benjp_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
-  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData.benjp_chat_close+"</a>";
+  about += chatBundleData.exoplatform_chat_designed+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
+  about += chatBundleData.exoplatform_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
+  about += chatBundleData.exoplatform_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
+  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData.exoplatform_chat_close+"</a>";
   this.hidePanels();
   var $chatAboutPanel = jqchat(".chat-about-panel");
   $chatAboutPanel.html(about);
@@ -2430,12 +2518,12 @@ ChatApplication.prototype.showDemoPanel = function() {
   this.hidePanels();
   //console.log("show-demo-panel");
   var $chatDemoPanel = jqchat(".chat-demo-panel");
-  var intro = chatBundleData.benjp_chat_panel_demo;
-  if (this.isPublic) intro = chatBundleData.benjp_chat_panel_public;
+  var intro = chatBundleData.exoplatform_chat_panel_demo;
+  if (this.isPublic) intro = chatBundleData.exoplatform_chat_panel_public;
   $chatDemoPanel.html(intro+"<br><br><div class='welcome-panel'>" +
-    "<br><br>"+chatBundleData.benjp_chat_display_name+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
-    "<br><br>"+chatBundleData.benjp_chat_email+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
-    "<br><a href='#' id='anonim-save'>"+chatBundleData.benjp_chat_save_profile+"</a>");
+    "<br><br>"+chatBundleData.exoplatform_chat_display_name+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
+    "<br><br>"+chatBundleData.exoplatform_chat_email+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
+    "<br><a href='#' id='anonim-save'>"+chatBundleData.exoplatform_chat_save_profile+"</a>");
   $chatDemoPanel.css("display", "block");
 
   jqchat("#anonim-save").on("click", function() {
@@ -2444,3 +2532,5 @@ ChatApplication.prototype.showDemoPanel = function() {
     this.createDemoUser(fullname, email);
   });
 };
+
+

@@ -14,20 +14,20 @@
     </filter-mapping>
   -->
   <listener>
-    <listener-class>org.benjp.listener.GuiceManager</listener-class>
+    <listener-class>org.exoplatform.chat.listener.GuiceManager</listener-class>
   </listener>
   <listener>
-    <listener-class>org.benjp.listener.ConnectionManager</listener-class>
+    <listener-class>org.exoplatform.chat.listener.ConnectionManager</listener-class>
   </listener>
   <listener>
-    <listener-class>org.benjp.listener.SchedulerManager</listener-class>
+    <listener-class>org.exoplatform.chat.listener.SchedulerManager</listener-class>
   </listener>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
       <param-name>juzu.app_name</param-name>
-      <param-value>org.benjp.server</param-value>
+      <param-value>org.exoplatform.chat.server</param-value>
     </init-param>
     <init-param>
       <param-name>juzu.inject</param-name>

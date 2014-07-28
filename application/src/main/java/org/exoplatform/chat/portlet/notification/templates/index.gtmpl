@@ -1,0 +1,87 @@
+<script type="text/javascript">
+  ${messages}
+</script>
+<div id="chat-status"
+  data-username="<%=user%>"
+  data-token="<%=token%>"
+  data-chat-page="<%=chatPage%>"
+  data-chat-server-url="<%=chatServerURL%>"
+  data-chat-interval-notif="<%=chatIntervalNotif%>"
+  data-chat-interval-status="<%=chatIntervalStatus%>"
+        class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
+  <div style="display: none;">
+    <audio id="chat-audio-notif" controls preload="auto" autobuffer>
+      <source src="/chat/audio/notif.wav" type='audio/wav; codecs="wav"'>
+      <source src="/chat/audio/notif.mp3" type='audio/mpeg; codecs="mp3"'>
+      <source src="/chat/audio/notif.ogg" type='audio/ogg; codecs="vorbis"'>
+    </audio>
+  </div>
+
+  <a class="dropdown-toggle" data-toggle="dropdown">
+    <!--i class="uiNotifMessageIcon"></i-->
+    <div class="uiNotifChatIcon">
+      <span id="chat-notification" style="float: right; display: none;"></span>
+    </div>
+    <% if (!"---".equals(title)) { %>
+    <div class="uiNotifChatTitle"><%=title%></div>
+    <% } %>
+
+  </a>
+  <ul class="dropdown-menu">
+    <li id="chat-notifications-details">
+      <span class="chat-notification-loading no-user-selection">&{exoplatform.chat.loading}</span>
+    </li>
+    <li class="divider" style="display:none">&nbsp;</li>
+    <li>
+      <a href="#" class="chat-status" data-status="available"><div class="chat-status-selected"></div><div class="chat-status-available chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.available}</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="donotdisturb"><div class="chat-status-selected"></div><div class="chat-status-donotdisturb chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.donotdisturb}</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="away"><div class="chat-status-selected"></div><div class="chat-status-away chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.away}</span></a>
+    </li>
+    <li>
+      <a href="#" class="chat-status" data-status="invisible"><div class="chat-status-selected"></div><div class="chat-status-invisible chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.invisible}</span></a>
+    </li>
+    <li class="divider">&nbsp;</li>
+    <li>
+      <a href="<%=chatPage%>" class="notif-chat-open-link" target="_chat"><div class="chat-status-open chat-status-icon"></div><span class="chat-label-status">&{exoplatform.chat.open.chat}</span></a>
+    </li>
+  </ul>
+</div>
+<div class="mini-chat arrow_box" style="position:fixed;bottom:0;right:10px;" data-position="right"></div>
+<script type="text/javascript">
+  (function() {
+    var chatMods = document.createElement('script'); chatMods.type = 'text/javascript'; chatMods.async = true;
+    chatMods.src = '/chat/js/chat-modules.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatMods);
+  })();
+
+
+  var fromChromeApp = false;
+  var appWindow, appOrigin;
+  function listenerMessage(event){
+    appWindow = event.source;
+    appOrigin = event.origin;
+    if (event.data==="fromChromeApp") {
+      fromChromeApp = true;
+      if (typeof chatApplication === "object") {
+        chatApplication.resize();
+        //jqchat(".btn-app-logout").css("display", "block");
+      }
+    }
+//    console.log("message: "+event.data);
+  }
+  function doSendMessage(msg) {
+    if (appWindow && appOrigin) {
+      appWindow.postMessage(msg, appOrigin);
+    }
+  }
+
+  if (window.addEventListener){
+    addEventListener("message", listenerMessage, false);
+  } else {
+    attachEvent("onmessage", listenerMessage);
+  }
+</script>

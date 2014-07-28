@@ -1,0 +1,131 @@
+//
+// Variables
+// --------------------------------------------------
+
+
+// Global values
+// --------------------------------------------------
+
+
+@height:                      645px;
+@width:                       600px;
+@heightMessage:               60px;
+@heightRoomDetail:            60px;
+@heightBar:                   0px;
+@widthUsers:                  180px;
+@widthMessages:               (@width - @widthUsers - 4);
+
+
+@backgroundColor:             white;
+
+@colorBgLight:                #F1F1F1;
+@colorBgGradient2:            @colorBgLight;
+@colorBgGradient1:            #E0E0E0;
+@colorBorder:                 #D0D0D0;
+@colorBorderGrey:             #CCC;
+@colorLink:                   #000;
+@colorUserLink:               #AAA;
+
+@colorAvailable:              #180;
+@colorDoNoDisturb:            #B10;
+@colorAway:                   #DA0;
+@colorInvisible:              #EEE;
+@colorSpace:                  #4f72ac;
+@colorTeam:                   #4fac72;
+@colorNotif:                  #4f72ac;
+@colorSelectedUser:           #D9EDF7;
+@colorLightText:              #FFF;
+@colorHighlight:              #FF0;
+
+@colorBgPanel:                rgba(0, 0, 0, 0.8);
+@colorChatMenu:               rgba(0, 0, 0, 0.1);
+@colorBgStatus:               rgba(255, 255, 255, 0.9);
+@colorBorderStatus:           #AAA;
+@colorBgEmoticon:             rgba(0, 0, 0, 0.6);
+
+@colorBgPanelPlain:           rgb(50, 50, 50);
+@colorChatMenuPlain:          rgb(200, 200, 200);
+@colorBgStatusPlain:          rgb(230, 230, 230);
+@colorBgEmoticonPlain:        rgb(50, 50, 50);
+
+@imgPath:                     "/chat/img/";
+@imgEmoticonGifPath:          "@{imgPath}emoticons/";
+
+.background(@left, @top) {
+  background: url('@{imgPath}general.png') no-repeat @left @top;
+  background-size: 96px 162px;
+}
+
+
+// Grays
+// -------------------------
+@black:                 #000;
+@grayDarker:            #222;
+@grayDark:              #333;
+@gray:                  #555;
+@grayLight:             #999;
+@grayLighter:           #eee;
+@white:                 #fff;
+@grayWhiteSmoke:		#f0f0f0;
+@grayDarkWhiteSmoke:	#cccccc;
+
+@borderColor:           @grayDarkWhiteSmoke;
+
+
+// Accent colors
+// -------------------------
+@blue:                  #049cdb;
+@blueDark:              #0064cd;
+@green:                 #46a546;
+@red:                   #9d261d;
+@yellow:                #ffc40d;
+@orange:                #f89406;
+@pink:                  #c3325f;
+@purple:                #7a43b6;
+
+
+// Scaffolding
+// -------------------------
+@bodyBackground:        @white;
+@textColor:             @grayDark;
+
+
+// Links
+// -------------------------
+@linkColor:             #2F5E92;
+@linkColorHover:        darken(@linkColor, 15%);
+
+
+// Typography
+// -------------------------
+@sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
+@serifFontFamily:       Georgia, "Times New Roman", Times, serif;
+@monoFontFamily:        Monaco, Menlo, Consolas, "Courier New", monospace;
+
+@baseFontSize:          14px;
+@baseFontFamily:        @sansFontFamily;
+@baseLineHeight:        20px;
+@altFontFamily:         @serifFontFamily;
+
+@headingsFontFamily:    inherit; // empty to use BS default, @baseFontFamily
+@headingsFontWeight:    bold;    // instead of browser default, bold
+@headingsColor:         inherit; // empty to use BS default, @textColor
+
+
+// Component sizing
+// -------------------------
+// Based on 14px font-size and 20px line-height
+
+@fontSizeLarge:         @baseFontSize * 1.25; // ~18px
+@fontSizeSmall:         @baseFontSize * 0.85; // ~12px
+@fontSizeMini:          @baseFontSize * 0.75; // ~11px
+
+@paddingLarge:          11px 19px; // 44px
+@paddingSmall:          2px 10px;  // 26px
+@paddingMini:           1px 6px;   // 24px
+
+@baseBorderRadius:      4px;
+@borderRadiusLarge:     6px;
+@borderRadiusSmall:     3px;
+
+

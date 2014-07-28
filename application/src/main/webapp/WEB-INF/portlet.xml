@@ -7,7 +7,7 @@
    <portlet>
      <portlet-name>ChatApplication</portlet-name>
      <display-name xml:lang="EN">Chat Application</display-name>
-     <portlet-class>org.benjp.portlet.chat.ChatPortlet</portlet-class>
+     <portlet-class>org.exoplatform.chat.portlet.chat.ChatPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
@@ -39,7 +39,7 @@
    <portlet>
      <portlet-name>ChatNotificationApplication</portlet-name>
      <display-name xml:lang="EN">Chat Notification Application</display-name>
-     <portlet-class>org.benjp.portlet.notification.NotificationPortlet</portlet-class>
+     <portlet-class>org.exoplatform.chat.portlet.notification.NotificationPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
@@ -66,7 +66,7 @@
    <portlet>
      <portlet-name>ChatStatisticsApplication</portlet-name>
      <display-name xml:lang="EN">Chat Statistics Application</display-name>
-     <portlet-class>org.benjp.portlet.statistics.StatisticsPortlet</portlet-class>
+     <portlet-class>org.exoplatform.chat.portlet.statistics.StatisticsPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
@@ -86,22 +86,13 @@
 
   <filter>
     <filter-name>ResponseFilter</filter-name>
-    <filter-class>org.benjp.portlet.chat.ResponseFilter</filter-class>
-    <lifecycle>RENDER_PHASE</lifecycle>
-  </filter>
-  <filter>
-    <filter-name>ResponseFilterWeemo</filter-name>
-    <filter-class>org.benjp.portlet.notification.ResponseFilter</filter-class>
+    <filter-class>org.exoplatform.chat.portlet.chat.ResponseFilter</filter-class>
     <lifecycle>RENDER_PHASE</lifecycle>
   </filter>
 
   <filter-mapping>
     <filter-name>ResponseFilter</filter-name>
     <portlet-name>ChatApplication</portlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ResponseFilterWeemo</filter-name>
-    <portlet-name>ChatNotificationApplication</portlet-name>
   </filter-mapping>
 
 </portlet-app>

@@ -29,6 +29,10 @@ function ChatNotification() {
   this.profileStatus = "offline";
 
   this.chatPage = "/portal/intranet/chat";
+
+  this.tiptipContentDOMNodeInsertedHandler = function() {
+    chatNotification.attachChatButtonToUserPopup();
+  };
 }
 
 /**
@@ -109,44 +113,110 @@ ChatNotification.prototype.initUserProfile = function(callback) {
  * Refresh Notifications
  */
 ChatNotification.prototype.refreshNotifDetails = function() {
+  var $chatNotificationsDetails = jqchat("#chat-notifications-details");
   if (this.oldNotifTotal>0) {
-    jqchat("#chat-notifications-details").css("display", "initial");
-
+    $chatNotificationsDetails.css("display", "initial");
     this.updateNotifEventURL();
     jqchat.ajax({
       url: this.notifEventURL+"&withDetails=true",
       dataType: "json",
       context: this,
       success: function(data){
-        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         var html = '';
         if (data.notifications.length>0) {
           var notifs = TAFFY(data.notifications);
           var notifs = notifs();
           var thiss = this;
           var froms = [];
+          var categoryIdList = new Array(); // Only display last unread messages from different conversations
           notifs.order("timestamp desc").each(function (notif, number) {
-            if (typeof froms[notif.from] === "undefined") {
-              html += '<li>';
-              html +=   '<a href="#" data-link="'+notif.link+'" data-id="'+notif.categoryId+'" class="chat-notification-detail" >';
-              html +=     '<img class="avatar-image" onerror="this.src=\'/chat/img/Avatar.gif;\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' width=\'30px\' height=\'30px\'  style="width:30px; height:30px;">';
-              html +=     '<div class="chat-label-status">';
-              html +=      '<div class="content">'+notif.content+'</div>';
-              html +=      '<div class="timestamp">'+thiss.getDate(notif.timestamp)+'</div>';
-              html +=     '</div>';
-              html +=   '</a>';
-              html += '</li>';
+            if (jqchat.inArray(notif.categoryId, categoryIdList) === -1) {
+              var content = notif.content;
+              var messageType = notif.options.type;
+              var evenClass = (categoryIdList.length % 2) ? "even": "";
+
+
+              html += '<div class="chat-notification-detail ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+              html +=   '<span class="avatarXSmall">';
+              html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg\'" src=\'/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:'+notif.from+'/soc:profile/soc:avatar\' class="avatar-image">';
+              html +=   '</span>';
+              html += '  <div class="chat-label-status">';
+              html += '    <div class="content">';
+              html += '      <span class="name" href="#">' + notif.fromFullName + '</span>';
+              html += '      <div class="text">';
+
+              // Icon for system message
+              if (messageType == undefined) {
+                if (content.indexOf("http:")===0 || content.indexOf("https:")===0 || content.indexOf("ftp:")===0) {
+                  content = "<a href='#'>" + content + "</a>";
+                }
+              } else {
+                if ("type-question" === messageType) {
+                  html += "       <i class='uiIconChatQuestion uiIconChatLightGray'></i>";
+                } else if ("type-hand" === messageType) {
+                  html += "       <i class='uiIconChatRaiseHand uiIconChatLightGray'></i>";
+                } else if ("type-file" === messageType) {
+                  html += "       <i class='uiIconChatUpload uiIconChatLightGray'></i>";
+                } else if ("type-link" === messageType) {
+                  html += "       <i class='uiIconChatLink uiIconChatLightGray'></i>";
+                  content = notif.options.link;
+                } else if ("type-task" === messageType) {
+                  html += "       <i class='uiIconChatCreateTask uiIconChatLightGray'></i>";
+                } else if ("type-event" === messageType) {
+                  html += "       <i class='uiIconChatCreateEvent uiIconChatLightGray'></i>";
+                } else if ("type-notes" === messageType) {
+                  //  html += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+                } else if ("type-meeting-start" === messageType) {
+                  //  html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                } else if ("type-meeting-stop" === messageType) {
+                  //  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                } else if ("type-add-team-user" === messageType) {
+                  content = chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                } else if ("type-remove-team-user" === messageType) {
+                  content = chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                } else if ("call-join" === messageType) {
+                  html += "       <i class='uiIconChatAddPeopleToMeeting uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_joined;
+                } else if ("call-on" === messageType) {
+                  html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_started;
+                } else if ("call-off" === messageType) {
+                  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_finished;
+                }
+                content = "<a href='#'>" + content + "</a>";
+              }
+
+              html +=          content;
+              html += '      </div>';
+              html += '    </div>';
+              html += '    <div class="gray-box">';
+              html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
+              if (notif.roomDisplayName.trim()) {
+                html += '    <div class="team">' + notif.roomDisplayName + '</div>';
+              }
+              html += '    </div>';
+              html += '  </div>';
+              html += '</div>';
+
               if (fromChromeApp) {
                 if (thiss.profileStatus !== "donotdisturb" && thiss.profileStatus !== "offline") {
                   doSendMessage(notif);
                 }
               }
-              froms[notif.from] = 1;
+
+              categoryIdList.push(notif.categoryId);
             }
           });
-          html += '<li class="divider">&nbsp;</li>';
         }
         $chatNotificationsDetails.html(html);
+        if (categoryIdList.length > 0) {
+          $chatNotificationsDetails.parent().addClass("full-width");
+          $chatNotificationsDetails.next().show();
+        } else {
+          $chatNotificationsDetails.parent().removeClass("full-width");
+          $chatNotificationsDetails.next().hide();
+        }
         $chatNotificationsDetails.css("display", "block");
         jqchat(".chat-notification-detail").on("click", function(){
           var id = jqchat(this).attr("data-id");
@@ -154,13 +224,14 @@ ChatNotification.prototype.refreshNotifDetails = function() {
         });
       },
       error: function(){
-        var $chatNotificationsDetails = jqchat("#chat-notifications-details");
         $chatNotificationsDetails.html("");
         $chatNotificationsDetails.css("display", "none");
       }
     });
-
-
+  }
+  else {
+    $chatNotificationsDetails.parent().removeClass("full-width");
+    $chatNotificationsDetails.next().hide();
   }
 };
 
@@ -224,7 +295,7 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotification.css('display', 'none');
           var $chatNotificationsDetails = jqchat("#chat-notifications-details");
           $chatNotificationsDetails.css("display", "none");
-          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.benjp_chat_loading+'</span><li class="divider">&nbsp;</li>');
+          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.exoplatform_chat_loading+'</span><li class="divider">&nbsp;</li>');
         }
         if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
           this.playNotifSound();
@@ -350,6 +421,8 @@ ChatNotification.prototype.changeStatusChat = function(status) {
   if (typeof chatApplication === "object") {
     chatApplication.profileStatus = status;
   }
+
+  // Update chat status on chatApplication
   var $chatStatusChat = jqchat(".chat-status-chat");
   $chatStatusChat.removeClass("chat-status-available");
   $chatStatusChat.removeClass("chat-status-donotdisturb");
@@ -369,495 +442,86 @@ ChatNotification.prototype.changeStatusChat = function(status) {
     }
   });
 
+  // Update chat status on top navigation
+  var $uiNotifChatIcon = jqchat(".uiNotifChatIcon");
+  $uiNotifChatIcon.removeClass("toggle-status-available");
+  $uiNotifChatIcon.removeClass("toggle-status-away");
+  $uiNotifChatIcon.removeClass("toggle-status-donotdisturb");
+  $uiNotifChatIcon.removeClass("toggle-status-invisible");
+  $uiNotifChatIcon.addClass("toggle-status-" + status);
 };
 
 ChatNotification.prototype.openChatPopup = function() {
   window.open(this.chatPage+"?noadminbar=true","chat-popup","menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=700, height=600");
 };
 
-/**
- ##################                           ##################
- ##################                           ##################
- ##################   WEEMO EXTENSION         ##################
- ##################                           ##################
- ##################                           ##################
- */
-
-
-/**
- * WeemoExtension Class
- * @constructor
- */
-function WeemoExtension() {
-  this.weemoKey = "";
-  try {
-    this.weemo = new Weemo('', '', 'internal', '', '1');
-  } catch (err) {
-    console.log("WEEMO NOT AVAILABLE YET");
-    this.weemo = undefined;
-    jqchat(".btn-weemo-conf").css('display', 'none');
-    jqchat(".btn-weemo").addClass('disabled');
-
-  }
-  this.callObj;
-
-  this.callOwner = jzGetParam("callOwner", false);
-  this.callActive = jzGetParam("callActive", false);
-  this.callType = jzGetParam("callType", "");
-
-  this.uidToCall = jzGetParam("uidToCall", "");
-  this.displaynameToCall = jzGetParam("displaynameToCall", "");
-
-  this.chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
-
-  this.isConnected = false;
-  this.timeoutWeemo = -1;
-  //this.changeStatus("not-connected");
-}
-
-WeemoExtension.prototype.log = function() {
-  console.log("callOwner         :: "+this.callOwner);
-  console.log("callActive        :: "+this.callActive);
-  console.log("callType          :: "+this.callType);
-  console.log("uidToCall         :: "+this.uidToCall);
-  console.log("displayNameToCall :: "+this.displaynameToCall);
-  console.log("chatMessage       :: "+this.chatMessage);
-}
-
-WeemoExtension.prototype.setKey = function(weemoKey) {
-  this.weemoKey = weemoKey;
-  jzStoreParam("weemoKey", weemoKey, 14400); // timeout = 60 sec * 60 min * 4 hours = 14400 sec
-};
-
-WeemoExtension.prototype.setCallOwner = function(callOwner) {
-  this.callOwner = callOwner;
-  jzStoreParam("callOwner", callOwner, 14400);
-};
-
-WeemoExtension.prototype.setCallType = function(callType) {
-  this.callType = callType;
-  jzStoreParam("callType", callType, 14400);
-};
-
-WeemoExtension.prototype.setCallActive = function(callActive) {
-  this.callActive = callActive;
-  jzStoreParam("callActive", callActive, 14400);
-};
-
-WeemoExtension.prototype.setUidToCall = function(uidToCall) {
-  this.uidToCall = uidToCall;
-  jzStoreParam("uidToCall", uidToCall, 14400);
-};
-
-WeemoExtension.prototype.setDisplaynameToCall = function(displaynameToCall) {
-  this.displaynameToCall = displaynameToCall;
-  jzStoreParam("displaynameToCall", displaynameToCall, 14400);
-};
-/**
- * A JSON Object like :
- * { "url" : url,
- *   "user" : user,
- *   "targetUser" : targetUser,
- *   "room" : room,
- *   "token" : token
- * }
- * @param chatMessage
- */
-WeemoExtension.prototype.setChatMessage = function(chatMessage) {
-  this.chatMessage = chatMessage;
-  jzStoreParam("chatMessage", JSON.stringify(chatMessage), 14400);
-};
-
-WeemoExtension.prototype.hasChatMessage = function() {
-  return (this.chatMessage.url !== undefined);
-};
-
-WeemoExtension.prototype.initChatMessage = function() {
-  this.setChatMessage({});
-};
-
-WeemoExtension.prototype.hangup = function() {
-  if (this.callObj !== undefined) {
-    this.callObj.hangup();
-  }
-};
-
-WeemoExtension.prototype.changeStatus = function(status) {
-  var $weemoStatus = jqchat(".weemo-status");
-  if (typeof status === "undefined") {
-    $weemoStatus.removeClass("weemo-status-connected");
-    return;
-  }
-  $weemoStatus.removeClass("weemo-status-not-connected");
-  $weemoStatus.removeClass("weemo-status-connecting");
-  $weemoStatus.removeClass("weemo-status-error");
-  $weemoStatus.removeClass("weemo-status-connected");
-  $weemoStatus.addClass("weemo-status-"+status);
-
-}
-
-/**
- * Init Weemo Call
- * @param $uid
- * @param $name
- */
-WeemoExtension.prototype.initCall = function($uid, $name) {
-  if (this.weemoKey!=="" && this.weemo !== undefined) {
-    jqchat(".btn-weemo-conf").css('display', 'none');
-
-    this.weemo.setDebugLevel(4); // Activate debug in JavaScript console
-    this.weemo.setWebAppId(this.weemoKey); // Configure your Web App Identifier (For POC use your Web Application Identifier provided by Weeemo)
-    this.weemo.setToken("weemo"+$uid); // Set user unique identifier
-    this.weemo.initialize(); // Launches the connection between WeemoDriver and Javascript
-    var fn = jqchat(".label-user").text();
-    var fullname = jqchat("#UIUserPlatformToolBarPortlet > a:first").text().trim();
-    if (fullname!=="") {
-      this.weemo.setDisplayName(fullname); // Configure the display name
-    } else if (fn!=="") {
-      this.weemo.setDisplayName(fn); // Configure the display name
-    }
-    this.changeStatus("not-connected");
-    /**
-     * Weemo Driver On Connection Javascript Handler
-     *
-     * @param message
-     * @param code
-     */
-    this.weemo.onConnectionHandler = function(message, code) {
-//      if(window.console)
-//        console.log("Connection Handler : " + message + ' ' + code);
-      switch(message) {
-        case 'connectedWebRTC':
-        case 'connectedWeemoDriver':
-          weemoExtension.changeStatus("connecting");
-//          this.authenticate();
-          break;
-        case 'sipOk':
-          weemoExtension.isConnected = true;
-          jqchat(".btn-weemo").removeClass('disabled');
-          weemoExtension.changeStatus("connected");
-          clearTimeout(weemoExtension.timeoutWeemo);
-          weemoExtension.timeoutWeemo = setTimeout(weemoExtension.changeStatus, 3000);
-          break;
-        case 'loggedasotheruser':
-          // force weemo to kick previous user and replace it with current one
-          this.authenticate(1);
-        case 'sipNok':
-        case 'error':
-        case 'kicked':
-          weemoExtension.changeStatus("error");
-          break;
-      }
-    };
-
-    /**
-     * Weemo Driver On Driver Started Javascript Handler
-     *
-     * @param downloadUrl
-     */
-    this.weemo.onWeemoDriverNotStarted = function(downloadUrl) {
-      var $btnDownload = jqchat(".btn-weemo-download");
-      $btnDownload.css("display", "inline-block");
-      if (navigator.platform === "Linux") {
-        $btnDownload.addClass("disabled");
-        $btnDownload.attr("title", "Weemo is not yet compatible with Linux OS.");
-      } else {
-        $btnDownload.attr("href", downloadUrl);
-      }
-    };
-
-
-    /**
-     * Weemo Driver On Call Javascript Handler
-     *
-     * @param type
-     * @param status
-     */
-    this.weemo.onCallHandler = function(callObj, args)
-    {
-      weemoExtension.callObj = callObj;
-      var type = args.type;
-      var status = args.status;
-      console.log("WEEMO:onCallHandler  ::"+type+":"+status+":"+weemoExtension.callType+":"+weemoExtension.callOwner+":"+weemoExtension.hasChatMessage());
-      var messageWeemo = "";
-      var optionsWeemo = {};
-      if((type==="call" || type==="webRTCcall") && ( status==="active" || status==="terminated" ))
-      {
-        console.log("Call Handler : " + type + ": " + status);
-        ts = Math.round(new Date().getTime() / 1000);
-
-        if (status === "terminated") weemoExtension.setCallOwner(false);
-
-        if (weemoExtension.callType==="internal" || status==="terminated") {
-          messageWeemo = "Call "+status;
-          optionsWeemo.timestamp = ts;
-        } else if (weemoExtension.callType==="host") {
-          messageWeemo = "Call "+status;
-          optionsWeemo.timestamp = ts;
-          optionsWeemo.uidToCall = weemoExtension.uidToCall;
-          optionsWeemo.displaynameToCall = weemoExtension.displaynameToCall;
-        }
-
-        if(type==="webRTCcall" && status==="active") {
-          addWeemoDragListeners();
-        }
-
-        if (status==="active" && weemoExtension.callActive) return; //Call already active, no need to push a new message
-        if (status==="terminated" && (!weemoExtension.callActive || weemoExtension.callType==="attendee")) return; //Terminate a non started call or a joined call, no message needed
-
-
-        if (weemoExtension.callType==="attendee" && status==="active") {
-          weemoExtension.setCallActive(true);
-          optionsWeemo.type = "call-join";
-          optionsWeemo.username = weemoExtension.chatMessage.user;
-          optionsWeemo.fullname = weemoExtension.chatMessage.fullname;
-
-        }
-        else if (status==="active") {
-          weemoExtension.setCallActive(true);
-          optionsWeemo.type = "call-on";
-        }
-        else if (status==="terminated") {
-          weemoExtension.setCallActive(false);
-          optionsWeemo.type = "call-off";
-        }
-
-        if (weemoExtension.hasChatMessage()) {
-
-          console.log("WEEMO:hasChatMessage::"+weemoExtension.chatMessage.user+":"+weemoExtension.chatMessage.targetUser);
-          if (chatApplication !== undefined) {
-            chatApplication.checkIfMeetingStarted(function(callStatus){
-              if (callStatus === 1 && optionsWeemo.type==="call-on") {
-                // Call is already created, not allowed.
-                weemoExtension.initChatMessage();
-                callObj.hangup();
-                return;
-              }
-              if (callStatus === 0 && optionsWeemo.type==="call-off") {
-                // Call is already terminated, no need to terminate again
-                return;
-              }
-
-              chatApplication.chatRoom.sendFullMessage(
-                weemoExtension.chatMessage.user,
-                weemoExtension.chatMessage.token,
-                weemoExtension.chatMessage.targetUser,
-                weemoExtension.chatMessage.room,
-                messageWeemo,
-                optionsWeemo,
-                "true"
-              )
-
-              if (status==="terminated") {
-                weemoExtension.initChatMessage();
-              }
-
-            });
-          }
-        }
-      }
-      else if(type==="webRTCcall")
-      {
-        if(status == 'proceeding')
-        {
-          console.log('WebRTC call proceeding');
-        }
-        else if(status == 'incoming')
-        {
-          console.log('WebRTC Call incoming');
-          console.log(callObj);
-          var confirmStr;
-          if(callObj.dn !== "undefined" && callObj.dn !== undefined)
-          {
-            confirmStr = callObj.dn + ' ' + chatBundleData.benjp_chat_video_invite;
-          }
-          else
-          {
-            confirmStr = chatBundleData.benjp_chat_video_person;
-          }
-          if (confirm(confirmStr))
-          {
-            callObj.accept();
-          }
-          else
-          {
-            callObj.hangup();
-          }
-        }
-      }
-    }
-
-
-  } else {
-    jqchat(".btn-weemo").css('display', 'none');
-  }
-};
-
-/**
- *
- */
-WeemoExtension.prototype.createWeemoCall = function(targetUser, targetFullname, chatMessage) {
-  console.log(targetUser+" : "+targetFullname);
-  if (this.weemoKey!=="") {
-
-    if (chatMessage !== undefined) {
-      this.setChatMessage(chatMessage);
-    }
-
-    if (targetUser.indexOf("space-")===-1 && targetUser.indexOf("team-")===-1) {
-      this.setUidToCall("weemo"+targetUser);
-      this.setDisplaynameToCall(targetFullname);
-      this.setCallType("internal");
-    } else {
-      this.setUidToCall(this.weemo.getToken());
-      this.setDisplaynameToCall(this.weemo.getDisplayName());
-      this.setCallType("host");
-    }
-    this.setCallOwner(true);
-    this.setCallActive(false);
-    this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
-
-  }
-
-};
-
-/**
- *
- */
-WeemoExtension.prototype.joinWeemoCall = function(chatMessage) {
-  if (this.weemoKey!=="") {
-    if (chatMessage !== undefined) {
-      this.setChatMessage(chatMessage);
-    }
-    this.setCallType("attendee");
-    this.setCallOwner(false);
-    this.setCallActive(false);
-    this.weemo.createCall(this.uidToCall, this.callType, this.displaynameToCall);
-
-  }
-
-};
-
-WeemoExtension.prototype.attachWeemoToPopups = function() {
-  var checkTiptip = jqchat('#tiptip_content').html();
-  if (checkTiptip === undefined) {
-    setTimeout(jqchat.proxy(this.attachWeemoToPopups, this), 250);
-    return;
-  }
-  jqchat('#tiptip_content').bind('DOMNodeInserted', function() {
-    var username = "";
-    var fullname = "";
-    var addStyle = "";
-    var $uiElement;
-
-    var $uiAction = jqchat(".uiAction", this).first();
-    if ($uiAction !== undefined && $uiAction.html() !== undefined) {
-      //console.log("uiAction bind on weemoCallOverlay");
-      var $uiFullname = jqchat('#tiptip_content').children('#tipName').children("tbody").children("tr").children("td").children("a");
-      $uiFullname.each(function() {
-        var html = jqchat(this).html();
-        if (html.indexOf("/rest/")==-1) {
-          fullname = html;
-        }
-        var href = jqchat(this).attr("href");
-        if (href.indexOf("/portal/intranet/activities/")>-1) {
-          username = href.substr(28);
-        }
-      });
-      $uiElement = $uiAction;
-    }
-
-    if (username !== "" && $uiElement.has(".weemoCallOverlay").size()===0) {
-      var out = '<a type="button" class="btn weemoCallOverlay weemoCall-'+username.replace('.', '-')+' disabled" title="Make a Video Call"';
-          out += ' data-fullname="'+fullname+'"';
-          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
-          out += '<i class="icon-facetime-video"></i> Call</a>';
-          out += '<a type="button" class="btn chatPopupOverlay chatPopup-'+username.replace('.', '-')+' disabled" title="Chat"';
-          out += ' data-username="'+username+'" style="margin-left:5px;'+addStyle+'">';
-          out += '<i class="uiIconForum uiIconLightGray"></i> Chat</a>';
-      //$uiElement.append("<div class='btn weemoCallOverlay' data-username='"+username+"' style='margin-left:5px;"+addStyle+"'>Call</div>");
-      $uiElement.append(out);
-      jqchat(".weemoCallOverlay").on("click", function() {
-        if (!jqchat(this).hasClass("disabled")) {
-          //console.log("weemo button clicked");
-          var targetUser = jqchat(this).attr("data-username");
-          var targetFullname = jqchat(this).attr("data-fullname");
-          weemoExtension.createWeemoCall(targetUser, targetFullname);
-        }
-      });
-
-      jqchat(".chatPopupOverlay").on("click", function() {
-        if (!jqchat(this).hasClass("disabled")) {
-          //console.log("weemo button clicked");
-          var targetUser = jqchat(this).attr("data-username");
-          showMiniChatPopup(targetUser,'username');
-        }
-      });
-
-      function cbGetStatus(targetUser, status) {
-        //console.log("Status :: target="+targetUser+" : status="+status);
-        if (status !== "offline") {
-          jqchat(".weemoCall-"+targetUser.replace('.', '-')).removeClass("disabled");
-          jqchat(".chatPopup-"+targetUser.replace('.', '-')).removeClass("disabled");
-        }
-      }
-      chatNotification.getStatus(username, cbGetStatus);
-
-
-    }
-
-  });
-
-};
-
-WeemoExtension.prototype.attachWeemoToConnections = function() {
-  if (window.location.href.indexOf("/portal/intranet/connexions")==-1) return;
-
-  var $uiPeople = jqchat('.uiTabInPage').first();
-  if ($uiPeople.html() === undefined) {
-    setTimeout(jqchat.proxy(this.attachWeemoToConnections, this), 250);
+ChatNotification.prototype.attachChatButtonToUserPopup = function() {
+  var $tiptip_content = jqchat("#tiptip_content");
+  if ($tiptip_content.length == 0 || $tiptip_content.hasClass("DisabledEvent")) {
+    //setTimeout(chatNotification.attachChatButtonToUserPopup(), 250);
+    setTimeout(jqchat.proxy(this.attachChatButtonToUserPopup, this), 250);
     return;
   }
 
-  function cbGetConnectionStatus(targetUser, status) {
-    //console.log("Status :: target="+targetUser+" : status="+status);
-    if (status !== "offline") {
-      jqchat(".weemoCall-"+targetUser.replace('.', '-')).removeClass("disabled");
+  $tiptip_content.addClass("DisabledEvent");
+  var $uiAction = jqchat(".uiAction", $tiptip_content);
+  var $btnChat = jqchat(".chatPopupOverlay", $uiAction);
+  if ($uiAction.length > 0 && $btnChat.length === 0) {
+    var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
+    var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
+    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + " disabled' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+    var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData.exoplatform_videocall_makeCall+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData.exoplatform_videocall_Call+'</a>';
+
+    // Position of chat button depend on weemo installation
+    var $btnWeemoCall = jqchat(".weemoCallOverlay", $uiAction);
+    if ($btnWeemoCall.length > 0) {
+      var $btnConnect = jqchat(".connect", $uiAction);
+      $btnConnect.wrap("<div></div>");
+      $uiAction.addClass("twice-line");
     }
+    $uiAction.append(strChatLink);
+
+    jqchat(".chatPopupOverlay").on("click", function() {
+      if (!jqchat(this).hasClass("disabled")) {
+        var targetUser = jqchat(this).attr("data-username");
+        showMiniChatPopup(targetUser,'username');
+      }
+    });
+
+    function cbGetStatus(targetUser, status) {
+      if (status !== "offline") {
+        jqchat(".chatPopup-"+targetUser.replace('.', '-')).removeClass("disabled");
+      }
+    }
+    chatNotification.getStatus(toUserName, cbGetStatus);
   }
 
-  jqchat(".contentBox", ".uiTabInPage").each(function() {
-    var $uiUsername = jqchat(this).children(".spaceTitle").children("a").first();
-    var username = $uiUsername.attr("href");
-    username = username.substring(username.lastIndexOf("/")+1);
-    var fullname = $uiUsername.html();
-
-    var $uiActionWeemo = jqchat(".weemoCallOverlay", this).first();
-    if ($uiActionWeemo !== undefined && $uiActionWeemo.html() == undefined) {
-      var html = jqchat(this).html();
-      html += '<a type="button" class="btn weemoCallOverlay weemoCall-'+username.replace('.', '-')+' pull-right disabled" id="weemoCall-'+username.replace('.', '-')+'" title="Make a Video Call"';
-      html += ' data-username="'+username+'" data-fullname="'+fullname+'"';
-      html += ' style="margin-left:5px;"><i class="icon-facetime-video"></i> Call</a>';
-      jqchat(this).html(html);
-
-      chatNotification.getStatus(username, cbGetConnectionStatus);
-    }
-
-  });
-
-
-  jqchat(".weemoCallOverlay").on("click", function() {
-    if (!jqchat(this).hasClass("disabled")) {
-      //console.log("weemo button clicked");
-      var targetUser = jqchat(this).attr("data-username");
-      var targetFullname = jqchat(this).attr("data-fullname");
-      weemoExtension.createWeemoCall(targetUser, targetFullname);
-    }
-  });
-
-
+  $tiptip_content.removeClass("DisabledEvent");
+  $tiptip_content.unbind("DOMNodeInserted", this.tiptipContentDOMNodeInsertedHandler);
+  $tiptip_content.bind('DOMNodeInserted', this.tiptipContentDOMNodeInsertedHandler);
 };
 
+ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = function() {
+  var $uiBreadcumbsNavigationPortlet = jqchat("#UIBreadCrumbsNavigationPortlet");
+  if ($uiBreadcumbsNavigationPortlet.length == 0) {
+    setTimeout(chatNotification.attachChatButtonBelowLeftNavigationSpaceName, 250);
+    return;
+  }
+
+  var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
+  var $btnChat = jqchat(".chat-button", $breadcumbEntry);
+  var spaceUrl = jqchat("div.userAvt > img", $uiBreadcumbsNavigationPortlet).attr("src");
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceUrl !== undefined && spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
+    var spaceName = spaceUrl.substr(73);
+    spaceName = spaceName.substring(0, spaceName.indexOf("/"));
+    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceName + "\", \"space-name\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
+    $breadcumbEntry.append(strChatLink);
+  }
+
+  $uiBreadcumbsNavigationPortlet.one('DOMNodeInserted', function() {
+    chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
+  });
+};
 /**
  ##################                           ##################
  ##################                           ##################
@@ -890,8 +554,6 @@ var console = console || {
 
 // GLOBAL VARIABLES
 var chatNotification = new ChatNotification();
-var weemoExtension = new WeemoExtension();
-
 
 (function($) {
 
@@ -912,22 +574,11 @@ var weemoExtension = new WeemoExtension();
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
 
-    // WEEMO : GETTING AND SETTING KEY
-    var weemoKey = $notificationApplication.attr("data-weemo-key");
-    weemoExtension.setKey(weemoKey);
-
-    // WEEMO : INIT CALL CALLBACK
-    var startWeemo = function(username, fullname) {
-      weemoExtension.initCall(username, fullname);
-      weemoExtension.attachWeemoToPopups();
-      weemoExtension.attachWeemoToConnections();
-    }
-
-    // CHAT NOTIFICATION : START WEEMO ON SUCCESS
-    chatNotification.initUserProfile(startWeemo);
+    chatNotification.initUserProfile();
 
     $(".chat-status").on("click", function() {
       var status = $(this).attr("data-status");
+
       chatNotification.setStatus(status);
     });
 
@@ -937,37 +588,16 @@ var weemoExtension = new WeemoExtension();
       chatNotification.changeStatusChat(chatNotification.profileStatus);
     });
 
+    // Attach chat to user popup
+    chatNotification.attachChatButtonToUserPopup();
+
+    // Attach chat below left navigation space name
+    chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
   });
 
 })(jqchat);
 
 
-/**
- * Weemo WebRTC Video Div : support for draggable div video
- * Call method addWeemoDragListeners() after div #weemo-videobox is created
- */
 var offX;
 var offY;
 
-function addWeemoDragListeners() {
-  document.getElementById('weemo-videobox').addEventListener('mousedown', mouseDown, false);
-  window.addEventListener('mouseup', mouseUp, false);
-}
-
-function mouseUp() {
-  window.removeEventListener('mousemove', divMove, true);
-}
-
-function mouseDown(e) {
-  var div = document.getElementById('weemo-videobox');
-  offY= e.clientY-parseInt(div.offsetTop);
-  offX= e.clientX-parseInt(div.offsetLeft);
-  window.addEventListener('mousemove', divMove, true);
-}
-
-function divMove(e) {
-  var div = document.getElementById('weemo-videobox');
-  div.style.position = 'absolute';
-  div.style.top = (e.clientY-offY) + 'px';
-  div.style.left = (e.clientX-offX) + 'px';
-}

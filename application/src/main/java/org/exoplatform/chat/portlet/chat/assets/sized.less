@@ -1,0 +1,72 @@
+
+
+#chat-application
+{
+  height: @height;
+  padding-left: 1px;
+  min-width: @width;
+  padding: 20px;
+}
+
+
+.chat-search
+{
+  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -o-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -moz-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -webkit-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  background-image: -ms-linear-gradient(bottom, @colorBgGradient1 45%, @colorBgGradient2 73%);
+  border-top: 1px solid @colorBorderGrey;
+  border-left: 1px solid @colorBorderGrey;
+  padding: 0px 4px 5px 6px;
+  margin-bottom: 0px;
+  border-right: 1px solid @colorBorderGrey;
+  width: (@width - 13);
+  position: relative;
+}
+
+.label-user {
+  display: block;
+  margin-top: 5px;
+  float: left;
+  line-height: 20px;
+  color: #2f5e92;
+  font-weight: bold;
+}
+
+.label-demo {
+  display: block;
+  margin-top: 5px;
+  float: left;
+  line-height: 20px;
+  color: black;
+  padding-left: 5px;
+}
+
+.chat-message
+{
+  background-color: @colorBgLight;
+  border-top: 1px solid @colorBorderGrey;
+  height: @heightMessage;
+}
+
+#chats
+{
+	height: (@height - 105 - 61 - @heightBar);
+	overflow-y: scroll;
+}
+
+.sh_container {
+  overflow-x: scroll;
+  background-color: @colorLightText;
+  font-size: 11px;
+  pre {
+    font-size: 11px;
+  }
+}
+.sh_java, .sh_javascript, .sh_css, .sh_html {
+  min-width: (@widthMessages - 55);
+  border: 0;
+  font-style: 10px;
+}
