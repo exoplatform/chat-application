@@ -47,7 +47,7 @@
             <field name="state">
               <object type="org.exoplatform.portal.config.model.TransientApplicationState">
                 <field name="contentId">
-                  <string>Chat/ChatNotificationApplication</string>
+                  <string>chat/ChatNotificationApplication</string>
                 </field>
               </object>
             </field>
