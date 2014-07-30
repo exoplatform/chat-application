@@ -649,7 +649,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += urlFile + size;
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> View</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> Download</a></div></div></div></div>";
+        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData.exoplatform_chat_view + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData.exoplatform_chat_download + "</a></div></div></div></div>";
       }
 
     } else if (options.type==="type-link") {
@@ -663,17 +663,17 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<b>" + options.task + "</b>";
       out += "<div class='msTimeEvent'>";
       out += "  <div>";
-      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>Assign To: </span>" + options.fullname;
+      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData.exoplatform_chat_assign_to + ": </span>" + options.fullname;
       out += "  </div>";
       out += "  <div>";
-      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>Due Date:</span> <b>" + options.dueDate + "</b>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData.exoplatform_chat_due_date +  ":</span> <b>" + options.dueDate + "</b>";
       out += "  </div>";
       out += "</div>";
     } else if (options.type==="type-event") {
       out += "<b>" + options.summary + "</b>";
       out += "<div class='msTimeEvent'>";
       out += "  <div>";
-      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>From: </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>To: </span><b>" + options.endDate + " " + options.endTime + "</b>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>" + chatBundleData.exoplatform_chat_from + ": </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>" + chatBundleData.exoplatform_chat_to + ": </span><b>" + options.endDate + " " + options.endTime + "</b>";
       out += "  </div>";
       out += "  <div>";
       out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.space;
@@ -796,7 +796,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
           "</div>";
       }
     } else if (options.type==="call-proceed") {
-      out += "<b>Call coming...</b>";
+      out += "<b>" + chatBundleData.exoplatform_chat_call_comming  + "...</b>";
     } else {
       out += message;
     }
@@ -1002,9 +1002,9 @@ String.prototype.endsWith = function(suffix) {
             var innerMiniChatHtml = "";
             innerMiniChatHtml += "<div class='title clearfix'>";
             innerMiniChatHtml +=    "<div class='title-right'>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='Minimize' ><i class='uiIconMinimize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='Maximize' ><i class='uiIconMaximize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='Open Chat' target='_chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_minimize + "' ><i class='uiIconMinimize uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_maximize + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_open_chat + "' target='_chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close_minichat + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
@@ -1022,18 +1022,6 @@ String.prototype.endsWith = function(suffix) {
 
       }
     });
-
-//    var spaceUrl = $("div.uiBreadcumbsNavigationPortlet > div.userAvt > img").attr("src");
-//    if (spaceUrl !== undefined) {
-//      if (spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
-//        var spaceName = spaceUrl.substr(73);
-//        spaceName = spaceName.substring(0, spaceName.indexOf("/"));
-//        $breadcrumbEntry = $("div.uiBreadcumbsNavigationPortlet > div.breadcumbEntry");
-//        var html = $breadcrumbEntry.html();
-//        html += '<div class="uiActionWithLabel" onclick="javascript:showMiniChatPopup(\''+spaceName+'\',\'space-name\');" data-toggle="tooltip" title="" data-original-title="Chat"><i class="uiIconForum uiIconLightGray"></i></div>';
-//        $breadcrumbEntry.html(html);
-//      }
-//    }
 
   });
 

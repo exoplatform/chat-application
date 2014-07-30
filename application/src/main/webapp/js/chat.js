@@ -1568,7 +1568,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_favorites;
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += '<span class="room-total total-favorites">No Favorite</span>';
+  out += '<span class="room-total total-favorites">' + chatBundleData.exoplatform_chat_no_favorite + '</span>';
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
@@ -1588,7 +1588,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsFavorites.count() === 0 && this.showFavorites) {
-    out += "<tr class='users-online empty'><td colspan='3'>No Favorite</td></tr>";
+    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_favorite + "</td></tr>";
   }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
@@ -1629,7 +1629,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsPeople.count() === 0 && this.showPeople) {
-    out += "<tr class='users-online empty'><td colspan='3'>No Connection</td></tr>";
+    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_connection + "</td></tr>";
   }
 
   /**
@@ -1665,7 +1665,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsTeams.count() === 0 && this.showTeams) {
-    out += "<tr class='users-online empty'><td colspan='3'>No Team</td></tr>";
+    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_team + "</td></tr>";
   }
 
   /**
@@ -1700,7 +1700,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsSpaces.count() === 0 && this.showSpaces) {
-    out += "<tr class='users-online empty'><td colspan='3'>No Space</td></tr>";
+    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_space + "</td></tr>";
   }
 
   out += '</table>';

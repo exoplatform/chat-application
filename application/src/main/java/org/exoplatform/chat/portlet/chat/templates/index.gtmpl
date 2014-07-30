@@ -134,15 +134,15 @@
 
               <div class="popover-content meeting-action-content">
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{exoplatform.chat.link}">
-                  <strong class="actionTitle">Share Link</strong>
+                  <strong class="actionTitle">&{exoplatform.chat.share.link}</strong>
                   <input type="text" class="input-with-value" id="share-link-text" placeholder="E.g: http://www.exoplatform.com" data-value="E.g: http://www.exoplatform.com">
                   <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
                   	<a href="#" type="button" class="btn btn-primary share-link-button">&{exoplatform.chat.share}</a>
-                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
                   </div>
                 </div>
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="&{exoplatform.chat.file}">
-                  <strong class="actionTitle">Upload File</strong>
+                  <strong class="actionTitle">&{exoplatform.chat.upload.file}</strong>
                   <span id="dropzone-container">
                     <div class="progressBar" id="dropzone">
                       <div class="progress">
@@ -160,7 +160,7 @@
 	                      <span>&{exoplatform.chat.file.manually}</span>
 	                      <input type="file" name="userfile" id="chat-file-file" />
 	                    </a>
-	                    <a href="#" type="button" class="btn btnClosePopup">Cancel</a>
+	                    <a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
 	                    <input type="submit" value="&{exoplatform.chat.file.select}" id="chat-file-submit" style="display:none" />
 	                </div>
                   </form>
@@ -178,25 +178,25 @@
                   <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="&{exoplatform.chat.optional.comment}" placeholder="&{exoplatform.chat.optional.comment}">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary raise-hand-button">&{exoplatform.chat.raise.your}</a>
-                  	<a href="#" type="button" class="btn btnClosePopup">Cancel</a>
-                  </div>
-                </div>
-                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
-                  <strong class="actionTitle">Assign Task</strong>
-                  <input type="text" class="input-with-value add-task" data-value="Task Title" placeholder="Task Title" id="task-add-task">
-                  <input type="text" class="input-with-value" data-value="Assign to" placeholder="Assign to" id="task-add-user" >
-                  <input type="hidden" id="task-add-fullname" value="">
-                  <div class="task-users-results" style="display:none;"></div>
-                  <input type="text" class="input-with-value" data-value="Due date" placeholder="Due date" id="task-add-date" data-date="<%=today%>" >
-                  <div class="uiActionBorder" >
-                  	<a href="#" type="button" class="btn btn-primary create-task-button">Post</a>
                   	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="Add event">
-                  <strong class="actionTitle">Add Event</strong>
-                  <input type="text" class="input-with-value" data-value="Event Title" placeholder="Event Title" id="event-add-summary">
-                  <span class="action-label" style="display: inline-block;width: 40px;">From: </span>
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
+                  <strong class="actionTitle">&{exoplatform.chat.assign.task}</strong>
+                  <input type="text" class="input-with-value add-task" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
+                  <input type="hidden" id="task-add-fullname" value="">
+                  <div class="task-users-results" style="display:none;"></div>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >
+                  <div class="uiActionBorder" >
+                  	<a href="#" type="button" class="btn btn-primary create-task-button">&{exoplatform.chat.post}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+                <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="&{exoplatform.chat.add.event}">
+                  <strong class="actionTitle">&{exoplatform.chat.add.event}</strong>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.event.title}" placeholder="&{exoplatform.chat.event.title}" id="event-add-summary">
+                  <span class="action-label" style="display: inline-block;width: 40px;">&{exoplatform.chat.from}: </span>
                   <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
                   <span class="uiSelectbox">
                     <select class="selectbox" id="event-add-start-time">
@@ -211,7 +211,7 @@
                       <option value="all-day">&{exoplatform.chat.all.day}</option>
                     </select>
                   </span>
-                  <input type="text" class="input-with-value input-default" data-value="Location" placeholder="Location" id="">
+                  <input type="text" class="input-with-value input-default" data-value="&{exoplatform.chat.location}" placeholder="&{exoplatform.chat.location}" id="">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-event-button">&{exoplatform.chat.post}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
@@ -235,14 +235,6 @@
         <div style="display: block;margin-left: 45px;margin-right: 54px;">
           <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
         </div>
-
-        <%/*
-        <div class="meeting-action-panel meeting-action-flag-panel">
-          <input type="text" class="span6 input-with-value" data-value="Topic to be discussed today?" placeholder="Topic to be discussed today?" >
-          <div class="pull-right uiActionWithLabel meeting-close-panel"><i class="uiIconClose uiIconLightGray"></i></div>
-          <a href="#" type="button" class="btn btn-primary pull-right"><i class="icon-flag icon-white"></i> Post</a>
-        </div>
-        */%>
 
       </div>
     </div>
@@ -269,7 +261,7 @@
 <!-- ################################## -->
 <div class="uiPopup hide edit-modal" style="top:100px;">
   <div class="popupHeader clearfix">
-	<a class="uiIconClose pull-right" title="Close Window" data-dismiss="modal" aria-hidden="true"></a>
+	<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
 	<span class="PopupTitle popupTitle">&{exoplatform.chat.edit}</span>
   </div>
 
