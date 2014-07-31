@@ -19,30 +19,15 @@
 
 package org.exoplatform.chat.server;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
-
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
@@ -59,31 +44,36 @@ import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
 {
-  Logger log = Logger.getLogger("ChatServer");
-
+  private static final Logger LOG = Logger.getLogger("ChatServer");
   @Inject
   @Path("index.gtmpl")
   Template index;
-
   @Inject
   @Path("users.gtmpl")
   Template users;
-
   ChatService chatService;
-
   UserService userService;
-
   TokenService tokenService;
-
   NotificationService notificationService;
-
   @Inject
   ChatTools chatTools;
 
@@ -115,28 +105,27 @@ public class ChatServer
       if (limit!=null && !"".equals(limit))
         ilimit = Integer.parseInt(limit);
     } catch (NumberFormatException nfe) {
-      log.info("limit is not a valid Integer number");
+      LOG.info("limit is not a valid Integer number");
     }
 
-//    RoomsBean roomsBean = chatService.getRooms(user, filter, "true".equals(withUsers), "true".equals(withSpaces), "true".equals(withPublic), "true".equals(withOffline), "true".equals(isAdmin), notificationService, userService, tokenService);
-    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit, notificationService, userService, tokenService);
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
+            notificationService, userService, tokenService);
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
+            ("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String token, String targetUser, String message, String room, String isSystem, String options) throws IOException
-  {
+  public Response.Content send(String user, String token, String targetUser, String message, String room,
+                               String isSystem, String options) throws IOException {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      //System.out.println(user + "::" + message + "::" + room);
       if (message!=null)
       {
-//        System.out.println(user + "::" + message + "::" + room);
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -147,23 +136,28 @@ public class ChatServer
 
           if (targetUser.startsWith(ChatService.SPACE_PREFIX))
           {
-            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX.length()), ChatService.TYPE_ROOM_SPACE);
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX
+                    .length()), ChatService.TYPE_ROOM_SPACE);
             for (String tuser:users)
             {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
+              notificationService.addNotification(tuser, user, "chat", "room", room, content,
+                      intranetPage + "?room=" + room, options);
             }
           }
           else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
           {
-            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX.length()), ChatService.TYPE_ROOM_TEAM);
+            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX
+                    .length()), ChatService.TYPE_ROOM_TEAM);
             for (String tuser:users)
             {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
+              notificationService.addNotification(tuser, user, "chat", "room", room, content,
+                      intranetPage + "?room=" + room, options);
             }
           }
           else
           {
-            notificationService.addNotification(targetUser, user, "chat", "room", room, content, intranetPage+"?room="+room, options);
+            notificationService.addNotification(targetUser, user, "chat", "room", room, content,
+                    intranetPage + "?room=" + room, options);
           }
 
           notificationService.setNotificationsAsRead(user, "chat", "room", room);
@@ -173,18 +167,16 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      //e.printStackTrace();
       return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
     }
-
 
     return Response.ok("ok").withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/read")
-  public Response.Content read(String user, String token, String room, String fromTimestamp, String isTextOnly) throws IOException
-  {
+  public Response.Content read(String user, String token, String room, String fromTimestamp,
+                               String isTextOnly) throws IOException {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
@@ -195,7 +187,7 @@ public class ChatServer
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
-      log.info("fromTimestamp is not a valid Long number");
+      LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
@@ -204,8 +196,8 @@ public class ChatServer
 
   @Resource
   @Route("/sendMeetingNotes")
-  public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp, String toTimestamp) throws IOException
-  {
+  public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp,
+                                           String toTimestamp) throws IOException {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
@@ -218,13 +210,13 @@ public class ChatServer
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
-      log.info("fromTimestamp is not a valid Long number");
+      LOG.info("fromTimestamp is not a valid Long number");
     }
     try {
       if (toTimestamp!=null && !"".equals(toTimestamp))
         to = Long.parseLong(toTimestamp);
     } catch (NumberFormatException nfe) {
-      log.info("fromTimestamp is not a valid Long number");
+      LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, false, from, to);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
@@ -272,7 +264,7 @@ public class ChatServer
       try {
         sendMailWithAuth(senderFullname, tos, html.toString(), title);
       } catch (Exception e) {
-        log.info(e.getMessage());
+        LOG.info(e.getMessage());
       }
 
     }
@@ -282,8 +274,8 @@ public class ChatServer
 
   @Resource
   @Route("/getMeetingNotes")
-  public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp, String toTimestamp, String serverBase) throws IOException
-  {
+  public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp,
+                                          String toTimestamp, String serverBase) throws IOException {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
@@ -296,13 +288,13 @@ public class ChatServer
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
-      log.info("fromTimestamp is not a valid Long number");
+      LOG.info("fromTimestamp is not a valid Long number");
     }
     try {
       if (toTimestamp!=null && !"".equals(toTimestamp))
         to = Long.parseLong(toTimestamp);
     } catch (NumberFormatException nfe) {
-      log.info("fromTimestamp is not a valid Long number");
+      LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, false, from, to);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
@@ -389,7 +381,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.log(java.util.logging.Level.WARNING, e.getMessage());
       return Response.notFound("Oups");
     }
     return Response.ok("Updated!");
@@ -397,8 +389,8 @@ public class ChatServer
 
   @Resource
   @Route("/getRoom")
-  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin, String withDetail, String type)
-  {
+  public Response.Content getRoom(String user, String token, String targetUser, String isAdmin, String withDetail,
+                                  String type) {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
@@ -450,7 +442,8 @@ public class ChatServer
       }
       else
       {
-        String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser.startsWith(UserService.ANONIM_USER))?UserService.SUPPORT_USER:user;
+        String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser
+                .startsWith(UserService.ANONIM_USER)) ? UserService.SUPPORT_USER : user;
 
         ArrayList<String> users = new ArrayList<String>(2);
         users.add(finalUser);
@@ -465,7 +458,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.log(java.util.logging.Level.WARNING, e.getMessage());
       return Response.notFound("No Room yet");
     }
     String out = room;
@@ -534,7 +527,8 @@ public class ChatServer
             notificationService.setNotificationsAsRead(usert, "chat", "room", room);
           }
           String removeTeamUserOptions
-                  = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", \"fullname\":\"" + userService.getUserFullName(user) + "\"}";
+                  = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
+                  "\"fullname\":\"" + userService.getUserFullName(user) + "\"}";
           this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions);
         }
         if (usersToAdd.size()>0)
@@ -549,7 +543,8 @@ public class ChatServer
             first = false;
           }
           String addTeamUserOptions
-                  = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", \"fullname\":\"" + userService.getUserFullName(user) + "\"}";
+                  = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
+                  "\"fullname\":\"" + userService.getUserFullName(user) + "\"}";
           this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions);
         }
 
@@ -560,7 +555,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
       return Response.notFound("No Room yet");
     }
     return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -585,12 +580,11 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
       return Response.notFound("Server Not Available yet");
     }
     return Response.ok("Updated.");
   }
-
 
   @Resource
   @Route("/notification")
@@ -660,7 +654,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
       return Response.notFound(status);
     }
     return Response.ok(status);
@@ -680,7 +674,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
       return Response.notFound("No Status for this User");
     }
     return Response.ok(status);
@@ -701,7 +695,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
       return Response.notFound("No Status for this User");
     }
     return Response.ok(creator);
@@ -735,9 +729,9 @@ public class ChatServer
 
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
+            ("Cache-Control", "no-cache");
   }
-
 
   @Resource
   @Route("/statistics")
@@ -754,7 +748,6 @@ public class ChatServer
 
     return Response.ok(data.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
-
 
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
 

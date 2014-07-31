@@ -64,7 +64,7 @@ public class ChatApplication
 
   boolean profileInitialized_ = false;
 
-  Logger log = Logger.getLogger("ChatApplication");
+  private static final Logger LOG = Logger.getLogger("ChatApplication");
 
   OrganizationService organizationService_;
 
@@ -185,7 +185,7 @@ public class ChatApplication
       }
       catch (Exception e)
       {
-        e.printStackTrace();
+        LOG.warning(e.getMessage());
         profileInitialized_ = false;
         return Response.notFound("Error during init, try later");
       }
@@ -203,14 +203,14 @@ public class ChatApplication
   @Resource
   @Ajax
   public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, ResourceContext resourceContext) {
-    log.info("file upload in " + room);
+    LOG.info("file upload in " + room);
     if (userfile.isFormField())
     {
       String fieldName = userfile.getFieldName();
       if ("room".equals(fieldName))
       {
         room = userfile.getString();
-        log.info("room : " + room);
+        LOG.info("room : " + room);
       }
     }
     if (userfile.getFieldName().equals("userfile"))
@@ -229,7 +229,7 @@ public class ChatApplication
       }
       File file = documentsData_.getNode(uuid);
 
-      log.info(file.toJSON());
+      LOG.info(file.toJSON());
 
 
       return Response.ok(file.toJSON())
@@ -251,10 +251,10 @@ public class ChatApplication
     try {
       calendarService_.saveTask(remoteUser_, username, task, today, sdf.parse(dueDate+" 23:59"));
     } catch (ParseException e) {
-      log.info("parse exception during task creation");
+      LOG.info("parse exception during task creation");
       return Response.notFound("Error during task creation");
     } catch (Exception e) {
-      log.info("exception during task creation");
+      LOG.info("exception during task creation");
       return Response.notFound("Error during task creation");
     }
 
@@ -272,10 +272,10 @@ public class ChatApplication
       calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime), sdf.parse(endDate + " " + endTime));
 
     } catch (ParseException e) {
-      log.info("parse exception during task creation");
+      LOG.info("parse exception during task creation");
       return Response.notFound("Error during task creation");
     } catch (Exception e) {
-      log.info("exception during task creation");
+      LOG.info("exception during task creation");
       return Response.notFound("Error during task creation");
     }
 
@@ -351,12 +351,10 @@ public class ChatApplication
           ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
         }
       }
-
-
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
     return fullname;
   }
@@ -371,7 +369,7 @@ public class ChatApplication
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
   }
 
@@ -395,9 +393,8 @@ public class ChatApplication
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
-
   }
 
   protected void saveDemoSpace(String username)
@@ -416,9 +413,7 @@ public class ChatApplication
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
-
   }
-
 }

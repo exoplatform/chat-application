@@ -45,7 +45,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 @ApplicationScoped
 public class ChatTools
 {
-  Logger log = Logger.getLogger("ChatTools");
+  private static final Logger LOG = Logger.getLogger("ChatTools");
 
   UserService userService;
 
@@ -215,7 +215,7 @@ public class ChatTools
       fullname = (String)ChatUtils.fromString(fullname);
       userService.addUserFullName(username, fullname);
     } catch (Exception e) {
-      log.info("fullname wasn't serialized : "+e.getMessage());
+      LOG.info("fullname wasn't serialized : " + e.getMessage());
     }
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -234,9 +234,9 @@ public class ChatTools
       SpaceBeans spaceBeans = (SpaceBeans)ChatUtils.fromString(spaces);
       userService.setSpaces(username, spaceBeans.getSpaces());
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -375,9 +375,8 @@ public class ChatTools
     }
     if ("".equals(passphrase) || "chat".equals(passphrase))
     {
-      log.info("ChatServer is not secured! please, change 'chatPassPhrase' property in conf/chat.properties");
+      LOG.warning("ChatServer is not secured! please, change 'chatPassPhrase' property in conf/chat.properties");
     }
-
 
     return checkPP;
   }

@@ -34,8 +34,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.logging.Logger;
 
 public class ServerBootstrap {
+
+  private static final Logger LOG = Logger.getLogger(ServerBootstrap.class.getName());
 
   public static String getUserFullName(String username)
   {
@@ -57,7 +60,7 @@ public class ServerBootstrap {
     try {
       postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
   }
 
@@ -78,7 +81,7 @@ public class ServerBootstrap {
       serSpaces = ChatUtils.toString(beans);
       serSpaces = URLEncoder.encode(serSpaces);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
     params += "&spaces="+serSpaces;
     postServer("setSpaces", params);
@@ -101,9 +104,9 @@ public class ServerBootstrap {
       body = IOUtils.toString(in, encoding);
       if ("null".equals(body)) body = null;
     } catch (MalformedURLException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
     return body;
   }
@@ -133,10 +136,9 @@ public class ServerBootstrap {
       if ("null".equals(body)) body = null;
 
     } catch (MalformedURLException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-
+      LOG.warning(e.getMessage());
     } finally{
       try{writer.close();}catch(Exception e){}
     }

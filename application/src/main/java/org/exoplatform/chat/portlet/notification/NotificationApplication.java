@@ -38,10 +38,13 @@ import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 @SessionScoped
 public class NotificationApplication
 {
+
+  private static final Logger LOG = Logger.getLogger(NotificationApplication.class.getName());
 
   @Inject
   @Path("index.gtmpl")
@@ -147,11 +150,8 @@ public class NotificationApplication
         ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
       }
 
-
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
+    } catch (Exception e) {
+      LOG.warning(e.getMessage());
     }
     return fullname;
   }
@@ -176,9 +176,7 @@ public class NotificationApplication
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
-
   }
-
 }

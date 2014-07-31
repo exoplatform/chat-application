@@ -65,7 +65,6 @@ public class BundleService {
       version = attributes.getValue("Implementation-Version");
     }
     catch(Exception e) {
-//      e.printStackTrace();
       version = "N/A";
     }
 

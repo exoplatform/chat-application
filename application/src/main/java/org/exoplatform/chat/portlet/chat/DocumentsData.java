@@ -23,10 +23,13 @@ import javax.jcr.Session;
 import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 @Named("documentsData")
 @SessionScoped
 public class DocumentsData {
+
+  private static final Logger LOG = Logger.getLogger(DocumentsData.class.getName());
 
   RepositoryService repositoryService_;
 
@@ -77,8 +80,6 @@ public class DocumentsData {
     {
       System.out.println("JCR::\n" + e.getMessage());
     }
-
-
     return null;
   }
 
@@ -165,8 +166,7 @@ public class DocumentsData {
     }
     catch (Exception e)
     {
-      System.out.println("JCR::" + e.getMessage());
-//      e.printStackTrace();
+      LOG.warning(e.getMessage());
     }
 
   }
@@ -249,8 +249,7 @@ public class DocumentsData {
     }
     catch (Exception e)
     {
-      System.out.println("JCR::" + e.getMessage());
-//      e.printStackTrace();
+      LOG.warning("JCR::" + e.getMessage());
     }
 
     return uuid;
@@ -268,7 +267,7 @@ public class DocumentsData {
     }
     catch (Exception e)
     {
-      System.out.println("JCR::" + e.getMessage());
+      LOG.warning("JCR::" + e.getMessage());
     }
 
     return null;
@@ -302,26 +301,6 @@ public class DocumentsData {
     return finalResult + " " + howBig;
   }
 
-/*
-  public String getSpaceName()
-  {
-    PortalRequestContext portalRequestContext = PortalRequestContext.getCurrentInstance();
-    // /portal/g/:spaces:espace_rh/espace_rh/DocumentsListApplication
-    String uri = portalRequestContext.getRequest().getRequestURI();
-
-    // /Groups/spaces/espace_rh/Documents
-
-    int io = uri.indexOf(":spaces:");
-    if (io==-1) return null;
-
-    String suri = uri.substring(io+8);
-    suri = suri.substring(0, suri.indexOf("/"));
-
-    return suri;
-  }
-*/
-
-
   private static String roundTwoDecimals(double d) {
     DecimalFormat twoDForm = new DecimalFormat("#.##");
     return twoDForm.format(d);
@@ -336,6 +315,4 @@ public class DocumentsData {
       return true;
     return false;
   }
-
-
 }

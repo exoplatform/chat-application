@@ -16,7 +16,7 @@ import org.xwiki.rendering.syntax.Syntax;
 public class WikiService {
 
   org.exoplatform.wiki.service.WikiService wikiService_;
-  Logger log = Logger.getLogger("WikiService");
+  private static final Logger LOG = Logger.getLogger("WikiService");
 
   @Inject
   public WikiService(org.exoplatform.wiki.service.WikiService wikiService)
@@ -95,7 +95,7 @@ public class WikiService {
       //wikiService_.postUpdatePage(wikiType, wikiOwner, TitleResolver.getId(title, false), page, PageWikiListener.EDIT_PAGE_CONTENT_AND_TITLE_TYPE);
 
     } catch (Exception e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
 
     return path;
