@@ -281,7 +281,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
       out += "<div class='noMessage'><span class='text'>" + chatBundleData.exoplatform_chat_no_messages + "</span></div>";
 
     // Set recorder button to start status
-    chatApplication.updateMeetingButtonStatus('stopped');
+    if (this.miniChat === undefined) {
+      chatApplication.updateMeetingButtonStatus('stopped');
+    }
   } else {
     var messages = TAFFY(this.messages);
     var thiss = this;
