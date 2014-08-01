@@ -285,6 +285,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
       chatApplication.updateMeetingButtonStatus('stopped');
     }
   } else {
+
     var messages = TAFFY(this.messages);
     var thiss = this;
     messages().order("timestamp asec").each(function (message, i) {

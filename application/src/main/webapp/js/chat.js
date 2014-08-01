@@ -151,6 +151,8 @@ var chatApplication = new ChatApplication();
     });
 
     $(".meeting-action-toggle").on("click", function() {
+      if ($(this).hasClass("disabled")) return;
+
       if ($('.meeting-action-popup').css('display') == 'none') {
         $(this).toggleClass('active');
       }      
@@ -424,6 +426,8 @@ var chatApplication = new ChatApplication();
     });
 
     $(".msg-emoticons").on("click", function() {
+      if ($(this).parent().hasClass("disabled")) return;
+
       var $msgEmoticonsPanel = $(".msg-emoticons-panel");
       if ($msgEmoticonsPanel.css("display")==="none") {
         $(this).parent().addClass('active');
@@ -1897,7 +1901,13 @@ ChatApplication.prototype.loadRoom = function() {
     this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
       thiss.room = room;
       var $msg = jqchat('#msg');
+      var $msButtonRecord = jqchat(".msButtonRecord");
+      var $msgEmoticons = jqchat(".msg-emoticons");
+      var $meetingActionToggle = jqchat(".meeting-action-toggle");
       $msg.removeAttr("disabled");
+      $msButtonRecord.removeAttr(("disabled"));
+      $msgEmoticons.parent().removeClass("disabled");
+      $meetingActionToggle.removeClass("disabled");
       if (thiss.isDesktopView()) $msg.focus();
 
     });
