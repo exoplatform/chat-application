@@ -1137,10 +1137,13 @@ function showMiniChatPopup(room, type) {
         $history.animate({ scrollTop: 20000 }, 'fast');
 
         if ($history.is(":hidden")) {
-          $miniChat.find(".notify-info").show();
           var unreadTotal = totalMsgs - $miniChat.attr("readTotal");
-          if (unreadTotal > 0)
+          if (unreadTotal > 0) {
+            $miniChat.find(".notify-info").show();
             $miniChat.find(".notify-info").html(unreadTotal);
+          }
+          else
+            $miniChat.find(".notify-info").hide();
         } else {
           $miniChat.attr("readTotal", totalMsgs);
           $miniChat.find(".notify-info").hide();
