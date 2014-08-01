@@ -426,15 +426,17 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "      </div>";
           out += "    </div>";
         }
-        out += "      <div class='msRow'>";
+        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' )
+          out += "    <div class='msRow'>";
+        else out += " <div class='msRow odd'>";
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";
-        //if (prevUser != message.user) {
+        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' ) {
           out += "            <div class='msTiltleLn clearfix'>";
           out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
           out += "            </div>";
-        //}
+        }
         out += "              <div class='msUserCont noEdit msg-text clearfix'>";
         msRightInfo = "";
         msRightInfo += "         <div class='msRightInfo pull-right'>";
@@ -452,7 +454,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (typeof message.options == "object")
           options = message.options;
         var nbOptions = thiss.getObjectSize(options);
-        
+
         if (options.type==="call-on") {
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
@@ -495,7 +497,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jqchat(".btn-weemo-conf").css("display", "none");
           }
         }
-        
+
 //        if (options.type === "type-me") {
 //          out += "<span class=\"system-event\">"+thiss.messageBeautifier(message, options)+"</span>";
 //          out += "<div style='margin-left:50px;'>";
@@ -684,10 +686,10 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "</div>";
     } else if (options.type==="type-add-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", options.fullname).replace("{1}", users);
+      out += chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", options.fullname).replace("{1}", users);
+      out += chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
     } else if (options.type==="type-question" || options.type==="type-hand") {
       out += "<b>" + message + "</b>";
 // TODO review
