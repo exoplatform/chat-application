@@ -66,9 +66,11 @@ public class MongoBootstrap
       }
       catch (UnknownHostException e)
       {
+        log.warning(e.getMessage());
       }
       catch (IOException e)
       {
+        log.warning(e.getMessage());
       }
     }
     return m;
@@ -82,7 +84,9 @@ public class MongoBootstrap
       }
       if (m!=null)
         m.close();
-    } catch (NullPointerException e) {}
+    } catch (NullPointerException e) {
+      return;
+    }
   }
 
   public void initialize() {
