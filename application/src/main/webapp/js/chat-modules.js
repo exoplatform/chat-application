@@ -681,7 +681,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>" + chatBundleData.exoplatform_chat_from + ": </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>" + chatBundleData.exoplatform_chat_to + ": </span><b>" + options.endDate + " " + options.endTime + "</b>";
       out += "  </div>";
       out += "  <div>";
-      out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.space;
+      out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.location;
       out += "  </div>";
       out += "</div>";
     } else if (options.type==="type-add-team-user") {

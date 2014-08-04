@@ -211,7 +211,7 @@
                       <option value="all-day">&{exoplatform.chat.all.day}</option>
                     </select>
                   </span>
-                  <input type="text" class="input-with-value input-default" data-value="&{exoplatform.chat.location}" placeholder="&{exoplatform.chat.location}" id="">
+                  <input type="text" class="input-with-value input-default" data-value="&{exoplatform.chat.location}" placeholder="&{exoplatform.chat.location}" id="event-add-location">
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-event-button">&{exoplatform.chat.post}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>

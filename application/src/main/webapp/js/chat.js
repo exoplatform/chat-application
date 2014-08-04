@@ -558,6 +558,7 @@ var chatApplication = new ChatApplication();
       var startTime = $("#event-add-start-time").val();
       var endDate = $("#event-add-end-date").val();
       var endTime = $("#event-add-end-time").val();
+      var location = $("#event-add-location").val();
       if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "") {
         return;
       }
@@ -589,7 +590,8 @@ var chatApplication = new ChatApplication();
             startDate: startDate,
             startTime: startTime,
             endDate: endDate,
-            endTime: endTime
+            endTime: endTime,
+            location:location
           };
           var msg = summary;
 
