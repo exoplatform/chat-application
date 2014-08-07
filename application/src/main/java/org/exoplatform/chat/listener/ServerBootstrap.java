@@ -24,7 +24,9 @@ import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.organization.OrganizationService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -37,6 +39,15 @@ import java.net.URLEncoder;
 import java.util.logging.Logger;
 
 public class ServerBootstrap {
+
+  static {
+    // Register UpdateUserEventListener
+    UpdateUserEventListener listener = new UpdateUserEventListener();
+    PortalContainer pcontainer = PortalContainer.getInstance();
+    OrganizationService oService =
+            (OrganizationService) pcontainer.getComponentInstanceOfType(OrganizationService.class);
+    oService.getUserHandler().addUserEventListener(listener);
+  }
 
   private static final Logger LOG = Logger.getLogger(ServerBootstrap.class.getName());
 

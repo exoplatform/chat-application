@@ -146,8 +146,12 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content initChatProfile()
-  {
+  public Response.Content initChatProfile() {
+    // Update new fullName;
+    if (!UserService.ANONIM_USER.equals(remoteUser_)) {
+      fullname_ = ServerBootstrap.getUserFullName(remoteUser_);
+    }
+
     String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
@@ -176,7 +180,6 @@ public class ChatApplication
 
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
-          fullname_ = ServerBootstrap.getUserFullName(remoteUser_);
           ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_);
         }
 
