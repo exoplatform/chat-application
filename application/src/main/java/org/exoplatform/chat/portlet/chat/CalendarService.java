@@ -19,7 +19,7 @@ public class CalendarService {
 
   org.exoplatform.calendar.service.CalendarService calendarService_;
   OrganizationService organizationService_;
-  Logger log = Logger.getLogger("CalendarService");
+  private static final Logger LOG = Logger.getLogger("CalendarService");
 
   @Inject
   public CalendarService(org.exoplatform.calendar.service.CalendarService calendarService, OrganizationService organizationService)
@@ -107,7 +107,7 @@ public class CalendarService {
         return listUserCalendar.get(0).getId();
       }
     } catch (Exception e) {
-      log.info("Error while checking User Calendar :" + e.getMessage());
+      LOG.info("Error while checking User Calendar :" + e.getMessage());
     }
     return null;
   }
@@ -120,7 +120,7 @@ public class CalendarService {
     try {
       listgroupCalendar = calendarService_.getGroupCalendars(getUserGroups(username), true, username);
     } catch (Exception e) {
-      log.info("Error while checking User Calendar :" + e.getMessage());
+      LOG.info("Error while checking User Calendar :" + e.getMessage());
     }
     for (GroupCalendarData g : listgroupCalendar) {
       for (org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {

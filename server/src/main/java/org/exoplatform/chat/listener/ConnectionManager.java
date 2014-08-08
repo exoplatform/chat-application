@@ -9,17 +9,17 @@ import java.util.logging.Logger;
 public class ConnectionManager implements ServletContextListener {
 
   private static MongoBootstrap mongoBootstrap;
-  private static Logger log = Logger.getLogger("ConnectionManager");
+  private static final Logger LOG = Logger.getLogger("ConnectionManager");
 
   @Override
   public void contextInitialized(ServletContextEvent servletContextEvent) {
-    log.info("INITIALIZING MONGODB");
+    LOG.info("INITIALIZING MONGODB");
     mongoBootstrap = new MongoBootstrap();
   }
 
   @Override
   public void contextDestroyed(ServletContextEvent servletContextEvent) {
-    log.info("CLOSING MONGODB");
+    LOG.info("CLOSING MONGODB");
     mongoBootstrap.close();
   }
 
@@ -30,7 +30,7 @@ public class ConnectionManager implements ServletContextListener {
 
   public static MongoBootstrap forceNew()
   {
-    log.warning("ConnectionManager.forceNew has been used : this should never happen in Production!");
+    LOG.warning("ConnectionManager.forceNew has been used : this should never happen in Production!");
     if (mongoBootstrap!=null)
       mongoBootstrap.close();
     mongoBootstrap = new MongoBootstrap();

@@ -38,7 +38,7 @@ public class MongoBootstrap
   private static MongodProcess mongod;
   private Mongo m;
   private DB db;
-  private static Logger log = Logger.getLogger("MongoBootstrap");
+  private static final Logger LOG = Logger.getLogger("MongoBootstrap");
 
   private Mongo mongo()
   {
@@ -48,9 +48,9 @@ public class MongoBootstrap
       {
         if (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE)))
         {
-          log.warning("WE WILL NOW USE MONGODB IN EMBED MODE...");
-          log.warning("BE AWARE...");
-          log.warning("EMBED MODE SHOULD NEVER BE USED IN PRODUCTION!");
+          LOG.warning("WE WILL NOW USE MONGODB IN EMBED MODE...");
+          LOG.warning("BE AWARE...");
+          LOG.warning("EMBED MODE SHOULD NEVER BE USED IN PRODUCTION!");
           setupEmbedMongo();
         }
 
@@ -66,11 +66,11 @@ public class MongoBootstrap
       }
       catch (UnknownHostException e)
       {
-        log.warning(e.getMessage());
+        LOG.warning(e.getMessage());
       }
       catch (IOException e)
       {
-        log.warning(e.getMessage());
+        LOG.warning(e.getMessage());
       }
     }
     return m;
@@ -97,9 +97,9 @@ public class MongoBootstrap
 
   public void dropDB(String dbName)
   {
-    log.info("---- Dropping DB " + dbName);
+    LOG.info("---- Dropping DB " + dbName);
     mongo().dropDatabase(dbName);
-    log.info("-------- DB " + dbName + " dropped!");
+    LOG.info("-------- DB " + dbName + " dropped!");
 
   }
 
@@ -138,7 +138,7 @@ public class MongoBootstrap
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {
-      log.info(e.getMessage());
+      LOG.info(e.getMessage());
     }
     String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
 
@@ -188,13 +188,13 @@ public class MongoBootstrap
     DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+roomId);
     collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+".room_"+roomId));
     collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+".room_"+roomId));
-    log.info("##### room index in "+roomId);
+    LOG.info("##### room index in "+roomId);
   }
 
   public void ensureIndexes()
   {
     String dbName = this.getDB().getName();
-    log.info("### ensureIndexes in "+dbName);
+    LOG.info("### ensureIndexes in "+dbName);
     BasicDBObject unique = new BasicDBObject();
     unique.put("unique", true);
     unique.put("background", true);
@@ -213,14 +213,14 @@ public class MongoBootstrap
     index.put("type", 1);
 //    index.put("isRead", 1);
     notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", dbName+".notifications"));
-    log.info("### notifications indexes in "+getDB().getName());
+    LOG.info("### notifications indexes in "+getDB().getName());
 
     DBCollection rooms = getDB().getCollection("room_rooms");
     rooms.dropIndexes();
     rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName+".room_rooms"));
     rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+".room_rooms"));
     rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName+".room_rooms"));
-    log.info("### rooms indexes in "+getDB().getName());
+    LOG.info("### rooms indexes in "+getDB().getName());
 
     DBCollection coll = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+ ChatServiceImpl.M_ROOMS_COLLECTION);
     DBCursor cursor = coll.find();
@@ -231,7 +231,7 @@ public class MongoBootstrap
       DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+roomId);
       collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+".room_"+roomId));
       collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+".room_"+roomId));
-      log.info("##### room index in "+roomId);
+      LOG.info("##### room index in "+roomId);
     }
 
 
@@ -254,9 +254,9 @@ public class MongoBootstrap
 
     users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", dbName+".users"));
     users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", dbName+".users"));
-    log.info("### users indexes in "+getDB().getName());
+    LOG.info("### users indexes in "+getDB().getName());
 
-    log.info("### Indexes creation completed in "+getDB().getName());
+    LOG.info("### Indexes creation completed in "+getDB().getName());
 
   }
 }

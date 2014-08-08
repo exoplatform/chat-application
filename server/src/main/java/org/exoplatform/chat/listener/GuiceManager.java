@@ -13,14 +13,14 @@ import com.google.inject.Injector;
 public class GuiceManager implements ServletContextListener
 {
 
-  private static Logger log = Logger.getLogger("GuiceManager");
+  private static final Logger LOG = Logger.getLogger("GuiceManager");
 
   private static Injector injector_;
 
   @Override
   public void contextInitialized(ServletContextEvent servletContextEvent)
   {
-    log.info("INITIALIZING GUICE");
+    LOG.info("INITIALIZING GUICE");
     GuiceManager.forceNew();
 
   }
@@ -28,7 +28,7 @@ public class GuiceManager implements ServletContextListener
   @Override
   public void contextDestroyed(ServletContextEvent servletContextEvent)
   {
-    log.info("CLOSING GUICE");
+    LOG.info("CLOSING GUICE");
   }
 
   public static Injector getInstance()

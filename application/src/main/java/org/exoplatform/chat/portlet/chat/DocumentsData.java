@@ -255,24 +255,6 @@ public class DocumentsData {
     return uuid;
   }
 
-  private String getUserPrivatePath()
-  {
-    String userName = Util.getPortalRequestContext().getRemoteUser();
-
-    SessionProvider sessionProvider = getUserSessionProvider();
-    try
-    {
-      Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, userName);
-      return userNode.getPath().substring(1)+"/Private";
-    }
-    catch (Exception e)
-    {
-      LOG.warning("JCR::" + e.getMessage());
-    }
-
-    return null;
-  }
-
   private String getSpacePath(String spaceDisplayname)
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);

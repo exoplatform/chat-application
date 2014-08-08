@@ -19,9 +19,15 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.*;
-import com.mongodb.util.JSON;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
@@ -33,12 +39,17 @@ import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Named("chatService")
@@ -46,7 +57,7 @@ import java.util.logging.Logger;
 public class ChatServiceImpl implements org.exoplatform.chat.services.ChatService
 {
 
-  private static Logger log = Logger.getLogger("ChatService");
+  private static final Logger LOG = Logger.getLogger("ChatService");
 
   private long readMillis;
   private int readTotalJson, readTotalTxt;
@@ -236,7 +247,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         }
         catch (Exception e)
         {
-          log.info("Message Date Format Error : "+e.getMessage());
+          LOG.info("Message Date Format Error : "+e.getMessage());
         }
 
         if (isTextOnly)
@@ -342,7 +353,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
-        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
       }
     }
 
@@ -383,7 +394,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
-        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
       }
     }
 
@@ -406,7 +417,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
-        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
       }
     }
 
@@ -430,7 +441,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         DBObject dbo = cursor.next();
         creator = dbo.get("user").toString();
       } catch (MongoException me) {
-        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
       }
     }
 
@@ -471,7 +482,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         coll.insert(basicDBObject);
         ensureIndexInRoom(room);
       } catch (MongoException me) {
-        log.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
       }
     }
 
@@ -701,7 +712,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       DBCollection collr = db().getCollection(M_ROOM_PREFIX+roomId);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
-//      log.info(roomId+" = "+cursorr.count());
+//      LOG.info(roomId+" = "+cursorr.count());
       nb += cursorr.count();
     }
 

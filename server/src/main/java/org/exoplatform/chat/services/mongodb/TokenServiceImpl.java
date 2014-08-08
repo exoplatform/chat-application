@@ -19,7 +19,12 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.utils.MessageDigester;
@@ -27,9 +32,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Named("tokenService")
 @ApplicationScoped
@@ -195,10 +198,9 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
       catch (Exception e)
       {
         //do nothing if exception happens, keep 15000 value (=> statusInterval should set)
+        return validity_;
       }
-
     }
     return validity_;
   }
-
 }

@@ -30,8 +30,8 @@ public class MessageDigester
     catch (NoSuchAlgorithmException nsae)
     {
       //SHA-1 exists, no exception should be raised here.
+      return ticket.toString();
     }
     return ticket.toString();
   }
-
 }

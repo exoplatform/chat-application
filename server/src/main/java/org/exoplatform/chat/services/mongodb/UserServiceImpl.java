@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements org.exoplatform.chat.services.UserService
 {
 
-  Logger log = Logger.getLogger("UserService");
+  private static final Logger LOG = Logger.getLogger("UserService");
 
   private DB db()
   {
@@ -229,7 +229,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
   public void addTeamUsers(String teamRoomId, List<String> users) {
     for (String user:users)
     {
-      log.info("Team Add : "+user);
+      LOG.info("Team Add : " + user);
       this.addTeamRoom(user, teamRoomId);
     }
   }
@@ -238,7 +238,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     for (String user:users)
     {
-      log.info("Team Remove : "+user);
+      LOG.info("Team Remove : " + user);
       BasicDBObject query = new BasicDBObject();
       query.put("user", user);
       DBCursor cursor = coll.find(query);

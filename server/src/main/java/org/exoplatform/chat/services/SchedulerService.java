@@ -19,31 +19,34 @@
 
 package org.exoplatform.chat.services;
 
-import org.exoplatform.chat.services.mongodb.NotificationCleanupJob;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.logging.Logger;
 
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
 
 @Named("schedulerService")
 @ApplicationScoped
 public class SchedulerService
 {
-  Logger log = Logger.getLogger("SchedulerService");
+  private static final Logger LOG = Logger.getLogger("SchedulerService");
 
   private static Scheduler sched;
 
   public SchedulerService()
   {
-    log.info("Start Scheduler");
+    LOG.info("Start Scheduler");
     startScheduler();
   }
 
@@ -69,22 +72,21 @@ public class SchedulerService
 
       sched.start();
 
-      log.info("Scheduler Started");
+      LOG.info("Scheduler Started");
 
       if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
       {
         try {
           ConnectionManager.getInstance().ensureIndexes();
-          log.info("MongoDB Indexes Up to Date");
+          LOG.info("MongoDB Indexes Up to Date");
         } catch (Exception e) {
-          log.severe("MongoDB Indexes couldn't be created during startup. Chat Extension may be unstable!");
+          LOG.severe("MongoDB Indexes couldn't be created during startup. Chat Extension may be unstable!");
         }
       }
 
     } catch (SchedulerException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      LOG.warning(e.getMessage());
     }
-
   }
 
   public void shutdown() throws SchedulerException {

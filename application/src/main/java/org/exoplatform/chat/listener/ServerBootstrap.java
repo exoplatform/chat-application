@@ -150,8 +150,12 @@ public class ServerBootstrap {
       LOG.warning(e.getMessage());
     } catch (IOException e) {
       LOG.warning(e.getMessage());
-    } finally{
-      try{writer.close();}catch(Exception e){}
+    } finally {
+      try {
+        writer.close();
+      } catch (Exception e) {
+        LOG.warning(e.getMessage());
+      }
     }
     return body;
   }
