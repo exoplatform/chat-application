@@ -2,8 +2,14 @@
 .actionIcon.disabled {
   opacity: 0.65;
   cursor: default;
+  &:hover,&:focus,&:active {
+	border:1px solid transparent;
+	background: none;
+	.box-shadow(none);
+	cursor: default;
+  }
   * {
-    cursor: default;
+   cursor: default;
   }
 }
 
