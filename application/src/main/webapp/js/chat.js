@@ -471,10 +471,38 @@ var chatApplication = new ChatApplication();
       var fullname = $("#task-add-fullname").val();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
-      if (username === "" || fullname === "" || task === "" || dueDate === "") {
+
+      // Validate empty
+      if (username === "" || username === $("#task-add-user").attr("data-value") || fullname === "" || task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
         return;
       }
-      
+
+      // Validate datetime
+      if (!uiMiniCalendar.isDate(dueDate)) {
+        alert(chatBundleData.exoplatform_chat_date_invalid_message);
+        $("#task-add-date").select();
+        return;
+      }
+
+      // Validate users
+      var isUserExisted = true;
+      var users = username.split(",");
+      for (var i = 0; i < users.length; i++)
+      {
+        var user = users[i];
+        chatApplication.synGetAllUsers(user, function (jsonData) {
+          var users = TAFFY(jsonData.users);
+          var users = users();
+          if (users.count() <= 0) {
+            alert(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", user));
+            $("#task-add-user").select();
+            isUserExisted = false;
+          }
+        });
+
+        if (!isUserExisted) return;
+      }
+
       setActionButtonEnabled('.create-task-button', false);
       $.ajax({
         url: chatApplication.jzCreateTask,
@@ -1424,6 +1452,24 @@ ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
  */
 ChatApplication.prototype.getAllUsers = function(filter, callback) {
   jqchat.ajax({
+    url: this.jzUsers,
+    data: {"filter": filter,
+      "user": this.username,
+      "token": this.token
+    },
+    dataType: "json",
+    context: this,
+    success: function(response){
+      if (typeof callback === "function") {
+        callback(response);
+      }
+    }
+  });
+};
+
+ChatApplication.prototype.synGetAllUsers = function(filter, callback) {
+  jqchat.ajax({
+    async: false,
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
