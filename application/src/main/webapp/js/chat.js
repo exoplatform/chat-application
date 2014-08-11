@@ -559,7 +559,17 @@ var chatApplication = new ChatApplication();
       var endDate = $("#event-add-end-date").val();
       var endTime = $("#event-add-end-time").val();
       var location = $("#event-add-location").val();
-      if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "") {
+      if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "" || summary === "" || summary === $("#event-add-summary").attr("data-value") || location === "" || location ===$("#event-add-location").attr("data-value")) {
+        return;
+      }
+      if (!uiMiniCalendar.isDate(startDate)) {
+        alert(chatBundleData.exoplatform_chat_date_invalid_message);
+        $("#event-add-start-date").select();
+        return;
+      }
+      if (!uiMiniCalendar.isDate(endDate)) {
+        alert(chatBundleData.exoplatform_chat_date_invalid_message);
+        $("#event-add-end-date").select();
         return;
       }
       if (startTime==="all-day") startTime = "00:00";
