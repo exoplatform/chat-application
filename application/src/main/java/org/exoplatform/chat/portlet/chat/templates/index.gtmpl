@@ -279,7 +279,7 @@
 <!-- ################################## -->
 <div class="modal hide team-modal">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <a onclick="" style="margin: 7px 0px 0px; cursor: pointer;" title="Close Window" class="uiIconClose pull-right " aria-hidden="true" data-dismiss="modal">&nbsp;</a>
     <h3>&{exoplatform.chat.team}</h3>
   </div>
   <div class="modal-body">
