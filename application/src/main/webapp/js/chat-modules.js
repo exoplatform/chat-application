@@ -1009,7 +1009,7 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml +=    "<div class='title-right'>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_minimize + "' ><i class='uiIconMinimize uiIconWhite'></i></a>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_maximize + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_open_chat + "' target='_chat'><i class='uiIconPopOut uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_open_chat + "' target='_chat'><i class='uiIconChatPopOut uiIconChatWhite'></i></a>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
