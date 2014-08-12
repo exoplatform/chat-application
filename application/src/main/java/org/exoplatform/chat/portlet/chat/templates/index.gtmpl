@@ -301,6 +301,7 @@
     <a href="#" class="btn btn-primary team-modal-save">&{exoplatform.chat.save}</a>
     <a href="#" class="btn team-modal-cancel">&{exoplatform.chat.cancel}</a>
   </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
 </div>
 <!-- ################################## -->
 <!-- ######### MIGRATION MODAL ############ -->
