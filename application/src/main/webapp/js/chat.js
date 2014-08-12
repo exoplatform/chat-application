@@ -1964,12 +1964,14 @@ ChatApplication.prototype.loadRoom = function() {
       var $meetingActionToggle = jqchat(".meeting-action-toggle");
       $msg.removeAttr("disabled");
       $msButtonRecord.removeAttr(("disabled"));
+      $msButtonRecord.attr("data-toggle","tooltip");
       $msgEmoticons.parent().removeClass("disabled");
+      $msgEmoticons.parent().attr("data-toggle", "tooltip");
       $meetingActionToggle.removeClass("disabled");
+      $meetingActionToggle.children("span").attr("data-toggle", "tooltip");
+      chatApplication.activateTootips();
       if (thiss.isDesktopView()) $msg.focus();
-
     });
-
   }
 };
 

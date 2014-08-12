@@ -78,7 +78,7 @@ public class DocumentsData {
     }
     catch (Exception e)
     {
-      System.out.println("JCR::\n" + e.getMessage());
+      LOG.warning("JCR::\n" + e.getMessage());
     }
     return null;
   }
@@ -286,15 +286,5 @@ public class DocumentsData {
   private static String roundTwoDecimals(double d) {
     DecimalFormat twoDForm = new DecimalFormat("#.##");
     return twoDForm.format(d);
-  }
-
-  private boolean isAcceptedFile(String filename)
-  {
-    if (filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(".pdf")
-            || filename.endsWith(".ppt") || filename.endsWith(".xls") || filename.endsWith(".doc")
-            || filename.endsWith(".pptx") || filename.endsWith(".xlsx") || filename.endsWith(".docx")
-            || filename.endsWith(".odt") || filename.endsWith(".ods") || filename.endsWith(".odp"))
-      return true;
-    return false;
   }
 }
