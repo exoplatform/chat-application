@@ -49,7 +49,7 @@
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
       <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
-        <div onclick="event.cancelBubble=true;"><input class="span4" id="chat-search" type="text" ></div>
+        <div onclick="event.cancelBubble=true;"><input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}"></div>
       </div>
     </span>
   </div>
