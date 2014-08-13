@@ -165,11 +165,14 @@ ChatNotification.prototype.refreshNotifDetails = function() {
                 } else if ("type-event" === messageType) {
                   html += "       <i class='uiIconChatCreateEvent uiIconChatLightGray'></i>";
                 } else if ("type-notes" === messageType) {
-                  //  html += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+                  html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_notes_saved;
                 } else if ("type-meeting-start" === messageType) {
-                  //  html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
+                  html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_started;
                 } else if ("type-meeting-stop" === messageType) {
-                  //  html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
+                  html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
+                  content = chatBundleData.exoplatform_chat_meeting_finished;
                 } else if ("type-add-team-user" === messageType) {
                   content = chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
                 } else if ("type-remove-team-user" === messageType) {

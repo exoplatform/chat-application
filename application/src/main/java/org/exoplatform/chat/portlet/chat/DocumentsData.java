@@ -259,7 +259,7 @@ public class DocumentsData {
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
 
-    return "Groups/spaces/"+spacet.getPrettyName();
+    return "Groups/spaces/".concat(spacet.getPrettyName());
   }
 
   public static String calculateFileSize(long fileLengthLong) {
