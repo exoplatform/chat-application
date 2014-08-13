@@ -19,17 +19,28 @@
 
 package org.exoplatform.chat.portlet.notification;
 
-import juzu.*;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
+import juzu.SessionScoped;
+import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
 import juzu.template.Template;
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.common.router.ExoRouter.Route;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
@@ -37,7 +48,11 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 @SessionScoped
@@ -85,6 +100,7 @@ public class NotificationApplication
     Locale locale = renderContext.getUserContext().getLocale();
     ResourceBundle bundle= renderContext.getApplicationContext().resolveBundle(locale) ;
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
+    String shortSpaceName = getCurrentShortSpaceName();
 
     index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
@@ -92,6 +108,7 @@ public class NotificationApplication
             .set("chatIntervalNotif", chatIntervalNotif)
             .set("title", title)
             .set("messages", messages)
+            .set("shortSpaceName", shortSpaceName)
             .render();
   }
 
@@ -178,5 +195,27 @@ public class NotificationApplication
     {
       LOG.warning(e.getMessage());
     }
+  }
+
+  protected String getCurrentShortSpaceName() {
+    Space currSpace = getSpaceByContext();
+    if (currSpace != null) {
+      return currSpace.getShortName();
+    } else {
+      return StringUtils.EMPTY;
+    }
+  }
+
+  private static Space getSpaceByContext() {
+    //
+    PortalRequestContext pcontext = Util.getPortalRequestContext();
+    String requestPath = pcontext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    Route route = ExoRouter.route(requestPath);
+    if (route == null) return null;
+
+    //
+    String spacePrettyName = route.localArgs.get("spacePrettyName");
+    SpaceService spaceService = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
+    return spaceService.getSpaceByPrettyName(spacePrettyName);
   }
 }

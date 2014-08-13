@@ -14,6 +14,7 @@
 function ChatNotification() {
   this.token = "";
   this.username = "";
+  this.shortSpaceName = ""; // short Name of current space being in
   this.jzInitUserProfile = "";
   this.jzNotification = "";
   this.jzGetStatus = "";
@@ -49,6 +50,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
+  this.shortSpaceName = options.shortSpaceName;
 };
 
 /**
@@ -513,10 +515,8 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
 
   var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
   var $btnChat = jqchat(".chat-button", $breadcumbEntry);
-  var spaceUrl = jqchat("div.userAvt > img", $uiBreadcumbsNavigationPortlet).attr("src");
-  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceUrl !== undefined && spaceUrl.indexOf("/rest/jcr/repository/social/production/soc%3Aproviders/soc%3Aspace/soc%3A")===0) {
-    var spaceName = spaceUrl.substr(73);
-    spaceName = spaceName.substring(0, spaceName.indexOf("/"));
+  var spaceName = this.shortSpaceName;
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceName !== "") {
     var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceName + "\", \"space-name\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
     $breadcumbEntry.append(strChatLink);
   }
@@ -572,7 +572,8 @@ var chatNotification = new ChatNotification();
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
-      "statusInterval": $notificationApplication.attr("data-chat-interval-status")
+      "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
+      "shortSpaceName": $notificationApplication.attr("data-short-space-name")
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
