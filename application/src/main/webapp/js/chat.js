@@ -771,7 +771,7 @@ var chatApplication = new ChatApplication();
             html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
             html += " </span></span>";
-            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+user.name+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>";
+            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/chat/api/1.0/user/getAvatarURL/"+user.name+"' width='30px' style='width:30px;'></span>";
             html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
             html += "</div>";
           });
@@ -1894,7 +1894,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
-      jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+this.targetUser+"/soc:profile/soc:avatar");
+      jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getAvatarURL/" + this.targetUser );
     }
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE

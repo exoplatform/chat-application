@@ -151,8 +151,8 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         room: this.id,
         user: this.username,
         token: this.token
-        }
-      }, function (err, res){
+      }
+    }, function (err, res){
       // check for an error
       if (err) {
         if (typeof thiss.onRefreshCB === "function") {
@@ -306,7 +306,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
                 if (thiss.isPublic) {
                   out += "  <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
                 } else {
-                  out += "  <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+                  out += "  <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 }
                 out += "  </div>";
               } else {
@@ -330,7 +330,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           } else {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
-                out += "    <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+                out += "    <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
                 out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -401,7 +401,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           if (thiss.isPublic) {
             out += "        <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
           } else {
-            out += "        <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+            out += "        <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
           }
           out += "        </div>";
           out += "      </div>";
@@ -418,7 +418,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (thiss.isPublic)
               out += "      <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
             else
-              out += "      <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:" + prevUser + "/soc:profile/soc:avatar' alt='" + prevFullName + "'></a>";
+              out += "      <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
             out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -740,7 +740,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
       out += "</div>";
       if (thiss.miniChat === undefined) {
-          chatApplication.updateMeetingButtonStatus('stopped');
+        chatApplication.updateMeetingButtonStatus('stopped');
       }
     } else if (options.type==="call-on") {
       this.startCallTimestamp = objMessage.timestamp;
@@ -909,8 +909,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
 };
 
 /**
-Generate html markup from quote, eg: [quote=xxx] [quote=yyy]information [/quote]comment1[/quote]comment2
-*/
+ Generate html markup from quote, eg: [quote=xxx] [quote=yyy]information [/quote]comment1[/quote]comment2
+ */
 ChatRoom.prototype.getQuote = function(message, originMessage) {
   var numQuotes = message.split('[quote=').length - 1;
   var numOriginQuotes = originMessage.split('[quote=').length - 1;

@@ -32,6 +32,10 @@
   <description>eXo Chat Extension Configuration Community</description>
   <dependencies>
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
       <scope>provided</scope>
