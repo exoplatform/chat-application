@@ -525,6 +525,7 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
     chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
   });
 };
+
 /**
  ##################                           ##################
  ##################                           ##################
@@ -597,6 +598,7 @@ var chatNotification = new ChatNotification();
 
     // Attach chat below left navigation space name
     chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
+
   });
 
 })(jqchat);
