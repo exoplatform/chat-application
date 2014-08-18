@@ -102,14 +102,14 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  */
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
-//  var im = this.messages.length;
-//  this.messages[im] = {"user": this.username,
-//    "fullname": chatBundleData.exoplatform_chat_you,
-//    "date": "pending",
-//    "message": msg,
-//    "options": options,
-//    "isSystem": isSystemMessage};
-//  this.showMessages();
+  var im = this.messages.length;
+  this.messages[im] = {"user": this.username,
+    "fullname": chatBundleData.exoplatform_chat_you,
+    "date": "pending",
+    "message": msg,
+    "options": options,
+    "isSystem": isSystemMessage};
+  this.showMessages();
 
   var thiss = this;
   snack.request({
@@ -140,6 +140,8 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
  * Refresh Chat : refresh messages and panels
  */
 ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
+  if (this.id === "") return;
+
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
