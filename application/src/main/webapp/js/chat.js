@@ -482,8 +482,10 @@ var chatApplication = new ChatApplication();
 
       // Validate datetime
       if (!uiMiniCalendar.isDate(dueDate)) {
-        alert(chatBundleData.exoplatform_chat_date_invalid_message);
-        $("#task-add-date").select();
+        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function (e) {
+          e.stopPropagation();
+          $("#task-add-date").select();
+        });
         return;
       }
 
@@ -497,8 +499,10 @@ var chatApplication = new ChatApplication();
           var users = TAFFY(jsonData.users);
           var users = users();
           if (users.count() <= 0) {
-            alert(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", user));
-            $("#task-add-user").select();
+            bootbox.alertError(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", user), function(e) {
+              e.stopPropagation();
+              $("#task-add-user").select();
+            });
             isUserExisted = false;
           }
         });
@@ -594,13 +598,17 @@ var chatApplication = new ChatApplication();
         return;
       }
       if (!uiMiniCalendar.isDate(startDate)) {
-        alert(chatBundleData.exoplatform_chat_date_invalid_message);
-        $("#event-add-start-date").select();
+        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function(e){
+          e.stopPropagation();
+          $("#event-add-start-date").select();
+        });
         return;
       }
       if (!uiMiniCalendar.isDate(endDate)) {
-        alert(chatBundleData.exoplatform_chat_date_invalid_message);
-        $("#event-add-end-date").select();
+        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function(e){
+          e.stopPropagation();
+          $("#event-add-end-date").select();
+        });
         return;
       }
       if (startTime==="all-day") startTime = "00:00";
@@ -649,15 +657,15 @@ var chatApplication = new ChatApplication();
 
     });
      
-     function setActionButtonEnabled(btnClass, isEnabled) {
-       if (isEnabled) {
-         $(btnClass).css('cursor', "default");
-         $(btnClass).removeAttr('disabled');
-       } else {
-         $(btnClass).css('cursor', "progress");
-         $(btnClass).attr('disabled','disabled');
-       }
-     };
+    function setActionButtonEnabled(btnClass, isEnabled) {
+      if (isEnabled) {
+        $(btnClass).css('cursor', "default");
+        $(btnClass).removeAttr('disabled');
+      } else {
+        $(btnClass).css('cursor', "progress");
+        $(btnClass).attr('disabled','disabled');
+      }
+    };
 
     $("#event-add-start-time").on("change", function() {
       var time = $(this).val();
@@ -985,14 +993,9 @@ var chatApplication = new ChatApplication();
       }
     }
 
-    //removeParametersFromLocation();
-
-
     String.prototype.endsWith = function(suffix) {
       return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
-
-
 
   });
 

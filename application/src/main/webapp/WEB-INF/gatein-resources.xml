@@ -7,6 +7,9 @@
             <depends>
                 <module>uiMiniCalendar</module>
             </depends>
+            <depends>
+                <module>bootbox</module>
+            </depends>
         </module>
     </portlet>
     <module>
@@ -25,6 +28,24 @@
         </depends>
         <depends>
             <module>I18NMessage</module>
+        </depends>
+    </module>
+    <module>
+        <name>bootbox</name>
+        <script>
+            <adapter>
+                (function($) {
+                var _$ = window.jQuery; window.jQuery = $;
+                <include>/js/bootbox.js</include>
+                window.jQuery = _$;
+                })($);
+            </adapter>
+        </script>
+        <depends>
+            <module>bts_modal</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
         </depends>
     </module>
 </gatein-resources>
