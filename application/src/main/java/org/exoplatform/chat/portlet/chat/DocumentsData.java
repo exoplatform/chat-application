@@ -18,6 +18,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.servlet.http.HttpServletRequest;
@@ -195,50 +196,62 @@ public class DocumentsData {
       }
 
       Node docNode = homeNode.getNode("Documents");
-
-      int cpt = 1;
+      Node fileNode = null;
       String filenameBase = filename.substring(0, filename.lastIndexOf("."));
       String filenameExt = filename.substring(filename.lastIndexOf("."));
-      while (docNode.hasNode(filename))
-      {
-        filename = filenameBase+"-"+cpt+filenameExt;
-        cpt++;
-      }
-
-      Node fileNode = docNode.addNode(filename, "nt:file");
-      Node jcrContent = fileNode.addNode("jcr:content", "nt:resource");
-      jcrContent.setProperty("jcr:data", item.getInputStream());
-      jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
-      jcrContent.setProperty("jcr:encoding", "UTF-8");
-      if (filename.endsWith(".jpg"))
-        jcrContent.setProperty("jcr:mimeType", "image/jpeg");
-      else if (filename.endsWith(".png"))
-        jcrContent.setProperty("jcr:mimeType", "image/png");
-      else if (filename.endsWith(".pdf"))
-        jcrContent.setProperty("jcr:mimeType", "application/pdf");
-      else if (filename.endsWith(".doc"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-word");
-      else if (filename.endsWith(".xls"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-excel");
-      else if (filename.endsWith(".ppt"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-powerpoint");
-      else if (filename.endsWith(".docx"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-      else if (filename.endsWith(".xlsx"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-      else if (filename.endsWith(".pptx"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-      else if (filename.endsWith(".odp"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.presentation");
-      else if (filename.endsWith(".odt"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
-      else if (filename.endsWith(".ods"))
-        jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
-      else if (filename.endsWith(".zip"))
-        jcrContent.setProperty("jcr:mimeType", "application/zip");
-      else
-        jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
-      session.save();
+      int cpt = 1;
+      
+      boolean fileExist = false;
+      do {
+        try {
+          while (docNode.hasNode(filename))
+          {
+            filename = filenameBase+"-"+cpt+filenameExt;
+            cpt++;
+          }
+    
+          fileNode = docNode.addNode(filename, "nt:file");
+          Node jcrContent = fileNode.addNode("jcr:content", "nt:resource");
+          jcrContent.setProperty("jcr:data", item.getInputStream());
+          jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
+          jcrContent.setProperty("jcr:encoding", "UTF-8");
+          if (filename.endsWith(".jpg"))
+            jcrContent.setProperty("jcr:mimeType", "image/jpeg");
+          else if (filename.endsWith(".png"))
+            jcrContent.setProperty("jcr:mimeType", "image/png");
+          else if (filename.endsWith(".pdf"))
+            jcrContent.setProperty("jcr:mimeType", "application/pdf");
+          else if (filename.endsWith(".doc"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-word");
+          else if (filename.endsWith(".xls"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-excel");
+          else if (filename.endsWith(".ppt"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-powerpoint");
+          else if (filename.endsWith(".docx"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+          else if (filename.endsWith(".xlsx"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+          else if (filename.endsWith(".pptx"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+          else if (filename.endsWith(".odp"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.presentation");
+          else if (filename.endsWith(".odt"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
+          else if (filename.endsWith(".ods"))
+            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
+          else if (filename.endsWith(".zip"))
+            jcrContent.setProperty("jcr:mimeType", "application/zip");
+          else
+            jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
+          session.save();
+          fileExist = false;
+        } catch (ItemExistsException e) {
+          fileExist = true;
+          docNode.refresh(false);
+          cpt++;
+          filename = filenameBase+"-"+cpt+filenameExt;
+        }
+      } while (fileExist);
       uuid = fileNode.getUUID();
 
       // Broadcast an activity when uploading file in a space conversation
