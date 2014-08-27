@@ -41,7 +41,7 @@ public class PropertyManager {
     return value;
   }
 
-  private static Properties properties()
+  private synchronized static Properties properties()
   {
     if (properties==null)
     {
