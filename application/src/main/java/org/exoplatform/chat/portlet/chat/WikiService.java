@@ -1,15 +1,15 @@
 package org.exoplatform.chat.portlet.chat;
 
-import java.util.logging.Logger;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.wiki.mow.core.api.wiki.PageImpl;
 import org.exoplatform.wiki.resolver.TitleResolver;
 import org.xwiki.rendering.syntax.Syntax;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named("wikiService")
 @ApplicationScoped
@@ -54,51 +54,54 @@ public class WikiService {
 
     try
     {
-      if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false)))
-      {
-        PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
-        ppage.getContent().setText("= "+parentTitle+" =\n");
-        ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
-        ppage.checkin();
-        ppage.checkout();
-      }
+      synchronized(wikiService_) {
 
-      PageImpl page;
-      if (wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(title, false)))
-      {
-        page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
-      }
-      else
-      {
-        page = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, title, TitleResolver.getId(parentTitle, false));
-      }
+        if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false))) {
+          PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
+          ppage.getContent().setText("= " + parentTitle + " =\n");
+          ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
+          ppage.checkin();
+          ppage.checkout();
+        }
 
-      page.getContent().setText(content);
-      page.setSyntax(Syntax.XWIKI_2_0.toIdString());
-      page.setMinorEdit(false);
-      page.checkin();
-      page.checkout();
+        PageImpl page;
+        boolean isPageExisted = false;
+        if (wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(title, false))) {
+          page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+          isPageExisted = true;
+        } else {
+          try {
+            page = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, title, TitleResolver.getId(parentTitle, false));
 
-      if (wikiType.equals(PortalConfig.GROUP_TYPE))
-      {
-        // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
-        path = "/portal/intranet/wiki/"+wikiType+"/"+wikiOwner+"/"+page.getName();
+          } catch (Exception e) {
+            isPageExisted = true;
+            page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+          }
+        }
+
+        page.getContent().setText(content);
+        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        page.setMinorEdit(false);
+        page.checkin();
+        page.checkout();
+
+        if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
+          // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
+          path = "/portal/intranet/wiki/" + wikiType + "/" + wikiOwner + "/" + page.getName();
+        } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
+          // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
+          path = "/portal/intranet/wiki/" + page.getName();
+        }
+
+        //Post Activity
+        if (!isPageExisted) {
+          wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
+        }
       }
-      else if (wikiType.equals(PortalConfig.PORTAL_TYPE))
-      {
-        // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
-        path = "/portal/intranet/wiki/"+ page.getName();
-      }
-
-      //Post Activity
-      wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
-      //wikiService_.postUpdatePage(wikiType, wikiOwner, TitleResolver.getId(title, false), page, PageWikiListener.EDIT_PAGE_CONTENT_AND_TITLE_TYPE);
-
     } catch (Exception e) {
-      LOG.warning(e.getMessage());
+      LOG.log(Level.SEVERE, "Unknown exception", e);
     }
 
     return path;
   }
-
 }
