@@ -10,6 +10,9 @@
             <depends>
                 <module>bootbox</module>
             </depends>
+            <depends>
+                <module>uiChatPopupWindow</module>
+            </depends>
         </module>
     </portlet>
     <module>
@@ -28,6 +31,27 @@
         </depends>
         <depends>
             <module>I18NMessage</module>
+        </depends>
+    </module>
+    <module>
+        <name>uiChatPopupWindow</name>
+        <script>
+            <path>/js/UIPopupWindow.js</path>
+        </script>
+        <depends>
+            <module>common</module>
+        </depends>
+        <depends>
+            <module>uiPopup</module>
+        </depends>
+        <depends>
+            <module>uiMaskLayer</module>
+        </depends>
+        <depends>
+            <module>base</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
         </depends>
     </module>
     <module>

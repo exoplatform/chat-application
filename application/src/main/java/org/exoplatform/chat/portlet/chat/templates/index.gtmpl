@@ -277,32 +277,36 @@
 <!-- ################################## -->
 <!-- ######### TEAM MODAL ############ -->
 <!-- ################################## -->
-<div class="modal hide team-modal">
-  <div class="modal-header">
-    <a onclick="" style="margin: 7px 0px 0px; cursor: pointer;" title="Close Window" class="uiIconClose pull-right " aria-hidden="true" data-dismiss="modal">&nbsp;</a>
-    <h3>&{exoplatform.chat.team}</h3>
+<div id="team-modal-form" class="uiPopup hide team-modal">
+  <div class="popupHeader clearfix">
+    <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+    <span class="PopupTitle popupTitle">&{exoplatform.chat.team}</span>
   </div>
-  <div class="modal-body">
-    <label>&{exoplatform.chat.team.name}</label><input type="text" id="team-modal-name" data-id="---" value="" />
-    <label>&{exoplatform.chat.team.people}</label>
-    <div class="team-users-list">
-    </div>
-    <div class="uiSearchForm uiSearchInput team-users-search">
-      <div onclick="event.cancelBubble=true;">
-        <input id="team-add-user" type="text" >
-        <label class="team-add-user-label">&{exoplatform.chat.team.help}</label>
+
+  <div class="PopupContent popupContent">
+    <div class="resizable">
+      <div class="modal-body">
+        <label>&{exoplatform.chat.team.name}</label>
+        <input type="text" id="team-modal-name" data-id="---" value="" />
+        <label>&{exoplatform.chat.team.people}</label>
+        <div class="team-users-list"></div>
+        <div class="uiSearchForm uiSearchInput team-users-search">
+          <div onclick="event.cancelBubble=true;">
+            <input id="team-add-user" type="text" >
+            <label class="team-add-user-label">&{exoplatform.chat.team.help}</label>
+          </div>
+        </div>
+        <div class="team-users-results" style="display:none;"></div>
       </div>
     </div>
-    <div class="team-users-results" style="display:none;">
+    <div class="uiAction uiActionBorder">
+      <a href="#" class="btn btn-primary team-modal-save">&{exoplatform.chat.save}</a>
+      <a href="#" class="btn team-modal-cancel">&{exoplatform.chat.cancel}</a>
     </div>
-
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn btn-primary team-modal-save">&{exoplatform.chat.save}</a>
-    <a href="#" class="btn team-modal-cancel">&{exoplatform.chat.cancel}</a>
   </div>
   <span class="uiIconResize pull-right uiIconLightGray"></span>
 </div>
+
 <!-- ################################## -->
 <!-- ######### MIGRATION MODAL ############ -->
 <!-- ################################## -->

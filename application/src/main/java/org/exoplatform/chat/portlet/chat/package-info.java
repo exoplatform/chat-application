@@ -35,9 +35,9 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/taffy-min.js", id="jquery"),
-                @Script(src = "js/bootstrap-datepicker.js", id="datepicker"),
-                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery","datepicker"} ),
+                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
+                @Script(src = "js/taffy-min.js", id="taffy"),
+                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery", "taffy"} ),
                 @Script(src = "js/chat.js", depends = {"chat-modules"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
@@ -47,8 +47,7 @@
         },
         stylesheets = {
                 @Stylesheet(src = "/org/exoplatform/chat/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
-                @Stylesheet(src = "css/sh_style.css"),
-                @Stylesheet(src = "css/datepicker.css")
+                @Stylesheet(src = "css/sh_style.css")
         }
         ,
         declaredStylesheets = {

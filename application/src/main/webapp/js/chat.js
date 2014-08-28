@@ -570,19 +570,19 @@ var chatApplication = new ChatApplication();
     });
 
     function setMiniCalendarToDateField(dateFieldId) {
-		  var dateField = document.getElementById(dateFieldId);
-		  dateField.onfocus=function(){
-		    uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
-		  };
-		  dateField.onkeyup=function(){
-		    uiMiniCalendar.show();
-		  };
-		  dateField.onkeydown=function(event){
-		    uiMiniCalendar.onTabOut(event);
-		  };
-		  dateField.onclick=function(event){
-		    event.cancelBubble = true;
-		  };
+      var dateField = document.getElementById(dateFieldId);
+      dateField.onfocus=function(){
+        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
+      };
+      dateField.onkeyup=function(){
+        uiMiniCalendar.show();
+      };
+      dateField.onkeydown=function(event){
+        uiMiniCalendar.onTabOut(event);
+      };
+      dateField.onclick=function(event){
+        event.cancelBubble = true;
+      };
     };
     setMiniCalendarToDateField('task-add-date');
 
@@ -848,7 +848,7 @@ var chatApplication = new ChatApplication();
           }
         });
 
-        $('.team-modal').modal({"backdrop": false});
+        uiChatPopupWindow.show("team-modal-form", true);
         $uitext.focus();
 
         // Set form position to screen center
@@ -873,7 +873,7 @@ var chatApplication = new ChatApplication();
     });
 
     $(".team-modal-cancel").on("click", function() {
-      $('.team-modal').modal('hide');
+      uiChatPopupWindow.hide("team-modal-form", true);
       var $uitext = $("#team-modal-name");
       $uitext.val("");
       $uitext.attr("data-id", "---");
@@ -882,8 +882,12 @@ var chatApplication = new ChatApplication();
     $(".team-modal-save").on("click", function() {
       var $uitext = $("#team-modal-name");
       var teamName = $uitext.val();
+      if ($.trim(teamName) === "") {
+        $uitext.focus();
+        return;
+      }
       var teamId = $uitext.attr("data-id");
-      $('.team-modal').modal('hide');
+      uiChatPopupWindow.hide("team-modal-form", true);
 
       var users = chatApplication.username;
       $(".team-user-label").each(function(index) {
@@ -2299,7 +2303,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uitext.val("");
     $uitext.attr("data-id", "---");
     jqchat(".team-user-label").remove();
-    jqchat('.team-modal').modal({"backdrop": false});
+    uiChatPopupWindow.show("team-modal-form", true);
 
     $uitext.focus();
 
