@@ -35,9 +35,8 @@
 @Assets(
         location = AssetLocation.SERVER,
         scripts = {
-                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
-                @Script(src = "js/taffy-min.js", id="taffy"),
-                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery", "taffy"} ),
+                @Script(src = "js/taffy-min.js", id="jquery"),
+                @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
                 @Script(src = "js/chat.js", depends = {"chat-modules"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
