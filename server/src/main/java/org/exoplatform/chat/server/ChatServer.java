@@ -489,13 +489,19 @@ public class ChatServer
       }
       else
       {
+        // Only creator can edit members or set team name
+        String creator = chatService.getTeamCreator(room);
+        if (!user.equals(creator)) {
+          return Response.notFound("Petit malin !");
+        }
+
         if (room.startsWith(ChatService.TEAM_PREFIX) && room.length()>ChatService.TEAM_PREFIX.length()+1)
         {
           room = room.substring(ChatService.TEAM_PREFIX.length());
         }
-
         chatService.setRoomName(room, teamName);
       }
+
       if (users!=null && !"".equals(users)) {
         String[] ausers = users.split(",");
         List<String> usersNew = Arrays.asList(ausers);
