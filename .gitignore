@@ -69,3 +69,6 @@ data/gatling/results/local/*
 copie.sh
 
 cache/data
+
+*.classpath
+*.project
