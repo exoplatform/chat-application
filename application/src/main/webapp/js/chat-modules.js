@@ -157,10 +157,39 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
     }, function (err, res){
       // check for an error
       if (err) {
+        if (err === 403 &&  ( thiss.messages.length === 0 || "type-kicked" !== thiss.messages[0].options.type)) {
+
+          // Show message user has been kicked
+          var options = {
+            "type" : "type-kicked"
+          };
+          var messages = [{
+            "message": "",
+            "options": options,
+            "isSystem": "true"
+          }];
+          thiss.messages = messages;
+          thiss.showMessages();
+
+          // Disable action buttons
+          var $msg = jqchat('#msg');
+          var $msButtonRecord = jqchat(".msButtonRecord");
+          var $msgEmoticons = jqchat(".msg-emoticons");
+          var $meetingActionToggle = jqchat(".meeting-action-toggle");
+          $msg.attr("disabled", "disabled");
+          $msButtonRecord.attr("disabled", "disabled");
+          $msButtonRecord.tooltip("disable");
+          $msgEmoticons.parent().addClass("disabled");
+          $msgEmoticons.parent().tooltip("disable");
+          $meetingActionToggle.addClass("disabled");
+          $meetingActionToggle.children("span").tooltip("disable");
+        }
         if (typeof thiss.onRefreshCB === "function") {
           thiss.onRefreshCB(1);
         }
         return;
+      } else {
+        chatApplication.activateRoomButtons();
       }
 
 
@@ -428,13 +457,13 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "      </div>";
           out += "    </div>";
         }
-        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' )
+        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user'  && message.options.type !=='type-kicked' )
           out += "    <div class='msRow'>";
         else out += " <div class='msRow odd'>";
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";
-        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' ) {
+        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
           out += "            <div class='msTiltleLn clearfix'>";
           out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
           out += "            </div>";
@@ -692,6 +721,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
       out += chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
+    } else if (options.type==="type-kicked") {
+      out += "<b>" + chatBundleData.exoplatform_chat_team_msg_kicked + "</b>";
     } else if (options.type==="type-question" || options.type==="type-hand") {
       out += "<b>" + message + "</b>";
 // TODO review

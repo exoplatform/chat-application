@@ -1969,20 +1969,25 @@ ChatApplication.prototype.loadRoom = function() {
     this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
       thiss.room = room;
       var $msg = jqchat('#msg');
-      var $msButtonRecord = jqchat(".msButtonRecord");
-      var $msgEmoticons = jqchat(".msg-emoticons");
-      var $meetingActionToggle = jqchat(".meeting-action-toggle");
-      $msg.removeAttr("disabled");
-      $msButtonRecord.removeAttr(("disabled"));
-      $msButtonRecord.attr("data-toggle","tooltip");
-      $msgEmoticons.parent().removeClass("disabled");
-      $msgEmoticons.parent().attr("data-toggle", "tooltip");
-      $meetingActionToggle.removeClass("disabled");
-      $meetingActionToggle.children("span").attr("data-toggle", "tooltip");
-      chatApplication.activateTootips();
+      thiss.activateRoomButtons();
       if (thiss.isDesktopView()) $msg.focus();
     });
   }
+};
+
+ChatApplication.prototype.activateRoomButtons = function() {
+  var $msg = jqchat('#msg');
+  var $msButtonRecord = jqchat(".msButtonRecord");
+  var $msgEmoticons = jqchat(".msg-emoticons");
+  var $meetingActionToggle = jqchat(".meeting-action-toggle");
+  $msg.removeAttr("disabled");
+  $msButtonRecord.removeAttr(("disabled"));
+  $msButtonRecord.attr("data-toggle","tooltip");
+  $msgEmoticons.parent().removeClass("disabled");
+  $msgEmoticons.parent().attr("data-toggle", "tooltip");
+  $meetingActionToggle.removeClass("disabled");
+  $meetingActionToggle.children("span").attr("data-toggle", "tooltip");
+  jqchat("[data-toggle='tooltip']").tooltip("enable");
 };
 
 ChatApplication.prototype.onRefreshCallback = function(code) {

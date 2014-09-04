@@ -122,10 +122,19 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
+
     try
     {
       if (message!=null)
       {
+        // Only member can send chat message in team
+        if (targetUser.startsWith(ChatService.TEAM_PREFIX)) {
+          List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+          if (!roomMembers.contains(user)) {
+            return Response.content(403, "Petit malin !");
+          }
+        }
+
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -189,6 +198,15 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
+
+    // Only member can view chat message in a team
+    if (userService.getRoom(user, room).isTeam()) {
+      List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+      if (!roomMembers.contains(user)) {
+        return Response.content(403, "Petit malin !");
+      }
+    }
+
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
     return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
