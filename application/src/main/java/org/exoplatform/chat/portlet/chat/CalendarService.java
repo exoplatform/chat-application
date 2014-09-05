@@ -32,7 +32,6 @@ public class CalendarService {
   protected void saveEvent(String user, String calName, String users, String summary,
                          Date from, Date to) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant:participants) {
@@ -48,6 +47,8 @@ public class CalendarService {
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
                          Date from, Date to) throws Exception
   {
+    summary = StringEscapeUtils.escapeHtml(summary);
+
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
@@ -81,6 +82,8 @@ public class CalendarService {
   protected void saveTask(String currentUser, String username, String summary,
                          Date from, Date to) throws Exception
   {
+    summary = StringEscapeUtils.escapeHtml(summary);
+
     String calId = getFirstCalendarsId(username);
     if (calId!=null) {
       CalendarEvent task = new CalendarEvent();
