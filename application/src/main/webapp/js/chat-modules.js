@@ -102,14 +102,6 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  */
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
-  var im = this.messages.length;
-  this.messages[im] = {"user": this.username,
-    "fullname": chatBundleData.exoplatform_chat_you,
-    "date": "pending",
-    "message": msg,
-    "options": options,
-    "isSystem": isSystemMessage};
-  this.showMessages();
 
   var thiss = this;
   snack.request({

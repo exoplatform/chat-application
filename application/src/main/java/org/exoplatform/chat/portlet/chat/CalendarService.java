@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.services.organization.Group;
@@ -31,6 +32,7 @@ public class CalendarService {
   protected void saveEvent(String user, String calName, String users, String summary,
                          Date from, Date to) throws Exception
   {
+    summary = StringEscapeUtils.escapeHtml(summary);
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant:participants) {
