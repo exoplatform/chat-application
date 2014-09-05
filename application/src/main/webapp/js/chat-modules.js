@@ -180,7 +180,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           thiss.onRefreshCB(1);
         }
         return;
-      } else {
+      } else if (thiss.miniChat === undefined) {
         chatApplication.activateRoomButtons();
       }
 
