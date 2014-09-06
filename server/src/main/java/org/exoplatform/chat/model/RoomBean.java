@@ -21,6 +21,8 @@ package org.exoplatform.chat.model;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.services.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RoomBean implements Comparable<RoomBean>
 {
@@ -132,23 +134,21 @@ public class RoomBean implements Comparable<RoomBean>
 
   public String toJSON()
   {
-    StringBuffer sb = new StringBuffer();
-
-    sb.append("{");
-
-    sb.append("\"escapedFullname\": \""+this.getEscapedFullname()+"\",");
-    sb.append("\"room\": \""+this.getRoom()+"\",");
-    sb.append("\"status\": \""+this.getStatus()+"\",");
-    sb.append("\"user\": \""+this.getUser()+"\",");
-    sb.append("\"timestamp\": "+this.getTimestamp()+",");
-    sb.append("\"unreadTotal\": \""+this.getUnreadTotal()+"\",");
-    sb.append("\"isActive\": \""+this.isActive()+"\",");
-    sb.append("\"isAvailableUser\": \""+this.isAvailableUser()+"\",");
-    sb.append("\"isFavorite\": \""+this.isFavorite()+"\",");
-    sb.append("\"isSpace\": \""+this.isSpace()+"\",");
-    sb.append("\"isTeam\": \""+this.isTeam()+"\"");
-
-    sb.append("}");
-
-    return sb.toString();
+    JSONObject obj = new org.json.JSONObject();
+    try {
+      obj.put("escapedFullname", this.getEscapedFullname());
+      obj.put("room", this.getRoom());
+      obj.put("status", this.getStatus());
+      obj.put("user", this.getUser());
+      obj.put("timestamp", this.getTimestamp());
+      obj.put("unreadTotal", String.valueOf(this.getUnreadTotal()));
+      obj.put("isActive", String.valueOf(this.isActive()));
+      obj.put("isAvailableUser", String.valueOf(this.isAvailableUser()));
+      obj.put("isFavorite", String.valueOf(this.isFavorite()));
+      obj.put("isSpace", String.valueOf(this.isSpace()));
+      obj.put("isTeam", String.valueOf(this.isTeam()));
+    } catch (JSONException e) {
+      return obj.toString();
+    }
+    return obj.toString();
   }}

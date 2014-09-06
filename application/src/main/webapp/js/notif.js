@@ -198,7 +198,7 @@ ChatNotification.prototype.refreshNotifDetails = function() {
               html += '    <div class="gray-box">';
               html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
               if (notif.roomDisplayName.trim()) {
-                html += '    <div class="team">' + jqchat('<div/>').text(notif.roomDisplayName).html() + '</div>';
+                html += '    <div class="team">' + notif.roomDisplayName + '</div>';
               }
               html += '    </div>';
               html += '  </div>';

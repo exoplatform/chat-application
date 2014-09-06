@@ -20,7 +20,10 @@
 package org.exoplatform.chat.model;
 
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -125,38 +128,36 @@ public class NotificationBean {
     this.fromFullName = fromFullName;
   }
 
-  public String toJSON()
-  {
-    StringBuffer sb = new StringBuffer();
+  public String toJSON() {
+    JSONObject obj = new org.json.JSONObject();
+    try {
+      obj.put("user", this.getUser());
+      obj.put("type", this.getType());
+      obj.put("from", this.getFrom());
+      obj.put("fromFullName", this.getFromFullName());
+      obj.put("category", this.getCategory());
+      obj.put("categoryId", this.getCategoryId());
+      obj.put("content", this.getContent().replaceAll("\n", "<br/>"));
+      obj.put("link", this.getLink());
 
-    sb.append("{");
+      String options = this.getOptions();
+      if (StringUtils.isNotEmpty(this.getOptions())) {
+        if (options.startsWith("{")) {
+          JSONObject optionsJson = new JSONObject(options);
+          obj.put("options", optionsJson);
+        } else {
+          obj.put("options", options);
+        }
+      } else {
+        obj.put("options", StringUtils.EMPTY);
+      }
+      obj.put("roomDisplayName", StringEscapeUtils.escapeHtml4(this.getRoomDisplayName()));
+      obj.put("timestamp", this.getTimestamp());
 
-    sb.append("\"user\": \""+this.getUser()+"\",");
-    sb.append("\"type\": \""+this.getType()+"\",");
-    sb.append("\"from\": \""+this.getFrom()+"\",");
-    sb.append("\"fromFullName\": \""+this.getFromFullName()+"\",");
-    sb.append("\"category\": \""+this.getCategory()+"\",");
-    sb.append("\"categoryId\": \""+this.getCategoryId()+"\",");
-    sb.append("\"content\": \""+this.getContent().replaceAll("\n", "<br/>")+"\",");
-    sb.append("\"link\": \""+this.getLink()+"\",");
-    String options = this.getOptions();
-    if (StringUtils.isNotEmpty(this.getOptions()))
-    {
-      if (options.startsWith("{"))
-        sb.append("\"options\": ").append(options).append(",");
-      else
-        sb.append("\"options\": \"").append(options).append("\",");
+    } catch (JSONException e) {
+      return obj.toString();
     }
-    else
-    {
-      sb.append("\"options\": \"\",");
-    }
-    sb.append("\"roomDisplayName\": \""+this.getRoomDisplayName()+"\",");
-    sb.append("\"timestamp\": "+this.getTimestamp());
-
-    sb.append("}");
-
-    return sb.toString();
+    return obj.toString();
   }
 
   public static String notificationstoJSON(List<NotificationBean> notificationBeans)

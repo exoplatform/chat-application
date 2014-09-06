@@ -1,8 +1,8 @@
 package org.exoplatform.chat.model;
 
-import java.util.List;
-
 import org.exoplatform.chat.utils.MessageDigester;
+
+import java.util.List;
 
 public class RoomsBean {
 

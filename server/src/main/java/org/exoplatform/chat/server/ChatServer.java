@@ -29,6 +29,7 @@ import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
@@ -43,6 +44,7 @@ import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.json.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -496,7 +498,7 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
-    String data = "{}";
+    JSONObject jsonObject = new JSONObject();
 
     try
     {
@@ -574,7 +576,8 @@ public class ChatServer
 
       }
 
-      data = "{\"name\": \""+teamName+"\", \"room\": \""+room+"\"}";
+      jsonObject.put("name", StringEscapeUtils.escapeHtml4(teamName));
+      jsonObject.put("room", room);
 
     }
     catch (Exception e)
@@ -582,7 +585,7 @@ public class ChatServer
       LOG.warning(e.getMessage());
       return Response.notFound("No Room yet");
     }
-    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
