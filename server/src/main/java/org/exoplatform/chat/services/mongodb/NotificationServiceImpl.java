@@ -84,7 +84,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     if (options != null) {
       options = options.replaceAll("<", "&lt;");
       options = options.replaceAll(">", "&gt;");
-      options = options.replaceAll("'", "\"");
+      options = options.replaceAll("'", "\\\\\"");
 //      options = options.replaceAll("\"", "&quot;");
 //      options = options.replaceAll("\\\\", "&#92");
       doc.put("options", options);
