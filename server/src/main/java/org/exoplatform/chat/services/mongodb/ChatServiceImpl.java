@@ -104,11 +104,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       options = options.replaceAll("<", "&lt;");
       options = options.replaceAll(">", "&gt;");
-      if (options.contains("type-event")) {
-        options = options.replaceAll("'", "\\\\\"");
-      }
-//      options = options.replaceAll("\"", "&quot;");
-//      options = options.replaceAll("\\\\", "&#92");
       doc.put("options", options);
     }
     coll.insert(doc);
