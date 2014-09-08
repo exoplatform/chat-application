@@ -19,7 +19,11 @@
 
 package org.exoplatform.chat.portlet.chat;
 
-import juzu.*;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
+import juzu.SessionScoped;
+import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
 import juzu.request.ResourceContext;
@@ -31,6 +35,7 @@ import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -44,7 +49,12 @@ import javax.portlet.PortletPreferences;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 @SessionScoped
@@ -272,7 +282,8 @@ public class ChatApplication
   public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     try {
-      calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime), sdf.parse(endDate + " " + endTime));
+      calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime),
+              sdf.parse(endDate + " " + endTime));
 
     } catch (ParseException e) {
       LOG.info("parse exception during task creation");
@@ -291,6 +302,9 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
+    // Clean targetFullName
+    targetFullname = ChatUtils.cleanString(targetFullname);
+
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
     Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
