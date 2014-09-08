@@ -26,6 +26,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.exoplatform.chat.listener.ConnectionManager;
@@ -103,7 +104,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       options = options.replaceAll("<", "&lt;");
       options = options.replaceAll(">", "&gt;");
-      options = options.replaceAll("'", "\\\\\"");
+      if (options.contains("type-event")) {
+        options = options.replaceAll("'", "\\\\\"");
+      }
 //      options = options.replaceAll("\"", "&quot;");
 //      options = options.replaceAll("\\\\", "&#92");
       doc.put("options", options);
@@ -278,7 +281,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
           sb.append("\"fullname\": \"").append(fullname).append("\",");
           sb.append("\"email\": \"").append(email).append("\",");
           sb.append("\"date\": \"").append(date).append("\",");
-          sb.append("\"message\": \"").append(dbo.get("message")).append("\",");
+          sb.append("\"message\": \"").append(StringEscapeUtils.escapeJson(dbo.get("message").toString())).append("\",");
           if (dbo.containsField("options"))
           {
             String options = dbo.get("options").toString();
