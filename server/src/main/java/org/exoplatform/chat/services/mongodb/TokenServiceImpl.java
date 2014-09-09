@@ -50,7 +50,6 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
     String in = user+passphrase;
     String token = MessageDigester.getHash(in);
-    //System.out.println("getToken :: user="+user+" ; token="+token);
     return token;
   }
 

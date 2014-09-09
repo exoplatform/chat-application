@@ -77,7 +77,6 @@ public class ServerBootstrap {
 
   public static String getToken(String username)
   {
-//    return callServer("getToken", "username="+username+"&tokenOnly=true");
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
     String in = username+passphrase;
     String token = MessageDigester.getHash(in);

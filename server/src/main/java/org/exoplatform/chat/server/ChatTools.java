@@ -142,39 +142,6 @@ public class ChatTools
   }
 
   @Resource
-  @Route("/getToken")
-  public Response.Content getToken(String username, String passphrase, String tokenOnly)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
-    }
-
-    if (username == null)
-    {
-      return Response.notFound("{ \"message\": \"username is null\"}");
-    }
-
-    String token = tokenService.getToken(username);
-
-    StringBuffer data = new StringBuffer();
-    if (tokenOnly!=null && "true".equals(tokenOnly))
-    {
-      data.append(token);
-    }
-    else
-    {
-      data.append("{");
-      data.append(" \"message\": \"OK\", ");
-      data.append(" \"token\": \""+token+"\", ");
-      data.append(" \"user\": \""+ username+"\" ");
-      data.append("}");
-    }
-
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
-  }
-
-  @Resource
   @Route("/addUser")
   public Response.Content addUser(String username, String token, String passphrase)
   {
