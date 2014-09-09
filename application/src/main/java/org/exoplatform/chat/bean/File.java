@@ -1,10 +1,13 @@
 package org.exoplatform.chat.bean;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class File implements Comparable<File> {
+  String title;
   String name;
   String owner;
   Calendar createdDate;
@@ -13,6 +16,14 @@ public class File implements Comparable<File> {
   String path;
   String uuid="";
   String publicUrl;
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
   public String getName() {
     return name;
@@ -104,6 +115,7 @@ public class File implements Comparable<File> {
 
       sb.append("\"status\": \"ok\",");
       sb.append("\"name\": \""+this.getName()+"\",");
+      sb.append("\"title\": \""+ StringEscapeUtils.escapeJson(StringEscapeUtils.escapeHtml4(this.getTitle()))+"\",");
       sb.append("\"size\": "+this.getSize()+",");
       sb.append("\"owner\": \""+this.getOwner()+"\",");
       sb.append("\"createdDate\": \""+this.getCreatedDate()+"\",");

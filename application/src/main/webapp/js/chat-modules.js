@@ -468,12 +468,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         msRightInfo += "           </div>";
         msRightInfo += "         </div>";
         var options = {};
-        // Legacy test
-        if (message.message.indexOf("&")>0) {
-          message.message = message.message.substring(0, message.message.indexOf("&"));
-          options.timestamp = new Date().getTime();
-        }
-        // end of legacy test
+
         if (typeof message.options == "object")
           options = message.options;
         var nbOptions = thiss.getObjectSize(options);
@@ -672,7 +667,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var text = message.replace("/me", urlProfile);
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
-      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.name+"</a> ";
+      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.title+"</a> ";
       var size = "<span class=\"fileSize\">("+options.sizeLabel+")</span>";
       out += urlFile + size;
       var link = options.restPath;

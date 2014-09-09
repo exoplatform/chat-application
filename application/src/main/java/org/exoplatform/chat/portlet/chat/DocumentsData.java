@@ -5,6 +5,7 @@ import juzu.SessionScoped;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.exoplatform.chat.bean.File;
+import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -12,6 +13,7 @@ import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.util.Text;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
@@ -89,6 +91,10 @@ public class DocumentsData {
     File file = new File();
     //set name
     file.setName(node.getName());
+    if (node.hasProperty("exo:title")) {
+      file.setTitle(Text.unescapeIllegalJcrChars(node.getProperty("exo:title").getString()));
+    }
+
     //set uuid
     if (node.isNodeType("mix:referenceable")) file.setUuid(node.getUUID());
     //hasMeta?
@@ -174,7 +180,17 @@ public class DocumentsData {
 
   protected String storeFile(FileItem item, String name, boolean isPrivateContext)
   {
-    String filename = FilenameUtils.getName(item.getName());
+    String filename = item.getName();
+    String filenameExt = filename.substring(filename.lastIndexOf("."));
+    String filenameBase = filename.substring(0, filename.lastIndexOf("."));
+
+    String title = Text.escapeIllegalJcrChars(filename);
+    String cleanedFilenameBase = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameBase));
+    String cleanedFilenameExt = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameExt));
+    String cleanedFilename = cleanedFilenameBase.concat(".").concat(cleanedFilenameExt);
+
+
+
     SessionProvider sessionProvider = getUserSessionProvider();
     String uuid = null;
     try
@@ -197,24 +213,28 @@ public class DocumentsData {
 
       Node docNode = homeNode.getNode("Documents");
       Node fileNode = null;
-      String filenameBase = filename.substring(0, filename.lastIndexOf("."));
-      String filenameExt = filename.substring(filename.lastIndexOf("."));
       int cpt = 1;
       
       boolean fileExist = false;
       do {
         try {
-          while (docNode.hasNode(filename))
+          while (docNode.hasNode(cleanedFilename))
           {
-            filename = filenameBase+"-"+cpt+filenameExt;
+            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(".").concat(cleanedFilenameExt);
             cpt++;
           }
     
-          fileNode = docNode.addNode(filename, "nt:file");
+          fileNode = docNode.addNode(cleanedFilename, "nt:file");
+          // Change title
+          if (!fileNode.hasProperty("exo:title")) {
+            fileNode.addMixin("exo:rss-enable");
+          }
+          fileNode.setProperty("exo:title", title);
           Node jcrContent = fileNode.addNode("jcr:content", "nt:resource");
           jcrContent.setProperty("jcr:data", item.getInputStream());
           jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
           jcrContent.setProperty("jcr:encoding", "UTF-8");
+
           if (filename.endsWith(".jpg"))
             jcrContent.setProperty("jcr:mimeType", "image/jpeg");
           else if (filename.endsWith(".png"))
@@ -249,7 +269,7 @@ public class DocumentsData {
           fileExist = true;
           docNode.refresh(false);
           cpt++;
-          filename = filenameBase+"-"+cpt+filenameExt;
+          cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(".").concat(cleanedFilenameExt);
         }
       } while (fileExist);
       uuid = fileNode.getUUID();
