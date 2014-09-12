@@ -676,11 +676,11 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       }
 
     } else if (options.type==="type-link") {
-      var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
-      out += url;
       var link = options.link.toLowerCase();
+      var url = "<a href='"+link+"' target='_new'>"+link+"</a>";
+      out += url;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
-        out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+        out += "<div><img src=\""+link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
     } else if (options.type==="type-task") {
       out += "<b>" + options.task + "</b>";
