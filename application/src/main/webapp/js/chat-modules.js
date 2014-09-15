@@ -1146,6 +1146,9 @@ function showMiniChatPopup(room, type) {
 
         });
       }
+      miniChats[index].id = cRoom.room;
+      miniChats[index].updateUnreadMessages();
+
       miniChats[index].setMiniChatDiv($miniChat);
       miniChats[index].onRefresh(function() {
 
