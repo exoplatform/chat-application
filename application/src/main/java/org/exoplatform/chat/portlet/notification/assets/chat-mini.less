@@ -64,6 +64,7 @@
     background-color: white;
     overflow: auto;
     max-height: 294px;
+    min-height: 294px;
     .msgln
     {
       padding: 3px 12px;
@@ -109,53 +110,43 @@
 
     .call-off {
       .background(0, 0);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .call-on {
       .background(-32px, 0);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .type-link {
       .background(0, -66px);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .type-file {
       .background(-32px, -66px);
-      width: 32px;
-      height: 32px;
+     .square(32px);
     }
     .call-join {
       .background(0, -130px);
-      width: 32px;
-      height: 32px;
+     .square(32px);
     }
     .type-hand {
       .background(-32px, -130px);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .type-agenda {
       .background(-64px, -66px);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .type-task {
       .background(0, -98px);
-      width: 32px;
-      height: 32px;
+     .square(32px);
     }
     .type-event {
       .background(-32px, -98px);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
     .type-question {
       .background(-64px, -98px);
-      width: 32px;
-      height: 32px;
+      .square(32px);
     }
 
     .message-changed {
@@ -353,8 +344,7 @@
     }
   }
   .msAttachmentBox {
-    width: 128px;
-    height: 128px;
+   .square(128px);
     position: relative;
     margin-top: 5px;
     > .msAttachFile {
@@ -366,8 +356,7 @@
       }
     }
     .msActionAttach {
-      height: 100%;
-      width: 100%;
+      .square(100%);
       position: absolute;
       top: 0;
       left: 0;
@@ -408,8 +397,7 @@
 .mini-chat .noContent,
 .mini-chat .noMessage{
 	background: url('@{imgPath}bg-chat.png') no-repeat center center;
-	width: 100%;
-	height: 100%;
+	.square(100%);
   position: relative;
   .text {
     color: #808080;
