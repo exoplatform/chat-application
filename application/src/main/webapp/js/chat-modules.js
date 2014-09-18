@@ -478,7 +478,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
             jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
           }
-          jqchat(".btn-weemo").addClass('disabled');
         } else if (options.type==="call-off") {
           if (options.timestamp!==undefined) {
             jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
