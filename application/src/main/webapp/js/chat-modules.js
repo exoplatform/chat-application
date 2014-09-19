@@ -102,7 +102,28 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  */
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
+  // Update temporary message for smooth view
+  var im = this.messages.length;
+  var tmpMessage = msg.replace(/&/g, "&#38");
+  tmpMessage = tmpMessage.replace(/</g, "&lt;");
+  tmpMessage = tmpMessage.replace(/>/g, "&gt;");
+  tmpMessage = tmpMessage.replace(/\"/g, "&quot;");
+  tmpMessage = tmpMessage.replace(/\n/g, "<br/>");
+  tmpMessage = tmpMessage.replace(/\\\\/g, "&#92");
+  tmpMessage = tmpMessage.replace(/\t/g, "  ");
+  var tmpOptions = JSON.stringify(options);
+  tmpOptions = tmpOptions.replace(/</g, "&lt;");
+  tmpOptions = tmpOptions.replace(/>/g, "&gt;");
+  tmpOptions = snack.parseJSON(tmpOptions);
+  this.messages[im] = {"user": this.username,
+    "fullname": chatBundleData.exoplatform_chat_you,
+    "date": "pending",
+    "message": tmpMessage,
+    "options": tmpOptions,
+    "isSystem": isSystemMessage};
+  this.showMessages();
 
+  // Send message to server
   var thiss = this;
   snack.request({
     url: thiss.jzChatSend,
@@ -123,10 +144,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       }
     }
   });
-
 };
-
-
 
 /**
  * Refresh Chat : refresh messages and panels
