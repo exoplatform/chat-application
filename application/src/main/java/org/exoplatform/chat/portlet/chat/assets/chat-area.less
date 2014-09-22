@@ -245,7 +245,7 @@
 .uiSelectbox  {
 	background: none;
 	border:none;
-	display: inline;
+	display: inline-block;
 	.border-radius(0);
 	overflow: visible;
 		select.selectbox{
@@ -255,6 +255,9 @@
 	    line-height: 20px;
 	    padding: 3px 6px;
 	    .border-radius(4px);
+	     -webkit-appearance: menulist;
+		   -moz-appearance:    menulist;
+		   appearance:         menulist;
 	}
 }
 
