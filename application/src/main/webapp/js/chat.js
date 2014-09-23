@@ -2352,6 +2352,17 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     }
   });
 
+  jqchat('.users-online').on("mouseenter", function() {
+    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
+    $uiIconChatFavorite.css("display", "block");
+    $uiIconChatFavorite.css("margin-right", "1px");
+  });
+
+  jqchat('.users-online').on("mouseleave", function() {
+    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
+    $uiIconChatFavorite.css("display", "none");
+  });
+
 
   jqchat('.room-link').on("click", function() {
     thiss.targetUser = jqchat(this).attr("user-data");
