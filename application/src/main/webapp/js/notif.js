@@ -114,10 +114,12 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 /**
  * Refresh Notifications
  */
-ChatNotification.prototype.refreshNotifDetails = function() {
+ChatNotification.prototype.refreshNotifDetails = function(callback) {
   var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+
   if (this.oldNotifTotal>0) {
     $chatNotificationsDetails.css("display", "initial");
+
     this.updateNotifEventURL();
     jqchat.ajax({
       url: this.notifEventURL+"&withDetails=true",
@@ -125,12 +127,12 @@ ChatNotification.prototype.refreshNotifDetails = function() {
       context: this,
       success: function(data){
         var html = '';
+        var categoryIdList = new Array(); // Only display last unread messages from different conversations
         if (data.notifications.length>0) {
           var notifs = TAFFY(data.notifications);
           var notifs = notifs();
           var thiss = this;
           var froms = [];
-          var categoryIdList = new Array(); // Only display last unread messages from different conversations
           notifs.order("timestamp desc").each(function (notif, number) {
             if (jqchat.inArray(notif.categoryId, categoryIdList) === -1) {
               var content = notif.content;
@@ -227,16 +229,28 @@ ChatNotification.prototype.refreshNotifDetails = function() {
           var id = jqchat(this).attr("data-id");
           showMiniChatPopup(id, "room-id");
         });
+
+        if (typeof callback === "function") {
+          callback();
+        }
       },
       error: function(){
         $chatNotificationsDetails.html("");
         $chatNotificationsDetails.css("display", "none");
+
+        if (typeof callback === "function") {
+          callback();
+        }
       }
     });
   }
   else {
     $chatNotificationsDetails.parent().removeClass("full-width");
     $chatNotificationsDetails.next().hide();
+
+    if (typeof callback === "function") {
+      callback();
+    }
   }
 };
 
@@ -301,6 +315,8 @@ ChatNotification.prototype.refreshNotif = function() {
           var $chatNotificationsDetails = jqchat("#chat-notifications-details");
           $chatNotificationsDetails.css("display", "none");
           $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.exoplatform_chat_loading+'</span><li class="divider">&nbsp;</li>');
+          $chatNotificationsDetails.parent().removeClass("full-width");
+          $chatNotificationsDetails.next().hide();
         }
         if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
           this.playNotifSound();
@@ -587,10 +603,15 @@ var chatNotification = new ChatNotification();
       chatNotification.setStatus(status);
     });
 
-    $(".uiNotifChatIcon").on("click", function() {
+    $(".uiNotifChatIcon").click( function(e) {
       console.log("NEED TO REFRESH NOTIFICATIONS");
-      chatNotification.refreshNotifDetails();
-      chatNotification.changeStatusChat(chatNotification.profileStatus);
+      if (!$(this).hasClass("disabled")) {
+        $(this).addClass("disabled");
+        chatNotification.refreshNotifDetails(function () {
+          $(".uiNotifChatIcon").removeClass("disabled");
+        });
+        chatNotification.changeStatusChat(chatNotification.profileStatus);
+      }
     });
 
     // Attach chat to user popup
