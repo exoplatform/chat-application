@@ -119,6 +119,9 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
 
   if (this.oldNotifTotal>0) {
     $chatNotificationsDetails.css("display", "initial");
+    if (jqchat(".chat-notification-loading", $chatNotificationsDetails).length > 0) {
+      $chatNotificationsDetails.next().show();
+    }
 
     this.updateNotifEventURL();
     jqchat.ajax({
@@ -314,7 +317,7 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotification.css('display', 'none');
           var $chatNotificationsDetails = jqchat("#chat-notifications-details");
           $chatNotificationsDetails.css("display", "none");
-          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.exoplatform_chat_loading+'</span><li class="divider">&nbsp;</li>');
+          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.exoplatform_chat_loading+'</span>');
           $chatNotificationsDetails.parent().removeClass("full-width");
           $chatNotificationsDetails.next().hide();
         }
