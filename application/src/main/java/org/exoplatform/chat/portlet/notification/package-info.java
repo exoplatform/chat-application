@@ -33,8 +33,7 @@
                 @Script(src = "js/taffy-min.js", id="taffy"),
                 @Script(src = "js/snack-min.js", id = "snack"),
                 @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/notif.js", id = "notif", depends = {"jquery", "snack", "juzu-utils", "taffy"}),
-                @Script(src = "js/jquery.filedrop.js", id = "filedrop", depends = "notif")
+                @Script(src = "js/notif.js", id = "notif", depends = {"jquery", "snack", "juzu-utils", "taffy"})
         },
         stylesheets = {
                 @Stylesheet(src = "css/webrtc.css"),
