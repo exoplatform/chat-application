@@ -207,14 +207,19 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       // handle the response data
       var data = snack.parseJSON(res);
       var lastTS = jzGetParam("lastTS"+thiss.username);
+      var lastUpdatedTS = jzGetParam("lastUpdatedTS"+thiss.username);
 //      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
       if (data.messages.length===0) {
         thiss.showMessages(data);
       } else {
         var ts = data.timestamp;
-        if (ts != lastTS || (forceRefresh === true)) {
+        var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
+        if (updatedTS < 0) updatedTS = 0;
+        if (ts != lastTS || (forceRefresh === true) || (Number(lastUpdatedTS) != updatedTS)) {
           jzStoreParam("lastTS"+thiss.username, ts, 600);
+          jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
+
           //console.log("new data to show");
           thiss.showMessages(data);
         }

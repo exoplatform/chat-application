@@ -123,6 +123,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       DBObject dbo = cursor.next();
       dbo.put("message", TYPE_DELETED);
       dbo.put("type", TYPE_DELETED);
+      dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
       coll.save(dbo, WriteConcern.NONE);
     }
   }
@@ -148,6 +149,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       DBObject dbo = cursor.next();
       dbo.put("message", message);
       dbo.put("type", TYPE_EDITED);
+      dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
       coll.save(dbo, WriteConcern.NONE);
     }
   }
@@ -272,6 +274,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
           if (!first)sb.append(",");
           sb.append("{\"id\": \"").append(msgId).append("\",");
           sb.append("\"timestamp\": ").append(timestamp).append(",");
+          if (dbo.containsField("lastUpdatedTimestamp")) {
+            sb.append("\"lastUpdatedTimestamp\": ").append(dbo.get("lastUpdatedTimestamp").toString()).append(",");
+          }
           sb.append("\"user\": \"").append(user).append("\",");
           sb.append("\"fullname\": \"").append(fullname).append("\",");
           sb.append("\"email\": \"").append(email).append("\",");
