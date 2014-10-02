@@ -2661,21 +2661,15 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
 
   jqchat(".btn-weemo-conf").unbind("click").one("click", function () {
     if (!jqchat(this).hasClass("disabled")) {
-      if (isTurnOnWeemoCallButton) {
-        var chatMessage = {
-          "url": chatApplication.jzChatSend,
-          "user": chatApplication.username,
-          "fullname": chatApplication.fullname,
-          "targetUser": chatApplication.targetUser,
-          "room": chatApplication.room,
-          "token": chatApplication.token
-        };
-        weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
-      } else {
-        eXo.ecm.VideoCalls.showPermissionInterceptor();
-        chatApplication.setModalToCenter('#permission-interceptor');
-
-      }
+      var chatMessage = {
+        "url": chatApplication.jzChatSend,
+        "user": chatApplication.username,
+        "fullname": chatApplication.fullname,
+        "targetUser": chatApplication.targetUser,
+        "room": chatApplication.room,
+        "token": chatApplication.token
+      };
+      weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
     }
   });
 
