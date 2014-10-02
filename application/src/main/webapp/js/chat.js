@@ -283,6 +283,12 @@ var chatApplication = new ChatApplication();
 
       }
 
+      if (toggleClass === "meeting-action-task-panel") {
+        $("#task-add-task").val("");
+        $("#task-add-user").val("");
+        $("#task-add-date").val("");
+        jqchat(".task-user-label").remove();
+      }
 
     });
 
@@ -486,12 +492,11 @@ var chatApplication = new ChatApplication();
 
     $(".create-task-button").on("click", function() {
       var username = $("#task-add-user").val();
-      var fullname = $("#task-add-fullname").val();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
 
       // Validate empty
-      if (username === "" || username === $("#task-add-user").attr("data-value") || fullname === "" || task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
+      if (task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
         return;
       }
 
@@ -504,31 +509,39 @@ var chatApplication = new ChatApplication();
         return;
       }
 
-      // Validate users
-      var isUserExisted = true;
-      var users = username.split(",");
-      for (var i = 0; i < users.length; i++)
-      {
-        var user = users[i];
-        chatApplication.synGetAllUsers(user, function (jsonData) {
-          var users = TAFFY(jsonData.users);
-          var users = users();
-          if (users.count() <= 0) {
-            bootbox.alertError(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", user), function(e) {
-              e.stopPropagation();
-              $("#task-add-user").select();
-            });
-            isUserExisted = false;
-          }
-        });
+      // Get selected users
+      var selectedUsers = "";
+      var selectedFullNames = "";
+      $(".task-user-label").each(function (index) {
+        var name = $(this).attr("data-name");
+        var fullname = $(this).attr("data-fullname");
+        if (index === 0) {
+          selectedUsers = name;
+          selectedFullNames = fullname;
+        }
+        else {
+          selectedUsers += "," + name;
+          selectedFullNames += ", " + fullname;
+        }
+      });
 
-        if (!isUserExisted) return;
+      if (selectedUsers === "") {
+        if (username !== "") {
+          bootbox.alertError(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", username), function (e) {
+            e.stopPropagation();
+            $("#task-add-user").select();
+          });
+        }
+        return;
       }
 
+      // Disable button while server updating
       setActionButtonEnabled('.create-task-button', false);
+
+      // Call server
       $.ajax({
         url: chatApplication.jzCreateTask,
-        data: {"username": username,
+        data: {"username": selectedUsers,
           "dueDate": dueDate,
           "task": task
         },
@@ -536,8 +549,8 @@ var chatApplication = new ChatApplication();
 
           var options = {
             type: "type-task",
-            username: username,
-            fullname: fullname,
+            username: selectedUsers,
+            fullname: selectedFullNames,
             dueDate: dueDate,
             task: task
           };
@@ -566,20 +579,12 @@ var chatApplication = new ChatApplication();
       }
 
       searchUsers(filter, prefix, event, true, function(name, fullname) {
-        //addTeamUserLabel(name, fullname);
-        console.log(name+" : "+fullname);
-        var currAddedUser = $.trim($('#task-add-user').val());
-        if (currAddedUser.indexOf(',') !== -1) {
-          $('#task-add-user').val(currAddedUser.substring(0, currAddedUser.lastIndexOf(',')) + ", " + name);
-          var currAddedFullName = $('#task-add-fullname').val().split(',', currAddedUser.split(',').length - 1).join(',');
-          $('#task-add-fullname').val(currAddedFullName + ", " + fullname);
-        } else {
-          $('#task-add-user').val(name);
-          $('#task-add-fullname').val(fullname);
-        }
-
-        $(".meeting-action-task-panel").trigger("click");
-        setTimeout(hideResults, 100);
+        addTaskUserLabel(name, fullname);
+        var pTaskHeight = parseInt($(".meeting-action-task-panel").attr("data-height"));
+        var taskUserListHeight = $(".task-users-list").height();
+        var $popup = $(".meeting-action-popup");
+        $popup.height(pTaskHeight + taskUserListHeight);
+        $popup.css("top", (-Math.abs($popup.height())-4)+"px");
       });
 
     });
@@ -836,6 +841,23 @@ var chatApplication = new ChatApplication();
         $(this).parent().remove();
       });
 
+    }
+
+    function addTaskUserLabel(name, fullname) {
+      var $usersList = $('.task-users-list');
+      var html = $usersList.html();
+      html += "<span class='label task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></span>";
+      $usersList.html(html);
+      var $taskAddUser = $('#task-add-user');
+      $taskAddUser.val("");
+      $taskAddUser.focus();
+      var $userResults = $(".task-users-results");
+      $userResults.css("display", "none");
+      $userResults.html("");
+
+      $(".task-user-remove").on("click", function() {
+        $(this).parent().remove();
+      });
     }
 
     function strip(html)

@@ -184,8 +184,8 @@
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
                   <strong class="actionTitle">&{exoplatform.chat.assign.task}</strong>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
+                  <div class="task-users-list"></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
-                  <input type="hidden" id="task-add-fullname" value="">
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
