@@ -202,15 +202,15 @@ table.list-rooms {
   }
 }
 
-.team-users-list {
-  .label.team-user-label {
+.team-users-list, .task-users-list {
+  .label.team-user-label, .label.task-user-label {
     background: none repeat scroll 0 0 #E0E8F5;
     border: 1px solid #3f6fbb;
     box-shadow: none;
     color: #224886;
     font-weight: normal;
     margin-right: 10px;
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     padding: 2px 4px;
     text-shadow: none;
     > i {
@@ -218,6 +218,10 @@ table.list-rooms {
     }
   }
 }
+.task-users-list {
+  .label.task-user-label {margin-bottom: 2px;}
+}
+
 .team-users-search {
   margin-top: 5px;
    .team-add-user-label {
