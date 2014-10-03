@@ -288,6 +288,14 @@ var chatApplication = new ChatApplication();
         $("#task-add-user").val("");
         $("#task-add-date").val("");
         jqchat(".task-user-label").remove();
+      } else if (toggleClass === "meeting-action-event-panel") {
+        $("#event-add-summary").val("");
+        $("#event-add-start-date").val("");
+        $("#event-add-end-date").val("");
+        $("#event-add-location").val("");
+        $("#event-add-start-time").val("all-day");
+        $("#event-add-end-time").val("all-day");
+
       }
 
     });
