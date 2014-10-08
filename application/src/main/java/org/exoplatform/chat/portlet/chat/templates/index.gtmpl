@@ -73,9 +73,9 @@
 
         <span class="room-detail-button" style="display:none">
             <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
-            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.call}</a>
-            <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
-            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.join}</a>
+            <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.call}</a>
+            <a type="button" class="btn btn-primary pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
+            <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
         </span>
         <div class="msbuttonGroupRecord">
            <button class="btn msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
@@ -136,7 +136,7 @@
                 <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{exoplatform.chat.link}">
                   <strong class="actionTitle">&{exoplatform.chat.share.link}</strong>
                   <input type="text" class="input-with-value" id="share-link-text" placeholder="E.g: http://www.exoplatform.com" data-value="E.g: http://www.exoplatform.com">
-                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
+                  <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary share-link-button">&{exoplatform.chat.share}</a>
                   	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
                   </div>
@@ -147,7 +147,7 @@
                     <div class="progressBar" id="dropzone">
                       <div class="progress">
                         <div class="bar" style="width: 0.0%;"></div>
-                        <div class="label">&{exoplatform.chat.file.drop}</div>
+                        <div class="label"><div class="label-inner">&{exoplatform.chat.file.drop}</div></div>
                       </div>
                     </div>
                   </span>

@@ -209,7 +209,7 @@ var chatApplication = new ChatApplication();
             var dropzone = '<div class="progressBar" id="dropzone">'
                             +'<div class="progress">'
                               +'<div class="bar" style="width: 0.0%;"></div>'
-                              +'<div class="label">'+chatBundleData.exoplatform_chat_file_drop+'</div>'
+                              +'<div class="label"><div class="label-inner">'+chatBundleData.exoplatform_chat_file_drop+'</div></div>'
                             +'</div>'
                           +'</div>';
             $('#dropzone-container').html(dropzone);

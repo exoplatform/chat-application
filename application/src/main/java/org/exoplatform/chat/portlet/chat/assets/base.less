@@ -366,11 +366,15 @@ table.list-rooms {
     .popover {
       display: none;
       position: absolute;
-      left: -271px;
-      top: -134px;
-      width: 306px;
+      left: auto;
+      right: -15px;
+      top: auto!important;
+      bottom: 32px!important;
+      min-width: 306px;
       max-width: none;
-      height: 130px;
+      width: auto!important;
+      min-height: 130px;
+      height:auto!important;
     }
 
     .popover-title {
@@ -389,8 +393,9 @@ table.list-rooms {
     	.popover-content{
     		.uiActionBorder{
     			text-align: right;
-    			padding: 18px 35px;
+    			padding: 14px 35px 4px;
     			margin: 10px -35px 0;
+    			white-space: nowrap;
     		}
     	}
     }
@@ -484,6 +489,7 @@ table.list-rooms {
 
     .btn {
       vertical-align: top;
+      margin: 5px 0;
     }
 
     .uiSelectbox {
@@ -511,11 +517,19 @@ table.list-rooms {
 
       .label {
         width: 100%;
-        line-height: 68px;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 18px;
+        line-height: 20px;       
         padding: 0px;
+        white-space: normal;
+        display: table;
+        .label-inner {
+        	display:table-cell;
+        	vertical-align: middle;
+        	height: 68px;
+        	width: 100%;
+        	 text-align: center;
+	        text-transform: uppercase;
+	        font-size: 18px;
+        }
       }
 
       .bar {
