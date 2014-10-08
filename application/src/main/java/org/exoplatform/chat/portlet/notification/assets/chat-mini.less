@@ -1,0 +1,493 @@
+/* Chat mini area [inherit from chat area] */
+.mini-chat {
+  &.mini-chat-collapse {
+    .history,.message {
+      display: none;
+    }
+  }
+  &.arrow_box:after, &.arrow_box:before {
+    display: none;
+  }
+  display: none;
+  position: fixed;
+  width: 300px;
+  position: fixed;
+  top: auto!important;
+  left: auto!important;
+  bottom: 0;
+  right: 10px;
+  background-color: @white;
+  .border-radius(5px);
+  z-index: 1000;
+  .box-shadow(0px 2px 6px 0px rgba(35, 44, 48, 0.5));
+  border: 1px solid #cccccc;
+
+  .title {
+    height: 26px;
+    line-height: 23px;
+    border:none;
+    border: 1px solid #3d3d3d;
+    padding: 5px 10px;
+    margin:-1px -1px 0px -1px;
+    .border-top-left-radius(4px);
+    .border-top-right-radius(4px);
+    #gradient > .vertical (#4f4f4f,#474747);
+    .title-left {
+      color: #fff;
+      display: block;
+      .text-overflow;
+    }
+    .title-right {
+      float: right;
+      margin-left: 5px;
+    }
+    .tooltip {
+      top: -41px!important;
+    }
+    .fullname {
+        font-weight: bold;
+        color:@white;
+        font-size: 14px;
+        line-height: 16px;
+        vertical-align: middle;
+        .text-overflow;
+        max-width: 175px;
+    }
+
+    .btn-close {
+    //  float: right;
+    }
+  }
+
+  .history {
+    display: block;
+    background-color: white;
+    overflow: auto;
+    max-height: 294px;
+    min-height: 294px;
+    .msgln
+    {
+      padding: 3px 12px;
+      background-color: @colorBgLight;
+    }
+    .msgln-odd
+    {
+      padding: 3px 12px;
+      background-color: @backgroundColor;
+    }
+    .user-link
+    {
+      color: @colorUserLink;
+      text-decoration: none;
+    }
+
+    .msg-time
+    {
+      vertical-align: bottom;
+      font-weight: normal;
+      color: #CCC;
+      padding-left: 10px;
+      line-height: 12px;
+    }
+
+    .system-event {
+      line-height: 12px;
+      vertical-align: bottom;
+      font-weight: bold;
+      width: 100%;
+      word-wrap: break-word;
+    }
+
+    .system-event a {
+      line-height: 12px;
+      vertical-align: bottom;
+    }
+
+    .emoticon-text, .invisible-text {
+      font-size: 1px;
+      color: white;
+    }
+
+    .call-off {
+      .background(0, 0);
+      .square(32px);
+    }
+    .call-on {
+      .background(-32px, 0);
+      .square(32px);
+    }
+    .type-link {
+      .background(0, -66px);
+      .square(32px);
+    }
+    .type-file {
+      .background(-32px, -66px);
+     .square(32px);
+    }
+    .call-join {
+      .background(0, -130px);
+     .square(32px);
+    }
+    .type-hand {
+      .background(-32px, -130px);
+      .square(32px);
+    }
+    .type-agenda {
+      .background(-64px, -66px);
+      .square(32px);
+    }
+    .type-task {
+      .background(0, -98px);
+     .square(32px);
+    }
+    .type-event {
+      .background(-32px, -98px);
+      .square(32px);
+    }
+    .type-question {
+      .background(-64px, -98px);
+      .square(32px);
+    }
+
+    .message-changed {
+      .background(-68px, -32px);
+      width: 12px;
+      height: 10px;
+      margin-right: 4px;
+      margin-top: 4px;
+      float: left;
+    }
+  }
+
+  .message {
+    padding:10px;
+  border-top:1px solid #ccc;
+    input {
+     width:100%;
+   margin:0;
+
+    }
+  }
+}
+
+ .mini-chat {
+  .msgln{
+    height: 100%;
+    padding: 0px !important;
+    color: @white;
+  }
+  .msgln-odd {
+    padding: 20px 0px;
+    background: @grayLighter;
+    .msg-text{
+      margin: 0px 60px 0px 110px;
+      word-wrap: break-word;
+      font-weight: bold;
+    }
+    .msg-date{
+      color: @grayLight;
+      margin-right: 20px;
+    }
+    .msg-user{
+      padding: 0px 10px 0px 45px;
+      color: @grayDark;
+    }
+  }
+}
+
+.mini-chat {
+  .msRow{
+    &:first-child {
+      .border-top-radius(3px);
+    }
+    &:last-child {
+      .border-bottom-radius(3px);
+    }
+  }
+}
+
+.msRow {
+  @widthOfAvatar: 32px;
+  padding: 10px 0;
+  &.odd {
+    background-color: #f8f8f8;
+  }
+  /* Layout Row Chat */
+  .msContBox {
+      float: left;
+      width: 100%;
+  }
+  .msContBox + .msUserAvatar {
+      float: left;
+      margin-left: -100%;
+      width: 68px;
+  }
+  .msContBox > .inner {
+      margin-left: 68px;
+      margin-right: 20px;
+  }
+
+  /* Style Row Chat */
+  .msUserCont {
+    + .msUserCont {
+      margin-top: 10px;
+    }
+  }
+  .msUserAvatar {
+    width: 40px!important;
+    padding-left: 12px;
+    padding-right: 15px;
+    text-align: center;
+  }
+  .msContBox {
+    > .inner {
+      margin-right: 20px;
+    }
+  }
+  .msAvatarLink, .msAvatarLink img {
+    .border-radius(@widthOfAvatar);
+  }
+  .msAvatarLink, .msAvatarLink > img {
+    width: @widthOfAvatar;
+    height: @widthOfAvatar;
+  }
+  .msAvatarLink {
+    background-color: #fff;
+    padding: 3px;
+    border: 1px solid #b2b1b1;
+    display: block;
+    #gradient > .vertical(#ffffff, #f1f1f1);
+    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
+    > img {
+      .box-shadow(0 1px 1px rgba(255,255,255, .1));
+    }
+  }
+  .msLinkInMes {
+    font-weight: bold;
+  }
+  .msTiltleLn {
+    margin-top: -5px;
+    margin-bottom: 10px;
+    .msNameUser {
+      font-weight: bold;
+      color: #999999;
+      &:hover {
+        color: @linkColor;
+      }
+    }
+  }
+  .msAction {
+    cursor: pointer;
+    visibility: hidden;
+    color: @linkColor;
+    font-size: 12px;
+    a {
+      font-size: 12px;
+    }
+  }
+  .msTimePost {
+    color: #999;
+    font-size: 12px;
+    position: absolute;
+    right: 0;
+    .msEditMes {
+    }
+  }
+  .msUserMes {
+    overflow: hidden;
+    .msUserQuote {
+      background-color: #f0f0f0;
+      .border-radius(3px);
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      .msNameUser {
+        color: #333333;
+      }
+    }
+  }
+  .msQuoteCont {
+    font-style: italic;
+    quote {
+      border-left: 5px solid #e0e0e0;
+      padding-left: 15px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+  .msRightInfo {
+    margin-left: 10px;
+    text-align: right;
+    position: relative;
+    min-width: 100px;
+  }
+  .msContBox .msUserCont:hover {
+    .msAction {
+      visibility: visible;
+    }
+    .msTimePost {
+      display: none;
+    }
+  }
+  .msContBox .msUserCont.noEdit,
+  .msContBox .msUserCont.noEdit:hover {
+    .msAction {
+      display: none;
+    }
+    .msTimePost {
+      display: block;
+      position: static;
+    }
+  }
+  .msMessagesGroup {
+    + .msMessagesGroup {
+      margin-top: 20px;
+    }
+  }
+  .msAttachmentBox {
+   .square(128px);
+    position: relative;
+    margin-top: 5px;
+    > .msAttachFile {
+      line-height: 128px;
+      vertical-align: middle;
+      img {
+        max-width: 128px;
+        max-height: 128px;
+      }
+    }
+    .msActionAttach {
+      .square(100%);
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      > .inner {
+        position: absolute;
+        top: 50%;
+        margin-top: -20px;
+        left: 0;
+        text-align: center;
+        width: 100%;
+      }
+      a {
+        color: #fff;
+        &:hover {
+          font-weight: bold;
+          i {
+            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+          }
+        }
+      }
+    }
+    &:hover {
+      .msActionAttach {
+        background-color: rgba(0, 0, 0, 0.1);
+        display: block;
+      }
+    }
+  }
+  .fileSize, .msTextGray {
+    color: #999;
+  }
+  .msSaveCall {
+    margin-top: 7px;
+  }
+}
+
+.mini-chat .noContent,
+.mini-chat .noMessage{
+	background: url('@{imgPath}bg-chat.png') no-repeat center center;
+  background-size: 100%;
+	.square(100%);
+  min-height: 294px;
+  position: relative;
+  .text {
+    color: #808080;
+    font-size: 14px;
+    font-weight: bold;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    .translate(-50%, -50%);
+  }
+}
+/*end inherit from chat area*/
+
+/*chat mini only*/
+.mini-chat {
+	.uiActionWithLabel {
+		padding: 2px ;
+		line-height: 100%;
+		border: none;
+		margin-left: 5px;
+		float: none;
+    vertical-align: middle;
+		&:hover ,&:active,&:focus,&.actived {
+				background:#333333;
+				.box-shadow(none);
+				border: none;
+				.uiIconMinimize ,.uiIconMaximize ,.uiIconClose {
+					background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png")!important;
+				}
+				.uiIconChatPopOut {
+					background-image: url('@{imgPath}uiIconChatWhite.png')!important;
+				}
+		}
+
+	}
+	.msUserMes {
+		a {
+			font-weight: bold;
+		}
+	}
+	.msTimeEvent {
+		.mgR5 + .muted  {
+			display: block;
+			float: left;
+			margin-left: 36px;
+			margin-right: 5px;
+		}
+	}
+	.msContBox .msUserCont:hover {
+		.msAction {
+		  visibility: hidden;
+		}
+		.msTimePost {
+		  display: block;
+		}
+	  }
+	  .contentDeleted {
+		color: #AAAAAA;
+		font-style: italic;
+	}
+	.msUserAvatar .uiIconChat32x32Event {
+		position: relative;
+	}
+	.dayOnCalendar {
+		color: @grayLight;
+		font-size: 18px;
+		line-height: 100%;
+		font-style: normal;
+		font-weight: bold;
+		left: 50%;
+		position: absolute;
+		top: 10px;
+		.translate(-50%, 0);
+	}
+	.notify-info {
+		background-color: @linkColor;
+		color: @white;
+		display: inline-block;
+		font-size: 11px;
+		height: 15px;
+		margin-right: 5px;
+		line-height: 15px;
+		min-width: 10px;
+		padding: 0 4px;
+		text-align: center;
+		vertical-align: middle;
+    font-weight: bold;
+    .border-radius(2px);    
+  	.box-shadow(1px 1px 1px 0px rgba(0,0,0,0.2));
+	}
+}

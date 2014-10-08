@@ -22,8 +22,11 @@ package org.exoplatform.addons.chat.utils;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class PropertyManager {
+  private static final Logger LOG = Logger.getLogger(PropertyManager.class.getName());
+
   private static Properties properties;
 
   private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
@@ -38,7 +41,7 @@ public class PropertyManager {
     return value;
   }
 
-  private static Properties properties()
+  private synchronized static Properties properties()
   {
     if (properties==null)
     {
@@ -52,6 +55,7 @@ public class PropertyManager {
       }
       catch (Exception e)
       {
+        LOG.warning(e.getMessage());
       }
 
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");

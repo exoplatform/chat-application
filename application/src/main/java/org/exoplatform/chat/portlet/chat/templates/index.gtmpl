@@ -1,0 +1,331 @@
+<div id="chat-application"
+  data-username="<%=user%>"
+  data-token="<%=token%>"
+  data-chat-server-url="<%=chatServerURL%>"
+  data-chat-interval-chat="<%=chatIntervalChat%>"
+  data-chat-interval-session="<%=chatIntervalSession%>"
+  data-chat-interval-status="<%=chatIntervalStatus%>"
+  data-chat-interval-users="<%=chatIntervalUsers%>"
+  data-public-mode="<%=publicMode%>"
+  data-public-mode-enabled="<%=publicModeEnabled%>"
+  data-view="<%=view%>"
+  data-fullscreen="<%=fullscreen%>"
+>
+
+  <div class="chat-sync-panel" style="display:none;"></div>
+  <div class="chat-error-panel" style="display:none;"></div>
+  <div class="chat-demo-panel" style="display:none;"></div>
+  <div class="chat-login-panel" style="display:none;"></div>
+  <div class="chat-about-panel" style="display:none;"></div>
+<% if (!"public".equals(view)) { %>
+  <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
+    <span class="menu-standard pull-left">
+      <span class="avatar-user">
+        <div class="activityAvatar avatarCircle" >
+          <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/<%=user%>" data-original-title="">
+            <img class="avatar-image" onerror="this.src='/chat/img/user-default.jpg;'" src='/rest/chat/api/1.0/user/getAvatarURL/<%=user%>' >
+          </a>
+        </div>
+      </span>
+
+      <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
+        <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
+        <ul class="dropdown-menu chat-status-panel">
+          <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{exoplatform.chat.available}</a></li>
+          <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{exoplatform.chat.away}</a></li>
+          <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{exoplatform.chat.donotdisturb}</a></li>
+          <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{exoplatform.chat.invisible}</a></li>
+        </ul>
+      </div>
+
+      <label class="pull-left" style="margin-top: 12px;">
+        <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
+        <% if ("DEV".equals(demoMode)) { %>
+        <span class="label-demo">(Demo Mode)</span>
+        <% } %>
+      </label>
+    </span>
+    <span class="menu-standard pull-right">
+      <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
+        <i class="icon-off"></i> Logout</a-->
+      <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
+        <div onclick="event.cancelBubble=true;"><input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}"></div>
+      </div>
+    </span>
+  </div>
+  <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
+    <div id="chat-users" class="uiBox">
+      <span>&nbsp;</span>
+    </div>
+  </div>
+  <% } %>
+  <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
+    <div class="uiBox">
+      <div class="room-detail no-user-selection" id="room-detail">
+
+        <span class="room-detail-avatar" style="display:none">
+          <div class="activityAvatar avatarCircle">
+            <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
+              <img class="avatar-image target-avatar-image" src='/chat/img/user-default.jpg;' >
+            </a>
+          </div>
+        </span>
+
+        <span class="room-detail-button" style="display:none">
+            <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
+            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.call}</a>
+            <a type="button" class="btn btn-success pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
+            <i class="icon-facetime-video icon-white"></i> &{exoplatform.chat.button.join}</a>
+        </span>
+        <div class="msbuttonGroupRecord">
+           <button class="btn msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
+        </div>
+        <span class="team-button">
+	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
+            <li>
+              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.edit}"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.edit}</div>
+            </li>
+          </ul>
+        </span>
+
+        <span class="target-user-fullname room-detail-fullname"></span>
+
+      </div>
+
+      <div id="chats">
+
+      	<div class="noContent"><span class="text">&{exoplatform.chat.no.conversation}</span></div>
+
+      </div>
+
+      <div class="chat-message">
+
+        <span class="pull-left" style="padding: 4px 0 0 18px;">
+          <span class="actionIcon actionIconSmile disabled" data-original-title="&{exoplatform.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
+        <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
+          <span class="msg-emoticons-panel no-user-selection" style="display:none">
+            <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
+            <span class="emoticon emoticon-sad-white emoticon-btn" data=":(">&nbsp;</span>
+            <span class="emoticon emoticon-big-smile-white emoticon-btn" data=":D">&nbsp;</span>
+            <span class="emoticon emoticon-eye-blink-white emoticon-btn" data=";)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-surprise-white emoticon-btn" data=":O">&nbsp;</span>
+            <span class="emoticon emoticon-no-voice-white emoticon-btn" data=":|">&nbsp;</span>
+            <span class="emoticon emoticon-tongue-white emoticon-btn" data=":p">&nbsp;</span>
+            <span class="emoticon emoticon-bow-white emoticon-btn" data="(bow)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-yes-white emoticon-btn" data="(y)">&nbsp;</span>
+            <span class="emoticon emoticon-no-white emoticon-btn" data="(n)">&nbsp;</span>
+            <span class="emoticon emoticon-star-white emoticon-btn" data="(star)">&nbsp;</span>
+            <span class="emoticon emoticon-beer-white emoticon-btn" data="(beer)">&nbsp;</span>
+            <br>
+            <span class="emoticon emoticon-bug-white emoticon-btn" data="(bug)">&nbsp;</span>
+            <span class="emoticon emoticon-cake-white emoticon-btn" data="(cake)">&nbsp;</span>
+            <span class="emoticon emoticon-cash-white emoticon-btn" data="(cash)">&nbsp;</span>
+            <span class="emoticon emoticon-coffee-white emoticon-btn" data="(coffee)">&nbsp;</span>
+          </span>
+        </span>
+
+        <div class="meeting-actions pull-right dropup  no-user-selection">
+          <div class="popover top meeting-action-popup">
+            <div class="arrow">
+            </div>
+            <div class="popover-inner">
+
+              <div class="popover-content meeting-action-content">
+                <div class="meeting-action-panel meeting-action-link-panel" data-height="161" data-title="&{exoplatform.chat.link}">
+                  <strong class="actionTitle">&{exoplatform.chat.share.link}</strong>
+                  <input type="text" class="input-with-value" id="share-link-text" placeholder="E.g: http://www.exoplatform.com" data-value="E.g: http://www.exoplatform.com">
+                  <div class="uiActionBorder" style="text-align: right; padding: 18px 35px; margin: 10px -35px 0;">
+                  	<a href="#" type="button" class="btn btn-primary share-link-button">&{exoplatform.chat.share}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+                <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="&{exoplatform.chat.file}">
+                  <strong class="actionTitle">&{exoplatform.chat.upload.file}</strong>
+                  <span id="dropzone-container">
+                    <div class="progressBar" id="dropzone">
+                      <div class="progress">
+                        <div class="bar" style="width: 0.0%;"></div>
+                        <div class="label">&{exoplatform.chat.file.drop}</div>
+                      </div>
+                    </div>
+                  </span>
+                  <form action="" id="chat-file-form" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="room" value="---" id="chat-file-room" />
+                    <input type="hidden" name="targetUser" value="---" id="chat-file-target-user" />
+                    <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
+                    <div class="uiActionBorder">
+	                    <a href="#" class="btn btn-primary chat-file-upload" type="button">
+	                      <span>&{exoplatform.chat.file.manually}</span>
+	                      <input type="file" name="userfile" id="chat-file-file" />
+	                    </a>
+	                    <a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+	                    <input type="submit" value="&{exoplatform.chat.file.select}" id="chat-file-submit" style="display:none" />
+	                </div>
+                  </form>
+                </div>
+                <div class="meeting-action-panel meeting-action-question-panel" data-height="157" data-title="&{exoplatform.chat.question}">
+                  <strong class="actionTitle">&{exoplatform.chat.panel.question.header}</strong>
+                  <input type="text" class="input-with-value" id="question-text" data-value="&{exoplatform.chat.question.what}" placeholder="&{exoplatform.chat.question.what}">
+                  <div class="uiActionBorder">
+                  	<a href="#" type="button" class="btn btn-primary question-button">&{exoplatform.chat.ask}</a>
+                    <a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+                <div class="meeting-action-panel meeting-action-hand-panel" data-height="157" data-title="&{exoplatform.chat.raise.hand}">
+                  <strong class="actionTitle">&{exoplatform.chat.raise.hand}</strong>
+                  <input type="text" class="input-with-value" id="raise-hand-comment-text" data-value="&{exoplatform.chat.optional.comment}" placeholder="&{exoplatform.chat.optional.comment}">
+                  <div class="uiActionBorder" >
+                  	<a href="#" type="button" class="btn btn-primary raise-hand-button">&{exoplatform.chat.raise.your}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
+                  <strong class="actionTitle">&{exoplatform.chat.assign.task}</strong>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
+                  <div class="task-users-list"></div>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
+                  <div class="task-users-results" style="display:none;"></div>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >
+                  <div class="uiActionBorder" >
+                  	<a href="#" type="button" class="btn btn-primary create-task-button">&{exoplatform.chat.post}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+                <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="&{exoplatform.chat.add.event}">
+                  <strong class="actionTitle">&{exoplatform.chat.add.event}</strong>
+                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.event.title}" placeholder="&{exoplatform.chat.event.title}" id="event-add-summary">
+                  <span class="action-label" style="display: inline-block;width: 40px;">&{exoplatform.chat.from}: </span>
+                  <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-start-date">
+                  <span class="uiSelectbox">
+                    <select class="selectbox" id="event-add-start-time">
+                      <option value="all-day">&{exoplatform.chat.all.day}</option>
+                    </select>
+                  </span>
+                  <br>
+                  <span class="action-label" style="display: inline-block;width: 40px;">&{exoplatform.chat.to}: </span>
+                  <input type="text" data-value="mm/dd/yyyy" placeholder="mm/dd/yyyy" data-date="<%=today%>" style="width:88px;" id="event-add-end-date">
+                  <span class="uiSelectbox">
+                    <select class="selectbox" id="event-add-end-time">
+                      <option value="all-day">&{exoplatform.chat.all.day}</option>
+                    </select>
+                  </span>
+                  <input type="text" class="input-with-value input-default" data-value="&{exoplatform.chat.location}" placeholder="&{exoplatform.chat.location}" id="event-add-location">
+                  <div class="uiActionBorder" >
+                  	<a href="#" type="button" class="btn btn-primary create-event-button">&{exoplatform.chat.post}</a>
+                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
+          <ul class="dropdown-menu pull-right">
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{exoplatform.chat.assign.task}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{exoplatform.chat.share.link}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> &{exoplatform.chat.upload.file}</a></li>
+            <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->
+            <li class="meeting-action-link" data-toggle="meeting-action-question-panel"><a href="#"><i class="uiIconChatQuestion uiIconChatLightGray"></i> &{exoplatform.chat.ask.question}</a></li>
+            <li class="meeting-action-link" data-toggle="meeting-action-hand-panel"><a href="#"><i class="uiIconChatRaiseHand uiIconChatLightGray"></i> &{exoplatform.chat.raise.hand}</a></li>
+          </ul>
+        </div>
+
+        <div style="display: block;margin-left: 45px;margin-right: 54px;">
+          <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ################################## -->
+<!-- ######### TEXT MODAL ############ -->
+<!-- ################################## -->
+<div class="modal hide text-modal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>&{exoplatform.chat.text.discussion}</h3>
+  </div>
+  <div class="modal-body">
+    <textarea id="text-modal-area"></textarea>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn btn-primary text-modal-close">&{exoplatform.chat.close}</a>
+  </div>
+</div>
+<!-- ################################## -->
+<!-- ######### EDIT MODAL ############ -->
+<!-- ################################## -->
+<div class="uiPopup hide edit-modal" style="top:100px;">
+  <div class="popupHeader clearfix">
+	<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+	<span class="PopupTitle popupTitle">&{exoplatform.chat.edit}</span>
+  </div>
+
+  <div class="PopupContent popupContent">
+    <textarea id="edit-modal-area" data-id="---"></textarea>
+    <div class="uiAction uiActionBorder">
+    	<a type="button" href="#" class="btn edit-modal-save">&{exoplatform.chat.save}</a>
+		<a type="button" href="#" class="btn edit-modal-cancel">&{exoplatform.chat.cancel}</a>
+	</div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+<!-- ################################## -->
+<!-- ######### TEAM MODAL ############ -->
+<!-- ################################## -->
+<div id="team-modal-form" class="uiPopup hide team-modal">
+  <div class="popupHeader clearfix">
+    <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+    <span class="PopupTitle popupTitle">&{exoplatform.chat.team}</span>
+  </div>
+
+  <div class="PopupContent popupContent">
+    <div class="resizable">
+      <div class="modal-body">
+        <label>&{exoplatform.chat.team.name}</label>
+        <input type="text" id="team-modal-name" data-id="---" value="" />
+        <label>&{exoplatform.chat.team.people}</label>
+        <div class="team-users-list"></div>
+        <div class="uiSearchForm uiSearchInput team-users-search">
+          <div onclick="event.cancelBubble=true;">
+            <input id="team-add-user" type="text" >
+            <label class="team-add-user-label">&{exoplatform.chat.team.help}</label>
+          </div>
+        </div>
+        <div class="team-users-results" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="uiAction uiActionBorder">
+      <a href="#" class="btn btn-primary team-modal-save">&{exoplatform.chat.save}</a>
+      <a href="#" class="btn team-modal-cancel">&{exoplatform.chat.cancel}</a>
+    </div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+
+<!-- ################################## -->
+<!-- ######### MIGRATION MODAL ############ -->
+<!-- ################################## -->
+<div class="modal hide help-modal" style="display:none;">
+  <div class="modal-header">
+    <h3>&{exoplatform.chat.howto1}</h3>
+  </div>
+  <div class="modal-body">
+    &{exoplatform.chat.howto2}
+    <ul>
+      <li><b>/me [&{exoplatform.chat.howto3}]</b>: &{exoplatform.chat.howto4} ;</li>
+      <li><b>/call</b>: &{exoplatform.chat.howto5} ;</li>
+      <li><b>/join</b>: &{exoplatform.chat.howto6} ;</li>
+      <li><b>/terminate</b>: &{exoplatform.chat.howto7} ;</li>
+      <li><b>/export</b>: &{exoplatform.chat.howto8} ;</li>
+      <li><b>/help</b>: &{exoplatform.chat.howto9} ;</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn help-modal-cancel" onclick="javascript:jqchat('.help-modal').hide();">&{exoplatform.chat.close}</button>
+  </div>
+</div>
