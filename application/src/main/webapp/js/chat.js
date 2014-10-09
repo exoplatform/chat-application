@@ -288,6 +288,7 @@ var chatApplication = new ChatApplication();
         $("#task-add-user").val("");
         $("#task-add-date").val("");
         jqchat(".task-user-label").remove();
+        hideResults();
       } else if (toggleClass === "meeting-action-event-panel") {
         $("#event-add-summary").val("");
         $("#event-add-start-date").val("");
@@ -878,6 +879,9 @@ var chatApplication = new ChatApplication();
 
 
     $(".team-edit-button").on("click", function() {
+      var $userResults = $(".team-users-results");
+      $userResults.css("display", "none");
+      $userResults.html("");
       var $uitext = $("#team-modal-name");
       $uitext.val(chatApplication.targetFullname);
       $uitext.attr("data-id", chatApplication.targetUser);
@@ -2336,6 +2340,10 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uitext.val("");
     $uitext.attr("data-id", "---");
     jqchat(".team-user-label").remove();
+    var $userResults = jqchat(".team-users-results");
+    $userResults.css("display", "none");
+    $userResults.html("");
+    jqchat("#team-add-user").val("");
     uiChatPopupWindow.show("team-modal-form", true);
 
     $uitext.focus();
