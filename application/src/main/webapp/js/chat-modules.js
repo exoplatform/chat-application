@@ -769,18 +769,20 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     } else if (options.type==="type-meeting-stop") {
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b>";
       var isStopedByCurrentUser = (thiss.username === options.fromUser);
-      out += "<div class='msMeetingNotes'>";
-      out += "  <div>";
-      out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='" + (isStopedByCurrentUser ? "send-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
-      out += "  </div>";
-      out += "  <div>";
-      out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='" + (isStopedByCurrentUser ? "save-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
-      out += "  </div>";
-      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
-      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
-      out += "</div>";
+      if (isStopedByCurrentUser) {
+        out += "<div class='msMeetingNotes'>";
+        out += "  <div>";
+        out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
+        out += "    <a class='" + (isStopedByCurrentUser ? "send-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
+        out += "  </div>";
+        out += "  <div>";
+        out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
+        out += "    <a class='" + (isStopedByCurrentUser ? "save-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
+        out += "  </div>";
+        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData.exoplatform_chat_sent + "</strong> " + chatBundleData.exoplatform_chat_check_mailbox + "</div>";
+        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "2\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData.exoplatform_chat_saved + "</strong> <a href=\"/portal/intranet/wiki\">" + chatBundleData.exoplatform_chat_open_wiki + "</a>.</div>";
+        out += "</div>";
+      }
       if (thiss.miniChat === undefined) {
         chatApplication.updateMeetingButtonStatus('stopped');
       }
