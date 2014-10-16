@@ -2227,22 +2227,40 @@ ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
  *
  * @param callback (callStatus)
  */
-ChatApplication.prototype.checkIfMeetingStarted = function(callback) {
-  chatApplication.chatRoom.refreshChat(true, function(msgs) {
-    var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
-    for (var i=0 ; i<msgs.length-1 && callStatus === -1 ; i++) {
-      var msg = msgs[i];
-      var type = msg.options.type;
-      if (type === "call-off") {
-        callStatus = 0;
-      } else if (type === "call-on") {
-        callStatus = 1;
+ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
+  if (room !== "" && room !== chatApplication.chatRoom.id) {
+    chatApplication.chatRoom.getChatMessages(room, function (msgs) {
+      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
+        var msg = msgs[i];
+        var type = msg.options.type;
+        if (type === "call-off") {
+          callStatus = 0;
+        } else if (type === "call-on") {
+          callStatus = 1;
+        }
       }
-    }
-    if (callback !== undefined) {
-      callback(callStatus);
-    }
-  });
+      if (callback !== undefined) {
+        callback(callStatus);
+      }
+    });
+  } else {
+    chatApplication.chatRoom.refreshChat(true, function (msgs) {
+      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
+        var msg = msgs[i];
+        var type = msg.options.type;
+        if (type === "call-off") {
+          callStatus = 0;
+        } else if (type === "call-on") {
+          callStatus = 1;
+        }
+      }
+      if (callback !== undefined) {
+        callback(callStatus);
+      }
+    });
+  }
 };
 
 /**

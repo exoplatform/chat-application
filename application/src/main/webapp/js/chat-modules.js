@@ -103,26 +103,27 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
   // Update temporary message for smooth view
-  var im = this.messages.length;
-  var tmpMessage = msg.replace(/&/g, "&#38");
-  tmpMessage = tmpMessage.replace(/</g, "&lt;");
-  tmpMessage = tmpMessage.replace(/>/g, "&gt;");
-  tmpMessage = tmpMessage.replace(/\"/g, "&quot;");
-  tmpMessage = tmpMessage.replace(/\n/g, "<br/>");
-  tmpMessage = tmpMessage.replace(/\\\\/g, "&#92");
-  tmpMessage = tmpMessage.replace(/\t/g, "  ");
-  var tmpOptions = JSON.stringify(options);
-  tmpOptions = tmpOptions.replace(/</g, "&lt;");
-  tmpOptions = tmpOptions.replace(/>/g, "&gt;");
-  tmpOptions = snack.parseJSON(tmpOptions);
-  this.messages[im] = {"user": this.username,
-    "fullname": chatBundleData.exoplatform_chat_you,
-    "date": "pending",
-    "message": tmpMessage,
-    "options": tmpOptions,
-    "isSystem": isSystemMessage};
-  this.showMessages();
-
+  if (room !== "" && room === this.id) {
+    var im = this.messages.length;
+    var tmpMessage = msg.replace(/&/g, "&#38");
+    tmpMessage = tmpMessage.replace(/</g, "&lt;");
+    tmpMessage = tmpMessage.replace(/>/g, "&gt;");
+    tmpMessage = tmpMessage.replace(/\"/g, "&quot;");
+    tmpMessage = tmpMessage.replace(/\n/g, "<br/>");
+    tmpMessage = tmpMessage.replace(/\\\\/g, "&#92");
+    tmpMessage = tmpMessage.replace(/\t/g, "  ");
+    var tmpOptions = JSON.stringify(options);
+    tmpOptions = tmpOptions.replace(/</g, "&lt;");
+    tmpOptions = tmpOptions.replace(/>/g, "&gt;");
+    tmpOptions = snack.parseJSON(tmpOptions);
+    this.messages[im] = {"user": this.username,
+      "fullname": chatBundleData.exoplatform_chat_you,
+      "date": "pending",
+      "message": tmpMessage,
+      "options": tmpOptions,
+      "isSystem": isSystemMessage};
+    this.showMessages();
+  }
   // Send message to server
   var thiss = this;
   snack.request({
@@ -239,6 +240,31 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   }
 };
 
+ChatRoom.prototype.getChatMessages = function(room, callback) {
+  if (room === "") return;
+
+  if (this.username !== this.ANONIM_USER) {
+    snack.request({
+      url: this.jzChatRead,
+      data: {
+        room: room,
+        user: this.username,
+        token: this.token
+      }
+    }, function (err, res){
+      if (err) {
+        return;
+      }
+
+      res = res.split("\t").join(" ");
+      var data = snack.parseJSON(res);
+
+      if (typeof callback === "function") {
+        callback(data.messages);
+      }
+    })
+  }
+};
 
 ChatRoom.prototype.showAsText = function(callback) {
 
