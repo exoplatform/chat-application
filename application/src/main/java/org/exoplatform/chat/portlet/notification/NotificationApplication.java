@@ -109,6 +109,7 @@ public class NotificationApplication
             .set("title", title)
             .set("messages", messages)
             .set("shortSpaceName", shortSpaceName)
+            .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
             .render();
   }
 

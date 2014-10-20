@@ -1091,13 +1091,20 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
             $obj.html(innerMiniChatHtml);
+
+            // If this is "refresh page" case, show minichat (if it shown before)
+            var miniChatRoom = jzGetParam(chatNotification.sessionId + "miniChatRoom");
+            if (miniChatRoom && miniChatRoom !== "") {
+              var miniChatType = jzGetParam(chatNotification.sessionId + "miniChatType");
+              var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode");
+              showMiniChatPopup(miniChatRoom, miniChatType);
+            }
           }
         });
 
 
       }
     });
-
   });
 
 })(jqchat);
@@ -1105,6 +1112,9 @@ String.prototype.endsWith = function(suffix) {
 var miniChats = {};
 
 function maximizeMiniChat() {
+  // Keep infor for "refresh page" case
+  jzStoreParam(chatNotification.sessionId + "miniChatMode", "maxi");
+
   var $miniChat = jqchat(".mini-chat").first();
   var $history = $miniChat.find(".history");
 
@@ -1115,22 +1125,30 @@ function maximizeMiniChat() {
   $miniChat.find(".message").show("fast");
   $history.animate({ scrollTop: 20000 }, 'fast');
 
-  $miniChat.slideDown(200, function() {
+  $miniChat.show("fast", function() {
     $miniChat.find(".message-input").focus();
   });
 };
 
 function minimizeMiniChat() {
+  // Keep infor for "refresh page" case
+  jzStoreParam(chatNotification.sessionId + "miniChatMode", "mini");
+
   var $miniChat = jqchat(".mini-chat").first();
 
   $miniChat.find(".btn-mini").hide();
   $miniChat.find(".btn-maxi").show();
-  $miniChat.find(".history").slideUp(200);
-  $miniChat.find(".message").slideUp(200);
+  $miniChat.find(".history").hide();
+  $miniChat.find(".message").hide();
   $miniChat.css("height","auto");
+  $miniChat.css("display", "block");
 };
 
 function showMiniChatPopup(room, type) {
+  // Keep infor for "refresh page" case
+  jzStoreParam(chatNotification.sessionId + "miniChatRoom", room);
+  jzStoreParam(chatNotification.sessionId + "miniChatType", type);
+
   var chatServerUrl = jqchat("#chat-status").attr("data-chat-server-url");
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
@@ -1141,7 +1159,12 @@ function showMiniChatPopup(room, type) {
     miniChats[index].id = "";
 
   // Display chat
-  maximizeMiniChat();
+  var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode","");
+  if (miniChatMode === "mini") {
+    minimizeMiniChat();
+  } else {
+    maximizeMiniChat();
+  }
   jqchat("[data-toggle='tooltip']").tooltip();
 
   // Show chat messages
@@ -1229,9 +1252,15 @@ function showMiniChatPopup(room, type) {
 
   /************ MINI CHAT event handlers *************/
   $miniChat.find(".btn-close").on("click", function(){
+    // Keep infor for "refresh page" case
+    jzStoreParam(chatNotification.sessionId + "miniChatRoom", "");
+    jzStoreParam(chatNotification.sessionId + "miniChatType", "");
+    jzStoreParam(chatNotification.sessionId + "miniChatMode", "");
+
+
     $miniChat.find(".message-input").val("");
     miniChats[index].clearInterval();
-    $miniChat.slideUp(200);
+    $miniChat.hide();
   });
 
   $miniChat.find(".btn-mini").on("click", function(){

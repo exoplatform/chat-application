@@ -14,6 +14,7 @@
 function ChatNotification() {
   this.token = "";
   this.username = "";
+  this.sessionId = "";
   this.shortSpaceName = ""; // short Name of current space being in
   this.jzInitUserProfile = "";
   this.jzNotification = "";
@@ -43,6 +44,7 @@ function ChatNotification() {
 ChatNotification.prototype.initOptions = function(options) {
   this.token = options.token;
   this.username = options.username;
+  this.sessionId = options.sessionId;
   this.jzInitUserProfile = options.urlInitUserProfile;
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
@@ -587,6 +589,7 @@ var chatNotification = new ChatNotification();
     chatNotification.initOptions({
       "token": $notificationApplication.attr("data-token"),
       "username": $notificationApplication.attr("data-username"),
+      "sessionId":$notificationApplication.attr("data-session-id"),
       "urlInitUserProfile": $notificationApplication.jzURL("NotificationApplication.initUserProfile"),
       "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
