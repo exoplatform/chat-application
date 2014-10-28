@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
+import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
@@ -143,6 +144,12 @@ public class NotificationApplication
         profileInitialized_ = false;
         return Response.notFound("Error during init, try later");
       }
+    }
+
+    if (!UserService.ANONIM_USER.equals(remoteUser_))
+    {
+      // Set user's Spaces in the DB
+      saveSpaces(remoteUser_);
     }
 
     return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
