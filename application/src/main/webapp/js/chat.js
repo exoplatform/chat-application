@@ -2693,7 +2693,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     || (weemoExtension.isTurnOffForGroupCall === "false" && (this.targetUser.indexOf("space-") !== -1 || this.targetUser.indexOf("team-") !== -1 && this.targetUser !== ""))
     );
 
-
   jqchat(".btn-weemo").unbind("click").one("click", function () {
     if (!jqchat(this).hasClass("disabled")) {
       if (isTurnOnWeemoCallButton) {
@@ -2705,12 +2704,20 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
           "room": chatApplication.room,
           "token": chatApplication.token
         };
-
-        weemoExtension.createWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
+        var targetUser = chatApplication.targetUser.trim();
+        var targetFullname = chatApplication.targetFullname.trim();
+        if (targetUser.indexOf("space-") === -1
+          && targetUser.indexOf("team-") === -1
+          && targetUser !== ""
+          && weemoExtension.hasOneOneCallPermission(targetUser) === "false") {
+          eXo.ecm.VideoCalls.showReceivingPermissionInterceptor(targetFullname);
+          chatApplication.setModalToCenter('#receive-permission-interceptor');
+        } else {
+          weemoExtension.createWeemoCall(targetUser, targetFullname, chatMessage);
+        }
       } else {
         eXo.ecm.VideoCalls.showPermissionInterceptor();
         chatApplication.setModalToCenter('#permission-interceptor');
-
       }
     }
   });
