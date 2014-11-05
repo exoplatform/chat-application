@@ -2258,6 +2258,7 @@ ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
   }
 };
 
+
 /**
  * return a status if a meeting is started or not :
  * -1 : no meeting in chat history
@@ -2270,6 +2271,7 @@ ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
   if (room !== "" && room !== chatApplication.chatRoom.id) {
     chatApplication.chatRoom.getChatMessages(room, function (msgs) {
       var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+      var recordStatus = -1;
       for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
         var msg = msgs[i];
         var type = msg.options.type;
@@ -2279,13 +2281,24 @@ ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
           callStatus = 1;
         }
       }
+      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
+        var msg = msgs[i];
+        var type = msg.options.type;
+        if (type === "type-meeting-stop") {
+          recordStatus = 0;
+        } else if (type === "type-meeting-start") {
+          recordStatus = 1;
+        }
+      }
       if (callback !== undefined) {
-        callback(callStatus);
+        callback(callStatus, recordStatus);
       }
     });
   } else {
     chatApplication.chatRoom.refreshChat(true, function (msgs) {
       var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+      var recordStatus = -1;
+
       for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
         var msg = msgs[i];
         var type = msg.options.type;
@@ -2295,8 +2308,17 @@ ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
           callStatus = 1;
         }
       }
+      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
+        var msg = msgs[i];
+        var type = msg.options.type;
+        if (type === "type-meeting-stop") {
+          recordStatus = 0;
+        } else if (type === "type-meeting-start") {
+          recordStatus = 1;
+        }
+      }
       if (callback !== undefined) {
-        callback(callStatus);
+        callback(callStatus, recordStatus);
       }
     });
   }
