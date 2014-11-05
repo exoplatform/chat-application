@@ -162,11 +162,11 @@ public class ReportBean {
           {
             msg = "[ Joined meeting ]";
           }
-          else if ("call-on".equals(options.get("type").toString()))
+          else if ("type-meeting-start".equals(options.get("type").toString()))
           {
             msg = "[ Meeting started ]";
           }
-          else if ("call-off".equals(options.get("type").toString()))
+          else if ("type-meeting-stop".equals(options.get("type").toString()))
           {
             msg = "[ Meeting finished ]";
           }
