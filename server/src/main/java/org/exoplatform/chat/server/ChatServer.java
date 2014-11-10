@@ -684,7 +684,7 @@ public class ChatServer
       LOG.warning(e.getMessage());
       return Response.notFound(status);
     }
-    return Response.ok(status);
+    return Response.ok(status).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
