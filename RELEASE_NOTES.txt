@@ -1,0 +1,36 @@
+
+Release Notes - eXo Add-on CHAT - Version 1.0.0
+
+
+** Bug
+    * [CHAT-13] - Arrow / Ear missing in the chat menu
+    * [CHAT-66] - The sound is not displayed when User is connected with FF
+    * [CHAT-67] - [IE10] After select, the read message is not removed from the list of unread message
+    * [CHAT-69] - The size of the mini chat is false
+    * [CHAT-70] - The Height of the notification badge of the Mini Chat is false
+    * [CHAT-72] - The button Chat is not displayed in the Generic User Pop up in the Suggestion Gadget
+    * [CHAT-75] - empty avatar icon is displayed on the Chat area bar
+    * [CHAT-78] - A sentence is detected and shared as a link 
+    * [CHAT-79] - Fields in Add Event pop up are not aligned
+    * [CHAT-80] - "Add event" is displayed with lowercase character
+    * [CHAT-82] - The Star gray icon is not displayed with a hover on the username
+    * [CHAT-83] - The Chat icon is not displayed in the Generic User pop up
+    * [CHAT-87] - The Call cannot be performed from Space and Team
+    * [CHAT-89] - The button Call still activated after OFF of the Group Calls permission
+    * [CHAT-90] - Warning status of the cam icon is not detected when the user is connected from 2 differents places
+    * [CHAT-91] - Messages are not displayed on the Chat area of the mini chat
+    * [CHAT-92] - The Chat Composer is unstable 
+    * [CHAT-102] - Impossible to upload a file by a drag and drop
+    * [CHAT-103] - The edition/Delete of a message is perceived by the receiver only after the page's refresh
+    * [CHAT-107] - [IE10] The Mini Chat cannot be displayed
+    * [CHAT-109] - [IE10] The left menu on the Chat window is not displayed
+    * [CHAT-115] - French session: bad displays of buttons in Share File pop up
+    * [CHAT-116] - The Mini chat is disappeared after page's refresh
+    * [CHAT-120] - The record marker is displayed on the Chat area for all participants
+    * [CHAT-122] - The bouton Call is displayed to Join although a Call group is ended 
+    * [CHAT-125] - The Space name is not displayed on the Header of the Mini Chat pop up
+    * [CHAT-127] - The status of the Call button is disabled only after page refresh
+    * [CHAT-128] - The Label of the Column Group Call is not displayed
+
+** Feedback
+    * [CHAT-81] - In the Assign Task pop up, remove the icon Search
