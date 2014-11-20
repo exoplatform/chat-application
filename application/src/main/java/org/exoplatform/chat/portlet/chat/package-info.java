@@ -17,6 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+
+
 @Application(defaultController = ChatApplication.class)
 @Portlet(name="ChatPortlet")
 @Bindings(
@@ -31,8 +33,26 @@
                 @Binding(value = org.exoplatform.services.listener.ListenerService.class)
         }
 )
-
-@Assets(
+@Scripts(location = AssetLocation.SERVER,
+        value =  {
+            @Script(value = "js/taffy-min.js", id="jquery"),
+            @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
+            @Script(value = "js/chat.js", depends = {"chat-modules"} ),
+            @Script(value = "js/sh_main.min.js"),
+            @Script(value = "js/sh_html.min.js"),
+            @Script(value = "js/sh_java.min.js"),
+            @Script(value = "js/sh_javascript.min.js"),
+            @Script(value = "js/sh_css.min.js")
+        }
+)
+@Stylesheets({
+        @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
+        @Stylesheet(value = "css/sh_style.css", location = AssetLocation.SERVER),
+        @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-normal.css", location = AssetLocation.APPLICATION, id = "chat-normal", depends = "chat"),
+        @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-public.css", location = AssetLocation.APPLICATION, id = "chat-public", depends = "chat"),
+        @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-responsive.css", location = AssetLocation.APPLICATION, id = "chat-responsive", depends = "chat")
+})
+/*@Assets(
         location = AssetLocation.SERVER,
         scripts = {
                 @Script(src = "js/taffy-min.js", id="jquery"),
@@ -54,20 +74,19 @@
                 @Stylesheet(src = "/org/exoplatform/chat/portlet/chat/assets/chat-public.css", location = AssetLocation.APPLICATION, id = "chat-public", depends = "chat"),
                 @Stylesheet(src = "/org/exoplatform/chat/portlet/chat/assets/chat-responsive.css", location = AssetLocation.APPLICATION, id = "chat-responsive", depends = "chat")
         }
-)
+)*/
 
 @Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less", "chat-public.less"}, minify = true)
-
-
+@Assets("*")
 package org.exoplatform.chat.portlet.chat;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.less.Less;
 import juzu.plugin.portlet.Portlet;
+import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Stylesheet;
 

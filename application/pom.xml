@@ -106,11 +106,6 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <scope>provided</scope>
     </dependency>

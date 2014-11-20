@@ -54,6 +54,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,9 +90,9 @@ public class ChatServer
 
   @View
   @Route("/")
-  public void index() throws IOException
+  public Response.Content index() throws IOException
   {
-    index.render();
+    return index.ok();
   }
 
   @Resource
@@ -651,7 +652,7 @@ public class ChatServer
       data += "data: {\"total\": "+totalUnread+"}\n\n";
     }
 
-    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json").withCharset(Charset.forName("UTF-8")).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

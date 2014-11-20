@@ -20,9 +20,9 @@
 package org.exoplatform.chat.portlet.statistics;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
-import juzu.request.RenderContext;
 import juzu.template.Template;
 import org.exoplatform.chat.utils.PropertyManager;
 
@@ -38,11 +38,11 @@ public class StatisticsApplication
   Template index;
 
   @View
-  public void index(RenderContext renderContext) throws IOException
+  public Response.Content index() throws IOException
   {
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
 
-    index.with().set("chatServerURL", chatServerURL).render();
+    return index.with().set("chatServerURL", chatServerURL).ok();
   }
 
 }
