@@ -25,31 +25,24 @@
     @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class)
   }
 )
-
-@Assets(
-        location = AssetLocation.SERVER,
-        scripts = {
-                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
-                @Script(src = "js/taffy-min.js", id="taffy"),
-                @Script(src = "js/snack-min.js", id = "snack"),
-                @Script(src = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils"),
-                @Script(src = "js/notif.js", id = "notif", depends = {"jquery", "snack", "juzu-utils", "taffy"})
-        },
-        stylesheets = {
-                @Stylesheet(src = "css/webrtc.css"),
-                @Stylesheet(src = "/org/exoplatform/chat/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)
-        }
-)
-
+@Scripts({
+        @Script(value = "js/jquery-1.8.3.min.js", id = "jquery", location = AssetLocation.SERVER),
+        @Script(value = "js/taffy-min.js", id="taffy", location = AssetLocation.SERVER),
+        @Script(value = "js/snack-min.js", id = "snack", location = AssetLocation.SERVER),
+        @Script(value = "js/jquery-juzu-utils-0.1.0.js", depends = "jquery", id = "juzu-utils", location = AssetLocation.SERVER),
+        @Script(value = "js/notif.js", id = "notif", location = AssetLocation.SERVER, depends = {"jquery", "snack", "juzu-utils", "taffy"})
+})
+@Stylesheets({
+        @Stylesheet(value = "css/webrtc.css", location = AssetLocation.SERVER),
+        @Stylesheet(value = "/org/exoplatform/chat/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)
+})
 @Less(value = "notif.less", minify = true)
-
+@Assets("*")
 package org.exoplatform.chat.portlet.notification;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.*;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.less.Less;

@@ -45,7 +45,7 @@
     <commons-lang3.version>3.1</commons-lang3.version>
     <exoplatform.version>4.0.0</exoplatform.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
-    <juzu.version>0.6.2</juzu.version>
+    <juzu.version>1.0.0-cr2-SNAPSHOT</juzu.version>
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
@@ -119,11 +119,6 @@
         <version>${exoplatform.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-bom-core</artifactId>
-        <version>${juzu.version}</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>

@@ -19,14 +19,9 @@
 
 package org.exoplatform.chat.portlet.chat;
 
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
-import juzu.SessionScoped;
-import juzu.View;
+import juzu.*;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.RenderContext;
-import juzu.request.ResourceContext;
+import juzu.request.SecurityContext;
 import juzu.template.Template;
 import org.apache.commons.fileupload.FileItem;
 import org.exoplatform.chat.bean.File;
@@ -101,9 +96,9 @@ public class ChatApplication
 
 
   @View
-  public Response.Content index(RenderContext renderContext)
+  public Response.Content index(SecurityContext securityContext)
   {
-    remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
+    remoteUser_ = securityContext.getRemoteUser();
     boolean isPublic = (remoteUser_==null);
     if (isPublic) remoteUser_ = UserService.ANONIM_USER;
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
@@ -143,7 +138,7 @@ public class ChatApplication
             .set("today", todayDate)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
-            .withStylesheets("chat-" + view);
+            .withAssets("chat-" + view);
 
   }
 
@@ -215,7 +210,7 @@ public class ChatApplication
 
   @Resource
   @Ajax
-  public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, ResourceContext resourceContext) {
+  public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, SecurityContext securityContext) {
     LOG.info("file upload in " + room);
     if (userfile.isFormField())
     {
@@ -236,7 +231,7 @@ public class ChatApplication
       }
       else
       {
-        remoteUser_ = resourceContext.getSecurityContext().getRemoteUser();
+        remoteUser_ = securityContext.getRemoteUser();
         uuid = documentsData_.storeFile(userfile, remoteUser_, true);
         documentsData_.setPermission(uuid, targetUser);
       }

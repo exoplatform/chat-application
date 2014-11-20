@@ -25,7 +25,9 @@ import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.RenderContext;
+import juzu.request.ApplicationContext;
+import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
@@ -88,22 +90,22 @@ public class NotificationApplication
   }
 
   @View
-  public void index(RenderContext renderContext) throws IOException
+  public Response.Content index(ApplicationContext applicationContext, SecurityContext securityContext, UserContext userContext) throws IOException
   {
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-    remoteUser_ = renderContext.getSecurityContext().getRemoteUser();
+    remoteUser_ = securityContext.getRemoteUser();
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
-    Locale locale = renderContext.getUserContext().getLocale();
-    ResourceBundle bundle= renderContext.getApplicationContext().resolveBundle(locale) ;
+    Locale locale = userContext.getLocale();
+    ResourceBundle bundle= applicationContext.resolveBundle(locale) ;
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
     String shortSpaceName = getCurrentShortSpaceName();
 
-    index.with().set("user", remoteUser_).set("token", token_)
+    return index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
@@ -111,7 +113,7 @@ public class NotificationApplication
             .set("messages", messages)
             .set("shortSpaceName", shortSpaceName)
             .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
-            .render();
+            .ok();
   }
 
   @Ajax

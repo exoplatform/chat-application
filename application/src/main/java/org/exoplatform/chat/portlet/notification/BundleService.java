@@ -3,7 +3,8 @@ package org.exoplatform.chat.portlet.notification;
 import juzu.Resource;
 import juzu.Response;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.ResourceContext;
+import juzu.request.ApplicationContext;
+import juzu.request.UserContext;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.InputStream;
@@ -21,10 +22,10 @@ public class BundleService {
 
   @Ajax
   @Resource
-  public Response.Content getBundle(String target, ResourceContext resourceContext)
+  public Response.Content getBundle(String target, ApplicationContext applicationContext, UserContext userContext)
   {
-    Locale locale = resourceContext.getUserContext().getLocale();
-    ResourceBundle bundle= resourceContext.getApplicationContext().resolveBundle(locale) ;
+    Locale locale = userContext.getLocale();
+    ResourceBundle bundle= applicationContext.resolveBundle(locale) ;
     return Response.ok(getBundle(target, bundle, locale)).withMimeType("text/javascript; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
