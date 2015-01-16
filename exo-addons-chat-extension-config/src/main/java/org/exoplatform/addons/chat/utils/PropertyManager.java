@@ -29,9 +29,18 @@ public class PropertyManager {
 
   private static Properties properties;
 
-  private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
+    private static final String PROPERTIES_PATH;
 
-  public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
+    static {
+        if ((System.getProperty("catalina.base") == null) || System.getProperty("catalina.base").isEmpty()) {
+            PROPERTIES_PATH =  System.getProperty("jboss.server.config.dir") + "/gatein/chat.properties";
+        }    else {
+
+            PROPERTIES_PATH = System.getProperty("catalina.base") + "/conf/chat.properties";
+        }
+    }
+
+    public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
 
   public static String getProperty(String key)
