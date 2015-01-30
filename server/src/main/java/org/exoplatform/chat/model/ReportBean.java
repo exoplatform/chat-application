@@ -298,7 +298,7 @@ public class ReportBean {
       if (!messageBean.getUser().equals(prevUser))
       {
         xwiki.append("{{div style='padding: 4px;color: #CCC;margin:0;'}}");
-        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+messageBean.getUser()+"/soc:profile/soc:avatar||width='30' height='30']] {{/span}}");
+        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/rest/chat/api/1.0/user/getAvatarURL/"+messageBean.getUser()+"||width='30' height='30']] {{/span}}");
         xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullname()).append("{{/span}}");
         xwiki.append("{{span style='font-size: smaller;vertical-align: top;'}}").append(messageBean.getDate()).append("{{/span}}");
         xwiki.append("{{/div}}");
