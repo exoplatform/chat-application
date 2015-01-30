@@ -304,6 +304,14 @@ public class ChatApplication
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
 
+    content = content.replaceAll("&#38", "&");
+    content = content.replaceAll("&lt;", "<");
+    content = content.replaceAll("&gt;", ">");
+    content = content.replaceAll("&quot;","\"");
+    content = content.replaceAll("<br/>","\n");
+    content = content.replaceAll("&#92","\\\\");
+    content = content.replaceAll("  ","\t");
+
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
     Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
