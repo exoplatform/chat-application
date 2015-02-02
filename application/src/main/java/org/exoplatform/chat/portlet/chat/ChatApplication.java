@@ -302,8 +302,6 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
-    // Clean targetFullName
-    targetFullname = ChatUtils.cleanString(targetFullname);
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
