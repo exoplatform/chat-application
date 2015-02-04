@@ -631,7 +631,7 @@ public class ChatServer
 
       }
 
-      jsonObject.put("name", StringEscapeUtils.escapeHtml4(teamName));
+      jsonObject.put("name", teamName);
       jsonObject.put("room", room);
 
     }
