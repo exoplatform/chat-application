@@ -66,7 +66,7 @@ public class UserRestService implements ResourceContainer
       in = con.getInputStream();
     } catch (Exception e) {
       try {
-        URL url = new URL(serverBase + "/social-resources/skin/images/ShareImages/UserAvtDefault.png");
+        URL url = new URL(serverBase + "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/UserAvtDefault.png");
         URLConnection con = url.openConnection();
         con.setDoOutput(true);
         in = con.getInputStream();

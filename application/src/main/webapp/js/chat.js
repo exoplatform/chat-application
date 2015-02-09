@@ -1964,7 +1964,7 @@ ChatApplication.prototype.loadRoom = function() {
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
-      jqchat(".target-avatar-image").attr("onerror", "this.src='/social-resources/skin/images/ShareImages/SpaceAvtDefault.png';");
+      jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
       jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
     }
     else
@@ -1994,7 +1994,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
-      jqchat(".target-avatar-image").attr("src", "/social-resources/skin/images/ShareImages/SpaceAvtDefault.png");
+      jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
     }
 
     var thiss = this;
