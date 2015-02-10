@@ -111,7 +111,7 @@ public class ChatApplication
     String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
     String demoMode = (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(dbServerMode) || PropertyManager.PROPERTY_SERVICE_IMPL_JCR.equals(servicesImplementation))?"DEV":"PROD";
 
-    String fullname = (fullname_==null)?remoteUser_:fullname_;
+    String fullname = (fullname_==null || fullname_.isEmpty()) ? remoteUser_ : fullname_;
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String view = portletPreferences.getValue("view", "responsive");
@@ -354,7 +354,7 @@ public class ChatApplication
     {
 
       fullname = ServerBootstrap.getUserFullName(username);
-      if (fullname==null)
+      if (fullname==null || fullname.isEmpty())
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         if (user!=null)

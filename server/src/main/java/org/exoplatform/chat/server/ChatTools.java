@@ -220,7 +220,7 @@ public class ChatTools
 
     String fullname = userService.getUserFullName(username);
 
-    return Response.ok(fullname).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
