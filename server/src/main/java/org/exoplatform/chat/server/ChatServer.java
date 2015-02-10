@@ -304,6 +304,8 @@ public class ChatServer
     Long from = null;
     Long to = null;
     String xwiki = "";
+    String typeRoom = "";
+    JSONObject jsonObject = new JSONObject();
     try {
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
@@ -340,13 +342,21 @@ public class ChatServer
           roomName = roomBean.getFullname();
         }
       }
+      
+      typeRoom = chatService.getTypeRoomChat(room);
       xwiki = reportBean.getAsXWiki(serverBase);
+      try {
+        jsonObject.put("xwiki", xwiki);
+        jsonObject.put("typeRoom", typeRoom);
+      } catch (Exception e) {
+        LOG.warning(e.getMessage());
+        return Response.notFound("No Room yet");
+      }
 
     }
 
-    return Response.ok(xwiki).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
-
   @Resource
   @Route("/delete")
   public Response.Content delete(String user, String token, String room, String messageId) throws IOException
