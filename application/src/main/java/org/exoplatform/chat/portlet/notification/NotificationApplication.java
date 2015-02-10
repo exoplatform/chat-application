@@ -170,7 +170,7 @@ public class NotificationApplication
     {
 
       fullname = ServerBootstrap.getUserFullName(username);
-      if (fullname==null)
+      if (fullname==null || fullname.isEmpty())
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         fullname = user.getFirstName()+" "+user.getLastName();
