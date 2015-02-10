@@ -402,16 +402,6 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 
   public List<UserBean> getUsers(String roomId)
   {
-    //removing "space-" prefix
-    if (roomId.indexOf(ChatService.SPACE_PREFIX)==0)
-    {
-      roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
-    }
-    //removing "team-" prefix
-    if (roomId.indexOf(ChatService.TEAM_PREFIX)==0)
-    {
-      roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
-    }
     List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
 
@@ -439,7 +429,24 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
     return users;
   }
-
+  
+  public List<UserBean> getUsersToSendEmail(String roomId) {
+    List<UserBean> users = new ArrayList<UserBean>();
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", roomId);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      Object objectUsers = doc.get("users");
+      ArrayList myArrayList = (ArrayList) objectUsers;
+      for (int i = 0; i < myArrayList.size(); i++) {
+        users.add(getUser(myArrayList.get(i).toString()));
+      }
+    }
+    return users;
+  }
+  
   public List<UserBean> getUsers(String filter, boolean fullBean) {
     filter = filter.replaceAll(" ", ".*");
     List<UserBean> users = new ArrayList<UserBean>();

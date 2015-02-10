@@ -66,6 +66,8 @@ public interface UserService
 
   public List<SpaceBean> getSpaces(String user);
 
+  public List<UserBean> getUsersToSendEmail(String roomId);
+  
   public List<UserBean> getUsers(String spaceId);
 
   public List<UserBean> getUsers(String filter, boolean fullBean);
