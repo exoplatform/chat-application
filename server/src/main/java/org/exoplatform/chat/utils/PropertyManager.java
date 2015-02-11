@@ -29,7 +29,7 @@ public class PropertyManager {
 
   private static Properties properties;
 
-  private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
+  private static final String PROPERTIES_PATH = System.getProperty("exo.conf.dir") + "/chat.properties";
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
