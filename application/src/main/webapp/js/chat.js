@@ -1262,6 +1262,7 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
  */
 ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
   jqchat.ajax({
+    type: 'POST',
     url: this.jzEdit,
     data: {"room": this.room,
       "user": this.username,
@@ -1294,6 +1295,7 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
  */
 ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callback) {
   jqchat.ajax({
+    type: 'POST',
     url: this.jzSaveTeamRoom,
     dataType: "json",
     data: {"teamName": teamName,
