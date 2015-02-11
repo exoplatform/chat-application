@@ -37,17 +37,17 @@
         value =  {
             @Script(value = "js/taffy-min.js", id="jquery"),
             @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
-            @Script(value = "js/chat.js", depends = {"chat-modules"} ),
-            @Script(value = "js/sh_main.min.js"),
-            @Script(value = "js/sh_html.min.js"),
-            @Script(value = "js/sh_java.min.js"),
-            @Script(value = "js/sh_javascript.min.js"),
-            @Script(value = "js/sh_css.min.js")
+            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules"} ),
+            @Script(value = "js/sh_main.min.js", id="shMain"),
+            @Script(value = "js/sh_html.min.js", id="shHtml"),
+            @Script(value = "js/sh_java.min.js", id="shJava"),
+            @Script(value = "js/sh_javascript.min.js", id="shJs"),
+            @Script(value = "js/sh_css.min.js", id="shCss")
         }
 )
 @Stylesheets({
         @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
-        @Stylesheet(value = "css/sh_style.css", location = AssetLocation.SERVER),
+        @Stylesheet(value = "css/sh_style.css", location = AssetLocation.SERVER, id="shStyle"),
         @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-normal.css", location = AssetLocation.APPLICATION, id = "chat-normal", depends = "chat"),
         @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-public.css", location = AssetLocation.APPLICATION, id = "chat-public", depends = "chat"),
         @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat-responsive.css", location = AssetLocation.APPLICATION, id = "chat-responsive", depends = "chat")
@@ -77,7 +77,7 @@
 )*/
 
 @Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less", "chat-public.less"}, minify = true)
-@Assets("*")
+@Assets({"chatJs", "shMain", "shHtml", "shJava", "shJs", "shCss", "chat", "shStyle"})
 package org.exoplatform.chat.portlet.chat;
 
 import juzu.Application;
