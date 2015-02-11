@@ -136,7 +136,7 @@ public class ReportBean {
           }
           else if ("type-hand".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.raiseHand", locale)+" ]";
+            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.raiseHand", locale)+": " + msg +"]";
           }
           else if ("type-task".equals(options.get("type").toString()))
           {
