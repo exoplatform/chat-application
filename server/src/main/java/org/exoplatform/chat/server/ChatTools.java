@@ -342,7 +342,7 @@ public class ChatTools
     }
     if ("".equals(passphrase) || "chat".equals(passphrase))
     {
-      LOG.warning("ChatServer is not secured! please, change 'chatPassPhrase' property in conf/chat.properties");
+      LOG.warning("ChatServer is not secured! Please change 'chatPassPhrase' property in " + PropertyManager.PROPERTIES_PATH);
     }
 
     return checkPP;
