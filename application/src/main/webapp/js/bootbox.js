@@ -21,7 +21,7 @@ var bootbox = window.bootbox || (function(document, $) {
     }
 
     // Build modal html
-    var parts = ["<div id='UIErrorMessageChat' class='UIPopupWindow uiPopup modal' tabindex='-1' style='overflow:hidden;width: 550px; visibility: visible; position: relative; display: block;'>"];
+    var parts = ["<div id='UIErrorMessageChat' class='UIPopupWindow uiPopup modal' tabindex='-1' style='overflow:hidden;width: 550px; visibility: visible; display: block;'>"];
     parts.push("    <div class='popupHeader ClearFix'>");
     parts.push("      <a title='Close Window' class='uiIconClose pull-right' data-dismiss='modal'></a><span class='PopupTitle popupTitle'>" + messageTypeText + "</span>");
     parts.push("    </div>");
@@ -68,15 +68,13 @@ var bootbox = window.bootbox || (function(document, $) {
     div.on("show", function(e) {
       $(document).off("focusin.modal");
     });
+    div.modal("show");
+
 
     // Show dialog to center
-    var centerTop = ($(window).height() - $("#UIErrorMessageChat").height()) / 2;
-    centerTop = centerTop >= 0 ? centerTop : $("#UIErrorMessageChat").offset().top;
-    var centerLeft = ($(window).width() - $("#UIErrorMessageChat").width()) / 2;
-    centerLeft = centerLeft >= 0 ? centerLeft : $("#UIErrorMessageChat").offset().left;
-
-    div.modal("show");
-    $("#UIErrorMessageChat").offset({top: centerTop, left: centerLeft})
+    $("#UIErrorMessageChat").css({
+      'margin-left': '0px'
+    });
 
     return div;
   };
