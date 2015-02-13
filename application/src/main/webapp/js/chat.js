@@ -887,8 +887,6 @@ var chatApplication = new ChatApplication();
       $uitext.attr("data-id", chatApplication.targetUser);
 
       chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-        $(".team-user-label").remove();
-
         var users = TAFFY(jsonData.users);
         var users = users();
         users.order("fullname").each(function (user, number) {
