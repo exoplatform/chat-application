@@ -291,8 +291,8 @@ public class DocumentsData {
   private String getSpacePath(String spaceDisplayname)
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
-
-    return "Groups/spaces/".concat(spacet.getPrettyName());
+    
+    return "Groups".concat(spacet.getGroupId());
   }
 
   public static String calculateFileSize(long fileLengthLong) {
