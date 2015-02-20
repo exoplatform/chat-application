@@ -40,6 +40,8 @@ import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.model.UsersBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
@@ -55,17 +57,16 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
 {
   private static final Logger LOG = Logger.getLogger("ChatServer");
+
+  public static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
+
   @Inject
   @Path("index.gtmpl")
   Template index;
@@ -75,6 +76,9 @@ public class ChatServer
   ChatService chatService;
   UserService userService;
   TokenService tokenService;
+
+  @Inject
+  OrganizationService organizationService;
   NotificationService notificationService;
   @Inject
   ChatTools chatTools;
@@ -340,7 +344,18 @@ public class ChatServer
           roomName = roomBean.getFullname();
         }
       }
-      xwiki = reportBean.getAsXWiki(serverBase);
+
+      Locale locale = DEFAULT_LANGUAGE;
+      try {
+        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+        if (lang != null && lang.trim().length() > 0) {
+          locale = Locale.forLanguageTag(lang);
+        }
+      } catch (Exception e) {
+
+      }
+      xwiki = reportBean.getAsXWiki(serverBase,locale);
 
     }
 
