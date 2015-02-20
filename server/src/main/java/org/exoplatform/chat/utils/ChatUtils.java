@@ -8,11 +8,15 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.ibm.icu.text.Transliterator;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.resources.ResourceBundleService;
 
 public class ChatUtils {
 
@@ -128,5 +132,16 @@ public class ChatUtils {
     }
 
     return clean;
+  }
+
+  public static String appRes(String key,Locale locale) {
+    ResourceBundleService bundleService = CommonsUtils.getService(ResourceBundleService.class);
+    ResourceBundle res = bundleService.getResourceBundle("locale.chat.server.Resource", locale);
+    if (res == null || res.containsKey(key) == false) {
+      return key;
+    }
+
+    return res.getString(key);
+
   }
 }
