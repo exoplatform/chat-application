@@ -120,7 +120,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
 
       overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "smtp.gmail.com");
-      overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "587");
+      overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "465");
       overridePropertyIfNotSet(PROPERTY_MAIL_USER, "exo");
       overridePropertyIfNotSet(PROPERTY_MAIL_PASSWORD, "");
     }
