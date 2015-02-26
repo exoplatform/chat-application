@@ -68,6 +68,8 @@ public interface ChatService
   public void setRoomName(String room, String name);
 
   public String getRoom(List<String> users);
+  
+  public String getTypeRoomChat(String roomId);
 
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService);
 

@@ -8,6 +8,10 @@ import org.xwiki.rendering.syntax.Syntax;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +21,8 @@ public class WikiService {
 
   org.exoplatform.wiki.service.WikiService wikiService_;
   private static final Logger LOG = Logger.getLogger("WikiService");
+  
+  public static final String ANY = "any".intern();
 
   @Inject
   public WikiService(org.exoplatform.wiki.service.WikiService wikiService)
@@ -24,9 +30,9 @@ public class WikiService {
     wikiService_ = wikiService;
   }
 
-  protected String createIntranetPage(String title, String content)
+  protected String createIntranetPage(String title, String content, ArrayList<String> users)
   {
-    return createOrEditPage("Meeting Notes", title, content, false, null);
+    return createOrEditPage("Meeting Notes", title, content, users, false, null);
   }
 
   /**
@@ -35,12 +41,12 @@ public class WikiService {
    * @param content
    * @param spaceGroupId : format with spaces/space_group_name
    */
-  protected String createSpacePage(String title, String content, String spaceGroupId)
+  protected String createSpacePage(String title, String content, String spaceGroupId, ArrayList<String> users)
   {
-    return createOrEditPage("Meeting Notes", title, content, false, spaceGroupId);
+    return createOrEditPage("Meeting Notes", title, content, users,false, spaceGroupId);
   }
 
-  private String createOrEditPage(String parentTitle, String title, String content, boolean forceNew, String spaceGroupId)
+  private String createOrEditPage(String parentTitle, String title, String content, ArrayList<String> users, boolean forceNew, String spaceGroupId)
   {
     String wikiType = PortalConfig.PORTAL_TYPE;
     String wikiOwner = "intranet";
@@ -59,6 +65,7 @@ public class WikiService {
         if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false))) {
           PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
           ppage.getContent().setText("= " + parentTitle + " =\n");
+          setPermissionForReportAsWiki(users,ppage);
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
           ppage.checkin();
           ppage.checkout();
@@ -81,6 +88,7 @@ public class WikiService {
 
         page.getContent().setText(content);
         page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        setPermissionForReportAsWiki(users, page);
         page.setMinorEdit(false);
         page.checkin();
         page.checkout();
@@ -103,5 +111,19 @@ public class WikiService {
     }
 
     return path;
+  }
+  
+  public void setPermissionForReportAsWiki(List<String> users, PageImpl page) {
+    try {
+      HashMap<String, String[]> permissions = page.getPermission();
+      permissions.remove(ANY);
+      for (int i = 0; i < users.size(); i++) {
+        permissions.put(users.get(i).toString(),org.exoplatform.services.jcr.access.PermissionType.ALL);
+      }
+      page.setPermission(permissions);
+    } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Unknown exception", e);
+
+    }
   }
 }

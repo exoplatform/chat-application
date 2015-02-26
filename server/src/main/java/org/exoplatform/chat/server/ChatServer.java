@@ -18,16 +18,40 @@
  */
 
 package org.exoplatform.chat.server;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -45,22 +69,6 @@ import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.json.JSONObject;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
@@ -240,8 +248,18 @@ public class ChatServer
     }
     String data = chatService.read(room, userService, false, from, to);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    String typeRoom = chatService.getTypeRoomChat(room);
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    String date = formatter.format(new GregorianCalendar().getTime());
+    String title = "";
+    List<UserBean> users = new ArrayList<UserBean>();
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if ("u".equalsIgnoreCase(typeRoom)) {
+        users = userService.getUsersInRoomChatOneToOne(room);
+        title = "Meeting Notes ["+date+"]";
+      } else {
+        users = userService.getUsers(room);
+      }
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
@@ -266,6 +284,7 @@ public class ChatServer
         if (room.equals(spaceBean.getRoom()))
         {
           roomName = spaceBean.getDisplayName();
+          title = roomName+" : Meeting Notes ["+date+"]";
         }
       }
       List<RoomBean> roomBeans = userService.getTeams(user);
@@ -274,11 +293,9 @@ public class ChatServer
         if (room.equals(roomBean.getRoom()))
         {
           roomName = roomBean.getFullname();
+          title = roomName+" : Meeting Notes ["+date+"]";
         }
       }
-      SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-      String date = formatter.format(new GregorianCalendar().getTime());
-      String title = roomName+" : Meeting Notes ["+date+"]";
       html = reportBean.getAsHtml(title);
 
       try {
@@ -304,6 +321,8 @@ public class ChatServer
     Long from = null;
     Long to = null;
     String xwiki = "";
+    List<UserBean> users = null;
+    JSONObject jsonObject = new JSONObject();
     try {
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
@@ -317,9 +336,15 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, false, from, to);
+    String typeRoom = chatService.getTypeRoomChat(room);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if("u".equalsIgnoreCase(typeRoom)){
+        users = userService.getUsersInRoomChatOneToOne(room);
+      }
+      else{
+        users = userService.getUsers(room);
+      }
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
@@ -340,13 +365,26 @@ public class ChatServer
           roomName = roomBean.getFullname();
         }
       }
+      ArrayList<String> usersInGroup = new ArrayList<String>();
       xwiki = reportBean.getAsXWiki(serverBase);
+      try {
+        jsonObject.put("xwiki", xwiki);
+        for (UserBean userBean : users) {
+          if (!"".equals(userBean.getName())) {
+            usersInGroup.add(userBean.getName());
+          }
+        }
+        jsonObject.put("users", usersInGroup);
+        jsonObject.put("typeRoom", typeRoom);
+      } catch (Exception e) {
+        LOG.warning(e.getMessage());
+        return Response.notFound("No Room yet");
+      }
 
     }
 
-    return Response.ok(xwiki).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
-
   @Resource
   @Route("/delete")
   public Response.Content delete(String user, String token, String room, String messageId) throws IOException
@@ -777,7 +815,7 @@ public class ChatServer
   }
 
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
-
+	  
     String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
     String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
     String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
@@ -785,36 +823,44 @@ public class ChatServer
 
     Properties props = System.getProperties();
 
-    props.put("mail.smtp.user",user);
-    props.put("mail.smtp.password", password);
-    props.put("mail.smtp.host", host);
-    props.put("mail.smtp.port", port);
+    props.put("mail.smtps.user",user);
+    props.put("mail.smtps.password", password);
+    props.put("mail.smtps.host", host);
+    props.put("mail.smtps.port", port);
     //props.put("mail.debug", "true");
-    props.put("mail.smtp.auth", "true");
-    props.put("mail.smtp.starttls.enable","true");
-    props.put("mail.smtp.EnableSSL.enable","true");
+    props.put("mail.smtps.auth", "true");
+    props.put("mail.smtps.starttls.enable","true");
+    props.put("mail.smtps.EnableSSL.enable","true");
 
     Session session = Session.getInstance(props, null);
     //session.setDebug(true);
-
     MimeMessage message = new MimeMessage(session);
+    
     message.setFrom(new InternetAddress(user, senderFullname));
 
     // To get the array of addresses
     for (String to: toList) {
       message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
     }
-
-    message.setSubject(subject);
-    message.setContent(htmlBody, "text/html");
-
-    Transport transport = session.getTransport("smtp");
+    message.setSubject(subject, "UTF-8");
+    // Create a message part to represent the body text
+    BodyPart messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
+    // use a MimeMultipart as we need to handle the file attachments
+    Multipart multipart = new MimeMultipart();
+    // add the message body to the mime message
+    multipart.addBodyPart(messageBodyPart);
+    // Put all message parts in the message
+    message.setContent(multipart);
+    message.setSubject(subject, "UTF-8");
+    
+    Transport transport = session.getTransport("smtps");
     try {
       transport.connect(host, user, password);
+      message.saveChanges();
       transport.sendMessage(message, message.getAllRecipients());
     } finally {
       transport.close();
     }
   }
-
 }

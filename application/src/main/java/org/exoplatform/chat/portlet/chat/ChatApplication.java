@@ -28,6 +28,7 @@ import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
 import juzu.request.ResourceContext;
 import juzu.template.Template;
+
 import org.apache.commons.fileupload.FileItem;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.listener.ServerBootstrap;
@@ -42,10 +43,13 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -302,23 +306,26 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
-    // Clean targetFullName
-    targetFullname = ChatUtils.cleanString(targetFullname);
-
+    
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
-    Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
-    if (spaceBean!=null) // Space use case
-    {
-      group = spaceBean.getGroupId();
-      if (group.startsWith("/")) group = group.substring(1);
-      title = "Meeting "+sdf.format(new Date());
-      path = wikiService_.createSpacePage(title, content, group);
+    JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
+    String typeRoom = (String)jsonObject.get("typeRoom");
+    String xwiki = (String)jsonObject.get("xwiki");
+    ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
+    if("s".equalsIgnoreCase(typeRoom)){
+      Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
+      if (spaceBean!=null) // Space use case
+      {
+        group = spaceBean.getGroupId();
+        if (group.startsWith("/")) group = group.substring(1);
+        title = "Meeting "+sdf.format(new Date());
+        path = wikiService_.createSpacePage(title, xwiki, group, users);
+      }
     }
-    else // Team use case
-    {
+    else{
       title = targetFullname+" Meeting "+sdf.format(new Date());
-      path = wikiService_.createIntranetPage(title, content);
+      path = wikiService_.createIntranetPage(title, xwiki, users);
     }
     path = ServerBootstrap.getServerBase()+path;
 
