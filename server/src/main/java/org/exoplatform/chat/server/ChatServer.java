@@ -30,7 +30,6 @@ import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
@@ -51,11 +50,15 @@ import org.json.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -853,12 +856,21 @@ public class ChatServer
       message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
     }
     
-    message.setSubject(subject);
-    message.setContent(htmlBody, "text/html");
+    message.setSubject(subject, "UTF-8");
+    // Create a message part to represent the body text
+    BodyPart messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
+    // use a MimeMultipart as we need to handle the file attachments
+    Multipart multipart = new MimeMultipart();
+    // add the message body to the mime message
+    multipart.addBodyPart(messageBodyPart);
+    // Put all message parts in the message
+    message.setContent(multipart);
     
     Transport transport = session.getTransport("smtps");
     try {
       transport.connect(host, user, password);
+      message.saveChanges();
       transport.sendMessage(message, message.getAllRecipients());
     } finally {
       transport.close();
