@@ -449,7 +449,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     return creator;
   }
-
+  
   public void setRoomName(String room, String name) {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
 
@@ -490,6 +490,19 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     return room;
   }
+  
+  public String getTypeRoomChat(String roomId){
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX+M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", roomId);
+    DBCursor cursor = coll.find(query);
+    Object roomType = null;
+    while (cursor.hasNext()){
+     DBObject doc = cursor.next();
+     roomType = doc.get("type");
+    }
+    return roomType.toString();
+    }
 
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService)
   {
