@@ -27,6 +27,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.MimeType;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -349,6 +350,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/delete")
   public Response.Content delete(String user, String token, String room, String messageId) throws IOException
   {
@@ -369,6 +371,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/edit")
   public Response.Content edit(String user, String token, String room, String messageId, String message) throws IOException
   {
@@ -389,6 +392,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/toggleFavorite")
   public Response.Content toggleFavorite(String user, String token, String targetUser)
   {
@@ -590,6 +594,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/updateUnreadMessages")
   public Response.Content updateUnreadMessages(String room, String user, String token)
   {
@@ -656,6 +661,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/getStatus")
   public Response.Content getStatus(String user, String token, String targetUser)
   {
@@ -689,6 +695,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/setStatus")
   public Response.Content setStatus(String user, String token, String status)
   {
@@ -709,6 +716,7 @@ public class ChatServer
   }
 
   @Resource
+  @MimeType("text/plain")
   @Route("/getCreator")
   public Response.Content getCreator(String user, String token, String room)
   {
