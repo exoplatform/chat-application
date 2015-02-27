@@ -240,8 +240,36 @@ public class ChatServer
     }
     String data = chatService.read(room, userService, false, from, to);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    String roomType = chatService.getTypeRoomChat(room);
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    String date = formatter.format(new GregorianCalendar().getTime());
+    String title = "";
+    String roomName = "";
+    List<UserBean> users = new ArrayList<UserBean>();
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
+        users = userService.getUsersInRoomChatOneToOne(room);
+        title = "Meeting Notes ["+date+"]";
+      } else {
+        users = userService.getUsers(room);
+        List<SpaceBean> spaces = userService.getSpaces(user);
+        for (SpaceBean spaceBean:spaces)
+        {
+          if (room.equals(spaceBean.getRoom()))
+          {
+            roomName = spaceBean.getDisplayName();
+          }
+        }
+        List<RoomBean> roomBeans = userService.getTeams(user);
+        for (RoomBean roomBean:roomBeans)
+        {
+          if (room.equals(roomBean.getRoom()))
+          {
+            roomName = roomBean.getFullname();
+          }
+        }
+        title = roomName+" : Meeting Notes ["+date+"]";
+      }
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
@@ -259,26 +287,6 @@ public class ChatServer
         }
       }
 
-      String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
-      for (SpaceBean spaceBean:spaces)
-      {
-        if (room.equals(spaceBean.getRoom()))
-        {
-          roomName = spaceBean.getDisplayName();
-        }
-      }
-      List<RoomBean> roomBeans = userService.getTeams(user);
-      for (RoomBean roomBean:roomBeans)
-      {
-        if (room.equals(roomBean.getRoom()))
-        {
-          roomName = roomBean.getFullname();
-        }
-      }
-      SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-      String date = formatter.format(new GregorianCalendar().getTime());
-      String title = roomName+" : Meeting Notes ["+date+"]";
       html = reportBean.getAsHtml(title);
 
       try {
@@ -777,7 +785,7 @@ public class ChatServer
   }
 
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
-
+	  
     String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
     String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
     String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
@@ -796,7 +804,7 @@ public class ChatServer
 
     Session session = Session.getInstance(props, null);
     //session.setDebug(true);
-
+    
     MimeMessage message = new MimeMessage(session);
     message.setFrom(new InternetAddress(user, senderFullname));
 
@@ -804,11 +812,11 @@ public class ChatServer
     for (String to: toList) {
       message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
     }
-
+    
     message.setSubject(subject);
     message.setContent(htmlBody, "text/html");
-
-    Transport transport = session.getTransport("smtp");
+    
+    Transport transport = session.getTransport("smtps");
     try {
       transport.connect(host, user, password);
       transport.sendMessage(message, message.getAllRecipients());
@@ -816,5 +824,4 @@ public class ChatServer
       transport.close();
     }
   }
-
 }
