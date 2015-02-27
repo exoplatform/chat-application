@@ -359,6 +359,7 @@ public class ReportBean {
     /**
      * Questions
      */
+   if(questions.size() > 0) {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-question' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
@@ -369,10 +370,12 @@ public class ReportBean {
       html.append("<div style='padding: 4px'>").append(question).append("</div>");
     }
     html.append("</span><br><br>");
+   }
 
     /**
      * Links
      */
+   if(links.size()>0) {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-link' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
@@ -385,10 +388,12 @@ public class ReportBean {
       html.append("</div>");
     }
     html.append("</span><br><br>");
+   }
 
     /**
      * Files
      */
+   if(files.size()>0) {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-file' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
@@ -402,6 +407,7 @@ public class ReportBean {
       html.append("</div>");
     }
     html.append("</span><br><br>");
+   }
 
     /**
      * Discussions
