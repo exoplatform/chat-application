@@ -64,9 +64,8 @@
 {
   height: (@height - 44);
   overflow: auto;
-  border: 1px solid @colorBorder;
   cursor: default;
-  background-color: #f0f0f0;
+  margin-bottom: 0!important;
 }
 .chat-status-chat {
   padding: 0;
@@ -110,25 +109,15 @@
 }
 
 table.list-rooms {
-  background-color: #ffffff;
-  tr.info td {
-    #gradient > .vertical(#5d88ce, #3261ac);
-    color: #FFF !important;
-  }
   tr.empty {
     td {
       text-align: center;
-      color: #999;
       padding-left: 6px;
     }
     &.info {
       td {
         background: none;
-        color: #999!important;
       }
-    }
-    &:hover td {
-      background: #fff;
     }
   }
   tr:last-child {
@@ -144,12 +133,7 @@ table.list-rooms {
     width: 100%;
   }
   .header-room {
-    background: #f0f0f0;
-    .box-shadow(0 0 3px 0 rgba(0, 0, 0, 0.1));
     td {
-      color: #333;
-      border-top: 1px solid #cfcfcf;
-      border-bottom: 1px solid #cfcfcf;
       font-weight: bold;
       padding: 7px 7px 7px 19px;
       height: 20px;
@@ -168,9 +152,6 @@ table.list-rooms {
     }
     &:first-child{
       .border-radius(4px 4px 0 0);
-    }
-    &:hover, &.open {
-      background-color: #f8f8f8;
     }
   }
 
@@ -202,24 +183,12 @@ table.list-rooms {
   }
 }
 
-.team-users-list, .task-users-list {
-  .label.team-user-label, .label.task-user-label {
-    background: none repeat scroll 0 0 #E0E8F5;
-    border: 1px solid #3f6fbb;
-    box-shadow: none;
-    color: #224886;
-    font-weight: normal;
-    margin-right: 10px;
-    margin-bottom: 8px;
-    padding: 2px 4px;
-    text-shadow: none;
-    > i {
-      vertical-align: middle;
+.task-users-list {
+  .uiMention {
+    & + .uiMention {
+      margin-left: 2px;
     }
   }
-}
-.task-users-list {
-  .label.task-user-label {margin-bottom: 2px;}
 }
 
 .team-users-search {
@@ -334,12 +303,8 @@ table.list-rooms {
 .chat-message
 {
   position: relative;
-  background-color: @colorBgLight;
-  border-top: 1px solid @colorBorderGrey;
   height: @heightMessage;
-  -webkit-border-radius: 0 0 4px 4px;
-  -moz-border-radius: 0 0 4px 4px;
-  border-radius: 0 0 4px 4px;
+  padding: 0!important;
   > .pull-left{
     padding-left: 11px!important;
   }
@@ -564,15 +529,11 @@ table.list-rooms {
 
 }
 
-.room-detail
-{
+.room-detail{
   position: block;
-  background-color: @colorBgLight;
-  border-bottom: 1px solid @colorBorderGrey;
   height: @heightRoomDetail;
-  -webkit-border-radius: 4px 4px 0 0;
-  -moz-border-radius: 4px 4px 0 0;
-  border-radius: 4px 4px 0 0;
+  .box-shadow(none)!important;
+  padding:0!important;
 }
 
 .room-detail-button, .msbuttonGroupRecord {
@@ -585,6 +546,9 @@ table.list-rooms {
   .btn.msButtonRecord {
     padding-right: 6px;
     padding-left: 6px;
+    [class^="uiIconChat"] {
+      margin-top: -1px;
+    }
   }
 }
 
@@ -615,7 +579,6 @@ table.list-rooms {
   line-height: 61px;
   font-weight: bold;
   font-size: 14px;
-  color: #2f5e92;
   .text-overflow;
 }
 
@@ -640,18 +603,12 @@ table.list-rooms {
 .users-online {
   td {
     border: 0px !important;
-    color: #333;
-    font-size: 13px;
     height: 20px;
-    padding: 6px 6px 6px 0px;
     vertical-align: middle;
   }
   .uiIconChatFavorite {
     cursor: pointer;
     display: none;
-  }
-  &:hover {
-    #gradient > .vertical(#f0f0f0, #f8f8f8);
   }
 }
 
@@ -887,14 +844,6 @@ hr
   margin-top: 4px;
 }
 
-.contentQuote {
-  font-style: italic;
-  padding: 10px;
-  background: #CCCCCC;
-  margin: 0 0 0 15px;
-  word-wrap: break-word;
-  .border-radius(2px);
-}
 
 .contentDeleted {
   font-style: italic;

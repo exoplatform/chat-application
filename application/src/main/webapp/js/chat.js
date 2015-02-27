@@ -838,7 +838,7 @@ var chatApplication = new ChatApplication();
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');
       var html = $usersList.html();
-      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i></span>";
+      html += "<span class='uiMention'><a href='javascript:void(0)' class='team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i><a/></span>";
       $usersList.html(html);
       var $teamAddUser = $('#team-add-user');
       $teamAddUser.val("");
@@ -848,7 +848,7 @@ var chatApplication = new ChatApplication();
       $userResults.html("");
 
       $(".team-user-remove").on("click", function() {
-        $(this).parent().remove();
+        $(this).parents('.uiMention').remove();
       });
 
     }
@@ -856,7 +856,7 @@ var chatApplication = new ChatApplication();
     function addTaskUserLabel(name, fullname) {
       var $usersList = $('.task-users-list');
       var html = $usersList.html();
-      html += "<span class='label task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></span>";
+      html += "<span class='uiMention'><a href='javascript:void(0)' class=' task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></a></span>";
       $usersList.html(html);
       var $taskAddUser = $('#task-add-user');
       $taskAddUser.val("");
@@ -866,7 +866,7 @@ var chatApplication = new ChatApplication();
       $userResults.html("");
 
       $(".task-user-remove").on("click", function() {
-        $(this).parent().remove();
+        $(this).parents('.uiMention').remove();
       });
     }
 
@@ -1928,10 +1928,10 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if (this.targetUser!==undefined) {
-    jqchat(".users-online").removeClass("info");
+    jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {
       var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
-      $targetUser.addClass("info");
+      $targetUser.addClass("accordion-active");
       jqchat(".room-total").removeClass("room-total-white");
       $targetUser.find(".room-total").addClass("room-total-white");
     }
@@ -2329,7 +2329,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   if (this.isDesktopView() && this.targetUser!==undefined) {
     var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
-    $targetUser.addClass("info");
+    $targetUser.addClass("accordion-active");
     jqchat(".room-total").removeClass("room-total-white");
     $targetUser.find(".room-total").addClass("room-total-white");
   }

@@ -55,14 +55,14 @@
     </span>
   </div>
   <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
-    <div id="chat-users" class="uiBox">
+    <div id="chat-users" class=" uiAccordion">
       <span>&nbsp;</span>
     </div>
   </div>
   <% } %>
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
     <div class="uiBox">
-      <div class="room-detail no-user-selection" id="room-detail">
+      <div class="title room-detail no-user-selection" id="room-detail">
 
         <span class="room-detail-avatar" style="display:none">
           <div class="activityAvatar avatarCircle">
@@ -89,7 +89,7 @@
           </ul>
         </span>
 
-        <span class="target-user-fullname room-detail-fullname"></span>
+        <a class="target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
 
       </div>
 
@@ -99,7 +99,7 @@
 
       </div>
 
-      <div class="chat-message">
+      <div class="chat-message footer">
 
         <span class="pull-left" style="padding: 4px 0 0 18px;">
           <span class="actionIcon actionIconSmile disabled" data-original-title="&{exoplatform.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
@@ -185,7 +185,7 @@
                 <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
                   <strong class="actionTitle">&{exoplatform.chat.assign.task}</strong>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
-                  <div class="task-users-list"></div>
+                  <div class="task-users-list "></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
                   <div class="task-users-results" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >

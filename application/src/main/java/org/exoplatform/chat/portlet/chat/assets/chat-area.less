@@ -14,7 +14,6 @@
       font-weight: bold;
     }
     .msg-date{
-      color: @grayLight;
       margin-right: 20px;
     }
     .msg-user{
@@ -38,9 +37,7 @@
 .msRow {
   @widthOfAvatar: 32px;
   padding: 10px 0;
-  &.odd {
-    background-color: #f8f8f8;
-  }
+
   /* Layout Row Chat */
   .msContBox {
       float: left;
@@ -97,13 +94,10 @@
   .msTiltleLn {
     margin-top: -5px;
     margin-bottom: 10px;
-    .msNameUser {
-      font-weight: bold;
-      color: @grayLight;
-      &:hover {
-        color: @linkColor;
-      }
-    }
+  }
+  .msNameUser {
+    font-weight: bold;
+    font-style: normal;
   }
   .msAction {
     cursor: pointer;
@@ -115,7 +109,6 @@
     }
   }
   .msTimePost {
-    color: #999;
     font-size: 12px;
     position: absolute;
     right: 0;
@@ -125,24 +118,6 @@
   }
   .msUserMes {
     overflow: hidden;
-    .msUserQuote {
-      background-color: #f0f0f0;
-      .border-radius(3px);
-      padding: 10px 15px;
-      margin-bottom: 8px;
-      .msNameUser {
-        color: #333333;
-      }
-    }
-  }
-  .msQuoteCont {
-    font-style: italic;
-    quote {
-      border-left: 5px solid #e0e0e0;
-      padding-left: 15px;
-      display: block;
-      margin-bottom: 10px;
-    }
   }
   .msRightInfo {
     margin-left: 10px;
@@ -218,9 +193,6 @@
       }
     }
   }
-  .fileSize, .msTextGray {
-    color: #999;
-  }
   .msSaveCall {
     margin-top: 7px;
   }
@@ -233,7 +205,6 @@
 	height: 100%;
   position: relative;
   .text {
-    color: #808080;
     font-size: 14px;
     font-weight: bold;
     left: 50%;

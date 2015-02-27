@@ -410,7 +410,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow odd'>";
+            out += "  <div class='msRow rowOdd odd'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
@@ -439,7 +439,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type === "DELETED" || message.type === "EDITED") {
           msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
-        msRightInfo += "          <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "          <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
           msRightInfo += "      <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
@@ -500,7 +500,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
         if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user'  && message.options.type !=='type-kicked' )
           out += "    <div class='msRow'>";
-        else out += " <div class='msRow odd'>";
+        else out += " <div class='msRow rowOdd odd'>";
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";
@@ -513,7 +513,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         msRightInfo = "";
         msRightInfo += "         <div class='msRightInfo pull-right'>";
         msRightInfo += "           <div class='msTimePost'>";
-        msRightInfo += "             <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "             <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "           </div>";
         msRightInfo += "         </div>";
         var options = {};
@@ -988,13 +988,13 @@ ChatRoom.prototype.getQuote = function(message, originMessage) {
   var outtermostContent = message.substring(message.indexOf(']') + 1, message.lastIndexOf('[/quote]'));
   var outermostComment = message.substring(message.lastIndexOf('[/quote]') + 8);
   if (numOriginQuotes === 1) {
-    return "<div class='msUserQuote'><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></div>" + outermostComment;
+    return "<div class='postContent'><div class='msUserQuote contentQuote quoteDefault'><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></div>" + outermostComment + "</div>";
   }
   if (numQuotes > 1) {
     if (numQuotes === numOriginQuotes) {
-      return "<div class='msUserQuote'><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></div>" + outermostComment;
+      return "<div class='postContent'><div class='msUserQuote contentQuote quoteDefault'><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></div>" + outermostComment + "</div>";
     } else {
-      return "<quote><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></quote>" + outermostComment;
+      return "<quote><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont '>" + this.getQuote(outtermostContent, originMessage) + "</div></quote>" + outermostComment;
     }
   } else {
     return "<quote><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></quote>" + outermostComment;
