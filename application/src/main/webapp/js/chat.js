@@ -1979,6 +1979,7 @@ ChatApplication.prototype.loadRoom = function() {
           "user": this.username,
           "token": this.token
         },
+        dataType: 'text',
         context: this,
         success: function(response){
           //console.log("SUCCESS::getRoom::"+response);
