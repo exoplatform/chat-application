@@ -42,7 +42,7 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <commons-lang3.version>3.1</commons-lang3.version>
+    <commons-lang3.version>3.2</commons-lang3.version>
     <exoplatform.version>4.0.0</exoplatform.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <juzu.version>0.6.2</juzu.version>
