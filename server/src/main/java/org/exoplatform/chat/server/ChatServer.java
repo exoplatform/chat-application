@@ -366,6 +366,12 @@ public class ChatServer
       ArrayList<String> usersInGroup = new ArrayList<String>();
       xwiki = reportBean.getAsXWiki(serverBase);
       try {
+        for (UserBean userBean : users) {
+          if (!"".equals(userBean.getName())) {
+            usersInGroup.add(userBean.getName());
+          }
+        }
+        jsonObject.put("users", usersInGroup);
         jsonObject.put("xwiki", xwiki);
         jsonObject.put("typeRoom", typeRoom);
       } catch (Exception e) {
