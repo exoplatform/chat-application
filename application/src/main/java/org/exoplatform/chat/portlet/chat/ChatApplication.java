@@ -328,6 +328,7 @@ public class ChatApplication
     JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
     String typeRoom = (String)jsonObject.get("typeRoom");
     String xwiki = (String)jsonObject.get("xwiki");
+    ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
     if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
       Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
       if (spaceBean!=null) // Space use case
@@ -335,13 +336,13 @@ public class ChatApplication
         group = spaceBean.getGroupId();
         if (group.startsWith("/")) group = group.substring(1);
         title = "Meeting "+sdf.format(new Date());
-        path = wikiService_.createSpacePage(title, content, group);
+        path = wikiService_.createSpacePage(title, xwiki, group, users);
       }
     }
     else // Team use case & one to one use case
     {
       title = targetFullname+" Meeting "+sdf.format(new Date());
-      path = wikiService_.createIntranetPage(title, content);
+      path = wikiService_.createIntranetPage(title, xwiki, users);
     }
     path = ServerBootstrap.getServerBase()+path;
 
