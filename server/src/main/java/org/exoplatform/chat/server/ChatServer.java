@@ -400,9 +400,15 @@ public class ChatServer
       
       }
       reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
-      
+      ArrayList<String> usersInGroup = new ArrayList<String>();
       xwiki = reportBean.getAsXWiki(serverBase,locale);
       try {
+        for (UserBean userBean : users) {
+          if (!"".equals(userBean.getName())) {
+            usersInGroup.add(userBean.getName());
+          }
+        }
+        jsonObject.put("users", usersInGroup);
         jsonObject.put("xwiki", xwiki);
         jsonObject.put("typeRoom", typeRoom);
       } catch (Exception e) {
