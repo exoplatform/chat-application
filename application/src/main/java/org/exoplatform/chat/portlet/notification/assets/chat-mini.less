@@ -1,13 +1,5 @@
 /* Chat mini area [inherit from chat area] */
 .mini-chat {
-  &.mini-chat-collapse {
-    .history,.message {
-      display: none;
-    }
-  }
-  &.arrow_box:after, &.arrow_box:before {
-    display: none;
-  }
   display: none;
   position: fixed;
   width: 300px;
@@ -16,11 +8,17 @@
   left: auto!important;
   bottom: 0;
   right: 10px;
-  background-color: @white;
-  .border-radius(5px);
   z-index: 1000;
   .box-shadow(0px 2px 6px 0px rgba(35, 44, 48, 0.5));
-  border: 1px solid #cccccc;
+
+  &.uiBox {
+    margin-bottom: 0;
+  }
+  &.mini-chat-collapse {
+    .history,.message {
+      display: none;
+    }
+  }
 
   .title {
     height: 26px;
@@ -61,10 +59,12 @@
 
   .history {
     display: block;
-    background-color: white;
     overflow: auto;
     max-height: 294px;
     min-height: 294px;
+    &.uiContentBox {
+      padding: 0;
+    }
     .msgln
     {
       padding: 3px 12px;

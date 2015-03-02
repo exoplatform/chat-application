@@ -1087,7 +1087,7 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml +=      " <span class='fullname'></span>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml += "</div>";
-            innerMiniChatHtml += "<div class='history'>";
+            innerMiniChatHtml += "<div class='history uiContentBox'>";
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
             $obj.html(innerMiniChatHtml);

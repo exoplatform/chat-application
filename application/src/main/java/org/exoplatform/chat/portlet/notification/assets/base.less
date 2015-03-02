@@ -42,13 +42,7 @@
   overflow: auto;
   overflow-x: hidden;
   .chat-notification-detail {
-    padding: 5px 10px;
-    display: block;
-    cursor: pointer;
     min-height: 59px;
-    &.even {
-      background-color: #f8f8f8;
-    }
     .avatarXSmall {
       float: left;
       margin-right: 10px;
@@ -59,14 +53,12 @@
     }
     .name {
       font-weight: bold;
-      color: @linkColor;
       .text-overflow;
       display: block;
     }
     .timestamp, .team {
       font-size: 12px;
       line-height: 18px;
-      color: #999;
       .text-overflow;
     }
     .timestamp {
@@ -83,16 +75,6 @@
         margin-right: 5px;
       }
     }
-    &:hover {
-      #gradient > .vertical(#638acd, darken(#638acd, 15%));
-      color: #fff;
-      a {
-        color: #fff;
-      }
-      .timestamp, .team, .name  {
-        color: #fff;
-      }
-    }
   }
 }
 .chat-notification-loading {
@@ -107,41 +89,17 @@
   -khtml-user-select: none;
   .user-select(none);
   user-select: none;
-  cursor: default; 
-    
+  cursor: default;
+}
+
+.mini-chat {
+  &.uiBox {
+    margin-bottom: 0;
+  }
 }
 
 .full-border-radius {
   .border-radius(5px);
-}
-
-.arrow_box {
-  position: relative;
-  background: #FFFFFF;
-  border: 1px solid #AAA;
-}
-.arrow_box:after, .arrow_box:before {
-  bottom: 100%;
-  left: 33%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-}
-
-.arrow_box:after {
-  border-color: rgba(240, 240, 240, 0);
-  border-bottom-color: #FFFFFF;
-  border-width: 10px;
-  margin-left: -10px;
-}
-.arrow_box:before {
-  border-color: rgba(170, 170, 170, 0);
-  border-bottom-color: #AAA;
-  border-width: 11px;
-  margin-left: -11px;
 }
 
 // Weemo Status
