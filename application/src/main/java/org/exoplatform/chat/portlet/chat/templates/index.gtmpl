@@ -104,7 +104,8 @@
         <span class="pull-left" style="padding: 4px 0 0 18px;">
           <span class="actionIcon actionIconSmile disabled" data-original-title="&{exoplatform.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
-          <span class="msg-emoticons-panel no-user-selection" style="display:none">
+          <span class="msg-emoticons-panel popover top no-user-selection" style="display:none">
+          <div class="arrow"></div>
             <span class="emoticon emoticon-smile-white emoticon-btn" data=":)">&nbsp;</span>
             <span class="emoticon emoticon-sad-white emoticon-btn" data=":(">&nbsp;</span>
             <span class="emoticon emoticon-big-smile-white emoticon-btn" data=":D">&nbsp;</span>
@@ -187,7 +188,7 @@
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
                   <div class="task-users-list "></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
-                  <div class="task-users-results" style="display:none;"></div>
+                  <div class="task-users-results uiAutoComplete" style="display:none;"></div>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >
                   <div class="uiActionBorder" >
                   	<a href="#" type="button" class="btn btn-primary create-task-button">&{exoplatform.chat.post}</a>
@@ -297,7 +298,7 @@
             <label class="team-add-user-label">&{exoplatform.chat.team.help}</label>
           </div>
         </div>
-        <div class="team-users-results" style="display:none;"></div>
+        <div class="team-users-results uiAutoComplete" style="display:none;"></div>
       </div>
     </div>
     <div class="uiAction uiActionBorder">

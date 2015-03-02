@@ -393,10 +393,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
             if (thiss.isPublic) {
-              out += "          <a class='msNameUser' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
+              out += "          <a class='msNameUser muted' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
             }
             else {
-              out += "          <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+              out += "          <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
             }
             out += "          </div>";
           } else {
@@ -415,7 +415,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
-            out += "            <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+            out += "            <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
             out += "          </div>";
           }
         }
@@ -426,7 +426,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         var msgtemp = message.message;
         var noEditCssClass = "";
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
+          msgtemp = "<span class='contentDeleted empty'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
           noEditCssClass = "noEdit";
         } else {
           msgtemp = thiss.messageBeautifier(message);
@@ -506,7 +506,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         out += "            <div class='inner'>";
         if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
           out += "            <div class='msTiltleLn clearfix'>";
-          out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+          out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
           out += "            </div>";
         }
         out += "              <div class='msUserCont noEdit msg-text clearfix'>";
@@ -629,7 +629,7 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
     } else if ("type-task" === actionType) {
       out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
     } else if ("type-event" === actionType) {
-      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
+      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar time'>" + options.startDate.substr(3, 2) + "</span></i>";
     } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
       out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
     } else if ("call-on" === actionType) {

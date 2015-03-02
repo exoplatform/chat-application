@@ -751,7 +751,7 @@ var chatApplication = new ChatApplication();
 
       if ( event.which === 13 ) { // ENTER
         $("."+prefix+"-user").each(function() {
-          if ($(this).hasClass(prefix+"-user-selected")) {
+          if ($(this).hasClass("selected")) {
             var name = $(this).attr("data-name");
             var fullname = $(this).attr("data-fullname");
             if (typeof callback === "function") {
@@ -764,19 +764,19 @@ var chatApplication = new ChatApplication();
         var total = $("."+prefix+"-user").size();
         var done = false;
         $("."+prefix+"-user").each(function(index) {
-          if (!done && $(this).hasClass(prefix+"-user-selected")) {
+          if (!done && $(this).hasClass("selected")) {
             done = true;
-            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
+            $("."+prefix+"-user").removeClass("selected");
             if (isUp) {
               if (index === 0)
-                $("."+prefix+"-user").last().addClass(prefix+"-user-selected");
+                $("."+prefix+"-user").last().addClass("selected");
               else
-                $(this).prev().addClass(prefix+"-user-selected");
+                $(this).prev().addClass("selected");
             } else {
               if (index === total-1)
-                $("."+prefix+"-user").first().addClass(prefix+"-user-selected");
+                $("."+prefix+"-user").first().addClass("selected");
               else
-                $(this).next().addClass(prefix+"-user-selected");
+                $(this).next().addClass("selected");
             }
           }
         });
@@ -806,8 +806,8 @@ var chatApplication = new ChatApplication();
             $userResults.css("display", "block");
             if (user.status == "offline") user.status = "invisible";
             var classSel = "";
-            if (number === 0) classSel = prefix+"-user-selected"
-            html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+            if (number === 0) classSel = "selected"
+            html += "<div class='"+prefix+"-user item "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
             html += " <span class='chat-user-name'><span class='inner'>";
             html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
@@ -819,8 +819,8 @@ var chatApplication = new ChatApplication();
           $userResults.html(html);
 
           $('.'+prefix+'-user').on("mouseover", function() {
-            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
-            $(this).addClass(prefix+"-user-selected");
+            $("."+prefix+"-user").removeClass("selected");
+            $(this).addClass("selected");
           });
 
           $('.'+prefix+'-user').on("click", function() {
