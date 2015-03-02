@@ -42,8 +42,8 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <commons-lang3.version>3.1</commons-lang3.version>
     <exoplatform.version>4.2.x-SNAPSHOT</exoplatform.version>
+    <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <juzu.version>1.0.0-cr2-SNAPSHOT</juzu.version>
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
