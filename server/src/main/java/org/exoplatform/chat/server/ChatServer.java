@@ -319,6 +319,9 @@ public class ChatServer
     Long from = null;
     Long to = null;
     String xwiki = "";
+    String roomName = "";
+    List<UserBean> users = new ArrayList<UserBean>();
+    JSONObject jsonObject = new JSONObject();
     try {
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
@@ -332,34 +335,47 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, false, from, to);
+    String typeRoom = chatService.getTypeRoomChat(room);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if(ChatService.TYPE_ROOM_USER.equalsIgnoreCase(typeRoom)) {
+        users = userService.getUsersInRoomChatOneToOne(room);
+      }
+      else {
+        users = userService.getUsers(room);
+        List<SpaceBean> spaces = userService.getSpaces(user);
+        for (SpaceBean spaceBean:spaces)
+        {
+          if (room.equals(spaceBean.getRoom()))
+          {
+            roomName = spaceBean.getDisplayName();
+          }
+        }
+        List<RoomBean> roomBeans = userService.getTeams(user);
+        for (RoomBean roomBean:roomBeans)
+        {
+          if (room.equals(roomBean.getRoom()))
+          {
+            roomName = roomBean.getFullname();
+          }
+        }
+      }
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
-
-      String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
-      for (SpaceBean spaceBean:spaces)
-      {
-        if (room.equals(spaceBean.getRoom()))
-        {
-          roomName = spaceBean.getDisplayName();
-        }
-      }
-      List<RoomBean> roomBeans = userService.getTeams(user);
-      for (RoomBean roomBean:roomBeans)
-      {
-        if (room.equals(roomBean.getRoom()))
-        {
-          roomName = roomBean.getFullname();
-        }
-      }
+      
+      ArrayList<String> usersInGroup = new ArrayList<String>();
       xwiki = reportBean.getAsXWiki(serverBase);
+      try {
+        jsonObject.put("xwiki", xwiki);
+        jsonObject.put("typeRoom", typeRoom);
+      } catch (Exception e) {
+        LOG.warning(e.getMessage());
+        return Response.notFound("No Room yet");
+      }
 
     }
 
-    return Response.ok(xwiki).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
