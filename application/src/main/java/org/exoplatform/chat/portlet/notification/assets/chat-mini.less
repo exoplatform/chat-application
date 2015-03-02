@@ -27,8 +27,8 @@
     border: 1px solid #3d3d3d;
     padding: 5px 10px;
     margin:-1px -1px 0px -1px;
-    .border-top-left-radius(4px);
-    .border-top-right-radius(4px);
+    .border-top-left-radius(3px);
+    .border-top-right-radius(3px);
     #gradient > .vertical (#4f4f4f,#474747);
     .title-left {
       color: #fff;
@@ -85,7 +85,6 @@
     {
       vertical-align: bottom;
       font-weight: normal;
-      color: #CCC;
       padding-left: 10px;
       line-height: 12px;
     }
@@ -161,7 +160,7 @@
 
   .message {
     padding:10px;
-  border-top:1px solid #ccc;
+    background: none;
     input {
      width:100%;
    margin:0;
@@ -230,10 +229,10 @@
     }
   }
   .msUserAvatar {
-    width: 40px!important;
-    padding-left: 12px;
-    padding-right: 15px;
-    text-align: center;
+   width: 40px!important;
+   padding-left: 12px;
+   padding-right: 15px;
+   text-align: center;
   }
   .msContBox {
     > .inner {
@@ -244,19 +243,10 @@
     .border-radius(@widthOfAvatar);
   }
   .msAvatarLink, .msAvatarLink > img {
-    width: @widthOfAvatar;
-    height: @widthOfAvatar;
+    .square(@widthOfAvatar);
   }
   .msAvatarLink {
-    background-color: #fff;
-    padding: 3px;
-    border: 1px solid #b2b1b1;
     display: block;
-    #gradient > .vertical(#ffffff, #f1f1f1);
-    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
-    > img {
-      .box-shadow(0 1px 1px rgba(255,255,255, .1));
-    }
   }
   .msLinkInMes {
     font-weight: bold;
@@ -268,14 +258,12 @@
   .msAction {
     cursor: pointer;
     visibility: hidden;
-    color: @linkColor;
     font-size: 12px;
     a {
       font-size: 12px;
     }
   }
   .msTimePost {
-    color: #999;
     font-size: 12px;
     position: absolute;
     right: 0;
@@ -345,7 +333,7 @@
         &:hover {
           font-weight: bold;
           i {
-            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+            background-image: url("@{images-path}/Icons/uiIconsSecondary.png");
           }
         }
       }
@@ -392,8 +380,9 @@
 		&:hover ,&:active,&:focus,&.actived {
 				.box-shadow(none);
 				border: none;
+                background: @grayDark;
 				.uiIconMinimize ,.uiIconMaximize ,.uiIconClose {
-					background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png")!important;
+					background-image: url("@{images-path}/Icons/uiIconsSecondary.png")!important;
 				}
 				.uiIconChatPopOut {
 					background-image: url('@{imgPath}uiIconChatWhite.png')!important;
@@ -437,21 +426,5 @@
 		position: absolute;
 		top: 10px;
 		.translate(-50%, 0);
-	}
-	.notify-info {
-		background-color: @linkColor;
-		color: @white;
-		display: inline-block;
-		font-size: 11px;
-		height: 15px;
-		margin-right: 5px;
-		line-height: 15px;
-		min-width: 10px;
-		padding: 0 4px;
-		text-align: center;
-		vertical-align: middle;
-    font-weight: bold;
-    .border-radius(2px);    
-  	.box-shadow(1px 1px 1px 0px rgba(0,0,0,0.2));
 	}
 }

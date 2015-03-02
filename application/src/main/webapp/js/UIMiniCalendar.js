@@ -65,9 +65,9 @@
             clndr.style.position = "absolute";
             clndr.style.zIndex = "99";
             if (base.Browser.isIE6()) {
-                clndr.innerHTML = "<div class='calendarComponent' ><iframe id='" + this.calendarId + "IFrame' frameBorder='0' style='position:absolute;height:100%;' scrolling='no'></iframe><div style='position:absolute;'></div></div>";
+                clndr.innerHTML = "<div class='calendarComponent uiCalendarComponent' ><iframe id='" + this.calendarId + "IFrame' frameBorder='0' style='position:absolute;height:100%;' scrolling='no'></iframe><div style='position:absolute;'></div></div>";
             } else {
-                clndr.innerHTML = "<div class='calendarComponent' ><div style='position: absolute; width: 100%;'></div></div>";
+                clndr.innerHTML = "<div class='calendarComponent uiCalendarComponent' ><div style='position: absolute; width: 100%;'></div></div>";
             }
             document.body.appendChild(clndr);
         },

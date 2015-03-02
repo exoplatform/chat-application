@@ -3,11 +3,9 @@
   .msgln{
     height: 100%;
     padding: 0px !important;
-    color: @white;
   }
   .msgln-odd {
     padding: 20px 0px;
-    background: @grayLighter;
     .msg-text{
       margin: 0px 60px 0px 110px;
       word-wrap: break-word;
@@ -18,7 +16,6 @@
     }
     .msg-user{
       padding: 0px 10px 0px 45px;
-      color: @grayDark;
     }
   }
 }
@@ -60,10 +57,10 @@
     }
   }
   .msUserAvatar {
-    width: 40px!important;
-    padding-left: 12px;
-    padding-right: 15px;
-    text-align: center;
+   width: 40px!important;
+   padding-left: 12px;
+   padding-right: 15px;
+   text-align: center;
   }
   .msContBox {
     > .inner {
@@ -74,19 +71,10 @@
     .border-radius(@widthOfAvatar);
   }
   .msAvatarLink, .msAvatarLink > img {
-    width: @widthOfAvatar;
-    height: @widthOfAvatar;
+    .square(@widthOfAvatar);
   }
   .msAvatarLink {
-    background-color: #fff;
-    padding: 3px;
-    border: 1px solid #b2b1b1;
     display: block;
-    #gradient > .vertical(#ffffff, #f1f1f1);
-    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
-    > img {
-      .box-shadow(0 1px 1px rgba(255,255,255, .1));
-    }
   }
   .msLinkInMes {
     font-weight: bold;
@@ -181,7 +169,7 @@
         &:hover {
           font-weight: bold;
           i {
-            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+            background-image: url("@{images-path}/Icons/uiIconsSecondary.png");
           }
         }
       }

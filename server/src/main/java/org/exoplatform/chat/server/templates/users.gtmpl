@@ -20,7 +20,7 @@
       </td>
       <td>
         <% if (room.unreadTotal>0) { %>
-        <span class="room-total" style="float:right;" data="<%=room.unreadTotal%>"><%=room.unreadTotal%></span>
+        <span class="room-total badgeDefault badgePrimary mini" style="float:right;" data="<%=room.unreadTotal%>"><%=room.unreadTotal%></span>
         <% } %>
       </td>
     </tr>

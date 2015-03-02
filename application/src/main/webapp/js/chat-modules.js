@@ -376,9 +376,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
                 if (thiss.isPublic) {
-                  out += "  <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+                  out += "  <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
                 } else {
-                  out += "  <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                  out += "  <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 }
                 out += "  </div>";
               } else {
@@ -402,7 +402,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
           } else {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
-                out += "    <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                out += "    <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
                 out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -471,9 +471,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "        </div>";
           out += "        <div class='msUserAvatar'>";
           if (thiss.isPublic) {
-            out += "        <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+            out += "        <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
           } else {
-            out += "        <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+            out += "        <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
           }
           out += "        </div>";
           out += "      </div>";
@@ -486,11 +486,11 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "          </div>";
           out += "        </div>";
           if (prevUser !== "__system") {
-            out += "      <div class='msUserAvatar'>";
+            out += "      <div class='msUserAvatar '>";
             if (thiss.isPublic)
-              out += "      <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+              out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
             else
-              out += "      <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+              out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
             out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -1083,13 +1083,13 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
-            innerMiniChatHtml +=      "<span class='notify-info'></span>";
+            innerMiniChatHtml +=      "<span class='notify-info badgeDefault badgePrimary mini'></span>";
             innerMiniChatHtml +=      " <span class='fullname'></span>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='history uiContentBox'>";
             innerMiniChatHtml += "</div>";
-            innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
+            innerMiniChatHtml += "<div class='message footer'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
             $obj.html(innerMiniChatHtml);
 
             // If this is "refresh page" case, show minichat (if it shown before)

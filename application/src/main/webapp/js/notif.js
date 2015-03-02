@@ -315,7 +315,7 @@ ChatNotification.prototype.refreshNotif = function() {
         //console.log('refreshNotif :: '+total);
         var $chatNotification = jqchat("#chat-notification");
         if (total>0) {
-          $chatNotification.html('<span class="notif-total">'+total+'</span>');
+          $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
           $chatNotification.css('display', 'block');
         } else {
           $chatNotification.html('<span></span>');
