@@ -97,6 +97,8 @@ public class NotificationApplication
     remoteUser_ = securityContext.getRemoteUser();
     String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
     String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
+    String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
+
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
@@ -109,6 +111,7 @@ public class NotificationApplication
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalStatus", chatIntervalStatus)
             .set("chatIntervalNotif", chatIntervalNotif)
+            .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("title", title)
             .set("messages", messages)
             .set("shortSpaceName", shortSpaceName)

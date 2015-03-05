@@ -19,7 +19,11 @@
 
 package org.exoplatform.chat.portlet.chat;
 
-import juzu.*;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
+import juzu.SessionScoped;
+import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.SecurityContext;
 import juzu.template.Template;
@@ -110,6 +114,7 @@ public class ChatApplication
     String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
     String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
     String demoMode = (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(dbServerMode) || PropertyManager.PROPERTY_SERVICE_IMPL_JCR.equals(servicesImplementation))?"DEV":"PROD";
+    String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
     String fullname = (fullname_==null || fullname_.isEmpty()) ? remoteUser_ : fullname_;
 
@@ -130,6 +135,7 @@ public class ChatApplication
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+            .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("publicMode", isPublic)
             .set("publicModeEnabled", publicModeEnabled)
             .set("view", view)

@@ -69,6 +69,8 @@ public class PropertyManager {
   public static final String PROPERTY_MAIL_USER = "mailUser";
   public static final String PROPERTY_MAIL_PASSWORD = "mailPassword";
 
+  public static final String PROPERTY_PLF_USER_STATUS_UPDATE_URL = "plfUsrStatUpdUrl";
+
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
@@ -114,7 +116,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_PUBLIC_MODE, "false");
       overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       overridePropertyIfNotSet(PROPERTY_TEAM_ADMIN_GROUP, "/platform/users");
-      overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "25000");
+      overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "60000");
       overridePropertyIfNotSet(PROPERTY_READ_DAYS, "30");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
@@ -123,6 +125,8 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "587");
       overridePropertyIfNotSet(PROPERTY_MAIL_USER, "exo");
       overridePropertyIfNotSet(PROPERTY_MAIL_PASSWORD, "");
+      overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
+
     }
     return properties;
   }
