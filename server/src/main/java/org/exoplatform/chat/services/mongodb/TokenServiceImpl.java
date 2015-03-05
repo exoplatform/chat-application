@@ -189,7 +189,7 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
   private int getValidity() {
     if (validity_==-1)
     {
-      validity_ = 25000;
+      validity_ = 60000;
       try
       {
         validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY));

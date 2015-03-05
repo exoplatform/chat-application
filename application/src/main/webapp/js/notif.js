@@ -32,6 +32,8 @@ function ChatNotification() {
 
   this.chatPage = "/portal/intranet/chat";
 
+  this.plfUserStatusUpdateUrl = "";
+
   this.tiptipContentDOMNodeInsertedHandler = function() {
     chatNotification.attachChatButtonToUserPopup();
   };
@@ -53,6 +55,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatIntervalStatus = options.statusInterval;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
   this.shortSpaceName = options.shortSpaceName;
+  this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
 };
 
 /**
@@ -406,7 +409,7 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
 ChatNotification.prototype.setStatus = function(status, callback) {
 
   if (status !== undefined) {
-    //console.log("setStatus :: "+status);
+    // Update mongo chat status
 
     jqchat.ajax({
       url: this.jzSetStatus,
@@ -433,8 +436,20 @@ ChatNotification.prototype.setStatus = function(status, callback) {
       }
 
     });
-  }
 
+    // Update platform user status
+    var url = this.plfUserStatusUpdateUrl + this.username  + "?status=" + status;
+    jqchat.ajax({
+      url: url,
+      type: 'PUT',
+      context: this,
+
+      success: function(response){
+      },
+      error: function(response){
+      }
+    });
+  }
 };
 
 
@@ -596,7 +611,8 @@ var chatNotification = new ChatNotification();
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
-      "shortSpaceName": $notificationApplication.attr("data-short-space-name")
+      "shortSpaceName": $notificationApplication.attr("data-short-space-name"),
+      "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url")
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();

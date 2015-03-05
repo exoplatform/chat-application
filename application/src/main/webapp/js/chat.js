@@ -17,6 +17,7 @@ var chatApplication = new ChatApplication();
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
     chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
     chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
+    chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
 
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
@@ -1105,6 +1106,7 @@ function ChatApplication() {
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
   this.chatIntervalUsers = "";
+  this.plfUserStatusUpdateUrl = "";
   this.chatIntervalSession = "";
   this.chatIntervalStatus = "";
 
@@ -2486,7 +2488,7 @@ ChatApplication.prototype.isDesktopView = function() {
 ChatApplication.prototype.setStatus = function(status, callback) {
 
   if (status !== undefined) {
-    //console.log("setStatus :: "+status);
+    // Update mongodb chat status
 
     jqchat.ajax({
       url: this.jzSetStatus,
@@ -2511,8 +2513,21 @@ ChatApplication.prototype.setStatus = function(status, callback) {
           callback("offline");
         }
       }
-
     });
+
+    // Update platform user status
+    var url = this.plfUserStatusUpdateUrl + this.username  + "?status=" + status;
+    jqchat.ajax({
+      url: url,
+      type: 'PUT',
+      context: this,
+
+      success: function(response){
+      },
+      error: function(response){
+      }
+    });
+
   }
 
 };
