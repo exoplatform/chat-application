@@ -24,12 +24,33 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 public class PropertyManager {
   private static final Logger LOG = Logger.getLogger(PropertyManager.class.getName());
 
   private static Properties properties;
 
-  public static final String PROPERTIES_PATH = System.getProperty("exo.conf.dir") + "/chat.properties";
+  public static final String PROPERTIES_PATH;
+    static {
+      String exoConfDir = System.getProperty("exo.conf.dir");
+      String tomcatConfDir = System.getProperty("catalina.base");
+      String jbossConfDir = System.getProperty("jboss.server.config.dir");
+
+      if (StringUtils.isNotEmpty(exoConfDir)) {
+        // One-server mode
+        PROPERTIES_PATH = exoConfDir + "/chat.properties";
+      } else { // Two-server mode
+        if (StringUtils.isNotEmpty(tomcatConfDir)) {
+          PROPERTIES_PATH = tomcatConfDir + "/conf/chat.properties";
+        } else if (StringUtils.isNotEmpty(jbossConfDir)) {
+          PROPERTIES_PATH = jbossConfDir + "/chat.properties";
+        } else {
+          LOG.warning("Impossible to get the path of chat.properties. Use the current folder.");
+          PROPERTIES_PATH= "./chat.properties";
+        }
+      }
+    }
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
