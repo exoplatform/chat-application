@@ -28,7 +28,7 @@ import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;

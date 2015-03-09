@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.ibm.icu.text.Transliterator;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.services.ChatService;
 
 public class ChatUtils {
