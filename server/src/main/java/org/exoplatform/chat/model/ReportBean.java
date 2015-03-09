@@ -146,7 +146,13 @@ public class ReportBean {
             task.setDueDate(options.get("dueDate").toString());
             task.setUsername(options.get("username").toString());
             addTask(task);
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.task", locale)+" \""+options.get("task").toString()+"\" "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.task.assignedTo", locale)+" "+options.get("fullname").toString()+" - "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.task.due", locale)+" "+options.get("dueDate").toString()+" ]";
+            msg = "[ "+
+              ChatUtils.appRes("exoplatform.chat.meetingnotes.task", locale).
+              replace("{0}", options.get("task").toString()).
+              replace("{1}", options.get("fullname").toString()).
+              replace("{2}", options.get("dueDate").toString())+
+              " ]";
+
           }
           else if ("type-event".equals(options.get("type").toString()))
           {
@@ -157,7 +163,14 @@ public class ReportBean {
             event.setEndDate(options.get("endDate").toString());
             event.setEndTime(options.get("endTime").toString());
             addEvent(event);
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.event", locale)+" \""+options.get("summary").toString()+"\" "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.event.from", locale)+" "+options.get("startDate").toString()+" "+options.get("startTime").toString()+" "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.event.to", locale)+" "+options.get("endDate").toString()+" "+options.get("endTime").toString()+" ]";
+            msg = "[ "+
+              ChatUtils.appRes("exoplatform.chat.meetingnotes.event", locale).
+              replace("{0}", options.get("summary").toString()).
+              replace("{1}", options.get("startDate").toString()).
+              replace("{2}", options.get("startTime").toString()).
+              replace("{3}", options.get("endDate").toString()).
+              replace("{4}", options.get("endTime").toString())+
+              " ]";
           }
           else if ("call-join".equals(options.get("type").toString()))
           {
@@ -165,11 +178,11 @@ public class ReportBean {
           }
           else if ("call-on".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.finished", locale)+" ]";
+            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.started", locale)+" ]";
           }
           else if ("call-off".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.started", locale)+" ]";
+            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.finished", locale)+" ]";
           }
         }
 
