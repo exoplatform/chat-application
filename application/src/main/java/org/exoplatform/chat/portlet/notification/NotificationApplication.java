@@ -30,8 +30,7 @@ import juzu.request.ApplicationContext;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.template.Template;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
@@ -52,7 +51,6 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

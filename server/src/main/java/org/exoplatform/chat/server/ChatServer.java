@@ -22,7 +22,6 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
@@ -31,8 +30,7 @@ import juzu.Route;
 import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.template.Template;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
@@ -62,7 +60,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

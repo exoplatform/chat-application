@@ -1,20 +1,17 @@
 package org.exoplatform.chat.portlet.chat;
 
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 
 @Named("calendarService")
 @ApplicationScoped
