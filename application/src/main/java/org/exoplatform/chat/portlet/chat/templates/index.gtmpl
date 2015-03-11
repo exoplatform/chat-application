@@ -10,6 +10,7 @@
   data-public-mode-enabled="<%=publicModeEnabled%>"
   data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
+  data-db-name="<%=dbName%>"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

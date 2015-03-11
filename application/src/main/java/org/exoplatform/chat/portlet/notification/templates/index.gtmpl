@@ -10,6 +10,7 @@
   data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-short-space-name="<%=shortSpaceName%>"
+  data-db-name="<%=dbName%>"
         class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
   <div style="display: none;">
     <audio id="chat-audio-notif" controls preload="auto" autobuffer>

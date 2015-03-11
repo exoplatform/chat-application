@@ -12,7 +12,7 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, dbName) {
   this.id = "";
   this.messages = "";
   this.jzChatRead = jzChatRead;
@@ -39,14 +39,16 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
 
   this.startMeetingTimestamp = "";
   this.startCallTimestamp = "";
+  this.dbName = dbName;
 }
 
 
-ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, callback) {
+ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, callback, dbName) {
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
+  this.dbName = dbName;
 
   var thiss = this;
   snack.request({
@@ -54,7 +56,8 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
     data: {"targetUser": targetUser,
       "user": username,
       "token": token,
-      "isAdmin": isAdmin
+      "isAdmin": isAdmin,
+      "dbName": thiss.dbName
     }
   }, function (err, response){
     if (!err) {
@@ -92,7 +95,7 @@ ChatRoom.prototype.onShowMessages = function(callback) {
 };
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
-  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, callback);
+  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, callback, this.dbName);
 };
 
 /**
@@ -100,7 +103,7 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  * @param message : the message to send
  * @param callback : the method to execute on success
  */
-ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
+ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback, dbName) {
 
   // Update temporary message for smooth view
   if (room !== "" && room === this.id) {
@@ -135,7 +138,8 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "options": JSON.stringify(options),
       "token": token,
       "timestamp": new Date().getTime(),
-      "isSystem": isSystemMessage
+      "isSystem": isSystemMessage,
+      "dbName": dbName
     }
   }, function (err, response){
     if (!err) {
@@ -163,7 +167,8 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       data: {
         room: this.id,
         user: this.username,
-        token: this.token
+        token: this.token,
+        dbName: this.dbName
       }
     }, function (err, res){
       // check for an error
@@ -249,7 +254,8 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
       data: {
         room: room,
         user: this.username,
-        token: this.token
+        token: this.token,
+        dbName: this.dbName
       }
     }, function (err, res){
       if (err) {
@@ -275,7 +281,8 @@ ChatRoom.prototype.showAsText = function(callback) {
       room: thiss.id,
       user: thiss.username,
       token: thiss.token,
-      isTextOnly: "true"
+      isTextOnly: "true",
+      dbName: thiss.dbName
     }
   }, function (err, response){
     if (!err) {
@@ -296,7 +303,8 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
       user: thiss.username,
       token: thiss.token,
       fromTimestamp: fromTimestamp,
-      toTimestamp: toTimestamp
+      toTimestamp: toTimestamp,
+      dbName: thiss.dbName
     }
   }, function (err, response){
     if (!err) {
@@ -320,7 +328,8 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
       token: thiss.token,
       serverBase: serverBase,
       fromTimestamp: fromTimestamp,
-      toTimestamp: toTimestamp
+      toTimestamp: toTimestamp,
+      dbName: thiss.dbName
     }
   }, function (err, response){
     if (!err) {
@@ -1027,7 +1036,8 @@ ChatRoom.prototype.updateUnreadMessages = function() {
     data: {"room": this.id,
       "user": this.username,
       "token": this.token,
-      "timestamp": new Date().getTime()
+      "timestamp": new Date().getTime(),
+      "dbName": this.dbName
     },
 
     success:function(response){
@@ -1149,7 +1159,9 @@ function showMiniChatPopup(room, type) {
   jzStoreParam(chatNotification.sessionId + "miniChatRoom", room);
   jzStoreParam(chatNotification.sessionId + "miniChatType", type);
 
-  var chatServerUrl = jqchat("#chat-status").attr("data-chat-server-url");
+  var chatStatus = jqchat("#chat-status");
+  var chatServerUrl = chatStatus.attr("data-chat-server-url");
+  var dbName = chatStatus.attr("data-db-name");
   var $miniChat = jqchat(".mini-chat").first();
   var username = $miniChat.attr("data-username");
   var token = $miniChat.attr("data-token");
@@ -1176,7 +1188,8 @@ function showMiniChatPopup(room, type) {
       user: username,
       token: token,
       withDetail: true,
-      type: type
+      type: type,
+      dbName: dbName
     }
 
   }, function (err, response){
@@ -1190,7 +1203,7 @@ function showMiniChatPopup(room, type) {
       var jzChatGetRoom = chatServerUrl+"/getRoom";
       var jzChatUpdateUnreadMessages = chatServerUrl+"/updateUnreadMessages";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", 3000, false);
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", 3000, false, dbName);
 
         $miniChat.find(".message-input").keyup(function(event) {
           var msg = jqchat(this).val();
@@ -1245,8 +1258,7 @@ function showMiniChatPopup(room, type) {
           $miniChat.find(".notify-info").hide();
         }
       });
-      miniChats[index].init(username, token, targetUser, targetFullname, false, function(){
-      });
+      miniChats[index].init(username, token, targetUser, targetFullname, false, function(){}, dbName);
     }
   });
 

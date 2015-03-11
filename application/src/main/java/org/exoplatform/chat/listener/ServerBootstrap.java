@@ -51,25 +51,25 @@ public class ServerBootstrap {
 
   private static final Logger LOG = Logger.getLogger(ServerBootstrap.class.getName());
 
-  public static String getUserFullName(String username)
+  public static String getUserFullName(String username, String dbName)
   {
-    return callServer("getUserFullName", "username="+username);
+    return callServer("getUserFullName", "username="+username+"&dbName="+dbName);
   }
 
-  public static void addUser(String username, String token)
+  public static void addUser(String username, String token, String dbName)
   {
-    postServer("addUser", "username="+username+"&token="+token);
+    postServer("addUser", "username="+username+"&token="+token+"&dbName="+dbName);
   }
 
-  public static void setAsAdmin(String username, boolean isAdmin)
+  public static void setAsAdmin(String username, boolean isAdmin, String dbName)
   {
-    postServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin);
+    postServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin+"&dbName="+dbName);
   }
 
-  public static void addUserFullNameAndEmail(String username, String fullname, String email)
+  public static void addUserFullNameAndEmail(String username, String fullname, String email, String dbName)
   {
     try {
-      postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email);
+      postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email + "&dbName=" + dbName);
     } catch (IOException e) {
       LOG.warning(e.getMessage());
     }
@@ -83,7 +83,7 @@ public class ServerBootstrap {
     return token;
   }
 
-  public static void setSpaces(String username, SpaceBeans beans)
+  public static void setSpaces(String username, SpaceBeans beans, String dbName)
   {
     String params = "username="+username;
     String serSpaces = "";
@@ -94,6 +94,7 @@ public class ServerBootstrap {
       LOG.warning(e.getMessage());
     }
     params += "&spaces="+serSpaces;
+    params += "&dbName="+dbName;
     postServer("setSpaces", params);
   }
 

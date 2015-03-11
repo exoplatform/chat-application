@@ -20,6 +20,8 @@
 package org.exoplatform.chat.services.mongodb;
 
 import com.mongodb.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
@@ -41,14 +43,18 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 
   private static final Logger LOG = Logger.getLogger("UserService");
 
-  private DB db()
+  private DB db(String dbName)
   {
-    return ConnectionManager.getInstance().getDB();
+    if (StringUtils.isEmpty(dbName)) {
+      return ConnectionManager.getInstance().getDB();
+    } else {
+      return ConnectionManager.getInstance().getDB(dbName);
+    }
   }
 
-  public void toggleFavorite(String user, String targetUser)
+  public void toggleFavorite(String user, String targetUser, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -69,9 +75,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public boolean isFavorite(String user, String targetUser)
+  public boolean isFavorite(String user, String targetUser, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -87,9 +93,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return false;
   }
 
-  public void addUserFullName(String user, String fullname)
+  public void addUserFullName(String user, String fullname, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -110,9 +116,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public void addUserEmail(String user, String email)
+  public void addUserEmail(String user, String email, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -133,10 +139,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public void setSpaces(String user, List<SpaceBean> spaces)
+  public void setSpaces(String user, List<SpaceBean> spaces, String dbName)
   {
     List<String> spaceIds = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     for (SpaceBean bean:spaces)
     {
       String room = ChatUtils.getRoomId(bean.getId());
@@ -173,7 +179,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 
 
     }
-    coll = db().getCollection(M_USERS_COLLECTION);
+    coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -193,10 +199,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public void addTeamRoom(String user, String teamRoomId) {
+  public void addTeamRoom(String user, String teamRoomId, String dbName) {
     List<String> teamIds = new ArrayList<String>();
     teamIds.add(teamRoomId);
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -226,16 +232,16 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public void addTeamUsers(String teamRoomId, List<String> users) {
+  public void addTeamUsers(String teamRoomId, List<String> users, String dbName) {
     for (String user:users)
     {
       LOG.info("Team Add : " + user);
-      this.addTeamRoom(user, teamRoomId);
+      this.addTeamRoom(user, teamRoomId, dbName);
     }
   }
 
-  public void removeTeamUsers(String teamRoomId, List<String> users) {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+  public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     for (String user:users)
     {
       LOG.info("Team Remove : " + user);
@@ -260,10 +266,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  private RoomBean getTeam(String teamId)
+  private RoomBean getTeam(String teamId, String dbName)
   {
     RoomBean roomBean = null;
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", teamId);
     DBCursor cursor = coll.find(query);
@@ -283,9 +289,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return roomBean;
   }
 
-  public List<RoomBean> getTeams(String user) {
+  public List<RoomBean> getTeams(String user, String dbName) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -298,7 +304,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       {
         for (String room:listrooms)
         {
-          rooms.add(getTeam(room));
+          rooms.add(getTeam(room, dbName));
         }
       }
 
@@ -306,10 +312,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return rooms;
   }
 
-  public RoomBean getRoom(String user, String roomId) {
+  public RoomBean getRoom(String user, String roomId, String dbName) {
     RoomBean roomBean = new RoomBean();
     roomBean.setRoom(roomId);
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -339,7 +345,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         users.remove(user);
         String targetUser = users.get(0);
         roomBean.setUser(targetUser);
-        roomBean.setFullname(this.getUserFullName(targetUser));
+        roomBean.setFullname(this.getUserFullName(targetUser, dbName));
       }
       else if ("e".equals(type))
       {
@@ -351,10 +357,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return roomBean;
   }
 
-  private SpaceBean getSpace(String roomId)
+  private SpaceBean getSpace(String roomId, String dbName)
   {
     SpaceBean spaceBean = null;
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -376,10 +382,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return spaceBean;
   }
 
-  public List<SpaceBean> getSpaces(String user)
+  public List<SpaceBean> getSpaces(String user, String dbName)
   {
     List<SpaceBean> spaces = new ArrayList<SpaceBean>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -392,7 +398,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       {
         for (String space:listspaces)
         {
-          spaces.add(getSpace(space));
+          spaces.add(getSpace(space, dbName));
         }
       }
 
@@ -400,7 +406,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return spaces;
   }
 
-  public List<UserBean> getUsers(String roomId)
+  public List<UserBean> getUsers(String roomId, String dbName)
   {
     //removing "space-" prefix
     if (roomId.indexOf(ChatService.SPACE_PREFIX)==0)
@@ -413,7 +419,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
     }
     List<UserBean> users = new ArrayList<UserBean>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
 
     BasicDBObject spaces = new BasicDBObject("spaces", roomId);
     BasicDBObject teams = new BasicDBObject("teams", roomId);
@@ -440,10 +446,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
 
-  public List<UserBean> getUsers(String filter, boolean fullBean) {
+  public List<UserBean> getUsers(String filter, boolean fullBean, String dbName) {
     filter = filter.replaceAll(" ", ".*");
     List<UserBean> users = new ArrayList<UserBean>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 
     BasicDBObject un = new BasicDBObject("user", regex);
@@ -470,9 +476,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
 
-  public String setStatus(String user, String status)
+  public String setStatus(String user, String status, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -493,9 +499,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return status;
   }
 
-  public void setAsAdmin(String user, boolean isAdmin)
+  public void setAsAdmin(String user, boolean isAdmin, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -515,9 +521,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  public boolean isAdmin(String user)
+  public boolean isAdmin(String user, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -530,10 +536,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return false;
   }
 
-  public String getStatus(String user)
+  public String getStatus(String user, String dbName)
   {
     String status = STATUS_NONE;
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -543,20 +549,20 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       if (doc.containsField("status"))
         status = doc.get("status").toString();
       else
-        status = setStatus(user, STATUS_AVAILABLE);
+        status = setStatus(user, STATUS_AVAILABLE, dbName);
     }
     else
     {
-      status = setStatus(user, STATUS_AVAILABLE);
+      status = setStatus(user, STATUS_AVAILABLE, dbName);
     }
 
     return status;
   }
 
-  public String getUserFullName(String user)
+  public String getUserFullName(String user, String dbName)
   {
     String fullname = null;
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -570,15 +576,15 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return fullname;
   }
 
-  public UserBean getUser(String user)
+  public UserBean getUser(String user, String dbName)
   {
-    return getUser(user, false);
+    return getUser(user, false, dbName);
   }
 
-  public UserBean getUser(String user, boolean withFavorites)
+  public UserBean getUser(String user, boolean withFavorites, String dbName)
   {
     UserBean userBean = new UserBean();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -603,10 +609,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return userBean;
   }
 
-  public List<String> getUsersFilterBy(String user, String room, String type)
+  public List<String> getUsersFilterBy(String user, String room, String type, String dbName)
   {
     ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     if (ChatService.TYPE_ROOM_SPACE.equals(type))
       query.put("spaces", room);
@@ -624,9 +630,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
 
-  public int getNumberOfUsers()
+  public int getNumberOfUsers(String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();

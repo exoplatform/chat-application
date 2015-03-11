@@ -62,7 +62,7 @@ public class ChatTools
 
   @Resource
   @Route("/createDemoUser")
-  public Response.Content createDemoUser(String username, String passphrase)
+  public Response.Content createDemoUser(String username, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -75,9 +75,9 @@ public class ChatTools
     }
 
     String token = tokenService.getToken(username);
-    tokenService.addUser(username, token);
-    userService.addUserFullName(username, username);
-    userService.setAsAdmin(username, false);
+    tokenService.addUser(username, token, dbName);
+    userService.addUserFullName(username, username, dbName);
+    userService.setAsAdmin(username, false, dbName);
 
     StringBuffer data = new StringBuffer();
     data.append("{");
@@ -91,7 +91,7 @@ public class ChatTools
 
   @Resource
   @Route("/createDemoSpaces")
-  public Response.Content createDemoSpaces(String username, String nbSpaces, String nbSpacesMax, String passphrase)
+  public Response.Content createDemoSpaces(String username, String nbSpaces, String nbSpacesMax, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -128,7 +128,7 @@ public class ChatTools
       spaceBean.setShortName("Demo Space "+spaceNum);
       beans.add(spaceBean);
     }
-    userService.setSpaces(username, beans);
+    userService.setSpaces(username, beans, dbName);
 
 
 
@@ -143,44 +143,44 @@ public class ChatTools
 
   @Resource
   @Route("/addUser")
-  public Response.Content addUser(String username, String token, String passphrase)
+  public Response.Content addUser(String username, String token, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    tokenService.addUser(username, token);
+    tokenService.addUser(username, token, dbName);
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/setAsAdmin")
-  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase)
+  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    userService.setAsAdmin(username, "true".equals(isAdmin));
+    userService.setAsAdmin(username, "true".equals(isAdmin), dbName);
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/addUserFullNameAndEmail")
-  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
+  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
     try {
-      userService.addUserEmail(username, email);
+      userService.addUserEmail(username, email, dbName);
       fullname = (String)ChatUtils.fromString(fullname);
-      userService.addUserFullName(username, fullname);
+      userService.addUserFullName(username, fullname, dbName);
     } catch (Exception e) {
       LOG.info("fullname wasn't serialized : " + e.getMessage());
     }
@@ -190,7 +190,7 @@ public class ChatTools
 
   @Resource
   @Route("/setSpaces")
-  public Response.Content setSpaces(String username, String spaces, String passphrase)
+  public Response.Content setSpaces(String username, String spaces, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -199,7 +199,7 @@ public class ChatTools
 
     try {
       SpaceBeans spaceBeans = (SpaceBeans)ChatUtils.fromString(spaces);
-      userService.setSpaces(username, spaceBeans.getSpaces());
+      userService.setSpaces(username, spaceBeans.getSpaces(), dbName);
     } catch (IOException e) {
       LOG.warning(e.getMessage());
     } catch (ClassNotFoundException e) {
@@ -211,21 +211,21 @@ public class ChatTools
 
   @Resource
   @Route("/getUserFullName")
-  public Response.Content getUserFullName(String username, String passphrase)
+  public Response.Content getUserFullName(String username, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    String fullname = userService.getUserFullName(username);
+    String fullname = userService.getUserFullName(username, dbName);
 
     return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/updateUnreadTestMessages")
-  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase)
+  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -246,9 +246,9 @@ public class ChatTools
       return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
     if (!room.equals("ALL"))
-      notificationService.setNotificationsAsRead(username, "chat", "room", room);
+      notificationService.setNotificationsAsRead(username, "chat", "room", room, dbName);
     else
-      notificationService.setNotificationsAsRead(username, null, null, null);
+      notificationService.setNotificationsAsRead(username, null, null, null, dbName);
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }

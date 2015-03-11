@@ -19,12 +19,12 @@ public class SpaceTestCase extends AbstractChatTestCase
   public void setUp()
   {
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
-    ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau");
-    ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com");
-    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
-    ServiceBootstrap.getUserService().addUserEmail("john", "john@exoplatform.com");
-    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
-    ServiceBootstrap.getUserService().addUserEmail("mary", "mary@exoplatform.com");
+    ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau", null);
+    ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com", null);
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
+    ServiceBootstrap.getUserService().addUserEmail("john", "john@exoplatform.com", null);
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams", null);
+    ServiceBootstrap.getUserService().addUserEmail("mary", "mary@exoplatform.com", null);
   }
 
   @Test
@@ -33,7 +33,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     log.info("SpaceTestCase.testSpaces");
     String user = "benjamin";
 
-    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     assertEquals(0, spaces.size());
     SpaceBean space = new SpaceBean();
     space.setDisplayName("Test Space");
@@ -42,9 +42,9 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
-    ServiceBootstrap.getUserService().setSpaces(user, spaces);
+    ServiceBootstrap.getUserService().setSpaces(user, spaces, null);
 
-    spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     assertEquals(1, spaces.size());
 
     SpaceBean space2 = new SpaceBean();
@@ -54,19 +54,19 @@ public class SpaceTestCase extends AbstractChatTestCase
     space2.setShortName("Test Space 2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
-    ServiceBootstrap.getUserService().setSpaces(user, spaces);
+    ServiceBootstrap.getUserService().setSpaces(user, spaces, null);
 
-    spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     assertEquals(2, spaces.size());
 
     spaces = new ArrayList<SpaceBean>();
     spaces.add(space);
-    ServiceBootstrap.getUserService().setSpaces(user, spaces);
-    spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    ServiceBootstrap.getUserService().setSpaces(user, spaces, null);
+    spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     assertEquals(1, spaces.size());
 
 
-    spaces = ServiceBootstrap.getUserService().getSpaces("john");
+    spaces = ServiceBootstrap.getUserService().getSpaces("john", null);
     assertEquals(0, spaces.size());
 
   }
@@ -75,7 +75,7 @@ public class SpaceTestCase extends AbstractChatTestCase
   public void testSpace() throws Exception
   {
     String user = "benjamin";
-    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     SpaceBean space = new SpaceBean();
     String displayName = "Test Space";
     String spaceId = "123456789";
@@ -87,9 +87,9 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setShortName("Test Space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
-    ServiceBootstrap.getUserService().setSpaces(user, spaces);
+    ServiceBootstrap.getUserService().setSpaces(user, spaces, null);
 
-    SpaceBean target = ServiceBootstrap.getUserService().getSpaces(user).get(0);
+    SpaceBean target = ServiceBootstrap.getUserService().getSpaces(user, null).get(0);
 
     assertEquals(space, target);
 
@@ -99,7 +99,7 @@ public class SpaceTestCase extends AbstractChatTestCase
   public void testSpaceUsers() throws Exception
   {
     String user = "benjamin";
-    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user);
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces(user, null);
     SpaceBean space = new SpaceBean();
     String displayName = "Test Space";
     String spaceId = "123456789";
@@ -112,13 +112,13 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
 
-    ServiceBootstrap.getUserService().setSpaces(user, spaces);
-    ServiceBootstrap.getUserService().setSpaces("john", spaces);
+    ServiceBootstrap.getUserService().setSpaces(user, spaces, null);
+    ServiceBootstrap.getUserService().setSpaces("john", spaces, null);
 
-    assertEquals(2, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
+    assertEquals(2, ServiceBootstrap.getUserService().getUsers(space.getRoom(), null).size());
 
-    ServiceBootstrap.getUserService().setSpaces("mary", spaces);
-    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
+    ServiceBootstrap.getUserService().setSpaces("mary", spaces, null);
+    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom(), null).size());
 
     SpaceBean space2 = new SpaceBean();
     String displayName2 = "Test Space 2";
@@ -132,9 +132,9 @@ public class SpaceTestCase extends AbstractChatTestCase
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
 
-    ServiceBootstrap.getUserService().setSpaces("mary", spaces);
-    assertEquals(1, ServiceBootstrap.getUserService().getUsers(space2.getRoom()).size());
-    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom()).size());
+    ServiceBootstrap.getUserService().setSpaces("mary", spaces, null);
+    assertEquals(1, ServiceBootstrap.getUserService().getUsers(space2.getRoom(), null).size());
+    assertEquals(3, ServiceBootstrap.getUserService().getUsers(space.getRoom(), null).size());
 
   }
 

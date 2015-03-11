@@ -40,6 +40,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.common.router.ExoRouter;
@@ -49,6 +50,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.jcr.RepositoryException;
 import javax.portlet.PortletPreferences;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +78,10 @@ public class NotificationApplication
 
   SpaceService spaceService_;
 
+  RepositoryService repositoryService_;
+
+  String dbName;
+
   @Inject
   BundleService bundleService_;
 
@@ -83,10 +89,19 @@ public class NotificationApplication
   Provider<PortletPreferences> providerPreferences;
 
   @Inject
-  public NotificationApplication(OrganizationService organizationService, SpaceService spaceService)
+  public NotificationApplication(OrganizationService organizationService, SpaceService spaceService, RepositoryService repositoryService)
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
+    repositoryService_ = repositoryService;
+    try {
+      dbName = repositoryService_.getCurrentRepository().getConfiguration().getName();
+    } catch(RepositoryException e) {
+      LOG.warning("Cannot get current repository " + e.getMessage());
+    }
+    if (StringUtils.isEmpty(dbName)) {
+      dbName = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
+    }
   }
 
   @View
@@ -113,6 +128,7 @@ public class NotificationApplication
             .set("messages", messages)
             .set("shortSpaceName", shortSpaceName)
             .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
+            .set("dbName", dbName)
             .ok();
   }
 
@@ -129,13 +145,13 @@ public class NotificationApplication
         token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
-        addUser(remoteUser_, token_);
+        addUser(remoteUser_, token_, dbName);
 
         // Set user's Full Name in the DB
-        saveFullNameAndEmail(remoteUser_);
+        saveFullNameAndEmail(remoteUser_, dbName);
 
         // Set user's Spaces in the DB
-        saveSpaces(remoteUser_);
+        saveSpaces(remoteUser_, dbName);
 
         out = "{\"token\": \""+token_+"\", \"msg\": \"updated\"}";
 
@@ -151,30 +167,30 @@ public class NotificationApplication
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
       // Set user's Spaces in the DB
-      saveSpaces(remoteUser_);
+      saveSpaces(remoteUser_, dbName);
     }
 
     return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
   }
 
-  protected void addUser(String remoteUser, String token)
+  protected void addUser(String remoteUser, String token, String dbName)
   {
-    ServerBootstrap.addUser(remoteUser, token);
+    ServerBootstrap.addUser(remoteUser, token, dbName);
   }
 
-  protected String saveFullNameAndEmail(String username)
+  protected String saveFullNameAndEmail(String username, String dbName)
   {
     String fullname = username;
     try
     {
 
-      fullname = ServerBootstrap.getUserFullName(username);
+      fullname = ServerBootstrap.getUserFullName(username, dbName);
       if (fullname==null || fullname.isEmpty())
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         fullname = user.getFirstName()+" "+user.getLastName();
-        ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
+        ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail(), dbName);
       }
 
     } catch (Exception e) {
@@ -183,7 +199,7 @@ public class NotificationApplication
     return fullname;
   }
 
-  protected void saveSpaces(String username)
+  protected void saveSpaces(String username, String dbName)
   {
     try
     {
@@ -199,7 +215,7 @@ public class NotificationApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
     }
     catch (Exception e)
     {

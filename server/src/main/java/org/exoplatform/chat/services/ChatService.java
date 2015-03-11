@@ -41,42 +41,42 @@ public interface ChatService
   public static final String TYPE_DELETED = "DELETED";
   public static final String TYPE_EDITED = "EDITED";
 
-  public void write(String message, String user, String room, String isSystem);
+  public void write(String message, String user, String room, String isSystem, String dbName);
 
-  public void write(String message, String user, String room, String isSystem, String options);
+  public void write(String message, String user, String room, String isSystem, String options, String dbName);
 
-  public void delete(String room, String user, String messageId);
+  public void delete(String room, String user, String messageId, String dbName);
 
-  public void edit(String room, String user, String messageId, String message);
+  public void edit(String room, String user, String messageId, String message, String dbName);
 
-  public String read(String room, UserService userService);
+  public String read(String room, UserService userService, String dbName);
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp);
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp);
+  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
 
-  public String getSpaceRoom(String space);
+  public String getSpaceRoom(String space, String dbName);
 
-  public String getSpaceRoomByName(String name);
+  public String getSpaceRoomByName(String name, String dbName);
 
-  public String getTeamRoom(String team, String user);
+  public String getTeamRoom(String team, String user, String dbName);
 
-  public String getExternalRoom(String identifier);
+  public String getExternalRoom(String identifier, String dbName);
 
-  public String getTeamCreator(String room);
+  public String getTeamCreator(String room, String dbName);
 
-  public void setRoomName(String room, String name);
+  public void setRoomName(String room, String name, String dbName);
 
-  public String getRoom(List<String> users);
+  public String getRoom(List<String> users, String dbName);
 
-  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService);
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName);
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService);
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName);
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService);
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName);
 
-  public int getNumberOfRooms();
+  public int getNumberOfRooms(String dbName);
 
-  public int getNumberOfMessages();
+  public int getNumberOfMessages(String dbName);
 
 }

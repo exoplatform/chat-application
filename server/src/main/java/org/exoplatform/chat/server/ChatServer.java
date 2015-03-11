@@ -98,9 +98,9 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String token, String filter, String isAdmin, String limit)
+  public Response.Content whoIsOnline(String user, String token, String filter, String isAdmin, String limit, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -113,7 +113,7 @@ public class ChatServer
     }
 
     RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
-            notificationService, userService, tokenService);
+            notificationService, userService, tokenService, dbName);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
             ("Cache-Control", "no-cache");
   }
@@ -121,8 +121,8 @@ public class ChatServer
   @Resource
   @Route("/send")
   public Response.Content send(String user, String token, String targetUser, String message, String room,
-                               String isSystem, String options) throws IOException {
-    if (!tokenService.hasUserWithToken(user,  token))
+                               String isSystem, String options, String dbName) throws IOException {
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -133,14 +133,14 @@ public class ChatServer
       {
         // Only member can send chat message in team
         if (targetUser.startsWith(ChatService.TEAM_PREFIX)) {
-          List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+          List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
           if (!roomMembers.contains(user)) {
             return Response.content(403, "Petit malin !");
           }
         }
 
         if (isSystem==null) isSystem="false";
-        chatService.write(message, user, room, isSystem, options);
+        chatService.write(message, user, room, isSystem, options, dbName);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
         {
           String content = ((message.length()>30)?message.substring(0,29)+"...":message);
@@ -150,30 +150,30 @@ public class ChatServer
           if (targetUser.startsWith(ChatService.SPACE_PREFIX))
           {
             List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX
-                    .length()), ChatService.TYPE_ROOM_SPACE);
+                    .length()), ChatService.TYPE_ROOM_SPACE, dbName);
             for (String tuser:users)
             {
               notificationService.addNotification(tuser, user, "chat", "room", room, content,
-                      intranetPage + "?room=" + room, options);
+                      intranetPage + "?room=" + room, options, dbName);
             }
           }
           else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
           {
             List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX
-                    .length()), ChatService.TYPE_ROOM_TEAM);
+                    .length()), ChatService.TYPE_ROOM_TEAM, dbName);
             for (String tuser:users)
             {
               notificationService.addNotification(tuser, user, "chat", "room", room, content,
-                      intranetPage + "?room=" + room, options);
+                      intranetPage + "?room=" + room, options, dbName);
             }
           }
           else
           {
             notificationService.addNotification(targetUser, user, "chat", "room", room, content,
-                    intranetPage + "?room=" + room, options);
+                    intranetPage + "?room=" + room, options, dbName);
           }
 
-          notificationService.setNotificationsAsRead(user, "chat", "room", room);
+          notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
         }
       }
 
@@ -189,8 +189,8 @@ public class ChatServer
   @Resource
   @Route("/read")
   public Response.Content read(String user, String token, String room, String fromTimestamp,
-                               String isTextOnly) throws IOException {
-    if (!tokenService.hasUserWithToken(user,  token))
+                               String isTextOnly, String dbName) throws IOException {
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -204,14 +204,14 @@ public class ChatServer
     }
 
     // Only member can view chat message in a team
-    if (userService.getRoom(user, room).isTeam()) {
-      List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+    if (userService.getRoom(user, room, dbName).isTeam()) {
+      List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
       if (!roomMembers.contains(user)) {
         return Response.content(403, "Petit malin !");
       }
     }
 
-    String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
+    String data = chatService.read(room, userService, "true".equals(isTextOnly), from, dbName);
 
     return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
@@ -219,8 +219,8 @@ public class ChatServer
   @Resource
   @Route("/sendMeetingNotes")
   public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                           String toTimestamp) throws IOException {
-    if (!tokenService.hasUserWithToken(user,  token))
+                                           String toTimestamp, String dbName) throws IOException {
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -240,10 +240,10 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, userService, false, from, to);
+    String data = chatService.read(room, userService, false, from, to, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      List<UserBean> users = userService.getUsers(room, dbName);
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
@@ -262,7 +262,7 @@ public class ChatServer
       }
 
       String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
+      List<SpaceBean> spaces = userService.getSpaces(user, dbName);
       for (SpaceBean spaceBean:spaces)
       {
         if (room.equals(spaceBean.getRoom()))
@@ -270,7 +270,7 @@ public class ChatServer
           roomName = spaceBean.getDisplayName();
         }
       }
-      List<RoomBean> roomBeans = userService.getTeams(user);
+      List<RoomBean> roomBeans = userService.getTeams(user, dbName);
       for (RoomBean roomBean:roomBeans)
       {
         if (room.equals(roomBean.getRoom()))
@@ -297,8 +297,8 @@ public class ChatServer
   @Resource
   @Route("/getMeetingNotes")
   public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                          String toTimestamp, String serverBase) throws IOException {
-    if (!tokenService.hasUserWithToken(user,  token))
+                                          String toTimestamp, String serverBase, String dbName) throws IOException {
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -318,15 +318,15 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, userService, false, from, to);
+    String data = chatService.read(room, userService, false, from, to, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      List<UserBean> users = userService.getUsers(room, dbName);
       ReportBean reportBean = new ReportBean();
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
       String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
+      List<SpaceBean> spaces = userService.getSpaces(user, dbName);
       for (SpaceBean spaceBean:spaces)
       {
         if (room.equals(spaceBean.getRoom()))
@@ -334,7 +334,7 @@ public class ChatServer
           roomName = spaceBean.getDisplayName();
         }
       }
-      List<RoomBean> roomBeans = userService.getTeams(user);
+      List<RoomBean> roomBeans = userService.getTeams(user, dbName);
       for (RoomBean roomBean:roomBeans)
       {
         if (room.equals(roomBean.getRoom()))
@@ -352,15 +352,15 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/delete")
-  public Response.Content delete(String user, String token, String room, String messageId) throws IOException
+  public Response.Content delete(String user, String token, String room, String messageId, String dbName) throws IOException
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      chatService.delete(room, user,  messageId);
+      chatService.delete(room, user, messageId, dbName);
     }
     catch (Exception e)
     {
@@ -373,15 +373,15 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/edit")
-  public Response.Content edit(String user, String token, String room, String messageId, String message) throws IOException
+  public Response.Content edit(String user, String token, String room, String messageId, String message, String dbName) throws IOException
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      chatService.edit(room, user, messageId, message);
+      chatService.edit(room, user, messageId, message, dbName);
     }
     catch (Exception e)
     {
@@ -394,15 +394,15 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/toggleFavorite")
-  public Response.Content toggleFavorite(String user, String token, String targetUser)
+  public Response.Content toggleFavorite(String user, String token, String targetUser, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      userService.toggleFavorite(user, targetUser);
+      userService.toggleFavorite(user, targetUser, dbName);
     }
     catch (Exception e)
     {
@@ -415,8 +415,8 @@ public class ChatServer
   @Resource
   @Route("/getRoom")
   public Response.Content getRoom(String user, String token, String targetUser, String isAdmin, String withDetail,
-                                  String type) {
-    if (!tokenService.hasUserWithToken(user,  token))
+                                  String type, String dbName) {
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -431,7 +431,7 @@ public class ChatServer
         }
         else if ("space-name".equals(type))
         {
-          room = chatService.getSpaceRoomByName(targetUser);
+          room = chatService.getSpaceRoomByName(targetUser, dbName);
         }
         else if ("space-id".equals(type))
         {
@@ -442,28 +442,28 @@ public class ChatServer
           List<String> users = new ArrayList<String>();
           users.add(user);
           users.add(targetUser);
-          room = chatService.getRoom(users);
+          room = chatService.getRoom(users, dbName);
         }
         else if ("external".equals(type))
         {
-          room = chatService.getExternalRoom(targetUser);
+          room = chatService.getExternalRoom(targetUser, dbName);
         }
       }
       else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
-        room = chatService.getSpaceRoom(targetUser);
+        room = chatService.getSpaceRoom(targetUser, dbName);
 
       }
       else
       if (targetUser.startsWith(ChatService.TEAM_PREFIX))
       {
-        room = chatService.getTeamRoom(targetUser, user);
+        room = chatService.getTeamRoom(targetUser, user, dbName);
 
       }
       else
       if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
       {
-        room = chatService.getExternalRoom(targetUser);
+        room = chatService.getExternalRoom(targetUser, dbName);
       }
       else
       {
@@ -473,13 +473,13 @@ public class ChatServer
         ArrayList<String> users = new ArrayList<String>(2);
         users.add(finalUser);
         users.add(targetUser);
-        room = chatService.getRoom(users);
+        room = chatService.getRoom(users, dbName);
       }
       if ("true".equals(withDetail))
       {
-        roomBean = userService.getRoom(user, room);
+        roomBean = userService.getRoom(user, room, dbName);
       }
-      notificationService.setNotificationsAsRead(user, "chat", "room", room);
+      notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
     }
     catch (Exception e)
     {
@@ -497,9 +497,9 @@ public class ChatServer
 
   @Resource
   @Route("/saveTeamRoom")
-  public Response.Content saveTeamRoom(String user, String token, String teamName, String room, String users)
+  public Response.Content saveTeamRoom(String user, String token, String teamName, String room, String users, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -509,13 +509,13 @@ public class ChatServer
     {
       if (room==null || "".equals(room) || "---".equals(room))
       {
-        room = chatService.getTeamRoom(teamName, user);
-        userService.addTeamRoom(user, room);
+        room = chatService.getTeamRoom(teamName, user, dbName);
+        userService.addTeamRoom(user, room, dbName);
       }
       else
       {
         // Only creator can edit members or set team name
-        String creator = chatService.getTeamCreator(room);
+        String creator = chatService.getTeamCreator(room, dbName);
         if (!user.equals(creator)) {
           return Response.notFound("Petit malin !");
         }
@@ -524,7 +524,7 @@ public class ChatServer
         {
           room = room.substring(ChatService.TEAM_PREFIX.length());
         }
-        chatService.setRoomName(room, teamName);
+        chatService.setRoomName(room, teamName, dbName);
       }
 
       if (users!=null && !"".equals(users)) {
@@ -532,7 +532,7 @@ public class ChatServer
         List<String> usersNew = Arrays.asList(ausers);
         List<String> usersToAdd = new ArrayList<String>(usersNew);
         List<String> usersToRemove = new ArrayList<String>();
-        List<String> usersExisting = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
+        List<String> usersExisting = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
         for (String userExist:usersExisting)
         {
@@ -547,36 +547,36 @@ public class ChatServer
         }
         if (usersToRemove.size()>0)
         {
-          userService.removeTeamUsers(room, usersToRemove);
+          userService.removeTeamUsers(room, usersToRemove, dbName);
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToRemove)
           {
             if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(usert));
+            sbUsers.append(userService.getUserFullName(usert, dbName));
             first = false;
-            notificationService.setNotificationsAsRead(usert, "chat", "room", room);
+            notificationService.setNotificationsAsRead(usert, "chat", "room", room, dbName);
           }
           String removeTeamUserOptions
                   = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(user) + "\"}";
-          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions);
+                  "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
         }
         if (usersToAdd.size()>0)
         {
-          userService.addTeamUsers(room, usersToAdd);
+          userService.addTeamUsers(room, usersToAdd, dbName);
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToAdd)
           {
             if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(usert));
+            sbUsers.append(userService.getUserFullName(usert, dbName));
             first = false;
           }
           String addTeamUserOptions
                   = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(user) + "\"}";
-          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions);
+                  "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
         }
 
       }
@@ -596,18 +596,18 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/updateUnreadMessages")
-  public Response.Content updateUnreadMessages(String room, String user, String token)
+  public Response.Content updateUnreadMessages(String room, String user, String token, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      notificationService.setNotificationsAsRead(user, "chat", "room", room);
-      if (userService.isAdmin(user))
+      notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+      if (userService.isAdmin(user, dbName))
       {
-        notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room);
+        notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room, dbName);
       }
 
     }
@@ -621,9 +621,9 @@ public class ChatServer
 
   @Resource
   @Route("/notification")
-  public Response.Content notification(String user, String token, String event, String withDetails) throws IOException
+  public Response.Content notification(String user, String token, String event, String withDetails, String dbName) throws IOException
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -633,15 +633,15 @@ public class ChatServer
     if (!detailed)
     {
       // GETTING TOTAL NOTIFICATION WITHOUT DETAILS
-      totalUnread = notificationService.getUnreadNotificationsTotal(user);
-      if (userService.isAdmin(user))
+      totalUnread = notificationService.getUnreadNotificationsTotal(user, dbName);
+      if (userService.isAdmin(user, dbName))
       {
-        totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
+        totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER, dbName);
       }
     }
     else {
       // GETTING ALL NOTIFICATION DETAILS
-      notifications = notificationService.getUnreadNotifications(user, userService);
+      notifications = notificationService.getUnreadNotifications(user, userService, dbName);
       totalUnread = notifications.size();
     }
 
@@ -663,9 +663,9 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/getStatus")
-  public Response.Content getStatus(String user, String token, String targetUser)
+  public Response.Content getStatus(String user, String token, String targetUser, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -674,16 +674,16 @@ public class ChatServer
     {
       if (targetUser!=null)
       {
-        boolean online = tokenService.isUserOnline(targetUser);
+        boolean online = tokenService.isUserOnline(targetUser, dbName);
         if (online)
-          status = userService.getStatus(targetUser);
+          status = userService.getStatus(targetUser, dbName);
         else
           status = UserService.STATUS_OFFLINE;
       }
       else
       {
-        status = userService.getStatus(user);
-        tokenService.updateValidity(user, token);
+        status = userService.getStatus(user, dbName);
+        tokenService.updateValidity(user, token, dbName);
       }
     }
     catch (Exception e)
@@ -697,15 +697,15 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/setStatus")
-  public Response.Content setStatus(String user, String token, String status)
+  public Response.Content setStatus(String user, String token, String status, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      userService.setStatus(user, status);
+      userService.setStatus(user, status, dbName);
     }
     catch (Exception e)
     {
@@ -718,16 +718,16 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/getCreator")
-  public Response.Content getCreator(String user, String token, String room)
+  public Response.Content getCreator(String user, String token, String room, String dbName)
   {
     String creator = "";
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
     try
     {
-      creator = chatService.getTeamCreator(room);
+      creator = chatService.getTeamCreator(room, dbName);
     }
     catch (Exception e)
     {
@@ -739,9 +739,9 @@ public class ChatServer
 
   @Resource
   @Route("/users")
-  public Response.Content getUsers(String user, String token, String room, String filter)
+  public Response.Content getUsers(String user, String token, String room, String filter, String dbName)
   {
-    if (!tokenService.hasUserWithToken(user,  token))
+    if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -749,16 +749,16 @@ public class ChatServer
     List<UserBean> users;
     if (room!=null && !"".equals(room))
     {
-      users = userService.getUsers(room);
+      users = userService.getUsers(room, dbName);
     }
     else
     {
-      users = userService.getUsers(filter, true);
+      users = userService.getUsers(filter, true, dbName);
     }
 
     for (UserBean userBean:users)
     {
-      boolean online = tokenService.isUserOnline(userBean.getName());
+      boolean online = tokenService.isUserOnline(userBean.getName(), dbName);
       if (!online) userBean.setStatus(UserService.STATUS_OFFLINE);
     }
 
@@ -771,15 +771,15 @@ public class ChatServer
 
   @Resource
   @Route("/statistics")
-  public Response.Content getStatistics()
+  public Response.Content getStatistics(String dbName)
   {
     StringBuffer data = new StringBuffer();
     data.append("{");
-    data.append(" \"users\": "+userService.getNumberOfUsers()+", ");
-    data.append(" \"rooms\": "+chatService.getNumberOfRooms()+", ");
-    data.append(" \"messages\": "+ chatService.getNumberOfMessages()+", ");
-    data.append(" \"notifications\": "+notificationService.getNumberOfNotifications()+", ");
-    data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
+    data.append(" \"users\": "+userService.getNumberOfUsers(dbName)+", ");
+    data.append(" \"rooms\": "+chatService.getNumberOfRooms(dbName)+", ");
+    data.append(" \"messages\": "+ chatService.getNumberOfMessages(dbName)+", ");
+    data.append(" \"notifications\": "+notificationService.getNumberOfNotifications(dbName)+", ");
+    data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications(dbName));
     data.append("}");
 
     return Response.ok(data.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
