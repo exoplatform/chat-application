@@ -94,13 +94,20 @@ public class NotificationApplication
     organizationService_ = organizationService;
     spaceService_ = spaceService;
     repositoryService_ = repositoryService;
+    String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
     try {
       dbName = repositoryService_.getCurrentRepository().getConfiguration().getName();
     } catch(RepositoryException e) {
       LOG.warning("Cannot get current repository " + e.getMessage());
     }
     if (StringUtils.isEmpty(dbName)) {
-      dbName = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
+      dbName = prefixDB;
+    } else {
+      StringBuilder sb = new StringBuilder()
+                                    .append(prefixDB)
+                                    .append(".")
+                                    .append(dbName);
+      dbName = sb.toString();
     }
   }
 
