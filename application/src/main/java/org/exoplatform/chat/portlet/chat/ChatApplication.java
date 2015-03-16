@@ -34,15 +34,14 @@ import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.jcr.RepositoryException;
 import javax.portlet.PortletPreferences;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -78,8 +77,6 @@ public class ChatApplication
 
   SpaceService spaceService_;
 
-  RepositoryService repositoryService_;
-
   String dbName;
 
   @Inject
@@ -95,23 +92,21 @@ public class ChatApplication
   WikiService wikiService_;
 
   @Inject
-  public ChatApplication(OrganizationService organizationService, SpaceService spaceService, RepositoryService repositoryService)
+  public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
-    repositoryService_ = repositoryService;
     String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    try {
-      dbName = repositoryService_.getCurrentRepository().getConfiguration().getName();
-    } catch(RepositoryException e) {
-      LOG.warning("Cannot get current repository " + e.getMessage());
+    ConversationState currentState = ConversationState.getCurrent();
+    if (currentState != null) {
+      dbName = (String) currentState.getAttribute("currentTenant");
     }
     if (StringUtils.isEmpty(dbName)) {
       dbName = prefixDB;
     } else {
       StringBuilder sb = new StringBuilder()
                                     .append(prefixDB)
-                                    .append(".")
+                                    .append("_")
                                     .append(dbName);
       dbName = sb.toString();
     }
