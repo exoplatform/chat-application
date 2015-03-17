@@ -30,6 +30,7 @@ import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.chat.common.utils.ChatUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
@@ -42,7 +43,6 @@ import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.common.router.ExoRouter;
 import org.exoplatform.social.common.router.ExoRouter.Route;
 import org.exoplatform.social.core.space.model.Space;
@@ -90,20 +90,7 @@ public class NotificationApplication
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
-    String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    ConversationState currentState = ConversationState.getCurrent();
-    if (currentState != null) {
-      dbName = (String) currentState.getAttribute("currentTenant");
-    }
-    if (StringUtils.isEmpty(dbName)) {
-      dbName = prefixDB;
-    } else {
-      StringBuilder sb = new StringBuilder()
-                                    .append(prefixDB)
-                                    .append("_")
-                                    .append(dbName);
-      dbName = sb.toString();
-    }
+    dbName = ChatUtils.getDBName();
   }
 
   @View

@@ -2012,12 +2012,12 @@ ChatApplication.prototype.loadRoom = function() {
     }
 
     var thiss = this;
-    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
+    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
       thiss.room = room;
       var $msg = jqchat('#msg');
       thiss.activateRoomButtons();
       if (thiss.isDesktopView()) $msg.focus();
-    }, this.dbName);
+    });
   }
 };
 

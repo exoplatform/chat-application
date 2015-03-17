@@ -43,7 +43,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
 }
 
 
-ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, callback, dbName) {
+ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, dbName, callback) {
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
@@ -95,7 +95,7 @@ ChatRoom.prototype.onShowMessages = function(callback) {
 };
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
-  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, callback, this.dbName);
+  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, this.dbName, callback);
 };
 
 /**
@@ -103,7 +103,7 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  * @param message : the message to send
  * @param callback : the method to execute on success
  */
-ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback, dbName) {
+ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, dbName, callback) {
 
   // Update temporary message for smooth view
   if (room !== "" && room === this.id) {
@@ -1258,7 +1258,7 @@ function showMiniChatPopup(room, type) {
           $miniChat.find(".notify-info").hide();
         }
       });
-      miniChats[index].init(username, token, targetUser, targetFullname, false, function(){}, dbName);
+      miniChats[index].init(username, token, targetUser, targetFullname, false, dbName, function(){});
     }
   });
 

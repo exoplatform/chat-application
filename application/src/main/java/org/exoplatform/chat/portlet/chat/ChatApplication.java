@@ -26,17 +26,16 @@ import juzu.template.Template;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.bean.File;
+import org.exoplatform.chat.common.utils.ChatUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
-import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
@@ -96,20 +95,7 @@ public class ChatApplication
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
-    String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    ConversationState currentState = ConversationState.getCurrent();
-    if (currentState != null) {
-      dbName = (String) currentState.getAttribute("currentTenant");
-    }
-    if (StringUtils.isEmpty(dbName)) {
-      dbName = prefixDB;
-    } else {
-      StringBuilder sb = new StringBuilder()
-                                    .append(prefixDB)
-                                    .append("_")
-                                    .append(dbName);
-      dbName = sb.toString();
-    }
+    dbName = ChatUtils.getDBName();
   }
 
 
@@ -317,7 +303,7 @@ public class ChatApplication
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
     // Clean targetFullName
-    targetFullname = ChatUtils.cleanString(targetFullname);
+    targetFullname = org.exoplatform.chat.utils.ChatUtils.cleanString(targetFullname);
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
