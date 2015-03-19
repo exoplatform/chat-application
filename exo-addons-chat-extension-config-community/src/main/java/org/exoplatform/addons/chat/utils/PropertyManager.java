@@ -29,7 +29,14 @@ public class PropertyManager {
 
   private static Properties properties;
 
-  private static final String PROPERTIES_PATH = System.getProperty("catalina.base")+"/conf/chat.properties";
+  public static final String PROPERTIES_PATH;
+  static {
+    String chatConfDir = System.getProperty("exo.chat.conf");
+    if (StringUtils.isEmpty(chatConfDir)) {
+      chatConfDir = System.getProperty("catalina.base")+"/conf/chat.properties";
+    }
+    PROPERTIES_PATH = chatConfDir;
+  }
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
@@ -37,7 +44,6 @@ public class PropertyManager {
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
-    //System.out.println("PROP:"+key+"="+value);
     return value;
   }
 

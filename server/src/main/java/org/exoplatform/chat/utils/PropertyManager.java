@@ -81,7 +81,6 @@ public class PropertyManager {
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
-    //System.out.println("PROP:"+key+"="+value);
     return value;
   }
 
