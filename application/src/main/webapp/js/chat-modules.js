@@ -376,9 +376,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
                 if (thiss.isPublic) {
-                  out += "  <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+                  out += "  <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
                 } else {
-                  out += "  <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                  out += "  <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 }
                 out += "  </div>";
               } else {
@@ -393,16 +393,16 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
             if (thiss.isPublic) {
-              out += "          <a class='msNameUser' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
+              out += "          <a class='msNameUser muted' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
             }
             else {
-              out += "          <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+              out += "          <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
             }
             out += "          </div>";
           } else {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
-                out += "    <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                out += "    <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
                 out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -410,12 +410,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow odd'>";
+            out += "  <div class='msRow rowOdd odd'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
-            out += "            <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+            out += "            <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
             out += "          </div>";
           }
         }
@@ -426,7 +426,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         var msgtemp = message.message;
         var noEditCssClass = "";
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
+          msgtemp = "<span class='contentDeleted empty'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
           noEditCssClass = "noEdit";
         } else {
           msgtemp = thiss.messageBeautifier(message);
@@ -439,7 +439,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         if (message.type === "DELETED" || message.type === "EDITED") {
           msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
-        msRightInfo += "          <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "          <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
           msRightInfo += "      <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
@@ -471,9 +471,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "        </div>";
           out += "        <div class='msUserAvatar'>";
           if (thiss.isPublic) {
-            out += "        <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+            out += "        <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
           } else {
-            out += "        <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+            out += "        <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
           }
           out += "        </div>";
           out += "      </div>";
@@ -486,11 +486,11 @@ ChatRoom.prototype.showMessages = function(msgs) {
           out += "          </div>";
           out += "        </div>";
           if (prevUser !== "__system") {
-            out += "      <div class='msUserAvatar'>";
+            out += "      <div class='msUserAvatar '>";
             if (thiss.isPublic)
-              out += "      <a class='msAvatarLink' href='#'><img src='/chat/img/support-avatar.png'></a>";
+              out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
             else
-              out += "      <a class='msAvatarLink' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+              out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
             out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -500,20 +500,20 @@ ChatRoom.prototype.showMessages = function(msgs) {
         }
         if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user'  && message.options.type !=='type-kicked' )
           out += "    <div class='msRow'>";
-        else out += " <div class='msRow odd'>";
+        else out += " <div class='msRow rowOdd odd'>";
         out += "        <div class='msMessagesGroup clearfix'>";
         out += "          <div class='msContBox'>";
         out += "            <div class='inner'>";
         if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
           out += "            <div class='msTiltleLn clearfix'>";
-          out += "              <a class='msNameUser' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+          out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
           out += "            </div>";
         }
         out += "              <div class='msUserCont noEdit msg-text clearfix'>";
         msRightInfo = "";
         msRightInfo += "         <div class='msRightInfo pull-right'>";
         msRightInfo += "           <div class='msTimePost'>";
-        msRightInfo += "             <span class='msg-date'>" + thiss.getDate(message.timestamp) + "</span>";
+        msRightInfo += "             <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "           </div>";
         msRightInfo += "         </div>";
         var options = {};
@@ -629,7 +629,7 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
     } else if ("type-task" === actionType) {
       out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
     } else if ("type-event" === actionType) {
-      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar'>" + options.startDate.substr(3, 2) + "</span></i>";
+      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar time'>" + options.startDate.substr(3, 2) + "</span></i>";
     } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
       out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
     } else if ("call-on" === actionType) {
@@ -988,13 +988,13 @@ ChatRoom.prototype.getQuote = function(message, originMessage) {
   var outtermostContent = message.substring(message.indexOf(']') + 1, message.lastIndexOf('[/quote]'));
   var outermostComment = message.substring(message.lastIndexOf('[/quote]') + 8);
   if (numOriginQuotes === 1) {
-    return "<div class='msUserQuote'><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></div>" + outermostComment;
+    return "<div class='postContent'><div class='msUserQuote contentQuote quoteDefault'><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></div>" + outermostComment + "</div>";
   }
   if (numQuotes > 1) {
     if (numQuotes === numOriginQuotes) {
-      return "<div class='msUserQuote'><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></div>" + outermostComment;
+      return "<div class='postContent'><div class='msUserQuote contentQuote quoteDefault'><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></div>" + outermostComment + "</div>";
     } else {
-      return "<quote><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont'>" + this.getQuote(outtermostContent, originMessage) + "</div></quote>" + outermostComment;
+      return "<quote><div class='msTiltleLn clearfix'><b class='msNameUser'>" + outermostName + "</b></div><div class='msQuoteCont '>" + this.getQuote(outtermostContent, originMessage) + "</div></quote>" + outermostComment;
     }
   } else {
     return "<quote><b class='msNameUser'>" + outermostName + ":</b><div>" + outtermostContent + "</div></quote>" + outermostComment;
@@ -1083,13 +1083,13 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
-            innerMiniChatHtml +=      "<span class='notify-info'></span>";
+            innerMiniChatHtml +=      "<span class='notify-info badgeDefault badgePrimary mini'></span>";
             innerMiniChatHtml +=      " <span class='fullname'></span>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml += "</div>";
-            innerMiniChatHtml += "<div class='history'>";
+            innerMiniChatHtml += "<div class='history uiContentBox'>";
             innerMiniChatHtml += "</div>";
-            innerMiniChatHtml += "<div class='message'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
+            innerMiniChatHtml += "<div class='message footer'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
             $obj.html(innerMiniChatHtml);
 
             // If this is "refresh page" case, show minichat (if it shown before)

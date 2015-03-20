@@ -717,33 +717,11 @@
 
 //============== Action With Label================
 
-.uiActionWithLabel(){
-  border: 1px solid transparent;
-  cursor: pointer;
-  display: inline-block;
-  padding: 3px 8px;
-  line-height: @baseLineHeight;
-  &:hover {
-    #StatusElements .StatusHover();
-  }
-  .uiIconMiniArrowDown{
-    margin-left: 5px;
-  }
-}
 
 
 //============== actionIcon================
 .actionContainer() {
   white-space: nowrap; 
-}
- 
-.actionIcon(){
-  .uiActionWithLabel;
-  padding:2px 4px;
-  vertical-align: middle;
-  &:active,&:focus,&.active {
-    #StatusElements > .StatusActive(0px 0px 10px 0 rgba(0, 0, 0, 0.15) inset);
-  }         
 }
 
 
@@ -788,7 +766,7 @@
   border: 1px solid @borderColor;
   background: @white;
   margin: 0 0 @baseLineHeight 0;
-  .title {    
+  .title {
     background-color:  @grayWhiteSmoke;
     border-bottom: 1px solid @borderColor;
     .box-shadow(0 1px 2px rgba(13, 13, 13, 0.2));
@@ -955,20 +933,11 @@
 
 .no-user-selection{
 	.uiActionWithLabel{
-	    border: 1px solid rgba(0, 0, 0, 0);
 	    cursor: pointer;
 	    display: inline-block;
 	    line-height: 20px;
 	    padding: 2px 4px;
 	    vertical-align: middle;
-	  &:hover {
-	    background-color: #F9F9F9;
-	    background-image: linear-gradient(to bottom, #FFFFFF, #F1F1F1);
-	    background-repeat: repeat-x;
-	    border: 1px solid #CCCCCC;
-	    border-radius: 3px;
-	    box-shadow: 0 1px 2px 0 #FFFFFF;
-	  }
 	  .uiIconMiniArrowDown{
 	    margin-left: 5px;
 	  }

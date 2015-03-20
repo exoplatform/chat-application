@@ -3,23 +3,19 @@
   .msgln{
     height: 100%;
     padding: 0px !important;
-    color: @white;
   }
   .msgln-odd {
     padding: 20px 0px;
-    background: @grayLighter;
     .msg-text{
       margin: 0px 60px 0px 110px;
       word-wrap: break-word;
       font-weight: bold;
     }
     .msg-date{
-      color: @grayLight;
       margin-right: 20px;
     }
     .msg-user{
       padding: 0px 10px 0px 45px;
-      color: @grayDark;
     }
   }
 }
@@ -38,9 +34,7 @@
 .msRow {
   @widthOfAvatar: 32px;
   padding: 10px 0;
-  &.odd {
-    background-color: #f8f8f8;
-  }
+
   /* Layout Row Chat */
   .msContBox {
       float: left;
@@ -63,10 +57,10 @@
     }
   }
   .msUserAvatar {
-    width: 40px!important;
-    padding-left: 12px;
-    padding-right: 15px;
-    text-align: center;
+   width: 40px!important;
+   padding-left: 12px;
+   padding-right: 15px;
+   text-align: center;
   }
   .msContBox {
     > .inner {
@@ -77,19 +71,10 @@
     .border-radius(@widthOfAvatar);
   }
   .msAvatarLink, .msAvatarLink > img {
-    width: @widthOfAvatar;
-    height: @widthOfAvatar;
+    .square(@widthOfAvatar);
   }
   .msAvatarLink {
-    background-color: #fff;
-    padding: 3px;
-    border: 1px solid #b2b1b1;
     display: block;
-    #gradient > .vertical(#ffffff, #f1f1f1);
-    .box-shadow(0 2px 4px 0 rgba(13, 13, 13, .2));
-    > img {
-      .box-shadow(0 1px 1px rgba(255,255,255, .1));
-    }
   }
   .msLinkInMes {
     font-weight: bold;
@@ -97,13 +82,10 @@
   .msTiltleLn {
     margin-top: -5px;
     margin-bottom: 10px;
-    .msNameUser {
-      font-weight: bold;
-      color: @grayLight;
-      &:hover {
-        color: @linkColor;
-      }
-    }
+  }
+  .msNameUser {
+    font-weight: bold;
+    font-style: normal;
   }
   .msAction {
     cursor: pointer;
@@ -115,7 +97,6 @@
     }
   }
   .msTimePost {
-    color: #999;
     font-size: 12px;
     position: absolute;
     right: 0;
@@ -125,24 +106,6 @@
   }
   .msUserMes {
     overflow: hidden;
-    .msUserQuote {
-      background-color: #f0f0f0;
-      .border-radius(3px);
-      padding: 10px 15px;
-      margin-bottom: 8px;
-      .msNameUser {
-        color: #333333;
-      }
-    }
-  }
-  .msQuoteCont {
-    font-style: italic;
-    quote {
-      border-left: 5px solid #e0e0e0;
-      padding-left: 15px;
-      display: block;
-      margin-bottom: 10px;
-    }
   }
   .msRightInfo {
     margin-left: 10px;
@@ -206,7 +169,7 @@
         &:hover {
           font-weight: bold;
           i {
-            background-image: url("/eXoResources/skin/images/Icons/uiIconsWhite.png");
+            background-image: url("@{images-path}/Icons/uiIconsSecondary.png");
           }
         }
       }
@@ -217,9 +180,6 @@
         display: block;
       }
     }
-  }
-  .fileSize, .msTextGray {
-    color: #999;
   }
   .msSaveCall {
     margin-top: 7px;
@@ -233,7 +193,6 @@
 	height: 100%;
   position: relative;
   .text {
-    color: #808080;
     font-size: 14px;
     font-weight: bold;
     left: 50%;

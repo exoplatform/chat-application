@@ -53,7 +53,7 @@
     </li>
   </ul>
 </div>
-<div class="mini-chat arrow_box" style="position:fixed;bottom:0;right:10px;" data-position="right"></div>
+<div class="mini-chat uiBox" style="position:fixed;bottom:0;right:10px;" data-position="right"></div>
 <script type="text/javascript">
   (function() {
     var chatMods = document.createElement('script'); chatMods.type = 'text/javascript'; chatMods.async = true;

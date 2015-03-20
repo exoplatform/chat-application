@@ -288,7 +288,7 @@ var chatApplication = new ChatApplication();
         $("#task-add-task").val("");
         $("#task-add-user").val("");
         $("#task-add-date").val("");
-        jqchat(".task-user-label").remove();
+        jqchat(".task-user-label").parent().remove();
         hideResults();
       } else if (toggleClass === "meeting-action-event-panel") {
         $("#event-add-summary").val("");
@@ -751,7 +751,7 @@ var chatApplication = new ChatApplication();
 
       if ( event.which === 13 ) { // ENTER
         $("."+prefix+"-user").each(function() {
-          if ($(this).hasClass(prefix+"-user-selected")) {
+          if ($(this).hasClass("selected")) {
             var name = $(this).attr("data-name");
             var fullname = $(this).attr("data-fullname");
             if (typeof callback === "function") {
@@ -764,19 +764,19 @@ var chatApplication = new ChatApplication();
         var total = $("."+prefix+"-user").size();
         var done = false;
         $("."+prefix+"-user").each(function(index) {
-          if (!done && $(this).hasClass(prefix+"-user-selected")) {
+          if (!done && $(this).hasClass("selected")) {
             done = true;
-            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
+            $("."+prefix+"-user").removeClass("selected");
             if (isUp) {
               if (index === 0)
-                $("."+prefix+"-user").last().addClass(prefix+"-user-selected");
+                $("."+prefix+"-user").last().addClass("selected");
               else
-                $(this).prev().addClass(prefix+"-user-selected");
+                $(this).prev().addClass("selected");
             } else {
               if (index === total-1)
-                $("."+prefix+"-user").first().addClass(prefix+"-user-selected");
+                $("."+prefix+"-user").first().addClass("selected");
               else
-                $(this).next().addClass(prefix+"-user-selected");
+                $(this).next().addClass("selected");
             }
           }
         });
@@ -806,8 +806,8 @@ var chatApplication = new ChatApplication();
             $userResults.css("display", "block");
             if (user.status == "offline") user.status = "invisible";
             var classSel = "";
-            if (number === 0) classSel = prefix+"-user-selected"
-            html += "<div class='"+prefix+"-user "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+            if (number === 0) classSel = "selected"
+            html += "<div class='"+prefix+"-user item "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
             html += " <span class='chat-user-name'><span class='inner'>";
             html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
@@ -819,8 +819,8 @@ var chatApplication = new ChatApplication();
           $userResults.html(html);
 
           $('.'+prefix+'-user').on("mouseover", function() {
-            $("."+prefix+"-user").removeClass(prefix+"-user-selected");
-            $(this).addClass(prefix+"-user-selected");
+            $("."+prefix+"-user").removeClass("selected");
+            $(this).addClass("selected");
           });
 
           $('.'+prefix+'-user').on("click", function() {
@@ -838,7 +838,7 @@ var chatApplication = new ChatApplication();
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');
       var html = $usersList.html();
-      html += "<span class='label team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i></span>";
+      html += "<span class='uiMention'><a href='javascript:void(0)' class='team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i><a/></span>";
       $usersList.html(html);
       var $teamAddUser = $('#team-add-user');
       $teamAddUser.val("");
@@ -848,7 +848,7 @@ var chatApplication = new ChatApplication();
       $userResults.html("");
 
       $(".team-user-remove").on("click", function() {
-        $(this).parent().remove();
+        $(this).parents('.uiMention').remove();
       });
 
     }
@@ -856,7 +856,7 @@ var chatApplication = new ChatApplication();
     function addTaskUserLabel(name, fullname) {
       var $usersList = $('.task-users-list');
       var html = $usersList.html();
-      html += "<span class='label task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></span>";
+      html += "<span class='uiMention'><a href='javascript:void(0)' class='task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></a></span>";
       $usersList.html(html);
       var $taskAddUser = $('#task-add-user');
       $taskAddUser.val("");
@@ -866,7 +866,7 @@ var chatApplication = new ChatApplication();
       $userResults.html("");
 
       $(".task-user-remove").on("click", function() {
-        $(this).parent().remove();
+        $(this).parents('.uiMention').remove();
       });
     }
 
@@ -888,7 +888,7 @@ var chatApplication = new ChatApplication();
       $uitext.attr("data-id", chatApplication.targetUser);
 
       chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-        $(".team-user-label").remove();
+        $(".team-user-label").parent().remove();
 
         var users = TAFFY(jsonData.users);
         var users = users();
@@ -1689,11 +1689,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * FAVORITES
    */
-  out += "<tr class='header-room header-favorites "+(this.showFavorites ? "open":"") + "'><td colspan='3' style='border-top: 0;'>";
+  out += "<tr class='header-room accordion-heading header-favorites "+(this.showFavorites ? "open":"") + "'><td colspan='3' style='border-top: 0;'>";
   if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_favorites;
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += '<span class="room-total total-favorites">' + chatBundleData.exoplatform_chat_no_favorite + '</span>';
+  out += '<span class="room-total total-favorites badgeDefault badgePrimary mini">' + chatBundleData.exoplatform_chat_no_favorite + '</span>';
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
@@ -1713,7 +1713,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsFavorites.count() === 0 && this.showFavorites) {
-    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_favorite + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_favorite + "</td></tr>";
   }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
@@ -1724,10 +1724,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
   /**
    * USERS
    */
-  out += "<tr class='header-room header-people "+(this.showPeople ? "open":"") + "'><td colspan='3'>";
+  out += "<tr class='header-room accordion-heading header-people "+(this.showPeople ? "open":"") + "'><td colspan='3'>";
   if (this.showPeople) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_people;
-  out += '<span class="room-total total-people"></span>';
+  out += '<span class="room-total total-people badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_users + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
@@ -1754,16 +1754,16 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsPeople.count() === 0 && this.showPeople) {
-    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_connection + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_connection + "</td></tr>";
   }
 
   /**
    * TEAMS
    */
-  out += "<tr class='header-room header-teams "+(this.showTeams ? "open":"") + "'><td colspan='3'>";
+  out += "<tr class='header-room accordion-heading header-teams "+(this.showTeams ? "open":"") + "'><td colspan='3'>";
   if (this.showTeams) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_teams;
-  out += '<span class="room-total total-teams"></span>';
+  out += '<span class="room-total total-teams badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='actionIcon btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_create_team + "'><i class='uiIconChatSimplePlusMini uiIconChatLightGray'></i></div></li></ul>";
@@ -1790,16 +1790,16 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsTeams.count() === 0 && this.showTeams) {
-    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_team + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_team + "</td></tr>";
   }
 
   /**
    * SPACES
    */
-  out += "<tr class='header-room header-spaces "+(this.showSpaces ? "open":"") + "'><td colspan='3'>";
+  out += "<tr class='header-room accordion-heading header-spaces "+(this.showSpaces ? "open":"") + "'><td colspan='3'>";
   if (this.showSpaces) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
   out += chatBundleData.exoplatform_chat_spaces;
-  out += '<span class="room-total total-spaces"></span>';
+  out += '<span class="room-total total-spaces badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
@@ -1825,7 +1825,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsSpaces.count() === 0 && this.showSpaces) {
-    out += "<tr class='users-online empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_space + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_space + "</td></tr>";
   }
 
   out += '</table>';
@@ -1875,7 +1875,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
 ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   var out = "";
   if (room.user!==roomPrevUser) {
-    out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online">';
+    out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online accordion-body">';
     out += '<td class="td-status">';
     out += '<i class="';
     if (room.status === "space" || room.status === "team") {
@@ -1894,12 +1894,12 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     if (room.isActive=="true") {
       out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
     } else {
-      out += '<span class="room-inactive">'+room.user+'</span>';
+      out += '<span class="room-inactive muted">'+room.user+'</span>';
     }
     out += '</td>';
     out += '<td>';
     if (Math.round(room.unreadTotal)>0) {
-      out += '<span class="room-total" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
+      out += '<span class="room-total badgeDefault badgePrimary mini" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
     }
     else {
       out+= '<i class="uiIconChatFavorite pull-right';
@@ -1928,12 +1928,12 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if (this.targetUser!==undefined) {
-    jqchat(".users-online").removeClass("info");
+    jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {
       var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
-      $targetUser.addClass("info");
-      jqchat(".room-total").removeClass("room-total-white");
-      $targetUser.find(".room-total").addClass("room-total-white");
+      $targetUser.addClass("accordion-active");
+      jqchat(".room-total").removeClass("badgeWhite");
+      $targetUser.find(".room-total").addClass("badgeWhite");
     }
 
     jqchat("#room-detail").css("display", "block");
@@ -2329,9 +2329,9 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   if (this.isDesktopView() && this.targetUser!==undefined) {
     var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
-    $targetUser.addClass("info");
-    jqchat(".room-total").removeClass("room-total-white");
-    $targetUser.find(".room-total").addClass("room-total-white");
+    $targetUser.addClass("accordion-active");
+    jqchat(".room-total").removeClass("badgeWhite");
+    $targetUser.find(".room-total").addClass("badgeWhite");
   }
 
   jqchat(".header-room").on("click", function() {
@@ -2361,7 +2361,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     var $uitext = jqchat("#team-modal-name");
     $uitext.val("");
     $uitext.attr("data-id", "---");
-    jqchat(".team-user-label").remove();
+    jqchat(".team-user-label").parent().remove();
     var $userResults = jqchat(".team-users-results");
     $userResults.css("display", "none");
     $userResults.html("");

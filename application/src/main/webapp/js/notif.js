@@ -148,13 +148,13 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
               var evenClass = (categoryIdList.length % 2) ? "even": "";
 
 
-              html += '<div class="chat-notification-detail ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+              html += '<div class="chat-notification-detail block-item ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html +=   '<span class="avatarXSmall">';
               html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg\'" src=\'/rest/chat/api/1.0/user/getAvatarURL/'+notif.from+'\' class="avatar-image">';
               html +=   '</span>';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
-              html += '      <span class="name" href="#">' + notif.fromFullName + '</span>';
+              html += '      <span class="name text-link" href="#">' + notif.fromFullName + '</span>';
               html += '      <div class="text">';
 
               // Icon for system message
@@ -206,9 +206,9 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
               html += '      </div>';
               html += '    </div>';
               html += '    <div class="gray-box">';
-              html += '      <div class="timestamp">' + thiss.getDate(notif.timestamp) + '</div>';
+              html += '      <div class="timestamp time">' + thiss.getDate(notif.timestamp) + '</div>';
               if (notif.roomDisplayName.trim()) {
-                html += '    <div class="team">' + notif.roomDisplayName + '</div>';
+                html += '    <div class="team muted">' + notif.roomDisplayName + '</div>';
               }
               html += '    </div>';
               html += '  </div>';
@@ -315,7 +315,7 @@ ChatNotification.prototype.refreshNotif = function() {
         //console.log('refreshNotif :: '+total);
         var $chatNotification = jqchat("#chat-notification");
         if (total>0) {
-          $chatNotification.html('<span class="notif-total">'+total+'</span>');
+          $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
           $chatNotification.css('display', 'block');
         } else {
           $chatNotification.html('<span></span>');
