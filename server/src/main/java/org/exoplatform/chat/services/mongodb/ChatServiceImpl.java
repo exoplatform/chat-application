@@ -26,6 +26,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -43,6 +44,9 @@ import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -81,10 +85,15 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     write(message, user, room, isSystem, null);
   }
 
-  public void write(String message, String user, String room, String isSystem, String options)
+  public void write(String plainMessage, String user, String room, String isSystem, String options)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
-
+    String message = null;
+    try {
+      message = URLDecoder.decode(plainMessage,"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      message = plainMessage;
+    }
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
     message = message.replaceAll("<", "&lt;");
