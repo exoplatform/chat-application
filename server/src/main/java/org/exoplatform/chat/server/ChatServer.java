@@ -55,7 +55,10 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -145,8 +148,14 @@ public class ChatServer
           if (!roomMembers.contains(user)) {
             return Response.content(403, "Petit malin !");
           }
+        }        
+        try {
+          message = URLDecoder.decode(message,"UTF-8");
+          options = URLDecoder.decode(options,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          // Chat server cannot do anything in this case
+          // Get original value
         }
-
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -412,6 +421,12 @@ public class ChatServer
     }
     try
     {
+      try {
+        message = URLDecoder.decode(message,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // Chat server cannot do anything in this case
+        // Get original value
+      }
       chatService.edit(room, user, messageId, message);
     }
     catch (Exception e)
@@ -522,7 +537,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out);
+    return Response.ok(out).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -537,6 +552,11 @@ public class ChatServer
 
     try
     {
+      try {
+    	teamName = URLDecoder.decode(teamName,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOG.info("Cannot decode message: " + teamName);
+      }
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user);

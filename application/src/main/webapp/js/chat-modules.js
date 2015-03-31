@@ -131,8 +131,8 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     data: {"user": user,
       "targetUser": targetUser,
       "room": room,
-      "message": msg,
-      "options": JSON.stringify(options),
+      "message": encodeURIComponent(msg),
+      "options": encodeURIComponent(JSON.stringify(options)),
       "token": token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage
