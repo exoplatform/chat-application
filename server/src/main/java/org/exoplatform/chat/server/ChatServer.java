@@ -22,12 +22,12 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.MimeType;
 import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -41,12 +41,12 @@ import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.model.UsersBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserProfile;
 import org.json.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -57,15 +57,16 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Arrays;
 import java.util.Properties;
-
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -147,8 +148,14 @@ public class ChatServer
           if (!roomMembers.contains(user)) {
             return Response.content(403, "Petit malin !");
           }
+        }        
+        try {
+          message = URLDecoder.decode(message,"UTF-8");
+          options = URLDecoder.decode(options,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          // Chat server cannot do anything in this case
+          // Get original value
         }
-
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -416,6 +423,12 @@ public class ChatServer
     }
     try
     {
+      try {
+        message = URLDecoder.decode(message,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // Chat server cannot do anything in this case
+        // Get original value
+      }
       chatService.edit(room, user, messageId, message);
     }
     catch (Exception e)
@@ -527,7 +540,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out);
+    return Response.ok(out).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -542,6 +555,11 @@ public class ChatServer
 
     try
     {
+      try {
+    	teamName = URLDecoder.decode(teamName,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOG.info("Cannot decode message: " + teamName);
+      }
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user);

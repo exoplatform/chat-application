@@ -1270,7 +1270,7 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       "user": this.username,
       "token": this.token,
       "messageId": id,
-      "message": newMessage
+      "message": encodeURIComponent(newMessage)
     },
 
     success:function(response){
@@ -1300,7 +1300,7 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     type: 'POST',
     url: this.jzSaveTeamRoom,
     dataType: "json",
-    data: {"teamName": teamName,
+    data: {"teamName": encodeURIComponent(teamName),
       "room": room,
       "users": users,
       "user": this.username,
