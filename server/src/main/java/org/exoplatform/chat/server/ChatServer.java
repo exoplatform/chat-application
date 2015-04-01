@@ -22,14 +22,12 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -140,20 +138,14 @@ public class ChatServer
           if (!roomMembers.contains(user)) {
             return Response.content(403, "Petit malin !");
           }
-        }
-        
+        }        
         try {
           message = URLDecoder.decode(message,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          LOG.info("Cannot decode message: " + message);
-        }
-        try {
           options = URLDecoder.decode(options,"UTF-8");
         } catch (UnsupportedEncodingException e) {
-          LOG.info("Cannot decode message: " + options);
+          // Chat server cannot do anything in this case
+          // Get original value
         }
-        
-
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -397,7 +389,8 @@ public class ChatServer
       try {
         message = URLDecoder.decode(message,"UTF-8");
       } catch (UnsupportedEncodingException e) {
-        LOG.info("Cannot decode message: " + message);
+        // Chat server cannot do anything in this case
+        // Get original value
       }
       chatService.edit(room, user, messageId, message);
     }
