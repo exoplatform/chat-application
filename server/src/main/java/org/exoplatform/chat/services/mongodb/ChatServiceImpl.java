@@ -85,15 +85,10 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     write(message, user, room, isSystem, null);
   }
 
-  public void write(String plainMessage, String user, String room, String isSystem, String options)
+  public void write(String message, String user, String room, String isSystem, String options)
   {
     DBCollection coll = db().getCollection(M_ROOM_PREFIX+room);
-    String message = null;
-    try {
-      message = URLDecoder.decode(plainMessage,"UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      message = plainMessage;
-    }
+    
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
     message = message.replaceAll("<", "&lt;");

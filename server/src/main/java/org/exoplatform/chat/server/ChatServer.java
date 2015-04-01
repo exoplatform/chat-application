@@ -22,12 +22,14 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -53,7 +55,10 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,6 +141,18 @@ public class ChatServer
             return Response.content(403, "Petit malin !");
           }
         }
+        
+        try {
+          message = URLDecoder.decode(message,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          LOG.info("Cannot decode message: " + message);
+        }
+        try {
+          options = URLDecoder.decode(options,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          LOG.info("Cannot decode message: " + options);
+        }
+        
 
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
@@ -377,6 +394,11 @@ public class ChatServer
     }
     try
     {
+      try {
+        message = URLDecoder.decode(message,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOG.info("Cannot decode message: " + message);
+      }
       chatService.edit(room, user, messageId, message);
     }
     catch (Exception e)
@@ -487,7 +509,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out);
+    return Response.ok(out).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -502,6 +524,11 @@ public class ChatServer
 
     try
     {
+      try {
+    	teamName = URLDecoder.decode(teamName,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOG.info("Cannot decode message: " + teamName);
+      }
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user);
