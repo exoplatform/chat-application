@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>1.0.x-SNAPSHOT</version>
+  <version>1.1.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
