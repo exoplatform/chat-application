@@ -235,31 +235,31 @@ public class DocumentsData {
           jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
           jcrContent.setProperty("jcr:encoding", "UTF-8");
 
-          if (filename.endsWith(".jpg"))
+          if (filename.toLowerCase().endsWith(".jpg"))
             jcrContent.setProperty("jcr:mimeType", "image/jpeg");
-          else if (filename.endsWith(".png"))
+          else if (filename.toLowerCase().endsWith(".png"))
             jcrContent.setProperty("jcr:mimeType", "image/png");
-          else if (filename.endsWith(".pdf"))
+          else if (filename.toLowerCase().endsWith(".pdf"))
             jcrContent.setProperty("jcr:mimeType", "application/pdf");
-          else if (filename.endsWith(".doc"))
+          else if (filename.toLowerCase().endsWith(".doc"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-word");
-          else if (filename.endsWith(".xls"))
+          else if (filename.toLowerCase().endsWith(".xls"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-excel");
-          else if (filename.endsWith(".ppt"))
+          else if (filename.toLowerCase().endsWith(".ppt"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-powerpoint");
-          else if (filename.endsWith(".docx"))
+          else if (filename.toLowerCase().endsWith(".docx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-          else if (filename.endsWith(".xlsx"))
+          else if (filename.toLowerCase().endsWith(".xlsx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-          else if (filename.endsWith(".pptx"))
+          else if (filename.toLowerCase().endsWith(".pptx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-          else if (filename.endsWith(".odp"))
+          else if (filename.toLowerCase().endsWith(".odp"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.presentation");
-          else if (filename.endsWith(".odt"))
+          else if (filename.toLowerCase().endsWith(".odt"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
-          else if (filename.endsWith(".ods"))
+          else if (filename.toLowerCase().endsWith(".ods"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
-          else if (filename.endsWith(".zip"))
+          else if (filename.toLowerCase().endsWith(".zip"))
             jcrContent.setProperty("jcr:mimeType", "application/zip");
           else
             jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
