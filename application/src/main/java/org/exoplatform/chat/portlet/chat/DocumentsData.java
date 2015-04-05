@@ -291,7 +291,12 @@ public class DocumentsData {
   private String getSpacePath(String spaceDisplayname)
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
-    
+
+    if (spacet == null) {
+      LOG.warning("Cannot get the space of " + spaceDisplayname + ". Return null.");
+      return null;
+    }
+
     return "Groups".concat(spacet.getGroupId());
   }
 
