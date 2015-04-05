@@ -247,14 +247,14 @@ var chatApplication = new ChatApplication();
               maxfiles: 1,
               maxfilesize: 100,    // max file size in MBs
               uploadStarted: function(i, file, len){
-                console.log("upload started : "+i+" : "+file+" : "+len);
+                console.log("upload started : "+i+" : "+file.name+" : "+len);
                 // a file began uploading
                 // i = index => 0, 1, 2, 3, 4 etc
                 // file is the actual file of the index
                 // len = total files user dropped
               },
               uploadFinished: function(i, file, response, time) {
-                console.log("upload finished : "+i+" : "+file+" : "+time+" : "+response.status+" : "+response.name);
+                console.log("upload finished : "+i+" : "+file.name+" : "+time+" : "+response.status+" : "+response.name);
                 // response is the data you got back from server in JSON format.
                 var msg = response.name;
                 var options = response;
@@ -269,7 +269,7 @@ var chatApplication = new ChatApplication();
 
               },
               progressUpdated: function(i, file, progress) {
-                console.log("progress updated : "+i+" : "+file+" : "+progress);
+                console.log("progress updated : "+i+" : "+file.name+" : "+progress);
                 $("#dropzone").find('.bar').width(progress+"%");
                 $("#dropzone").find('.bar').html(progress+"%");
                 // this function is used for large files and updates intermittently
@@ -424,6 +424,7 @@ var chatApplication = new ChatApplication();
 
         var msg = response.name;
         var options = response;
+        options.fileName = encodeURIComponent(options.fileName);
         options.type = "type-file";
         options.username = chatApplication.username;
         options.fullname = chatApplication.fullname;
