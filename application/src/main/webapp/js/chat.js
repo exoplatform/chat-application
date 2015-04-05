@@ -221,7 +221,7 @@ var chatApplication = new ChatApplication();
               data: {
                 room: chatApplication.room,
                 targetUser: targetUser,
-                targetFullname: chatApplication.targetFullname
+                targetFullname: encodeURIComponent(chatApplication.targetFullname)
               },
               error: function(err, file) {
                 switch(err) {
