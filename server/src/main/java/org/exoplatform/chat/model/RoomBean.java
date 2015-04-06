@@ -136,7 +136,6 @@ public class RoomBean implements Comparable<RoomBean>
   {
     JSONObject obj = new org.json.JSONObject();
     try {
-      obj.put("fullname", this.fullname);
       obj.put("escapedFullname", this.getEscapedFullname());
       obj.put("room", this.getRoom());
       obj.put("status", this.getStatus());
