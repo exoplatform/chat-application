@@ -417,6 +417,7 @@ var chatApplication = new ChatApplication();
 
         var msg = response.name;
         var options = response;
+        options.fileName = encodeURIComponent(options.fileName);
         options.type = "type-file";
         options.username = chatApplication.username;
         options.fullname = chatApplication.fullname;

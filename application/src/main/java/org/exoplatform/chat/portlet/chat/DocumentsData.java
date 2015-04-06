@@ -24,6 +24,9 @@ import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.servlet.http.HttpServletRequest;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.logging.Logger;
@@ -181,6 +184,11 @@ public class DocumentsData {
   protected String storeFile(FileItem item, String name, boolean isPrivateContext)
   {
     String filename = item.getName();
+    try {
+      filename = URLDecoder.decode(filename,"utf-8");
+    } catch (UnsupportedEncodingException e1) {
+      // Do nothing because there is nothing to process here
+    }
     String filenameExt = filename.substring(filename.lastIndexOf("."));
     String filenameBase = filename.substring(0, filename.lastIndexOf("."));
 
