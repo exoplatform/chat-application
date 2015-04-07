@@ -259,7 +259,7 @@ public class ChatServer
         UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
         String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
         if (lang != null && lang.trim().length() > 0) {
-            locale = new Locale(lang);
+            locale = Locale.forLanguageTag(lang);
         }
       } catch (Exception e) {
 
@@ -349,7 +349,7 @@ public class ChatServer
         UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
         String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
         if (lang != null && lang.trim().length() > 0) {
-            locale = new Locale(lang);
+            locale = Locale.forLanguageTag(lang);
         }
       } catch (Exception e) {
 
