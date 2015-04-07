@@ -27,7 +27,7 @@ import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
 import juzu.template.Template;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;

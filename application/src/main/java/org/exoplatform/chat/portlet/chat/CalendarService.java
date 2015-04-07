@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.services.organization.Group;
@@ -47,7 +47,7 @@ public class CalendarService {
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
                          Date from, Date to) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
+    summary = StringEscapeUtils.escapeHtml4(summary);
 
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
@@ -82,7 +82,7 @@ public class CalendarService {
   protected void saveTask(String currentUser, String username, String summary,
                          Date from, Date to) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
+    summary = StringEscapeUtils.escapeHtml4(summary);
 
     String calId = getFirstCalendarsId(username);
     if (calId!=null) {
