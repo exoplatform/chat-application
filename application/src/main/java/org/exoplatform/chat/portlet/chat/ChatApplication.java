@@ -27,6 +27,7 @@ import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.SecurityContext;
 import juzu.template.Template;
+
 import org.apache.commons.fileupload.FileItem;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.listener.ServerBootstrap;
@@ -45,6 +46,9 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -217,7 +221,12 @@ public class ChatApplication
   @Resource
   @Ajax
   public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, SecurityContext securityContext) {
-    LOG.info("file upload in " + room);
+    try {
+      targetFullname = URLDecoder.decode(targetFullname, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // Cannot do anything here
+    }
+    LOG.info("File is uploaded in " + room + " (" + targetFullname + ")");
     if (userfile.isFormField())
     {
       String fieldName = userfile.getFieldName();

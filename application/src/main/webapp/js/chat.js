@@ -222,7 +222,7 @@ var chatApplication = new ChatApplication();
               data: {
                 room: chatApplication.room,
                 targetUser: targetUser,
-                targetFullname: chatApplication.targetFullname
+                targetFullname: encodeURIComponent(chatApplication.targetFullname)
               },
               error: function(err, file) {
                 switch(err) {
@@ -403,9 +403,15 @@ var chatApplication = new ChatApplication();
     });
 
     $('#chat-file-form').ajaxForm({
-      beforeSend: function() {
+      beforeSubmit: function(formData, jqForm, options) {
         $("#dropzone").find('.bar').width("0%");
         $("#dropzone").find('.bar').html("0%");
+        for (index = 0; index < formData.length; index++) {
+          if (formData[index].name === "targetFullname") {
+            formData[index].value = encodeURIComponent(formData[index].value);
+            break;
+          }
+        }
       },
       uploadProgress: function(event, position, total, percentComplete) {
         console.log("progress updated : "+percentComplete);
