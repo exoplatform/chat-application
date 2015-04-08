@@ -1816,14 +1816,14 @@ ChatApplication.prototype.showRooms = function(rooms) {
             totalSpaces += Math.round(room.unreadTotal);
           }
         }
-        // Update chat area header if space name is changed
+        
         if (chatApplication.room === room.room) {
           var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
           if (chatApplication.targetFullname !== spaceFullName) {
-              jqchat('.target-user-fullname').text(spaceFullName);
-              chatApplication.targetUser = room.user;
-              chatApplication.targetFullname = spaceFullName;
-              chatApplication.loadRoom();
+            jqchat('.target-user-fullname').text(spaceFullName);
+            chatApplication.targetUser = room.user;
+            chatApplication.targetFullname = spaceFullName;
+            chatApplication.loadRoom();
           }
         }
       }
