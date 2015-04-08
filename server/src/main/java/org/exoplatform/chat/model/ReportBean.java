@@ -369,7 +369,7 @@ public class ReportBean {
     {
       html.append("<div style='padding: 4px'>").append(question).append("</div>");
     }
-      html.append("</span><br><br>");
+    html.append("</span><br><br>");
    }
 
     /**
@@ -387,7 +387,7 @@ public class ReportBean {
       html.append("<span><a href='"+link+"'>").append(link).append("</a></span>");
       html.append("</div>");
     }
-      html.append("</span><br><br>");
+    html.append("</span><br><br>");
    }
 
     /**
@@ -406,7 +406,7 @@ public class ReportBean {
       html.append("  <div style='color: #ccc;'>").append(file.getSize()).append("</div>");
       html.append("</div>");
     }
-      html.append("</span><br><br>");
+    html.append("</span><br><br>");
    }
 
     /**

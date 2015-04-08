@@ -270,11 +270,22 @@ public class ChatServer
     String date = formatter.format(new GregorianCalendar().getTime());
     String title = "";
     String roomName = "";
+    
+    Locale locale = DEFAULT_LANGUAGE;
+    try {
+      UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+      String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+      if (lang != null && lang.trim().length() > 0) {
+          locale = Locale.forLanguageTag(lang);
+      }
+    } catch (Exception e) {
+
+    }
     List<UserBean> users = new ArrayList<UserBean>();
     if (datao.containsField("messages")) {
       if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
         users = userService.getUsersInRoomChatOneToOne(room);
-        title = "Meeting Notes ["+date+"]";
+        title = ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
       } else {
         users = userService.getUsers(room);
         List<SpaceBean> spaces = userService.getSpaces(user);
@@ -293,20 +304,10 @@ public class ChatServer
             roomName = roomBean.getFullname();
           }
         }
-        title = roomName+" : Meeting Notes ["+date+"]";
+        title = roomName+" : "+ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
       }
       ReportBean reportBean = new ReportBean();
 
-      Locale locale = DEFAULT_LANGUAGE;
-      try {
-        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
-        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
-        if (lang != null && lang.trim().length() > 0) {
-            locale = Locale.forLanguageTag(lang);
-        }
-      } catch (Exception e) {
-
-      }
       reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
 
       ArrayList<String> tos = new ArrayList<String>();
