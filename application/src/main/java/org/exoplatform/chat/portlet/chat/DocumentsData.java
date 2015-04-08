@@ -81,7 +81,7 @@ public class DocumentsData {
     }
     catch (Exception e)
     {
-      LOG.warning("JCR::\n" + e.getMessage());
+      LOG.warning("JCR::" + e.getMessage());
     }
     return null;
   }

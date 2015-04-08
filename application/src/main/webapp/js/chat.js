@@ -193,7 +193,7 @@ var chatApplication = new ChatApplication();
         $("#chat-file-form").attr("action", chatApplication.jzUpload);
         $("#chat-file-room").val(chatApplication.room);
         $("#chat-file-target-user").val(chatApplication.targetUser);
-        $("#chat-file-target-fullname").val(chatApplication.targetFullname);
+        $("#chat-file-target-fullname").val(encodeURIComponent(chatApplication.targetFullname));
         $("#chat-file-file").val("");
 
         chatApplication.getUsers(chatApplication.targetUser, function (users) {
@@ -221,7 +221,7 @@ var chatApplication = new ChatApplication();
               data: {
                 room: chatApplication.room,
                 targetUser: targetUser,
-                targetFullname: chatApplication.targetFullname
+                targetFullname: encodeURIComponent(chatApplication.targetFullname)
               },
               error: function(err, file) {
                 switch(err) {
