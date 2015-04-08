@@ -1819,10 +1819,12 @@ ChatApplication.prototype.showRooms = function(rooms) {
         // Update chat area header if space name is changed
         if (chatApplication.room === room.room) {
           var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          jqchat('.target-user-fullname').text(spaceFullName);
-          chatApplication.targetUser = room.user;
-          chatApplication.targetFullname = spaceFullName;
-          chatApplication.loadRoom();
+          if (chatApplication.targetFullname !== spaceFullName) {
+              jqchat('.target-user-fullname').text(spaceFullName);
+              chatApplication.targetUser = room.user;
+              chatApplication.targetFullname = spaceFullName;
+              chatApplication.loadRoom();
+          }
         }
       }
     }
