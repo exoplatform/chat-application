@@ -41,6 +41,8 @@ import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.model.UsersBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
@@ -58,16 +60,21 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Arrays;
 import java.util.Properties;
+
 import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
 {
   private static final Logger LOG = Logger.getLogger("ChatServer");
+
+  public static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
+
   @Inject
   @Path("index.gtmpl")
   Template index;
@@ -77,6 +84,9 @@ public class ChatServer
   ChatService chatService;
   UserService userService;
   TokenService tokenService;
+
+  @Inject
+  OrganizationService organizationService;
   NotificationService notificationService;
   @Inject
   ChatTools chatTools;
@@ -245,7 +255,18 @@ public class ChatServer
     if (datao.containsField("messages")) {
       List<UserBean> users = userService.getUsers(room);
       ReportBean reportBean = new ReportBean();
-      reportBean.fill((BasicDBList) datao.get("messages"), users);
+
+      Locale locale = DEFAULT_LANGUAGE;
+      try {
+        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+        if (lang != null && lang.trim().length() > 0) {
+            locale = Locale.forLanguageTag(lang);
+        }
+      } catch (Exception e) {
+
+      }
+      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
 
       ArrayList<String> tos = new ArrayList<String>();
       String senderFullname = user;
@@ -278,10 +299,12 @@ public class ChatServer
           roomName = roomBean.getFullname();
         }
       }
+
+
       SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
       String date = formatter.format(new GregorianCalendar().getTime());
-      String title = roomName+" : Meeting Notes ["+date+"]";
-      html = reportBean.getAsHtml(title);
+      String title = roomName+" : "+ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
+      html = reportBean.getAsHtml(title, locale);
 
       try {
         sendMailWithAuth(senderFullname, tos, html.toString(), title);
@@ -323,7 +346,17 @@ public class ChatServer
     if (datao.containsField("messages")) {
       List<UserBean> users = userService.getUsers(room);
       ReportBean reportBean = new ReportBean();
-      reportBean.fill((BasicDBList) datao.get("messages"), users);
+      Locale locale = DEFAULT_LANGUAGE;
+      try {
+        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+        if (lang != null && lang.trim().length() > 0) {
+            locale = Locale.forLanguageTag(lang);
+        }
+      } catch (Exception e) {
+
+      }
+      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
 
       String roomName = "";
       List<SpaceBean> spaces = userService.getSpaces(user);
@@ -342,7 +375,9 @@ public class ChatServer
           roomName = roomBean.getFullname();
         }
       }
-      xwiki = reportBean.getAsXWiki(serverBase);
+
+
+      xwiki = reportBean.getAsXWiki(serverBase,locale);
 
     }
 
