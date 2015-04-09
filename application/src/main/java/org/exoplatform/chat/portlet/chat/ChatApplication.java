@@ -43,6 +43,8 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -322,15 +324,20 @@ public class ChatApplication
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
-    Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
-    if (spaceBean!=null) // Space use case
-    {
-      group = spaceBean.getGroupId();
-      if (group.startsWith("/")) group = group.substring(1);
-      title = "Meeting "+sdf.format(new Date());
-      path = wikiService_.createSpacePage(title, content, group);
+    JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
+    String typeRoom = (String)jsonObject.get("typeRoom");
+    String xwiki = (String)jsonObject.get("xwiki");
+    if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
+      Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
+      if (spaceBean!=null) // Space use case
+      {
+        group = spaceBean.getGroupId();
+        if (group.startsWith("/")) group = group.substring(1);
+        title = "Meeting "+sdf.format(new Date());
+        path = wikiService_.createSpacePage(title, content, group);
+      }
     }
-    else // Team use case
+    else // Team use case & one to one use case
     {
       title = targetFullname+" Meeting "+sdf.format(new Date());
       path = wikiService_.createIntranetPage(title, content);
