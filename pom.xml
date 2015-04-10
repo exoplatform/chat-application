@@ -30,6 +30,7 @@
     <module>exo-addons-chat-extension-config</module>
     <module>exo-addons-chat-extension</module>
     <module>exo-addons-chat-extension-pkg</module>
+    <module>exo-addons-chat-extension-pkg-standalone</module>
     <module>exo-addons-chat-extension-config-community</module>
     <module>exo-addons-chat-extension-community</module>
     <module>exo-addons-chat-extension-pkg-community</module>
@@ -109,6 +110,12 @@
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
         <artifactId>server</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>server-standalone</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
