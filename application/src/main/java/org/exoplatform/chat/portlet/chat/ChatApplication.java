@@ -305,6 +305,13 @@ public class ChatApplication
   public Response.Content saveWiki(String targetFullname, String content) {
     // Clean targetFullName
     targetFullname = ChatUtils.cleanString(targetFullname);
+    content = content.replaceAll("&#38", "&");
+    content = content.replaceAll("&lt;", "<");
+    content = content.replaceAll("&gt;", ">");
+    content = content.replaceAll("&quot;","\"");
+    content = content.replaceAll("<br/>","\n");
+    content = content.replaceAll("&#92","\\\\");
+    content = content.replaceAll("  ","\t");
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
