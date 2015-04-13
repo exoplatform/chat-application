@@ -292,7 +292,12 @@ public class DocumentsData {
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
 
-    return "Groups/spaces/".concat(spacet.getPrettyName());
+    if (spacet == null) {
+      LOG.warning("Cannot get the space of " + spaceDisplayname + ". Return null.");
+      return null;
+    }
+
+    return "Groups".concat(spacet.getGroupId());
   }
 
   public static String calculateFileSize(long fileLengthLong) {
