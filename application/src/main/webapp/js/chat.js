@@ -212,8 +212,8 @@ var chatApplication = new ChatApplication();
                               +'<div class="label"><div class="label-inner">'+chatBundleData.exoplatform_chat_file_drop+'</div></div>'
                             +'</div>'
                           +'</div>';
-            $('#dropzone-container').html(dropzone);
 
+            $('#dropzone-container').html(dropzone);
             $('#dropzone').filedrop({
 //          fallback_id: 'upload_button',   // an identifier of a standard file input element
               url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
@@ -436,8 +436,11 @@ var chatApplication = new ChatApplication();
     });
 
     $("#chat-file-file").on("change", function() {
-      if ($(this).val()!=="")
+      if ($(this).val()!=="") {
+          var originalName = encodeURIComponent($(this).val().split(/(\\|\/)/g).pop());
+          $("#chat-encoded-file-name").val(originalName);
         $("#chat-file-submit").trigger("click");
+      }
     });
 
     $('.uiRightContainerArea').on('dragenter', function() {
