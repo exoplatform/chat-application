@@ -225,7 +225,7 @@ public class ChatApplication
 
   @Resource
   @Ajax
-  public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, SecurityContext securityContext) {
+  public Response.Content upload(String room, String targetUser, String targetFullname, String encodedFileName, FileItem userfile, SecurityContext securityContext) {
     try {
       targetFullname = URLDecoder.decode(targetFullname, "UTF-8");
     } catch (UnsupportedEncodingException e) {
@@ -247,12 +247,12 @@ public class ChatApplication
       String uuid = null;
       if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
-        uuid = documentsData_.storeFile(userfile, targetFullname, false);
+        uuid = documentsData_.storeFile(userfile, encodedFileName, targetFullname, false);
       }
       else
       {
         remoteUser_ = securityContext.getRemoteUser();
-        uuid = documentsData_.storeFile(userfile, remoteUser_, true);
+        uuid = documentsData_.storeFile(userfile, encodedFileName, remoteUser_, true);
         documentsData_.setPermission(uuid, targetUser);
       }
       File file = documentsData_.getNode(uuid);

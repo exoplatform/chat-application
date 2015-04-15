@@ -42,10 +42,12 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <exoplatform.version>4.2.x-SNAPSHOT</exoplatform.version>
+    <org.gatein.portal.version>4.2.x-PLF-SNAPSHOT</org.gatein.portal.version>
+    <org.exoplatform.ecms.version>4.2.x-SNAPSHOT</org.exoplatform.ecms.version>
+    <org.exoplatform.platform.version>4.2.x-SNAPSHOT</org.exoplatform.platform.version>
     <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
-    <juzu.version>1.0.x-SNAPSHOT</juzu.version>
+    <juzu.version>1.0.0</juzu.version>
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
@@ -112,11 +114,29 @@
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.component.portal</artifactId>
+      <version>${org.gatein.portal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.webui.portal</artifactId>
+      <version>${org.gatein.portal.version}</version>
+    </dependency>
+      <!-- Import versions from ecms project -->
+      <dependency>
+        <groupId>org.exoplatform.ecms</groupId>
+        <artifactId>ecms</artifactId>
+        <version>${org.exoplatform.ecms.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Import versions from platform project -->
       <dependency>
         <groupId>org.exoplatform.platform</groupId>
         <artifactId>platform</artifactId>
-        <version>${exoplatform.version}</version>
+        <version>${org.exoplatform.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
