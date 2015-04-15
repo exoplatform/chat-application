@@ -88,6 +88,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.exoplatform.ecms</groupId>
+      <artifactId>ecms-core-services</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
       <scope>provided</scope>
@@ -141,6 +146,9 @@
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
+        <configuration>
+          <providerSelection>${gmaven-plugin.providerSelection}</providerSelection>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -188,6 +196,6 @@
   </build>
   <properties>
     <!-- gmaven-plugin -->
-    <gmaven-plugin.providerSelection>1.6</gmaven-plugin.providerSelection>
+    <gmaven-plugin.providerSelection>1.7</gmaven-plugin.providerSelection>
   </properties>
 </project>

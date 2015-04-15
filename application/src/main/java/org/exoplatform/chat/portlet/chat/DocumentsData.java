@@ -2,10 +2,12 @@ package org.exoplatform.chat.portlet.chat;
 
 
 import juzu.SessionScoped;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.services.cms.impl.Utils;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -122,13 +124,13 @@ public class DocumentsData {
     }
 
     // set path
-    file.setPath(node.getPath());
+    file.setPath(Text.escapePath(node.getPath()));
     // set public url
     HttpServletRequest request = Util.getPortalRequestContext().getRequest();
     String baseURI = request.getScheme() + "://" + request.getServerName() + ":"
             + String.format("%s", request.getServerPort());
 
-    String url = baseURI+ "/documents/file/" +Util.getPortalRequestContext().getRemoteUser()+"/"+file.getUuid()+"/"+file.getName();
+    String url = baseURI+ "/documents/file/" +Util.getPortalRequestContext().getRemoteUser()+"/"+file.getUuid()+"/"+Text.escape(file.getName());
     file.setPublicUrl(url);
 
     return file;
@@ -181,21 +183,30 @@ public class DocumentsData {
 
   }
 
-  protected String storeFile(FileItem item, String name, boolean isPrivateContext)
-  {
-    String filename = item.getName();
+  protected String storeFile(FileItem item, String name, boolean isPrivateContext) {
+    return storeFile(item, name, null, isPrivateContext);
+  }
+
+  protected String storeFile(FileItem item, String encodedFileName, String name, boolean isPrivateContext) {
+    String filename;
+    if (encodedFileName != null) {
+      filename = encodedFileName;
+    } else {
+      filename = item.getName();
+    }
     try {
       filename = URLDecoder.decode(filename,"utf-8");
     } catch (UnsupportedEncodingException e1) {
       // Do nothing because there is nothing to process here
     }
+    filename = Utils.cleanName(filename);
     String filenameExt = filename.substring(filename.lastIndexOf("."));
     String filenameBase = filename.substring(0, filename.lastIndexOf("."));
 
     String title = Text.escapeIllegalJcrChars(filename);
-    String cleanedFilenameBase = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameBase));
-    String cleanedFilenameExt = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameExt));
-    String cleanedFilename = cleanedFilenameBase.concat(".").concat(cleanedFilenameExt);
+    String cleanedFilenameBase = ChatUtils.cleanString(filenameBase);
+    String cleanedFilenameExt = ChatUtils.cleanString(filenameExt);
+    String cleanedFilename = cleanedFilenameBase.concat(cleanedFilenameExt);
 
 
 
@@ -228,7 +239,7 @@ public class DocumentsData {
         try {
           while (docNode.hasNode(cleanedFilename))
           {
-            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(".").concat(cleanedFilenameExt);
+            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(cleanedFilenameExt);
             cpt++;
           }
     
