@@ -154,6 +154,10 @@ public class DocumentsData {
 
   protected void setPermission(String id, String targetUser)
   {
+    if (targetUser == null || targetUser.length() == 0) {
+      LOG.warning("No target User to set permission for " + id);
+      return;
+    }
     SessionProvider sessionProvider = getUserSessionProvider();
     String uuid = null;
     try
