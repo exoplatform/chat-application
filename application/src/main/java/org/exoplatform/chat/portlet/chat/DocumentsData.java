@@ -2,8 +2,9 @@ package org.exoplatform.chat.portlet.chat;
 
 
 import juzu.SessionScoped;
+
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.portal.webui.util.Util;
@@ -154,6 +155,10 @@ public class DocumentsData {
 
   protected void setPermission(String id, String targetUser)
   {
+    if (StringUtils.isEmpty(targetUser)) {
+      LOG.warning("No target User to set permission for " + id);
+      return;
+    }
     SessionProvider sessionProvider = getUserSessionProvider();
     String uuid = null;
     try
