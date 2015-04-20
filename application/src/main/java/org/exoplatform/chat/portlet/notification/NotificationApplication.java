@@ -24,11 +24,13 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
+import juzu.impl.common.Tools;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.ApplicationContext;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.template.Template;
+
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
@@ -50,6 +52,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +119,8 @@ public class NotificationApplication
             .set("messages", messages)
             .set("shortSpaceName", shortSpaceName)
             .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
-            .ok();
+            .ok()
+            .withCharset(Tools.UTF_8);
   }
 
   @Ajax
@@ -157,7 +161,8 @@ public class NotificationApplication
       saveSpaces(remoteUser_);
     }
 
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
 
   }
 

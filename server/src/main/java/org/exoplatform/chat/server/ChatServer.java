@@ -22,13 +22,16 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.impl.common.Tools;
 import juzu.template.Template;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -60,10 +63,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,8 +132,8 @@ public class ChatServer
 
     RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
             notificationService, userService, tokenService);
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
-            ("Cache-Control", "no-cache");
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -234,7 +237,8 @@ public class ChatServer
 
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
-    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -416,7 +420,8 @@ public class ChatServer
       }
     }
 
-    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -568,7 +573,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -671,7 +676,8 @@ public class ChatServer
       LOG.warning(e.getMessage());
       return Response.notFound("No Room yet");
     }
-    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -738,7 +744,7 @@ public class ChatServer
       data += "data: {\"total\": "+totalUnread+"}\n\n";
     }
 
-    return Response.ok(data).withMimeType("application/json").withCharset(Charset.forName("UTF-8")).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -846,8 +852,8 @@ public class ChatServer
 
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
-            ("Cache-Control", "no-cache");
+    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -863,7 +869,7 @@ public class ChatServer
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {

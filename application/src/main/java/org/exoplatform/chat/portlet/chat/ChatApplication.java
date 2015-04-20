@@ -24,6 +24,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
+import juzu.impl.common.Tools;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.SecurityContext;
 import juzu.template.Template;
@@ -150,7 +151,8 @@ public class ChatApplication
             .set("today", todayDate)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
-            .withAssets("chat-" + view);
+            .withAssets("chat-" + view)
+            .withCharset(Tools.UTF_8);
 
   }
 
@@ -216,7 +218,8 @@ public class ChatApplication
       saveSpaces(remoteUser_);
     }
 
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+    		       .withCharset(Tools.UTF_8);
 
   }
 
@@ -258,7 +261,7 @@ public class ChatApplication
 
 
       return Response.ok(file.toJSON())
-              .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+              .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
     }
 
 
@@ -368,7 +371,8 @@ public class ChatApplication
     json.append("{ \"username\": \"").append(remoteUser_).append("\"");
     json.append(", \"token\": \"").append(token_).append("\" }");
 
-    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   protected void addUser(String remoteUser, String token)

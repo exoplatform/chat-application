@@ -30,6 +30,7 @@ import javax.enterprise.context.ApplicationScoped;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
+import juzu.impl.common.Tools;
 
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -86,7 +87,7 @@ public class ChatTools
     data.append(" \"user\": \""+ username+"\" ");
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -138,7 +139,7 @@ public class ChatTools
     data.append(" \"user\": \""+ username+"\" ");
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -152,7 +153,7 @@ public class ChatTools
 
     tokenService.addUser(username, token);
 
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -220,7 +221,7 @@ public class ChatTools
 
     String fullname = userService.getUserFullName(username);
 
-    return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -275,7 +276,7 @@ public class ChatTools
     data.append(" \"message\": \"using db="+db+"\"");
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -299,7 +300,7 @@ public class ChatTools
     data.append(" \"message\": \"deleting db="+db+"\"");
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -328,7 +329,7 @@ public class ChatTools
     data.append(" \"message\": \"indexes created or updated on db="+db+"\"");
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
 
