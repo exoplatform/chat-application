@@ -295,7 +295,7 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime) {
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
     try {
       calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime),
               sdf.parse(endDate + " " + endTime));
