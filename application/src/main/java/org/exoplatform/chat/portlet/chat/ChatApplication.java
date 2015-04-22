@@ -328,6 +328,7 @@ public class ChatApplication
     JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
     String typeRoom = (String)jsonObject.get("typeRoom");
     String xwiki = (String)jsonObject.get("xwiki");
+    xwiki = xwiki.replaceAll("~", "~~");
     xwiki = xwiki.replaceAll("&#38", "&");
     xwiki = xwiki.replaceAll("&lt;", "<");
     xwiki = xwiki.replaceAll("&gt;", ">");
