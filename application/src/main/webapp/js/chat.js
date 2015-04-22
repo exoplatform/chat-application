@@ -2180,7 +2180,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
       to = Math.round(to)+1;
       chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
         if (response !== "ko") {
-          console.log(response);
+//          console.log(response);
           jqchat.ajax({
             type: "POST",
             url: chatApplication.jzSaveWiki,
@@ -2190,7 +2190,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
             context: this,
             dataType: "json",
             success: function(data){
-              console.log(data.path);
+//              console.log(data.path);
               if (data.path !== "") {
                 var options = {
                   type: "type-link",
