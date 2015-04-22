@@ -43,9 +43,9 @@
   <properties>
     <!-- 3rd party libraries versions -->
     <commons-lang3.version>3.2</commons-lang3.version>
-    <org.gatein.portal.version>3.5.14-PLF</org.gatein.portal.version>
-    <org.exoplatform.ecms.version>4.1.1</org.exoplatform.ecms.version>
-    <org.exoplatform.platform.version>4.1.1</org.exoplatform.platform.version>
+    <org.gatein.portal.version>3.5.x-PLF-SNAPSHOT</org.gatein.portal.version>
+    <org.exoplatform.ecms.version>4.1.x-SNAPSHOT</org.exoplatform.ecms.version>
+    <org.exoplatform.platform.version>4.1.x-SNAPSHOT</org.exoplatform.platform.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <juzu.version>0.6.2</juzu.version>
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
