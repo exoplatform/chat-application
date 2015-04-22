@@ -314,19 +314,18 @@ public class ChatApplication
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
 
-    content = content.replaceAll("&#38", "&");
-    content = content.replaceAll("&lt;", "<");
-    content = content.replaceAll("&gt;", ">");
-    content = content.replaceAll("&quot;","\"");
-    content = content.replaceAll("<br/>","\n");
-    content = content.replaceAll("&#92","\\\\");
-    content = content.replaceAll("  ","\t");
-
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
     JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
     String typeRoom = (String)jsonObject.get("typeRoom");
     String xwiki = (String)jsonObject.get("xwiki");
+    xwiki = xwiki.replaceAll("&#38", "&");
+    xwiki = xwiki.replaceAll("&lt;", "<");
+    xwiki = xwiki.replaceAll("&gt;", ">");
+    xwiki = xwiki.replaceAll("&quot;","\"");
+    xwiki = xwiki.replaceAll("<br/>","\n");
+    xwiki = xwiki.replaceAll("&#92","\\\\");
+    xwiki = xwiki.replaceAll("  ","\t");
     ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
     if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
       Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
