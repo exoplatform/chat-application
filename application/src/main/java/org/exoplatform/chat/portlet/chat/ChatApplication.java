@@ -271,13 +271,13 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createTask(String username, String dueDate, String task) {
+  public Response.Content createTask(String username, String dueDate, String task, String roomName) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     Date today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     try {
-      calendarService_.saveTask(remoteUser_, username, task, today, sdf.parse(dueDate+" 23:59"));
+      calendarService_.saveTask(remoteUser_, username, task, roomName, today, sdf.parse(dueDate+" 23:59"));
     } catch (ParseException e) {
       LOG.info("parse exception during task creation");
       return Response.notFound("Error during task creation");

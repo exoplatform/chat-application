@@ -1,5 +1,6 @@
 package org.exoplatform.chat.portlet.chat;
 
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.chat.utils.ChatUtils;
@@ -77,25 +78,32 @@ public class CalendarService {
     }
   }
 
-  protected void saveTask(String currentUser, String username, String summary,
-                         Date from, Date to) throws Exception
-  {
+  protected void saveTask(String currentUser, String username, String summary, String roomName,
+                          Date from, Date to) throws Exception {
     summary = ChatUtils.escapeSpecialCharacters(summary);
-
-    String calId = getFirstCalendarsId(username);
-    if (calId!=null) {
-      CalendarEvent task = new CalendarEvent();
+    CalendarEvent task = new CalendarEvent();
+    task.setSummary(summary);
+    task.setEventType(CalendarEvent.TYPE_TASK);
+    task.setRepeatType(CalendarEvent.RP_NOREPEAT);
+    task.setPrivate(true);
+    task.setFromDateTime(from);
+    task.setToDateTime(to);
+    task.setPriority(CalendarEvent.PRIORITY_NORMAL);
+    task.setTaskDelegator(username);
+    task.setDescription("Created by " + currentUser + " for " + username);
+    String calId = getCalendarId(currentUser, roomName);
+    if (calId != null) {
       task.setCalendarId(calId);
-      task.setSummary(summary);
-      task.setEventType(CalendarEvent.TYPE_TASK);
-      task.setRepeatType(CalendarEvent.RP_NOREPEAT);
-      task.setPrivate(true);
-      task.setFromDateTime(from);
-      task.setToDateTime(to);
-      task.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      task.setTaskDelegator(currentUser);
-      task.setDescription("Created by "+currentUser+" for "+username);
-      calendarService_.saveUserEvent(username, calId, task, true);
+      calendarService_.savePublicEvent(calId, task, true);
+    } else {
+      if (!StringUtils.isEmpty(username)) {
+        String[] assignees = username.split(",");
+        for (String assignee : assignees) {
+          String assigneeCalId = getFirstCalendarsId(assignee);
+          task.setCalendarId(assigneeCalId);
+          calendarService_.saveUserEvent(assignee, assigneeCalId, task, true);
+        }
+      }
     }
   }
 

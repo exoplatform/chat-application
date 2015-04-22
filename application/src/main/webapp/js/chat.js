@@ -513,6 +513,7 @@ var chatApplication = new ChatApplication();
       var username = $("#task-add-user").val();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
+      var roomName = chatApplication.targetFullname;
 
       // Validate empty
       if (task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
@@ -562,7 +563,8 @@ var chatApplication = new ChatApplication();
         url: chatApplication.jzCreateTask,
         data: {"username": selectedUsers,
           "dueDate": dueDate,
-          "task": task
+          "task": task,
+          "roomName": roomName
         },
         success:function(response){
 
