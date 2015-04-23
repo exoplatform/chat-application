@@ -1963,7 +1963,8 @@ ChatApplication.prototype.loadRoom = function() {
 
     jqchat("#room-detail").css("display", "block");
     jqchat(".team-button").css("display", "none");
-    jqchat(".target-user-fullname").text(jqchat("<div/>").html(this.targetFullname).text());
+    this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
+    jqchat(".target-user-fullname").text(this.targetFullname);
 
     if(navigator.platform.indexOf("Linux") === -1) {
       jqchat(".btn-weemo-conf").css("display", "none");
