@@ -30,22 +30,22 @@ public class CalendarService {
   }
 
   protected void saveEvent(String user, String calName, String users, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant:participants) {
         String calId = getFirstCalendarsId(participant);
-        saveEvent(participant, false, participants, calId, calName, summary, from, to);
+        saveEvent(participant, false, participants, calId, calName, summary, from, to, location);
       }
     } else {
       String calId = getCalendarId(user, calName);
-      saveEvent(user, true, null, calId, calName, summary, from, to);
+      saveEvent(user, true, null, calId, calName, summary, from, to, location);
     }
   }
 
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
     summary = StringEscapeUtils.escapeHtml(summary);
 
@@ -59,8 +59,7 @@ public class CalendarService {
       event.setFromDateTime(from);
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      event.setTaskDelegator(user);
-      event.setDescription("Created by "+user+" in "+calName);
+      event.setLocation(location);
       if (isPublic)
         calendarService_.savePublicEvent(calId, event, true);
       else {

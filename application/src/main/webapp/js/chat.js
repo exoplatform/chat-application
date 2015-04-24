@@ -667,7 +667,8 @@ var chatApplication = new ChatApplication();
           "startDate": startDate,
           "startTime": startTime,
           "endDate": endDate,
-          "endTime": endTime
+          "endTime": endTime,
+          "location": location
         },
         success:function(response){
 
