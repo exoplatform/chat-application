@@ -68,7 +68,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -76,8 +75,6 @@ import java.util.logging.Logger;
 public class ChatServer
 {
   private static final Logger LOG = Logger.getLogger("ChatServer");
-
-  public static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
 
   @Inject
   @Path("index.gtmpl")
@@ -88,9 +85,6 @@ public class ChatServer
   ChatService chatService;
   UserService userService;
   TokenService tokenService;
-
-  @Inject
-  OrganizationService organizationService;
   NotificationService notificationService;
   @Inject
   ChatTools chatTools;
@@ -269,21 +263,11 @@ public class ChatServer
     String title = "";
     String roomName = "";
     
-    Locale locale = DEFAULT_LANGUAGE;
-    try {
-      UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
-      String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
-      if (lang != null && lang.trim().length() > 0) {
-          locale = Locale.forLanguageTag(lang);
-      }
-    } catch (Exception e) {
-
-    }
     List<UserBean> users = new ArrayList<UserBean>();
     if (datao.containsField("messages")) {
       if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
         users = userService.getUsersInRoomChatOneToOne(room);
-        title = ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
+        title = "Meeting Notes ["+date+"]";
       } else {
         users = userService.getUsers(room);
         List<SpaceBean> spaces = userService.getSpaces(user);
@@ -302,11 +286,11 @@ public class ChatServer
             roomName = roomBean.getFullname();
           }
         }
-        title = roomName+" : "+ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
+        title = roomName+" : Meeting Notes ["+date+"]";
       }
       ReportBean reportBean = new ReportBean();
 
-      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
+      reportBean.fill((BasicDBList) datao.get("messages"), users);
 
       ArrayList<String> tos = new ArrayList<String>();
       String senderFullname = user;
@@ -321,7 +305,7 @@ public class ChatServer
           senderFullname = userBean.getFullname();
         }
       }
-      html = reportBean.getAsHtml(title, locale);
+      html = reportBean.getAsHtml(title);
       
       try {
         sendMailWithAuth(senderFullname, tos, html.toString(), title);
@@ -388,19 +372,9 @@ public class ChatServer
         }
       }
       ReportBean reportBean = new ReportBean();
-      Locale locale = DEFAULT_LANGUAGE;
-      try {
-        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
-        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
-        if (lang != null && lang.trim().length() > 0) {
-            locale = Locale.forLanguageTag(lang);
-        }
-      } catch (Exception e) {
-      
-      }
-      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
+      reportBean.fill((BasicDBList) datao.get("messages"), users);
       ArrayList<String> usersInGroup = new ArrayList<String>();
-      xwiki = reportBean.getAsXWiki(serverBase,locale);
+      xwiki = reportBean.getAsXWiki(serverBase);
       try {
         for (UserBean userBean : users) {
           if (!"".equals(userBean.getName())) {

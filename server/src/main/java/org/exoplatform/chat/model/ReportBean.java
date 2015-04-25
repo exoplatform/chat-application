@@ -3,7 +3,6 @@ package org.exoplatform.chat.model;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.exoplatform.chat.services.UserService;
-import org.exoplatform.chat.utils.ChatUtils;
 
 import java.util.*;
 
@@ -91,7 +90,7 @@ public class ReportBean {
     this.events.add(event);
   }
 
-  public void fill(BasicDBList messages, List<UserBean> users, Locale locale)
+  public void fill(BasicDBList messages, List<UserBean> users)
   {
     for (UserBean user:users)
     {
@@ -118,12 +117,12 @@ public class ReportBean {
           if ("type-link".equals(options.get("type").toString()))
           {
             addLink(options.get("link").toString());
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.link", locale)+": "+ options.get("link").toString()+" ]";
+            msg = "[ Link: "+ options.get("link").toString()+" ]";
           }
           else if ("type-question".equals(options.get("type").toString()))
           {
             addQuestion(msg);
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.question", locale)+": "+ msg +" ]";
+            msg = "[ Question: "+ msg +" ]";
           }
           else if ("type-file".equals(options.get("type").toString()))
           {
@@ -132,11 +131,11 @@ public class ReportBean {
             file.setUrl(options.get("restPath").toString());
             file.setSize(options.get("sizeLabel").toString());
             addFile(file);
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.file", locale)+": "+ options.get("name").toString()+" ]";
+            msg = "[ File: "+ options.get("name").toString()+" ]";
           }
           else if ("type-hand".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.raiseHand", locale)+": " + msg +"]";
+            msg = "[ Raised the hand: " + msg + "]";
           }
           else if ("type-task".equals(options.get("type").toString()))
           {
@@ -146,13 +145,7 @@ public class ReportBean {
             task.setDueDate(options.get("dueDate").toString());
             task.setUsername(options.get("username").toString());
             addTask(task);
-            msg = "[ "+
-              ChatUtils.appRes("exoplatform.chat.meetingnotes.task", locale).
-              replace("{0}", options.get("task").toString()).
-              replace("{1}", options.get("fullname").toString()).
-              replace("{2}", options.get("dueDate").toString())+
-              " ]";
-
+            msg = "[ Task \""+options.get("task").toString()+"\" assigned to "+options.get("fullname").toString()+" - due "+options.get("dueDate").toString()+" ]";
           }
           else if ("type-event".equals(options.get("type").toString()))
           {
@@ -163,26 +156,19 @@ public class ReportBean {
             event.setEndDate(options.get("endDate").toString());
             event.setEndTime(options.get("endTime").toString());
             addEvent(event);
-            msg = "[ "+
-              ChatUtils.appRes("exoplatform.chat.meetingnotes.event", locale).
-              replace("{0}", options.get("summary").toString()).
-              replace("{1}", options.get("startDate").toString()).
-              replace("{2}", options.get("startTime").toString()).
-              replace("{3}", options.get("endDate").toString()).
-              replace("{4}", options.get("endTime").toString())+
-              " ]";
+            msg = "[ Event \""+options.get("summary").toString()+"\" from "+options.get("startDate").toString()+" "+options.get("startTime").toString()+" to "+options.get("endDate").toString()+" "+options.get("endTime").toString()+" ]";
           }
           else if ("call-join".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.joined", locale)+" ]";
+            msg = "[ Joined meeting ]";
           }
           else if ("call-on".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.started", locale)+" ]";
+            msg = "[ Meeting started ]";
           }
           else if ("call-off".equals(options.get("type").toString()))
           {
-            msg = "[ "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.finished", locale)+" ]";
+            msg = "[ Meeting finished ]";
           }
         }
 
@@ -200,7 +186,7 @@ public class ReportBean {
     }
   }
 
-  public String getAsXWiki(String serverBase, Locale locale)
+  public String getAsXWiki(String serverBase)
   {
     StringBuilder xwiki = new StringBuilder();
 
@@ -210,7 +196,7 @@ public class ReportBean {
      * Questions
      */
     if (questions.size()>0) {
-      xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.questions", locale)+" ===\n");
+      xwiki.append("\n=== Questions ===\n");
       for (String question:this.getQuestions())
       {
         xwiki.append(question).append("\n");
@@ -221,7 +207,7 @@ public class ReportBean {
      * Links
      */
     if (links.size()>0) {
-      xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.links", locale)+" ===\n");
+      xwiki.append("\n=== Links ===\n");
       for (String link:this.getLinks())
       {
         xwiki.append("[[").append(link).append("]]").append("\n");
@@ -232,7 +218,7 @@ public class ReportBean {
      * Files
      */
     if (files.size()>0) {
-      xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.files", locale)+" ===\n");
+      xwiki.append("\n=== Files ===\n");
       for (FileBean file:this.getFiles())
       {
         xwiki.append("[[");
@@ -245,10 +231,8 @@ public class ReportBean {
      * Tasks
      */
     if (tasks.size()>0) {
-      xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.tasks", locale)+" ===\n");
-      xwiki.append("|= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.tasks.task", locale)+
-              " |= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.tasks.assignee", locale)+
-              " |= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.tasks.due", locale)+"\n");
+      xwiki.append("\n=== Tasks ===\n");
+      xwiki.append("|= Task |= Assignee |= Due\n");
       for (TaskBean task:this.getTasks())
       {
         xwiki.append("| ").append(task.getTask())
@@ -261,10 +245,8 @@ public class ReportBean {
      * Events
      */
     if (events.size()>0) {
-      xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.events", locale)+" ===\n");
-      xwiki.append("|= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.events.event", locale)+
-              " |= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.events.start", locale)+
-              " |= "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.events.end", locale)+"\n");
+      xwiki.append("\n=== Events ===\n");
+      xwiki.append("|= Event |= Start |= End\n");
       for (EventBean event:this.getEvents())
       {
         xwiki.append("| ").append(event.getSummary())
@@ -277,7 +259,7 @@ public class ReportBean {
     /**
      * Attendees
      */
-    xwiki.append("\n{{column}}\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.attendees", locale)+" ===\n{{panel}}\n");
+    xwiki.append("\n{{column}}\n=== Attendees ===\n{{panel}}\n");
     for (UserBean userBean:this.getAttendees()) {
       if ("available".equals(userBean.getStatus()))
         xwiki.append("(/) ");
@@ -290,7 +272,7 @@ public class ReportBean {
     /**
      * Discussions
      */
-    xwiki.append("\n=== "+ ChatUtils.appRes("exoplatform.chat.meetingnotes.discussions", locale)+" ===\n\n");
+    xwiki.append("\n=== Discussions ===\n\n");
     String prevUser = "";
     for (MessageBean messageBean:this.getMessages())
     {
@@ -312,7 +294,7 @@ public class ReportBean {
     return xwiki.toString();
   }
 
-  public String getAsHtml(String title, Locale locale)
+  public String getAsHtml(String title)
   {
     StringBuilder html = new StringBuilder();
     html.append("<div style='font-family: Lucida,arial,tahoma;'>");
@@ -338,7 +320,7 @@ public class ReportBean {
      * Attendees
      */
     html.append("<span style='float:right; border: 1px solid #CCC;'>");
-    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>"+ChatUtils.appRes("exoplatform.chat.meetingnotes.attendees", locale)+"</div>");
+    html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>Attendees</div>");
     for (UserBean userBean:this.getAttendees())
     {
       html.append("<div style='padding: 4px;'>");
@@ -363,7 +345,7 @@ public class ReportBean {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-question' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
-    html.append("    <span style='vertical-align: top;line-height: 18px;'>"+ChatUtils.appRes("exoplatform.chat.meetingnotes.questions", locale)+"</span>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Questions</span>");
     html.append("  </div>");
     for (String question:this.getQuestions())
     {
@@ -379,7 +361,7 @@ public class ReportBean {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-link' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
-    html.append("    <span style='vertical-align: top;line-height: 18px;'>"+ChatUtils.appRes("exoplatform.chat.meetingnotes.links", locale)+"</span>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Links</span>");
     html.append("  </div>");
     for (String link:this.getLinks())
     {
@@ -397,7 +379,7 @@ public class ReportBean {
     html.append("<span style='border: 1px solid #CCC;width: 300px; display: inline-block;'>");
     html.append("  <div style='font-weight: bold;border-bottom: 1px solid #CCC;padding: 4px;font-size: larger'>");
     html.append("    <img class='type-file' src='http://demo.exoplatform.net/chat/img/empty.png' width='16px' style='width:16px;'>");
-    html.append("    <span style='vertical-align: top;line-height: 18px;'>"+ChatUtils.appRes("exoplatform.chat.meetingnotes.files", locale)+"</span>");
+    html.append("    <span style='vertical-align: top;line-height: 18px;'>Files</span>");
     html.append("  </div>");
     for (FileBean file:this.getFiles())
     {
@@ -412,7 +394,7 @@ public class ReportBean {
     /**
      * Discussions
      */
-    html.append("<h3>"+ChatUtils.appRes("exoplatform.chat.meetingnotes.discussions", locale)+"</h3>");
+    html.append("<h3>Discussions</h3>");
     html.append("<span>");
     String prevUser = "";
     for (MessageBean messageBean:this.getMessages())
