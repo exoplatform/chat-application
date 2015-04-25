@@ -7,6 +7,5 @@
   <import>war:/conf/chat/portal-configuration.xml</import>
   <import>war:/conf/chat/rest-configuration.xml</import>
   <import>war:/conf/chat/container-configuration.xml</import>
-  <import>war:/conf/chat/resources-bundle-configuration.xml</import>
 
 </configuration>
