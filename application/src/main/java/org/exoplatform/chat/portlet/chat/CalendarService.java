@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.services.organization.Group;
@@ -47,8 +48,8 @@ public class CalendarService {
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
                          Date from, Date to, String location) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
-
+    summary = escapeSpecialCharacters(summary);
+    location = escapeSpecialCharacters(location);
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
@@ -81,7 +82,7 @@ public class CalendarService {
   protected void saveTask(String currentUser, String username, String summary,
                          Date from, Date to) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
+    summary = escapeSpecialCharacters(summary);
 
     String calId = getFirstCalendarsId(username);
     if (calId!=null) {
@@ -146,5 +147,15 @@ public class CalendarService {
     return groups;
   }
 
+  private String escapeSpecialCharacters(String message) {
+    message = StringUtils.chomp(message);
+    message = message.replaceAll("&", "&#38");
+    message = message.replaceAll("<", "&lt;");
+    message = message.replaceAll(">", "&gt;");
+    message = message.replaceAll("\"", "&quot;");
+    message = message.replaceAll("\n", "<br/>");
+    message = message.replaceAll("\\\\", "&#92");
+    return message;
+  }
 
 }
