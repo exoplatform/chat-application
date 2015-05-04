@@ -1591,6 +1591,30 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
+    // Update name of current user
+    jqchat.ajax({
+      url: this.jzInitChatProfile,
+      dataType: "json",
+      context: this,
+      success: function(data){
+        this.fullname = data.fullname;
+        var $labelUser = jqchat(".label-user");
+        $labelUser.text(data.fullname);
+      },
+      error: function (response){
+        //retry in 3 sec
+        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
+      }
+    });
+    // Reload avatar
+    jqchat(".avatar-image").each(function(){
+      var src = jqchat(this).attr('src');
+      if (src.indexOf('?') >= 0) {
+        src = src.substr(0,src.indexOf('?'));
+      }
+      src += '?ts=' + new Date().getTime();
+      jqchat(this).attr('src',src);
+    });
     jqchat.ajax({
       url: this.jzChatWhoIsOnline,
       dataType: "json",
