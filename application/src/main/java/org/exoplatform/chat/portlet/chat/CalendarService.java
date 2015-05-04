@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.services.organization.Group;
@@ -30,25 +31,25 @@ public class CalendarService {
   }
 
   protected void saveEvent(String user, String calName, String users, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant:participants) {
         String calId = getFirstCalendarsId(participant);
-        saveEvent(participant, false, participants, calId, calName, summary, from, to);
+        saveEvent(participant, false, participants, calId, calName, summary, from, to, location);
       }
     } else {
       String calId = getCalendarId(user, calName);
-      saveEvent(user, true, null, calId, calName, summary, from, to);
+      saveEvent(user, true, null, calId, calName, summary, from, to, location);
     }
   }
 
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
-
+    summary = escapeSpecialCharacters(summary);
+    location = escapeSpecialCharacters(location);
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
@@ -59,8 +60,7 @@ public class CalendarService {
       event.setFromDateTime(from);
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      event.setTaskDelegator(user);
-      event.setDescription("Created by "+user+" in "+calName);
+      event.setLocation(location);
       if (isPublic)
         calendarService_.savePublicEvent(calId, event, true);
       else {
@@ -82,7 +82,7 @@ public class CalendarService {
   protected void saveTask(String currentUser, String username, String summary,
                          Date from, Date to) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
+    summary = escapeSpecialCharacters(summary);
 
     String calId = getFirstCalendarsId(username);
     if (calId!=null) {
@@ -147,5 +147,15 @@ public class CalendarService {
     return groups;
   }
 
+  private String escapeSpecialCharacters(String message) {
+    message = StringUtils.chomp(message);
+    message = message.replaceAll("&", "&#38");
+    message = message.replaceAll("<", "&lt;");
+    message = message.replaceAll(">", "&gt;");
+    message = message.replaceAll("\"", "&quot;");
+    message = message.replaceAll("\n", "<br/>");
+    message = message.replaceAll("\\\\", "&#92");
+    return message;
+  }
 
 }
