@@ -510,6 +510,12 @@ var chatApplication = new ChatApplication();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
       var roomName = chatApplication.targetFullname;
+      var isSpace = false;
+      var roomId = chatApplication.targetUser;
+      var targetUser = chatApplication.targetUser;
+      if (targetUser.indexOf("space-")>-1) {
+    	  isSpace = true;
+      }
 
       // Validate empty
       if (task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
@@ -560,7 +566,8 @@ var chatApplication = new ChatApplication();
         data: {"username": selectedUsers,
           "dueDate": dueDate,
           "task": task,
-          "roomName": roomName
+          "roomName": roomName,
+          "isSpace": isSpace
         },
         success:function(response){
 
