@@ -78,7 +78,7 @@ public class CalendarService {
     }
   }
 
-  protected void saveTask(String currentUser, String username, String summary, String roomName,
+  protected void saveTask(String currentUser, String username, String summary, String roomName, String isSpace,
                           Date from, Date to) throws Exception {
     summary = ChatUtils.escapeSpecialCharacters(summary);
     CalendarEvent task = new CalendarEvent();
@@ -91,7 +91,10 @@ public class CalendarService {
     task.setPriority(CalendarEvent.PRIORITY_NORMAL);
     task.setTaskDelegator(username);
     task.setDescription("Created by " + currentUser + " for " + username);
-    String calId = getCalendarId(currentUser, roomName);
+    String calId = null;
+    if ("true".equals(isSpace)) {
+      calId = getCalendarId(currentUser, roomName);
+    }
     if (calId != null) {
       task.setCalendarId(calId);
       calendarService_.savePublicEvent(calId, task, true);
@@ -152,5 +155,4 @@ public class CalendarService {
     }
     return groups;
   }
-
 }
