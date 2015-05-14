@@ -439,7 +439,24 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
     return users;
   }
-
+  
+  public List<UserBean> getUsersInRoomChatOneToOne(String roomId) {
+    List<UserBean> users = new ArrayList<UserBean>();
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("_id", roomId);
+    DBCursor cursor = coll.find(query);
+    while (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      Object objectUsers = doc.get("users");
+      ArrayList myArrayList = (ArrayList) objectUsers;
+      for (int i = 0; i < myArrayList.size(); i++) {
+        users.add(getUser(myArrayList.get(i).toString()));
+      }
+    }
+    return users;
+  }
+  
   public List<UserBean> getUsers(String filter, boolean fullBean) {
     filter = filter.replaceAll(" ", ".*");
     List<UserBean> users = new ArrayList<UserBean>();

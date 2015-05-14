@@ -22,15 +22,17 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+
+import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.MimeType;
+import juzu.impl.common.Tools;
 import juzu.template.Template;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
@@ -45,22 +47,31 @@ import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserProfile;
 import org.json.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -68,6 +79,9 @@ import java.util.logging.Logger;
 public class ChatServer
 {
   private static final Logger LOG = Logger.getLogger("ChatServer");
+
+  public static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
+
   @Inject
   @Path("index.gtmpl")
   Template index;
@@ -77,6 +91,9 @@ public class ChatServer
   ChatService chatService;
   UserService userService;
   TokenService tokenService;
+
+  @Inject
+  OrganizationService organizationService;
   NotificationService notificationService;
   @Inject
   ChatTools chatTools;
@@ -114,8 +131,8 @@ public class ChatServer
 
     RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
             notificationService, userService, tokenService);
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
-            ("Cache-Control", "no-cache");
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -137,8 +154,14 @@ public class ChatServer
           if (!roomMembers.contains(user)) {
             return Response.content(403, "Petit malin !");
           }
+        }        
+        try {
+          message = URLDecoder.decode(message,"UTF-8");
+          options = URLDecoder.decode(options,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          // Chat server cannot do anything in this case
+          // Get original value
         }
-
         if (isSystem==null) isSystem="false";
         chatService.write(message, user, room, isSystem, options);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
@@ -213,7 +236,8 @@ public class ChatServer
 
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from);
 
-    return Response.ok(data).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -242,10 +266,50 @@ public class ChatServer
     }
     String data = chatService.read(room, userService, false, from, to);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    String roomType = chatService.getTypeRoomChat(room);
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    String date = formatter.format(new GregorianCalendar().getTime());
+    String title = "";
+    String roomName = "";
+    
+    Locale locale = DEFAULT_LANGUAGE;
+    try {
+      UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+      String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+      if (lang != null && lang.trim().length() > 0) {
+          locale = Locale.forLanguageTag(lang);
+      }
+    } catch (Exception e) {
+
+    }
+    List<UserBean> users = new ArrayList<UserBean>();
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
+        users = userService.getUsersInRoomChatOneToOne(room);
+        title = ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
+      } else {
+        users = userService.getUsers(room);
+        List<SpaceBean> spaces = userService.getSpaces(user);
+        for (SpaceBean spaceBean:spaces)
+        {
+          if (room.equals(spaceBean.getRoom()))
+          {
+            roomName = spaceBean.getDisplayName();
+          }
+        }
+        List<RoomBean> roomBeans = userService.getTeams(user);
+        for (RoomBean roomBean:roomBeans)
+        {
+          if (room.equals(roomBean.getRoom()))
+          {
+            roomName = roomBean.getFullname();
+          }
+        }
+        title = roomName+" : "+ChatUtils.appRes("exoplatform.chat.meetingnotes", locale)+" ["+date+"]";
+      }
       ReportBean reportBean = new ReportBean();
-      reportBean.fill((BasicDBList) datao.get("messages"), users);
+
+      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
 
       ArrayList<String> tos = new ArrayList<String>();
       String senderFullname = user;
@@ -260,29 +324,8 @@ public class ChatServer
           senderFullname = userBean.getFullname();
         }
       }
-
-      String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
-      for (SpaceBean spaceBean:spaces)
-      {
-        if (room.equals(spaceBean.getRoom()))
-        {
-          roomName = spaceBean.getDisplayName();
-        }
-      }
-      List<RoomBean> roomBeans = userService.getTeams(user);
-      for (RoomBean roomBean:roomBeans)
-      {
-        if (room.equals(roomBean.getRoom()))
-        {
-          roomName = roomBean.getFullname();
-        }
-      }
-      SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-      String date = formatter.format(new GregorianCalendar().getTime());
-      String title = roomName+" : Meeting Notes ["+date+"]";
-      html = reportBean.getAsHtml(title);
-
+      html = reportBean.getAsHtml(title, locale);
+      
       try {
         sendMailWithAuth(senderFullname, tos, html.toString(), title);
       } catch (Exception e) {
@@ -306,6 +349,9 @@ public class ChatServer
     Long from = null;
     Long to = null;
     String xwiki = "";
+    String roomName = "";
+    List<UserBean> users = new ArrayList<UserBean>();
+    JSONObject jsonObject = new JSONObject();
     try {
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
@@ -319,34 +365,62 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(room, userService, false, from, to);
+    String typeRoom = chatService.getTypeRoomChat(room);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
-      List<UserBean> users = userService.getUsers(room);
+      if(ChatService.TYPE_ROOM_USER.equalsIgnoreCase(typeRoom)) {
+        users = userService.getUsersInRoomChatOneToOne(room);
+      }
+      else {
+        users = userService.getUsers(room);
+        List<SpaceBean> spaces = userService.getSpaces(user);
+        for (SpaceBean spaceBean:spaces)
+        {
+          if (room.equals(spaceBean.getRoom()))
+          {
+            roomName = spaceBean.getDisplayName();
+          }
+        }
+        List<RoomBean> roomBeans = userService.getTeams(user);
+        for (RoomBean roomBean:roomBeans)
+        {
+          if (room.equals(roomBean.getRoom()))
+          {
+            roomName = roomBean.getFullname();
+          }
+        }
+      }
       ReportBean reportBean = new ReportBean();
-      reportBean.fill((BasicDBList) datao.get("messages"), users);
-
-      String roomName = "";
-      List<SpaceBean> spaces = userService.getSpaces(user);
-      for (SpaceBean spaceBean:spaces)
-      {
-        if (room.equals(spaceBean.getRoom()))
-        {
-          roomName = spaceBean.getDisplayName();
+      Locale locale = DEFAULT_LANGUAGE;
+      try {
+        UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(user);
+        String lang = profile.getAttribute(UserProfile.PERSONAL_INFO_KEYS[8]);
+        if (lang != null && lang.trim().length() > 0) {
+            locale = Locale.forLanguageTag(lang);
         }
+      } catch (Exception e) {
+      
       }
-      List<RoomBean> roomBeans = userService.getTeams(user);
-      for (RoomBean roomBean:roomBeans)
-      {
-        if (room.equals(roomBean.getRoom()))
-        {
-          roomName = roomBean.getFullname();
+      reportBean.fill((BasicDBList) datao.get("messages"), users, locale);
+      ArrayList<String> usersInGroup = new ArrayList<String>();
+      xwiki = reportBean.getAsXWiki(serverBase,locale);
+      try {
+        for (UserBean userBean : users) {
+          if (!"".equals(userBean.getName())) {
+            usersInGroup.add(userBean.getName());
+          }
         }
+        jsonObject.put("users", usersInGroup);
+        jsonObject.put("xwiki", xwiki);
+        jsonObject.put("typeRoom", typeRoom);
+      } catch (Exception e) {
+        LOG.warning(e.getMessage());
+        return Response.notFound("No Room yet");
       }
-      xwiki = reportBean.getAsXWiki(serverBase);
-
     }
 
-    return Response.ok(xwiki).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -381,6 +455,12 @@ public class ChatServer
     }
     try
     {
+      try {
+        message = URLDecoder.decode(message,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // Chat server cannot do anything in this case
+        // Get original value
+      }
       chatService.edit(room, user, messageId, message);
     }
     catch (Exception e)
@@ -492,7 +572,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out);
+    return Response.ok(out).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -507,6 +587,11 @@ public class ChatServer
 
     try
     {
+      try {
+    	teamName = URLDecoder.decode(teamName,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        LOG.info("Cannot decode message: " + teamName);
+      }
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user);
@@ -581,7 +666,7 @@ public class ChatServer
 
       }
 
-      jsonObject.put("name", StringEscapeUtils.escapeHtml4(teamName));
+      jsonObject.put("name", teamName);
       jsonObject.put("room", room);
 
     }
@@ -590,7 +675,8 @@ public class ChatServer
       LOG.warning(e.getMessage());
       return Response.notFound("No Room yet");
     }
-    return Response.ok(jsonObject.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -657,7 +743,7 @@ public class ChatServer
       data += "data: {\"total\": "+totalUnread+"}\n\n";
     }
 
-    return Response.ok(data).withMimeType("application/json").withCharset(Charset.forName("UTF-8")).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -765,8 +851,8 @@ public class ChatServer
 
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json; charset=UTF-8").withHeader
-            ("Cache-Control", "no-cache");
+    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
   @Resource
@@ -782,11 +868,11 @@ public class ChatServer
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
-
+	  
     String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
     String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
     String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
@@ -805,7 +891,7 @@ public class ChatServer
 
     Session session = Session.getInstance(props, null);
     //session.setDebug(true);
-
+    
     MimeMessage message = new MimeMessage(session);
     message.setFrom(new InternetAddress(user, senderFullname));
 
@@ -813,17 +899,25 @@ public class ChatServer
     for (String to: toList) {
       message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
     }
-
-    message.setSubject(subject);
-    message.setContent(htmlBody, "text/html");
-
-    Transport transport = session.getTransport("smtp");
+    
+    message.setSubject(subject, "UTF-8");
+    // Create a message part to represent the body text
+    BodyPart messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
+    // use a MimeMultipart as we need to handle the file attachments
+    Multipart multipart = new MimeMultipart();
+    // add the message body to the mime message
+    multipart.addBodyPart(messageBodyPart);
+    // Put all message parts in the message
+    message.setContent(multipart);
+    
+    Transport transport = session.getTransport("smtps");
     try {
       transport.connect(host, user, password);
+      message.saveChanges();
       transport.sendMessage(message, message.getAllRecipients());
     } finally {
       transport.close();
     }
   }
-
 }

@@ -153,10 +153,11 @@
                       </div>
                     </div>
                   </span>
-                  <form action="" id="chat-file-form" method="post" enctype="multipart/form-data">
+                  <form action="" id="chat-file-form" method="post" enctype="multipart/form-data" accept-charset="utf-8">
                     <input type="hidden" name="room" value="---" id="chat-file-room" />
                     <input type="hidden" name="targetUser" value="---" id="chat-file-target-user" />
                     <input type="hidden" name="targetFullname" value="---" id="chat-file-target-fullname" />
+                    <input type="hidden" name="encodedFileName" value="---" id="chat-encoded-file-name" />
                     <div class="uiActionBorder">
 	                    <a href="#" class="btn btn-primary chat-file-upload" type="button">
 	                      <span>&{exoplatform.chat.file.manually}</span>

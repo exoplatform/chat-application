@@ -5,7 +5,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>1.0.x-SNAPSHOT</version>
+    <version>1.1.x-SNAPSHOT</version>
   </parent>
   <artifactId>application</artifactId>
   <packaging>war</packaging>
@@ -14,7 +14,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.2</version>
     </dependency>
     <dependency>
       <groupId>javax.enterprise</groupId>
@@ -90,6 +89,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.exoplatform.ecms</groupId>
+      <artifactId>ecms-core-services</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
       <scope>provided</scope>
@@ -138,6 +142,9 @@
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
+        <configuration>
+          <providerSelection>${gmaven-plugin.providerSelection}</providerSelection>
+        </configuration>
         <executions>
           <execution>
             <goals>

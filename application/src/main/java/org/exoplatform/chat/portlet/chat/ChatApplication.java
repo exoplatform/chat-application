@@ -24,9 +24,11 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
+import juzu.impl.common.Tools;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.SecurityContext;
 import juzu.template.Template;
+
 import org.apache.commons.fileupload.FileItem;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.listener.ServerBootstrap;
@@ -41,10 +43,15 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -144,7 +151,8 @@ public class ChatApplication
             .set("today", todayDate)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
-            .withAssets("chat-" + view);
+            .withAssets("chat-" + view)
+            .withCharset(Tools.UTF_8);
 
   }
 
@@ -210,14 +218,20 @@ public class ChatApplication
       saveSpaces(remoteUser_);
     }
 
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+    		       .withCharset(Tools.UTF_8);
 
   }
 
   @Resource
   @Ajax
-  public Response.Content upload(String room, String targetUser, String targetFullname, FileItem userfile, SecurityContext securityContext) {
-    LOG.info("file upload in " + room);
+  public Response.Content upload(String room, String targetUser, String targetFullname, String encodedFileName, FileItem userfile, SecurityContext securityContext) {
+    try {
+      targetFullname = URLDecoder.decode(targetFullname, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // Cannot do anything here
+    }
+    LOG.info("File is uploaded in " + room + " (" + targetFullname + ")");
     if (userfile.isFormField())
     {
       String fieldName = userfile.getFieldName();
@@ -233,12 +247,12 @@ public class ChatApplication
       String uuid = null;
       if (targetUser.startsWith(ChatService.SPACE_PREFIX))
       {
-        uuid = documentsData_.storeFile(userfile, targetFullname, false);
+        uuid = documentsData_.storeFile(userfile, encodedFileName, targetFullname, false);
       }
       else
       {
         remoteUser_ = securityContext.getRemoteUser();
-        uuid = documentsData_.storeFile(userfile, remoteUser_, true);
+        uuid = documentsData_.storeFile(userfile, encodedFileName, remoteUser_, true);
         documentsData_.setPermission(uuid, targetUser);
       }
       File file = documentsData_.getNode(uuid);
@@ -247,7 +261,7 @@ public class ChatApplication
 
 
       return Response.ok(file.toJSON())
-              .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+              .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
     }
 
 
@@ -281,7 +295,7 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime) {
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
     try {
       calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime),
               sdf.parse(endDate + " " + endTime));
@@ -303,23 +317,34 @@ public class ChatApplication
   @Ajax
   @Resource
   public Response.Content saveWiki(String targetFullname, String content) {
-    // Clean targetFullName
-    targetFullname = ChatUtils.cleanString(targetFullname);
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH-mm");
     String group = null, title = null, path="";
-    Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
-    if (spaceBean!=null) // Space use case
-    {
-      group = spaceBean.getGroupId();
-      if (group.startsWith("/")) group = group.substring(1);
-      title = "Meeting "+sdf.format(new Date());
-      path = wikiService_.createSpacePage(title, content, group);
+    JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
+    String typeRoom = (String)jsonObject.get("typeRoom");
+    String xwiki = (String)jsonObject.get("xwiki");
+    xwiki = xwiki.replaceAll("&#38", "&");
+    xwiki = xwiki.replaceAll("&lt;", "<");
+    xwiki = xwiki.replaceAll("&gt;", ">");
+    xwiki = xwiki.replaceAll("&quot;","\"");
+    xwiki = xwiki.replaceAll("<br/>","\n");
+    xwiki = xwiki.replaceAll("&#92","\\\\");
+    xwiki = xwiki.replaceAll("  ","\t");
+    ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
+    if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
+      Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
+      if (spaceBean!=null) // Space use case
+      {
+        group = spaceBean.getGroupId();
+        if (group.startsWith("/")) group = group.substring(1);
+        title = "Meeting "+sdf.format(new Date());
+        path = wikiService_.createSpacePage(title, xwiki, group, users);
+      }
     }
-    else // Team use case
+    else // Team use case & one to one use case
     {
       title = targetFullname+" Meeting "+sdf.format(new Date());
-      path = wikiService_.createIntranetPage(title, content);
+      path = wikiService_.createIntranetPage(title, xwiki, users);
     }
     path = ServerBootstrap.getServerBase()+path;
 
@@ -345,7 +370,8 @@ public class ChatApplication
     json.append("{ \"username\": \"").append(remoteUser_).append("\"");
     json.append(", \"token\": \"").append(token_).append("\" }");
 
-    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+                   .withCharset(Tools.UTF_8);
   }
 
   protected void addUser(String remoteUser, String token)

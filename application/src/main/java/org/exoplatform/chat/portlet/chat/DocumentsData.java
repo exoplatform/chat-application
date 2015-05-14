@@ -2,10 +2,12 @@ package org.exoplatform.chat.portlet.chat;
 
 
 import juzu.SessionScoped;
+
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.services.cms.impl.Utils;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -24,6 +26,9 @@ import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.servlet.http.HttpServletRequest;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.logging.Logger;
@@ -119,13 +124,13 @@ public class DocumentsData {
     }
 
     // set path
-    file.setPath(node.getPath());
+    file.setPath(Text.escapePath(node.getPath()));
     // set public url
     HttpServletRequest request = Util.getPortalRequestContext().getRequest();
     String baseURI = request.getScheme() + "://" + request.getServerName() + ":"
             + String.format("%s", request.getServerPort());
 
-    String url = baseURI+ "/documents/file/" +Util.getPortalRequestContext().getRemoteUser()+"/"+file.getUuid()+"/"+file.getName();
+    String url = baseURI+ "/documents/file/" +Util.getPortalRequestContext().getRemoteUser()+"/"+file.getUuid()+"/"+Text.escape(file.getName());
     file.setPublicUrl(url);
 
     return file;
@@ -151,6 +156,10 @@ public class DocumentsData {
 
   protected void setPermission(String id, String targetUser)
   {
+    if (StringUtils.isEmpty(targetUser)) {
+      LOG.warning("No target User to set permission for " + id);
+      return;
+    }
     SessionProvider sessionProvider = getUserSessionProvider();
     String uuid = null;
     try
@@ -178,16 +187,30 @@ public class DocumentsData {
 
   }
 
-  protected String storeFile(FileItem item, String name, boolean isPrivateContext)
-  {
-    String filename = item.getName();
+  protected String storeFile(FileItem item, String name, boolean isPrivateContext) {
+    return storeFile(item, name, null, isPrivateContext);
+  }
+
+  protected String storeFile(FileItem item, String encodedFileName, String name, boolean isPrivateContext) {
+    String filename;
+    if (encodedFileName != null) {
+      filename = encodedFileName;
+    } else {
+      filename = item.getName();
+    }
+    try {
+      filename = URLDecoder.decode(filename,"utf-8");
+    } catch (UnsupportedEncodingException e1) {
+      // Do nothing because there is nothing to process here
+    }
+    filename = Utils.cleanName(filename);
     String filenameExt = filename.substring(filename.lastIndexOf("."));
     String filenameBase = filename.substring(0, filename.lastIndexOf("."));
 
     String title = Text.escapeIllegalJcrChars(filename);
-    String cleanedFilenameBase = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameBase));
-    String cleanedFilenameExt = Text.escapeIllegalJcrChars(ChatUtils.cleanString(filenameExt));
-    String cleanedFilename = cleanedFilenameBase.concat(".").concat(cleanedFilenameExt);
+    String cleanedFilenameBase = ChatUtils.cleanString(filenameBase);
+    String cleanedFilenameExt = ChatUtils.cleanString(filenameExt);
+    String cleanedFilename = cleanedFilenameBase.concat(cleanedFilenameExt);
 
 
 
@@ -220,7 +243,7 @@ public class DocumentsData {
         try {
           while (docNode.hasNode(cleanedFilename))
           {
-            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(".").concat(cleanedFilenameExt);
+            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(cleanedFilenameExt);
             cpt++;
           }
     
@@ -235,31 +258,31 @@ public class DocumentsData {
           jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
           jcrContent.setProperty("jcr:encoding", "UTF-8");
 
-          if (filename.endsWith(".jpg"))
+          if (filename.toLowerCase().endsWith(".jpg"))
             jcrContent.setProperty("jcr:mimeType", "image/jpeg");
-          else if (filename.endsWith(".png"))
+          else if (filename.toLowerCase().endsWith(".png"))
             jcrContent.setProperty("jcr:mimeType", "image/png");
-          else if (filename.endsWith(".pdf"))
+          else if (filename.toLowerCase().endsWith(".pdf"))
             jcrContent.setProperty("jcr:mimeType", "application/pdf");
-          else if (filename.endsWith(".doc"))
+          else if (filename.toLowerCase().endsWith(".doc"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-word");
-          else if (filename.endsWith(".xls"))
+          else if (filename.toLowerCase().endsWith(".xls"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-excel");
-          else if (filename.endsWith(".ppt"))
+          else if (filename.toLowerCase().endsWith(".ppt"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-powerpoint");
-          else if (filename.endsWith(".docx"))
+          else if (filename.toLowerCase().endsWith(".docx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-          else if (filename.endsWith(".xlsx"))
+          else if (filename.toLowerCase().endsWith(".xlsx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-          else if (filename.endsWith(".pptx"))
+          else if (filename.toLowerCase().endsWith(".pptx"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-          else if (filename.endsWith(".odp"))
+          else if (filename.toLowerCase().endsWith(".odp"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.presentation");
-          else if (filename.endsWith(".odt"))
+          else if (filename.toLowerCase().endsWith(".odt"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
-          else if (filename.endsWith(".ods"))
+          else if (filename.toLowerCase().endsWith(".ods"))
             jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
-          else if (filename.endsWith(".zip"))
+          else if (filename.toLowerCase().endsWith(".zip"))
             jcrContent.setProperty("jcr:mimeType", "application/zip");
           else
             jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
@@ -292,7 +315,12 @@ public class DocumentsData {
   {
     Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
 
-    return "Groups/spaces/".concat(spacet.getPrettyName());
+    if (spacet == null) {
+      LOG.warning("Cannot get the space of " + spaceDisplayname + ". Return null.");
+      return null;
+    }
+
+    return "Groups".concat(spacet.getGroupId());
   }
 
   public static String calculateFileSize(long fileLengthLong) {

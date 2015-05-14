@@ -213,8 +213,8 @@ var chatApplication = new ChatApplication();
                               +'<div class="label"><div class="label-inner">'+chatBundleData.exoplatform_chat_file_drop+'</div></div>'
                             +'</div>'
                           +'</div>';
-            $('#dropzone-container').html(dropzone);
 
+            $('#dropzone-container').html(dropzone);
             $('#dropzone').filedrop({
 //          fallback_id: 'upload_button',   // an identifier of a standard file input element
               url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
@@ -222,7 +222,7 @@ var chatApplication = new ChatApplication();
               data: {
                 room: chatApplication.room,
                 targetUser: targetUser,
-                targetFullname: chatApplication.targetFullname
+                targetFullname: encodeURIComponent(chatApplication.targetFullname)
               },
               error: function(err, file) {
                 switch(err) {
@@ -247,14 +247,14 @@ var chatApplication = new ChatApplication();
               maxfiles: 1,
               maxfilesize: 100,    // max file size in MBs
               uploadStarted: function(i, file, len){
-                console.log("upload started : "+i+" : "+file+" : "+len);
+                console.log("upload started : "+i+" : "+file.name+" : "+len);
                 // a file began uploading
                 // i = index => 0, 1, 2, 3, 4 etc
                 // file is the actual file of the index
                 // len = total files user dropped
               },
               uploadFinished: function(i, file, response, time) {
-                console.log("upload finished : "+i+" : "+file+" : "+time+" : "+response.status+" : "+response.name);
+                console.log("upload finished : "+i+" : "+file.name+" : "+time+" : "+response.status+" : "+response.name);
                 // response is the data you got back from server in JSON format.
                 var msg = response.name;
                 var options = response;
@@ -269,7 +269,7 @@ var chatApplication = new ChatApplication();
 
               },
               progressUpdated: function(i, file, progress) {
-                console.log("progress updated : "+i+" : "+file+" : "+progress);
+                console.log("progress updated : "+i+" : "+file.name+" : "+progress);
                 $("#dropzone").find('.bar').width(progress+"%");
                 $("#dropzone").find('.bar').html(progress+"%");
                 // this function is used for large files and updates intermittently
@@ -403,9 +403,15 @@ var chatApplication = new ChatApplication();
     });
 
     $('#chat-file-form').ajaxForm({
-      beforeSend: function() {
+      beforeSubmit: function(formData, jqForm, options) {
         $("#dropzone").find('.bar').width("0%");
         $("#dropzone").find('.bar').html("0%");
+        for (index = 0; index < formData.length; index++) {
+          if (formData[index].name === "targetFullname") {
+            formData[index].value = encodeURIComponent(formData[index].value);
+            break;
+          }
+        }
       },
       uploadProgress: function(event, position, total, percentComplete) {
         console.log("progress updated : "+percentComplete);
@@ -431,8 +437,11 @@ var chatApplication = new ChatApplication();
     });
 
     $("#chat-file-file").on("change", function() {
-      if ($(this).val()!=="")
+      if ($(this).val()!=="") {
+          var originalName = encodeURIComponent($(this).val().split(/(\\|\/)/g).pop());
+          $("#chat-encoded-file-name").val(originalName);
         $("#chat-file-submit").trigger("click");
+      }
     });
 
     $('.uiRightContainerArea').on('dragenter', function() {
@@ -1270,7 +1279,7 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       "user": this.username,
       "token": this.token,
       "messageId": id,
-      "message": newMessage
+      "message": encodeURIComponent(newMessage)
     },
 
     success:function(response){
@@ -1300,7 +1309,7 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     type: 'POST',
     url: this.jzSaveTeamRoom,
     dataType: "json",
-    data: {"teamName": teamName,
+    data: {"teamName": encodeURIComponent(teamName),
       "room": room,
       "users": users,
       "user": this.username,
@@ -1705,6 +1714,16 @@ ChatApplication.prototype.showRooms = function(rooms) {
       roomPrevUser = room.user;
       if (chatApplication.showFavorites) {
         out += rhtml;
+
+        if (chatApplication.room === room.room) {
+          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
+          if (chatApplication.targetFullname !== spaceFullName) {
+            jqchat('.target-user-fullname').text(spaceFullName);
+            chatApplication.targetUser = room.user;
+            chatApplication.targetFullname = spaceFullName;
+            chatApplication.loadRoom();
+          }
+        }
       } else {
         if (Math.round(room.unreadTotal)>0) {
           totalFavorites += Math.round(room.unreadTotal);
@@ -1748,6 +1767,15 @@ ChatApplication.prototype.showRooms = function(rooms) {
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
+          }
+        }
+        if (chatApplication.room === room.room) {
+          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
+          if (chatApplication.targetFullname !== spaceFullName) {
+            jqchat('.target-user-fullname').text(spaceFullName);
+            chatApplication.targetUser = room.user;
+            chatApplication.targetFullname = spaceFullName;
+            chatApplication.loadRoom();
           }
         }
       }
@@ -1818,6 +1846,16 @@ ChatApplication.prototype.showRooms = function(rooms) {
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalSpaces += Math.round(room.unreadTotal);
+          }
+        }
+
+        if (chatApplication.room === room.room) {
+          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
+          if (chatApplication.targetFullname !== spaceFullName) {
+            jqchat('.target-user-fullname').text(spaceFullName);
+            chatApplication.targetUser = room.user;
+            chatApplication.targetFullname = spaceFullName;
+            chatApplication.loadRoom();
           }
         }
       }
@@ -1938,7 +1976,7 @@ ChatApplication.prototype.loadRoom = function() {
 
     jqchat("#room-detail").css("display", "block");
     jqchat(".team-button").css("display", "none");
-    jqchat(".target-user-fullname").text(this.targetFullname);
+    jqchat(".target-user-fullname").text(jqchat("<div/>").html(this.targetFullname).text());
 
     if(navigator.platform.indexOf("Linux") === -1) {
       jqchat(".btn-weemo-conf").css("display", "none");
@@ -2154,7 +2192,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
       to = Math.round(to)+1;
       chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
         if (response !== "ko") {
-          console.log(response);
+//          console.log(response);
           jqchat.ajax({
             type: "POST",
             url: chatApplication.jzSaveWiki,
@@ -2164,7 +2202,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
             context: this,
             dataType: "json",
             success: function(data){
-              console.log(data.path);
+//              console.log(data.path);
               if (data.path !== "") {
                 var options = {
                   type: "type-link",
