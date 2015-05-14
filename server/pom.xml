@@ -95,13 +95,11 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <scope>provided</scope>
-      <version>3.5.13-PLF</version>
     </dependency>
     <dependency>
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portal</artifactId>
       <scope>provided</scope>
-      <version>3.5.13-PLF</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
