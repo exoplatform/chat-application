@@ -547,6 +547,9 @@ ChatRoom.prototype.showMessages = function(msgs) {
             if (typeof weemoExtension!=="undefined") {
               weemoExtension.setUidToCall(options.uidToCall);
               weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+              if (options.meetingPointId!==undefined) {
+                weemoExtension.setMeetingPointId(options.meetingPointId);
+              }
             }
             jqchat(".btn-weemo").css("display", "none");
             jqchat(".btn-weemo-conf").css("display", "block");
