@@ -1982,7 +1982,7 @@ ChatApplication.prototype.loadRoom = function() {
     this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
     jqchat(".target-user-fullname").text(this.targetFullname);
 
-    if(navigator.platform.indexOf("Linux") === -1) {
+    if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
       jqchat(".btn-weemo-conf").css("display", "none");
       jqchat(".btn-weemo-conf").addClass("disabled");
       if (typeof weemoExtension !== 'undefined') {
@@ -2821,14 +2821,18 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
       if (weemoExtension.isConnected && (activity !== "offline" && activity !== "invisible")) {
         jqchat(".btn-weemo").removeClass("disabled");
+        jqchat(".btn-weemo-conf").removeClass("disabled");
       } else {
         jqchat(".btn-weemo").addClass("disabled");
+        jqchat(".btn-weemo-conf").addClass("disabled");
       }
     } else {
       if (weemoExtension.isConnected) {
         jqchat(".btn-weemo").removeClass("disabled");
+        jqchat(".btn-weemo-conf").removeClass("disabled");
       } else {
         jqchat(".btn-weemo").addClass("disabled");
+        jqchat(".btn-weemo-conf").addClass("disabled");
       }
     }
   }
@@ -2839,5 +2843,3 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     chatApplication.displayVideoCallOnChatApp()
   }, 3000);
 };
-
-
