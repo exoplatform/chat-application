@@ -1710,16 +1710,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
       roomPrevUser = room.user;
       if (chatApplication.showFavorites) {
         out += rhtml;
-
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
-          }
-        }
+        chatApplication.reloadCurrentItem(room);
       } else {
         if (Math.round(room.unreadTotal)>0) {
           totalFavorites += Math.round(room.unreadTotal);
@@ -1760,20 +1751,12 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showPeople && (chatApplication.showOffline || (!chatApplication.showOffline && room.status!=="invisible"))) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
           }
-        }
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
-          }
-        }
+        } 
       }
     }
   });
@@ -1804,6 +1787,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showTeams) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalTeams += Math.round(room.unreadTotal);
@@ -1839,19 +1823,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showSpaces) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalSpaces += Math.round(room.unreadTotal);
-          }
-        }
-
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
           }
         }
       }
@@ -1906,6 +1881,17 @@ ChatApplication.prototype.showRooms = function(rooms) {
 
 };
 
+ChatApplication.prototype.reloadCurrentItem = function(room) {
+  if (chatApplication.room === room.room) {
+    var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
+    if (chatApplication.targetFullname !== spaceFullName) {
+      jqchat('.target-user-fullname').text(spaceFullName);
+      chatApplication.targetUser = room.user;
+      chatApplication.targetFullname = spaceFullName;
+      chatApplication.loadRoom();
+    }
+  }
+}
 ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   var out = "";
   if (room.user!==roomPrevUser) {
