@@ -349,7 +349,7 @@ public class ChatApplication
     path = ServerBootstrap.getServerBase()+path;
 
     return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")
-            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
 
   }
 
