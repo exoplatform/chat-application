@@ -659,8 +659,15 @@ var chatApplication = new ChatApplication();
         });
         return;
       }
-      if (startTime==="all-day") startTime = "00:00";
-      if (endTime==="all-day") endTime = "23:59";
+      if (Date.parse(startDate)>Date.parse(endDate)) {
+          bootbox.alertError(chatBundleData.exoplatform_chat_compareddate_invalid_message, function(e){
+            e.stopPropagation();
+            $("#event-add-start-date").select();
+          });
+          return;
+        }
+      if (startTime==="all-day") startTime = "12:00 AM";
+      if (endTime==="all-day") endTime = "11:59 PM";
       var users = "";
       var targetUser = chatApplication.targetUser;
       if (targetUser.indexOf("team-")>-1) {
