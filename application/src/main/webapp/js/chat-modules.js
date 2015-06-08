@@ -729,7 +729,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var size = "<span class=\"fileSize\">("+options.sizeLabel+")</span>";
       out += urlFile + size;
       var link = options.restPath;
-      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
+      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
+          link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
         out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData.exoplatform_chat_view + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData.exoplatform_chat_download + "</a></div></div></div></div>";
       }
 
@@ -737,7 +738,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var link = options.link.toLowerCase();
       var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
       out += url;
-      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif")) {
+      if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
+          link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
         out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
     } else if (options.type==="type-task") {
