@@ -19,9 +19,31 @@
 
 package org.exoplatform.chat.server;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import juzu.MimeType;
 import juzu.Path;
 import juzu.Resource;
@@ -30,7 +52,14 @@ import juzu.Route;
 import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.template.Template;
+
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
@@ -45,31 +74,6 @@ import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.UserProfile;
-import org.json.JSONObject;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ChatServer
@@ -842,12 +846,51 @@ public class ChatServer
     return Response.ok(data.toString()).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
-  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
-	  
+  private Session getMailSession() {
+    String protocal = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PROTOCAL);
     String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
+    final String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
+    final String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
+    String port = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PORT);
+    String auth = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_AUTH);
+    String starttlsEnable = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_STARTTLS_ENABLE);
+    String enableSSL = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_ENABLE_SSL_ENABLE);
+    String smtpAuth = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_AUTH);
+    String socketFactoryPort = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SOCKET_FACTORY_PORT);
+    String socketFactoryClass = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SOCKET_FACTORY_CLASS);
+    String socketFactoryFallback = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK);
+    
+    Properties props = new Properties();
+
+    // SMTP protocol properties
+    props.put("mail.transport.protocol",protocal);
+    props.put("mail.smtp.host", host);
+    props.put("mail.smtp.port", port);
+    props.put("mail.smtp.auth", auth);
+
+    if (Boolean.parseBoolean(smtpAuth)) {
+      props.put("mail.smtp.socketFactory.port",socketFactoryPort);
+      props.put("mail.smtp.socketFactory.class",socketFactoryClass);
+      props.put("mail.smtp.socketFactory.fallback",socketFactoryFallback);
+      return Session.getInstance(props, new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+          return new PasswordAuthentication(user, password);
+        }
+      });
+    } else {
+      return Session.getInstance(props);
+    }
+  }
+  
+  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
     String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
+    String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
     String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
     String port = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PORT);
+    String auth = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_AUTH);
+    String starttlsEnable = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_STARTTLS_ENABLE);
+    String enableSSL = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_ENABLE_SSL_ENABLE);
 
     Properties props = System.getProperties();
 
@@ -856,19 +899,18 @@ public class ChatServer
     props.put("mail.smtp.host", host);
     props.put("mail.smtp.port", port);
     //props.put("mail.debug", "true");
-    props.put("mail.smtp.auth", "true");
-    props.put("mail.smtp.starttls.enable","true");
-    props.put("mail.smtp.EnableSSL.enable","true");
+    props.put("mail.smtp.auth", auth);
+    props.put("mail.smtp.starttls.enable",starttlsEnable);
+    props.put("mail.smtp.EnableSSL.enable",enableSSL);
 
-    Session session = Session.getInstance(props, null);
-    //session.setDebug(true);
+    Session session = getMailSession();
     
     MimeMessage message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(user, senderFullname));
+    message.setFrom(new InternetAddress(senderFullname));
 
     // To get the array of addresses
     for (String to: toList) {
-      message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+      message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
     }
     
     message.setSubject(subject, "UTF-8");
@@ -882,13 +924,10 @@ public class ChatServer
     // Put all message parts in the message
     message.setContent(multipart);
     
-    Transport transport = session.getTransport("smtps");
     try {
-      transport.connect(host, user, password);
-      message.saveChanges();
-      transport.sendMessage(message, message.getAllRecipients());
-    } finally {
-      transport.close();
+      Transport.send(message);
+    } catch(Exception e){
+      LOG.info(e.getMessage());
     }
   }
 }
