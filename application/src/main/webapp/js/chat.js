@@ -513,6 +513,13 @@ var chatApplication = new ChatApplication();
       var username = $("#task-add-user").val();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
+      var roomName = chatApplication.targetFullname;
+      var isSpace = false;
+      var roomId = chatApplication.targetUser;
+      var targetUser = chatApplication.targetUser;
+      if (targetUser.indexOf("space-")>-1) {
+    	  isSpace = true;
+      }
 
       // Validate empty
       if (task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
@@ -562,7 +569,9 @@ var chatApplication = new ChatApplication();
         url: chatApplication.jzCreateTask,
         data: {"username": selectedUsers,
           "dueDate": dueDate,
-          "task": task
+          "task": task,
+          "roomName": roomName,
+          "isSpace": isSpace
         },
         success:function(response){
 
@@ -667,7 +676,8 @@ var chatApplication = new ChatApplication();
           "startDate": startDate,
           "startTime": startTime,
           "endDate": endDate,
-          "endTime": endTime
+          "endTime": endTime,
+          "location": location
         },
         success:function(response){
 
@@ -1714,16 +1724,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
       roomPrevUser = room.user;
       if (chatApplication.showFavorites) {
         out += rhtml;
-
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
-          }
-        }
+        chatApplication.reloadCurrentItem(room);
       } else {
         if (Math.round(room.unreadTotal)>0) {
           totalFavorites += Math.round(room.unreadTotal);
@@ -1764,20 +1765,12 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showPeople && (chatApplication.showOffline || (!chatApplication.showOffline && room.status!=="invisible"))) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
           }
-        }
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
-          }
-        }
+        } 
       }
     }
   });
@@ -1808,6 +1801,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showTeams) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalTeams += Math.round(room.unreadTotal);
@@ -1843,19 +1837,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
         roomPrevUser = room.user;
         if (chatApplication.showSpaces) {
           out += rhtml;
+          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalSpaces += Math.round(room.unreadTotal);
-          }
-        }
-
-        if (chatApplication.room === room.room) {
-          var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-          if (chatApplication.targetFullname !== spaceFullName) {
-            jqchat('.target-user-fullname').text(spaceFullName);
-            chatApplication.targetUser = room.user;
-            chatApplication.targetFullname = spaceFullName;
-            chatApplication.loadRoom();
           }
         }
       }
@@ -1910,6 +1895,17 @@ ChatApplication.prototype.showRooms = function(rooms) {
 
 };
 
+ChatApplication.prototype.reloadCurrentItem = function(room) {
+  if (chatApplication.room === room.room) {
+    var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
+    if (chatApplication.targetFullname !== spaceFullName) {
+      jqchat('.target-user-fullname').text(spaceFullName);
+      chatApplication.targetUser = room.user;
+      chatApplication.targetFullname = spaceFullName;
+      chatApplication.loadRoom();
+    }
+  }
+}
 ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   var out = "";
   if (room.user!==roomPrevUser) {
@@ -1976,7 +1972,8 @@ ChatApplication.prototype.loadRoom = function() {
 
     jqchat("#room-detail").css("display", "block");
     jqchat(".team-button").css("display", "none");
-    jqchat(".target-user-fullname").text(jqchat("<div/>").html(this.targetFullname).text());
+    this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
+    jqchat(".target-user-fullname").text(this.targetFullname);
 
     if(navigator.platform.indexOf("Linux") === -1) {
       jqchat(".btn-weemo-conf").css("display", "none");

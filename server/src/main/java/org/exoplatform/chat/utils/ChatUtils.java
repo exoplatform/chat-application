@@ -12,8 +12,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import com.ibm.icu.text.Transliterator;
+
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.ecm.utils.text.Text;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -120,5 +121,25 @@ public class ChatUtils {
 
     return res.getString(key);
 
+  }
+  public static String escapeSpecialCharacters(String message) {
+    message = StringUtils.chomp(message);
+    message = message.replaceAll("&", "&#38");
+    message = message.replaceAll("<", "&lt;");
+    message = message.replaceAll(">", "&gt;");
+    message = message.replaceAll("\"", "&quot;");
+    message = message.replaceAll("\n", "<br/>");
+    message = message.replaceAll("\\\\", "&#92");
+    return message;
+  }
+  public static String unEscapeSpecialCharacters(String message) {
+    message = StringUtils.chomp(message);
+    message = message.replaceAll("&#38", "&");
+    message = message.replaceAll("&lt;", "<");
+    message = message.replaceAll("&gt;", ">");
+    message = message.replaceAll("&quot;", "\"");
+    message = message.replaceAll("<br/>", "\n");
+    message = message.replaceAll("&#92", "\\\\");
+    return message;
   }
 }
