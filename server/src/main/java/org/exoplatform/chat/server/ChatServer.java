@@ -297,7 +297,7 @@ public class ChatServer
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
       ArrayList<String> tos = new ArrayList<String>();
-      String senderFullname = user;
+      String sender = user;
       for (UserBean userBean:users)
       {
         if (!"".equals(userBean.getEmail()))
@@ -306,13 +306,14 @@ public class ChatServer
         }
         if (user.equals(userBean.getName()))
         {
-          senderFullname = userBean.getFullname();
+          sender = userBean.getFullname();
+          sender += "<" + userBean.getEmail() + ">";
         }
       }
       html = reportBean.getAsHtml(title);
       
       try {
-        sendMailWithAuth(senderFullname, tos, html.toString(), title);
+        sendMailWithAuth(sender, tos, html.toString(), title);
       } catch (Exception e) {
         LOG.info(e.getMessage());
       }
@@ -872,6 +873,8 @@ public class ChatServer
       props.put("mail.smtp.socketFactory.port",socketFactoryPort);
       props.put("mail.smtp.socketFactory.class",socketFactoryClass);
       props.put("mail.smtp.socketFactory.fallback",socketFactoryFallback);
+      props.put("mail.smtp.starttls.enable",starttlsEnable);
+      props.put("mail.smtp.ssl.enable",enableSSL);
       return Session.getInstance(props, new Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
@@ -884,24 +887,6 @@ public class ChatServer
   }
   
   public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
-    String user = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_USER);
-    String host = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HOST);
-    String password = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PASSWORD);
-    String port = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_PORT);
-    String auth = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_AUTH);
-    String starttlsEnable = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_STARTTLS_ENABLE);
-    String enableSSL = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_ENABLE_SSL_ENABLE);
-
-    Properties props = System.getProperties();
-
-    props.put("mail.smtp.user",user);
-    props.put("mail.smtp.password", password);
-    props.put("mail.smtp.host", host);
-    props.put("mail.smtp.port", port);
-    //props.put("mail.debug", "true");
-    props.put("mail.smtp.auth", auth);
-    props.put("mail.smtp.starttls.enable",starttlsEnable);
-    props.put("mail.smtp.EnableSSL.enable",enableSSL);
 
     Session session = getMailSession();
     
