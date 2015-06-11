@@ -1,18 +1,18 @@
 package org.exoplatform.chat.portlet.chat;
 
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.OrganizationService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.OrganizationService;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 
 @Named("calendarService")
 @ApplicationScoped
@@ -30,25 +30,25 @@ public class CalendarService {
   }
 
   protected void saveEvent(String user, String calName, String users, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant:participants) {
         String calId = getFirstCalendarsId(participant);
-        saveEvent(participant, false, participants, calId, calName, summary, from, to);
+        saveEvent(participant, false, participants, calId, calName, summary, from, to, location);
       }
     } else {
       String calId = getCalendarId(user, calName);
-      saveEvent(user, true, null, calId, calName, summary, from, to);
+      saveEvent(user, true, null, calId, calName, summary, from, to, location);
     }
   }
 
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
-                         Date from, Date to) throws Exception
+                         Date from, Date to, String location) throws Exception
   {
-    summary = StringEscapeUtils.escapeHtml(summary);
-
+    summary = ChatUtils.escapeSpecialCharacters(summary);
+    location = ChatUtils.escapeSpecialCharacters(location);
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
@@ -59,8 +59,7 @@ public class CalendarService {
       event.setFromDateTime(from);
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      event.setTaskDelegator(user);
-      event.setDescription("Created by "+user+" in "+calName);
+      event.setLocation(location);
       if (isPublic)
         calendarService_.savePublicEvent(calId, event, true);
       else {
@@ -79,25 +78,35 @@ public class CalendarService {
     }
   }
 
-  protected void saveTask(String currentUser, String username, String summary,
-                         Date from, Date to) throws Exception
-  {
-    summary = StringEscapeUtils.escapeHtml(summary);
-
-    String calId = getFirstCalendarsId(username);
-    if (calId!=null) {
-      CalendarEvent task = new CalendarEvent();
+  protected void saveTask(String currentUser, String username, String summary, String roomName, String isSpace,
+                          Date from, Date to) throws Exception {
+    summary = ChatUtils.escapeSpecialCharacters(summary);
+    CalendarEvent task = new CalendarEvent();
+    task.setSummary(summary);
+    task.setEventType(CalendarEvent.TYPE_TASK);
+    task.setRepeatType(CalendarEvent.RP_NOREPEAT);
+    task.setPrivate(true);
+    task.setFromDateTime(from);
+    task.setToDateTime(to);
+    task.setPriority(CalendarEvent.PRIORITY_NORMAL);
+    task.setTaskDelegator(username);
+    task.setDescription("Created by " + currentUser + " for " + username);
+    String calId = null;
+    if ("true".equals(isSpace)) {
+      calId = getCalendarId(currentUser, roomName);
+    }
+    if (calId != null) {
       task.setCalendarId(calId);
-      task.setSummary(summary);
-      task.setEventType(CalendarEvent.TYPE_TASK);
-      task.setRepeatType(CalendarEvent.RP_NOREPEAT);
-      task.setPrivate(true);
-      task.setFromDateTime(from);
-      task.setToDateTime(to);
-      task.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      task.setTaskDelegator(currentUser);
-      task.setDescription("Created by "+currentUser+" for "+username);
-      calendarService_.saveUserEvent(username, calId, task, true);
+      calendarService_.savePublicEvent(calId, task, true);
+    } else {
+      if (!StringUtils.isEmpty(username)) {
+        String[] assignees = username.split(",");
+        for (String assignee : assignees) {
+          String assigneeCalId = getFirstCalendarsId(assignee);
+          task.setCalendarId(assigneeCalId);
+          calendarService_.saveUserEvent(assignee, assigneeCalId, task, true);
+        }
+      }
     }
   }
 
@@ -146,6 +155,4 @@ public class CalendarService {
     }
     return groups;
   }
-
-
 }

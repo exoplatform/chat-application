@@ -271,13 +271,13 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createTask(String username, String dueDate, String task) {
+  public Response.Content createTask(String username, String dueDate, String task, String roomName, String isSpace) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
     Date today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     try {
-      calendarService_.saveTask(remoteUser_, username, task, today, sdf.parse(dueDate+" 23:59"));
+      calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
     } catch (ParseException e) {
       LOG.info("parse exception during task creation");
       return Response.notFound("Error during task creation");
@@ -294,11 +294,11 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime) {
+  public Response.Content createEvent(String space, String users, String summary, String startDate, String startTime, String endDate, String endTime, String location) {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
     try {
       calendarService_.saveEvent(remoteUser_, space, users, summary, sdf.parse(startDate + " " + startTime),
-              sdf.parse(endDate + " " + endTime));
+              sdf.parse(endDate + " " + endTime), location);
 
     } catch (ParseException e) {
       LOG.info("parse exception during task creation");
@@ -349,7 +349,7 @@ public class ChatApplication
     path = ServerBootstrap.getServerBase()+path;
 
     return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")
-            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
 
   }
 
