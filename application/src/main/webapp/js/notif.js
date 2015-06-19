@@ -562,6 +562,50 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
   });
 };
 
+ChatNotification.prototype.attachChatToProfile = function() {
+    if (window.location.href.indexOf("/portal/intranet/profile") == -1) return;
+
+    var $UIStatusProfilePortlet = jqchat("#UIStatusProfilePortlet");
+    if ($UIStatusProfilePortlet.html() === undefined) {
+        setTimeout(jqchat.proxy(this.attachChatToProfile, this), 250);
+        return;
+    }
+
+    var userName = jqchat(".user-status", $UIStatusProfilePortlet).attr('data-userid');
+    var fullName = jqchat(".user-status span", $UIStatusProfilePortlet).text();
+    var $userActions = jqchat("#UIActionProfilePortlet .user-actions");
+
+    if (userName != chatNotification.username && userName !== "" && $userActions.has(".chatPopupOverlay").length === 0 && $userActions.has("button").length) {
+        var strChatLink = "<a style='margin-top:0px !important;margin-right:-3px' data-username='" + userName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + userName.replace('.', '-') + " disabled' type='button'><i class='uiIconChat uiIconForum uiIconLightGray'></i> Chat</a>";
+
+        if ($userActions.has(".weemoCallOverlay").length === 0) {
+            $userActions.prepend(strChatLink);
+        } else {
+            jqchat("a:first-child", $userActions).after(strChatLink);
+        }
+
+        jqchat(".chatPopupOverlay").on("click", function() {
+            if (!jqchat(this).hasClass("disabled")) {
+                var targetUser = jqchat(this).attr("data-username");
+                showMiniChatPopup(targetUser, 'username');
+            }
+        });
+
+        function cbGetStatus(targetUser, status) {
+            if (status !== "offline") {
+                jqchat(".chatPopup-" + targetUser.replace('.', '-')).removeClass("disabled");
+            }
+        }
+        chatNotification.getStatus(userName, cbGetStatus);
+    }
+
+    setTimeout(function() {
+        chatNotification.attachChatToProfile()
+    }, 250);
+};
+
+
+
 /**
  ##################                           ##################
  ##################                           ##################
@@ -641,6 +685,9 @@ var chatNotification = new ChatNotification();
 
     // Attach chat below left navigation space name
     chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
+
+    // Attach chat to profile
+    chatNotification.attachChatToProfile();
 
   });
 
