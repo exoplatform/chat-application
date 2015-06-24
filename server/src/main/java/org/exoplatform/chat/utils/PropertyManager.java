@@ -53,6 +53,7 @@ public class PropertyManager {
   }
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
+  public static final String EXO_PROPERTY_SYSTEM_PREFIX = "exo.";
   public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
   public static final String PROPERTY_SERVER_TYPE = "dbServerType";
   public static final String PROPERTY_SERVER_HOST = "dbServerHost";
@@ -85,10 +86,19 @@ public class PropertyManager {
   public static final String PROPERTY_SERVICE_IMPL_MONGO = "mongo";
   public static final String PROPERTY_SERVICE_IMPL_JCR = "jcr";
 
-  public static final String PROPERTY_MAIL_HOST = "mailHost";
-  public static final String PROPERTY_MAIL_PORT = "mailPort";
-  public static final String PROPERTY_MAIL_USER = "mailUser";
-  public static final String PROPERTY_MAIL_PASSWORD = "mailPassword";
+  public static final String PROPERTY_MAIL_PROTOCAL               = "email.smtp.protocal";
+  public static final String PROPERTY_MAIL_HOST                   = "email.smtp.host";
+  public static final String PROPERTY_MAIL_PORT                   = "email.smtp.port";
+  public static final String PROPERTY_MAIL_USER                   = "email.smtp.username";
+  public static final String PROPERTY_MAIL_PASSWORD               = "email.smtp.password";
+  public static final String PROPERTY_MAIL_FROM                   = "email.smtp.from";
+  public static final String PROPERTY_MAIL_STARTTLS_ENABLE        = "email.smtp.starttls.enable";
+  public static final String PROPERTY_MAIL_ENABLE_SSL_ENABLE      = "email.smtp.EnableSSL.enable";
+  public static final String PROPERTY_MAIL_AUTH                   = "email.smtp.auth";
+  public static final String PROPERTY_MAIL_SOCKET_FACTORY_PORT    = "email.smtp.socketFactory.port";
+  public static final String PROPERTY_MAIL_SOCKET_FACTORY_CLASS   = "email.smtp.socketFactory.class";
+  public static final String PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK= "email.smtp.socketFactory.fallback";
+  public static final String PROPERTY_MAIL_SENDER                 = "email.smtp.from";
 
   public static final String PROPERTY_PLF_USER_STATUS_UPDATE_URL = "plfUsrStatUpdUrl";
 
@@ -142,10 +152,20 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
 
-      overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "smtp.gmail.com");
-      overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "587");
-      overridePropertyIfNotSet(PROPERTY_MAIL_USER, "exo");
+      overridePropertyIfNotSet(PROPERTY_MAIL_PROTOCAL, "smtp");
+      overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "localhost");
+      overridePropertyIfNotSet(PROPERTY_MAIL_PORT, "25");
+      overridePropertyIfNotSet(PROPERTY_MAIL_USER, "");
       overridePropertyIfNotSet(PROPERTY_MAIL_PASSWORD, "");
+      overridePropertyIfNotSet(PROPERTY_MAIL_FROM, "eXo Platform");
+      overridePropertyIfNotSet(PROPERTY_MAIL_STARTTLS_ENABLE, "false");
+      overridePropertyIfNotSet(PROPERTY_MAIL_ENABLE_SSL_ENABLE, "true");
+      overridePropertyIfNotSet(PROPERTY_MAIL_AUTH, "false");
+      overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_PORT, "");
+      overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_CLASS, "");
+      overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK, "false");
+      overridePropertyIfNotSet(PROPERTY_MAIL_SENDER, "chat@localhost.com");
+      
       overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
 
     }
@@ -159,6 +179,9 @@ public class PropertyManager {
     }
     if (System.getProperty(PROPERTY_SYSTEM_PREFIX+key)!=null) {
       properties().setProperty(key, System.getProperty(PROPERTY_SYSTEM_PREFIX+key));
+    }
+    if (System.getProperty(EXO_PROPERTY_SYSTEM_PREFIX+key)!=null) {
+      properties().setProperty(key, System.getProperty(EXO_PROPERTY_SYSTEM_PREFIX+key));
     }
 
   }

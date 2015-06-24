@@ -279,10 +279,10 @@ public class ChatApplication
     try {
       calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
     } catch (ParseException e) {
-      LOG.info("parse exception during task creation");
+      LOG.warning("parse exception during task creation");
       return Response.notFound("Error during task creation");
     } catch (Exception e) {
-      LOG.info("exception during task creation");
+      LOG.warning("exception during task creation");
       return Response.notFound("Error during task creation");
     }
 
@@ -301,11 +301,11 @@ public class ChatApplication
               sdf.parse(endDate + " " + endTime), location);
 
     } catch (ParseException e) {
-      LOG.info("parse exception during task creation");
-      return Response.notFound("Error during task creation");
+      LOG.warning("parse exception during event creation");
+      return Response.notFound("Error during event creation");
     } catch (Exception e) {
-      LOG.info("exception during task creation");
-      return Response.notFound("Error during task creation");
+      LOG.warning("exception during event creation");
+      return Response.notFound("Error during event creation");
     }
 
 
