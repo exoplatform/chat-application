@@ -22,19 +22,12 @@ package org.exoplatform.chat.server;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -43,9 +36,17 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.notification.LinkProviderUtils;
+import org.exoplatform.social.notification.Utils;
 
 import juzu.Path;
 import juzu.Resource;
@@ -56,12 +57,8 @@ import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-
 import org.exoplatform.chat.listener.GuiceManager;
+import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.ReportBean;
 import org.exoplatform.chat.model.RoomBean;
@@ -79,28 +76,21 @@ import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.json.JSONObject;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Arrays;
 import java.util.Properties;
-
 import java.util.logging.Logger;
 @ApplicationScoped
 public class ChatServer
@@ -337,9 +327,22 @@ public class ChatServer
         }
       }
       html = reportBean.getAsHtml(title);
-      
+      // inline images
+      String prevUser = "";
+      int index = 0;
+      Map<String, String> inlineImages = new HashMap<String, String>();
+      for(MessageBean messageBean : reportBean.getMessages()) {
+        if(!messageBean.getUser().equals(prevUser)) {
+          String keyAvatar = messageBean.getUser() + index;
+          Identity identity = Utils.getIdentityManager().getOrCreateIdentity("organization", messageBean.getUser(), true);
+          String getAvatarUrl = LinkProviderUtils.getUserAvatarUrl(identity.getProfile());
+          inlineImages.put(keyAvatar, getAvatarUrl);
+          index ++;
+        }
+        prevUser = messageBean.getUser();
+      }
       try {
-        sendMailWithAuth(sender, tos, html.toString(), title);
+        sendMailWithAuth(sender, tos, html.toString(), title, inlineImages);
       } catch (Exception e) {
         LOG.info(e.getMessage());
       }
@@ -903,7 +906,7 @@ public class ChatServer
     }
   }
   
-  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject) throws Exception {
+  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject, Map<String, String> inlineImages) throws Exception {
 
     Session session = getMailSession();
     
@@ -917,12 +920,32 @@ public class ChatServer
     
     message.setSubject(subject, "UTF-8");
     // Create a message part to represent the body text
-    BodyPart messageBodyPart = new MimeBodyPart();
+    MimeBodyPart messageBodyPart = new MimeBodyPart();
     messageBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
     // use a MimeMultipart as we need to handle the file attachments
     Multipart multipart = new MimeMultipart();
     // add the message body to the mime message
     multipart.addBodyPart(messageBodyPart);
+    
+    // Part2: get user's avatar
+    
+    if (inlineImages != null && inlineImages.size() > 0) {
+      Set<String> setImageID = inlineImages.keySet();
+      for (String contentId : setImageID) {
+        messageBodyPart = new MimeBodyPart();
+        String imageFilePath = inlineImages.get(contentId);
+        // Install the custom authenticator
+        URL url = new URL(imageFilePath);
+        URLConnection con = url.openConnection();
+        con.setDoOutput(true);
+        InputStream is = con.getInputStream();
+        ByteArrayDataSource byteArrayDataSource = new ByteArrayDataSource(is, "image/jpeg");
+        messageBodyPart.setDataHandler(new DataHandler(byteArrayDataSource));
+        messageBodyPart.setContentID("<" + contentId + ">");
+        messageBodyPart.setDisposition(MimeBodyPart.INLINE);
+        multipart.addBodyPart(messageBodyPart);
+        }
+    }
     // Put all message parts in the message
     message.setContent(multipart);
     

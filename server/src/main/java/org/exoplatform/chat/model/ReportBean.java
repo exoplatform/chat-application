@@ -397,16 +397,21 @@ public class ReportBean {
     html.append("<h3>Discussions</h3>");
     html.append("<span>");
     String prevUser = "";
+    String keyAvatar = "";
+    int index =0;
     for (MessageBean messageBean:this.getMessages())
     {
       html.append("<span style='padding: 4px; border-bottom: 1px dotted #DDD; width: 500px;display: block;'>");
+      
       if (!messageBean.getUser().equals(prevUser))
       {
+        keyAvatar = messageBean.getUser() + index;
         html.append("  <div style='padding: 4px;color: #CCC;'>");
-        html.append("    <span style='float: left; display: inline-block;padding-right: 10px;'><img src='http://demo.exoplatform.net:8080/rest/jcr/repository/social/production/soc:providers/soc:organization/soc:"+messageBean.getUser()+"/soc:profile/soc:avatar' width='30px' style='width:30px;'></span>");
+        html.append("    <span style='float: left; display: inline-block;padding-right: 10px;'><img src=\"cid:"+keyAvatar+"\" width='30px' style='width:30px;'></span>");
         html.append("    <span style='width: 300px;display: inline-block;vertical-align: top;'>").append(messageBean.getFullname()).append("</span>");
         html.append("    <span style='font-size: smaller;vertical-align: top;'>").append(messageBean.getDate()).append("</span>");
         html.append("  </div>");
+        index ++;
       }
       prevUser = messageBean.getUser();
       html.append("  <div style='padding: 0 4px; margin-left: 40px;vertical-align: top;'>").append(messageBean.getMessage()).append("</div>");
