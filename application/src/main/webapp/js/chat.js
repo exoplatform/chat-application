@@ -2649,6 +2649,15 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.fullname = this.fullname;
       sendMessageToServer = true;
     } else if (msg.indexOf("/terminate")===0) {
+      if (msg.indexOf("/terminate")===0) {
+        var optionsStop = {
+          type: "type-meeting-stop",
+          fromUser: chatApplication.username,
+          fromFullname: chatApplication.fullname
+        };
+        this.chatRoom.sendMessage("", optionsStop, isSystemMessage, callback);
+      }
+
       ts = Math.round(new Date().getTime() / 1000);
       msg = chatBundleData.exoplatform_chat_call_terminated;
       options.timestamp = ts;
