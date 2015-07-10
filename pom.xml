@@ -9,20 +9,10 @@
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>1.1.x-SNAPSHOT</version>
+  <version>1.2.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
-  <developers>
-    <developer>
-      <id>benjamin.paillereau</id>
-      <name>Benjamin Paillereau</name>
-      <email>benjamin.paillereau@exoplatform.com</email>
-      <roles>
-        <role>Owner</role>
-      </roles>
-    </developer>
-  </developers>
   <modules>
     <module>server</module>
     <module>server-standalone</module>
@@ -52,11 +42,10 @@
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
     <!-- **************************************** -->
-    <jenkins.job.name>chat-application-master-ci</jenkins.job.name>
+    <jenkins.job.name>chat-application-develop-ci</jenkins.job.name>
     <!-- **************************************** -->
     <!-- Other Settings -->
     <!-- **************************************** -->
-    <project.output.directory>/Users/benjamin/java/demos/eXo-Platform-tomcat-3.5.3-MOD/tomcat-bundle/webapps</project.output.directory>
   </properties>
   <dependencyManagement>
     <dependencies>
