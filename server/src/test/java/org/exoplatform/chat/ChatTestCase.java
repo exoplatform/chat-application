@@ -29,13 +29,15 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("benjamin");
     users.add("john");
     String roomId = ServiceBootstrap.getChatService().getRoom(users);
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId).drop();
+    String roomType = ServiceBootstrap.getChatService().getTypeRoomChat(roomId);
+    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomType).drop();
     users = new ArrayList<String>();
     users.add("benjamin");
     users.add("mary");
     roomId = ServiceBootstrap.getChatService().getRoom(users);
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomId).drop();
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+ChatService.M_ROOMS_COLLECTION).drop();
+    roomType = ServiceBootstrap.getChatService().getTypeRoomChat(roomId);
+    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomType).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOMS_COLLECTION).drop();
 
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
 
@@ -249,7 +251,6 @@ public class ChatTestCase extends AbstractChatTestCase
   public void testGetExistingRooms() throws Exception
   {
     ChatService chatService = ServiceBootstrap.getChatService();
-    UserService userService = ServiceBootstrap.getUserService();
     TokenService tokenService = ServiceBootstrap.getTokenService();
     NotificationService notificationService = ServiceBootstrap.getNotificationService();
     List<String> users = new ArrayList<String>();
@@ -303,7 +304,6 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("james");
     String roomId3 = chatService.getRoom(users);
 
-
     chatService.write("foo", "benjamin", roomId1, "false");
     chatService.write("bar", "john", roomId1, "false");
 
@@ -340,8 +340,8 @@ public class ChatTestCase extends AbstractChatTestCase
     chatService.write("foo", "benjamin", spaceId1, "false");
 
     String spaceId2 = chatService.getSpaceRoom("test_space_2");
-    chatService.write("foo", "benjamin", spaceId1, "false");
-    chatService.write("foo", "john", spaceId1, "false");
+    chatService.write("foo", "benjamin", spaceId2, "false");
+    chatService.write("foo", "john", spaceId2, "false");
 
 
     //public RoomsBean getRooms(String user, String filter,
@@ -406,7 +406,6 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("benjamin");
     users.add("james");
     String roomId3 = chatService.getRoom(users);
-
 
     chatService.write("foo", "benjamin", roomId1, "false");
     chatService.write("bar", "john", roomId1, "false");
@@ -481,6 +480,4 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, roomsBenMaWi.getRooms().size());
 
   }
-
-
 }

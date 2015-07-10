@@ -26,17 +26,34 @@ Be Up and Running
 ===============
 
 One Tomcat Server mode
-----------------
+----------------------
 
 Jump to Wiki Install Page : [One Server Mode](https://github.com/exo-addons/chat-application/wiki/One-Server-Mode)
 
 Two Tomcat Servers mode
-----------------
+-----------------------
 
 To be sure, the Chat will never interfere with eXo Platform, you can install it on a separated server. It's of course the recommended configuration.
 
 Jump to Wiki Install Page : [Two Servers Mode](https://github.com/exo-addons/chat-application/wiki/Two-Servers-Mode)
 
+Migrate to Chat 1.2
+-------------------
+* Before processing the migration, it's recommended to backup the data. This can be done with the following command:
+
+	mongodump --host {host} --port {port} --username {username} --password {password} --db {dbName} --out "{backup_folder}"
+
+with {host} and {port} are respectively hostname/IP and port of mongoDB server; {username} and {password} are required if authentication is enabled for your database; {dbName} is name of chat database and {backup_folder} is path to folder that backup data is stored.
+
+* To migrate, you have two options:
+
+** Automatical migration: you just need to turn off your Chat Server, deploy new chatServer.war package then restart Chat Server.
+
+** Manual migration: to do a manual migration, you have to get the migration script - migration-chat-addon.js file - that is packaged in chatServer.war/WEB-INF/lib/server-{version}-classes.jar. Extract binary packages to get migration script then launch the following command:
+
+	mongo --quiet {host}:{port}/{dbName} -u {username} -p {password} migration-chat-addon.js
+
+with {host} and {port} are respectively hostname/IP and port of mongoDB server; {username} and {password} are required if authentication is enabled for your database; {dbName} is name of database that is configured in chat.properties.
 
 
 License

@@ -42,10 +42,7 @@
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
-    <!-- **************************************** -->
     <jenkins.job.name>chat-application-develop-ci</jenkins.job.name>
-    <!-- **************************************** -->
-    <!-- Other Settings -->
     <!-- **************************************** -->
   </properties>
   <dependencyManagement>

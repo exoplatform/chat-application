@@ -29,7 +29,7 @@ public interface UserService
 {
 
   public static final String M_USERS_COLLECTION = "users";
-  public static final String M_ROOMS_COLLECTION = "room_rooms";
+  public static final String M_ROOMS_COLLECTION = "rooms";
 
   public static final String STATUS_AVAILABLE = "available";
   public static final String STATUS_DONOTDISTURB = "donotdisturb";

@@ -10,6 +10,9 @@
   <absolute-ordering />
 
   <listener>
+    <listener-class>org.exoplatform.chat.listener.MigrateServiceListener</listener-class>
+  </listener>
+  <listener>
     <listener-class>org.exoplatform.chat.listener.GuiceManager</listener-class>
   </listener>
   <listener>
