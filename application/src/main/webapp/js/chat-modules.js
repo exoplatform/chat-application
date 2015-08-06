@@ -570,7 +570,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jqchat(".btn-weemo").css("display", "none");
             jqchat(".btn-weemo-conf").css("display", "block");
             if (typeof weemoExtension!=="undefined") {
-              if (options.uidToCall!=="weemo"+thiss.username && weemoExtension.isConnected)
+              if (options.uidToCall!=="weemo"+thiss.username)
                 jqchat(".btn-weemo-conf").removeClass("disabled");
               else
                 jqchat(".btn-weemo-conf").addClass("disabled");

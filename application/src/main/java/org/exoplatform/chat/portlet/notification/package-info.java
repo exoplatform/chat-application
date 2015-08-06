@@ -33,7 +33,6 @@
         @Script(value = "js/notif.js", id = "notif", location = AssetLocation.SERVER, depends = {"jquery", "snack", "juzu-utils", "taffy"})
 })
 @Stylesheets({
-        @Stylesheet(value = "css/webrtc.css", location = AssetLocation.SERVER),
         @Stylesheet(value = "/org/exoplatform/chat/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)
 })
 @Less(value = "notif.less", minify = true)

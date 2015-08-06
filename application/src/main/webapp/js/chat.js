@@ -2681,9 +2681,6 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.timestamp = ts;
       options.type = "call-off";
       sendMessageToServer = true;
-      if (typeof weemoExtension !== 'undefined') {
-        weemoExtension.setCallActive(false);
-      }
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {
@@ -2821,7 +2818,21 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
           eXo.ecm.VideoCalls.showReceivingPermissionInterceptor(targetFullname);
           chatApplication.setModalToCenter('#receive-permission-interceptor');
         } else {
-          weemoExtension.createWeemoCall(targetUser, targetFullname, chatMessage);
+          //sightCallExtension.createWeemoCall(targetUser, targetFullname, chatMessage);
+          jzStoreParam("jzChatSend", chatApplication.jzChatSend);
+          jzStoreParam("room", chatApplication.room);
+          jzStoreParam("targetFullname", targetFullname);
+          jzStoreParam("targetUser", targetUser);
+
+          if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
+            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
+          } else {
+            var isSpace = (targetUser.indexOf("space-") !== -1);
+            var spaceOrTeamName = jzGetParam("targetFullname","").toLowerCase().split(" ").join("_");
+
+            jzStoreParam("isSpace", isSpace);
+            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+          }
         }
       } else {
         eXo.ecm.VideoCalls.showPermissionInterceptor();
@@ -2840,13 +2851,23 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         "room": chatApplication.room,
         "token": chatApplication.token
       };
-      weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
+      var targetUser = chatApplication.targetUser.trim();
+      var targetFullname = chatApplication.targetFullname.trim();
+      var isSpace = (targetUser.indexOf("space-") !== -1);
+      var spaceOrTeamName = jzGetParam("targetFullname","").toLowerCase().split(" ").join("_");
+
+      jzStoreParam("jzChatSend", chatApplication.jzChatSend);
+      jzStoreParam("room", chatApplication.room);
+      jzStoreParam("targetFullname", targetFullname);
+      jzStoreParam("targetUser", targetUser);
+      weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+      //weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
     }
   });
 
   function cbGetConnectionStatus(targetUser, activity) {
     if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
-      if (weemoExtension.isConnected && (activity !== "offline" && activity !== "invisible")) {
+      if (activity !== "offline" && activity !== "invisible") {
         jqchat(".btn-weemo").removeClass("disabled");
         jqchat(".btn-weemo-conf").removeClass("disabled");
       } else {
@@ -2854,13 +2875,8 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         jqchat(".btn-weemo-conf").addClass("disabled");
       }
     } else {
-      if (weemoExtension.isConnected) {
         jqchat(".btn-weemo").removeClass("disabled");
-        jqchat(".btn-weemo-conf").removeClass("disabled");
-      } else {
-        jqchat(".btn-weemo").addClass("disabled");
-        jqchat(".btn-weemo-conf").addClass("disabled");
-      }
+        //jqchat(".btn-weemo-conf").removeClass("disabled");
     }
   }
 

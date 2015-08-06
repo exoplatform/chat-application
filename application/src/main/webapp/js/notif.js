@@ -12,6 +12,8 @@
  */
 
 function ChatNotification() {
+  this.jzChatRead = "";
+  this.jzChatSend = "";
   this.token = "";
   this.username = "";
   this.sessionId = "";
@@ -58,6 +60,8 @@ ChatNotification.prototype.initOptions = function(options) {
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
   this.shortSpaceName = options.shortSpaceName;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
+  this.jzChatRead = options.jzChatRead;
+  this.jzChatSend = options.jzChatSend;
 };
 
 /**
@@ -608,8 +612,94 @@ ChatNotification.prototype.attachChatToProfile = function() {
         chatNotification.attachChatToProfile()
     }, 250);
 };
+ChatNotification.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
+
+// Send message to server
+  var thiss = this;
+  snack.request({
+    url: thiss.jzChatSend,
+    data: {
+      "user": user,
+      "targetUser": targetUser,
+      "room": room,
+      "message": encodeURIComponent(msg),
+      "options": encodeURIComponent(JSON.stringify(options)),
+      "token": token,
+      "timestamp": new Date().getTime(),
+      "isSystem": isSystemMessage
+    }
+  }, function (err, response) {
+    if (!err) {
+      if (typeof callback === "function") {
+        callback();
+      }
+    }
+  });
+};
 
 
+
+/**
+ * return a status if a meeting is started or not :
+ * -1 : no meeting in chat history
+ * 0 : meeting terminated
+ * 1 : obgoing meeting
+ *
+ * @param callback (callStatus)
+ */
+ChatNotification.prototype.checkIfMeetingStarted = function (room, callback) {
+  chatNotification.getChatMessages(room, function (msgs) {
+    var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
+    var recordStatus = -1;
+    for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
+      var msg = msgs[i];
+      var type = msg.options.type;
+      if (type === "call-off") {
+        callStatus = 0;
+      } else if (type === "call-on") {
+        callStatus = 1;
+      }
+    }
+    for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
+      var msg = msgs[i];
+      var type = msg.options.type;
+      if (type === "type-meeting-stop") {
+        recordStatus = 0;
+      } else if (type === "type-meeting-start") {
+        recordStatus = 1;
+      }
+    }
+    if (callback !== undefined) {
+      callback(callStatus, recordStatus);
+    }
+  });
+};
+
+ChatNotification.prototype.getChatMessages = function(room, callback) {
+  if (room === "") return;
+
+  if (this.username !== this.ANONIM_USER) {
+    snack.request({
+      url: this.jzChatRead,
+      data: {
+        room: room,
+        user: this.username,
+        token: this.token
+      }
+    }, function (err, res){
+      if (err) {
+        return;
+      }
+
+      res = res.split("\t").join(" ");
+      var data = snack.parseJSON(res);
+
+      if (typeof callback === "function") {
+        callback(data.messages);
+      }
+    })
+  }
+};
 
 /**
  ##################                           ##################
@@ -662,7 +752,9 @@ var chatNotification = new ChatNotification();
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
       "shortSpaceName": $notificationApplication.attr("data-short-space-name"),
       "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
-      "dbName": $notificationApplication.attr("data-db-name")
+      "dbName": $notificationApplication.attr("data-db-name"),
+      "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
+      "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send"
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
