@@ -2828,7 +2828,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
             weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
           } else {
             var isSpace = (targetUser.indexOf("space-") !== -1);
-            var spaceOrTeamName = jzGetParam("targetFullname","").toLowerCase().split(" ").join("_");
+            var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
             jzStoreParam("isSpace", isSpace);
             weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
@@ -2854,7 +2854,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
       var targetUser = chatApplication.targetUser.trim();
       var targetFullname = chatApplication.targetFullname.trim();
       var isSpace = (targetUser.indexOf("space-") !== -1);
-      var spaceOrTeamName = jzGetParam("targetFullname","").toLowerCase().split(" ").join("_");
+      var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
       jzStoreParam("jzChatSend", chatApplication.jzChatSend);
       jzStoreParam("room", chatApplication.room);
