@@ -519,7 +519,7 @@ var chatApplication = new ChatApplication();
       var roomId = chatApplication.targetUser;
       var targetUser = chatApplication.targetUser;
       if (targetUser.indexOf("space-")>-1) {
-    	  isSpace = true;
+        isSpace = true;
       }
 
       // Validate empty
@@ -2022,7 +2022,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-      jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
+      jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getSpaceAvartar/"+spaceName);
     }
     else
     ////// TEAM

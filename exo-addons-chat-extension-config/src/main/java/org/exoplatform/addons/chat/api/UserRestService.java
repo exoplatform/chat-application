@@ -119,4 +119,44 @@ public class UserRestService implements ResourceContainer
             .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
             .build();
   }
+
+  @GET
+  @Path("/getSpaceAvartar/{spaceName}/")
+  @RolesAllowed("users")
+  public Response getSpaceAvartar(@PathParam("spaceName") String spaceName, @Context UriInfo uri) {
+
+    CacheControl cacheControl = new CacheControl();
+    DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
+
+    // Get server base
+    String scheme = uri.getBaseUri().getScheme();
+    String serverName = uri.getBaseUri().getHost();
+    int serverPort = uri.getBaseUri().getPort();
+    String serverBase = scheme + "://" + serverName;
+    if (serverPort != 80) serverBase += ":" + serverPort;
+
+    // Get avatar
+    InputStream in = null;
+    try {
+      URL url = new URL(serverBase +
+              "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:" + spaceName +
+              "/soc:profile/soc:avatar");
+      URLConnection con = url.openConnection();
+      con.setDoOutput(true);
+      in = con.getInputStream();
+    } catch (Exception e) {
+      try {
+        URL url = new URL(serverBase + "/weemo-extension/img/SpaceChatAvatar.png");
+        URLConnection con = url.openConnection();
+        con.setDoOutput(true);
+        in = con.getInputStream();
+      } catch (Exception e1) {
+        return Response.status(Status.NOT_FOUND).build();
+      }
+    }
+
+    return Response.ok(in, "Image").cacheControl(cacheControl)
+            .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
+            .build();
+  }
 }
