@@ -492,7 +492,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
       else
       {
         var hideWemmoMessage = "";
-        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' || message.options.type === 'call-join')) {
+        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' )) {
           hideWemmoMessage = "style='display:none;'";
         }
         if (prevUser !== "") {
@@ -653,6 +653,8 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
       out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
     } else if ("call-on" === actionType) {
       out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
+    } else if ("call-join" === actionType) {
+      out += "                <i class='uiIconChat32x32AddPeopleToMeeting uiIconChat32x32LightGray'></i>";
     } else if ("call-off" === actionType) {
       out += "                <i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
     } else if ("call-proceed" === actionType) {
@@ -826,7 +828,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     } else if (options.type==="call-on") {
       this.startCallTimestamp = objMessage.timestamp;
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
-
+    } else if (options.type==="call-join") {
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_joined + "</b>";
     } else if (options.type==="call-off") {
       var callDuration = (objMessage.timestamp - this.startCallTimestamp)/1000;
       var hours = Math.floor(callDuration / 3600);

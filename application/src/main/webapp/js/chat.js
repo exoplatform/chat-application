@@ -2886,7 +2886,8 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
   setTimeout(function () {
     chatApplication.displayVideoCallOnChatApp();
     var chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
-      if ((chatMessage.url !== undefined) && (chatNotification !== undefined) && jzGetParam("isSightCallConnected",false) === "false") {
+      if ((chatMessage.url !== undefined) && (chatNotification !== undefined) && jzGetParam("isSightCallConnected",false) === "false"
+        && (jzGetParam("callMode") === "one" || jzGetParam("callMode") === "host")) {
         var roomToCheck = chatMessage.room;
 
         chatNotification.checkIfMeetingStarted(roomToCheck, function(callStatus, recordStatus) {
@@ -2927,8 +2928,9 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
               "true"
             );
 
-            jzStoreParam("chatMessage", JSON.stringify({}));
+            localStorage.removeItem("chatMessage");
             localStorage.removeItem("isSightCallConnected");
+            localStorage.removeItem("callMode");
         });
     }
   }, 3000);
