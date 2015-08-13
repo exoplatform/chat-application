@@ -2884,6 +2884,52 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
   chatNotification.getStatus(chatApplication.targetUser, cbGetConnectionStatus);
 
   setTimeout(function () {
-    chatApplication.displayVideoCallOnChatApp()
+    chatApplication.displayVideoCallOnChatApp();
+    var chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
+      if ((chatMessage.url !== undefined) && (chatNotification !== undefined) && jzGetParam("isSightCallConnected",false) === "false") {
+        var roomToCheck = chatMessage.room;
+
+        chatNotification.checkIfMeetingStarted(roomToCheck, function(callStatus, recordStatus) {
+
+            if (callStatus === 0) { // Already terminated
+               jzStoreParam("chatMessage", JSON.stringify({}));
+               return;
+            }
+
+            // Also Update record status
+            if (recordStatus !== 0) {
+                var options = {
+                    type: "type-meeting-stop",
+                    fromUser: chatNotification.username,
+                    fromFullname: chatNotification.username
+                };
+                chatNotification.sendFullMessage(
+                  chatMessage.user,
+                  chatMessage.token,
+                  chatMessage.targetUser,
+                  roomToCheck,
+                  "",
+                  options,
+                  "true"
+                );
+            }
+
+            var options = {};
+            options.timestamp = Math.round(new Date().getTime() / 1000);
+            options.type = "call-off";
+            chatNotification.sendFullMessage(
+              chatMessage.user,
+              chatMessage.token,
+              chatMessage.targetUser,
+              roomToCheck,
+              chatBundleData.exoplatform_chat_call_terminated,
+              options,
+              "true"
+            );
+
+            jzStoreParam("chatMessage", JSON.stringify({}));
+            localStorage.removeItem("isSightCallConnected");
+        });
+    }
   }, 3000);
 };

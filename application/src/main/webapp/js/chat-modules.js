@@ -492,7 +492,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
       else
       {
         var hideWemmoMessage = "";
-        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed')) {
+        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' || message.options.type === 'call-join')) {
           hideWemmoMessage = "style='display:none;'";
         }
         if (prevUser !== "") {
