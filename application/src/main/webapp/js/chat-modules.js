@@ -288,6 +288,8 @@ ChatRoom.prototype.showAsText = function(callback) {
 };
 
 ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp, callback) {
+  var serverBase = window.location.href.substr(0, 9+window.location.href.substr(9).indexOf("/"));
+  
   var thiss = this;
   snack.request({
     url: thiss.jzChatSendMeetingNotes,
@@ -295,6 +297,7 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
       room: room,
       user: thiss.username,
       token: thiss.token,
+      serverBase: serverBase,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp
     }

@@ -238,7 +238,7 @@ public class ChatServer
   @Resource
   @Route("/sendMeetingNotes")
   public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                           String toTimestamp) throws IOException {
+                                           String toTimestamp, String serverBase) throws IOException {
     if (!tokenService.hasUserWithToken(user,  token))
     {
       return Response.notFound("Petit malin !");
@@ -310,7 +310,7 @@ public class ChatServer
           sender += "<" + userBean.getEmail() + ">";
         }
       }
-      html = reportBean.getAsHtml(title);
+      html = reportBean.getAsHtml(title, serverBase);
       
       try {
         sendMailWithAuth(sender, tos, html.toString(), title);
