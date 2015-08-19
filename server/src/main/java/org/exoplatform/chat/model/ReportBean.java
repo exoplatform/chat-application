@@ -294,7 +294,7 @@ public class ReportBean {
     return xwiki.toString();
   }
 
-  public String getAsHtml(String title)
+  public String getAsHtml(String title, String serverBase)
   {
     StringBuilder html = new StringBuilder();
     html.append("<div style='font-family: Lucida,arial,tahoma;'>");
@@ -375,7 +375,7 @@ public class ReportBean {
     for (FileBean file:this.getFiles())
     {
       html.append("<div style='padding: 4px'>");
-      html.append("  <div><a href='http://demo.exoplatform.net"+file.getUrl().replaceFirst("/rest", "/rest/private")+"'>").append(file.getName()).append("</a></div>");
+      html.append("  <div><a href='"+serverBase+""+file.getUrl().replaceFirst("/rest", "/rest/private")+"'>").append(file.getName()).append("</a></div>");
       html.append("  <div style='color: #ccc;'>").append(file.getSize()).append("</div>");
       html.append("</div>");
     }
