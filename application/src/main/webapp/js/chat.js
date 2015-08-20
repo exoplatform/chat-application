@@ -2892,13 +2892,13 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
 
         chatNotification.checkIfMeetingStarted(roomToCheck, function(callStatus, recordStatus) {
 
-            if (callStatus === 0) { // Already terminated
+            if (callStatus !== 1) { // Already terminated
                jzStoreParam("chatMessage", JSON.stringify({}));
                return;
             }
 
             // Also Update record status
-            if (recordStatus !== 0) {
+            if (recordStatus === 1) {
                 var options = {
                     type: "type-meeting-stop",
                     fromUser: chatNotification.username,

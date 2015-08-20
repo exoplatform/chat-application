@@ -651,7 +651,7 @@ ChatNotification.prototype.checkIfMeetingStarted = function (room, callback) {
   chatNotification.getChatMessages(room, function (msgs) {
     var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
     var recordStatus = -1;
-    for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
+    for (var i = 0; i < msgs.length && callStatus === -1; i++) {
       var msg = msgs[i];
       var type = msg.options.type;
       if (type === "call-off") {
@@ -660,7 +660,7 @@ ChatNotification.prototype.checkIfMeetingStarted = function (room, callback) {
         callStatus = 1;
       }
     }
-    for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
+    for (var i = 0; i < msgs.length && recordStatus === -1; i++) {
       var msg = msgs[i];
       var type = msg.options.type;
       if (type === "type-meeting-stop") {
