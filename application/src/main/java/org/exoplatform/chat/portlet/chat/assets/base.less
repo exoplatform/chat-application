@@ -31,6 +31,11 @@
   .actionIcon{
   	padding: 2px;
   	margin: 0 3px;
+      line-height: 16px;
+      .chat-status-chat {
+          height: 16px;
+          line-height: 16px;
+      }
   }
   &.pull-right {
     .uiSearchForm  {
@@ -147,6 +152,9 @@ table.list-rooms {
       padding-top: 3px;
       padding-bottom: 2px;
       cursor: pointer;
+        & > [class^="uiIcon"] {
+            font-size: 10px;
+        }
     }
     &:first-child{
       .border-radius(4px 4px 0 0);
@@ -161,11 +169,15 @@ table.list-rooms {
     &.pull-right {
       .uiIconArrowRight {
       }
-      .uiIconArrowDown {
-        background-position: 0 -118px;
+      .uiIconArrowDown{
+        &:before {
+          content: "\e75a";
+        }
       }
       .uiIconArrowRight {
-        background-position: -40px -118px;
+        &:before {
+          content: "\e75c";
+        }
       }
     }
   }
@@ -385,8 +397,11 @@ table.list-rooms {
     	margin-top: 8px;
     }
     .add-task{
-    	background: url("/eXoSkin/skin/images/themes/default/SearchInput/Search.png") no-repeat scroll right -1px ;
+    	//background: url("/eXoSkin/skin/images/themes/default/SearchInput/Search.png") no-repeat scroll right -1px ;
     	padding-right: 24px;
+        &:before {
+          content: "\e74a";
+        }
     }
 
     .meeting-close-panel {
@@ -759,7 +774,7 @@ footer
   position: relative;
 }
 .dayOnCalendar {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 100%;
     font-style: normal;
     font-weight: bold;

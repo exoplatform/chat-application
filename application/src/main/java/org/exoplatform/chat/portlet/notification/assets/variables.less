@@ -18,7 +18,7 @@
 }
 
 .weemo(@left, @top) {
-  background: url('@{imgPath}weemo-status.png') no-repeat @left @top;
+  //background: url('@{imgPath}weemo-status.png') no-repeat @left @top;
   background-size: 16px 16px;
   width: 8px;
   height: 8px;
@@ -97,3 +97,33 @@
 @borderRadiusSmall:     3px;
 
 
+// Icon color and size
+@primaryColor: #2f5e92;
+
+@colorIconDefault: #999999;
+@colorIconExtra: #626262;
+@colorIconPrimary: @primaryColor;
+@colorIconOrange: #ff9916;
+@colorIconSecondary:#ffffff;
+@sizeIcon24x24: 22px;
+@sizeIcon12x12: 10px;
+@sizeIcon64x64: 60px;
+@sizeIcon32x32: 30px;
+@sizeIconDefault: 14px;
+@fontIconColor: #999;
+@compressedFilesIconColor: #717272;
+// Icon Status color
+@iconStatusDefault: @white;
+@iconStatusDefaultContainerLight: @grayLight;
+@iconStatusAvailable: @green;
+@iconStatusAway: @orange;
+@iconStatusDoNotDisturb: @red;
+@iconStatusInvisible: @white;
+@iconStatusInvisibleContainerLight: @grayLight;
+// Weemo colors
+@weemoRed: #d62126;
+@weemoBlue: @primaryColor;
+@weemoWarning: #da7e01;
+@weemoGreen: #2b802c;
+// Color of yellow star
+@yellowStarColor: #fad31b;

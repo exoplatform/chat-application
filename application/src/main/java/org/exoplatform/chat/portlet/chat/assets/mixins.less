@@ -561,7 +561,7 @@
 }
 
 // The Grid
-#grid {
+/*#grid {
 
   .core (@gridColumnWidth, @gridGutterWidth) {
 
@@ -693,7 +693,7 @@
 
   }
 
-}
+}*/
 
 //============== Status Elements================
 
@@ -971,4 +971,21 @@
 
 .generateEmotion(@nameImage){
   background-image: url("@{imgEmoticonGifPath}@{nameImage}");
+}
+
+.font-icon(){
+    font-family: "PLF-FONT-ICONS";
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    line-height: 1;
+    text-transform: none;
+    color: @colorIconDefault;
+    font-size: @sizeIconDefault;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
+    position: relative;
+    top: 1px;
 }
