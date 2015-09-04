@@ -33,21 +33,26 @@ public class PropertyManager {
 
   public static final String PROPERTIES_PATH;
   static {
-    String exoConfDir = System.getProperty("exo.conf.dir");
-    String tomcatConfDir = System.getProperty("catalina.base");
-    String jbossConfDir = System.getProperty("jboss.server.config.dir");
-
-    if (StringUtils.isNotEmpty(exoConfDir)) {
-      // One-server mode
-      PROPERTIES_PATH = exoConfDir + "/chat.properties";
-    } else { // Two-server mode
-      if (StringUtils.isNotEmpty(tomcatConfDir)) {
-        PROPERTIES_PATH = tomcatConfDir + "/conf/chat.properties";
-      } else if (StringUtils.isNotEmpty(jbossConfDir)) {
-        PROPERTIES_PATH = jbossConfDir + "/chat.properties";
-      } else {
-        LOG.warning("Impossible to get the path of chat.properties. Use the current folder.");
-        PROPERTIES_PATH= "./chat.properties";
+    String chatConf = System.getProperty("exo.chat.conf");
+    if (StringUtils.isNotEmpty(chatConf)) {
+      PROPERTIES_PATH = chatConf;
+    } else {
+      String exoConfDir = System.getProperty("exo.conf.dir");
+      String tomcatConfDir = System.getProperty("catalina.base");
+      String jbossConfDir = System.getProperty("jboss.server.config.dir");
+  
+      if (StringUtils.isNotEmpty(exoConfDir)) {
+        // One-server mode
+        PROPERTIES_PATH = exoConfDir + "/chat.properties";
+      } else { // Two-server mode
+        if (StringUtils.isNotEmpty(tomcatConfDir)) {
+          PROPERTIES_PATH = tomcatConfDir + "/conf/chat.properties";
+        } else if (StringUtils.isNotEmpty(jbossConfDir)) {
+          PROPERTIES_PATH = jbossConfDir + "/chat.properties";
+        } else {
+          LOG.warning("Impossible to get the path of chat.properties. Use the current folder.");
+          PROPERTIES_PATH= "./chat.properties";
+        }
       }
     }
   }
@@ -105,7 +110,6 @@ public class PropertyManager {
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
-    //System.out.println("PROP:"+key+"="+value);
     return value;
   }
 

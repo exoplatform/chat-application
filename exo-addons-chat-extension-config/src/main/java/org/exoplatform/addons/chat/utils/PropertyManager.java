@@ -24,12 +24,21 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 public class PropertyManager {
   private static final Logger LOG = Logger.getLogger(PropertyManager.class.getName());
 
   private static Properties properties;
 
-  private static final String PROPERTIES_PATH = System.getProperty("exo.conf.dir") + "/chat.properties";
+  private static final String PROPERTIES_PATH;
+  static {
+    String chatConfDir = System.getProperty("exo.chat.conf");
+    if (StringUtils.isEmpty(chatConfDir)) {
+      chatConfDir = System.getProperty("exo.conf.dir") + "/chat.properties";
+    }
+    PROPERTIES_PATH = chatConfDir;
+  }
 
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
@@ -37,7 +46,6 @@ public class PropertyManager {
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
-    //System.out.println("PROP:"+key+"="+value);
     return value;
   }
 
