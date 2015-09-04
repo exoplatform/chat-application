@@ -1,106 +1,92 @@
 package org.exoplatform.chat.services;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.chat.services.mongodb.MongoBootstrap;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 public class MigrateService {
 
   private static final Logger LOG = LoggerFactory.getLogger(MigrateService.class);
 
-  public MigrateService() {}
+  private DB db;
+
+  public MigrateService() {
+    db = (new MongoBootstrap()).getDB();
+  }
 
   public void migrate() {
-    // Collect database info
-    String hostname = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
-    String port = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT);
-    String dbName = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    String isAuth = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION);
-    String username = "", password = "";
-    if (Boolean.parseBoolean(isAuth)) {
-      username = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER);
-      password = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD);
-    }
-
-    if (StringUtils.isEmpty(dbName)) {
-      LOG.error("Database name is required. Set it in the variable 'dbName' in chat.properties");
-      return;
-    }
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("mongo --quiet ");
-    if (!StringUtils.isEmpty(hostname)) {
-      sb.append(hostname);
-      if (!StringUtils.isEmpty(port)) {
-        sb.append(":")
-          .append(port);
+    // Detect if migration has been done before by checking if rooms "room_{roomId}" exist
+    DBCollection namespacesCol = db.getCollection("system.namespaces");
+    BasicDBObject getRoomNamespaces = new BasicDBObject();
+    Pattern regex = Pattern.compile("^"+db.getName()+".room_");
+    getRoomNamespaces.append("name", regex);
+    DBCursor roomNamespaces = namespacesCol.find(getRoomNamespaces);
+    if (roomNamespaces.count() > 0) {
+      String roomTypes[] = {"u", "s", "t", "e"};
+      for (String type : roomTypes) {
+        migrateRoom(type);
       }
-      sb.append("/");
-    }
-
-    sb.append(dbName)
-      .append(" ");
-
-    if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
-      sb.append("-u ")
-        .append(username)
-        .append(" -p ")
-        .append(password)
-        .append(" ");
-    }
-
-    // Copy migration script to /temp folder to perform migrate process via mongo command
-    InputStream fileIn = this.getClass().getClassLoader().getResourceAsStream("migration-chat-addon.js");
-    OutputStream fileOut = null;
-    File migrationScriptfile = null;
-    try {
-      migrationScriptfile = File.createTempFile("migration-chat-addon", ".js");
-      migrationScriptfile.deleteOnExit();
-      fileOut = new FileOutputStream(migrationScriptfile);
-      byte[] buf = new byte[1024];
-      int bytesRead;
-      while ((bytesRead = fileIn.read(buf)) > 0) {
-        fileOut.write(buf, 0, bytesRead);
-      }
-    } catch(IOException e){
-      LOG.error("Failed to copy migration script : "+e.getMessage(), e);
-      return;
-    } finally {
-      try {
-        if (fileIn != null) {
-          fileIn.close();
+  
+      if (db.collectionExists("room_rooms")) {
+        DBCollection roomsCol = db.getCollection("room_rooms");
+        if (!db.collectionExists(ChatService.M_ROOMS_COLLECTION)) {
+          roomsCol.rename(ChatService.M_ROOMS_COLLECTION);
+        } else {
+          DBCollection newRoomsCol = db.getCollection(ChatService.M_ROOMS_COLLECTION);
+          DBCursor rooms = roomsCol.find();
+          while (rooms.hasNext()) {
+            DBObject room = rooms.next();
+            newRoomsCol.insert(room);
+          }
+          roomsCol.drop();
         }
-        if (fileOut != null) {
-          fileOut.close();
-        }
-      } catch (IOException e){
-        LOG.error("Failed to close files : "+e.getMessage(), e);
+        LOG.info("Finished to migrate room_rooms collection");
       }
+    }
+  }
+
+  private void migrateRoom(String roomType) {
+    if (!db.collectionExists(ChatService.M_ROOM_PREFIX+roomType)) {
+      db.createCollection(ChatService.M_ROOM_PREFIX+roomType, null);
     }
 
-    // Execute mongo command
-    String command = sb.append(migrationScriptfile.getAbsolutePath()).toString();
-    try {
-      Process p = Runtime.getRuntime().exec(command);
-      StringBuffer output = new StringBuffer();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-      String line = "";
-      while ((line = reader.readLine())!= null) {
-        output.append(line + "\n");
+    DBCollection roomsCol = db.getCollection("room_rooms");
+    BasicDBObject findRoomsByType = new BasicDBObject();
+    findRoomsByType.put("type", roomType);
+    DBCursor cursor = roomsCol.find(findRoomsByType);
+    while (cursor.hasNext()) {
+      DBObject dbo = cursor.next();
+      String roomId = dbo.get("_id").toString();
+      String roomName = "room_" + roomId;
+      if (db.collectionExists(roomName)) {
+        DBCollection roomCol = db.getCollection(roomName);
+
+        // Add roomId field to all messages of a room 
+        BasicDBObject addRoomIdToMessages = new BasicDBObject();
+        addRoomIdToMessages.append("$set", new BasicDBObject().append("roomId", roomId));
+        roomCol.updateMulti(new BasicDBObject(), addRoomIdToMessages);
+
+        // Move all message of a room to messages_room_{roomType} collection
+        DBCursor allMessages = roomCol.find();
+        DBCollection newRoomCol = db.getCollection(ChatService.M_ROOM_PREFIX+roomType);
+        while (allMessages.hasNext()) {
+          DBObject message = allMessages.next();
+          message.removeField("time");
+          newRoomCol.insert(message);
+        }
+
+        // Drop migrated room
+        roomCol.drop();
       }
-      p.waitFor();
-      LOG.info(output.toString());
-    } catch (Exception e) {
-      LOG.error("Error while migrating chat data : " + e.getMessage(), e);
     }
+    LOG.info("Finished to migrate rooms with type : {}", roomType);
   }
 }
