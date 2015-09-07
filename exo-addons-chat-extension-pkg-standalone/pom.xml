@@ -6,9 +6,9 @@
     <groupId>org.exoplatform.addons.chat</groupId>
     <version>1.2.x-SNAPSHOT</version>
   </parent>
-  <artifactId>exo-addons-chat-extension-pkg</artifactId>
+  <artifactId>exo-addons-chat-extension-pkg-standalone</artifactId>
   <packaging>pom</packaging>
-  <name>eXo Addons - Chat Extension Package</name>
+  <name>eXo Addons - Chat Extension Package Standalone</name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
-      <artifactId>server</artifactId>
+      <artifactId>server-standalone</artifactId>
       <type>war</type>
       <scope>provided</scope>
     </dependency>
@@ -42,12 +42,41 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package-extension</id>
-            <phase>prepare-package</phase>
+            <id>package-chat-application</id>
+            <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
             <configuration>
+              <finalName>exo-addons-chat-application-${project.version}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/chat-application.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>package-chat-server</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>exo-addons-chat-server-${project.version}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/chat-server.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>package-chat-addon</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>exo-addons-chat-extension-pkg-standalone-${project.version}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/main/assemblies/exo-addons-chat-extension.xml</descriptor>

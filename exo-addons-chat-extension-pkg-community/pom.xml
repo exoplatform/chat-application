@@ -16,7 +16,6 @@
       <type>war</type>
       <scope>provided</scope>
     </dependency>
-    <!-- Chat Application -->
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>exo-addons-chat-extension-community</artifactId>

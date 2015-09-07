@@ -27,7 +27,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/chat/webapps</outputDirectory>
+      <outputDirectory>/</outputDirectory>
       <includes>
         <include>org.exoplatform.addons.chat:application:war</include>
       </includes>
@@ -36,7 +36,7 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/chat/webapps</outputDirectory>
+      <outputDirectory>/</outputDirectory>
       <includes>
         <include>org.exoplatform.addons.chat:server:war</include>
       </includes>
@@ -45,7 +45,7 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/chat/webapps</outputDirectory>
+      <outputDirectory>/</outputDirectory>
       <includes>
         <include>org.exoplatform.addons.chat:exo-addons-chat-extension-community:war</include>
       </includes>
@@ -55,7 +55,7 @@
     </dependencySet>
     <!-- Libraries -->
     <dependencySet>
-      <outputDirectory>/chat/lib</outputDirectory>
+      <outputDirectory>/</outputDirectory>
       <includes>
         <include>org.exoplatform.addons.chat:exo-addons-chat-extension-config-community:jar</include>
       </includes>
