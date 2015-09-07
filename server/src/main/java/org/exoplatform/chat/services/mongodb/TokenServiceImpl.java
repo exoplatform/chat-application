@@ -25,6 +25,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
+
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.utils.MessageDigester;
@@ -40,9 +42,13 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
 {
   private int validity_ = -1;
 
-  private DB db()
+  private DB db(String dbName)
   {
-    return ConnectionManager.getInstance().getDB();
+    if (StringUtils.isEmpty(dbName)) {
+      return ConnectionManager.getInstance().getDB();
+    } else {
+      return ConnectionManager.getInstance().getDB(dbName);
+    }
   }
 
   public String getToken(String user)
@@ -53,9 +59,9 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     return token;
   }
 
-  public boolean hasUserWithToken(String user, String token)
+  public boolean hasUserWithToken(String user, String token, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -63,13 +69,13 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     return (cursor.hasNext());
   }
 
-  public void addUser(String user, String token)
+  public void addUser(String user, String token, String dbName)
   {
-    if (!hasUserWithToken(user, token))
+    if (!hasUserWithToken(user, token, dbName))
     {
       //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
 //      removeUser(user);
-      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+      DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
 
       BasicDBObject query = new BasicDBObject();
       query.put("user", user);
@@ -96,9 +102,9 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
   }
 
 /*
-  private void removeUser(String user)
+  private void removeUser(String user, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -110,9 +116,9 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
   }
 */
 
-  public void updateValidity(String user, String token)
+  public void updateValidity(String user, String token, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -125,15 +131,15 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     }
   }
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
-    return getActiveUsersFilterBy(user, withUsers, withPublic, isAdmin, 0);
+    return getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, 0);
   }
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
     HashMap<String, UserBean> users = new HashMap<String, UserBean>();
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     if (isAdmin)
@@ -171,9 +177,9 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     return users;
   }
 
-  public boolean isUserOnline(String user)
+  public boolean isUserOnline(String user, String dbName)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)

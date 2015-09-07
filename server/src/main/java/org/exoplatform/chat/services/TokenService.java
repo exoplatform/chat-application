@@ -30,17 +30,17 @@ public interface TokenService
 
   public String getToken(String user);
 
-  public boolean hasUserWithToken(String user, String token);
+  public boolean hasUserWithToken(String user, String token, String dbName);
 
-  public void addUser(String user, String token);
+  public void addUser(String user, String token, String dbName);
 
-  public void updateValidity(String user, String token);
+  public void updateValidity(String user, String token, String dbName);
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin);
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin);
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
+  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
-  public boolean isUserOnline(String user);
+  public boolean isUserOnline(String user, String dbName);
 
   public boolean isDemoUser(String user);
 

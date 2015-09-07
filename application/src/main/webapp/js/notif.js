@@ -26,6 +26,7 @@ function ChatNotification() {
   this.chatIntervalNotif = "";
   this.statusEventInt = "";
   this.chatIntervalStatus = "";
+  this.dbName = "";
 
   this.oldNotifTotal = 0;
   this.profileStatus = "offline";
@@ -53,7 +54,8 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzSetStatus = options.urlSetStatus;
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
+  this.dbName = options.dbName;
+  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
   this.shortSpaceName = options.shortSpaceName;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
 };
@@ -75,7 +77,7 @@ ChatNotification.prototype.initUserInterface = function() {
 };
 
 ChatNotification.prototype.updateNotifEventURL = function() {
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token;
+  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
 };
 
 /**
@@ -362,7 +364,8 @@ ChatNotification.prototype.refreshStatusChat = function() {
     data: {
       "user": thiss.username,
       "token": thiss.token,
-      "timestamp": new Date().getTime()
+      "timestamp": new Date().getTime(),
+      "dbName": thiss.dbName 
     }
   }, function (err, response){
     if (err) {
@@ -385,7 +388,8 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
     data: {
       "user": this.username,
       "token": this.token,
-      "targetUser": targetUser
+      "targetUser": targetUser,
+      "dbName": this.dbName 
     },
     context: this,
     success: function(response){
@@ -416,7 +420,8 @@ ChatNotification.prototype.setStatus = function(status, callback) {
       data: { "user": this.username,
         "token": this.token,
         "status": status,
-        "timestamp": new Date().getTime()
+        "timestamp": new Date().getTime(),
+        "dbName": this.dbName
       },
       context: this,
 
@@ -656,7 +661,8 @@ var chatNotification = new ChatNotification();
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
       "shortSpaceName": $notificationApplication.attr("data-short-space-name"),
-      "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url")
+      "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
+      "dbName": $notificationApplication.attr("data-db-name")
     });
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();

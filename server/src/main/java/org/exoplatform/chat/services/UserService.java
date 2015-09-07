@@ -44,50 +44,50 @@ public interface UserService
   public static final String SUPPORT_USER = "__support_";
 
 
-  public void toggleFavorite(String user, String targetUser);
+  public void toggleFavorite(String user, String targetUser, String dbName);
 
-  public boolean isFavorite(String user, String targetUser);
+  public boolean isFavorite(String user, String targetUser, String dbName);
 
-  public void addUserFullName(String user, String fullname);
+  public void addUserFullName(String user, String fullname, String dbName);
 
-  public void addUserEmail(String user, String email);
+  public void addUserEmail(String user, String email, String dbName);
 
-  public void setSpaces(String user, List<SpaceBean> spaces);
+  public void setSpaces(String user, List<SpaceBean> spaces, String dbName);
 
-  public void addTeamRoom(String user, String teamRoomId);
+  public void addTeamRoom(String user, String teamRoomId, String dbName);
 
-  public void addTeamUsers(String teamRoomId, List<String> users);
+  public void addTeamUsers(String teamRoomId, List<String> users, String dbName);
 
-  public void removeTeamUsers(String teamRoomId, List<String> users);
+  public void removeTeamUsers(String teamRoomId, List<String> users, String dbName);
 
-  public List<RoomBean> getTeams(String user);
+  public List<RoomBean> getTeams(String user, String dbName);
 
-  public RoomBean getRoom(String user, String roomId);
+  public RoomBean getRoom(String user, String roomId, String dbName);
 
-  public List<SpaceBean> getSpaces(String user);
+  public List<SpaceBean> getSpaces(String user, String dbName);
 
-  public List<UserBean> getUsersInRoomChatOneToOne(String roomId);
+  public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
   
-  public List<UserBean> getUsers(String spaceId);
+  public List<UserBean> getUsers(String spaceId, String dbName);
 
-  public List<UserBean> getUsers(String filter, boolean fullBean);
+  public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 
-  public String setStatus(String user, String status);
+  public String setStatus(String user, String status, String dbName);
 
-  public void setAsAdmin(String user, boolean isAdmin);
+  public void setAsAdmin(String user, boolean isAdmin, String dbName);
 
-  public boolean isAdmin(String user);
+  public boolean isAdmin(String user, String dbName);
 
-  public String getStatus(String user);
+  public String getStatus(String user, String dbName);
 
-  public String getUserFullName(String user);
+  public String getUserFullName(String user, String dbName);
 
-  public UserBean getUser(String user);
+  public UserBean getUser(String user, String dbName);
 
-  public UserBean getUser(String user, boolean withFavorites);
+  public UserBean getUser(String user, boolean withFavorites, String dbName);
 
-  public List<String> getUsersFilterBy(String user, String room, String type);
+  public List<String> getUsersFilterBy(String user, String room, String type, String dbName);
 
-  public int getNumberOfUsers();
+  public int getNumberOfUsers(String dbName);
 
 }

@@ -30,13 +30,14 @@ import juzu.request.SecurityContext;
 import juzu.template.Template;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.bean.File;
+import org.exoplatform.chat.common.utils.ChatUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
-import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
@@ -86,6 +87,8 @@ public class ChatApplication
 
   SpaceService spaceService_;
 
+  String dbName;
+
   @Inject
   Provider<PortletPreferences> providerPreferences;
 
@@ -103,6 +106,7 @@ public class ChatApplication
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
+    dbName = ChatUtils.getDBName();
   }
 
 
@@ -149,6 +153,7 @@ public class ChatApplication
             .set("fullscreen", fullscreen)
             .set("demoMode", demoMode)
             .set("today", todayDate)
+            .set("dbName", dbName)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)
@@ -168,7 +173,7 @@ public class ChatApplication
   public Response.Content initChatProfile() {
     // Update new fullName;
     if (!UserService.ANONIM_USER.equals(remoteUser_)) {
-      fullname_ = ServerBootstrap.getUserFullName(remoteUser_);
+      fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
     }
 
     String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
@@ -180,10 +185,10 @@ public class ChatApplication
         token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
-        addUser(remoteUser_, token_);
+        addUser(remoteUser_, token_, dbName);
 
         // Set user's Full Name in the DB
-        saveFullNameAndEmail(remoteUser_);
+        saveFullNameAndEmail(remoteUser_, dbName);
 
         if ("true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE)))
         {
@@ -199,7 +204,7 @@ public class ChatApplication
 
         if (!UserService.ANONIM_USER.equals(remoteUser_))
         {
-          ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_);
+          ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
         }
 
         out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
@@ -215,7 +220,7 @@ public class ChatApplication
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
       // Set user's Spaces in the DB
-      saveSpaces(remoteUser_);
+      saveSpaces(remoteUser_, dbName);
     }
 
     return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
@@ -346,14 +351,13 @@ public class ChatApplication
       title = targetFullname+" Meeting "+sdf.format(new Date());
       path = wikiService_.createIntranetPage(title, xwiki, users);
     }
-    path = ServerBootstrap.getServerBase()+path;
 
     return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")
             .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
 
   }
 
-  public Response.Content createDemoUser(String fullname, String email, String isPublic)
+  public Response.Content createDemoUser(String fullname, String email, String isPublic, String dbName)
   {
     String out = "created";
     boolean isPublicUser = "true".equals(isPublic);
@@ -361,10 +365,10 @@ public class ChatApplication
     String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-").replace(".", "-");
     remoteUser_ = username;
     token_ = ServerBootstrap.getToken(remoteUser_);
-    addUser(remoteUser_, token_);
-    ServerBootstrap.addUserFullNameAndEmail(username, fullname, email);
-    ServerBootstrap.setAsAdmin(username, false);
-    if (!isPublicUser) saveDemoSpace(username);
+    addUser(remoteUser_, token_, dbName);
+    ServerBootstrap.addUserFullNameAndEmail(username, fullname, email, dbName);
+    ServerBootstrap.setAsAdmin(username, false ,dbName);
+    if (!isPublicUser) saveDemoSpace(username, dbName);
 
     StringBuffer json = new StringBuffer();
     json.append("{ \"username\": \"").append(remoteUser_).append("\"");
@@ -374,25 +378,25 @@ public class ChatApplication
                    .withCharset(Tools.UTF_8);
   }
 
-  protected void addUser(String remoteUser, String token)
+  protected void addUser(String remoteUser, String token, String dbName)
   {
-    ServerBootstrap.addUser(remoteUser, token);
+    ServerBootstrap.addUser(remoteUser, token, dbName);
   }
 
-  protected String saveFullNameAndEmail(String username)
+  protected String saveFullNameAndEmail(String username, String dbName)
   {
     String fullname = username;
     try
     {
 
-      fullname = ServerBootstrap.getUserFullName(username);
+      fullname = ServerBootstrap.getUserFullName(username, dbName);
       if (fullname==null || fullname.isEmpty())
       {
         User user = organizationService_.getUserHandler().findUserByName(username);
         if (user!=null)
         {
           fullname = user.getFirstName()+" "+user.getLastName();
-          ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail());
+          ServerBootstrap.addUserFullNameAndEmail(username, fullname, user.getEmail(), dbName);
         }
       }
     }
@@ -403,12 +407,12 @@ public class ChatApplication
     return fullname;
   }
 
-  protected void setAsAdmin(String username, boolean isAdmin)
+  protected void setAsAdmin(String username, boolean isAdmin, String dbName)
   {
     try
     {
 
-      ServerBootstrap.setAsAdmin(username, isAdmin);
+      ServerBootstrap.setAsAdmin(username, isAdmin, dbName);
 
     }
     catch (Exception e)
@@ -417,7 +421,7 @@ public class ChatApplication
     }
   }
 
-  protected void saveSpaces(String username)
+  protected void saveSpaces(String username, String dbName)
   {
     try
     {
@@ -433,7 +437,7 @@ public class ChatApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
     }
     catch (Exception e)
     {
@@ -441,7 +445,7 @@ public class ChatApplication
     }
   }
 
-  protected void saveDemoSpace(String username)
+  protected void saveDemoSpace(String username, String dbName)
   {
     try
     {
@@ -453,7 +457,7 @@ public class ChatApplication
       spaceBean.setShortName("welcome_space");
       beans.add(spaceBean);
 
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans));
+      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
     }
     catch (Exception e)
     {

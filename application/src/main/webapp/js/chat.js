@@ -20,6 +20,7 @@ var chatApplication = new ChatApplication();
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
 
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
+    chatApplication.dbName = $chatApplication.attr("data-db-name");
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
     var chatView = $chatApplication.attr("data-view");
     chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
@@ -1097,6 +1098,7 @@ function ChatApplication() {
   this.isLoaded = false;
   this.isPublic = false;
   this.publicModeEnabled = false;
+  this.dbName = "";
   this.chatFullscreen = "false";
 
   this.chatRoom;
@@ -1182,7 +1184,8 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
     data: {
       "fullname": fullname,
       "email": email,
-      "isPublic": this.isPublic
+      "isPublic": this.isPublic,
+      "dbName": this.dbName
     },
     dataType: "json",
     context: this,
@@ -1233,7 +1236,8 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
     data: {"room": this.room,
       "user": this.username,
       "token": this.token,
-      "timestamp": new Date().getTime()
+      "timestamp": new Date().getTime(),
+      "dbName": this.dbName
     },
 
     success:function(response){
@@ -1263,7 +1267,8 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
     data: {"room": this.room,
       "user": this.username,
       "token": this.token,
-      "messageId": id
+      "messageId": id,
+      "dbName": this.dbName
     },
 
     success:function(response){
@@ -1296,7 +1301,8 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       "user": this.username,
       "token": this.token,
       "messageId": id,
-      "message": encodeURIComponent(newMessage)
+      "message": encodeURIComponent(newMessage),
+      "dbName": this.dbName
     },
 
     success:function(response){
@@ -1330,7 +1336,8 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
       "room": room,
       "users": users,
       "user": this.username,
-      "token": this.token
+      "token": this.token,
+      "dbName": this.dbName
     },
 
     success:function(response){
@@ -1506,7 +1513,8 @@ ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
     url: this.jzUsers,
     data: {"room": roomId,
       "user": this.username,
-      "token": this.token
+      "token": this.token,
+      "dbName": this.dbName
     },
     dataType: "json",
     context: this,
@@ -1544,7 +1552,8 @@ ChatApplication.prototype.getAllUsers = function(filter, callback) {
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
-      "token": this.token
+      "token": this.token,
+      "dbName": this.dbName
     },
     dataType: "json",
     context: this,
@@ -1562,7 +1571,8 @@ ChatApplication.prototype.synGetAllUsers = function(filter, callback) {
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
-      "token": this.token
+      "token": this.token,
+      "dbName": this.dbName
     },
     dataType: "json",
     context: this,
@@ -1619,7 +1629,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
         "token": this.token,
         "filter": this.userFilter,
         "isAdmin": this.isAdmin,
-        "timestamp": new Date().getTime()},
+        "timestamp": new Date().getTime(),
+        "dbName": this.dbName},
       context: this,
       success: function(response){
         if (targetUser !== undefined && targetFullname !== undefined) {
@@ -2021,7 +2032,8 @@ ChatApplication.prototype.loadRoom = function() {
         url: this.jzChatGetCreator,
         data: {"room": this.targetUser,
           "user": this.username,
-          "token": this.token
+          "token": this.token,
+          "dbName": this.dbName
         },
         context: this,
         success: function(response){
@@ -2044,7 +2056,7 @@ ChatApplication.prototype.loadRoom = function() {
     }
 
     var thiss = this;
-    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, function(room) {
+    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
       thiss.room = room;
       var $msg = jqchat('#msg');
       thiss.activateRoomButtons();
@@ -2208,9 +2220,13 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
             success: function(data){
 //              console.log(data.path);
               if (data.path !== "") {
+                var baseUrl = location.protocol + "//" + location.hostname;
+                if (location.port) {
+                  baseUrl += ":" + location.port;
+                }
                 var options = {
                   type: "type-link",
-                  link: data.path,
+                  link: baseUrl+data.path,
                   from: chatApplication.username,
                   fullname: chatApplication.fullname
                 };
@@ -2342,7 +2358,8 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     data: {"targetUser": targetFav,
       "user": this.username,
       "token": this.token,
-      "timestamp": new Date().getTime()
+      "timestamp": new Date().getTime(),
+      "token": this.token
     },
     context: this,
     success: function(response){
@@ -2559,7 +2576,8 @@ ChatApplication.prototype.setStatus = function(status, callback) {
       data: { "user": this.username,
         "token": this.token,
         "status": status,
-        "timestamp": new Date().getTime()
+        "timestamp": new Date().getTime(),
+        "dbName": this.dbName
       },
       context: this,
 

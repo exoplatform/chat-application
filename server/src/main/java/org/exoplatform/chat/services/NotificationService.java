@@ -27,22 +27,22 @@ public interface NotificationService
 {
   public static final String M_NOTIFICATIONS = "notifications";
 
-  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link);
+  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link, String dbName);
 
-  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link, String options);
+  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link, String options, String dbName);
 
-  public void setNotificationsAsRead(String user, String type, String category, String categoryId);
+  public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName);
 
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String dbName);
 
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId, String dbName);
 
-  public int getUnreadNotificationsTotal(String user);
+  public int getUnreadNotificationsTotal(String user, String dbName);
 
-  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId);
+  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName);
 
-  public int getNumberOfNotifications();
+  public int getNumberOfNotifications(String dbName);
 
-  public int getNumberOfUnreadNotifications();
+  public int getNumberOfUnreadNotifications(String dbName);
 
 }

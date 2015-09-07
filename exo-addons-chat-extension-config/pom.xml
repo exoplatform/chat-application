@@ -50,5 +50,10 @@
       <artifactId>exo.core.component.security.core</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

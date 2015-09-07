@@ -36,9 +36,13 @@ import java.util.List;
 public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
 {
 
-  private DB db()
+  private DB db(String dbName)
   {
-    return ConnectionManager.getInstance().getDB();
+    if (StringUtils.isEmpty(dbName)) {
+      return ConnectionManager.getInstance().getDB();
+    } else {
+      return ConnectionManager.getInstance().getDB(dbName);
+    }
   }
 
   public static void cleanupNotifications()
@@ -56,19 +60,19 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   }
 
   public void addNotification(String user, String from, String type, String category, String categoryId,
-                              String content, String link) {
-    addNotification(user, from, type, category, categoryId, content, link, null);
+                              String content, String link, String dbName) {
+    addNotification(user, from, type, category, categoryId, content, link, null, dbName);
   }
 
   public void addNotification(String user, String from, String type, String category, String categoryId,
-                              String content, String link, String options) {
+                              String content, String link, String options, String dbName) {
     // Do not set notification for some message type to avoid duplication with manual meeting (type-meeting-start, type-meeting-stop)
     if (options != null && (options.contains("call-on") || options.contains("call-off") || options.contains
             ("call-proceed"))) {
       return;
     }
 
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject doc = new BasicDBObject();
 
     content = StringUtils.chomp(content);
@@ -101,9 +105,9 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     coll.insert(doc);
   }
 
-  public void setNotificationsAsRead(String user, String type, String category, String categoryId)
+  public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName)
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     if (categoryId!=null) query.put("categoryId", categoryId);
@@ -122,15 +126,15 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService) {
-    return getUnreadNotifications(user, userService, null, null, null);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String dbName) {
+    return getUnreadNotifications(user, userService, null, null, null, dbName);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId) {
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId, String dbName) {
     List<NotificationBean> notifications = new ArrayList<NotificationBean>();
 
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
 
     query.put("user", user);
@@ -148,7 +152,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
       notificationBean.setUser(user);
       if (doc.containsField("from")) {
         notificationBean.setFrom(doc.get("from").toString());
-        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom()).getFullname());
+        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom(), dbName).getFullname());
       }
       notificationBean.setCategory(doc.get("category").toString());
       notificationBean.setCategoryId(doc.get("categoryId").toString());
@@ -158,7 +162,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
       {
         notificationBean.setOptions(doc.get("options").toString());
       }
-      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
+      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId(), dbName);
       if (roomBean.isSpace() || roomBean.isTeam()) {
         notificationBean.setRoomDisplayName(roomBean.getFullname());
       }
@@ -170,16 +174,16 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     return notifications;
   }
 
-  public int getUnreadNotificationsTotal(String user)
+  public int getUnreadNotificationsTotal(String user, String dbName)
   {
-    return getUnreadNotificationsTotal(user, null, null, null);
+    return getUnreadNotificationsTotal(user, null, null, null, dbName);
   }
 
 
-  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
+  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName)
   {
     int total = -1;
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
 
     query.put("user", user);
@@ -193,17 +197,17 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     return total;
   }
 
-  public int getNumberOfNotifications()
+  public int getNumberOfNotifications(String dbName)
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
-  public int getNumberOfUnreadNotifications()
+  public int getNumberOfUnreadNotifications(String dbName)
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
 //    query.put("isRead", false);
     DBCursor cursor = coll.find(query);
