@@ -95,7 +95,7 @@ ChatRoom.prototype.onShowMessages = function(callback) {
 };
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
-  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, this.dbName, callback);
+  this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, callback);
 };
 
 /**
@@ -103,7 +103,7 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  * @param message : the message to send
  * @param callback : the method to execute on success
  */
-ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, dbName, callback) {
+ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
   // Update temporary message for smooth view
   if (room !== "" && room === this.id) {
@@ -139,7 +139,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "token": token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage,
-      "dbName": dbName
+      "dbName": this.dbName
     }
   }, function (err, response){
     if (!err) {
