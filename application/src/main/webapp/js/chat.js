@@ -68,7 +68,8 @@ var chatApplication = new ChatApplication();
     var labelAway = $chatApplication.attr("data-label-away");
     var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
     var labelInvisible = $chatApplication.attr("data-label-invisible");
-
+    // check click or dbclick for adding task and event CHAT-306
+    var clicks = 0;
 
 
     /**
@@ -289,6 +290,7 @@ var chatApplication = new ChatApplication();
         $("#task-add-task").val("");
         $("#task-add-user").val("");
         $("#task-add-date").val("");
+        clicks = 0;
         jqchat(".task-user-label").parent().remove();
         hideResults();
       } else if (toggleClass === "meeting-action-event-panel") {
@@ -298,6 +300,7 @@ var chatApplication = new ChatApplication();
         $("#event-add-location").val("");
         $("#event-add-start-time").val("all-day");
         $("#event-add-end-time").val("all-day");
+        clicks = 0;
 
       }
 
@@ -511,6 +514,8 @@ var chatApplication = new ChatApplication();
     });
 
     $(".create-task-button").on("click", function() {
+      clicks++;
+      if (clicks === 1) {
       var username = $("#task-add-user").val();
       var task = $("#task-add-task").val();
       var dueDate = $("#task-add-date").val();
@@ -594,8 +599,8 @@ var chatApplication = new ChatApplication();
           console.log("error");
           setActionButtonEnabled('.create-task-button', true);
         }
-      });
-
+      });	
+      }
     });
 
     $('#task-add-user').keyup(function(event) {
@@ -636,6 +641,8 @@ var chatApplication = new ChatApplication();
     setMiniCalendarToDateField('task-add-date');
 
     $(".create-event-button").on("click", function() {
+      clicks++;
+      if (clicks === 1) {
       var space = chatApplication.targetFullname;
       var summary = $("#event-add-summary").val();
       var startDate = $("#event-add-start-date").val();
@@ -711,7 +718,7 @@ var chatApplication = new ChatApplication();
           setActionButtonEnabled('.create-event-button', true);
         }
       });
-
+      }
     });
 
     function setActionButtonEnabled(btnClass, isEnabled) {
