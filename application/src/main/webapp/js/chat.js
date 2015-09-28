@@ -2402,6 +2402,7 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
  * jQuery bindings on dom elements created by Who Is Online methods
  */
 ChatApplication.prototype.jQueryForUsersTemplate = function() {
+  var $targetUser;
   var value = jzGetParam("lastUsername"+this.username);
   var thiss = this;
 
@@ -2409,14 +2410,22 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     //console.log("firstLoad with user : *"+value+"*");
     this.targetUser = value;
     this.targetFullname = jzGetParam("lastFullName"+this.username);
-    if (this.username!==this.ANONIM_USER) {
-      this.loadRoom();
+
+    $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+    if (!$targetUser.length) {
+      this.targetUser = "";
+      this.targetFullname = "";
+      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
+      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
+    } else {
+      if (this.username!==this.ANONIM_USER) {
+        this.loadRoom();
+      }
+      this.firstLoad = false;
     }
-    this.firstLoad = false;
   }
 
-  if (this.isDesktopView() && this.targetUser!==undefined) {
-    var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+  if (this.isDesktopView() && $targetUser!==undefined) {
     $targetUser.addClass("accordion-active");
     jqchat(".room-total").removeClass("badgeWhite");
     $targetUser.find(".room-total").addClass("badgeWhite");
