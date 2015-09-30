@@ -55,7 +55,7 @@ public class WikiService {
     if (spaceGroupId != null)
     {
       wikiType = PortalConfig.GROUP_TYPE;
-      wikiOwner = spaceGroupId;
+      wikiOwner = "/" + spaceGroupId;
     }
 
     try
@@ -94,12 +94,12 @@ public class WikiService {
 
         if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
           // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
-          path = "/portal/intranet/wiki/" + wikiType + "/" + wikiOwner + "/" + page.getName();
+          path = "/portal/intranet/wiki/" + wikiType + wikiOwner + "/" + page.getName();
         } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
           // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
           path = "/portal/intranet/wiki/" + page.getName();
         }
-
+        page.setURL(path);
         //Post Activity
         if (!isPageExisted) {
           wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
