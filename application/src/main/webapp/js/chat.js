@@ -233,6 +233,7 @@ var chatApplication = new ChatApplication();
                     // user uploaded more than 'maxfiles'
                     break;
                   case 'FileTooLarge':
+                    alert(chatBundleData.exoplatform_chat_dnd_filesize);
                     // program encountered a file whose size is greater than 'maxfilesize'
                     // FileTooLarge also has access to the file which was too large
                     // use file.name to reference the filename of the culprit file
