@@ -72,7 +72,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
       thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
-      thiss.refreshChat(false);
+      thiss.refreshChat(true);
     }
   });
 
