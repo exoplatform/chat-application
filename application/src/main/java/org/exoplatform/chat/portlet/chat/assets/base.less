@@ -32,9 +32,15 @@
   	padding: 2px;
   	margin: 0 3px;
       line-height: 16px;
+      min-width: 16px;
       .chat-status-chat {
-          height: 16px;
-          line-height: 16px;
+          font-size: 12px;
+          height: 14px;
+          left: 1px;
+          line-height: 14px;
+          text-align: center;
+          top: 0;
+          width: 14px;
       }
   }
   &.pull-right {
@@ -86,15 +92,11 @@
 
 .chat-status {
   padding: 0;
-  display: inline-block;
+  top: -1px;
   white-space: nowrap;
-  min-width: 17px;
-  line-height: 29px;
-  height: 17px;
   cursor: pointer;
-  float: left;
-  margin-right: 7px;
-  margin-top: 2px;
+  margin-right: 8px;
+  font-size: 12px;
 }
 
 
@@ -149,11 +151,12 @@ table.list-rooms {
       margin-right: 5px;
     }
     .iconDynamic {
-      padding-top: 3px;
-      padding-bottom: 2px;
-      cursor: pointer;
+        cursor: pointer;
+        line-height: 0px;
+        padding: 0;
+        margin-top: 6px;
         & > [class^="uiIcon"] {
-            font-size: 10px;
+            font-size: 9px;
         }
     }
     &:first-child{
@@ -189,8 +192,15 @@ table.list-rooms {
 
   .btn-add-team, .btn-history, .btn-offline {
     line-height: 14px;
-    padding: 1px;
+    padding: 2px;
+      position: relative;
+    top: -1px;
   }
+    .btn-add-team {
+        i {
+            top: -1px;
+        }
+    }
 }
 
 
@@ -291,7 +301,11 @@ table.list-rooms {
     padding-left: 11px!important;
   }
 	.actionIconSmile{
-		padding: 2px;
+        line-height: 20px;
+        min-height: 20px;
+        min-width: 22px;
+        padding: 0;
+        text-align: center;
 	}
   .meeting-actions {
     margin: 4px 17px 0 0;
@@ -505,7 +519,11 @@ table.list-rooms {
   margin-top: 15px;
   margin-right: 15px;
 }
-
+.room-detail-button {
+    .btn-primary {
+        padding: 5px 10px;
+    }
+}
 .msbuttonGroupRecord {
   .btn.msButtonRecord {
     padding-right: 6px;
@@ -552,13 +570,18 @@ table.list-rooms {
   margin-left: 4px;
 }
 
-
+.chat-status-team {
+    font-size: 12px
+}
 .td-status {
   width: 16px;
   min-width: 16px;
-
+    .user-available,.user-away,.user-donotdisturb, .user-invisible{
+        font-size: 12px;
+    }
   > i {
     margin-top: -2px;
+
   }
 }
 .users-online {
@@ -574,6 +597,7 @@ table.list-rooms {
   .uiIconChatFavorite {
     cursor: pointer;
     display: none;
+    top: -1px;
   }
 }
 
@@ -662,10 +686,9 @@ table.list-rooms {
 }
 
 .msg-button {
-  padding: 2px;
-  cursor: pointer;
-  display: inline-block;
-  float: right;
+    padding: 0;
+    right: 0;
+    width: 15px;
 }
 
 
