@@ -207,7 +207,7 @@ public class DocumentsData {
     String filenameExt = "";
     String filenameBase = filename;
     if (filename.lastIndexOf(".") > -1) {
-      filename.substring(filename.lastIndexOf("."));
+      filenameExt = filename.substring(filename.lastIndexOf("."));
       filenameBase = filename.substring(0, filename.lastIndexOf("."));
     }
 
