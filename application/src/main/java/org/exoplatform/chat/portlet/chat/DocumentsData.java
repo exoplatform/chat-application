@@ -204,8 +204,12 @@ public class DocumentsData {
       // Do nothing because there is nothing to process here
     }
     filename = Utils.cleanName(filename);
-    String filenameExt = filename.substring(filename.lastIndexOf("."));
-    String filenameBase = filename.substring(0, filename.lastIndexOf("."));
+    String filenameExt = "";
+    String filenameBase = filename;
+    if (filename.lastIndexOf(".") > -1) {
+      filename.substring(filename.lastIndexOf("."));
+      filenameBase = filename.substring(0, filename.lastIndexOf("."));
+    }
 
     String title = Text.escapeIllegalJcrChars(filename);
     String cleanedFilenameBase = ChatUtils.cleanString(filenameBase);
