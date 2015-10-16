@@ -316,7 +316,8 @@ public class ChatServer
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
       ArrayList<String> tos = new ArrayList<String>();
-      String sender = user;
+      String senderName = user;
+      String senderMail = "";
       for (UserBean userBean:users)
       {
         if (!"".equals(userBean.getEmail()))
@@ -325,8 +326,8 @@ public class ChatServer
         }
         if (user.equals(userBean.getName()))
         {
-          sender = userBean.getFullname();
-          sender += "<" + userBean.getEmail() + ">";
+          senderName = userBean.getFullname();
+          senderMail = userBean.getEmail();
         }
       }
       html = reportBean.getAsHtml(title);
@@ -347,7 +348,7 @@ public class ChatServer
         prevUser = messageBean.getUser();
       }
       try {
-        sendMailWithAuth(sender, tos, html.toString(), title, inlineImages);
+        sendMailWithAuth(senderName,senderMail , tos, html.toString(), title, inlineImages);
       } catch (Exception e) {
         LOG.info(e.getMessage());
       }
@@ -920,12 +921,12 @@ public class ChatServer
     }
   }
   
-  public void sendMailWithAuth(String senderFullname, List<String> toList, String htmlBody, String subject, Map<String, String> inlineImages) throws Exception {
+  public void sendMailWithAuth(String senderFullname, String senderMail, List<String> toList, String htmlBody, String subject, Map<String, String> inlineImages) throws Exception {
 
     Session session = getMailSession();
     
     MimeMessage message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(senderFullname));
+    message.setFrom(new InternetAddress(senderMail, senderFullname, "UTF-8"));
 
     // To get the array of addresses
     for (String to: toList) {
