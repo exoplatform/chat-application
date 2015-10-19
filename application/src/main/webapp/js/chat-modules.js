@@ -1177,11 +1177,7 @@ function showMiniChatPopup(room, type) {
 
   // Display chat
   var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode","");
-  if (miniChatMode === "mini") {
-    minimizeMiniChat();
-  } else {
-    maximizeMiniChat();
-  }
+  maximizeMiniChat();
   jqchat("[data-toggle='tooltip']").tooltip();
 
   // Show chat messages
