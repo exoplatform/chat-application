@@ -129,7 +129,7 @@ var chatApplication = new ChatApplication();
     $('#msg').keyup(function(event) {
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-      if ( event.which === 13 && keydown !== 18 && msg.length>=1) {
+      if ( event.which === 13 && keydown !== 18 && msg.trim().length>=1) {
         //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
         if(!msg)
         {
@@ -142,7 +142,7 @@ var chatApplication = new ChatApplication();
       if ( keydown === 18 ) {
         keydown = -1;
       }
-      if ( event.which === 13 && msg.length === 1) {
+      if ( event.which === 13 ) {
         document.getElementById("msg").value = '';
       }
 
