@@ -8,119 +8,193 @@
   line-height: 100%;
   vertical-align: middle;
   position: relative;
-  background-image: url('@{imgPath}uiIconChatColor24x24.png');
-  background-repeat: no-repeat;
-  background-size: 276px 24px;
+  &:before { // Changing the background image to font-icon
+	content: "\e601";
+	font-size: @sizeIcon24x24;
+  }
+  span { // reset the font for the number of notifications
+	font-family: @sansFontFamily;
+  }
 }
 
+// Setting every icon
 .toggle-status-available {
-	background-position: -28px 0;
+  color: @iconStatusAvailable;
 }
 .toggle-status-away {
-	background-position: -56px 0;
+  color: @iconStatusAway;
 }
 .toggle-status-donotdisturb {
-	background-position: -84px 0;
+  color: @iconStatusDoNotDisturb;
 }
 .toggle-status-invisible {
-	background-position: -112px 0;
+  color: @iconStatusInvisible;
 }
 
 .UIToolbarContainerLight {
 	.uiNotifChatIcon {
-		background-position: -140px 0;
-	}
-	.toggle-status-available {
-		background-position: -168px 0;
-	}
-	.toggle-status-away {
-		background-position: -196px 0;
-	}
-	.toggle-status-donotdisturb {
-		background-position: -224px 0;
+	  color: @iconStatusDefaultContainerLight;
 	}
 	.toggle-status-invisible {
-		background-position: -252px 0;
+	  color: @iconStatusInvisibleContainerLight;
 	}
 }
 
 .uiNotifWeemoIcon {
-	background-image: url("@{imgPath}uiIconChatColor.png");
 	line-height: 100%;
-	background-repeat: no-repeat;
 	background-size: 196px 16px;
 	.square(16px);
+  &:before {
+	content: "\e602";
+  }
 }
 
 .uiNotifWeemoRed {
-	background-position: -120px 0;
+  color: @weemoRed;
 }
 .uiNotifWeemoBlue {
-	background-position: -140px 0;
+  color: @weemoBlue;
 }
 .uiNotifWeemoWarning {
-	background-position: -160px 0;
+  color: @weemoWarning;
+  &:before {
+	content: "\e772";
+  }
 }
 .uiNotifWeemoGreen {
-	background-position: -180px 0;
+  color: @weemoGreen;
 }
 // Icon Chat 16x16
 .LeftNavigationTDContainer [class^="uiIconChat"],.uiIconChatExtra ,.uiIconChatDrakGray{
-  background-image: url('@{imgPath}uiIconChatDarkGray.png');
+  color: @colorIconExtra;
 }
-.uiIconChatTeam{background-position: 0 0;}
-.uiIconChatSpace{background-position: -20px 0;}
-.uiIconChatAction{background-position: -40px 0;}
-.uiIconChatSmile{background-position: -60px 0;}
-.uiIconChatRaiseHand{background-position: -80px 0;}
-.uiIconChatAssign{background-position: -100px 0;}
-.uiIconChatCreateEvent{background-position: -120px 0;}
-.uiIconChatCreateTask{background-position: -140px 0;}
-.uiIconChatEdited{background-position: -160px 0;}
-.uiIconChatChat{background-position: -180px 0;}
-.uiIconChatVideo {background-position: 0 -20px;}
-.uiIconChatMember {background-position: -20px -20px;}
-.uiIconChatClock {background-position: -40px -20px;}
-.uiIconChatArrowDown {background-position: -60px -20px;}
-.uiIconChatArrowRight {background-position: -80px -20px;}
-.uiIconChatSimplePlusMini {background-position: -100px -20px;}
-.uiIconChatLink {background-position: -120px -20px;}
-.uiIconChatCheckin {background-position: -140px -20px;}
-.uiIconChatUpload {background-position: -160px -20px;}
-.uiIconChatDownload {background-position: -180px -20px;}
-.uiIconChatSearch {background-position: 0 -40px;}
-.uiIconChatQuestion {background-position: -20px -40px;}
-.uiIconChatEdit {background-position: -40px -40px;}
-.uiIconChatClose {background-position: -60px -40px;}
-.uiIconChatRecordStart {background-position: -80px -40px;}
-.uiIconChatRecordStop {background-position: -100px -40px;}
-.uiIconChatSendEmail {background-position: -120px -40px;}
-.uiIconChatWiki {background-position: -140px -40px;}
-.uiIconChatRecording {background-position: -160px -40px;}
-.uiIconChatAddPeopleToMeeting {background-position: -180px -40px;}
-.uiIconChatStartCall {background-position: 0px -60px;}
-.uiIconChatFinishCall {background-position: -20px -60px;}
-.uiIconChatMeeting{background-position: -40px -60px;}
-.uiIconChatAddMembership  {background-position: -60px -60px;}
-.uiIconChatStar {background-position: -80px -60px;}
-.uiIconChatVideo {background-position: -100px -60px;}
-.uiIconChatPopOut {background-position: -120px -60px;} 
+.uiIconChatTeam:before {
+  content: "\e6be";
+}
+.uiIconChatSpace:before {
+  content: "\e6c1";
+}
+.uiIconChatAction:before {
+  content: "\e620";
+}
+.uiIconChatSmile:before {
+  content: "\e621";
+}
+.uiIconChatRaiseHand:before {
+  content: "\e622";
+}
+.uiIconChatAssign:before {
+  content: "\e6c6";
+}
+.uiIconChatCreateEvent:before {
+  content: "\e613";
+}
+.uiIconChatCreateTask:before {
+  content: "\e614";
+}
+.uiIconChatEdited:before {
+  content: "\e6e3";
+}
+.uiIconChatChat:before {
+  content: "\e601";
+}
+.uiIconChatVideo:before {
+  content: "\e602";
+}
+.uiIconChatMember:before {
+  content: "\e6cb";
+}
+.uiIconChatClock:before {
+  content: "\e742";
+}
+.uiIconChatArrowDown:before {
+  content: "\e75a";
+}
+.uiIconChatArrowRight:before {
+  content: "\e75c";
+}
+.uiIconChatSimplePlusMini:before {
+  content: "\e74b";
+}
+.uiIconChatLink:before {
+  content: "\e793";
+}
+.uiIconChatCheckin:before {
+  content: "\e782";
+}
+.uiIconChatUpload:before {
+  content: "\e78d";
+}
+.uiIconChatDownload:before {
+  content: "\e784";
+}
+.uiIconChatSearch:before {
+  content: "\e74a";
+}
+.uiIconChatQuestion:before {
+  content: "\e76b";
+}
+.uiIconChatEdit:before {
+  content: "\e791";
+}
+.uiIconChatClose:before {
+  content: "\e75e";
+}
+.uiIconChatRecordStart:before {
+  content: "\e775";
+}
+.uiIconChatRecordStop:before {
+  content: "\e76c";
+}
+.uiIconChatSendEmail:before {
+  content: "\e777";
+}
+.uiIconChatWiki:before {
+  content: "\e695";
+}
+.uiIconChatRecording:before {
+  content: "\e76c";
+}
+.uiIconChatAddPeopleToMeeting:before {
+  content: "\e618";
+}
+.uiIconChatStartCall:before {
+  content: "\e61c";
+}
+.uiIconChatFinishCall:before {
+  content: "\e61e";
+}
+.uiIconChatMeeting:before {
+  content: "\e61a";
+}
+.uiIconChatAddMembership:before {
+  content: "\e6c7";
+}
+.uiIconChatStar:before {
+  content: "\e779";
+}
+.uiIconChatVideo:before {
+  content: "\e602";
+}
+.uiIconChatPopOut:before {
+  content: "\e754";
+}
 /* Define Blude Color */
 .nav-pills > .active > a > [class^="uiIconChat"], .nav-list > .active > a > [class^="uiIconChat"], .navbar-inverse .nav > .active > a > [class^="uiIconChat"], .btn:hover [class^="uiIconChat"], a:hover [class^="uiIconChat"], .actionIcon.active [class^="uiIconChat"], .nodeSelected:hover [class^="uiIconChat"], [class^="uiIconChat"]:hover, .uiActionBar [class^="uiIconChat"]:hover, .chat-message > .meeting-actions > .actionIcon:hover > i,
 .uiActionWithLabel:hover [class^="uiIconChat"], .uiActionWithLabel.active [class^="uiIconChat"],
 .actionIcon:hover [class^="uiIconChat"], .actionIcon.active [class^="uiIconChat"],
 .header-room:hover [class^="uiIconChatArrow"] {
-  background-image: url('@{imgPath}uiIconChatBlue.png');
+  color: @hoverColor;
 }
 /* Define Light Gray Color */
 [class^="uiIconChat"],.dropdown-menu > li > a > [class^="uiIconChat"], .dropdown-menu > .active > a > [class^="uiIconChat"], .uiDropdownWithIcon .dropdown-submenu > a > [class^="uiIconChat"], .uiActionBar [class^="uiIconChat"], .uiIconChatLightGray{
-  background-image: url('@{imgPath}uiIconChatLightGray.png');
+  color: @grayLight;
 }
 
 /* Define White Color */
 .uiDropdownWithIcon .nav-pills > .active > a > [class^="uiIconChat"], .uiDropdownWithIcon .nav-list > .active > a > [class^="uiIconChat"], .uiDropdownWithIcon .navbar-inverse .nav > .active > a > [class^="uiIconChat"], .uiDropdownWithIcon .dropdown-menu > li > a:hover > [class^="uiIconChat"], .uiDropdownWithIcon .dropdown-menu > .active > a > [class^="uiIconChat"], .uiDropdownWithIcon .dropdown-submenu:hover > a > [class^="uiIconChat"], .btn-primary [class^="uiIconChat"], .btn-primary:hover [class^="uiIconChat"], .uiDropDownCal a:hover [class^="uiIconChat"], .uiDropDownCal .active a:hover [class^="uiIconChat"], .eventAllDay [class^="uiIconChat"], .eventDayContainer [class^="uiIconChat"], .uiIconChatWhite, .chat-message .dropdown-menu a:hover [class^="uiIconChat"],
 .users-online.info .td-status [class^="uiIconChat"], .room-detail-button .btn:hover [class^="uiIconChat"],  .room-detail-button .btn [class^="uiIconChat"]:hover, .chat-notification-detail:hover [class^="uiIconChat"] {
-  background-image: url('@{imgPath}uiIconChatWhite.png');
+  color: @white;
 }
 
 
@@ -129,21 +203,48 @@
 [class^="uiIconChat32x32"], [class^="uiIconChat32x32"]:hover {
 	width: 32px;
 	height: 32px;
-	background-image: url('@{imgPath}uiIconChat32x32DarkGray.png');
+	color: @grayDark;
+	font-size: @sizeIcon32x32;
 }
-.uiIconChat32x32Team {background-position: 0 0;}
-.uiIconChat32x32HyperLink {background-position: -36px 0;}
-.uiIconChat32x32RaiseHand {background-position: -72px 0;}
-.uiIconChat32x32Event {background-position: -108px 0;}
-.uiIconChat32x32Task {background-position: -144px 0;}
-.uiIconChat32x32ShareFile {background-position: -180px 0;}
-.uiIconChat32x32Question {background-position: -216px 0;}
-.uiIconChat32x32AddCall {background-position: -252px 0;}
-.uiIconChat32x32StartCall {background-position: -288px 0;}
-.uiIconChat32x32FinishCall {background-position: -324px 0;}
-.uiIconChat32x32Space {background-position: 0 -36px;}
-.uiIconChat32x32Blog {background-position: -36px -36px;}
-.uiIconChat32x32Metting {background-position:   -72px -36px;}
+.uiIconChat32x32Team:before {
+  content: "\e6be";
+}
+.uiIconChat32x32HyperLink:before {
+  content: "\e61b";
+}
+.uiIconChat32x32RaiseHand:before {
+  content: "\e622";
+}
+.uiIconChat32x32Event:before {
+  content: "\e619";
+}
+.uiIconChat32x32Task:before {
+  content: "\e611";
+}
+.uiIconChat32x32ShareFile:before {
+  content: "\e6b3";
+}
+.uiIconChat32x32Question:before {
+  content: "\e76b";
+}
+.uiIconChat32x32AddCall:before {
+  content: "\e618";
+}
+.uiIconChat32x32StartCall:before {
+  content: "\e61c";
+}
+.uiIconChat32x32FinishCall:before {
+  content: "\e61e";
+}
+.uiIconChat32x32Space:before {
+  content: "\e6c1";
+}
+.uiIconChat32x32Blog:before {
+  content: "\e678";
+}
+.uiIconChat32x32Metting:before {
+  content: "\e61a";
+}
 //.uiIconChat32x32MeetingStop {background-position: -108px -36px;}
 //.uiIconChat32x32MeetingStart {background-position: -144px -36px;}
 
@@ -155,7 +256,7 @@
 .actionIcon.active [class^="uiIconChat32"],
 .nodeSelected:hover [class^="uiIconChat32"],
 .uiActionBar [class^="uiIconChat32"]:hover {
-  background-image: url('@{imgPath}uiIconChat32x32Blue.png');
+  color: @hoverColor;
 }
 // Define Light Gray Color
 .dropdown-menu > li > a > [class^="uiIconChat32"],
@@ -163,7 +264,7 @@
 .uiDropdownWithIcon .dropdown-submenu > a > [class^="uiIconChat32"],
 .uiActionBar [class^="uiIconChat32"],
 .uiIconChat32x32LightGray, .uiIconChat32x32LightGray:hover{
-  background-image: url('@{imgPath}uiIconChat32x32LightGray.png');
+  color: @grayLight;
 }
 
 // Define White Color
@@ -181,5 +282,17 @@
 .eventDayContainer [class^="uiIconChat32"],
 .uiIconChat32x32White,
 .chat-message .dropdown-menu a:hover [class^="uiIconChat32"] {
-  background-image: url('@{imgPath}uiIconChat32x32White.png');
+  color: @white;
+}
+
+
+// Adding font-icon in chat status elements in notifications
+.chat-status-icon {
+  font-family: "PLF-FONT-ICONS";
+}
+[class^="chat-status-"]:before {
+  content: "\e76e";
+}
+.chat-status-open:before {
+  content: "\e601";
 }

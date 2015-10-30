@@ -108,53 +108,93 @@
     }
 
     .call-off {
-      .background(0, 0);
+      //.background(0, 0);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e61e";
+      }
     }
     .call-on {
-      .background(-32px, 0);
+      //.background(-32px, 0);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e61c";
+      }
     }
     .type-link {
       .background(0, -66px);
       .square(32px);
     }
     .type-file {
-      .background(-32px, -66px);
+      //.background(-32px, -66px);
      .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e6b3";
+      }
     }
     .call-join {
-      .background(0, -130px);
+      //.background(0, -130px);
      .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e618";
+      }
     }
     .type-hand {
-      .background(-32px, -130px);
+      //.background(-32px, -130px);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e622";
+      }
     }
     .type-agenda {
-      .background(-64px, -66px);
+      //.background(-64px, -66px);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e678";
+      }
     }
     .type-task {
-      .background(0, -98px);
+      //.background(0, -98px);
      .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e690";
+      }
     }
     .type-event {
-      .background(-32px, -98px);
+      //.background(-32px, -98px);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e6cf";
+      }
     }
     .type-question {
-      .background(-64px, -98px);
+      //.background(-64px, -98px);
       .square(32px);
+      color: @colorIconDefault;
+      &:before {
+        content: "\e76b";
+      }
     }
 
     .message-changed {
-      .background(-68px, -32px);
+      //.background(-68px, -32px);
       width: 12px;
       height: 10px;
       margin-right: 4px;
       margin-top: 4px;
       float: left;
+      color: @colorIconDefault;
+      &:before {
+        content: "\e6e3";
+      }
     }
   }
 
@@ -333,7 +373,8 @@
         &:hover {
           font-weight: bold;
           i {
-            background-image: url("@{images-path}/Icons/uiIconsSecondary.png");
+            //background-image: url("@{images-path}/Icons/uiIconsSecondary.png");
+            color: @colorIconSecondary;
           }
         }
       }
@@ -371,21 +412,29 @@
 /*chat mini only*/
 .mini-chat {
 	.uiActionWithLabel {
-		padding: 2px ;
-		line-height: 100%;
-		border: none;
-		margin-left: 5px;
-		float: none;
-    vertical-align: middle;
+        border: medium none;
+        float: none;
+        line-height: 18px;
+        min-height: 20px;
+        min-width: 20px;
+        padding: 0;
+        text-align: center;
+        vertical-align: middle;
+        i {
+            font-size: 9px;
+            top: 2px;
+        }
 		&:hover ,&:active,&:focus,&.actived {
 				.box-shadow(none);
 				border: none;
                 background: @grayDark;
 				.uiIconMinimize ,.uiIconMaximize ,.uiIconClose {
-					background-image: url("@{images-path}/Icons/uiIconsSecondary.png")!important;
+					//background-image: url("@{images-path}/Icons/uiIconsSecondary.png")!important;
+                  color: @colorIconSecondary;
 				}
 				.uiIconChatPopOut {
-					background-image: url('@{imgPath}uiIconChatWhite.png')!important;
+					//background-image: url('@{imgPath}uiIconChatWhite.png')!important;
+                  color: @colorIconSecondary;
 				}
 		}
 
@@ -418,7 +467,7 @@
 		position: relative;
 	}
 	.dayOnCalendar {
-		font-size: 18px;
+		font-size: 14px;
 		line-height: 100%;
 		font-style: normal;
 		font-weight: bold;

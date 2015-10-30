@@ -97,15 +97,31 @@
 }
 .weemo-status-not-connected {
   .weemo(0, 0);
+  color: @weemoRed;//#a1282d or #9e0000 ?
+  &:before {
+    content: "\e76d";
+  }
 }
 .weemo-status-connecting {
   .weemo(-8px, 0);
+  color: @weemoBlue;
+  &:before {
+    content: "\e797";
+  }
 }
 .weemo-status-error {
   .weemo(0, -8px);
+  color: @weemoWarning;
+  &:before {
+    content: "\e771";
+  }
 }
 .weemo-status-connected {
   .weemo(-8px, -8px);
+  color: @weemoGreen;
+  &:before {
+    content: "\e770";
+  }
 }
 
 .chatPopupOverlay {
@@ -117,35 +133,36 @@
 }
 
 /* Chat Status */
+// Changed to font-icons
 .chat-status-icon {
 	display: inline-block;
 	.square(16px);
-	background-image: url("@{imgPath}/uiIconChatColor.png");
-	background-repeat: no-repeat;
-	background-color: transparent;
-	vertical-align: -3px;
+    color: @iconStatusDefaultContainerLight;
 }
 .chat-status-available {
-  background-position: 0 0;
+  color: @iconStatusAvailable;
 }
 .chat-status-donotdisturb{
-  background-position: -20px 0;
+  color: @iconStatusDoNotDisturb;
 }
 .chat-status-away {
-  background-position: -40px 0;
+  color: @iconStatusAway;
 }
 .chat-status-invisible {
-  background-position: -60px 0;
+  color: @iconStatusInvisibleContainerLight;
+}
+.chat-status:hover .chat-status-invisible { // This is really really optional...
+  color: @iconStatusInvisible;
 }
 .chat-status-icon.chat-status-open {
-  background-image: url("@{imgPath}/uiIconChatLightGray.png");
-  background-position: -180px 0;
-  background-size: 196px 76px;
+  color: @iconStatusDefaultContainerLight;
+  font-size: 15px;
+  position: relative;
+  top: 2px;
 }
 .notif-chat-open-link:hover {
   .chat-status-open {
-    background-image: url("@{imgPath}/uiIconChatWhite.png");
-    background-size: 196px 76px;
+    color: @iconStatusDefault;
   }
 }
 .chatStatusPortlet {
@@ -204,7 +221,7 @@
 
 .connectAction .chatPopupOverlay  .uiIconForum,
 .connectAction  .weemoCallOverlay .icon-facetime-video {
-	background-image: url("@{imgPath}/uiIconChatLightGray.png");
+  color: @grayLight;
 }
 
 .connectAction .chatPopupOverlay:hover .uiIconForum,
@@ -213,17 +230,17 @@
 .connectAction .weemoCallOverlay:active .icon-facetime-video,
 .connectAction  .chatPopupOverlay  .uiIconForum:hover,
 .connectAction  .weemoCallOverlay .icon-facetime-video:hover{
-	background-image: url("@{imgPath}/uiIconChatBlue.png");
+  color: @hoverColor;//#4f72ac;
 }
 
 .connectAction .btn:first-child {
 	padding: 4px 10px;
 }
-.chatPopupOverlay  .uiIconForum {
-	background-position: -180px 0;
+.chatPopupOverlay  .uiIconForum:before {
+  content: "\e601";
 }
 .weemoCallOverlay .icon-facetime-video {
-	background-position: 0 -20px;
+  content: "\e6c1";
 }
 
 .connectAction { 
