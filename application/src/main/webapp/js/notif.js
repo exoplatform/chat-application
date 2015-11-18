@@ -600,6 +600,18 @@ ChatNotification.prototype.attachChatToProfile = function() {
             }
         });
 
+        // Fix PLF-6493: Only let hover happens on connection buttons instead of all in .user-actions
+        var $btnConnections = jqchat(".show-default, .hide-default", $userActions);
+        var $btnShowConnection = jqchat(".show-default", $userActions);
+        var $btnHideConnection = jqchat(".hide-default", $userActions);
+        $btnShowConnection.show();
+        $btnConnections.css('font-style', 'italic');
+        $btnHideConnection.hide();
+        $btnConnections.removeClass('show-default hide-default');
+        $btnConnections.hover(function(e) {
+          $btnConnections.toggle();
+        });
+
         function cbGetStatus(targetUser, status) {
             if (status !== "offline") {
                 jqchat(".chatPopup-" + targetUser.replace('.', '-')).removeClass("disabled");
