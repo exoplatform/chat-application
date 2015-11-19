@@ -1,7 +1,11 @@
 package org.exoplatform.chat.portlet.chat;
 
 import org.exoplatform.portal.config.model.PortalConfig;
-import org.exoplatform.wiki.mow.core.api.wiki.PageImpl;
+import org.exoplatform.wiki.mow.api.Wiki;
+import org.exoplatform.wiki.mow.api.Page;
+import org.exoplatform.wiki.mow.api.PermissionEntry;
+import org.exoplatform.wiki.mow.api.PermissionType;
+import org.exoplatform.wiki.mow.api.Permission;
 import org.exoplatform.wiki.resolver.TitleResolver;
 import org.xwiki.rendering.syntax.Syntax;
 
@@ -63,62 +67,77 @@ public class WikiService {
       synchronized(wikiService_) {
 
         if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false))) {
-          PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
-          ppage.getContent().setText("= " + parentTitle + " =\n");
-          ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
-          ppage.checkin();
-          ppage.checkout();
+          Page ppage = new Page();
+          ppage.setTitle(parentTitle);
+          Wiki pwiki = new Wiki();
+          pwiki.setOwner(wikiOwner);
+          pwiki.setType(wikiType);
+          Page createdPpage = wikiService_.createPage(pwiki, "WikiHome", ppage);
+          createdPpage.setContent("= " + parentTitle + " =\n");
+          createdPpage.setSyntax(Syntax.XWIKI_2_0.toIdString());
+          wikiService_.createVersionOfPage(createdPpage);
         }
 
-        PageImpl page;
+        Page page = new Page();
+        page.setTitle(title);
+        Wiki wiki = new Wiki();
+        wiki.setOwner(wikiOwner);
+        wiki.setType(wikiType);
+        Page createdPage;
         boolean isPageExisted = false;
         if (wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(title, false))) {
-          page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+          createdPage = wikiService_.getPageById(TitleResolver.getId(title, false));
           isPageExisted = true;
         } else {
           try {
-            page = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, title, TitleResolver.getId(parentTitle, false));
-
+            createdPage =  wikiService_.createPage(wiki, parentTitle, page);
           } catch (Exception e) {
             isPageExisted = true;
-            page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+            createdPage = wikiService_.getPageById(TitleResolver.getId(title, false));
           }
         }
 
-        page.getContent().setText(content);
-        setPermissionForReportAsWiki(users, page);
-        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
-        page.setMinorEdit(false);
-        page.checkin();
-        page.checkout();
+        createdPage.setContent(content);
+        setPermissionForReportAsWiki(users, createdPage);
+        createdPage.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        createdPage.setMinorEdit(false);
+        wikiService_.createVersionOfPage(createdPage);
 
         if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
           // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
-          path = "/portal/intranet/wiki/" + wikiType + wikiOwner + "/" + page.getName();
+          path = "/portal/intranet/wiki/" + wikiType + wikiOwner + "/" + createdPage.getName();
         } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
           // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
-          path = "/portal/intranet/wiki/" + page.getName();
+          path = "/portal/intranet/wiki/" + createdPage.getName();
         }
-        page.setURL(path);
-        //Post Activity
-        if (!isPageExisted) {
-          wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
-        }
-      }
+        createdPage.setUrl(path);
+       }
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unknown exception", e);
     }
 
     return path;
   }
-  public void setPermissionForReportAsWiki(List<String> users, PageImpl page) {
+  public void setPermissionForReportAsWiki(List<String> users, Page page) {
     try {
-      HashMap<String, String[]> permissions = page.getPermission();
-      permissions.remove(ANY);
-      for (int i = 0; i < users.size(); i++) {
-        permissions.put(users.get(i).toString(),org.exoplatform.services.jcr.access.PermissionType.ALL);
+      Permission[] allPermissions = new Permission[] {
+              new Permission(PermissionType.VIEWPAGE, true),
+              new Permission(PermissionType.EDITPAGE, true),
+      };
+      List<PermissionEntry> permissions = page.getPermissions();
+      int anyIndex = -1;
+      for (int i = 0; i < permissions.size(); i ++) {
+        PermissionEntry any = permissions.get(i);
+        if (ANY.equals(any.getFullName())) anyIndex = i;
       }
-      page.setPermission(permissions);
+      if (anyIndex > -1 ) permissions.remove(anyIndex);
+      for (int i = 0; i < users.size(); i++) {
+        PermissionEntry userPermission = new PermissionEntry();
+        userPermission.setFullName(users.get(i).toString());
+        userPermission.setPermissions(allPermissions);
+        permissions.add(userPermission);
+      }
+      page.setPermissions(permissions);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unknown exception", e);
 
