@@ -74,6 +74,11 @@ public class WikiService {
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
           ppage.setOwner(creator);
           ppage.setAuthor(creator);
+          Page wikiHome = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, "WikiHome");
+          setPermissionForReportAsWiki(users, ppage, wikiHome);
+          List<PermissionEntry> permissions = ppage.getPermissions();
+          permissions.add(new PermissionEntry(ANY,"", IDType.USER, new Permission[]{new Permission (PermissionType.VIEWPAGE, true)}));
+          ppage.setPermissions(permissions);
           Wiki pwiki = new Wiki();
           pwiki.setOwner(wikiOwner);
           pwiki.setType(wikiType);
@@ -84,7 +89,8 @@ public class WikiService {
         page.setTitle(title);
         page.setContent(content);
         page.setSyntax(Syntax.XWIKI_2_0.toIdString());
-        setPermissionForReportAsWiki(users, page);
+        Page ppage = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false));
+        setPermissionForReportAsWiki(users, page, ppage);
         page.setOwner(creator);
         page.setAuthor(creator);
         page.setMinorEdit(false);
@@ -118,19 +124,29 @@ public class WikiService {
 
     return path;
   }
-  public void setPermissionForReportAsWiki(List<String> users, Page page) {
+  public void setPermissionForReportAsWiki(List<String> users, Page page, Page parentPage) {
     try {
       Permission[] allPermissions = new Permission[] {
               new Permission(PermissionType.VIEWPAGE, true),
               new Permission(PermissionType.EDITPAGE, true),
       };
-      List<PermissionEntry> permissions = new ArrayList<PermissionEntry>();
-      for (int i = 0; i < users.size(); i++) {
-        String strUser = users.get(i).toString();
-        PermissionEntry userPermission = new PermissionEntry(strUser, strUser, IDType.USER, allPermissions);
-        permissions.add(userPermission);
+      List<PermissionEntry> permissions = parentPage.getPermissions();
+      if (permissions != null) {
+      // remove any permission
+        int anyIndex = -1;
+        for (int i = 0; i < permissions.size(); i ++) {
+          PermissionEntry any = permissions.get(i);
+          if (ANY.equals(any.getId())) anyIndex = i;
+        }
+        if (anyIndex > -1 ) permissions.remove(anyIndex);
+        for (int i = 0; i < users.size(); i++) {
+          String strUser = users.get(i).toString();
+          PermissionEntry userPermission = new PermissionEntry(strUser, strUser, IDType.USER, allPermissions);
+          permissions.add(userPermission);
+        }
+        page.setPermissions(permissions);
       }
-      page.setPermissions(permissions);
+      
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unknown exception", e);
 
