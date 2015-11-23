@@ -64,4 +64,13 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>../data/</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>chat.properties</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>
