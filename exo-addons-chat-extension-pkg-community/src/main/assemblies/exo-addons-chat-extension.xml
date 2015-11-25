@@ -69,7 +69,7 @@
       <directory>../data/</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>chat.properties</include>
+        <include>chat-sample.properties</include>
       </includes>
     </fileSet>
   </fileSets>

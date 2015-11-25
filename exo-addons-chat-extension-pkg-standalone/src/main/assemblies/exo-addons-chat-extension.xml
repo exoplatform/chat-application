@@ -21,7 +21,7 @@
       <directory>../data/</directory>
       <outputDirectory>/exo-addons-chat-extension</outputDirectory>
       <includes>
-        <include>chat.properties</include>
+        <include>chat-sample.properties</include>
       </includes>
     </fileSet>
    </fileSets>
