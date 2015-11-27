@@ -1,8 +1,13 @@
 package org.exoplatform.chat.portlet.chat;
 
 import org.exoplatform.portal.config.model.PortalConfig;
-import org.exoplatform.wiki.mow.core.api.wiki.PageImpl;
+import org.exoplatform.wiki.mow.api.Wiki;
+import org.exoplatform.wiki.mow.api.Page;
+import org.exoplatform.wiki.mow.api.PermissionEntry;
+import org.exoplatform.wiki.mow.api.PermissionType;
+import org.exoplatform.wiki.mow.api.Permission;
 import org.exoplatform.wiki.resolver.TitleResolver;
+import org.exoplatform.wiki.service.IDType;
 import org.xwiki.rendering.syntax.Syntax;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,9 +35,9 @@ public class WikiService {
     wikiService_ = wikiService;
   }
 
-  protected String createIntranetPage(String title, String content, ArrayList<String> users)
+  protected String createIntranetPage(String creator, String title, String content, ArrayList<String> users)
   {
-    return createOrEditPage("Meeting Notes", title, content, users, false, null);
+    return createOrEditPage(creator, "Meeting Notes", title, content, users, false, null);
   }
 
   /**
@@ -41,12 +46,12 @@ public class WikiService {
    * @param content
    * @param spaceGroupId : format with spaces/space_group_name
    */
-  protected String createSpacePage(String title, String content, String spaceGroupId, ArrayList<String> users)
+  protected String createSpacePage(String creator, String title, String content, String spaceGroupId, ArrayList<String> users)
   {
-    return createOrEditPage("Meeting Notes", title, content, users, false, spaceGroupId);
+    return createOrEditPage(creator, "Meeting Notes", title, content, users, false, spaceGroupId);
   }
 
-  private String createOrEditPage(String parentTitle, String title, String content, ArrayList<String> users, boolean forceNew, String spaceGroupId)
+  private String createOrEditPage(String creator, String parentTitle, String title, String content, ArrayList<String> users, boolean forceNew, String spaceGroupId)
   {
     String wikiType = PortalConfig.PORTAL_TYPE;
     String wikiOwner = "intranet";
@@ -55,7 +60,7 @@ public class WikiService {
     if (spaceGroupId != null)
     {
       wikiType = PortalConfig.GROUP_TYPE;
-      wikiOwner = spaceGroupId;
+      wikiOwner = "/" + spaceGroupId;
     }
 
     try
@@ -63,46 +68,54 @@ public class WikiService {
       synchronized(wikiService_) {
 
         if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false))) {
-          PageImpl ppage = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, parentTitle, TitleResolver.getId("Wiki Home", false));
-          ppage.getContent().setText("= " + parentTitle + " =\n");
+          Page ppage = new Page();
+          ppage.setTitle(parentTitle);
+          ppage.setContent("= " + parentTitle + " =\n");
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
-          ppage.checkin();
-          ppage.checkout();
+          ppage.setOwner(creator);
+          ppage.setAuthor(creator);
+          Page wikiHome = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, "WikiHome");
+          setPermissionForReportAsWiki(users, ppage, wikiHome);
+          List<PermissionEntry> permissions = ppage.getPermissions();
+          permissions.add(new PermissionEntry(ANY,"", IDType.USER, new Permission[]{new Permission (PermissionType.VIEWPAGE, true)}));
+          ppage.setPermissions(permissions);
+          Wiki pwiki = new Wiki();
+          pwiki.setOwner(wikiOwner);
+          pwiki.setType(wikiType);
+          wikiService_.createPage(pwiki, "WikiHome", ppage);
         }
 
-        PageImpl page;
+        Page page = new Page();
+        page.setTitle(title);
+        page.setContent(content);
+        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        Page ppage = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false));
+        setPermissionForReportAsWiki(users, page, ppage);
+        page.setOwner(creator);
+        page.setAuthor(creator);
+        page.setMinorEdit(false);
+        if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
+            // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
+            path = "/portal/intranet/wiki/" + wikiType + wikiOwner + "/" + TitleResolver.getId(title, false);
+          } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
+            // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
+            path = "/portal/intranet/wiki/" + TitleResolver.getId(title, false);
+          }
+        page.setUrl(path);
+        Wiki wiki = new Wiki();
+        wiki.setOwner(wikiOwner);
+        wiki.setType(wikiType);
         boolean isPageExisted = false;
         if (wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(title, false))) {
-          page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+          wikiService_.getPageById(TitleResolver.getId(title, false));
           isPageExisted = true;
         } else {
           try {
-            page = (PageImpl) wikiService_.createPage(wikiType, wikiOwner, title, TitleResolver.getId(parentTitle, false));
-
+            wikiService_.createPage(wiki, TitleResolver.getId(parentTitle, false), page);
           } catch (Exception e) {
             isPageExisted = true;
-            page = (PageImpl) wikiService_.getPageById(wikiType, wikiOwner, TitleResolver.getId(title, false));
+            wikiService_.getPageById(TitleResolver.getId(title, false));
           }
-        }
-
-        page.getContent().setText(content);
-        setPermissionForReportAsWiki(users, page);
-        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
-        page.setMinorEdit(false);
-        page.checkin();
-        page.checkout();
-
-        if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
-          // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
-          path = "/portal/intranet/wiki/" + wikiType + "/" + wikiOwner + "/" + page.getName();
-        } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
-          // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
-          path = "/portal/intranet/wiki/" + page.getName();
-        }
-
-        //Post Activity
-        if (!isPageExisted) {
-          wikiService_.postAddPage(wikiType, wikiOwner, TitleResolver.getId(title, false), page);
         }
       }
     } catch (Exception e) {
@@ -111,14 +124,29 @@ public class WikiService {
 
     return path;
   }
-  public void setPermissionForReportAsWiki(List<String> users, PageImpl page) {
+  public void setPermissionForReportAsWiki(List<String> users, Page page, Page parentPage) {
     try {
-      HashMap<String, String[]> permissions = page.getPermission();
-      permissions.remove(ANY);
-      for (int i = 0; i < users.size(); i++) {
-        permissions.put(users.get(i).toString(),org.exoplatform.services.jcr.access.PermissionType.ALL);
+      Permission[] allPermissions = new Permission[] {
+              new Permission(PermissionType.VIEWPAGE, true),
+              new Permission(PermissionType.EDITPAGE, true),
+      };
+      List<PermissionEntry> permissions = parentPage.getPermissions();
+      if (permissions != null) {
+      // remove any permission
+        int anyIndex = -1;
+        for (int i = 0; i < permissions.size(); i ++) {
+          PermissionEntry any = permissions.get(i);
+          if (ANY.equals(any.getId())) anyIndex = i;
+        }
+        if (anyIndex > -1 ) permissions.remove(anyIndex);
+        for (int i = 0; i < users.size(); i++) {
+          String strUser = users.get(i).toString();
+          PermissionEntry userPermission = new PermissionEntry(strUser, strUser, IDType.USER, allPermissions);
+          permissions.add(userPermission);
+        }
+        page.setPermissions(permissions);
       }
-      page.setPermission(permissions);
+      
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unknown exception", e);
 

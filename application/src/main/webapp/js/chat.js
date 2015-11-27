@@ -70,7 +70,6 @@ var chatApplication = new ChatApplication();
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
 
-
     /**
      ##################                           ##################
      ##################                           ##################
@@ -130,7 +129,7 @@ var chatApplication = new ChatApplication();
     $('#msg').keyup(function(event) {
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-      if ( event.which === 13 && keydown !== 18 && msg.length>=1) {
+      if ( event.which === 13 && keydown !== 18 && msg.trim().length>=1) {
         //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
         if(!msg)
         {
@@ -143,7 +142,7 @@ var chatApplication = new ChatApplication();
       if ( keydown === 18 ) {
         keydown = -1;
       }
-      if ( event.which === 13 && msg.length === 1) {
+      if ( event.which === 13 ) {
         document.getElementById("msg").value = '';
       }
 
@@ -234,6 +233,7 @@ var chatApplication = new ChatApplication();
                     // user uploaded more than 'maxfiles'
                     break;
                   case 'FileTooLarge':
+                    alert(chatBundleData.exoplatform_chat_dnd_filesize);
                     // program encountered a file whose size is greater than 'maxfilesize'
                     // FileTooLarge also has access to the file which was too large
                     // use file.name to reference the filename of the culprit file
@@ -519,7 +519,7 @@ var chatApplication = new ChatApplication();
       var roomId = chatApplication.targetUser;
       var targetUser = chatApplication.targetUser;
       if (targetUser.indexOf("space-")>-1) {
-    	  isSpace = true;
+        isSpace = true;
       }
 
       // Validate empty
@@ -561,7 +561,7 @@ var chatApplication = new ChatApplication();
         }
         return;
       }
-
+      hideMeetingPanel();
       // Disable button while server updating
       setActionButtonEnabled('.create-task-button', false);
 
@@ -586,7 +586,6 @@ var chatApplication = new ChatApplication();
           var msg = task;
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
-          hideMeetingPanel();
           setActionButtonEnabled('.create-task-button', true);
 
         },
@@ -594,8 +593,7 @@ var chatApplication = new ChatApplication();
           console.log("error");
           setActionButtonEnabled('.create-task-button', true);
         }
-      });
-
+      });	
     });
 
     $('#task-add-user').keyup(function(event) {
@@ -674,6 +672,7 @@ var chatApplication = new ChatApplication();
       if (targetUser.indexOf("team-")>-1) {
         users = $("#chat-file-target-user").val();
       }
+      hideMeetingPanel();
       setActionButtonEnabled('.create-event-button', false);
 
       $.ajax({
@@ -702,7 +701,6 @@ var chatApplication = new ChatApplication();
           var msg = summary;
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
-          hideMeetingPanel();
           setActionButtonEnabled('.create-event-button', true);
 
         },
@@ -711,7 +709,6 @@ var chatApplication = new ChatApplication();
           setActionButtonEnabled('.create-event-button', true);
         }
       });
-
     });
 
     function setActionButtonEnabled(btnClass, isEnabled) {
@@ -2022,7 +2019,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-      jqchat(".target-avatar-image").attr("src", "/rest/jcr/repository/social/production/soc:providers/soc:space/soc:"+spaceName+"/soc:profile/soc:avatar");
+      jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getSpaceAvartar/"+spaceName);
     }
     else
     ////// TEAM
@@ -2395,6 +2392,7 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
  * jQuery bindings on dom elements created by Who Is Online methods
  */
 ChatApplication.prototype.jQueryForUsersTemplate = function() {
+  var $targetUser;
   var value = jzGetParam("lastUsername"+this.username);
   var thiss = this;
 
@@ -2402,14 +2400,22 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     //console.log("firstLoad with user : *"+value+"*");
     this.targetUser = value;
     this.targetFullname = jzGetParam("lastFullName"+this.username);
-    if (this.username!==this.ANONIM_USER) {
-      this.loadRoom();
+
+    $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+    if (!$targetUser.length) {
+      this.targetUser = "";
+      this.targetFullname = "";
+      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
+      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
+    } else {
+      if (this.username!==this.ANONIM_USER) {
+        this.loadRoom();
+      }
+      this.firstLoad = false;
     }
-    this.firstLoad = false;
   }
 
-  if (this.isDesktopView() && this.targetUser!==undefined) {
-    var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+  if (this.isDesktopView() && $targetUser!==undefined) {
     $targetUser.addClass("accordion-active");
     jqchat(".room-total").removeClass("badgeWhite");
     $targetUser.find(".room-total").addClass("badgeWhite");
@@ -2681,9 +2687,6 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       options.timestamp = ts;
       options.type = "call-off";
       sendMessageToServer = true;
-      if (typeof weemoExtension !== 'undefined') {
-        weemoExtension.setCallActive(false);
-      }
     } else if (msg.indexOf("/export")===0) {
       this.showAsText();
     } else if (msg.indexOf("/help")===0) {
@@ -2821,7 +2824,21 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
           eXo.ecm.VideoCalls.showReceivingPermissionInterceptor(targetFullname);
           chatApplication.setModalToCenter('#receive-permission-interceptor');
         } else {
-          weemoExtension.createWeemoCall(targetUser, targetFullname, chatMessage);
+          //sightCallExtension.createWeemoCall(targetUser, targetFullname, chatMessage);
+          jzStoreParam("jzChatSend", chatApplication.jzChatSend);
+          jzStoreParam("room", chatApplication.room);
+          jzStoreParam("targetFullname", targetFullname);
+          jzStoreParam("targetUser", targetUser);
+
+          if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
+            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
+          } else {
+            var isSpace = (targetUser.indexOf("space-") !== -1);
+            var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
+
+            jzStoreParam("isSpace", isSpace);
+            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+          }
         }
       } else {
         eXo.ecm.VideoCalls.showPermissionInterceptor();
@@ -2840,13 +2857,24 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         "room": chatApplication.room,
         "token": chatApplication.token
       };
-      weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
+      var targetUser = chatApplication.targetUser.trim();
+      var targetFullname = chatApplication.targetFullname.trim();
+      var isSpace = (targetUser.indexOf("space-") !== -1);
+      var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
+
+      jzStoreParam("jzChatSend", chatApplication.jzChatSend);
+      jzStoreParam("room", chatApplication.room);
+      jzStoreParam("targetFullname", targetFullname);
+      jzStoreParam("targetUser", targetUser);
+      jzStoreParam("meetingPointId", weemoExtension.meetingPointId);
+      weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+      //weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
     }
   });
 
   function cbGetConnectionStatus(targetUser, activity) {
     if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
-      if (weemoExtension.isConnected && (activity !== "offline" && activity !== "invisible")) {
+      if (activity !== "offline" && activity !== "invisible") {
         jqchat(".btn-weemo").removeClass("disabled");
         jqchat(".btn-weemo-conf").removeClass("disabled");
       } else {
@@ -2854,19 +2882,62 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         jqchat(".btn-weemo-conf").addClass("disabled");
       }
     } else {
-      if (weemoExtension.isConnected) {
         jqchat(".btn-weemo").removeClass("disabled");
-        jqchat(".btn-weemo-conf").removeClass("disabled");
-      } else {
-        jqchat(".btn-weemo").addClass("disabled");
-        jqchat(".btn-weemo-conf").addClass("disabled");
-      }
+        //jqchat(".btn-weemo-conf").removeClass("disabled");
     }
   }
 
   chatNotification.getStatus(chatApplication.targetUser, cbGetConnectionStatus);
 
   setTimeout(function () {
-    chatApplication.displayVideoCallOnChatApp()
+    chatApplication.displayVideoCallOnChatApp();
+    var chatMessage = JSON.parse( jzGetParam("chatMessage", '{}') );
+      if ((chatMessage.url !== undefined) && (chatNotification !== undefined) && jzGetParam("isSightCallConnected",false) === "false"
+        && (jzGetParam("callMode") === "one" || jzGetParam("callMode") === "host")) {
+        var roomToCheck = chatMessage.room;
+
+        chatNotification.checkIfMeetingStarted(roomToCheck, function(callStatus, recordStatus) {
+
+            if (callStatus !== 1) { // Already terminated
+               jzStoreParam("chatMessage", JSON.stringify({}));
+               return;
+            }
+
+            // Also Update record status
+            if (recordStatus === 1) {
+                var options = {
+                    type: "type-meeting-stop",
+                    fromUser: chatNotification.username,
+                    fromFullname: chatNotification.username
+                };
+                chatNotification.sendFullMessage(
+                  chatMessage.user,
+                  chatMessage.token,
+                  chatMessage.targetUser,
+                  roomToCheck,
+                  "",
+                  options,
+                  "true"
+                );
+            }
+
+            var options = {};
+            options.timestamp = Math.round(new Date().getTime() / 1000);
+            options.type = "call-off";
+            chatNotification.sendFullMessage(
+              chatMessage.user,
+              chatMessage.token,
+              chatMessage.targetUser,
+              roomToCheck,
+              chatBundleData.exoplatform_chat_call_terminated,
+              options,
+              "true"
+            );
+
+            localStorage.removeItem("chatMessage");
+            localStorage.removeItem("isSightCallConnected");
+            localStorage.removeItem("callMode");
+        });
+    }
   }, 3000);
 };

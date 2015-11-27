@@ -343,13 +343,13 @@ public class ChatApplication
         group = spaceBean.getGroupId();
         if (group.startsWith("/")) group = group.substring(1);
         title = "Meeting "+sdf.format(new Date());
-        path = wikiService_.createSpacePage(title, xwiki, group, users);
+        path = wikiService_.createSpacePage(remoteUser_, title, xwiki, group, users);
       }
     }
     else // Team use case & one to one use case
     {
       title = targetFullname+" Meeting "+sdf.format(new Date());
-      path = wikiService_.createIntranetPage(title, xwiki, users);
+      path = wikiService_.createIntranetPage(remoteUser_, title, xwiki, users);
     }
 
     return Response.ok("{\"status\":\"ok\", \"path\":\""+path+"\"}")

@@ -16,4 +16,13 @@
       <outputDirectory>/exo-addons-chat-extension</outputDirectory>
     </file>
   </files>
+  <fileSets>
+    <fileSet>
+      <directory>../data/</directory>
+      <outputDirectory>/exo-addons-chat-extension</outputDirectory>
+      <includes>
+        <include>chat-sample.properties</include>
+      </includes>
+    </fileSet>
+   </fileSets>
 </assembly>

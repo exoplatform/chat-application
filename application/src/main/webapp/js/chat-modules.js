@@ -72,7 +72,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
       thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
-      thiss.refreshChat(false);
+      thiss.refreshChat(true);
     }
   });
 
@@ -492,7 +492,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
       else
       {
         var hideWemmoMessage = "";
-        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed')) {
+        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' )) {
           hideWemmoMessage = "style='display:none;'";
         }
         if (prevUser !== "") {
@@ -570,7 +570,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             jqchat(".btn-weemo").css("display", "none");
             jqchat(".btn-weemo-conf").css("display", "block");
             if (typeof weemoExtension!=="undefined") {
-              if (options.uidToCall!=="weemo"+thiss.username && weemoExtension.isConnected)
+              if (options.uidToCall!=="weemo"+thiss.username)
                 jqchat(".btn-weemo-conf").removeClass("disabled");
               else
                 jqchat(".btn-weemo-conf").addClass("disabled");
@@ -653,6 +653,8 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
       out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
     } else if ("call-on" === actionType) {
       out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
+    } else if ("call-join" === actionType) {
+      out += "                <i class='uiIconChat32x32AddPeopleToMeeting uiIconChat32x32LightGray'></i>";
     } else if ("call-off" === actionType) {
       out += "                <i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
     } else if ("call-proceed" === actionType) {
@@ -826,7 +828,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     } else if (options.type==="call-on") {
       this.startCallTimestamp = objMessage.timestamp;
       out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
-
+    } else if (options.type==="call-join") {
+      out += "<b>" + chatBundleData.exoplatform_chat_meeting_joined + "</b>";
     } else if (options.type==="call-off") {
       var callDuration = (objMessage.timestamp - this.startCallTimestamp)/1000;
       var hours = Math.floor(callDuration / 3600);
@@ -1174,11 +1177,7 @@ function showMiniChatPopup(room, type) {
 
   // Display chat
   var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode","");
-  if (miniChatMode === "mini") {
-    minimizeMiniChat();
-  } else {
-    maximizeMiniChat();
-  }
+  maximizeMiniChat();
   jqchat("[data-toggle='tooltip']").tooltip();
 
   // Show chat messages
