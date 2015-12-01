@@ -26,9 +26,9 @@
     <module>exo-addons-chat-extension-pkg-standalone</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/exo-addons/chat-application.git</developerConnection>
-    <url>https://github.com/exo-addons/chat-application</url>
+    <connection>scm:git:git://github.com/exoplatform/chat-application.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/exoplatform/chat-application.git</developerConnection>
+    <url>https://github.com/exoplatform/chat-application</url>
     <tag>HEAD</tag>
   </scm>
   <properties>
@@ -38,7 +38,7 @@
     <org.exoplatform.platform.version>4.3.x-SNAPSHOT</org.exoplatform.platform.version>
     <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
-    <juzu.version>1.1.0-M1</juzu.version>
+    <juzu.version>1.1.0</juzu.version>
     <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
