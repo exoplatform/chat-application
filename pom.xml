@@ -26,9 +26,9 @@
     <module>exo-addons-chat-extension-pkg-standalone</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/exo-addons/chat-application.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/exo-addons/chat-application.git</developerConnection>
-    <url>https://github.com/exo-addons/chat-application</url>
+    <connection>scm:git:git://github.com/exoplatform/chat-application.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/exoplatform/chat-application.git</developerConnection>
+    <url>https://github.com/exoplatform/chat-application</url>
     <tag>HEAD</tag>
   </scm>
   <properties>
