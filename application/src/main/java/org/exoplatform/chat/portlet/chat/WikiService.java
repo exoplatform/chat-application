@@ -74,7 +74,11 @@ public class WikiService {
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
           ppage.setOwner(creator);
           ppage.setAuthor(creator);
-          Page wikiHome = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, "WikiHome");
+          Wiki wiki = wikiService_.getWikiByTypeAndOwner(wikiType, wikiOwner);
+          if(wiki == null) {
+            wiki = wikiService_.createWiki(wikiType, wikiOwner);
+          }
+          Page wikiHome = wiki.getWikiHome();
           setPermissionForReportAsWiki(users, ppage, wikiHome);
           List<PermissionEntry> permissions = ppage.getPermissions();
           permissions.add(new PermissionEntry(ANY,"", IDType.USER, new Permission[]{new Permission (PermissionType.VIEWPAGE, true)}));
