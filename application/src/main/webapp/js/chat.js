@@ -120,6 +120,16 @@ var chatApplication = new ChatApplication();
     });
 
     $('#msg').keydown(function(event) {
+      //prevent the default behavior of the enter button
+      if ( event.which == 13 ) {
+        event.preventDefault();
+      }
+      //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+      if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+        this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+        var textarea =  $('#msg');
+        $('#msg').scrollTop(textarea[0].scrollHeight - textarea.height());
+      }
   //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
         keydown = 18;
@@ -129,11 +139,10 @@ var chatApplication = new ChatApplication();
     $('#msg').keyup(function(event) {
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-      if ( event.which === 13 && keydown !== 18 && msg.trim().length>=1) {
+      if ( event.which === 13 && msg.trim().length>=1) {
         //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-        if(!msg)
-        {
-          return;
+        if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+          return false;
         }
   //      console.log("*"+msg+"*");
         chatApplication.sendMessage(msg);
