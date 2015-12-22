@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,8 +68,9 @@ public class WikiService {
     {
       synchronized(wikiService_) {
 
-        if (!wikiService_.isExisting(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false))) {
-          Page ppage = new Page();
+        Page ppage = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false));
+        if (ppage == null) {
+          ppage = new Page();
           ppage.setTitle(parentTitle);
           ppage.setContent("= " + parentTitle + " =\n");
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
@@ -79,21 +81,20 @@ public class WikiService {
             wiki = wikiService_.createWiki(wikiType, wikiOwner);
           }
           Page wikiHome = wiki.getWikiHome();
-          setPermissionForReportAsWiki(users, ppage, wikiHome);
+          setPermissionForReportAsWiki(Collections.EMPTY_LIST, ppage, wikiHome);
           List<PermissionEntry> permissions = ppage.getPermissions();
           permissions.add(new PermissionEntry(ANY,"", IDType.USER, new Permission[]{new Permission (PermissionType.VIEWPAGE, true)}));
           ppage.setPermissions(permissions);
           Wiki pwiki = new Wiki();
           pwiki.setOwner(wikiOwner);
           pwiki.setType(wikiType);
-          wikiService_.createPage(pwiki, "WikiHome", ppage);
+          ppage = wikiService_.createPage(pwiki, "WikiHome", ppage);
         }
 
         Page page = new Page();
         page.setTitle(title);
         page.setContent(content);
         page.setSyntax(Syntax.XWIKI_2_0.toIdString());
-        Page ppage = wikiService_.getPageOfWikiByName(wikiType, wikiOwner, TitleResolver.getId(parentTitle, false));
         setPermissionForReportAsWiki(users, page, ppage);
         page.setOwner(creator);
         page.setAuthor(creator);
