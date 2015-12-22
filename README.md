@@ -49,7 +49,7 @@ with {host} and {port} are respectively hostname/IP and port of mongoDB server; 
 
 ** Automatical migration: you just need to turn off your Chat Server, deploy new chatServer.war package then restart Chat Server.
 
-** Manual migration: to do a manual migration, you have to get the migration script - migration-chat-addon.js file - that is packaged in chatServer.war/WEB-INF/lib/server-{version}-classes.jar. Extract binary packages to get migration script then launch the following command:
+** Manual migration: to do a manual migration, you have to get the migration script - migration-chat-addon.js file - that is packaged in chatServer.war/WEB-INF/lib/server-{version}.jar. Extract binary packages to get migration script then launch the following command:
 
 	mongo --quiet {host}:{port}/{dbName} -u {username} -p {password} migration-chat-addon.js
 
