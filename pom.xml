@@ -39,7 +39,7 @@
     <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <juzu.version>1.1.0</juzu.version>
-    <mongodb-java-driver.version>2.12.2</mongodb-java-driver.version>
+    <mongodb-java-driver.version>2.14.0</mongodb-java-driver.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
     <jenkins.job.name>chat-application-develop-ci</jenkins.job.name>
