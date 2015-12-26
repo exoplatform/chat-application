@@ -95,7 +95,7 @@ public class CalendarService {
       task.setFromDateTime(from);
       task.setToDateTime(to);
       task.setPriority(CalendarEvent.PRIORITY_NORMAL);
-      task.setTaskDelegator(currentUser);
+      task.setTaskDelegator(username);
       task.setDescription("Created by "+currentUser+" for "+username);
       calendarService_.saveUserEvent(username, calId, task, true);
     }
