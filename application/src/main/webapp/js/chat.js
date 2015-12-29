@@ -1345,7 +1345,8 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     },
 
     error:function (xhr, status, error){
-
+      alert(error);
+      jqchat(".btn-add-team").trigger("click");
     }
 
   });
