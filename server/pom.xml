@@ -131,6 +131,11 @@
       <artifactId>social-component-core</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-component-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>chatServer</finalName>
