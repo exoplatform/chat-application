@@ -16,7 +16,6 @@ import javax.inject.Named;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,8 +73,6 @@ public class WikiService {
           ppage.setTitle(parentTitle);
           ppage.setContent("= " + parentTitle + " =\n");
           ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
-          ppage.setOwner(creator);
-          ppage.setAuthor(creator);
           Wiki wiki = wikiService_.getWikiByTypeAndOwner(wikiType, wikiOwner);
           if(wiki == null) {
             wiki = wikiService_.createWiki(wikiType, wikiOwner);
@@ -89,6 +86,17 @@ public class WikiService {
           pwiki.setOwner(wikiOwner);
           pwiki.setType(wikiType);
           ppage = wikiService_.createPage(pwiki, "WikiHome", ppage);
+
+          // remove permissions on the Meeting Notes parent page for current user (automatically added by the Wiki API)
+          permissions = ppage.getPermissions();
+          for(int i=0; i<permissions.size(); i++) {
+            PermissionEntry permission = permissions.get(i);
+            if (creator.equals(permission.getId())) {
+              permissions.remove(i);
+            }
+          }
+          ppage.setPermissions(permissions);
+          wikiService_.updatePage(ppage, null);
         }
 
         Page page = new Page();
