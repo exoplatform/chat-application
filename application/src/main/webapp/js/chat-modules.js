@@ -1213,7 +1213,7 @@ function showMiniChatPopup(room, type) {
 //        console.log("keyup : "+event.which + ";"+msg.length);
           var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
 
-          if ( event.which === 13 && msg.length>=1) {
+          if ( event.which === 13 && msg.trim().length>=1) {
             //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
             if(!msg)
             {
