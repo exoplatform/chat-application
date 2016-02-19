@@ -519,7 +519,7 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
   if ($uiAction.length > 0 && $btnChat.length === 0) {
     var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
     var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
-    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + " disabled' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
     var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData.exoplatform_videocall_makeCall+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData.exoplatform_videocall_Call+'</a>';
 
     // Position of chat button depend on weemo installation
@@ -537,13 +537,6 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
         showMiniChatPopup(targetUser,'username');
       }
     });
-
-    function cbGetStatus(targetUser, status) {
-      if (status !== "offline") {
-        jqchat(".chatPopup-"+targetUser.replace('.', '-')).removeClass("disabled");
-      }
-    }
-    chatNotification.getStatus(toUserName, cbGetStatus);
   }
 
   $tiptip_content.removeClass("DisabledEvent");
@@ -585,7 +578,7 @@ ChatNotification.prototype.attachChatToProfile = function() {
     var $userActions = jqchat("#UIActionProfilePortlet .user-actions");
 
     if (userName != chatNotification.username && userName !== "" && $userActions.has(".chatPopupOverlay").length === 0 && $userActions.has("button").length) {
-        var strChatLink = "<a style='margin-top:0px !important;margin-right:-3px' data-username='" + userName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + userName.replace('.', '-') + " disabled' type='button'><i class='uiIconChat uiIconForum uiIconLightGray'></i> Chat</a>";
+        var strChatLink = "<a style='margin-top:0px !important;margin-right:-3px' data-username='" + userName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + userName.replace('.', '-') + "' type='button'><i class='uiIconChat uiIconForum uiIconLightGray'></i> Chat</a>";
 
         if ($userActions.has(".weemoCallOverlay").length === 0) {
             $userActions.prepend(strChatLink);
@@ -611,13 +604,6 @@ ChatNotification.prototype.attachChatToProfile = function() {
         $btnConnections.hover(function(e) {
           $btnConnections.toggle();
         });
-
-        function cbGetStatus(targetUser, status) {
-            if (status !== "offline") {
-                jqchat(".chatPopup-" + targetUser.replace('.', '-')).removeClass("disabled");
-            }
-        }
-        chatNotification.getStatus(userName, cbGetStatus);
     }
 
     setTimeout(function() {
