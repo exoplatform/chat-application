@@ -129,7 +129,7 @@ var chatApplication = new ChatApplication();
         this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
         $("#msg").animate({
           scrollTop:$("#msg")[0].scrollHeight - $("#msg").height()
-        },350,function(){/* Animation complete.*/});
+        },0,function(){/* Animation complete.*/});
       }
   //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
