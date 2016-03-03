@@ -122,12 +122,15 @@ var chatApplication = new ChatApplication();
     $('#msg').keydown(function(event) {
       //prevent the default behavior of the enter button
       if ( event.which == 13 ) {
-         event.preventDefault();
-        }
+        event.preventDefault();
+      }
       //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
       if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-         this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
-        }
+        this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+        $("#msg").animate({
+          scrollTop:$("#msg")[0].scrollHeight - $("#msg").height()
+        },350,function(){/* Animation complete.*/});
+      }
   //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
         keydown = 18;
