@@ -597,7 +597,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
 ////            else
 ////              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
 ////          } else {
-////            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
+////            out += "<span class='invisible-text'>- </span><a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_blank'>"+message.fullname+"</a><span class='invisible-text'> : </span><br/>";
 ////          }
 //          //out += "<div style='margin-left:50px;' class='msg-text'><span style='float:left' class=\"system-event\">"+thiss.messageBeautifier(message.message, options)+"</span>";
 //
@@ -735,11 +735,11 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     var out = "";
 
     if (options.type ==="type-me") {
-      var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_new'>"+options.fullname+"</a>";
+      var urlProfile = "<a href='/portal/intranet/profile/"+options.username+"' target='_blank'>"+options.fullname+"</a>";
       var text = message.replace("/me", urlProfile);
       out += "<center>"+text+"</center>";
     } else if (options.type ==="type-file") {
-      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_new'>"+options.title+"</a> ";
+      var urlFile = "<a class='msLinkInMes' href='"+options.restPath+"' target='_blank'>"+options.title+"</a> ";
       var size = "<span class=\"fileSize\">("+options.sizeLabel+")</span>";
       out += urlFile + size;
       var link = options.restPath;
@@ -750,7 +750,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
 
     } else if (options.type==="type-link") {
       var link = options.link.toLowerCase();
-      var url = "<a href='"+options.link+"' target='_new'>"+options.link+"</a>";
+      var url = "<a href='"+options.link+"' target='_blank'>"+options.link+"</a>";
       out += url;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
           link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
@@ -919,30 +919,30 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     l = lines[il];
     if (l.indexOf("google:")===0) {
       // console.log("*"+l+"* "+l.length);
-      msg += "google:<a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_new'>"+l.substr(7, l.length-7)+"</a> ";
+      msg += "google:<a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_blank'>"+l.substr(7, l.length-7)+"</a> ";
     } else if (l.indexOf("wolfram:")===0) {
       // console.log("*"+l+"* "+l.length);
-      msg += "wolfram:<a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_new'>"+l.substr(8, l.length-8)+"</a> ";
+      msg += "wolfram:<a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_blank'>"+l.substr(8, l.length-8)+"</a> ";
     } else {
       var tab = l.split(" ");
       var it,w;
       for (it=0 ; it<tab.length ; it++) {
         w = tab[it];
         if (w.indexOf("google:")===0) {
-          w = "google:<a href='http://www.google.com/search?q="+w.substr(7, w.length-7)+"' target='_new'>"+w.substr(7, w.length-7)+"</a>";
+          w = "google:<a href='http://www.google.com/search?q="+w.substr(7, w.length-7)+"' target='_blank'>"+w.substr(7, w.length-7)+"</a>";
         } else if (w.indexOf("wolfram:")===0) {
-          w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_new'>"+w.substr(8, w.length-8)+"</a>";
+          w = "wolfram:<a href='http://www.wolframalpha.com/input/?i="+w.substr(8, w.length-8)+"' target='_blank'>"+w.substr(8, w.length-8)+"</a>";
         } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
           var link = w;
           if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
-            w = "<a href='"+w+"' target='_new'><img src='"+w+"' width='100%' /></a>";
+            w = "<a href='"+w+"' target='_blank'><img src='"+w+"' width='100%' /></a>";
             w += "<span class='invisible-text'>"+link+"</span>";
           } else if (w.indexOf("http://www.youtube.com/watch?v=")===0 && !this.IsIE8Browser() ) {
             var id = w.substr(31);
             w = "<iframe width='100%' src='http://www.youtube.com/embed/"+id+"' frameborder='0' allowfullscreen></iframe>";
             w += "<span class='invisible-text'>"+link+"</span>";
           } else if (w.indexOf("[/quote]")===-1 && (w.indexOf("http:")===0 || w.indexOf("https:")===0 || w.indexOf("ftp:")===0) ) {
-            w = "<a href='"+w+"' target='_new'>"+w+"</a>";
+            w = "<a href='"+w+"' target='_blank'>"+w+"</a>";
           }
         } else if (w == ":-)" || w==":)") {
           w = "<span class='uiIconChatGifsmile'><span class='emoticon-text'>:)</span></span>";

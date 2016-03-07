@@ -41,7 +41,7 @@
       </div>
 
       <label class="pull-left" style="margin-top: 12px;">
-        <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_new'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
+        <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_blank'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
         <% if ("DEV".equals(demoMode)) { %>
         <span class="label-demo">(Demo Mode)</span>
         <% } %>

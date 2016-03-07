@@ -2768,8 +2768,8 @@ ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
   about += "Version "+chatBundleData.version+"<br><br>";
   about += chatBundleData.exoplatform_chat_designed+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
-  about += chatBundleData.exoplatform_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_new\">eXo Platform 4</a><br><br>";
-  about += chatBundleData.exoplatform_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_new\">https://github.com/exo-addons/chat-application</a>";
+  about += chatBundleData.exoplatform_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_blank\">eXo Platform 4</a><br><br>";
+  about += chatBundleData.exoplatform_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_blank\">https://github.com/exo-addons/chat-application</a>";
   about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData.exoplatform_chat_close+"</a>";
   this.hidePanels();
   var $chatAboutPanel = jqchat(".chat-about-panel");
