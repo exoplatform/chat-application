@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mongodb.BasicDBList;
@@ -453,6 +454,22 @@ public class ChatServer
     }
     return Response.ok("Updated!");
 
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/deleteTeamRoom")
+  public Response.Content deleteTeamRoom(String user, String token, String room, String dbName) throws IOException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Petit malin !");
+    }
+    try {
+      chatService.deleteTeamRoom(room, user, dbName);
+    } catch (Exception e) {
+      LOG.log(Level.SEVERE, "Impossible to delete Team Room [" + room + "] : " + e.getMessage(), e);
+      return Response.content(500, "Oups!");
+    }
+    return Response.ok("Updated!");
   }
 
   @Resource

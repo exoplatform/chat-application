@@ -156,6 +156,32 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 };
 
 /**
+ * Empty and disable the Chat zone
+ */
+ChatRoom.prototype.emptyChatZone = function() {
+  var $msg = jqchat('#msg');
+  $msg.attr("disabled", "disabled");
+  $msg.val('');
+  var $msButtonRecord = jqchat("#chat-record-button");
+  $msButtonRecord.attr("disabled", "disabled");
+  $msButtonRecord.tooltip("disable");
+  var $msgEmoticons = jqchat("#chat-msg-smiley-button");
+  $msgEmoticons.addClass("disabled");
+  $msgEmoticons.tooltip("disable");
+  var $meetingActionToggle = jqchat("#chat-msg-meeting-actions");
+  $meetingActionToggle.addClass("disabled");
+  $meetingActionToggle.children("span").tooltip("disable");
+  jqchat("#chat-room-detail-fullname").text('');
+  jqchat("#chat-room-detail-avatar").hide();
+  jqchat("#chat-team-button").hide();
+  jqchat("#chat-video-button").hide();
+  jqchat("#chat-record-button .btn").attr("disabled","");
+  var $chats = jqchat("#chats");
+  $chats.empty();
+  $chats.append("<div class=\"noContent\"><span class=\"text\">" + chatBundleData.exoplatform_chat_no_conversation + "</span></div>");
+};
+
+/**
  * Refresh Chat : refresh messages and panels
  */
 ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {

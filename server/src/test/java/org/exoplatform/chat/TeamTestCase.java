@@ -1,7 +1,6 @@
 package org.exoplatform.chat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class TeamTestCase extends AbstractChatTestCase
   @Test
   public void testTeamCreation() throws Exception
   {
-    log.info("TeamTestCase.testTeam");
+    log.info("TeamTestCase.testTeamCreation");
     String user = "benjamin";
     String user2 = "john";
 
@@ -48,6 +47,60 @@ public class TeamTestCase extends AbstractChatTestCase
     assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room2, null));
     assertEquals(user2, ServiceBootstrap.getChatService().getTeamCreator(room3, null));
 
+  }
+
+  @Test
+  public void testTeamRoomDeletion() throws Exception
+  {
+    log.info("TeamTestCase.testTeamDeletion");
+    String user = "benjamin";
+    String teamName = "My Team to Delete";
+
+    // create a team room
+    String roomId = ServiceBootstrap.getChatService().getTeamRoom(teamName, user, null);
+    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    assertNotNull("The room should exist", room);
+
+    // delete the Team Room
+    ServiceBootstrap.getChatService().deleteTeamRoom(roomId, user, null);
+
+    List<String> members = ServiceBootstrap.getUserService().getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, null);
+    assertTrue("No user should be member of the deleted Team Room", members.isEmpty());
+
+    RoomBean roomDelete = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    assertNull("The room should have been deleted", roomDelete);
+
+  }
+
+  @Test
+  public void testTeamRoomLoadById() throws Exception
+  {
+    log.info("TeamTestCase.testTeamRoomLoadById");
+    String user = "benjamin";
+    String roomSpaceName = "RoomSpace";
+    String roomTeamName = "RoomTeam";
+
+    // create a team room
+    String roomTeamId = ServiceBootstrap.getChatService().getTeamRoom(roomTeamName, user, null);
+    RoomBean roomTeam = ServiceBootstrap.getChatService().getTeamRoomById(roomTeamId, null);
+    assertNotNull("The room should exists", roomTeam);
+    assertEquals("The room name is not good", roomTeamName, roomTeam.getFullname());
+    assertEquals("The room owner is not good", user, roomTeam.getUser());
+
+    // create a space room
+    String roomId = ServiceBootstrap.getChatService().getSpaceRoom(roomSpaceName, null);
+    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null); // nothing should be loaded
+    assertNull("The team room should not exist", room);
+  }
+
+  @Test
+  public void testTeamRoomLoadByIdNonExisting() throws Exception
+  {
+    log.info("TeamTestCase.testTeamRoomLoadByIdNonExisting");
+    String roomId = "non-existing-id";
+
+    RoomBean nullTeamRoom = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    assertNull("The returned room should be null", nullTeamRoom);
   }
 
   @Test

@@ -47,6 +47,21 @@ public interface ChatService
 
   public void delete(String room, String user, String messageId, String dbName);
 
+  /**
+   * Delete a Team Room by its corresponding ID.<br>
+   * Nothing happen if : <br>
+   * <ul>
+   * <li>the roomId doesn't exists</li>
+   * <li>the roomId doesn't correspond to a Team Room</li>
+   * <li>the specified user is not the owner of the Team Room</li>
+   * </ul>
+   *
+   * @param roomId the team room ID to delete
+   * @param user   the owner of the team room
+   * @param dbName the database to use for the query
+   */
+  public void deleteTeamRoom(String roomId, String user, String dbName);
+
   public void edit(String room, String user, String messageId, String message, String dbName);
 
   public String read(String room, UserService userService, String dbName);
@@ -66,6 +81,14 @@ public interface ChatService
   public String getTeamCreator(String room, String dbName);
 
   public void setRoomName(String room, String name, String dbName);
+
+  /**
+   * Retrieve a Room by its ID
+   * @param roomId the ID of the room
+   * @param dbName the database to use for the query
+   * @return the room or null if the room doesn't exists
+   */
+  public RoomBean getTeamRoomById(String roomId, String dbName);
 
   public String getRoom(List<String> users, String dbName);
   

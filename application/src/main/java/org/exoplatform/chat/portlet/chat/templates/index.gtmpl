@@ -65,7 +65,7 @@
     <div class="uiBox">
       <div class="title room-detail no-user-selection" id="room-detail">
 
-        <span class="room-detail-avatar" style="display:none">
+        <span id="chat-room-detail-avatar" class="room-detail-avatar" style="display:none">
           <div class="activityAvatar avatarCircle">
             <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
               <img class="avatar-image target-avatar-image" src='/chat/img/user-default.jpg;' >
@@ -73,24 +73,25 @@
           </div>
         </span>
 
-        <span class="room-detail-button" style="display:none">
+        <span id="chat-video-button" class="room-detail-button" style="display:none">
             <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
             <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.call}</a>
             <a type="button" class="btn btn-primary pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
             <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
         </span>
-        <div class="msbuttonGroupRecord">
+        <div id="chat-record-button" class="msbuttonGroupRecord">
            <button class="btn msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
         </div>
-        <span class="team-button">
+        <span id="chat-team-button" class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.edit}"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.edit}</div>
+              <div id="team-edit-button" class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.edit}"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.edit}</div>
+              <div id="team-delete-button" class="uiActionWithLabel team-delete-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}"><i class="uiIconDelete uiIconChatLightGray"></i></div>
             </li>
           </ul>
         </span>
 
-        <a class="target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
+        <a id="chat-room-detail-fullname" class="target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
 
       </div>
 
@@ -103,7 +104,7 @@
       <div class="chat-message footer">
 
         <span class="pull-left" style="padding: 4px 0 0 18px;">
-          <span class="actionIcon actionIconSmile disabled" data-original-title="&{exoplatform.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
+          <span id="chat-msg-smiley-button" class="actionIcon actionIconSmile disabled" data-original-title="&{exoplatform.chat.emoticons}" data-placement="right"><span class="uiIconChatSmile uiIconChatLightGray msg-button msg-emoticons no-user-selection" >&nbsp;</span></span><br>
         <!--span class="msg-button msg-help no-user-selection">&nbsp;</span-->
           <span class="msg-emoticons-panel popover top no-user-selection" style="display:none">
           <div class="arrow"></div>
@@ -224,7 +225,7 @@
               </div>
             </div>
           </div>
-          <div class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
+          <div id="chat-msg-meeting-actions" class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{exoplatform.chat.assign.task}</a></li>
@@ -309,6 +310,25 @@
     </div>
   </div>
   <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+<!-- ################################## -->
+<!-- ######### TEAM DELETE MODAL ###### -->
+<!-- ################################## -->
+<div id="team-delete-window" class="uiPopup hide team-delete-modal">
+  <div class="popupHeader clearfix">
+    <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+    <span id="team-delete-window-label" class="PopupTitle popupTitle">&{exoplatform.chat.team.delete.title}</span>
+  </div>
+
+  <div class="PopupContent popupContent">
+    <div class="modal-body">
+      <p><span id="team-delete-window-chat-name" class="confirmationIcon">&{exoplatform.chat.team.delete.message}</span></p>
+    </div>
+    <div class="uiAction uiActionBorder">
+      <a id="team-delete-button-ok" href="#" class="btn btn-primary">&{exoplatform.chat.team.delete.ok}</a>
+      <a id="team-delete-button-cancel" href="#" class="btn">&{exoplatform.chat.team.delete.ko}</a>
+    </div>
+  </div>
 </div>
 
 <!-- ################################## -->

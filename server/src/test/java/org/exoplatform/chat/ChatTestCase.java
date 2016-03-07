@@ -78,6 +78,21 @@ public class ChatTestCase extends AbstractChatTestCase
     assertNotEquals(roomId, roomId4);
 
   }
+  @Test
+  public void testGetRoomTeamById() throws Exception {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    String user = "Benjamin";
+    String teamRoomName = "my team Room";
+    String teamRoomId = chatService.getTeamRoom(teamRoomName, user, null);
+
+    RoomBean teamRoom = chatService.getTeamRoomById(teamRoomId, null);
+    assertEquals("The room id should be the same", teamRoomId, teamRoom.getRoom());
+    assertEquals("The room name should be the same", teamRoomName, teamRoom.getFullname());
+    assertEquals("The room owner should be the same", user, teamRoom.getUser());
+    assertTrue("The room should be a team room", teamRoom.isTeam());
+    assertFalse("The room should not be a space room", teamRoom.isSpace());
+
+  }
 
   @Test
   public void testTextFormatRead() throws Exception

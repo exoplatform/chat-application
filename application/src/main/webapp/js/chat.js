@@ -45,6 +45,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
     chatApplication.jzUsers = chatServerURL+"/users";
     chatApplication.jzDelete = chatServerURL+"/delete";
+    chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
     chatApplication.jzEdit = chatServerURL+"/edit";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
     chatApplication.room = "";
@@ -949,6 +950,27 @@ var chatApplication = new ChatApplication();
 
     });
 
+    $("#team-delete-button").on("click", function(e) {
+      jqchat("#team-delete-window-chat-name").text(chatBundleData.exoplatform_chat_team_delete_message.replace("{0}", chatApplication.targetFullname));
+      uiChatPopupWindow.show("team-delete-window",true, true);
+    });
+
+    $("#team-delete-button-ok").on("click", function() {
+      uiChatPopupWindow.hide("team-delete-window",true);
+      jqchat("#team-delete-window-chat-name").empty();
+      chatApplication.deleteTeamRoom(function() {
+        chatApplication.chatRoom.emptyChatZone();
+        jqchat("#users-online-team-"+chatApplication.room).hide();
+        chatApplication.room="";
+        chatApplication.chatRoom.id="";
+      })
+    });
+
+    $("#team-delete-button-cancel").on("click", function() {
+      uiChatPopupWindow.hide("team-delete-window",true);
+      jqchat("#team-delete-window-chat-name").empty();
+    });
+
     $(".msButtonRecord").on("click", function() {
       var $icon = $(this).children("i");
 
@@ -1148,6 +1170,7 @@ function ChatApplication() {
   this.jzSaveWiki = "";
   this.jzUsers = "";
   this.jzDelete = "";
+  this.jzDeleteTeamRoom = "";
   this.jzEdit = "";
   this.jzSaveTeamRoom = "";
   this.userFilter = "";    //not set
@@ -1326,6 +1349,31 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
 
   });
 
+};
+
+/**
+ * Delete the selected team room
+ *
+ * @param callback
+ */
+ChatApplication.prototype.deleteTeamRoom = function(callback) {
+  jqchat.ajax({
+    url: this.jzDeleteTeamRoom,
+    data: {"room": this.room,
+      "user": this.username,
+      "token": this.token,
+      "dbName": this.dbName
+    },
+    success:function(response){
+      if (typeof callback === "function") {
+        callback();
+      }
+    },
+    error:function (xhr, status, error){
+      console.log(chatBundleData.exoplatform_chat_team_delete_error + " (" + error + ")");
+      bootbox.alertError(chatBundleData.exoplatform_chat_team_delete_error);
+    }
+  });
 };
 
 /**
@@ -1754,8 +1802,6 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 };
 
-
-
 /**
  * Show rooms : convert json to html
  * @param rooms : a json object
@@ -1766,6 +1812,16 @@ ChatApplication.prototype.showRooms = function(rooms) {
   var out = '<table class="table list-rooms">';
   var classArrow;
   var totalFavorites = 0, totalPeople = 0, totalSpaces = 0, totalTeams = 0;
+
+  // If the selected room is not present in the room list we cleanup the Chat Zone
+  // and stop refreshing the Chat data
+  if (rooms({room:chatApplication.room}).count()===0) {
+    chatApplication.chatRoom.clearInterval();
+    chatApplication.room="";
+    chatApplication.targetUser="";
+    chatApplication.chatRoom.emptyChatZone();
+  }
+
   /**
    * FAVORITES
    */
@@ -2114,6 +2170,7 @@ ChatApplication.prototype.activateRoomButtons = function() {
   var $msgEmoticons = jqchat(".msg-emoticons");
   var $meetingActionToggle = jqchat(".meeting-action-toggle");
   $msg.removeAttr("disabled");
+  jqchat("#chat-record-button").show();
   $msButtonRecord.removeAttr(("disabled"));
   $msButtonRecord.attr("data-toggle","tooltip");
   $msgEmoticons.parent().removeClass("disabled");

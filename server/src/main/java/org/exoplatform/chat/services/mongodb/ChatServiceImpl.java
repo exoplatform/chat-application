@@ -43,6 +43,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,6 +63,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   private long readMillis;
   private int readTotalJson, readTotalTxt;
+
+  @Inject
+  private UserService userService;
 
   public ChatServiceImpl()
   {
@@ -133,6 +137,65 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
       coll.save(dbo, WriteConcern.NONE);
     }
+  }
+
+  public RoomBean getTeamRoomById(String roomId, String dbName) {
+    if (roomId == null || roomId.isEmpty())
+      return null;
+    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject qRoom = new BasicDBObject();
+    qRoom.put("_id", roomId);
+    qRoom.put("type", TYPE_ROOM_TEAM);
+    DBObject dbRoom = cRooms.findOne(qRoom);
+    if (dbRoom == null)
+      return null;
+    RoomBean room = new RoomBean();
+    room.setRoom((String) dbRoom.get("_id"));
+    room.setTeam(true);
+    room.setFullname((String) dbRoom.get("team"));
+    room.setUser((String) dbRoom.get("user"));
+    long timestamp = -1;
+    if (dbRoom.containsField("timestamp")) {
+      room.setTimestamp((Long) dbRoom.get("timestamp"));
+    }
+    return room;
+  }
+
+  public void deleteTeamRoom(String roomId, String user, String dbName) {
+    RoomBean room = getTeamRoomById(roomId, dbName);
+    if (room == null) {
+      LOG.warning("No room with id [" + roomId + "] available to delete");
+      return;
+    }
+    if (!room.isTeam()) {
+      LOG.warning("The room with id [" + roomId + "] is not a Team Room so it won't be deleted.");
+      return;
+    }
+    LOG.info("Deleting Team Chat Room [" + room.getFullname() + "] (id:" + room.getRoom() + ")");
+    // Check if the requester is the owner of the Team Chat Room
+    if (user == null || room.getUser().equals(user) == false) {
+      LOG.warning("The user [" + user + "] is not the owner of the room with id [" + roomId + "] so this room won't be deleted.");
+      return;
+    }
+
+    // Delete all message of the Team Chat Room
+    DBCollection cMessages = db(dbName).getCollection(M_ROOM_PREFIX + TYPE_ROOM_TEAM);
+    BasicDBObject qMessages = new BasicDBObject();
+    qMessages.put("roomId", roomId);
+    cMessages.remove(qMessages, WriteConcern.ACKNOWLEDGED);
+    LOG.info("Messages of room [" + roomId + "] deleted");
+
+    // Remove the Team Chat Room from all the users
+    List<String> users = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
+    userService.removeTeamUsers(roomId, users, dbName);
+    LOG.info("All users removed from the team room [" + roomId + "]");
+
+    // Delete the Team Chat Room
+    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject qRoom = new BasicDBObject();
+    qRoom.put("_id", roomId);
+    cRooms.remove(qRoom, WriteConcern.ACKNOWLEDGED);
+    LOG.info("Team room [" + roomId + "] deleted");
   }
 
   public void edit(String room, String user, String messageId, String message, String dbName)
