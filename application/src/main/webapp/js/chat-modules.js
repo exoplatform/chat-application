@@ -72,7 +72,11 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
       thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
-      thiss.refreshChat(true);
+      thiss.refreshChat(true, function() {
+        // always scroll to the last message when loading a chat room
+        var $chats = jqchat("#chats");
+        $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+      });
     }
   });
 
@@ -1141,7 +1145,8 @@ function maximizeMiniChat() {
   $miniChat.find(".notify-info").hide();
   $history.show("fast");
   $miniChat.find(".message").show("fast");
-  $history.animate({ scrollTop: 20000 }, 'fast');
+  // scroll to the last message
+  $history.scrollTop($history.prop('scrollHeight') - $history.innerHeight());
 
   $miniChat.show("fast", function() {
     $miniChat.find(".message-input").focus();
@@ -1245,9 +1250,19 @@ function showMiniChatPopup(room, type) {
       });
       miniChats[index].onShowMessages(function(out) {
         var $history = this.miniChat.find(".history");
+
+        // check if scroll was at max before the new message
+        var scrollTopMax = $history.prop('scrollHeight') - $history.innerHeight();
+        var scrollAtMax = ($history.scrollTop() == scrollTopMax);
+
         $history.html('<span>'+out+'</span>');
         var totalMsgs = jqchat(".msUserCont", $history).length;
-        $history.animate({ scrollTop: 20000 }, 'fast');
+
+        // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
+        if (scrollAtMax) {
+          var newScrollTopMax = $history.prop('scrollHeight') - $history.innerHeight();
+          $history.scrollTop(newScrollTopMax);
+        }
 
         if ($history.is(":hidden")) {
           var unreadTotal = totalMsgs - $miniChat.attr("readTotal");
