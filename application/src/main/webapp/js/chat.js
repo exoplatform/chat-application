@@ -2105,9 +2105,16 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
 ChatApplication.prototype.onShowMessagesCallback = function(out) {
 
   var $chats = jqchat("#chats");
-  $chats.html('<span>'+out+'</span>');
+  // check if scroll was at max before the new message
+  var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
+  var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
+  $chats.html('<span>' + out + '</span>');
   sh_highlightDocument();
-  $chats.scrollTop(20000);
+  // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
+  if (scrollAtMax) {
+    var newScrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
+    $chats.scrollTop(newScrollTopMax);
+  }
 
   jqchat(".msg-text").mouseover(function() {
     if (jqchat(".msg-actions", this).children().length > 0) {
