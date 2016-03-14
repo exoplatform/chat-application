@@ -2527,18 +2527,6 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $uiIconChatFavorite.css("display", "none");
   });
 
-
-  jqchat('.room-link').on("click", function() {
-    thiss.targetUser = jqchat(this).attr("user-data");
-    thiss.targetFullname = jqchat(this).attr("data-fullname");
-    thiss.loadRoom();
-    if (thiss.isMobileView()) {
-      jqchat(".uiRightContainerArea").css("display", "block");
-      jqchat(".uiLeftContainerArea").css("display", "none");
-//      jqchat(".room-name").html(thiss.targetFullname);
-    }
-  });
-
   jqchat('.user-status').on("click", function() {
     var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
