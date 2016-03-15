@@ -148,6 +148,15 @@ var chatApplication = new ChatApplication();
         chatApplication.sendMessage(msg);
 
       }
+      // UP Arrow
+      if (event.which === 38 && msg.length === 0) {
+        var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+        var $uimsgdata = $uimsg.find(".msg-data");
+        if ($uimsgdata.length === 1) {
+          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+        }
+      }
+
       if ( keydown === 18 ) {
         keydown = -1;
       }
@@ -995,6 +1004,7 @@ var chatApplication = new ChatApplication();
 
     $(".edit-modal-cancel").on("click", function() {
       $('.edit-modal').modal('hide');
+      jqchat("#msg").focus();
       $("#edit-modal-area").val("");
     });
 
@@ -1007,12 +1017,12 @@ var chatApplication = new ChatApplication();
 
       chatApplication.editMessage(id, message, function() {
         chatApplication.chatRoom.refreshChat(true);
+        jqchat("#msg").focus();
       });
 
     });
 
     $('#edit-modal-area').keydown(function(event) {
-  //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
         keydownModal = 18;
       }
@@ -1021,19 +1031,17 @@ var chatApplication = new ChatApplication();
     $('#edit-modal-area').keyup(function(event) {
       var id = $(this).attr("data-id");
       var msg = $(this).val();
-  //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
       if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
-        //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
         if(!msg)
         {
           return;
         }
-  //      console.log("*"+msg+"*");
         $(this).val("");
         $('.edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
           chatApplication.chatRoom.refreshChat(true);
+          jqchat("#msg").focus();
         });
 
       }
@@ -1042,6 +1050,11 @@ var chatApplication = new ChatApplication();
       }
       if ( event.which === 13 && msg.length === 1) {
         $(this).val('');
+      }
+      // press Escape
+      if (event.which === 27) {
+        $('.edit-modal').modal('hide');
+        jqchat("#msg").focus();
       }
 
     });
@@ -1260,6 +1273,29 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
   });
 
 };
+
+/**
+ * Edit a chat message in a popup
+ * @param msgDataId the data-id value of the message
+ * @param msgData the raw text of the message to edit
+ */
+ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
+  if (msgDataId === null || msgDataId === undefined || msgDataId === "") {
+    return;
+  }
+  if (msgData === null || msgData === undefined || msgData === "") {
+    return;
+  }
+
+  msgHtml = msgData.replace(eval("/<br>/g"), "\n");
+
+  var $uitextarea = jqchat("#edit-modal-area");
+  $uitextarea.val(msgHtml);
+  $uitextarea.attr("data-id", msgDataId);
+  jqchat('.edit-modal').modal({"backdrop": false});
+  chatApplication.setModalToCenter('.edit-modal');
+  $uitextarea.focus();
+}
 
 /**
  * Delete the message with id in the room
@@ -2149,16 +2185,8 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   });
 
   jqchat(".msg-action-edit").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgId = $uimsg.attr("data-id");
-    var msgHtml = $uimsg.html();
-    msgHtml = msgHtml.replace(eval("/<br>/g"), "\n");
-
-    jqchat("#edit-modal-area").val(msgHtml);
-    jqchat("#edit-modal-area").attr("data-id", msgId);
-    jqchat('.edit-modal').modal({"backdrop": false});
-    chatApplication.setModalToCenter('.edit-modal');
-
+    var $uimsgdata = jqchat(this).siblings(".msg-data");
+    chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
   });
 
   jqchat(".msg-action-savenotes").on("click", function() {

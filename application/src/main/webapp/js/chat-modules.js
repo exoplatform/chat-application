@@ -348,6 +348,15 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
 
 };
 
+/**
+ * Find and return from the selected chat the last message of the current user.
+ * @return an DOM node
+ */
+ChatRoom.prototype.getUserLastMessage = function() {
+  var $lastMessage = jqchat(".msMy").find(".msg-text").last();
+  return $lastMessage;
+}
+
 
 /**
  * Show Messages (json to html)
@@ -426,7 +435,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow rowOdd odd'>";
+            // msMy is used to identify group of messages of the current user
+            out += "  <div class='msRow rowOdd odd msMy'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
