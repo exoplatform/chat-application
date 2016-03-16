@@ -1147,7 +1147,7 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml += "</div>";
             innerMiniChatHtml += "<div class='history uiContentBox'>";
             innerMiniChatHtml += "</div>";
-            innerMiniChatHtml += "<div class='message footer'><input type='text' class='message-input' autocomplete='off' name='text'></div>"
+            innerMiniChatHtml += "<div class='message footer'><textarea class='message-input' autocomplete='off' name='text'></textarea></div>"
             $obj.html(innerMiniChatHtml);
 
             // If this is "refresh page" case, show minichat (if it shown before)
@@ -1249,7 +1249,18 @@ function showMiniChatPopup(room, type) {
       var jzChatUpdateUnreadMessages = chatServerUrl+"/updateUnreadMessages";
       if (miniChats[index] === undefined) {
         miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", 3000, false, dbName);
-
+        $miniChat.find(".message-input").keydown(function(event) {
+          //prevent the default behavior of the enter button
+          if ( event.which == 13 ) {
+            event.preventDefault();
+          }
+          //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+          if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+            this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+            var textarea =  jqchat(this);
+            jqchat(this).scrollTop(textarea[0].scrollHeight - textarea.height());
+          }
+        });
         $miniChat.find(".message-input").keyup(function(event) {
           var msg = jqchat(this).val();
 //        console.log("keyup : "+event.which + ";"+msg.length);
@@ -1257,9 +1268,9 @@ function showMiniChatPopup(room, type) {
 
           if ( event.which === 13 && msg.length>=1) {
             //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-            if(!msg)
+            if(!msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey))
             {
-              return;
+              return false;
             }
             //      console.log("*"+msg+"*");
             jqchat(this).val("");
