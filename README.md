@@ -55,6 +55,56 @@ with {host} and {port} are respectively hostname/IP and port of mongoDB server; 
 
 with {host} and {port} are respectively hostname/IP and port of mongoDB server; {username} and {password} are required if authentication is enabled for your database; {dbName} is name of database that is configured in chat.properties.
 
+Testing with Docker
+===============
+
+You can use Docker to develop and test eXo Chat add-on in an easy way.
+We provide a fully functional Docker Compose file to start eXo Trial with a persistent volume (to keep data across test sessions).
+
+Create a Docker volume
+-------------------
+This step is only needed once.
+
+    docker volume create plf_chat_test
+
+Build the project
+-------------------
+From the home of the source project :
+
+    # To build everything
+    mvn clean package
+
+    # To only build the add-on package and his required modules
+    mvn -am -pl :exo-addons-chat-extension-pkg clean package
+
+(!) you need to execute this step each time you changed the add-on source code and want to redeploy it.
+
+Start eXo Platform
+-------------------
+
+Simply use docker-compose to start eXo Trial and the chat add-on
+
+    docker-compose up -d
+
+(!) you need to wait eXo Platform to be started and if you want to tail the eXo Platform logs just do in another terminal :
+
+    docker exec exo_chat tail -f /var/log/exo/platform.log
+
+When you see the `Server startup in xxxxxxx ms` in your logs, it mean that you can use your eXo Platform : http://localhost/
+
+Code and test the add-on
+-------------------
+
+You have made some changes on the add-on code and you want to test it without restarting eXo Platform ? quite simple ...
+
+What you have to do is :
+
+    # rebuild your add-on package
+    mvn -am -pl :exo-addons-chat-extension-pkg clean package
+
+    # use the add-on manager to redeploy the newly build version
+    docker exec exo_chat /opt/exo/current/addon install --catalog=file:///etc/exo/catalog.json  exo-chat:1.3.x-SNAPSHOT --force --batch-mode
+
 
 License
 ===============
