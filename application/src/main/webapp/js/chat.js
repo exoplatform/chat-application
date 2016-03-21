@@ -1045,6 +1045,16 @@ var chatApplication = new ChatApplication();
     });
 
     $('#edit-modal-area').keydown(function(event) {
+      //prevent the default behavior of the enter button
+      if ( event.which == 13 ) {
+        event.preventDefault();
+      }
+      //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+      if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+        this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+        var textarea =  jqchat(this);
+        jqchat(this).scrollTop(textarea[0].scrollHeight - textarea.height());
+      }
       if ( event.which == 18 ) {
         keydownModal = 18;
       }
@@ -1054,9 +1064,9 @@ var chatApplication = new ChatApplication();
       var id = $(this).attr("data-id");
       var msg = $(this).val();
       if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
-        if(!msg)
+        if( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) )
         {
-          return;
+          return false;
         }
         $(this).val("");
         $('.edit-modal').modal('hide');
