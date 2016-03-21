@@ -19,7 +19,14 @@
 
 package org.exoplatform.chat.services.mongodb;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.logging.Logger;
+
 import com.mongodb.*;
+
+import org.exoplatform.chat.utils.PropertyManager;
+
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
@@ -28,21 +35,16 @@ import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
-import org.exoplatform.chat.utils.PropertyManager;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.logging.Logger;
 
 public class MongoBootstrap
 {
   private static MongodExecutable mongodExe;
   private static MongodProcess mongod;
-  private Mongo m;
+  private MongoClient m;
   private DB db;
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
 
-  private Mongo mongo()
+  private MongoClient mongo()
   {
     if (m==null)
     {
@@ -56,14 +58,14 @@ public class MongoBootstrap
           setupEmbedMongo();
         }
 
-        MongoOptions options = new MongoOptions();
-        options.connectionsPerHost = 200;
-        options.connectTimeout = 60000;
-        options.threadsAllowedToBlockForConnectionMultiplier = 10;
-        options.autoConnectRetry = true;
+        MongoClientOptions options = MongoClientOptions.builder()
+                .connectionsPerHost(200)
+                .connectTimeout(60000)
+                .threadsAllowedToBlockForConnectionMultiplier(10)
+                .build();
         String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
         int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
-        m = new Mongo(new ServerAddress(host, port), options);
+        m = new MongoClient(new ServerAddress(host, port), options);
         m.setWriteConcern(WriteConcern.SAFE);
       }
       catch (UnknownHostException e)
@@ -118,11 +120,16 @@ public class MongoBootstrap
         db = mongo().getDB(dbName);
       else
         db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
+
       boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION));
-      if (authenticate)
-      {
-        db.authenticate(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER), PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD).toCharArray());
+      if (authenticate) {
+        mongo().getCredentialsList().clear();
+        mongo().getCredentialsList().add(MongoCredential.createCredential(
+                PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER),
+                db.getName(),
+                PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD).toCharArray()));
       }
+
       initCollection("notifications");
       initCollection(ChatServiceImpl.M_ROOMS_COLLECTION);
       initCollection("users");
@@ -184,8 +191,8 @@ public class MongoBootstrap
     notUnique.put("background", true);
 
     DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+type);
-    collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
-    collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
+    collr.createIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOM_PREFIX + type));
+    collr.createIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName + "." + ChatServiceImpl.M_ROOM_PREFIX + type));
     LOG.info("##### room index in "+ChatServiceImpl.M_ROOM_PREFIX+type);
   }
 
@@ -202,29 +209,29 @@ public class MongoBootstrap
 
     DBCollection notifications = getDB().getCollection("notifications");
     notifications.dropIndexes();
-    notifications.createIndex(new BasicDBObject("user", 1), notUnique.append("name", "user_1").append("ns", dbName+".notifications"));
-    notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", dbName+".notifications"));
+    notifications.createIndex(new BasicDBObject("user", 1), notUnique.append("name", "user_1").append("ns", dbName + ".notifications"));
+    notifications.createIndex(new BasicDBObject("isRead", 1), notUnique.append("name", "isRead_1").append("ns", dbName + ".notifications"));
     BasicDBObject index = new BasicDBObject();
     index.put("user", 1);
     index.put("categoryId", 1);
     index.put("category", 1);
     index.put("type", 1);
     // index.put("isRead", 1);
-    notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", dbName+".notifications"));
+    notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", dbName + ".notifications"));
     LOG.info("### notifications indexes in "+getDB().getName());
 
     DBCollection rooms = getDB().getCollection(ChatServiceImpl.M_ROOMS_COLLECTION);
     rooms.dropIndexes();
-    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName+"."+ChatServiceImpl.M_ROOMS_COLLECTION));
-    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName+"."+ChatServiceImpl.M_ROOMS_COLLECTION));
-    rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName+"."+ChatServiceImpl.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
     LOG.info("### rooms indexes in "+getDB().getName());
 
     String[] roomTypes = {ChatServiceImpl.TYPE_ROOM_USER, ChatServiceImpl.TYPE_ROOM_SPACE, ChatServiceImpl.TYPE_ROOM_TEAM, ChatServiceImpl.TYPE_ROOM_EXTERNAL};
     for (String type : roomTypes) {
       DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+type);
-      collr.ensureIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
-      collr.ensureIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
+      collr.createIndex(new BasicDBObject("timestamp", 1), notUnique.append("name", "timestamp_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOM_PREFIX + type));
+      collr.createIndex(new BasicDBObject("timestamp", -1), notUnique.append("name", "timestamp_m1").append("ns", dbName + "." + ChatServiceImpl.M_ROOM_PREFIX + type));
       LOG.info("##### room index in "+type);
     }
 

@@ -135,7 +135,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       dbo.put("message", TYPE_DELETED);
       dbo.put("type", TYPE_DELETED);
       dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.NONE);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
     }
   }
 
@@ -222,7 +222,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       dbo.put("message", message);
       dbo.put("type", TYPE_EDITED);
       dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.NONE);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
     }
   }
 
@@ -393,7 +393,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       DBObject dbo = cursor.next();
       dbo.put("timestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.NONE);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
     }
 
   }
@@ -520,7 +520,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     return creator;
   }
-  
+
   public void setRoomName(String room, String name, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
 
@@ -532,7 +532,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       DBObject dbo = cursor.next();
       dbo.put("team", name);
-      coll.save(dbo, WriteConcern.NONE);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
     }
   }
 
