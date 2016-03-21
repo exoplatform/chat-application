@@ -246,3 +246,11 @@ function calcMD5(str)
   return rhex(a) + rhex(b) + rhex(c) + rhex(d);
 }
 
+/**
+ * Take a string and replace some html entities by their corresponding characters
+ * @param str the string to decode
+ * @returns the decoded string
+ */
+function decodeRoomName(str) {
+  return str.replace(/&amp;/gi, '&').replace(/&gt;/gi, '>').replace(/&lt;/gi, '<');
+}

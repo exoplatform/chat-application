@@ -2053,7 +2053,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     out += '</td>';
     out +=  '<td>';
     if (room.isActive=="true") {
-      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+room.escapedFullname+'</span>';
+      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+ decodeRoomName(room.escapedFullname) +'</span>';
     } else {
       out += '<span class="room-inactive muted">'+room.user+'</span>';
     }
