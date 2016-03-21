@@ -1,0 +1,19 @@
+version: '2'
+services:
+  exo:
+    image: "exoplatform/exo-trial:develop"
+    container_name: "exo_chat"
+    environment:
+      - EXO_ADDONS_LIST="exo-chat:1.3.x-SNAPSHOT"
+      - EXO_ADDONS_CATALOG_URL="file:///etc/exo/catalog.json"
+    ports:
+      - "80:8080"
+      - "27017:27017"
+    volumes:
+      - ./catalog.json:/etc/exo/catalog.json:ro
+      - ./exo-addons-chat-extension-pkg/target/exo-addons-chat-extension-pkg-1.3.x-SNAPSHOT.zip:/etc/exo/exo-addons-chat-extension-pkg-1.3.x-SNAPSHOT.zip:ro
+      - srv:/srv
+volumes:
+  srv:
+    external:
+      name: plf_chat_test

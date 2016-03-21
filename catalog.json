@@ -1,0 +1,19 @@
+[
+  {
+    "id": "exo-chat",
+    "version": "1.3.x-SNAPSHOT",
+    "unstable": true,
+    "name": "eXo Chat",
+    "description": "Add instant messaging capabilities to your eXo Platform intranet",
+    "sourceUrl": "https://github.com/exo-addons/chat-application",
+    "documentationUrl": "http://community.exoplatform.com/portal/intranet/addon-detail?content-id=/repository/collaboration/sites/intranet/web%20contents/Contributions/chat-application",
+    "downloadUrl": "file:///etc/exo/exo-addons-chat-extension-pkg-1.3.x-SNAPSHOT.zip",
+    "vendor": "eXo",
+    "license": "LGPLv3",
+    "licenseUrl": "https://www.gnu.org/licenses/lgpl-3.0.txt",
+    "mustAcceptLicense": false,
+    "supportedDistributions": "enterprise",
+    "supportedApplicationServers": "tomcat,jboss",
+    "compatibility": "[4.3.0,)"
+  }
+]
