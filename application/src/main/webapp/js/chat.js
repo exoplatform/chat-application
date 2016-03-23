@@ -878,22 +878,38 @@ var chatApplication = new ChatApplication();
       }
     }
 
+    /**
+     * Add a user mention html component in the uiContainer element.
+     * @param uiContainer the html element to insert the mention in
+     * @param username the username (invisible)
+     * @param fullName the full name (visible)
+     * @param removable is the mention html component removable (it add a clickable X in the component) (default is true)
+       */
+    function addTeamUserMention(uiContainer, username, fullName, removable) {
+      if (typeof removable === 'undefined') removable = true;
+      var html = "<span class='uiMention'><a href='javascript:void(0)' class='team-user-label' data-name='"+username+"'>"+fullName;
+      if (removable) {
+        html += "&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i>";
+      }
+      html +="<a/></span>";
+      var $__return = uiContainer.append(html);
+
+      if (removable) {
+        $__return.find(".team-user-remove").on("click", function() {
+          $(this).parents('.uiMention').remove();
+        });
+      }
+    }
+
     function addTeamUserLabel(name, fullname) {
       var $usersList = $('.team-users-list');
-      var html = $usersList.html();
-      html += "<span class='uiMention'><a href='javascript:void(0)' class='team-user-label' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i><a/></span>";
-      $usersList.html(html);
+      addTeamUserMention($usersList, name, fullname, true);
       var $teamAddUser = $('#team-add-user');
       $teamAddUser.val("");
       $teamAddUser.focus();
       var $userResults = $(".team-users-results");
       $userResults.css("display", "none");
       $userResults.html("");
-
-      $(".team-user-remove").on("click", function() {
-        $(this).parents('.uiMention').remove();
-      });
-
     }
 
     function addTaskUserLabel(name, fullname) {
@@ -920,34 +936,52 @@ var chatApplication = new ChatApplication();
       return tmp.textContent||tmp.innerText;
     }
 
-
-
-    $(".team-edit-button").on("click", function() {
-      var $userResults = $(".team-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
-      var $uitext = $("#team-modal-name");
-      $uitext.val(chatApplication.targetFullname);
-      $uitext.attr("data-id", chatApplication.targetUser);
+    $("#team-edit-button").on("click", function() {
 
       chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-        $(".team-user-label").parent().remove();
-
         var users = TAFFY(jsonData.users);
         var users = users();
-        users.order("fullname").each(function (user, number) {
-          if (user.name !== chatApplication.username) {
-            addTeamUserLabel(user.name, user.fullname);
-          }
-        });
 
-        uiChatPopupWindow.show("team-modal-form", true);
-        $uitext.focus();
+        // If the current user is the room owner we open the Settings Edit popup
+        // else we open the Settings View popup
+        if (chatApplication.username === chatApplication.chatRoom.owner) {
+          var $userResults = $(".team-users-results");
+          $userResults.css("display", "none");
+          $userResults.html("");
+          var $uitext = $("#team-modal-name");
+          $uitext.val(chatApplication.targetFullname);
+          $uitext.attr("data-id", chatApplication.targetUser);
+          $(".team-users-list").empty();
+          users.order("fullname").each(function (user, number) {
+            if (user.name !== chatApplication.username) {
+              addTeamUserLabel(user.name, user.fullname);
+            }
+          });
 
-        // Set form position to screen center
-        chatApplication.setModalToCenter('.team-modal');
+          uiChatPopupWindow.show("team-modal-form", true);
+          $uitext.focus();
+
+          // Set form position to screen center
+          chatApplication.setModalToCenter('.team-modal');
+        } else {
+          var $uiUserList = $("#team-settings-users-list");
+          var $uiUserOwner = $("#team-settings-user-owner");
+          $uiUserList.empty();
+          $uiUserOwner.empty();
+
+          users.order("fullname").each(function (user, number) {
+            if (user.name !== chatApplication.chatRoom.owner) {
+              addTeamUserMention($uiUserList, user.name, user.fullname, false);
+            } else {
+              addTeamUserMention($uiUserOwner, user.name, user.fullname, false);
+            }
+          });
+
+          // Center the popup + show it
+          chatApplication.setModalToCenter('.team-modal');
+          uiChatPopupWindow.show("team-settings-modal-view", true);
+        }
       });
-
     });
 
     $("#team-delete-button").on("click", function(e) {
@@ -969,6 +1003,10 @@ var chatApplication = new ChatApplication();
     $("#team-delete-button-cancel").on("click", function() {
       uiChatPopupWindow.hide("team-delete-window",true);
       jqchat("#team-delete-window-chat-name").empty();
+    });
+
+    $(".team-settings-modal-close").on("click", function() {
+      uiChatPopupWindow.hide("team-settings-modal-view", true);
     });
 
     $(".msButtonRecord").on("click", function() {
@@ -2088,6 +2126,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
  */
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
+  this.chatRoom.owner = "";
   if (this.targetUser!==undefined) {
     jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {
@@ -2148,15 +2187,18 @@ ChatApplication.prototype.loadRoom = function() {
         success: function(response){
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
+          this.chatRoom.owner = creator;
+          jqchat(".team-button").css("display", "block");
           if (creator === this.username) {
-            jqchat(".team-button").css("display", "block");
+            jqchat("#team-delete-button").show();
+          } else {
+            jqchat("#team-delete-button").hide();
           }
         },
         error: function(xhr, status, error){
           //console.log("ERROR::"+xhr.responseText);
         }
       });
-//      jqchat(".meeting-actions").css("display", "inline-block");
       jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();

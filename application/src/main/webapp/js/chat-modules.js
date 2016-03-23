@@ -25,6 +25,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.chatIntervalChat = chatIntervalChat;
   this.username = "";
   this.token = "";
+  this.owner = "";
   this.targetUser = "";
   this.targetFullname = "";
   this.isPublic = isPublic;
@@ -49,6 +50,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
   this.dbName = dbName;
+  this.owner = "";
 
   var thiss = this;
   snack.request({

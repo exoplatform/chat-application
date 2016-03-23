@@ -85,7 +85,7 @@
         <span id="chat-team-button" class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div id="team-edit-button" class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.edit}"><i class="uiIconChatEdit uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.edit}</div>
+              <div id="team-edit-button" class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.settings.button.tip}"><i class="uiIconSettings uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.team.settings.button}</div>
               <div id="team-delete-button" class="uiActionWithLabel team-delete-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}"><i class="uiIconDelete uiIconChatLightGray"></i></div>
             </li>
           </ul>
@@ -267,7 +267,7 @@
 <div class="uiPopup hide edit-modal" style="top:100px;">
   <div class="popupHeader clearfix">
 	<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
-	<span class="PopupTitle popupTitle">&{exoplatform.chat.edit}</span>
+	<span class="PopupTitle popupTitle">&{exoplatform.chat.settings}</span>
   </div>
 
   <div class="PopupContent popupContent">
@@ -285,7 +285,7 @@
 <div id="team-modal-form" class="uiPopup hide team-modal">
   <div class="popupHeader clearfix">
     <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
-    <span class="PopupTitle popupTitle">&{exoplatform.chat.team}</span>
+    <span class="PopupTitle popupTitle">&{exoplatform.chat.team.settings.title}</span>
   </div>
 
   <div class="PopupContent popupContent">
@@ -311,6 +311,30 @@
   </div>
   <span class="uiIconResize pull-right uiIconLightGray"></span>
 </div>
+<!-- ################################## -->
+<!-- ### TEAM SETTINGS VIEW MODAL ##### -->
+<!-- ################################## -->
+<div id="team-settings-modal-view" class="uiPopup hide team-settings-modal">
+  <div class="popupHeader clearfix">
+    <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+    <span class="PopupTitle popupTitle">&{exoplatform.chat.team.settings.title}</span>
+  </div>
+  <div class="PopupContent popupContent">
+    <div class="resizable">
+      <div class="modal-body">
+        <label>&{exoplatform.chat.team.settings.owner}</label>
+        <div id="team-settings-user-owner"></div>
+        <label>&{exoplatform.chat.team.settings.members}</label>
+        <div id="team-settings-users-list"></div>
+      </div>
+    </div>
+    <div class="uiAction uiActionBorder">
+      <a href="#" class="btn team-settings-modal-close">&{exoplatform.chat.close}</a>
+    </div>
+  </div>
+  <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+
 <!-- ################################## -->
 <!-- ######### TEAM DELETE MODAL ###### -->
 <!-- ################################## -->
