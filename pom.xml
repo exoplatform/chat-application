@@ -33,7 +33,7 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.gatein.portal.version>4.3.x-PLF-SNAPSHOT</org.gatein.portal.version>
+    <org.gatein.portal.version>4.3.0-PLF</org.gatein.portal.version>
     <org.exoplatform.ecms.version>4.3.0</org.exoplatform.ecms.version>
     <org.exoplatform.platform.version>4.3.0</org.exoplatform.platform.version>
     <commons-lang3.version>3.2</commons-lang3.version>
