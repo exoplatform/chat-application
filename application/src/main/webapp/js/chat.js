@@ -229,7 +229,7 @@ var chatApplication = new ChatApplication();
             var dropzone = '<div class="progressBar" id="dropzone">'
                             +'<div class="progress">'
                               +'<div class="bar" style="width: 0.0%;"></div>'
-                              +'<div class="label"><div class="label-inner">'+chatBundleData.exoplatform_chat_file_drop+'</div></div>'
+                              +'<div class="label"><div class="label-inner">'+chatBundleData["exoplatform.chat.file.drop"]+'</div></div>'
                             +'</div>'
                           +'</div>';
 
@@ -246,13 +246,13 @@ var chatApplication = new ChatApplication();
               error: function(err, file) {
                 switch(err) {
                   case 'BrowserNotSupported':
-                    alert(chatBundleData.exoplatform_chat_dnd_support);
+                    alert(chatBundleData["exoplatform.chat.dnd.support"]);
                     break;
                   case 'TooManyFiles':
                     // user uploaded more than 'maxfiles'
                     break;
                   case 'FileTooLarge':
-                    alert(chatBundleData.exoplatform_chat_dnd_filesize);
+                    alert(chatBundleData["exoplatform.chat.dnd.filesize"]);
                     // program encountered a file whose size is greater than 'maxfilesize'
                     // FileTooLarge also has access to the file which was too large
                     // use file.name to reference the filename of the culprit file
@@ -364,7 +364,7 @@ var chatApplication = new ChatApplication();
       // Validate url
       var isValid = /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(text);
       if (!isValid) {
-        bootbox.alertError(chatBundleData.exoplatform_chat_link_invalid_message, function (e) {
+        bootbox.alertError(chatBundleData["exoplatform.chat.link.invalid.message"], function (e) {
           e.stopPropagation();
           $("#share-link-text").select();
         });
@@ -548,7 +548,7 @@ var chatApplication = new ChatApplication();
 
       // Validate datetime
       if (!uiMiniCalendar.isDate(dueDate)) {
-        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function (e) {
+        bootbox.alertError(chatBundleData["exoplatform.chat.date.invalid.message"], function (e) {
           e.stopPropagation();
           $("#task-add-date").select();
         });
@@ -573,7 +573,7 @@ var chatApplication = new ChatApplication();
 
       if (selectedUsers === "") {
         if (username !== "") {
-          bootbox.alertError(chatBundleData.exoplatform_chat_task_invalidUser_message.replace("{0}", username), function (e) {
+          bootbox.alertError(chatBundleData["exoplatform.chat.task.invalidUser.message"].replace("{0}", username), function (e) {
             e.stopPropagation();
             $("#task-add-user").select();
           });
@@ -638,7 +638,7 @@ var chatApplication = new ChatApplication();
     function setMiniCalendarToDateField(dateFieldId) {
       var dateField = document.getElementById(dateFieldId);
       dateField.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData.exoplatform_chat_monthNames);
+        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
       };
       dateField.onkeyup=function(){
         uiMiniCalendar.show();
@@ -664,21 +664,21 @@ var chatApplication = new ChatApplication();
         return;
       }
       if (!uiMiniCalendar.isDate(startDate)) {
-        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function(e){
+        bootbox.alertError(chatBundleData["exoplatform.chat.date.invalid.message"], function(e){
           e.stopPropagation();
           $("#event-add-start-date").select();
         });
         return;
       }
       if (!uiMiniCalendar.isDate(endDate)) {
-        bootbox.alertError(chatBundleData.exoplatform_chat_date_invalid_message, function(e){
+        bootbox.alertError(chatBundleData["exoplatform.chat.date.invalid.message"], function(e){
           e.stopPropagation();
           $("#event-add-end-date").select();
         });
         return;
       }
       if (Date.parse(startDate)>Date.parse(endDate)) {
-          bootbox.alertError(chatBundleData.exoplatform_chat_compareddate_invalid_message, function(e){
+          bootbox.alertError(chatBundleData["exoplatform.chat.compareddate.invalid.message"], function(e){
             e.stopPropagation();
             $("#event-add-start-date").select();
           });
@@ -985,7 +985,7 @@ var chatApplication = new ChatApplication();
     });
 
     $("#team-delete-button").on("click", function(e) {
-      jqchat("#team-delete-window-chat-name").text(chatBundleData.exoplatform_chat_team_delete_message.replace("{0}", chatApplication.targetFullname));
+      jqchat("#team-delete-window-chat-name").text(chatBundleData["exoplatform.chat.team.delete.message"].replace("{0}", chatApplication.targetFullname));
       uiChatPopupWindow.show("team-delete-window",true, true);
     });
 
@@ -1299,7 +1299,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
 
       if (this.isPublic) {
         this.targetUser = this.SUPPORT_USER;
-        this.targetFullname = chatBundleData.exoplatform_chat_support_fullname;
+        this.targetFullname = chatBundleData["exoplatform.chat.support.fullname"];
       }
 
       this.loadRoom();
@@ -1418,8 +1418,8 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
       }
     },
     error:function (xhr, status, error){
-      console.log(chatBundleData.exoplatform_chat_team_delete_error + " (" + error + ")");
-      bootbox.alertError(chatBundleData.exoplatform_chat_team_delete_error);
+      console.log(chatBundleData["exoplatform.chat.team.delete.error"] + " (" + error + ")");
+      bootbox.alertError(chatBundleData["exoplatform.chat.team.delete.error"]);
     }
   });
 };
@@ -1805,8 +1805,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
               window.fluid.dockBadge = "";
             if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
               window.fluid.showGrowlNotification({
-                title: chatBundleData.exoplatform_chat_title,
-                description: chatBundleData.exoplatform_chat_new_messages,
+                title: chatBundleData["exoplatform.chat.title"],
+                description: chatBundleData["exoplatform.chat.new.messages"],
                 priority: 1,
                 sticky: false,
                 identifier: "messages"
@@ -1820,8 +1820,8 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
                 // 0 is PERMISSION_ALLOWED
                 var notification = window.webkitNotifications.createNotification(
                   '/chat/img/chat.png',
-                  chatBundleData.exoplatform_chat_title,
-                  chatBundleData.exoplatform_chat_new_messages
+                  chatBundleData["exoplatform.chat.title"],
+                  chatBundleData["exoplatform.chat.new.messages"]
                 );
 
                 notification.onclick = function () {
@@ -1875,9 +1875,9 @@ ChatApplication.prototype.showRooms = function(rooms) {
    */
   out += "<tr class='header-room accordion-heading header-favorites "+(this.showFavorites ? "open":"") + "'><td colspan='3' style='border-top: 0;'>";
   if (this.showFavorites) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
-  out += chatBundleData.exoplatform_chat_favorites;
+  out += chatBundleData["exoplatform.chat.favorites"];
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += '<span class="room-total total-favorites badgeDefault badgePrimary mini">' + chatBundleData.exoplatform_chat_no_favorite + '</span>';
+  out += '<span class="room-total total-favorites badgeDefault badgePrimary mini">' + chatBundleData["exoplatform.chat.no.favorite"] + '</span>';
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
@@ -1898,7 +1898,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsFavorites.count() === 0 && this.showFavorites) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_favorite + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.favorite"] + "</td></tr>";
   }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
@@ -1911,11 +1911,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
    */
   out += "<tr class='header-room accordion-heading header-people "+(this.showPeople ? "open":"") + "'><td colspan='3'>";
   if (this.showPeople) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
-  out += chatBundleData.exoplatform_chat_people;
+  out += chatBundleData["exoplatform.chat.people"];
   out += '<span class="room-total total-people badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_show_users + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.history"] + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.users"] + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -1940,7 +1940,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsPeople.count() === 0 && this.showPeople) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_connection + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.connection"] + "</td></tr>";
   }
 
   /**
@@ -1948,11 +1948,11 @@ ChatApplication.prototype.showRooms = function(rooms) {
    */
   out += "<tr class='header-room accordion-heading header-teams "+(this.showTeams ? "open":"") + "'><td colspan='3'>";
   if (this.showTeams) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
-  out += chatBundleData.exoplatform_chat_teams;
+  out += chatBundleData["exoplatform.chat.teams"];
   out += '<span class="room-total total-teams badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='actionIcon btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData.exoplatform_chat_create_team + "'><i class='uiIconChatSimplePlusMini uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-teams' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xTeamsHistory+"' data-type='team' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.show.history"] + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-add-actions' style='margin-right: 5px;'><li><div class='actionIcon btn-add-team' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.create.team"] + "'><i class='uiIconChatSimplePlusMini uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsTeams = rooms();
@@ -1977,7 +1977,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsTeams.count() === 0 && this.showTeams) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_team + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.team"] + "</td></tr>";
   }
 
   /**
@@ -1985,10 +1985,10 @@ ChatApplication.prototype.showRooms = function(rooms) {
    */
   out += "<tr class='header-room accordion-heading header-spaces "+(this.showSpaces ? "open":"") + "'><td colspan='3'>";
   if (this.showSpaces) classArrow="uiIconChatArrowDown uiIconChatLightGray"; else classArrow = "uiIconChatArrowRight uiIconChatLightGray";
-  out += chatBundleData.exoplatform_chat_spaces;
+  out += chatBundleData["exoplatform.chat.spaces"];
   out += '<span class="room-total total-spaces badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_show_history + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-spaces' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xSpacesHistory+"' data-type='space' href='javaScript:void(0)' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.show.history"] + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
@@ -2013,7 +2013,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsSpaces.count() === 0 && this.showSpaces) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData.exoplatform_chat_no_space + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.space"] + "</td></tr>";
   }
 
   out += '</table>';
@@ -2109,9 +2109,9 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       }
       out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
       if (room.isFavorite == "true") {
-        out += ' title="' + chatBundleData.exoplatform_chat_remove_favorites + '"';
+        out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"] + '"';
       } else {
-        out += ' title="' + chatBundleData.exoplatform_chat_add_favorites + '"';
+        out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"] + '"';
       }
       out+= '></i>';
     }
@@ -2381,7 +2381,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
                   from: chatApplication.username,
                   fullname: chatApplication.fullname
                 };
-                var msg = chatBundleData.exoplatform_chat_meeting_notes;
+                var msg = chatBundleData["exoplatform.chat.meeting.notes"];
 
                 chatApplication.chatRoom.sendMessage(msg, options, "true");
 
@@ -2536,7 +2536,7 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
     $icon.removeClass("uiIconChatRecordStop");
   }
 
-  var tooltipText = $icon.hasClass("uiIconChatRecordStart") ? chatBundleData.exoplatform_chat_meeting_start : chatBundleData.exoplatform_chat_meeting_stop;
+  var tooltipText = $icon.hasClass("uiIconChatRecordStart") ? chatBundleData["exoplatform.chat.meeting.start"] : chatBundleData["exoplatform.chat.meeting.stop"];
   $icon.parent().tooltip('hide')
     .attr('data-original-title', tooltipText)
     .tooltip('fixTitle');
@@ -2825,7 +2825,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
       }
 
       ts = Math.round(new Date().getTime() / 1000);
-      msg = chatBundleData.exoplatform_chat_call_terminated;
+      msg = chatBundleData["exoplatform.chat.call.terminated"];
       options.timestamp = ts;
       options.type = "call-off";
       sendMessageToServer = true;
@@ -2884,7 +2884,7 @@ ChatApplication.prototype.showErrorPanel = function() {
   this.hidePanels();
   //console.log("show-error-panel");
   var $chatErrorPanel = jqchat(".chat-error-panel");
-  $chatErrorPanel.html(chatBundleData.exoplatform_chat_panel_error1+"<br/><br/>"+chatBundleData.exoplatform_chat_panel_error2);
+  $chatErrorPanel.html(chatBundleData["exoplatform.chat.panel.error1"]+"<br/><br/>"+chatBundleData["exoplatform.chat.panel.error2"]);
   $chatErrorPanel.css("display", "block");
 };
 
@@ -2892,17 +2892,17 @@ ChatApplication.prototype.showLoginPanel = function() {
   this.hidePanels();
   //console.log("show-login-panel");
   var $chatLoginPanel = jqchat(".chat-login-panel");
-  $chatLoginPanel.html(chatBundleData.exoplatform_chat_panel_login1+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData.exoplatform_chat_panel_login2+"</a>");
+  $chatLoginPanel.html(chatBundleData["exoplatform.chat.panel.login1"]+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData["exoplatform.chat.panel.login2"]+"</a>");
   $chatLoginPanel.css("display", "block");
 };
 
 ChatApplication.prototype.showAboutPanel = function() {
   var about = "eXo Chat<br>";
-  about += "Version "+chatBundleData.version+"<br><br>";
-  about += chatBundleData.exoplatform_chat_designed+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
-  about += chatBundleData.exoplatform_chat_for+" <a href=\"http://www.exoplatform.com\" target=\"_blank\">eXo Platform 4</a><br><br>";
-  about += chatBundleData.exoplatform_chat_sources+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_blank\">https://github.com/exo-addons/chat-application</a>";
-  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData.exoplatform_chat_close+"</a>";
+  about += "Version "+chatBundleData["version"]+"<br><br>";
+  about += chatBundleData["exoplatform.chat.designed"]+" <a href=\"mailto:bpaillereau@exoplatform.com\">Benjamin Paillereau</a><br>";
+  about += chatBundleData["exoplatform.chat.for"]+" <a href=\"http://www.exoplatform.com\" target=\"_blank\">eXo Platform 4</a><br><br>";
+  about += chatBundleData["exoplatform.chat.sources"]+" <a href=\"https://github.com/exo-addons/chat-application\" target=\"_blank\">https://github.com/exo-addons/chat-application</a>";
+  about += "<br><br><a href=\"#\" id=\"about-close-btn\" >"+chatBundleData["exoplatform.chat.close"]+"</a>";
   this.hidePanels();
   var $chatAboutPanel = jqchat(".chat-about-panel");
   $chatAboutPanel.html(about);
@@ -2921,12 +2921,12 @@ ChatApplication.prototype.showDemoPanel = function() {
   this.hidePanels();
   //console.log("show-demo-panel");
   var $chatDemoPanel = jqchat(".chat-demo-panel");
-  var intro = chatBundleData.exoplatform_chat_panel_demo;
-  if (this.isPublic) intro = chatBundleData.exoplatform_chat_panel_public;
+  var intro = chatBundleData["exoplatform.chat.panel.demo"];
+  if (this.isPublic) intro = chatBundleData["exoplatform.chat.panel.public"];
   $chatDemoPanel.html(intro+"<br><br><div class='welcome-panel'>" +
-    "<br><br>"+chatBundleData.exoplatform_chat_display_name+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
-    "<br><br>"+chatBundleData.exoplatform_chat_email+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
-    "<br><a href='#' id='anonim-save'>"+chatBundleData.exoplatform_chat_save_profile+"</a>");
+    "<br><br>"+chatBundleData["exoplatform.chat.display.name"]+"&nbsp;&nbsp;<input type='text' id='anonim-name'>" +
+    "<br><br>"+chatBundleData["exoplatform.chat.email"]+"&nbsp;&nbsp;<input type='text' id='anonim-email'></div>" +
+    "<br><a href='#' id='anonim-save'>"+chatBundleData["exoplatform.chat.save.profile"]+"</a>");
   $chatDemoPanel.css("display", "block");
 
   jqchat("#anonim-save").on("click", function() {
@@ -3071,7 +3071,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
               chatMessage.token,
               chatMessage.targetUser,
               roomToCheck,
-              chatBundleData.exoplatform_chat_call_terminated,
+              chatBundleData["exoplatform.chat.call.terminated"],
               options,
               "true"
             );

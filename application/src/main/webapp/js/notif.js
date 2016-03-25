@@ -184,26 +184,26 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
                   html += "       <i class='uiIconChatCreateEvent uiIconChatLightGray'></i>";
                 } else if ("type-notes" === messageType) {
                   html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_notes_saved;
+                  content = chatBundleData["exoplatform.chat.notes.saved"];
                 } else if ("type-meeting-start" === messageType) {
                   html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_meeting_started;
+                  content = chatBundleData["exoplatform.chat.meeting.started"];
                 } else if ("type-meeting-stop" === messageType) {
                   html += "       <i class='uiIconChatMeeting uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_meeting_finished;
+                  content = chatBundleData["exoplatform.chat.meeting.finished"];
                 } else if ("type-add-team-user" === messageType) {
-                  content = chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                  content = chatBundleData["exoplatform.chat.team.msg.adduser"].replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
                 } else if ("type-remove-team-user" === messageType) {
-                  content = chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
+                  content = chatBundleData["exoplatform.chat.team.msg.removeuser"].replace("{0}", notif.options.fullname).replace("{1}", notif.options.users);
                 } else if ("call-join" === messageType) {
                   html += "       <i class='uiIconChatAddPeopleToMeeting uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_meeting_joined;
+                  content = chatBundleData["exoplatform.chat.meeting.joined"];
                 } else if ("call-on" === messageType) {
                   html += "       <i class='uiIconChatStartCall uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_meeting_started;
+                  content = chatBundleData["exoplatform.chat.meeting.started"];
                 } else if ("call-off" === messageType) {
                   html += "       <i class='uiIconChatFinishCall uiIconChatLightGray'></i>";
-                  content = chatBundleData.exoplatform_chat_meeting_finished;
+                  content = chatBundleData["exoplatform.chat.meeting.finished"];
                 }
                 content = "<a href='#'>" + content + "</a>";
               }
@@ -328,7 +328,7 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotification.css('display', 'none');
           var $chatNotificationsDetails = jqchat("#chat-notifications-details");
           $chatNotificationsDetails.css("display", "none");
-          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData.exoplatform_chat_loading+'</span>');
+          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData["exoplatform.chat.loading"]+'</span>');
           $chatNotificationsDetails.parent().removeClass("full-width");
           $chatNotificationsDetails.next().hide();
         }
@@ -520,7 +520,7 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
     var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
     var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
     var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
-    var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData.exoplatform_videocall_makeCall+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData.exoplatform_videocall_Call+'</a>';
+    var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData["exoplatform.videocall.makeCall"]+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData["exoplatform.videocall.Call"]+'</a>';
 
     // Position of chat button depend on weemo installation
     var $btnWeemoCall = jqchat(".weemoCallOverlay", $uiAction);

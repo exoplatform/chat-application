@@ -49,7 +49,7 @@
             this.months = monthNames.split(',');
             this.months.pop();
 
-            var weekdays = chatBundleData.exoplatform_chat_weekdays.split(',');
+            var weekdays = chatBundleData["exoplatform.chat.weekdays"].split(',');
             if (weekdays != null && typeof (weekdays) == "object") {
                 this.weekdays = weekdays;
             }

@@ -45,9 +45,8 @@ public class BundleService {
       for (String key:bundle.keySet())
       {
         String value = bundle.getString(key).replaceAll("\"", "\\\\\"");
-        String tkey = key.replaceAll("\\.", "_");
-        if (tkey.indexOf("exoplatform_")==0)
-          sb.append(", \""+tkey+"\":\""+value+"\"");
+        if (key.indexOf("exoplatform.")==0)
+          sb.append(", \""+key+"\":\""+value+"\"");
       }
       sb.append("};");
 

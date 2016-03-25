@@ -126,7 +126,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     tmpOptions = tmpOptions.replace(/>/g, "&gt;");
     tmpOptions = snack.parseJSON(tmpOptions);
     this.messages[im] = {"user": this.username,
-      "fullname": chatBundleData.exoplatform_chat_you,
+      "fullname": chatBundleData["exoplatform.chat.you"],
       "date": "pending",
       "message": tmpMessage,
       "options": tmpOptions,
@@ -180,7 +180,7 @@ ChatRoom.prototype.emptyChatZone = function() {
   jqchat("#chat-record-button .btn").attr("disabled","");
   var $chats = jqchat("#chats");
   $chats.empty();
-  $chats.append("<div class=\"noContent\"><span class=\"text\">" + chatBundleData.exoplatform_chat_no_conversation + "</span></div>");
+  $chats.append("<div class=\"noContent\"><span class=\"text\">" + chatBundleData["exoplatform.chat.no.conversation"] + "</span></div>");
 };
 
 /**
@@ -403,11 +403,11 @@ ChatRoom.prototype.showMessages = function(msgs) {
   if (this.messages.length===0) {
     if (this.isPublic) {
       out = "<div class='msRow' style='padding:22px 20px;'>";
-      out += "<b><center>"+chatBundleData.exoplatform_chat_public_welcome+"</center></b>";
+      out += "<b><center>"+chatBundleData["exoplatform.chat.public.welcome"]+"</center></b>";
       out += "</div>";
     }
     else
-      out += "<div class='noMessage'><span class='text'>" + chatBundleData.exoplatform_chat_no_messages + "</span></div>";
+      out += "<div class='noMessage'><span class='text'>" + chatBundleData["exoplatform.chat.no.messages"] + "</span></div>";
 
     // Set recorder button to start status
     if (this.miniChat === undefined) {
@@ -450,7 +450,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
             out += "        <div class='inner'>";
             out += "          <div class='msTiltleLn clearfix'>";
             if (thiss.isPublic) {
-              out += "          <a class='msNameUser muted' href='#'>" + chatBundleData.exoplatform_chat_support_fullname + "</a>";
+              out += "          <a class='msNameUser muted' href='#'>" + chatBundleData["exoplatform.chat.support.fullname"] + "</a>";
             }
             else {
               out += "          <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
@@ -484,7 +484,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
         var msgtemp = message.message;
         var noEditCssClass = "";
         if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted empty'>"+chatBundleData.exoplatform_chat_deleted+"</span>";
+          msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
           noEditCssClass = "noEdit";
         } else {
           msgtemp = thiss.messageBeautifier(message);
@@ -501,12 +501,12 @@ ChatRoom.prototype.showMessages = function(msgs) {
         msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
           msRightInfo += "      <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
-          msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData.exoplatform_chat_notes + "</a> |";
+          msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
           if (message.user === thiss.username) {
-            msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData.exoplatform_chat_edit + "</a> |";
-            msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData.exoplatform_chat_delete + "</a> |";
+            msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
+            msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData["exoplatform.chat.delete"] + "</a> |";
           }
-          msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData.exoplatform_chat_quote + "</a>";
+          msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData["exoplatform.chat.quote"] + "</a>";
           msRightInfo += "       </div>";
         }
         msRightInfo += "       </div>";
@@ -639,7 +639,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
 //// TODO: check to new BD
 ////          if (message.user != thiss.username) {
 ////            if (thiss.isPublic)
-////              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData.exoplatform_chat_support_fullname+"</a><span class='invisible-text'> : </span><br/>";
+////              out += "<span class='invisible-text'>- </span><a href='#'>"+chatBundleData["exoplatform.chat.support.fullname"]+"</a><span class='invisible-text'> : </span><br/>";
 ////            else
 ////              out += "<a href='/portal/intranet/profile/"+message.user+"' class='user-link' target='_new'>"+message.fullname+"</a>";
 ////          } else {
@@ -791,7 +791,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var link = options.restPath;
       if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
           link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
-        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData.exoplatform_chat_view + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData.exoplatform_chat_download + "</a></div></div></div></div>";
+        out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData["exoplatform.chat.view"] + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData["exoplatform.chat.download"] + "</a></div></div></div></div>";
       }
 
     } else if (options.type==="type-link") {
@@ -806,17 +806,17 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "<b>" + options.task + "</b>";
       out += "<div class='msTimeEvent'>";
       out += "  <div>";
-      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData.exoplatform_chat_assign_to + ": </span>" + options.fullname;
+      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData["exoplatform.chat.assign.to"] + ": </span>" + options.fullname;
       out += "  </div>";
       out += "  <div>";
-      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData.exoplatform_chat_due_date +  ":</span> <b>" + options.dueDate + "</b>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData["exoplatform.chat.due.date"] +  ":</span> <b>" + options.dueDate + "</b>";
       out += "  </div>";
       out += "</div>";
     } else if (options.type==="type-event") {
       out += "<b>" + options.summary + "</b>";
       out += "<div class='msTimeEvent'>";
       out += "  <div>";
-      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>" + chatBundleData.exoplatform_chat_from + ": </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>" + chatBundleData.exoplatform_chat_to + ": </span><b>" + options.endDate + " " + options.endTime + "</b>";
+      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>" + chatBundleData["exoplatform.chat.from"] + ": </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>" + chatBundleData["exoplatform.chat.to"] + ": </span><b>" + options.endDate + " " + options.endTime + "</b>";
       out += "  </div>";
       out += "  <div>";
       out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.location;
@@ -824,51 +824,51 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       out += "</div>";
     } else if (options.type==="type-add-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.exoplatform_chat_team_msg_adduser.replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
+      out += chatBundleData["exoplatform.chat.team.msg.adduser"].replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
     } else if (options.type==="type-remove-team-user") {
       var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
-      out += chatBundleData.exoplatform_chat_team_msg_removeuser.replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
+      out += chatBundleData["exoplatform.chat.team.msg.removeuser"].replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
     } else if (options.type==="type-kicked") {
-      out += "<b>" + chatBundleData.exoplatform_chat_team_msg_kicked + "</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.team.msg.kicked"] + "</b>";
     } else if (options.type==="type-question" || options.type==="type-hand") {
       out += "<b>" + message + "</b>";
     } else if (options.type==="type-notes") {
-      out += "<b>" + chatBundleData.exoplatform_chat_notes_saved + "</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.notes.saved"] + "</b>";
       out += "<div class='msMeetingNotes'>";
       out += "  <div>";
       out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='send-meeting-notes' href='#' data-from='" + options.fromTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
+      out += "    <a class='send-meeting-notes' href='#' data-from='" + options.fromTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "'>" + chatBundleData["exoplatform.chat.send.notes"] + "</a>";
       out += "  </div>";
       out += "  <div>";
       out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
-      out += "    <a class='save-meeting-notes' href='#' data-from='" + options.fromTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
+      out += "    <a class='save-meeting-notes' href='#' data-from='" + options.fromTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username +"' data-id='" + objMessage.timestamp + "2'>" + chatBundleData["exoplatform.chat.save.wiki"] + "</a>";
       out += "  </div>";
-      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>";
-      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>";
+      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData["exoplatform.chat.sent"]+"</strong> "+chatBundleData["exoplatform.chat.check.mailbox"]+"</div>";
+      out += "  <div class='alert alert-success' id='"+objMessage.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+objMessage.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData["exoplatform.chat.saved"]+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData["exoplatform.chat.open.wiki"]+"</a>.</div>";
       out += "</div>";
     } else if (options.type==="type-meeting-start") {
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
-      out += "<p><i class='muted'>" + chatBundleData.exoplatform_chat_meeting_started_message + "</i></p>";
+      out += "<b>" + chatBundleData["exoplatform.chat.meeting.started"] + "</b>";
+      out += "<p><i class='muted'>" + chatBundleData["exoplatform.chat.meeting.started.message"] + "</i></p>";
 
       thiss.startMeetingTimestamp = objMessage.timestamp;
       if (thiss.miniChat === undefined) {
         chatApplication.updateMeetingButtonStatus('started');
       }
     } else if (options.type==="type-meeting-stop") {
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.meeting.finished"] + "</b>";
       var isStopedByCurrentUser = (thiss.username === options.fromUser);
       if (isStopedByCurrentUser) {
         out += "<div class='msMeetingNotes'>";
         out += "  <div>";
         out += "    <i class='uiIconChatSendEmail uiIconChatLightGray mgR10'></i>";
-        out += "    <a class='" + (isStopedByCurrentUser ? "send-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "'>" + chatBundleData.exoplatform_chat_send_notes + "</a>";
+        out += "    <a class='" + (isStopedByCurrentUser ? "send-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "'>" + chatBundleData["exoplatform.chat.send.notes"] + "</a>";
         out += "  </div>";
         out += "  <div>";
         out += "    <i class='uiIconChatWiki uiIconChatLightGray mgR10'></i>";
-        out += "    <a class='" + (isStopedByCurrentUser ? "save-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "2'>" + chatBundleData.exoplatform_chat_save_wiki + "</a>";
+        out += "    <a class='" + (isStopedByCurrentUser ? "save-meeting-notes" : "") + "' href='" + (isStopedByCurrentUser ? "javascript:void(0);" : "javascript:alert(\"Only the participants who stopped the session can send or save meeting notes!\");") + "' data-from='" + thiss.startMeetingTimestamp + "' data-to='" + objMessage.timestamp + "' data-room='" + this.id + "' data-owner='" + this.username + "' data-id='" + objMessage.timestamp + "2'>" + chatBundleData["exoplatform.chat.save.wiki"] + "</a>";
         out += "  </div>";
-        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData.exoplatform_chat_sent + "</strong> " + chatBundleData.exoplatform_chat_check_mailbox + "</div>";
-        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "2\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData.exoplatform_chat_saved + "</strong> <a href=\"/portal/intranet/wiki\">" + chatBundleData.exoplatform_chat_open_wiki + "</a>.</div>";
+        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData["exoplatform.chat.sent"] + "</strong> " + chatBundleData["exoplatform.chat.check.mailbox"] + "</div>";
+        out += "  <div class='alert alert-success' id='" + objMessage.timestamp + "2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#" + objMessage.timestamp + "2\").hide();' style='right: 0;'>×</button><strong>" + chatBundleData["exoplatform.chat.saved"] + "</strong> <a href=\"/portal/intranet/wiki\">" + chatBundleData["exoplatform.chat.open.wiki"] + "</a>.</div>";
         out += "</div>";
       }
       if (thiss.miniChat === undefined) {
@@ -876,9 +876,9 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       }
     } else if (options.type==="call-on") {
       this.startCallTimestamp = objMessage.timestamp;
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_started + "</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.meeting.started"] + "</b>";
     } else if (options.type==="call-join") {
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_joined + "</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.meeting.joined"] + "</b>";
     } else if (options.type==="call-off") {
       var callDuration = (objMessage.timestamp - this.startCallTimestamp)/1000;
       var hours = Math.floor(callDuration / 3600);
@@ -889,24 +889,24 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       var stime = "<span class='msTextGray'>";
       if (hours>0) {
         if (hours===1)
-          stime += hours+ " "+chatBundleData.exoplatform_chat_hour+" ";
+          stime += hours+ " "+chatBundleData["exoplatform.chat.hour"]+" ";
         else
-          stime += hours+ " "+chatBundleData.exoplatform_chat_hours+" ";
+          stime += hours+ " "+chatBundleData["exoplatform.chat.hours"]+" ";
       }
       if (minutes>0) {
         if (minutes===1)
-          stime += minutes+ " "+chatBundleData.exoplatform_chat_minute+" ";
+          stime += minutes+ " "+chatBundleData["exoplatform.chat.minute"]+" ";
         else
-          stime += minutes+ " "+chatBundleData.exoplatform_chat_minutes+" ";
+          stime += minutes+ " "+chatBundleData["exoplatform.chat.minutes"]+" ";
       }
       if (seconds>0) {
         if (seconds===1)
-          stime += seconds+ " "+chatBundleData.exoplatform_chat_second;
+          stime += seconds+ " "+chatBundleData["exoplatform.chat.second"];
         else
-          stime += seconds+ " "+chatBundleData.exoplatform_chat_seconds;
+          stime += seconds+ " "+chatBundleData["exoplatform.chat.seconds"];
       }
       stime += "</span>";
-      out += "<b>" + chatBundleData.exoplatform_chat_meeting_finished + "</b> " + stime;
+      out += "<b>" + chatBundleData["exoplatform.chat.meeting.finished"] + "</b> " + stime;
 
       var callOwner = jzGetParam("weemoCallHandlerOwner");
       if (thiss.username === callOwner) {
@@ -919,7 +919,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"' " +
-          ">"+chatBundleData.exoplatform_chat_send_notes+"</a>" +
+          ">"+chatBundleData["exoplatform.chat.send.notes"]+"</a>" +
           " - " +
           "<a href='#' class='save-meeting-notes' " +
           "data-from='"+jzGetParam("weemoCallHandlerFrom")+"' " +
@@ -927,14 +927,14 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
           "data-room='"+this.id+"' " +
           "data-owner='"+this.username +"' " +
           "data-id='"+options.timestamp+"2' " +
-          ">"+chatBundleData.exoplatform_chat_save_wiki+"</a>" +
+          ">"+chatBundleData["exoplatform.chat.save.wiki"]+"</a>" +
           "</span>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_sent+"</strong> "+chatBundleData.exoplatform_chat_check_mailbox+"</div>" +
-          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData.exoplatform_chat_saved+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData.exoplatform_chat_open_wiki+"</a>.</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData["exoplatform.chat.sent"]+"</strong> "+chatBundleData["exoplatform.chat.check.mailbox"]+"</div>" +
+          "<div class='alert alert-success' id='"+options.timestamp+"2' style='display:none;'><button type='button' class='close' onclick='jqchat(\"#"+options.timestamp+"2\").hide();' style='right: 0;'>×</button><strong>"+chatBundleData["exoplatform.chat.saved"]+"</strong> <a href=\"/portal/intranet/wiki\">"+chatBundleData["exoplatform.chat.open.wiki"]+"</a>.</div>" +
           "</div>";
       }
     } else if (options.type==="call-proceed") {
-      out += "<b>" + chatBundleData.exoplatform_chat_call_comming  + "...</b>";
+      out += "<b>" + chatBundleData["exoplatform.chat.call.comming"]  + "...</b>";
     } else {
       out += message;
     }
@@ -1141,10 +1141,10 @@ String.prototype.endsWith = function(suffix) {
             var innerMiniChatHtml = "";
             innerMiniChatHtml += "<div class='title clearfix'>";
             innerMiniChatHtml +=    "<div class='title-right'>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_minimize + "' ><i class='uiIconMinimize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_maximize + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_open_chat + "' target='_chat'><i class='uiIconChatPopOut uiIconChatWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData.exoplatform_chat_close + "' ><i class='uiIconClose uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.minimize"] + "' ><i class='uiIconMinimize uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.maximize"] + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.open.chat"] + "' target='_chat'><i class='uiIconChatPopOut uiIconChatWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.close"] + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
             innerMiniChatHtml +=      "<span class='notify-info badgeDefault badgePrimary mini'></span>";
