@@ -23,16 +23,27 @@ import com.mongodb.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
+import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -491,6 +502,121 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       users.add(userBean);
     }
     return users;
+  }
+
+  @Override
+  public List<UserBean> getSuggestionUsers(String currentUserName, String roomId, String filter, String dbName, int limit) {
+    Map<String, UserBean> users = new LinkedHashMap<>();
+
+    String originalFilter = filter;
+    filter = filter.replaceAll(" ", ".*");
+    Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+
+    BasicDBObject un = new BasicDBObject("user", regex);
+    BasicDBObject fn = new BasicDBObject("fullname", regex);
+    List<BasicDBObject> orList = new ArrayList<BasicDBObject>();
+    orList.add(un);
+    orList.add(fn);
+    BasicDBObject filterQuery = new BasicDBObject("$or", orList);
+
+    // Search in team members first
+    if (roomId != null && !"".equals(roomId)) {
+      // Search in room first
+      //removing "space-" prefix
+      if (roomId.indexOf(ChatService.SPACE_PREFIX)==0) {
+        roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+      }
+      //removing "team-" prefix
+      if (roomId.indexOf(ChatService.TEAM_PREFIX)==0) {
+        roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
+      }
+
+      BasicDBObject spaces = new BasicDBObject("spaces", roomId);
+      BasicDBObject teams = new BasicDBObject("teams", roomId);
+      orList = new ArrayList<BasicDBObject>();
+      orList.add(spaces);
+      orList.add(teams);
+      BasicDBObject teamQuery = new BasicDBObject("$or", orList);
+
+      BasicDBObject query = new BasicDBObject("$and", Arrays.asList(teamQuery, filterQuery));
+      searchByQuery(users, dbName, query, limit);
+    }
+
+    int remain = limit - users.size();
+
+    // Then search in connection
+    if (remain > 0 && currentUserName != null && !"".equals(currentUserName)) {
+      // We can not inject IdentityManager to this service here because it threw NPE,
+      // maybe Guice container only return this service instance when portal container started
+      IdentityManager identityManager = GuiceManager.getInstance().getInstance(IdentityManager.class);
+      if (identityManager != null) {
+        Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUserName, false);
+        if (identity != null && !identity.isDeleted()) {
+          try {
+            ListAccess<Identity> connections = identityManager.getConnectionsWithListAccess(identity);
+            if (connections != null && connections.getSize() > 0) {
+              int start = 0;
+              int size = connections.getSize();
+              while (start < size && users.size() < limit) {
+                Identity[] ids = connections.load(0, limit);
+                for (Identity id : ids) {
+                  Profile profile = identityManager.getProfile(id);
+                  if (!users.containsKey(id.getRemoteId()) && isMatch(originalFilter, profile)) {
+                    UserBean userBean = new UserBean();
+                    userBean.setName(id.getRemoteId());
+                    userBean.setEmail(profile.getEmail());
+                    userBean.setFullname(profile.getFullName());
+                    userBean.setStatus(UserService.STATUS_AVAILABLE);
+
+                    users.put(id.getRemoteId(), userBean);
+                  }
+                  if (users.size() >= limit) break;
+                }
+                start += limit;
+              }
+            }
+          } catch (Exception ex) {
+            LOG.info(ex.getMessage());
+          }
+          //
+          remain = limit - users.size();
+        }
+      }
+    }
+
+    if (remain > 0) {
+      searchByQuery(users, dbName, filterQuery, limit);
+    }
+
+    return new LinkedList<>(users.values());
+  }
+
+  private void searchByQuery(Map<String, UserBean> users, String dbName, BasicDBObject query, int limit) {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCursor cursor = coll.find(query).sort(new BasicDBObject("fullname", 1));
+    while (cursor.hasNext() && users.size() < limit) {
+      DBObject doc = cursor.next();
+      UserBean userBean = new UserBean();
+      userBean.setName(doc.get("user").toString());
+      Object prop = doc.get("fullname");
+      userBean.setFullname((prop!=null)?prop.toString():"");
+      prop = doc.get("email");
+      userBean.setEmail((prop!=null)?prop.toString():"");
+      prop = doc.get("status");
+      userBean.setStatus((prop!=null)?prop.toString():"");
+      if (!users.containsKey(userBean.getName())) {
+        users.put(userBean.getName(), userBean);
+      }
+    }
+  }
+
+  private boolean isMatch(String keyword, Profile profile) {
+    String fullName = profile.getFullName();
+    String firstName = (String)profile.getProperty(Profile.FIRST_NAME);
+    String lastName = (String)profile.getProperty(Profile.FIRST_NAME);
+    return ((fullName != null && fullName.toLowerCase().contains(keyword))
+            || (firstName != null && firstName.toLowerCase().contains(keyword))
+            || (lastName != null && lastName.toLowerCase().contains(keyword)));
   }
 
   public String setStatus(String user, String status, String dbName)

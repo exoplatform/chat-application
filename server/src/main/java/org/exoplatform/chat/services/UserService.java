@@ -72,6 +72,8 @@ public interface UserService
 
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 
+  public List<UserBean> getSuggestionUsers(String currentUserName, String roomId, String filter, String dbName, int limit);
+
   public String setStatus(String user, String status, String dbName);
 
   public void setAsAdmin(String user, boolean isAdmin, String dbName);
