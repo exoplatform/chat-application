@@ -30,11 +30,14 @@ import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.manager.RelationshipManager;
+import org.exoplatform.social.core.profile.ProfileFilter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -44,6 +47,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -546,37 +550,35 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 
     // Then search in connection
     if (remain > 0 && currentUserName != null && !"".equals(currentUserName)) {
-      // We can not inject IdentityManager to this service here because it threw NPE,
-      // maybe Guice container only return this service instance when portal container started
-      IdentityManager identityManager = GuiceManager.getInstance().getInstance(IdentityManager.class);
-      if (identityManager != null) {
+      //
+      IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+      RelationshipManager relationshipManager = CommonsUtils.getService(RelationshipManager.class);
+
+      if (identityManager != null && relationshipManager != null) {
         Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUserName, false);
         if (identity != null && !identity.isDeleted()) {
           try {
-            ListAccess<Identity> connections = identityManager.getConnectionsWithListAccess(identity);
+            ProfileFilter profileFilter = new ProfileFilter();
+            profileFilter.setName(originalFilter);
+            ListAccess<Identity> connections = relationshipManager.getConnectionsByFilter(identity, profileFilter);
             if (connections != null && connections.getSize() > 0) {
-              int start = 0;
               int size = connections.getSize();
-              while (start < size && users.size() < limit) {
-                Identity[] ids = connections.load(0, limit);
-                for (Identity id : ids) {
-                  Profile profile = identityManager.getProfile(id);
-                  if (!users.containsKey(id.getRemoteId()) && isMatch(originalFilter, profile)) {
-                    UserBean userBean = new UserBean();
-                    userBean.setName(id.getRemoteId());
-                    userBean.setEmail(profile.getEmail());
-                    userBean.setFullname(profile.getFullName());
-                    userBean.setStatus(UserService.STATUS_AVAILABLE);
+              for (Identity id : connections.load(0, size < remain ? size : remain)) {
+                Profile profile = identityManager.getProfile(id);
+                if (!users.containsKey(id.getRemoteId())) {
+                  UserBean userBean = new UserBean();
+                  userBean.setName(id.getRemoteId());
+                  userBean.setEmail(profile.getEmail());
+                  userBean.setFullname(profile.getFullName());
+                  userBean.setStatus(UserService.STATUS_AVAILABLE);
 
-                    users.put(id.getRemoteId(), userBean);
-                  }
-                  if (users.size() >= limit) break;
+                  users.put(id.getRemoteId(), userBean);
                 }
-                start += limit;
+                if (users.size() >= limit) break;
               }
             }
           } catch (Exception ex) {
-            LOG.info(ex.getMessage());
+            LOG.log(Level.WARNING, "Exception while search user in connection", ex);
           }
           //
           remain = limit - users.size();
@@ -608,15 +610,6 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         users.put(userBean.getName(), userBean);
       }
     }
-  }
-
-  private boolean isMatch(String keyword, Profile profile) {
-    String fullName = profile.getFullName();
-    String firstName = (String)profile.getProperty(Profile.FIRST_NAME);
-    String lastName = (String)profile.getProperty(Profile.FIRST_NAME);
-    return ((fullName != null && fullName.toLowerCase().contains(keyword))
-            || (firstName != null && firstName.toLowerCase().contains(keyword))
-            || (lastName != null && lastName.toLowerCase().contains(keyword)));
   }
 
   public String setStatus(String user, String status, String dbName)
