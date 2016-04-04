@@ -863,7 +863,6 @@ public class ChatServer
     }
     else
     {
-      //users = userService.getUsers(filter, true, dbName);
       users = userService.getSuggestionUsers(user, currentRoom, filter, dbName, 10);
     }
 

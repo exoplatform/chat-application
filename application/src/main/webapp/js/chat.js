@@ -834,10 +834,7 @@ var chatApplication = new ChatApplication();
         $userResults.html("");
       } else if (filter != searchingValue){
         searchingValue = filter;
-        if (searchTimeout !== false) {
-          clearTimeout(searchTimeout);
-          searchTimeout = false;
-        }
+        clearTimeout(searchTimeout);
         searchTimeout = setTimeout(function() {
           chatApplication.getAllUsers(filter, searchInRoomFirst, function (jsonData) {
             searchingValue = '';

@@ -1,14 +1,10 @@
 package org.exoplatform.chat.services.mongodb;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.container.RootContainer;
-import org.exoplatform.social.core.manager.IdentityManager;
 
 public class MongoModule extends AbstractModule
 {
