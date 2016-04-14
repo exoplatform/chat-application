@@ -53,6 +53,10 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import juzu.impl.request.Request;
+import juzu.request.ApplicationContext;
+import juzu.request.UserContext;
+
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -69,8 +73,8 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.json.JSONObject;
+
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.model.NotificationBean;
@@ -99,6 +103,7 @@ public class ChatServer
   @Inject
   @Path("users.gtmpl")
   Template users;
+
   ChatService chatService;
   UserService userService;
   TokenService tokenService;
@@ -246,7 +251,7 @@ public class ChatServer
   @Resource
   @Route("/sendMeetingNotes")
   public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                           String toTimestamp, String serverBase, String dbName) throws IOException {
+                                           String toTimestamp, String serverBase, String dbName, ApplicationContext applicationContext, UserContext userContext) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
@@ -276,10 +281,13 @@ public class ChatServer
     String roomName = "";
     
     List<UserBean> users = new ArrayList<UserBean>();
+    Locale locale = userContext.getLocale();
+    ResourceBundle res = applicationContext.resolveBundle(locale);
+
     if (datao.containsField("messages")) {
       if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
         users = userService.getUsersInRoomChatOneToOne(room, dbName);
-        title = "Meeting Notes ["+date+"]";
+        title = res.getString("exoplatform.chat.meetingnotes") + " ["+date+"]";
       } else {
         users = userService.getUsers(room, dbName);
         List<SpaceBean> spaces = userService.getSpaces(user, dbName);
@@ -298,10 +306,9 @@ public class ChatServer
             roomName = roomBean.getFullname();
           }
         }
-        title = roomName+" : Meeting Notes ["+date+"]";
+        title = roomName+" : "+ res.getString("exoplatform.chat.meetingnotes") + " ["+date+"]";
       }
-      ReportBean reportBean = new ReportBean();
-
+      ReportBean reportBean = new ReportBean(res);
       reportBean.fill((BasicDBList) datao.get("messages"), users);
 
       ArrayList<String> tos = new ArrayList<String>();
@@ -319,7 +326,7 @@ public class ChatServer
           senderMail = userBean.getEmail();
         }
       }
-      html = reportBean.getAsHtml(title, serverBase);
+      html = reportBean.getAsHtml(title, serverBase,locale);
 
       // inline images
       String prevUser = "";
@@ -350,7 +357,7 @@ public class ChatServer
   @Resource
   @Route("/getMeetingNotes")
   public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                          String toTimestamp, String serverBase, String dbName) throws IOException {
+                                          String toTimestamp, String serverBase, String dbName, ApplicationContext applicationContext, UserContext userContext) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
@@ -400,7 +407,11 @@ public class ChatServer
           }
         }
       }
-      ReportBean reportBean = new ReportBean();
+      Locale locale = userContext.getLocale();
+      ResourceBundle res = applicationContext.resolveBundle(locale);
+
+      ReportBean reportBean = new ReportBean(res);
+
       reportBean.fill((BasicDBList) datao.get("messages"), users);
       ArrayList<String> usersInGroup = new ArrayList<String>();
       xwiki = reportBean.getAsXWiki(serverBase);
