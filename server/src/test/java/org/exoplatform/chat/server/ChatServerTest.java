@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -312,4 +313,36 @@ public class ChatServerTest extends AbstractChatTestCase {
     assertNotNull(messageBean);
     assertEquals("my message", messageBean.getMessage());
   }
+  
+  @Test
+  public void testIsFavorite() throws Exception {
+    // Given
+    ChatServer chatServer = new ChatServer();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    UserService userService = ServiceBootstrap.getUserService();
+    
+    String benjamin = "benjamin";
+    String john = "john";
+    
+    userService.addUserFullName(benjamin, "Benjamin Paillereau", null);
+    userService.addUserFullName(john, "John Smith", null);
+    userService.toggleFavorite(benjamin, john, null);
+
+    String tokenBen = tokenService.getToken(benjamin);
+    tokenService.addUser(benjamin, tokenBen, null);
+    
+    String tokenJohn = tokenService.getToken(john);
+    tokenService.addUser(john, tokenJohn, null);
+  
+    // When
+    Response.Content isFavoriteBen = chatServer.isFavorite(benjamin, tokenBen, john, null);
+    Response.Content isFavoriteJohn = chatServer.isFavorite(benjamin, tokenJohn, john, null);
+    // Then
+    assertNotNull(isFavoriteBen);
+    assertEquals(200, isFavoriteBen.getCode());
+    
+    assertNotNull(isFavoriteJohn);
+    assertEquals(404, isFavoriteJohn.getCode());
+  }
+  
 }

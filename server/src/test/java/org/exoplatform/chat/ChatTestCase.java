@@ -495,4 +495,43 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, roomsBenMaWi.getRooms().size());
 
   }
+  
+  @Test
+  public void testSetRoomNotificationTrigger() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    
+    String benjamin = "benjamin";
+    String john = "john";
+    String normal = ChatService.NOTIFY_ME_ON_ROOM_NORMAL;
+    users.add(benjamin);
+    users.add(john);
+    String roomId1 = chatService.getRoom(users, null);
+    
+    userService.setRoomNotificationTrigger(benjamin, roomId1, normal, null, 1000);
+    userService.setRoomNotificationTrigger(benjamin, roomId1, "silence", null, 500);
+    
+    String userDNS = userService.getUserDesktopNotificationSettings(benjamin, null);
+    assertNotNull(userDNS);
+    
+    Object userDNSObj = JSONValue.parse(userDNS);
+    assertTrue(userDNSObj instanceof JSONObject);
+    JSONObject jsonUserDNS = (JSONObject)userDNSObj;
+    
+    Object roomSettingsObj = jsonUserDNS.get("preferredRoomNotificationTrigger");
+    assertTrue(roomSettingsObj instanceof String);
+    JSONObject roomSettings = (JSONObject)JSONValue.parse((String)roomSettingsObj);
+    assertEquals(1, roomSettings.values().size());
+    
+    Object roomSettingObj = roomSettings.values().iterator().next();
+    assertTrue(roomSettingObj instanceof JSONObject);
+    
+    JSONObject roomSetting = (JSONObject)roomSettingObj;
+    Object notifCond = roomSetting.get("notifCond");
+    assertEquals(normal, notifCond);
+  }
 }

@@ -30,7 +30,8 @@
         @Script(value = "js/taffy-min.js", id="taffy", location = AssetLocation.SERVER),
         @Script(value = "js/snack-min.js", id = "snack", location = AssetLocation.SERVER),
         @Script(value = "js/jquery-juzu-utils-0.2.0.js", depends = "jquery", id = "juzu-utils", location = AssetLocation.SERVER),
-        @Script(value = "js/notif.js", id = "notif", location = AssetLocation.SERVER, depends = {"jquery", "snack", "juzu-utils", "taffy"})
+        @Script(value = "js/desktop.js", id="desktop", depends = {"jquery"}, location = AssetLocation.SERVER ),
+        @Script(value = "js/notif.js", id = "notif", location = AssetLocation.SERVER, depends = {"desktop","jquery", "snack", "juzu-utils", "taffy"})
 })
 @Stylesheets({
         @Stylesheet(value = "/org/exoplatform/chat/portlet/notification/assets/notif.css", location = AssetLocation.APPLICATION)

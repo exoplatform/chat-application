@@ -28,6 +28,8 @@ import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -42,6 +44,8 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 {
 
   private static final Logger LOG = Logger.getLogger("UserService");
+  
+  private static final String PREFERRED_ROOM_NOTIFICATION_TRIGGER = "preferredRoomNotificationTrigger";
 
   private DB db(String dbName)
   {
@@ -73,6 +77,126 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       doc.put("favorites", favorites);
       coll.save(doc, WriteConcern.SAFE);
     }
+  }
+
+  public boolean setPreferredNotification(String user, String notifManner, String dbName) {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      if(ChatService.BIP.equals(notifManner) || ChatService.DESKTOP_NOTIFICATION.equals(notifManner) || ChatService.ON_SITE.equals(notifManner)) {
+        Object prefNotif = doc.get("preferredNotification");
+        List<String> existingPrefNotif = null;
+        if(prefNotif==null) {
+          existingPrefNotif = new ArrayList<String>();
+          //default values to the untouched settings
+          existingPrefNotif.add("on-site");
+          existingPrefNotif.add("desktop");
+          existingPrefNotif.add("bip");
+        } else {
+          existingPrefNotif = ((List<String>)prefNotif);
+        }
+        if(existingPrefNotif.contains(notifManner)) {
+          existingPrefNotif.remove(notifManner);
+        } else {
+          existingPrefNotif.add(notifManner);
+        }
+        doc.put("preferredNotification", existingPrefNotif);
+        coll.save(doc, WriteConcern.SAFE);
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  public boolean setNotificationTrigger(String user, String notifCond, String dbName){
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
+        Object prefNotif = doc.get("preferredNotificationTrigger");
+        List<String> existingPrefNotif = null;
+        if(prefNotif==null) {
+          existingPrefNotif = new ArrayList<String>();
+        } else {
+          existingPrefNotif = ((List<String>)prefNotif);
+        }
+
+        if(existingPrefNotif.contains(notifCond)) {
+          existingPrefNotif.remove(notifCond);
+        } else {
+          existingPrefNotif.add(notifCond);
+        }
+        doc.put("preferredNotificationTrigger", existingPrefNotif);
+        coll.save(doc, WriteConcern.SAFE);
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+  public boolean setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time){
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+
+      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifCond) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifCond) || 
+	      notifCond.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
+	DBObject existingRoomNotif = (DBObject)doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        if(existingRoomNotif == null) {
+          existingRoomNotif = new BasicDBObject();
+        }
+        
+        DBObject notifData = (DBObject)existingRoomNotif.get(room);
+        if (notifData == null) {
+          notifData = new BasicDBObject();
+        }
+        
+        if (notifData.get("time") == null || (long)notifData.get("time") < time) {
+          notifData.put("notifCond", notifCond);
+          notifData.put("time", time);
+        }
+        
+        existingRoomNotif.put(room, notifData);
+        
+        doc.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        coll.save(doc, WriteConcern.SAFE);
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  public String getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    JSONObject userSettings = new JSONObject();
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      if(doc.get("preferredNotification")!=null){
+        userSettings.put("preferredNotification",doc.get("preferredNotification").toString());
+      }
+      if(doc.get("preferredNotificationTrigger")!=null){
+        userSettings.put("preferredNotificationTrigger",doc.get("preferredNotificationTrigger").toString());
+      }
+      if(doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
+        userSettings.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
+      }
+      return userSettings.toString();
+    }
+    return "{}";
   }
 
   public boolean isFavorite(String user, String targetUser, String dbName)

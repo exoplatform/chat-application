@@ -223,7 +223,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
   }
 
-
   public String read(String room, UserService userService, String dbName)
   {
     return read(room, userService, false, null, null, dbName);
@@ -541,6 +540,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     return creator;
   }
+
 
   public void setRoomName(String room, String name, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);

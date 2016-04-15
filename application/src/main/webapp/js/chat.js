@@ -42,6 +42,11 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatGetRoom = chatServerURL+"/getRoom";
     chatApplication.jzChatGetCreator = chatServerURL+"/getCreator";
     chatApplication.jzChatToggleFavorite = chatServerURL+"/toggleFavorite";
+    chatApplication.jzChatIsFavorite = chatServerURL+"/isFavorite";
+    chatApplication.jzChatSetPreferredNotification = chatServerURL+"/setPreferredNotification";
+    chatApplication.jzChatSetNotificationTrigger = chatServerURL+"/setNotificationTrigger";
+    chatApplication.jzChatSetRoomNotificationTrigger = chatServerURL + "/setRoomNotificationTrigger";
+    chatApplication.jzChatGetUserDesktopNotificationSettings = chatServerURL+"/getUserDesktopNotificationSettings";
     chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
     chatApplication.jzUsers = chatServerURL+"/users";
     chatApplication.jzDelete = chatServerURL+"/delete";
@@ -344,6 +349,178 @@ var chatApplication = new ChatApplication();
         $(this).removeClass("input-default");
       }
     });
+
+
+    var handleGlobalNotifLayout = function () {
+        jqchat("#room-detail .room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
+        desktop.getPreferredNotification().forEach(function (prefNotif, index, array) {
+          $("input[notif-type='"+prefNotif+"']").attr("checked","checked");
+        });
+        desktop.getPreferredNotificationTrigger().forEach(function (prefNotif, index, array) {
+          $("input[notif-trigger='"+prefNotif+"']").attr("checked","checked");
+        });
+
+        if(desktop.getPreferredNotification().length===0){ //if there is no preffered channel
+          $("input[notif-trigger]").attr('disabled',true);
+        }
+        jqchat(':checkbox').iphoneStyle();
+        $("div.chat-message").css({
+          "pointer-events": "none",
+          "opacity": "0.3"
+        });
+        jqchat("#chat-team-button-dropdown").hide();
+    };
+
+    $(document).on("click", "#close-global-notif-config", function() {//close the setting page and go for the previous screen
+      chatApplication.loadRoom();
+    });
+
+    $(document).on("click", "#close-room-notif-config", function() {//close the setting page and go for the previous screen
+        chatApplication.loadRoom();
+      });
+
+   $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
+     var roomTriggerType = jqchat(this).attr('room-notif-trigger');
+     var roomTriggerWhenKeyWordValue = jqchat("#" + desktop.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
+     var notifCondition = roomTriggerType;
+     
+     if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
+       notifCondition += ":"+roomTriggerWhenKeyWordValue;
+       $("input#room-notif-trigger-when-key-word-value").removeAttr("readonly");
+     } else {
+       $("input#room-notif-trigger-when-key-word-value").attr("readonly", true);
+     }
+     var roomName = chatApplication.targetFullname;
+     var roomId = chatApplication.targetUser;
+
+     jqchat.ajax({
+       url: chatApplication.jzChatSetRoomNotificationTrigger,
+       data: {
+         "user": chatApplication.username,
+         "token": chatApplication.token,
+         "room": roomId,
+         "notifCondition" : notifCondition,
+         "dbName": chatApplication.dbName,
+         "time": (new Date()).getTime()
+       },
+
+       success:function(operation){
+         operation = JSON.parse(operation);
+         if(operation.done) {
+           desktop.setRoomPreferredNotificationTrigger(roomId, notifCondition);//set into the memory
+         } else {
+           alert("Request received but operation done without success..");
+         }
+       },
+       error:function (xhr, status, error){
+         alert('an error has been occured');
+       }
+
+     });
+     
+    });
+
+    $(document).on("keyup", "input[name='keyWords']", function(event) {//when entering keywords save them imediately
+	    console.log(event.target.value);
+	});
+
+    //global desktop notification settings
+    $("#configButton").on("click", function() {
+      chatApplication.setConfigMode(true);
+      jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
+    });
+
+    //team/room desktop notification settings
+    $("#team-notification-button").on("click", function() {
+      chatApplication.setConfigMode(true);
+      jqchat("#chats").load("/chat/partials/chat.notification.room.html", function() {
+        jqchat("#room-detail .room-detail-fullname").html(
+                chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
+
+        var roomPrefTrigger = desktop.getRoomPreferredNotificationTrigger()[chatApplication.targetUser];
+        if (roomPrefTrigger) {
+          if (roomPrefTrigger === desktop.ROOM_NOTIF_TRIGGER_NORMAL ||
+              roomPrefTrigger === desktop.ROOM_NOTIF_TRIGGER_SILENCE) {
+              $("input#room-notif-trigger-when-key-word-value").attr("readonly", true);
+              $("input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
+          } else {
+              $("input#room-notif-trigger-when-key-word-value").removeAttr("readonly");
+              $("input[room-notif-trigger='"+desktop.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
+              var keywords = roomPrefTrigger.split(":")[1];
+              $("input[id='"+desktop.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
+          }
+        }
+        
+        $("input#room-notif-trigger-when-key-word-value").unbind("blur");
+
+        $("input#room-notif-trigger-when-key-word-value").blur(function(evt) {
+            $("input[room-notif-trigger='"+desktop.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
+        });
+
+        
+        jqchat(':checkbox').iphoneStyle();
+      });
+    });
+
+    $(document).on("click", "div.notif-manner div.uiSwitchBtn", function() {
+      var notifManner = $(this).find('input[notif-type]').attr("notif-type");
+      jqchat.ajax({
+        url: chatApplication.jzChatSetPreferredNotification,
+        data: {
+          "user": chatApplication.username,
+          "token": chatApplication.token,
+          "notifManner" : notifManner,
+          "dbName": chatApplication.dbName
+          },
+
+        success: function(operation){
+          operation = JSON.parse(operation);
+          if(operation.done) {
+            desktop.setPreferredNotification(notifManner);//set into the memory
+            if(desktop.getPreferredNotification().length<= 1){ //if there is one or no preferred channel
+                jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
+            }
+          } else {
+            alert("Request received but operation done without success..");
+          }
+        },
+        error: function (xhr, status, error){
+          alert('an error has been occured');
+        }
+
+      });
+    });
+
+    $(document).on("click", "div.notif-trigger div.uiSwitchBtn", function() {
+    if($(this).hasClass("switchBtnDisabled")) {//if the checkbox are disabled
+      return;
+    }
+      var notifTrigger = $(this).find('input[notif-trigger]').attr("notif-trigger");
+      jqchat.ajax({
+        url: chatApplication.jzChatSetNotificationTrigger,
+        data: {
+          "user": chatApplication.username,
+          "token": chatApplication.token,
+          "notifCondition" : notifTrigger,
+          "dbName": chatApplication.dbName
+        },
+
+        success:function(operation){
+          operation = JSON.parse(operation);
+          if(operation.done) {
+            desktop.setPreferredNotificationTrigger(notifTrigger);//set into the memory
+          } else {
+            alert("Request received but operation done without success..");
+          }
+        },
+        error:function (xhr, status, error){
+          alert('an error has been occured');
+        }
+
+      });
+    });
+    
+    
 
     $(".meeting-close-panel").on("click", function() {
       hideMeetingPanel();
@@ -1210,6 +1387,7 @@ var chatApplication = new ChatApplication();
  * @constructor
  */
 function ChatApplication() {
+  this.configMode = false;
   this.isLoaded = false;
   this.isPublic = false;
   this.publicModeEnabled = false;
@@ -1285,6 +1463,14 @@ function ChatApplication() {
 
   this.showRoomOfflinePeople = false;
 }
+
+ChatApplication.prototype.setConfigMode = function(mode) {
+  this.configMode = mode;
+};
+
+ChatApplication.prototype.isConfigMode = function() {
+  return this.configMode === true;
+};
 
 /**
  * Create demo user
@@ -2164,6 +2350,12 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
  */
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
+  chatApplication.setConfigMode(false);//we're not on the config mode anymore
+  jqchat("div.chat-message").css({//enable the chat footer again
+   "pointer-events": "",
+   "opacity": ""
+  });
+  var thiss = this;
   this.chatRoom.owner = "";
   if (this.targetUser!==undefined) {
     // reset room users panel
@@ -2200,6 +2392,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
+      jqchat("#chat-team-button-dropdown").hide();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
       jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getAvatarURL/" + this.targetUser );
@@ -2231,8 +2424,15 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
           this.chatRoom.owner = creator;
+          jqchat(".team-button").css("display", "block");
+          jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
           if (creator === this.username) {
+            jqchat("#chat-team-button-dropdown .only-admin").show();
             jqchat("#chat-team-button").show();
+            jqchat("#team-delete-button").show();
+            jqchat("#chat-team-button-dropdown").show();
+          } else {
+            jqchat("#chat-team-button-dropdown .only-admin").hide();
           }
         },
         error: function(xhr, status, error){
@@ -2244,6 +2444,41 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
+    }
+    
+    if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
+      jqchat.ajax({
+        url: this.jzChatIsFavorite,
+        data: {"user": this.username,
+          "token": this.token,
+          "targetUser": this.targetUser,
+          "dbName": this.dbName
+        },
+        context: this,
+        success: function(response){
+          //console.log("SUCCESS::getRoom::"+response);
+          console.log("isFavorite response: " + response);
+          jqchat("#team-remove-from-favorites-button").unbind('click');
+          jqchat("#team-add-to-favorites-button").unbind('click');
+          var toggleFav = function() {
+              thiss.toggleFavorite(thiss.targetUser);
+              jqchat("#team-remove-from-favorites-button").toggle();
+              jqchat("#team-add-to-favorites-button").toggle();
+          }
+          jqchat("#team-remove-from-favorites-button").click(toggleFav);
+          jqchat("#team-add-to-favorites-button").click(toggleFav);
+          if (response == "true") {
+            jqchat("#team-remove-from-favorites-button").show();
+            jqchat("#team-add-to-favorites-button").hide();
+          } else {
+            jqchat("#team-add-to-favorites-button").show();
+            jqchat("#team-remove-from-favorites-button").hide();
+          }
+        },
+        error: function(xhr, status, error){
+          console.log("ERROR::"+xhr.responseText);
+        }
+      });
     }
 
     var thiss = this;
@@ -2568,6 +2803,7 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
  */
 ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
   var $icon = jqchat(".msButtonRecord").children("i");
+  var $span = jqchat(".msButtonRecord").children("span");
   if ('started' === status) {
     $icon.addClass("uiIconChatRecordStop");
     $icon.removeClass("uiIconChatRecordStart");
@@ -2580,6 +2816,8 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
   $icon.parent().tooltip('hide')
     .attr('data-original-title', tooltipText)
     .tooltip('fixTitle');
+  
+  $span.html(tooltipText);
 };
 
 /**

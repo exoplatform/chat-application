@@ -312,17 +312,29 @@ ChatNotification.prototype.refreshNotif = function() {
 //  console.log("refreshNotif :: URL="+this.notifEventURL);
   this.updateNotifEventURL();
   jqchat.ajax({
-    url: this.notifEventURL,
+    url: this.notifEventURL+"&withDetails=true",
     dataType: "json",
     context: this,
     success: function(data){
-      if(this.oldNotifTotal!=data.total){
-        var total = Math.abs(data.total);
+      if(this.oldNotifTotal!=data.notifications.length){
+        var notifyMe = false;
+        data.notifications.sort(function(el1, el2){
+          return el2.timestamp - el1.timestamp;
+        });
+        var lastMsg = data.notifications[0]; // the last one is at 0 index
+        var total = Math.abs(data.notifications.length);
+        if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktop.canIbypassDonotDistrub() ||  desktop.checkMention(this.username,lastMsg.content) ) && 
+            this.profileStatus !== "offline" && desktop.canIbypassRoomNotif(lastMsg.content)) {
+          notifyMe = true;
+        }
+
         //console.log('refreshNotif :: '+total);
         var $chatNotification = jqchat("#chat-notification");
         if (total>0) {
-          $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
-          $chatNotification.css('display', 'block');
+          if(desktop.canIShowOnSiteNotif() && notifyMe) {
+             $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
+             $chatNotification.css('display', 'block');
+          }
         } else {
           $chatNotification.html('<span></span>');
           $chatNotification.css('display', 'none');
@@ -332,8 +344,14 @@ ChatNotification.prototype.refreshNotif = function() {
           $chatNotificationsDetails.parent().removeClass("full-width");
           $chatNotificationsDetails.next().hide();
         }
-        if (total>this.oldNotifTotal && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-          this.playNotifSound();
+
+        if(notifyMe) {
+          if(desktop.canIPlaySound()){
+            this.playNotifSound();
+          }
+          if(desktop.canIShowDesktopNotif()){
+            this.showDesktopNotif(this.chatPage,total,lastMsg);
+          }
         }
 
         this.oldNotifTotal = total;
@@ -357,6 +375,33 @@ ChatNotification.prototype.playNotifSound = function() {
   notifSound.play();
 };
 
+
+/**
+ * Show desktop Notif
+ */
+ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
+  var displayMsg = desktop.highlightMessage(msg);
+  if(Notification.permission !== "granted")
+    Notification.requestPermission();
+
+  if (!Notification) {
+    alert('Desktop notifications not available in your browser. Please update your browser.');
+    return;
+  }
+
+  if(Notification.permission !== "granted")
+    Notification.requestPermission();
+  else {
+    var notification = new Notification('You have new notifications', {
+      icon: '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from,
+      body: displayMsg ,
+    });
+
+    notification.onclick = function () {
+      window.open(path);
+    };
+  }
+};
 
 /**
  * Refresh Status

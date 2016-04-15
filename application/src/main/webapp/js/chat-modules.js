@@ -84,7 +84,6 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       });
     }
   });
-
 };
 
 ChatRoom.prototype.onRefresh = function(callback) {
@@ -196,6 +195,9 @@ ChatRoom.prototype.emptyChatZone = function() {
 ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   if (this.id === "") return;
 
+  if (chatApplication.isConfigMode()) {
+    return;//do nothing when we're on the config page
+  }
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username) || 0;
@@ -1198,8 +1200,42 @@ String.prototype.endsWith = function(suffix) {
               showMiniChatPopup(miniChatRoom, miniChatType);
             }
           }
-        });
 
+            var $chatApplication = $("#chat-application").length ? $("#chat-application") : $("#chat-status");
+            var yourUsername = $chatApplication.attr("data-username");
+            var servertoken = $( "div.mini-chat" ).attr("data-token");
+            var serverDbName = $chatApplication.attr("data-db-name");
+            var chatServerURL = $chatApplication.attr("data-chat-server-url");
+            var urlToApi = chatServerURL+"/getUserDesktopNotificationSettings";
+
+            $.ajax({
+              url: urlToApi,
+              data: {
+                "user": yourUsername,
+                "token": servertoken,
+                "dbName": serverDbName
+                },
+
+              success: function(operation){
+                operation = JSON.parse(operation);
+                if(operation.done) {
+                  var settings = JSON.parse(operation.userDesktopNotificationSettings);
+                  desktop.setPreferredNotificationSettings(settings);
+                } else {
+                  if(operation.userDesktopNotificationSettings === "{}") {//first time using the settings - so set to the default values
+                    var settings = {preferredNotification: ["on-site", "desktop", "bip"] , preferredNotificationTrigger: []};
+                    settings.preferredNotification = JSON.stringify(settings.preferredNotification);
+                    settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+                    desktop.setPreferredNotificationSettings(settings);
+                  }
+                }
+              },
+              error: function (xhr, status, error){
+                alert('an error has been occured');
+              }
+
+            });
+        });
 
       }
     });

@@ -50,6 +50,9 @@
     <span class="menu-standard pull-right">
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
+      <div class="uiSearchForm uiSearchInput pull-right"  data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+           <div onclick="event.cancelBubble=true;"><button id="configButton" class="btn btn-primary pull-right"> <i class="uiIconSetting"></i> </button> </div>
+      </div>
       <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
         <div onclick="event.cancelBubble=true;"><input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}"></div>
       </div>
@@ -98,17 +101,35 @@
             <a type="button" class="btn btn-primary pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
             <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
         </span>
-        <div id="chat-record-button" class="msbuttonGroupRecord">
-           <button class="btn msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled><i class="uiIconChatRecordStart uiIconChatLightGray"></i></button>
-        </div>
+
+        <div id="chat-team-button-dropdown" class="btn-group pull-right" style="margin-top: 15px;margin-right: 10px;">
+          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#"><i class="caret" style="margin-right:4px;"></i></a>
+          <ul class="dropdown-menu">
+
+            <li>
+              <a href="#" id="chat-record-button" class="msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled>
+                <i class="uiIconChatRecordStart uiIconChatLightGray"></i>
+                <span>&{exoplatform.chat.meeting.start}</span>
+              </a>
+            </li>
+            
+            <li><a href="#" id="team-add-to-favorites-button"><i class="uiIconChatFavorite pull-left user-status"></i>&nbsp;&{exoplatform.chat.add.favorites}</a></li>
+            <li><a href="#" id="team-remove-from-favorites-button"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
+            <li><a href="#" id="team-notification-button"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
+            <li class="only-admin"><a href="#" id="team-edit-button"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.edit}">&nbsp;&{exoplatform.chat.edit}</span></a></li>
+            <li class="only-admin"><a href="#" id="team-delete-button"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
+
+          </ul>
+        </div> 
+
+        <!-- just comment it for now 
         <span id="chat-team-button" class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon" style="margin-top: 15px;margin-right: 10px;">
             <li>
-              <div id="team-edit-button" class="uiActionWithLabel team-edit-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.settings.button.tip}"><i class="uiIconSettings uiIconChatLightGray"></i>&nbsp;&{exoplatform.chat.team.settings.button}</div>
               <div id="team-delete-button" class="uiActionWithLabel team-delete-button" href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}"><i class="uiIconDelete uiIconChatLightGray"></i></div>
             </li>
           </ul>
-        </span>
+        </span> -->
 
         <a id="chat-room-detail-fullname" class="title-text target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
 
