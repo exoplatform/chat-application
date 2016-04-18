@@ -19,9 +19,10 @@
 
 package org.exoplatform.chat.services;
 
-import org.exoplatform.chat.model.NotificationBean;
-
 import java.util.List;
+import java.util.Map;
+
+import org.exoplatform.chat.model.NotificationBean;
 
 public interface NotificationService
 {
@@ -40,6 +41,8 @@ public interface NotificationService
   public int getUnreadNotificationsTotal(String user, String dbName);
 
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName);
+
+  public Map<String, Integer> getUnreadNotificationsTotalByCat(String user, String type, String category, String[] categoryIds, String dbName);
 
   public int getNumberOfNotifications(String dbName);
 

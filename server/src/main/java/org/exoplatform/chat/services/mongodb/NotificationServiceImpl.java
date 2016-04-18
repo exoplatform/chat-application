@@ -19,17 +19,25 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.UserService;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 @Named("notificationService")
 @ApplicationScoped
@@ -196,7 +204,36 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
     return total;
   }
+  
+  public Map<String, Integer> getUnreadNotificationsTotalByCat(String user, String type, String category, String[] categoryIds, String dbName)
+  {
+    HashMap<String, Integer> res = new HashMap<String, Integer>();
+    
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = new BasicDBObject();
 
+    query.put("user", user);
+//    query.put("isRead", false);
+    if (type!=null) query.put("type", type);
+    if (category!=null) query.put("category", category);
+    if (categoryIds!=null && categoryIds.length>0) query.put("categoryId", new BasicDBObject("$in", categoryIds));
+
+    
+    BasicDBObject group = new BasicDBObject();
+    group.put("_id", "$categoryId");
+    group.put("count", new BasicDBObject("$sum", 1));
+    
+    List<DBObject> pipeline = java.util.Arrays.asList(
+        (DBObject)new BasicDBObject("$match", query),
+        (DBObject)new BasicDBObject("$group", group));
+    
+    for(DBObject doc : coll.aggregate(pipeline).results()) {
+      res.put(doc.get("_id").toString(), (Integer)doc.get("count"));
+    }
+    
+    return res;
+  }
+  
   public int getNumberOfNotifications(String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);

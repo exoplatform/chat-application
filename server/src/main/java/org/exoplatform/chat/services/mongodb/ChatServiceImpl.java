@@ -26,6 +26,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -574,6 +576,33 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return roomType.toString();
     }
 
+  private void collectNotifications(String user, List<RoomBean> rooms, NotificationService notificationService,
+      String dbName) {
+    
+    String[] roomIds = new String[rooms.size()];
+    
+    for (int i = 0; i < rooms.size(); i++) {
+      RoomBean room = rooms.get(i);
+      String id = room.getRoom();
+      if(room.isSpace()) {
+        id = getSpaceRoom(SPACE_PREFIX + id, dbName);
+      }
+      roomIds[i] = id;
+    }
+    
+    Map<String, Integer> notifs = notificationService.getUnreadNotificationsTotalByCat(user, "chat", "room", roomIds,
+        dbName);
+    
+    for (RoomBean room : rooms) {
+      Integer n = notifs.get(room.getRoom());
+      if (n == null) {
+        room.setUnreadTotal(0);
+      } else {
+        room.setUnreadTotal(n);
+      }
+    }
+  }
+  
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName)
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
@@ -602,7 +631,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         {
           RoomBean roomBean = new RoomBean();
           roomBean.setRoom(roomId);
-          roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId, dbName));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           rooms.add(roomBean);
@@ -621,6 +649,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
   {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
+    List<RoomBean> roomsNotif = new ArrayList<RoomBean>();
     UserBean userBean = userService.getUser(user, true, dbName);
     int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
 
@@ -642,8 +671,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         roomBean.setStatus(targetUserBean.getStatus());
         roomBean.setAvailableUser(true);
         availableUsers.remove(targetUser);
-        if (roomBean.getUnreadTotal()>0)
-          unreadOnline += roomBean.getUnreadTotal();
       }
       else
       {
@@ -652,10 +679,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         roomBean.setAvailableUser(false);
         if (!withOffline)
           roomsOffline.add(roomBean);
-        if (roomBean.getUnreadTotal()>0)
-          unreadOffline += roomBean.getUnreadTotal();
-
       }
+
+      roomsNotif.add(roomBean);
     }
 
     if (withUsers)
@@ -699,10 +725,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
-      if (roomBeanS.getUnreadTotal()>0)
-        unreadSpaces += roomBeanS.getUnreadTotal();
       roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
+      roomsNotif.add(roomBeanS);
       if (withSpaces)
       {
         rooms.add(roomBeanS);
@@ -722,15 +746,29 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(false);
       roomBeanS.setTeam(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
-      if (roomBeanS.getUnreadTotal()>0)
-        unreadTeams += roomBeanS.getUnreadTotal();
       roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
+      roomsNotif.add(roomBeanS);
       if (withSpaces)
       {
         rooms.add(roomBeanS);
       }
 
+    }
+    
+    //collect notifications by room and update global counters
+    this.collectNotifications(user, roomsNotif, notificationService, dbName);
+    for (RoomBean room:rooms)
+    {
+      if(room.getUnreadTotal()>0) {
+        if(room.isSpace())
+          unreadSpaces += room.getUnreadTotal();
+        else if(room.isTeam())
+          unreadTeams += room.getUnreadTotal();
+        else if (room.isAvailableUser())
+          unreadOnline += room.getUnreadTotal();
+        else 
+          unreadOffline += room.getUnreadTotal();
+      }
     }
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
