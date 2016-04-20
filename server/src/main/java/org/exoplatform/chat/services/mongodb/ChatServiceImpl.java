@@ -761,7 +761,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     
     //collect notifications by room and update global counters
     this.collectNotifications(user, roomsNotif, notificationService, dbName);
-    for (RoomBean room:rooms)
+    for (RoomBean room:roomsNotif)
     {
       if(room.getUnreadTotal()>0) {
         if(room.isSpace())

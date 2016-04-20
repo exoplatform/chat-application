@@ -127,21 +127,24 @@ public class NotificationTestCase extends AbstractChatTestCase
     notificationService_.addNotification(user1, user2, "type", "cat", "catid3", "content2", "link", null);
     notificationService_.addNotification(user1, user2, "type", "cat", "catid3", "content2", "link", null);
 
-    Map<String, Integer>  total = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat", new String[]{"catid1","catid2"}, null);
+    Map<String, Integer> total = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat",
+        new String[] { "catid1", "catid2" }, null);
 
     assertEquals(2, total.size());
-    assertEquals(2, (int)total.get(getGroupKey("type","cat","catid1")));
-    assertEquals(1, (int)total.get(getGroupKey("type","cat","catid2")));
+    assertEquals(2, (int) total.get(getGroupKey("type", "cat", "catid1")));
+    assertEquals(1, (int) total.get(getGroupKey("type", "cat", "catid2")));
 
-    Map<String, Integer>  total2 = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat", null, null);
+    Map<String, Integer> total2 = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat", null,
+        null);
     assertEquals(3, total2.size());
-    assertEquals(2, (int)total2.get(getGroupKey("type","cat","catid1")));
-    assertEquals(1, (int)total2.get(getGroupKey("type","cat","catid2")));
-    assertEquals(2, (int)total2.get(getGroupKey("type","cat","catid3")));
+    assertEquals(2, (int) total2.get(getGroupKey("type", "cat", "catid1")));
+    assertEquals(1, (int) total2.get(getGroupKey("type", "cat", "catid2")));
+    assertEquals(2, (int) total2.get(getGroupKey("type", "cat", "catid3")));
 
-  }  
-  
-  private String getGroupKey(String type, String category, String categoryId) {
+  }
+
+  private String getGroupKey(String type, String category, String categoryId)
+  {
     BasicDBObject groupkey = new BasicDBObject();
     groupkey.put("type", type);
     groupkey.put("category", category);
