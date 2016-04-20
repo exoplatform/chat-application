@@ -483,7 +483,6 @@ public class ChatTestCase extends AbstractChatTestCase
     spaces.add(space);
 
     ServiceBootstrap.getUserService().setSpaces("john", spaces, null);
-    ServiceBootstrap.getUserService().setSpaces("james", spaces, null);
 
     SpaceBean space2 = new SpaceBean();
     space2.setDisplayName("Test Space 2");
