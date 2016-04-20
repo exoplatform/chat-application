@@ -471,9 +471,6 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatService.write("foo", "benjamin", roomId3, "false", null);
     chatService.write("bar", "james", roomId3, "false", null);
-    notificationService.addNotification("benjamin", "james", "chat", "room", roomId3, "bar",
-            "intranetPage?room="+roomId3, null);
-    notificationService.setNotificationsAsRead("james", "chat", "room", roomId3, null);
 
 
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces("benjamin", null);
@@ -505,9 +502,6 @@ public class ChatTestCase extends AbstractChatTestCase
     String spaceId2 = chatService.getSpaceRoom("test_space_2", null);
     chatService.write("foo", "benjamin", spaceId2, "false", null);
     chatService.write("foo", "john", spaceId2, "false", null);
-    notificationService.addNotification("benjamin", "john", "chat", "room", spaceId2, "bar",
-            "intranetPage?room="+spaceId2, null);
-    notificationService.setNotificationsAsRead("james", "chat", "room", spaceId2, null);
 
     RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
             true, true, false, true, false,
