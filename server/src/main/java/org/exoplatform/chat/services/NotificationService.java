@@ -42,7 +42,7 @@ public interface NotificationService
 
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName);
 
-  public Map<String, Integer> getUnreadNotificationsTotalByCat(String user, String type, String category, String[] categoryIds, String dbName);
+  public Map<String, Integer> getUnreadNotificationsTotalGroupById(String user, String type, String category, String[] categoryIds, String dbName);
 
   public int getNumberOfNotifications(String dbName);
 

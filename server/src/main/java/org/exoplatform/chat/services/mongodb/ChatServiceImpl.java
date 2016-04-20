@@ -590,11 +590,15 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       roomIds[i] = id;
     }
     
-    Map<String, Integer> notifs = notificationService.getUnreadNotificationsTotalByCat(user, "chat", "room", roomIds,
+    Map<String, Integer> notifs = notificationService.getUnreadNotificationsTotalGroupById(user, "chat", "room", roomIds,
         dbName);
     
     for (RoomBean room : rooms) {
-      Integer n = notifs.get(room.getRoom());
+      BasicDBObject groupKey = new BasicDBObject();
+      groupKey.put("type", "chat");
+      groupKey.put("category", "room");
+      groupKey.put("categoryId", room.getRoom());
+      Integer n = notifs.get(groupKey.toString());
       if (n == null) {
         room.setUnreadTotal(0);
       } else {

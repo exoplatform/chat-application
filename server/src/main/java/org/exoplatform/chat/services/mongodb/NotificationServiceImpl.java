@@ -205,7 +205,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     return total;
   }
   
-  public Map<String, Integer> getUnreadNotificationsTotalByCat(String user, String type, String category, String[] categoryIds, String dbName)
+  public Map<String, Integer> getUnreadNotificationsTotalGroupById(String user, String type, String category, String[] categoryIds, String dbName)
   {
     HashMap<String, Integer> res = new HashMap<String, Integer>();
     
@@ -218,9 +218,13 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     if (category!=null) query.put("category", category);
     if (categoryIds!=null && categoryIds.length>0) query.put("categoryId", new BasicDBObject("$in", categoryIds));
 
+    BasicDBObject groupkey = new BasicDBObject();
+    groupkey.put("type", "$type");
+    groupkey.put("category", "$category");
+    groupkey.put("categoryId", "$categoryId");
     
     BasicDBObject group = new BasicDBObject();
-    group.put("_id", "$categoryId");
+    group.put("_id", groupkey);
     group.put("count", new BasicDBObject("$sum", 1));
     
     List<DBObject> pipeline = java.util.Arrays.asList(

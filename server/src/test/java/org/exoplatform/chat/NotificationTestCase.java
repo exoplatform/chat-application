@@ -1,11 +1,16 @@
 package org.exoplatform.chat;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Map;
+
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.services.NotificationService;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.mongodb.BasicDBObject;
 
 public class NotificationTestCase extends AbstractChatTestCase
 {
@@ -112,4 +117,35 @@ public class NotificationTestCase extends AbstractChatTestCase
 
   }
 
+
+  @Test
+  public void testTotalByCategoryGroups() throws Exception
+  {
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid1", "content", "link", null);
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid1", "content2", "link", null);
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid2", "content", "link", null);
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid3", "content2", "link", null);
+    notificationService_.addNotification(user1, user2, "type", "cat", "catid3", "content2", "link", null);
+
+    Map<String, Integer>  total = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat", new String[]{"catid1","catid2"}, null);
+
+    assertEquals(2, total.size());
+    assertEquals(2, (int)total.get(getGroupKey("type","cat","catid1")));
+    assertEquals(1, (int)total.get(getGroupKey("type","cat","catid2")));
+
+    Map<String, Integer>  total2 = notificationService_.getUnreadNotificationsTotalGroupById(user1, "type", "cat", null, null);
+    assertEquals(3, total2.size());
+    assertEquals(2, (int)total2.get(getGroupKey("type","cat","catid1")));
+    assertEquals(1, (int)total2.get(getGroupKey("type","cat","catid2")));
+    assertEquals(2, (int)total2.get(getGroupKey("type","cat","catid3")));
+
+  }  
+  
+  private String getGroupKey(String type, String category, String categoryId) {
+    BasicDBObject groupkey = new BasicDBObject();
+    groupkey.put("type", type);
+    groupkey.put("category", category);
+    groupkey.put("categoryId", categoryId);
+    return groupkey.toString();
+  }
 }

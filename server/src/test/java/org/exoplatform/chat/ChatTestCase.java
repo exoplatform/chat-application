@@ -328,25 +328,24 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatService.write("foo", "benjamin", roomId1, "false", null);
     notificationService.addNotification("john", "benjamin", "chat", "room", roomId1, "foo",
-            "intranetPage?room="+roomId1, null);
+        "intranetPage?room=" + roomId1, null);
     chatService.write("bar", "john", roomId1, "false", null);
     notificationService.addNotification("benjamin", "john", "chat", "room", roomId1, "bar",
-            "intranetPage?room="+roomId1, null);
+        "intranetPage?room=" + roomId1, null);
 
     chatService.write("foo", "benjamin", roomId2, "false", null);
     notificationService.addNotification("mary", "benjamin", "chat", "room", roomId2, "foo",
-            "intranetPage?room="+roomId2, null);
+        "intranetPage?room=" + roomId2, null);
     chatService.write("bar", "mary", roomId2, "false", null);
     notificationService.addNotification("benjamin", "mary", "chat", "room", roomId2, "bar",
-            "intranetPage?room="+roomId2, null);
+        "intranetPage?room=" + roomId2, null);
 
     chatService.write("foo", "benjamin", roomId3, "false", null);
     notificationService.addNotification("john", "benjamin", "chat", "room", roomId3, "foo",
-            "intranetPage?room="+roomId3, null);
+        "intranetPage?room=" + roomId3, null);
     chatService.write("bar", "james", roomId3, "false", null);
     notificationService.addNotification("benjamin", "james", "chat", "room", roomId3, "bar",
-            "intranetPage?room="+roomId3, null);
-
+        "intranetPage?room=" + roomId3, null);
 
     List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces("benjamin", null);
     SpaceBean space = new SpaceBean();
@@ -370,53 +369,44 @@ public class ChatTestCase extends AbstractChatTestCase
 
     ServiceBootstrap.getUserService().setSpaces("benjamin", spaces, null);
 
-
     String spaceId1 = chatService.getSpaceRoom("test_space", null);
     chatService.write("foo", "benjamin", spaceId1, "false", null);
     notificationService.addNotification("john", "benjamin", "chat", "room", spaceId1, "foo",
-            "intranetPage?room="+spaceId1, null);
+        "intranetPage?room=" + spaceId1, null);
     notificationService.addNotification("james", "benjamin", "chat", "room", spaceId1, "foo",
-            "intranetPage?room="+spaceId1, null);
-    
-    
+        "intranetPage?room=" + spaceId1, null);
+
     String spaceId2 = chatService.getSpaceRoom("test_space_2", null);
     chatService.write("foo", "benjamin", spaceId2, "false", null);
     chatService.write("foo", "john", spaceId2, "false", null);
 
+    // public RoomsBean getRooms(String user, String filter,
+    // boolean withUsers, boolean withSpaces, boolean withPublic, boolean
+    // withOffline, boolean isAdmin,
+    // NotificationService notificationService, UserService userService,
+    // TokenService tokenService)
 
-    //public RoomsBean getRooms(String user, String filter,
-    //      boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin,
-    //      NotificationService notificationService, UserService userService, TokenService tokenService)
+    RoomsBean roomsBenAll = chatService.getRooms("benjamin", null, true, true, false, true, false, notificationService,
+        userService, tokenService, null);
+    RoomsBean roomsMaryAll = chatService.getRooms("mary", null, true, true, false, true, false, notificationService,
+        userService, tokenService, null);
+    RoomsBean roomsJohnAll = chatService.getRooms("john", null, true, true, false, true, false, notificationService,
+        userService, tokenService, null);
 
-    RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
-            true, true, false, true, false,
-            notificationService, userService, tokenService, null);
-    RoomsBean roomsMaryAll = chatService.getRooms("mary", null,
-            true, true, false, true, false,
-            notificationService, userService, tokenService, null);
-    RoomsBean roomsJohnAll = chatService.getRooms("john", null,
-            true, true, false, true, false,
-            notificationService, userService, tokenService, null);
-
-    RoomsBean roomsBenUsers = chatService.getRooms("benjamin", null,
-            true, false, false, true, false,
-            notificationService, userService, tokenService, null);
-    RoomsBean roomsMaryUsers = chatService.getRooms("mary", null,
-            true, false, false, true, false,
-            notificationService, userService, tokenService, null);
-    RoomsBean roomsMarySpaces = chatService.getRooms("mary", null,
-            false, true, false, false, false,
-            notificationService, userService, tokenService, null);
+    RoomsBean roomsBenUsers = chatService.getRooms("benjamin", null, true, false, false, true, false,
+        notificationService, userService, tokenService, null);
+    RoomsBean roomsMaryUsers = chatService.getRooms("mary", null, true, false, false, true, false, notificationService,
+        userService, tokenService, null);
+    RoomsBean roomsMarySpaces = chatService.getRooms("mary", null, false, true, false, false, false,
+        notificationService, userService, tokenService, null);
 
     Thread.sleep(110);
 
-    RoomsBean roomsBenOffline = chatService.getRooms("benjamin", null,
-            true, false, false, true, false,
-            notificationService, userService, tokenService, null);
+    RoomsBean roomsBenOffline = chatService.getRooms("benjamin", null, true, false, false, true, false,
+        notificationService, userService, tokenService, null);
 
-    RoomsBean roomsBenOnline = chatService.getRooms("benjamin", null,
-            true, false, false, false, false,
-            notificationService, userService, tokenService, null);
+    RoomsBean roomsBenOnline = chatService.getRooms("benjamin", null, true, false, false, false, false,
+        notificationService, userService, tokenService, null);
 
     assertEquals(5, roomsBenAll.getRooms().size());
     assertEquals(3, roomsBenUsers.getRooms().size());
@@ -426,21 +416,27 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(0, roomsMarySpaces.getRooms().size());
     assertEquals(1, roomsMaryUsers.getRooms().size());
     assertEquals(2, roomsJohnAll.getRooms().size());
-
+    
     // check notifications for ben
-    for (RoomBean b : roomsBenAll.getRooms()) {
-      if (Arrays.asList(roomId1, roomId2, roomId3).contains(b.getRoom())) {
-        assertEquals(1, b.getUnreadTotal());
-      } else {
-        assertEquals(0, b.getUnreadTotal());
+    for (RoomBean b : roomsBenAll.getRooms())
+    {
+      if (Arrays.asList(roomId1, roomId2, roomId3).contains(b.getRoom()))
+      {
+        assertEquals(b.getRoom(), 1, b.getUnreadTotal());
+      } else
+      {
+        assertEquals(b.getRoom(), 0, b.getUnreadTotal());
       }
     }
     // check notifications for john
-    for (RoomBean b : roomsJohnAll.getRooms()) {
-      if (Arrays.asList(roomId1, spaceId1).contains(b.getRoom())) {
-        assertEquals(1, b.getUnreadTotal());
-      } else {
-        assertEquals(0, b.getUnreadTotal());
+    for (RoomBean b : roomsJohnAll.getRooms())
+    {
+      if (Arrays.asList(roomId1, spaceId1).contains(b.getRoom()))
+      {
+        assertEquals(b.getRoom(), 1, b.getUnreadTotal());
+      } else
+      {
+        assertEquals(b.getRoom(), 0, b.getUnreadTotal());
       }
     }
   }
