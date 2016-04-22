@@ -19,13 +19,20 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -41,18 +48,13 @@ import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
 
 @Named("chatService")
 @ApplicationScoped
@@ -259,7 +261,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       tsobj.append("$lt", toTimestamp);
     }
-    query.put("timestamp", tsobj);
+    BasicDBObject ts = new BasicDBObject("timestamp",tsobj);
+    BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp",tsobj);
+    query.put("$or", new BasicDBObject[]{ts, updts});
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
