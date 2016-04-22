@@ -89,7 +89,7 @@ ChatNotification.prototype.updateNotifEventURL = function() {
  * @param callback : allows you to call an async callback function(username, fullname) when the profile is initiated.
  */
 ChatNotification.prototype.initUserProfile = function(callback) {
-
+  var thiss = this;
   jqchat.ajax({
     url: this.jzInitUserProfile,
     dataType: "json",
@@ -105,13 +105,9 @@ ChatNotification.prototype.initUserProfile = function(callback) {
         callback(this.username, fullname);
       }
 
-      this.notifEventInt = window.clearInterval(this.notifEventInt);
-      this.notifEventInt = setInterval(jqchat.proxy(this.refreshNotif, this), this.chatIntervalNotif);
-      this.refreshNotif();
+      thiss.enableNotifRefresh(true);
+      thiss.enableStatusRefresh(true);
 
-      this.statusEventInt = window.clearInterval(this.statusEventInt);
-      this.statusEventInt = setInterval(jqchat.proxy(this.refreshStatusChat, this), this.chatIntervalStatus);
-      this.refreshStatusChat();
     },
     error: function () {
       //retry in 3 sec
@@ -121,6 +117,21 @@ ChatNotification.prototype.initUserProfile = function(callback) {
 
 };
 
+ChatNotification.prototype.enableNotifRefresh = function(isEnabled) {
+  this.notifEventInt = window.clearInterval(this.notifEventInt);
+  if (isEnabled) {
+    this.notifEventInt = setInterval(jqchat.proxy(this.refreshNotif, this), this.chatIntervalNotif);
+    this.refreshNotif();
+  }
+}
+
+ChatNotification.prototype.enableStatusRefresh = function(isEnabled) {
+  this.statusEventInt = window.clearInterval(this.statusEventInt);
+  if (isEnabled) {
+      this.statusEventInt = setInterval(jqchat.proxy(this.refreshStatusChat, this), this.chatIntervalStatus);
+      this.refreshStatusChat();
+  }
+}
 
 /**
  * Refresh Notifications

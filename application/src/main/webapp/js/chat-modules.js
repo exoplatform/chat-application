@@ -1,4 +1,4 @@
-
+﻿
 /**
  ##################                           ##################
  ##################                           ##################
@@ -14,7 +14,7 @@
  */
 function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, dbName) {
   this.id = "";
-  this.messages = "";
+  this.messages = [];
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
   this.jzChatGetRoom = jzChatGetRoom;
@@ -72,16 +72,24 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastUsername"+thiss.username, thiss.targetUser, 60000);
       jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
       jzStoreParam("lastTS"+thiss.username, "0");
-      thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
-      thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
-      thiss.refreshChat(true, function() {
-        // always scroll to the last message when loading a chat room
-        var $chats = jqchat("#chats");
-        $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
-      });
+      
+	  thiss.enableRefresh(true);
+
     }
   });
 
+};
+
+ChatRoom.prototype.enableRefresh = function(isEnabled) {
+  this.chatEventInt = window.clearInterval(this.chatEventInt);
+  if(isEnabled) {
+      this.chatEventInt = setInterval(jqchat.proxy(this.refreshChat, this), this.chatIntervalChat);
+      this.refreshChat(true, function() {
+	    // always scroll to the last message when loading a chat room
+    	var $chats = jqchat("#chats");
+    	$chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+  	});
+  }
 };
 
 ChatRoom.prototype.onRefresh = function(callback) {
@@ -192,6 +200,9 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
+    var lastUpdatedTS = jzGetParam("lastUpdatedTS"+this.username);
+
+    var fromTimestamp = lastTS == 0 ? lastTS : Math.max(lastTS, lastUpdatedTS);
 
     var thiss = this;
     snack.request({
@@ -200,6 +211,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         room: this.id,
         user: this.username,
         token: this.token,
+        fromTimestamp: fromTimestamp,
         dbName: this.dbName
       }
     }, function (err, res){
@@ -253,7 +265,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
 //      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
       if (data.messages.length===0) {
-        thiss.showMessages(data);
+        thiss.showMessages(data, lastTS != 0);
       } else {
         var ts = data.timestamp;
         var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
@@ -263,7 +275,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
 
           //console.log("new data to show");
-          thiss.showMessages(data);
+          thiss.showMessages(data, lastTS != 0);
         }
       }
 
@@ -393,11 +405,31 @@ ChatRoom.prototype.getUserLastMessage = function() {
 /**
  * Show Messages (json to html)
  * @param msgs : json messages data to show
+ * @param merge : if true merge msgs with the current list, else replace
  */
-ChatRoom.prototype.showMessages = function(msgs) {
+ChatRoom.prototype.showMessages = function(msgs, merge) {
   var im, message, out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
   if (msgs!==undefined) {
-    this.messages = msgs.messages;
+  	if(merge) {
+	    var messages = TAFFY(this.messages);
+	    
+	    messages({date:"pending"}).remove();
+	    
+	    for (var m in msgs.messages) {
+	    	if( msgs.messages.hasOwnProperty( m ) ) {
+	    	var r = messages({id:msgs.messages[m].id});
+	    	if(r.count()>0) {
+	    		r.update(msgs.messages[m]);
+	    	} else {
+	    		messages.insert(msgs.messages[m]);
+	    	}
+	    	}
+	    }
+  		
+  		this.messages = messages().get();
+  	} 	else {
+    	this.messages = msgs.messages;
+  	}
   }
 
   if (this.messages.length===0) {
