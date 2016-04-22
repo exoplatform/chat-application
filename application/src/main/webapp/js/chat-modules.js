@@ -412,11 +412,13 @@ ChatRoom.prototype.showMessages = function(msgs, merge) {
 	    messages({date:"pending"}).remove();
 	    
 	    for (var m in msgs.messages) {
+	    	if( msgs.messages.hasOwnProperty( m ) ) {
 	    	var r = messages({id:msgs.messages[m].id});
 	    	if(r.count()>0) {
 	    		r.update(msgs.messages[m]);
 	    	} else {
 	    		messages.insert(msgs.messages[m]);
+	    	}
 	    	}
 	    }
   		
