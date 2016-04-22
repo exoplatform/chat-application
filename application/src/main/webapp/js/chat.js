@@ -1552,14 +1552,36 @@ ChatApplication.prototype.initChat = function() {
 
   this.initChatPreferences();
 
-  this.chatOnlineInt = clearInterval(this.chatOnlineInt);
-  this.chatOnlineInt = setInterval(jqchat.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
-  this.refreshWhoIsOnline();
+  this.enableRefresh(true);
+
+  var thiss = this;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      console.log("disabling refresh");
+      //TODO it could be interesting to regroup whoisonline and notification services
+      //thiss.enableRefresh(false);
+      thiss.chatRoom.enableRefresh(false);
+      //chatNotification.enableNotifRefresh(false);
+      chatNotification.enableStatusRefresh(false);
+    } else {
+      console.log("enabling refresh");
+      //thiss.enableRefresh(true);
+      thiss.chatRoom.enableRefresh(true);
+      //chatNotification.enableNotifRefresh(true);
+      chatNotification.enableStatusRefresh(true);
+    }
+  }, false);
 
   if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
 };
 
-
+ChatApplication.prototype.enableRefresh = function(isEnabled) {
+  this.chatOnlineInt = clearInterval(this.chatOnlineInt);
+  if (isEnabled) {
+    this.chatOnlineInt = setInterval(jqchat.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
+    this.refreshWhoIsOnline();
+  }
+}
 
 /**
  * Init Chat Preferences
