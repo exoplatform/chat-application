@@ -72,17 +72,26 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastUsername"+thiss.username, thiss.targetUser, 60000);
       jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
       jzStoreParam("lastTS"+thiss.username, "0");
-      thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
-      thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
-      thiss.refreshChat(true, function() {
-        // always scroll to the last message when loading a chat room
-        var $chats = jqchat("#chats");
-        $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
-      });
+
+      thiss.enableRefresh(true);
     }
   });
 
 };
+
+ChatRoom.prototype.enableRefresh = function(isEnabled) {
+  this.chatEventInt = window.clearInterval(this.chatEventInt);
+  if (isEnabled) {
+    this.chatEventInt = setInterval(jqchat.proxy(this.refreshChat, this),
+        this.chatIntervalChat);
+    this.refreshChat(true, function() {
+      // always scroll to the last message when loading a chat room
+      var $chats = jqchat("#chats");
+      $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+    });
+  }
+};
+
 
 ChatRoom.prototype.onRefresh = function(callback) {
   this.onRefreshCB = callback;
