@@ -525,6 +525,9 @@ var chatApplication = new ChatApplication();
 
 
     $('#chat-search').keyup(function(event) {
+      if (event.keyCode == 27 || event.which == 27) {
+        $(this).val('');
+      }
       var filter = $(this).val();
       chatApplication.search(filter);
     });
@@ -2682,11 +2685,19 @@ ChatApplication.prototype.search = function(filter) {
   if (filter == ":aboutme" || filter == ":about me") {
     this.showAboutPanel();
   }
-  if (filter.indexOf("@")!==0) {
+
+  var index = filter.indexOf("@");
+  if (index !== 0 || filter.length == 0) {
     this.chatRoom.highlight = filter;
     this.chatRoom.showMessages();
-  } else {
-    this.userFilter = filter.substr(1, filter.length-1);
+  }
+
+  if (index === 0 || filter.length == 0) {
+    var userFilter = filter.length == 0 ? filter : filter.substr(1, filter.length-1);
+    if (userFilter == this.userFilter) {
+      return;
+    }
+    this.userFilter = userFilter;
     this.filterInt = clearTimeout(this.filterInt);
     this.filterInt = setTimeout(jqchat.proxy(this.refreshWhoIsOnline, this), 500);
   }
