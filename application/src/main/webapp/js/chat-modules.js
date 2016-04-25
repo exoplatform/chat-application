@@ -14,7 +14,7 @@
  */
 function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, dbName) {
   this.id = "";
-  this.messages = "";
+  this.messages = [];
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
   this.jzChatGetRoom = jzChatGetRoom;
@@ -192,6 +192,9 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
     var lastTS = jzGetParam("lastTS"+this.username);
+    var lastUpdatedTS = jzGetParam("lastUpdatedTS"+this.username);
+
+    var fromTimestamp = lastTS == 0 ? lastTS : Math.max(lastTS, lastUpdatedTS);
 
     var thiss = this;
     snack.request({
@@ -200,6 +203,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         room: this.id,
         user: this.username,
         token: this.token,
+        fromTimestamp: fromTimestamp,
         dbName: this.dbName
       }
     }, function (err, res){
@@ -249,7 +253,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
 //      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
       var im, message, out="", prevUser="";
       if (data.messages.length===0) {
-        thiss.showMessages(data);
+        thiss.showMessages(data, lastTS != 0);
       } else {
         var ts = data.timestamp;
         var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
@@ -259,7 +263,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
 
           //console.log("new data to show");
-          thiss.showMessages(data);
+          thiss.showMessages(data, lastTS != 0);
         }
       }
 
@@ -389,11 +393,36 @@ ChatRoom.prototype.getUserLastMessage = function() {
 /**
  * Show Messages (json to html)
  * @param msgs : json messages data to show
+ * @param merge : if true merge msgs with the current list, else replace
  */
-ChatRoom.prototype.showMessages = function(msgs) {
+ChatRoom.prototype.showMessages = function(msgs, merge) {
   var im, message, out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
-  if (msgs!==undefined) {
-    this.messages = msgs.messages;
+  if (msgs !== undefined) {
+    if (merge) {
+      var messages = TAFFY(this.messages);
+
+      messages({
+        date : "pending"
+      }).remove();
+
+      for ( var m in msgs.messages) {
+        if (msgs.messages.hasOwnProperty(m)) {
+          var msg = msgs.messages[m];
+          var localMsg = messages({
+            id : msg.id
+          });
+          if (localMsg.count() > 0) {
+            localMsg.update(msg);
+          } else {
+            messages.insert(msg);
+          }
+        }
+      }
+
+      this.messages = messages().get();
+    } else {
+      this.messages = msgs.messages;
+    }
   }
 
   if (this.messages.length===0) {
