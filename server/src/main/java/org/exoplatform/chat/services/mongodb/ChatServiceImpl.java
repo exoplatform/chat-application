@@ -259,7 +259,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     {
       tsobj.append("$lt", toTimestamp);
     }
-    query.put("timestamp", tsobj);
+    BasicDBObject ts = new BasicDBObject("timestamp",tsobj);
+    BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp",tsobj);
+    query.put("$or", new BasicDBObject[]{ts, updts});
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
