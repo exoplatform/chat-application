@@ -624,7 +624,7 @@ var chatApplication = new ChatApplication();
         else return;
       }
 
-      searchUsers(filter, prefix, event, true, function(name, fullname) {
+      searchUsers(filter, prefix, event, true, true, function(name, fullname) {
         addTaskUserLabel(name, fullname);
         var pTaskHeight = parseInt($(".meeting-action-task-panel").attr("data-height"));
         var taskUserListHeight = $(".task-users-list").height();
@@ -783,14 +783,16 @@ var chatApplication = new ChatApplication();
       var prefix = "team";
       var filter = $(this).val();
 
-      searchUsers(filter, prefix, event, false, function(name, fullname) {
+      searchUsers(filter, prefix, event, false, false, function(name, fullname) {
         addTeamUserLabel(name, fullname);
       });
 
 
     });
 
-    function searchUsers(filter, prefix, event, withCurrentUser,callback) {
+    var searchTimeout = false;
+    var searchingValue = '';
+    function searchUsers(filter, prefix, event, withCurrentUser, searchInRoomFirst ,callback) {
 
       if ( event.which === 13 ) { // ENTER
         $("."+prefix+"-user").each(function() {
@@ -830,51 +832,57 @@ var chatApplication = new ChatApplication();
         var $userResults = $("."+prefix+"-users-results");
         $userResults.css("display", "none");
         $userResults.html("");
-      } else {
-        chatApplication.getAllUsers(filter, function (jsonData) {
-          var users = TAFFY(jsonData.users);
-          var users = users();
-          var $userResults = $("."+prefix+"-users-results");
-          $userResults.css("display", "none");
-          var html = "";
-          if (!withCurrentUser) {
+      } else if (filter != searchingValue){
+        searchingValue = filter;
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+          chatApplication.getAllUsers(filter, searchInRoomFirst, function (jsonData) {
+            searchingValue = '';
+            var users = TAFFY(jsonData.users);
+            var users = users();
+            var $userResults = $("."+prefix+"-users-results");
+            $userResults.css("display", "none");
+            var html = "";
+            if (!withCurrentUser) {
               users = users.filter({name:{"!is":chatApplication.username}});
-          }
-          $("."+prefix+"-user-label").each(function() {
-            var name = $(this).attr("data-name");
-            users = users.filter({name:{"!is":name}});
-          });
-          var filterRegExp = new RegExp( "(" + filter + ")" , 'gi' );
-          users.order("fullname").limit(5).each(function (user, number) {
-            $userResults.css("display", "block");
-            if (user.status == "offline") user.status = "invisible";
-            var classSel = "";
-            if (number === 0) classSel = "selected"
-            html += "<div class='"+prefix+"-user item "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-            html += " <span class='chat-user-name'><span class='inner'>";
-            html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
-            html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
-            html += " </span></span>";
-            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/chat/api/1.0/user/getAvatarURL/"+user.name+"' width='30px' style='width:30px;'></span>";
-            html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
-            html += "</div>";
-          });
-          $userResults.html(html);
-
-          $('.'+prefix+'-user').on("mouseover", function() {
-            $("."+prefix+"-user").removeClass("selected");
-            $(this).addClass("selected");
-          });
-
-          $('.'+prefix+'-user').on("click", function() {
-            var name = $(this).attr("data-name");
-            var fullname = $(this).attr("data-fullname");
-            if (typeof callback === "function") {
-              callback(name, fullname);
             }
+            $("."+prefix+"-user-label").each(function() {
+              var name = $(this).attr("data-name");
+              users = users.filter({name:{"!is":name}});
+            });
+            var filterRegExp = new RegExp( "(" + filter + ")" , 'gi' );
+            users.limit(5).each(function (user, number) {
+              $userResults.css("display", "block");
+              if (user.status == "offline") user.status = "invisible";
+              var classSel = "";
+              if (number === 0) classSel = "selected"
+              html += "<div class='"+prefix+"-user item "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
+              html += " <span class='chat-user-name'><span class='inner'>";
+              html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
+              html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
+              html += " </span></span>";
+              html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/chat/api/1.0/user/getAvatarURL/"+user.name+"' width='30px' style='width:30px;'></span>";
+              html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
+              html += "</div>";
+            });
+            $userResults.html(html);
+
+            $('.'+prefix+'-user').on("mouseover", function() {
+              $("."+prefix+"-user").removeClass("selected");
+              $(this).addClass("selected");
+            });
+
+            $('.'+prefix+'-user').on("click", function() {
+              var name = $(this).attr("data-name");
+              var fullname = $(this).attr("data-fullname");
+              if (typeof callback === "function") {
+                callback(name, fullname);
+              }
+            });
+
           });
 
-        });
+        }, 300);
       }
     }
 
@@ -1686,17 +1694,41 @@ ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
  * @param filter : the filter (ex: Ben Pa)
  * @param callback : return the json users data list as a parameter of the callback function
  */
-ChatApplication.prototype.getAllUsers = function(filter, callback) {
+ChatApplication.prototype.getAllUsers = function(filter, isSearchInRoomFirst, callback) {
+
+  // Cache result
+  var _this = this;
+  if (this.getAllUsersCache == undefined) {
+    this.getAllUsersCache = {};
+  }
+  var cacheKey = filter;
+  if (isSearchInRoomFirst) {
+    cacheKey += '__' + this.targetUser;
+  }
+  if (this.getAllUsersCache[cacheKey] != undefined) {
+    if (typeof callback === "function") {
+      callback(this.getAllUsersCache[cacheKey]);
+    }
+    return;
+  }
+
+  var data = {
+    "filter": filter,
+    "user": this.username,
+    "token": this.token,
+    "dbName": this.dbName
+  };
+  if (isSearchInRoomFirst === true) {
+    data.currentRoom = this.targetUser;
+  }
+
   jqchat.ajax({
     url: this.jzUsers,
-    data: {"filter": filter,
-      "user": this.username,
-      "token": this.token,
-      "dbName": this.dbName
-    },
+    data: data,
     dataType: "json",
     context: this,
     success: function(response){
+      _this.getAllUsersCache[cacheKey] = response;
       if (typeof callback === "function") {
         callback(response);
       }

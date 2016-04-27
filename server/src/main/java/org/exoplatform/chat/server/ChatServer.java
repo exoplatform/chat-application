@@ -44,25 +44,19 @@ import com.mongodb.util.JSON;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.social.notification.Utils;
 
@@ -855,7 +849,7 @@ public class ChatServer
 
   @Resource
   @Route("/users")
-  public Response.Content getUsers(String user, String token, String room, String filter, String dbName)
+  public Response.Content getUsers(String user, String token, String room, String filter, String currentRoom, String dbName)
   {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
@@ -869,7 +863,7 @@ public class ChatServer
     }
     else
     {
-      users = userService.getUsers(filter, true, dbName);
+      users = userService.getSuggestionUsers(user, currentRoom, filter, dbName, 10);
     }
 
     for (UserBean userBean:users)
