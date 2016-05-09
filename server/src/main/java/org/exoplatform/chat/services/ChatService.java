@@ -19,6 +19,7 @@
 
 package org.exoplatform.chat.services;
 
+import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 
@@ -69,6 +70,8 @@ public interface ChatService
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, String dbName);
 
   public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+
+  public MessageBean getMessage(String roomId, String messageId, String dbName);
 
   public String getSpaceRoom(String space, String dbName);
 

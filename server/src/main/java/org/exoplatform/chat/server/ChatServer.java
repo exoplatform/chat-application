@@ -26,14 +26,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -163,13 +156,11 @@ public class ChatServer
     {
       if (message!=null)
       {
-        // Only member can send chat message in team
-        if (targetUser.startsWith(ChatService.TEAM_PREFIX)) {
-          List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
-          if (!roomMembers.contains(user)) {
-            return Response.content(403, "Petit malin !");
-          }
-        }        
+        // Only members of the room can send messages
+        if (!isMemberOfRoom(user, room, dbName)) {
+          return Response.content(403, "Petit malin !");
+        }
+
         try {
           message = URLDecoder.decode(message,"UTF-8");
           options = URLDecoder.decode(options,"UTF-8");
@@ -241,12 +232,9 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
 
-    // Only member can view chat message in a team
-    if (userService.getRoom(user, room, dbName).isTeam()) {
-      List<String> roomMembers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
-      if (!roomMembers.contains(user)) {
-        return Response.content(403, "Petit malin !");
-      }
+    // Only members of the room can view the messages
+    if (!isMemberOfRoom(user, room, dbName)) {
+      return Response.content(403, "Petit malin !");
     }
 
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from, dbName);
@@ -444,6 +432,13 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
+
+    // Only author of the message can delete it
+    MessageBean message = chatService.getMessage(room, messageId, dbName);
+    if (message == null || !message.getUser().equals(user)) {
+      return Response.notFound("");
+    }
+
     try
     {
       chatService.delete(room, user, messageId, dbName);
@@ -481,6 +476,13 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
+
+    // Only author of the message can edit it
+    MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
+    if (currentMessage == null || !currentMessage.getUser().equals(user)) {
+      return Response.notFound("");
+    }
+
     try
     {
       try {
@@ -987,5 +989,38 @@ public class ChatServer
     } catch(Exception e){
       LOG.info(e.getMessage());
     }
+  }
+
+  /**
+   * Check if an user is member of a room
+   * @param username Username of the user
+   * @param roomId Id of the room
+   * @param dbName Databse name
+   * @return true if the user is member of the room
+   */
+  protected boolean isMemberOfRoom(String username, String roomId, String dbName) {
+    List<String> roomMembers;
+    RoomBean room = userService.getRoom(username, roomId, dbName);
+    if(room == null) {
+      LOG.warning("Cannot check if user " + username + " is member of room " + roomId + " since the room does not exist.");
+      return false;
+    }
+    if (room.isTeam()) {
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
+    } else if(room.isSpace()) {
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE, dbName);
+    } else {
+      roomMembers = new ArrayList<>();
+      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId, dbName);
+      if(userBeans != null) {
+        for (UserBean userBean : userBeans) {
+          roomMembers.add(userBean.getName());
+        }
+      }
+    }
+    if (roomMembers == null || !roomMembers.contains(username)) {
+      return false;
+    }
+    return true;
   }
 }

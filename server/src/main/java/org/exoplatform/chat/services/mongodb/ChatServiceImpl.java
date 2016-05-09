@@ -30,10 +30,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.exoplatform.chat.listener.ConnectionManager;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.model.RoomsBean;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.UserBean;
+import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.TokenService;
@@ -381,6 +378,28 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     return sb.toString();
 
+  }
+
+  public MessageBean getMessage(String roomId, String messageId, String dbName) {
+    MessageBean message = null;
+
+    String roomType = getTypeRoomChat(roomId, dbName);
+
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+
+    BasicDBObject query = new BasicDBObject();
+    query.put("roomId", roomId);
+    query.put("_id", new ObjectId(messageId));
+
+    DBObject object = coll.findOne(query);
+    if(object != null) {
+      message = new MessageBean();
+      message.setUser(object.get("user").toString());
+      message.setMessage(object.get("message").toString());
+      message.setDate(object.get("timestamp").toString());
+    }
+
+    return message;
   }
 
   private void updateRoomTimestamp(String room, String dbName)
