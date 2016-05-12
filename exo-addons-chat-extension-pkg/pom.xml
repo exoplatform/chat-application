@@ -4,7 +4,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>1.3.x-SNAPSHOT</version>
+    <version>1.3.0-RC01</version>
   </parent>
   <artifactId>exo-addons-chat-extension-pkg</artifactId>
   <packaging>pom</packaging>
