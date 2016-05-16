@@ -113,10 +113,10 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
  * @param callback : the method to execute on success
  */
 ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
+  var newMsgTimestamp = new Date().getTime();
 
   // Update temporary message for smooth view
   if (room !== "" && room === this.id) {
-    var im = this.messages.length;
     var tmpMessage = msg.replace(/&/g, "&#38");
     tmpMessage = tmpMessage.replace(/</g, "&lt;");
     tmpMessage = tmpMessage.replace(/>/g, "&gt;");
@@ -128,12 +128,15 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     tmpOptions = tmpOptions.replace(/</g, "&lt;");
     tmpOptions = tmpOptions.replace(/>/g, "&gt;");
     tmpOptions = snack.parseJSON(tmpOptions);
-    this.messages[im] = {"user": this.username,
+    this.addMessagesToLocalList({"messages": [
+      {"user": this.username,
       "fullname": chatBundleData["exoplatform.chat.you"],
       "date": "pending",
+      "timestamp": newMsgTimestamp,
       "message": tmpMessage,
       "options": tmpOptions,
-      "isSystem": isSystemMessage};
+      "isSystem": isSystemMessage}
+    ]}, true);
     this.showMessages();
   }
   // Send message to server
@@ -146,13 +149,12 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "message": encodeURIComponent(msg),
       "options": encodeURIComponent(JSON.stringify(options)),
       "token": token,
-      "timestamp": new Date().getTime(),
+      "timestamp": newMsgTimestamp,
       "isSystem": isSystemMessage,
       "dbName": this.dbName
     }
   }, function (err, response){
     if (!err) {
-      thiss.refreshChat();
       if (typeof callback === "function") {
         callback();
       }
@@ -252,23 +254,15 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       res = res.split("\t").join(" ");
       // handle the response data
       var data = snack.parseJSON(res);
-      var lastTS = jzGetParam("lastTS"+thiss.username);
-      var lastUpdatedTS = jzGetParam("lastUpdatedTS"+thiss.username);
-//      console.log("chatEvent :: lastTS="+lastTS+" :: serverTS="+data.timestamp);
-      var im, message, out="", prevUser="";
-      if (data.messages.length===0) {
-        thiss.showMessages(data);
-      } else {
+      if (data.messages.length > 0) {
         var ts = data.timestamp;
         var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
         if (updatedTS < 0) updatedTS = 0;
-        if (ts != lastTS || (forceRefresh === true) || (Number(lastUpdatedTS) != updatedTS)) {
-          jzStoreParam("lastTS"+thiss.username, ts, 600);
-          jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
+        jzStoreParam("lastTS"+thiss.username, ts, 600);
+        jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
 
-          //console.log("new data to show");
-          thiss.showMessages(data);
-        }
+        thiss.addMessagesToLocalList(data);
+        thiss.showMessages();
       }
 
       if (typeof thiss.onRefreshCB === "function") {
@@ -393,24 +387,27 @@ ChatRoom.prototype.getUserLastMessage = function() {
   return $lastMessage;
 }
 
-
 /**
- * Show Messages (json to html)
- * @param msgs : json messages data to show
+ * Merge new/updated/deleted messages with the local messages list.
+ * @param newMsgs new or updated messages
+ * @param addedLocally is the message added locally ? locally means by the current browser, not by fetching data on the server
  */
-ChatRoom.prototype.showMessages = function(msgs) {
-  var im, message, out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
-  if (msgs !== undefined) {
+ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
+  if (newMsgs !== undefined) {
     if (this.messages.length > 0) {
       var messages = TAFFY(this.messages);
 
-      messages({
-        date : "pending"
-      }).remove();
+      // remove messages added locally when merging with messages retrieved from the server,
+      // since these messages are also on the server and will be merged
+      if(!addedLocally) {
+        messages({
+          date: "pending"
+        }).remove();
+      }
 
-      for ( var m in msgs.messages) {
-        if (msgs.messages.hasOwnProperty(m)) {
-          var msg = msgs.messages[m];
+      for ( var m in newMsgs.messages) {
+        if (newMsgs.messages.hasOwnProperty(m)) {
+          var msg = newMsgs.messages[m];
           var localMsg = messages({
             id : msg.id
           });
@@ -424,9 +421,16 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
       this.messages = messages().get();
     } else {
-      this.messages = msgs.messages;
+      this.messages = newMsgs.messages;
     }
   }
+}
+
+/**
+ * Convert local messages list in HTML output to display the list of messages
+ */
+ChatRoom.prototype.showMessages = function() {
+  var out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
 
   if (this.messages.length===0) {
     if (this.isPublic) {
