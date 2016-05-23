@@ -203,10 +203,14 @@ var chatApplication = new ChatApplication();
       $toggle.show();
       $(".meeting-action-title").html(ptitle);
       $popup.show();
-      if (toggleClass === "meeting-action-event-panel" && chatApplication.targetUser.indexOf("team-")>-1) {
-        chatApplication.getUsers(chatApplication.targetUser, function (users) {
-          $("#chat-file-target-user").val(users);
-        }, true);
+      if (toggleClass === "meeting-action-event-panel") {
+        if (chatApplication.targetUser.indexOf("team-") > -1) {
+          chatApplication.getUsers(chatApplication.targetUser, function (users) { // Team chat room
+            $("#chat-file-target-user").val(users);
+          }, true);
+        } else if (chatApplication.targetUser.indexOf("space-") == -1) { // 1:1 chat room
+          $("#chat-file-target-user").val(chatApplication.username + "," + chatApplication.targetUser);
+        }
       }
 
       if (toggleClass === "meeting-action-file-panel") {
@@ -691,7 +695,7 @@ var chatApplication = new ChatApplication();
       if (endTime==="all-day") endTime = "11:59 PM";
       var users = "";
       var targetUser = chatApplication.targetUser;
-      if (targetUser.indexOf("team-")>-1) {
+      if (targetUser.indexOf("space-") == -1) {
         users = $("#chat-file-target-user").val();
       }
       hideMeetingPanel();
@@ -2156,7 +2160,6 @@ ChatApplication.prototype.loadRoom = function() {
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     ////// USER
     {
-      jqchat(".meeting-action-event").css("display", "none");
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
@@ -2167,7 +2170,6 @@ ChatApplication.prototype.loadRoom = function() {
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE
     {
-      jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
@@ -2202,7 +2204,6 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("ERROR::"+xhr.responseText);
         }
       });
-      jqchat(".meeting-action-event").css("display", "block");
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");

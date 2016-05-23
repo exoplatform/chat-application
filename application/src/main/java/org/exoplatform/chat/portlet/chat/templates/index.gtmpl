@@ -227,7 +227,7 @@
           </div>
           <div id="chat-msg-meeting-actions" class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
           <ul class="dropdown-menu pull-right">
-            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
+            <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
             <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{exoplatform.chat.assign.task}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{exoplatform.chat.share.link}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> &{exoplatform.chat.upload.file}</a></li>
