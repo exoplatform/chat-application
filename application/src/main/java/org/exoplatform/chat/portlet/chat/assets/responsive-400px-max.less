@@ -1,6 +1,6 @@
 @media (max-width: 400px) {
   @height:                      460px;
-  @width:                       320px;
+  @width:                       100%;
   @heightMessage:               60px;
   @heightBar:                   30px;
   @widthUsers:                  320px;
@@ -19,17 +19,13 @@
 
   #chat-application {
     min-width: 320px;
-    width: 320px;
+    width: 100%;
 //    padding: 5px;
     padding: 0;
 
     .uiGrayLightBox {
       margin: 0!important;
       -webkit-border-radius: 0;
-
-      .avatar-user {
-        display: none;
-      }
 
       .btn-weemo-download {
         display: none!important;
@@ -39,9 +35,6 @@
       }
       .containerMoreItem {
         padding-right: 0px!important;
-      }
-      label {
-        display: none;
       }
     }
 
@@ -54,17 +47,15 @@
 
     .uiLeftContainerArea {
       width: 100%;
-      padding: 0!important;
       float: none;
       #chat-users {
+        height: initial !important;
         margin: 0!important;
-        height: 400px!important;
       }
     }
 
     .uiRightContainerArea {
-      display: none;
-      padding: 0!important;
+      clear: both;
       height: 400px!important;
 
       #chats {
@@ -73,4 +64,20 @@
     }
   }
 
+  .msRow {
+    .msRightInfo {
+      .msTimePost {
+        width: 100%;
+        position: relative;
+      }
+
+      .msAction {
+        display: none !important;
+      }
+    }
+
+    .msUserMes {
+      clear: both;
+    }
+  }
 }
