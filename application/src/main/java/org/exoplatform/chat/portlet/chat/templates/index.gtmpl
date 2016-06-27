@@ -218,18 +218,7 @@
                   	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
                   </div>
                 </div>
-                <div class="meeting-action-panel meeting-action-task-panel" data-height="249" data-title="&{exoplatform.chat.assign.task}">
-                  <strong class="actionTitle">&{exoplatform.chat.assign.task}</strong>
-                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.task.title}" placeholder="&{exoplatform.chat.task.title}" id="task-add-task">
-                  <div class="task-users-list "></div>
-                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.assign.to}" placeholder="&{exoplatform.chat.assign.to}" id="task-add-user" >
-                  <div class="task-users-results uiAutoComplete" style="display:none;"></div>
-                  <input type="text" class="input-with-value" data-value="&{exoplatform.chat.due.date}" placeholder="&{exoplatform.chat.due.date}" id="task-add-date" data-date="<%=today%>" >
-                  <div class="uiActionBorder" >
-                  	<a href="#" type="button" class="btn btn-primary create-task-button">&{exoplatform.chat.post}</a>
-                  	<a href="#" type="button" class="btn btnClosePopup">&{exoplatform.chat.cancel}</a>
-                  </div>
-                </div>
+                <%=taskPopup%>
                 <div class="meeting-action-panel meeting-action-event-panel" data-height="279" data-title="&{exoplatform.chat.add.event}">
                   <strong class="actionTitle">&{exoplatform.chat.add.event}</strong>
                   <input type="text" class="input-with-value" data-value="&{exoplatform.chat.event.title}" placeholder="&{exoplatform.chat.event.title}" id="event-add-summary">
@@ -260,7 +249,7 @@
           <div id="chat-msg-meeting-actions" class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
           <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
-            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><a href="#"><i class="uiIconChatCreateTask uiIconChatLightGray"></i> &{exoplatform.chat.assign.task}</a></li>
+            <li class="meeting-action-link meeting-action-task" data-toggle="meeting-action-task-panel" style="display: none;"><%=taskMenuItem %></li>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{exoplatform.chat.share.link}</a></li>
             <li class="meeting-action-link" data-toggle="meeting-action-file-panel" id="meeting-action-upload-link"><a href="#"><i class="uiIconChatUpload uiIconChatLightGray"></i> &{exoplatform.chat.upload.file}</a></li>
             <!--li class="meeting-action-link" data-toggle="meeting-action-flag-panel"><a href="#"><i class="icon-flag"></i> Add to Agenda (Coming Soon)</a></li-->

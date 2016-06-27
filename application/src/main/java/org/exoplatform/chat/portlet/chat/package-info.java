@@ -30,7 +30,8 @@
                 @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class),
                 @Binding(value = org.exoplatform.calendar.service.CalendarService.class),
                 @Binding(value = org.exoplatform.wiki.service.WikiService.class),
-                @Binding(value = org.exoplatform.services.listener.ListenerService.class)
+                @Binding(value = org.exoplatform.services.listener.ListenerService.class),
+                @Binding(value = org.exoplatform.commons.api.ui.PlugableUIService.class)
         }
 )
 @Scripts(location = AssetLocation.SERVER,
