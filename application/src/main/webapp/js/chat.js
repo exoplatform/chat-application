@@ -3106,6 +3106,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
  * Load Room Users : server call
  */
 ChatApplication.prototype.loadRoomUsers = function() {
+  var thiss = this;
   this.chatRoom.owner = "";
   var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
   if (this.targetUser !== undefined) {
@@ -3117,23 +3118,15 @@ ChatApplication.prototype.loadRoomUsers = function() {
       // fetch room users
       chatApplication.getUsers(this.targetUser, function (jsonData) {
         var users = TAFFY(jsonData.users);
-        var users = users();
 
+        // generate room users list DOM
         var html = "";
-        users.order("status").each(function (user, number) {
-          if (user.name !== chatApplication.username) {
-            html += "<div class='room-user' data-name='"+user.name+"'>";
-            html += "  <div class='msUserAvatar pull-left'>";
-            html += "    <a class='msAvatarLink avatarCircle' href='" + eXo.env.portal.context + "/" + eXo.env.portal.portalName + "/profile/" + user.name + "'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></a>";
-            html += "  </div>";
-            html += "  <div class='room-user-status pull-right'>";
-            html += "    <i class='user-" + user.status + "'></i>";
-            html += "  </div>";
-            html += "  <div class='room-user-name'>" + user.fullname + "</div>";
-            html += "</div>"
-          }
+        var sortedStatuses = ["available", "donotdisturb", "away", "offline"];
+        sortedStatuses.forEach(function(status) {
+          users({status: status}).order("fullname").each(function (user) {
+            html += thiss.renderRoomUser(user);
+          });
         });
-
         roomUsersList.html(html);
       }, false);
     }
@@ -3141,4 +3134,25 @@ ChatApplication.prototype.loadRoomUsers = function() {
     // hide room users since the room id is not defined
     roomUsersContainer.hide();
   }
-}
+};
+
+/**
+ * Generate room user DOM
+ * @param user User to render
+ * @returns {string} The DOM representing the user
+ */
+ChatApplication.prototype.renderRoomUser = function(user) {
+  var html = "";
+  if (user.name !== chatApplication.username) {
+    html += "<div class='room-user' data-name='"+user.name+"'>";
+    html += "  <div class='msUserAvatar pull-left'>";
+    html += "    <a class='msAvatarLink avatarCircle' href='" + eXo.env.portal.context + "/" + eXo.env.portal.portalName + "/profile/" + user.name + "'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></a>";
+    html += "  </div>";
+    html += "  <div class='room-user-status pull-right'>";
+    html += "    <i class='user-" + user.status + "'></i>";
+    html += "  </div>";
+    html += "  <div class='room-user-name'>" + user.fullname + "</div>";
+    html += "</div>"
+  }
+  return html;
+};
