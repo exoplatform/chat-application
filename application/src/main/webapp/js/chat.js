@@ -2163,6 +2163,7 @@ ChatApplication.prototype.loadRoom = function() {
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     ////// USER
     {
+      jqchat(".uiRoomUsersContainerArea").hide();
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
@@ -2173,6 +2174,7 @@ ChatApplication.prototype.loadRoom = function() {
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE
     {
+      jqchat(".uiRoomUsersContainerArea").hide();
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
@@ -2207,6 +2209,7 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("ERROR::"+xhr.responseText);
         }
       });
+      this.loadRoomUsers();
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
@@ -2653,7 +2656,6 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();
-    thiss.loadRoomUsers();
     if (thiss.isMobileView()) {
       jqchat(".right-chat").css("display", "block");
       jqchat(".left-chat").css("display", "none");
