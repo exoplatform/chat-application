@@ -32,7 +32,6 @@
 }
 
 .msRow {
-  @widthOfAvatar: 32px;
   padding: 10px 0;
 
   /* Layout Row Chat */
@@ -56,25 +55,10 @@
       margin-top: 10px;
     }
   }
-  .msUserAvatar {
-   width: 40px!important;
-   padding-left: 12px;
-   padding-right: 15px;
-   text-align: center;
-  }
   .msContBox {
     > .inner {
       margin-right: 20px;
     }
-  }
-  .msAvatarLink, .msAvatarLink img {
-    .border-radius(@widthOfAvatar);
-  }
-  .msAvatarLink, .msAvatarLink > img {
-    .square(@widthOfAvatar);
-  }
-  .msAvatarLink {
-    display: block;
   }
   .msLinkInMes {
     font-weight: bold;

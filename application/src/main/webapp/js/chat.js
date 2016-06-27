@@ -1522,6 +1522,7 @@ ChatApplication.prototype.resize = function() {
   $chatApplication.height(heightChat);
   jqchat("#chats").height(heightChat - 105 - 61);
   jqchat("#chat-users").height(heightChat - 44);
+  jqchat("#room-users").height(heightChat - 44);
 
 };
 
@@ -2652,6 +2653,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();
+    thiss.loadRoomUsers();
     if (thiss.isMobileView()) {
       jqchat(".right-chat").css("display", "block");
       jqchat(".left-chat").css("display", "none");
@@ -3097,3 +3099,44 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     }
   }, 3000);
 };
+
+/**
+ * Load Room Users : server call
+ */
+ChatApplication.prototype.loadRoomUsers = function() {
+  this.chatRoom.owner = "";
+  var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
+  if (this.targetUser !== undefined) {
+    roomUsersContainer.show();
+    var roomUsersList = jqchat("#room-users-list");
+    if(roomUsersList !== undefined) {
+      // reset users list
+      roomUsersList.html("");
+      // fetch room users
+      chatApplication.getUsers(this.targetUser, function (jsonData) {
+        var users = TAFFY(jsonData.users);
+        var users = users();
+
+        var html = "";
+        users.order("status").each(function (user, number) {
+          if (user.name !== chatApplication.username) {
+            html += "<div class='room-user' data-name='"+user.name+"'>";
+            html += "  <div class='msUserAvatar pull-left'>";
+            html += "    <a class='msAvatarLink avatarCircle' href='" + eXo.env.portal.context + "/" + eXo.env.portal.portalName + "/profile/" + user.name + "'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></a>";
+            html += "  </div>";
+            html += "  <div class='room-user-status pull-right'>";
+            html += "    <i class='user-" + user.status + "'></i>";
+            html += "  </div>";
+            html += "  <div class='room-user-name'>" + user.fullname + "</div>";
+            html += "</div>"
+          }
+        });
+
+        roomUsersList.html(html);
+      }, false);
+    }
+  } else {
+    // hide room users since the room id is not defined
+    roomUsersContainer.hide();
+  }
+}

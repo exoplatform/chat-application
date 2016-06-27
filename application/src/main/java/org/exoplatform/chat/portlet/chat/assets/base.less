@@ -13,10 +13,78 @@
   }
 }
 
+.uiBox {
+  .title {
+    padding: 0;
+
+    .title-text {
+      font-weight: bold;
+      font-size: 1.11em;
+    }
+  }
+}
+
+// avatar
+.msUserAvatar {
+  padding-left: 12px;
+  padding-right: 15px;
+  text-align: center;
+
+  .msAvatarLink {
+    @widthOfAvatar: 32px;
+
+    .square(@widthOfAvatar);
+    display: block;
+
+    img {
+      .border-radius(@widthOfAvatar);
+      .square(@widthOfAvatar);
+    }
+  }
+}
+
 .uiRightContainerArea {
   float: none;
-    overflow: auto;
-    padding: 15px 0 0;
+  overflow: auto;
+  padding: 15px 0 0;
+}
+
+.uiRoomUsersContainerArea {
+  float: right;
+  padding: 15px 0 0 15px;
+  width: 300px;
+
+  .uiBox {
+    .room-users-title {
+      padding-left: 20px;
+      line-height: 61px;
+      font-weight: bold;
+      font-size: 1.11em;
+    }
+
+    #room-users-list {
+      padding: 10px 0;
+
+      .room-user {
+        height: 50px;
+        padding: 5px 0 0 0;
+
+        .room-user-name {
+          line-height: 50px;
+          color: #333333;
+        }
+
+        .room-user-status {
+          line-height: 50px;
+          padding: 0px 15px;
+
+          i:before {
+            content: "\e76e";
+          }
+        }
+      }
+    }
+  }
 }
 
 .chat-sync {
@@ -563,8 +631,6 @@ table.list-rooms {
   display: block;
   padding-left: 10px;
   line-height: 61px;
-  font-weight: bold;
-  font-size: 14px;
   .text-overflow;
 }
 
@@ -580,7 +646,7 @@ table.list-rooms {
 .td-status {
   width: 16px;
   min-width: 16px;
-    .user-available,.user-away,.user-donotdisturb, .user-invisible{
+    .user-available,.user-away,.user-donotdisturb, .user-invisible, .user-offline {
         font-size: 12px;
     }
   > i {
