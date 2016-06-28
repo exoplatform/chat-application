@@ -1188,6 +1188,22 @@ var chatApplication = new ChatApplication();
       chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
     });
 
+    $("#room-users-collapse-bar").on("click", function() {
+      chatApplication.roomUsersCollapsed = !chatApplication.roomUsersCollapsed;
+      // toggle room users
+      var roomUsersContainer = $(".uiRoomUsersContainerArea");
+      var collpaseBarIcon = $(this).children("i");
+      if(chatApplication.roomUsersCollapsed) {
+        roomUsersContainer.addClass("room-users-collapsed");
+        collpaseBarIcon.removeClass("uiIconArrowRight");
+        collpaseBarIcon.addClass("uiIconArrowLeft");
+      } else {
+        roomUsersContainer.removeClass("room-users-collapsed");
+        collpaseBarIcon.removeClass("uiIconArrowLeft");
+        collpaseBarIcon.addClass("uiIconArrowRight");
+      }
+    });
+
   });
 
 })(jqchat);
@@ -1535,6 +1551,7 @@ ChatApplication.prototype.resize = function() {
   jqchat("#chats").height(heightChat - 105 - 61);
   jqchat("#chat-users").height(heightChat - 44);
   jqchat("#room-users").height(heightChat - 44);
+  jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
 
 };
 

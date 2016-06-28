@@ -63,6 +63,9 @@
   <% } %>
 
   <div class="uiRoomUsersContainerArea">
+    <div id="room-users-collapse-bar">
+      <i class="uiIconArrowRight"></i>
+    </div>
     <div class="uiBox" id="room-users">
       <div class="title no-user-selection" id="room-users-header">
         <span id="room-users-title" class="title-text room-users-title">People</span>

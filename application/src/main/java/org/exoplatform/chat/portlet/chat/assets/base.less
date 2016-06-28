@@ -1,4 +1,6 @@
 // Base CSS
+@headerWidth: 61px;
+
 .actionIcon.disabled {
   opacity: 0.65;
   cursor: default;
@@ -55,10 +57,41 @@
   padding: 15px 0 0 15px;
   width: 300px;
 
+  #room-users-collapse-bar {
+    float: left;
+    position: absolute;
+    margin-left: -10px;
+    cursor: pointer;
+  }
+
+  &.room-users-collapsed {
+    width: 70px;
+
+    #room-users-header {
+      #room-users-title {
+        display: none;
+      }
+
+      #room-users-button {
+        padding-right: 17px;
+      }
+    }
+
+    #room-users-list {
+      .room-user-name, .room-user-status {
+        display: none;
+      }
+    }
+  }
+
   .uiBox {
+    #room-users-header {
+      height: @headerWidth;
+      line-height: @headerWidth;
+    }
+
     .room-users-title {
       padding-left: 20px;
-      line-height: 61px;
       font-weight: bold;
       font-size: 1.11em;
     }
@@ -67,7 +100,7 @@
       padding-right: 10px;
 
       li {
-        line-height: 61px;
+        line-height: @headerWidth;
         padding-right: 5px;
         float: right;
       }
@@ -641,7 +674,7 @@ table.list-rooms {
   overflow: hidden;
   display: block;
   padding-left: 10px;
-  line-height: 61px;
+  line-height: @headerWidth;
   .text-overflow;
 }
 
