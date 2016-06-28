@@ -1176,6 +1176,18 @@ var chatApplication = new ChatApplication();
       return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
 
+    $("#room-users-btn-offline").on("click", function() {
+      chatApplication.showRoomOfflinePeople = !chatApplication.showRoomOfflinePeople;
+      // toggle button state
+      if(chatApplication.showRoomOfflinePeople == true) {
+        $(this).addClass("btn active");
+      } else {
+        $(this).removeClass("btn active");
+      }
+      // toggle offline users visibility
+      chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
+    });
+
   });
 
 })(jqchat);
@@ -1266,7 +1278,7 @@ function ChatApplication() {
   this.showSpacesHistory = false;
   this.showTeamsHistory = false;
 
-
+  this.showRoomOfflinePeople = false;
 }
 
 /**
@@ -2624,7 +2636,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     chatApplication.setModalToCenter('.team-modal');
   });
 
-  jqchat(".btn-history").on("click", function() {
+  jqchat("#chat-users .btn-history").on("click", function() {
     var type = jqchat(this).attr("data-type");
     if (type === "people") {
       chatApplication.showPeople = true;
@@ -2643,7 +2655,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   });
 
-  jqchat(".btn-offline").on("click", function() {
+  jqchat("#chat-users .btn-offline").on("click", function() {
     chatApplication.showPeople = true;
     jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
     chatApplication.showOffline = !chatApplication.showOffline;
@@ -2652,7 +2664,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
   });
 
 
-  jqchat('.users-online').on("click", function() {
+  jqchat('#chat-users .users-online').on("click", function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();
@@ -2663,13 +2675,13 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     }
   });
 
-  jqchat('.users-online').on("mouseenter", function() {
+  jqchat('#chat-users .users-online').on("mouseenter", function() {
     var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
     $uiIconChatFavorite.css("display", "block");
     $uiIconChatFavorite.css("margin-right", "1px");
   });
 
-  jqchat('.users-online').on("mouseleave", function() {
+  jqchat('#chat-users .users-online').on("mouseleave", function() {
     var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
     $uiIconChatFavorite.css("display", "none");
   });
@@ -2678,7 +2690,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
-  jqchat('.user-favorite').on("click", function() {
+  jqchat('#chat-users .user-favorite').on("click", function() {
     var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
@@ -3124,7 +3136,7 @@ ChatApplication.prototype.loadRoomUsers = function() {
         var sortedStatuses = ["available", "away", "donotdisturb", "offline"];
         sortedStatuses.forEach(function(status) {
           users({status: status}).order("fullname").each(function (user) {
-            html += thiss.renderRoomUser(user);
+            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
           });
         });
         roomUsersList.html(html);
@@ -3141,10 +3153,14 @@ ChatApplication.prototype.loadRoomUsers = function() {
  * @param user User to render
  * @returns {string} The DOM representing the user
  */
-ChatApplication.prototype.renderRoomUser = function(user) {
+ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
   var html = "";
   if (user.name !== chatApplication.username) {
-    html += "<div class='room-user' data-name='"+user.name+"'>";
+    html += "<div class='room-user' data-name='"+user.name+"'"
+    if(!showOfflineUsers && user.status == 'offline') {
+      html += "style='display: none;'";
+    }
+    html += ">";
     html += "  <div class='msUserAvatar pull-left'>";
     html += "    <a class='msAvatarLink avatarCircle' href='" + eXo.env.portal.context + "/" + eXo.env.portal.portalName + "/profile/" + user.name + "'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></a>";
     html += "  </div>";
@@ -3155,4 +3171,17 @@ ChatApplication.prototype.renderRoomUser = function(user) {
     html += "</div>"
   }
   return html;
+};
+
+/**
+ *
+ * @param showPeople Show people if true, otherwise hide them
+ */
+ChatApplication.prototype.toggleOfflineRoomUsers = function(showPeople) {
+  var offlineUsers = jqchat("#room-users-list .room-user-status .user-offline").parents(".room-user");
+  if(showPeople == true) {
+    offlineUsers.show();
+  } else {
+    offlineUsers.hide();
+  }
 };
