@@ -3158,6 +3158,30 @@ ChatApplication.prototype.loadRoomUsers = function() {
         });
         roomUsersList.html(html);
 
+        // User Profile Popup initialize
+        var portal = eXo.env.portal;
+        var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
+        var userLinks = jqchat(roomUsersList).find('.msAvatarLink');
+        jqchat.each(userLinks, function (idx, el) {
+          var userUrl = jqchat(el).attr('href');
+          var userId = userUrl.substring(userUrl.lastIndexOf('/') + 1);
+
+          jqchat(el).userPopup({
+            restURL: restUrl,
+            labels: {
+              StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
+              Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
+              Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
+              CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
+              RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
+            },
+            content: false,
+            defaultPosition: "left",
+            keepAlive: true,
+            maxWidth: "240px"
+          });
+        });
+
         // update nb of users in the room
         jqchat("#room-users-title-nb-users").html("(" + (users().count() - 1) + ")");
       }, false);
