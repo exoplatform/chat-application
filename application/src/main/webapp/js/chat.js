@@ -3121,7 +3121,7 @@ ChatApplication.prototype.loadRoomUsers = function() {
 
         // generate room users list DOM
         var html = "";
-        var sortedStatuses = ["available", "donotdisturb", "away", "offline"];
+        var sortedStatuses = ["available", "away", "donotdisturb", "offline"];
         sortedStatuses.forEach(function(status) {
           users({status: status}).order("fullname").each(function (user) {
             html += thiss.renderRoomUser(user);
