@@ -3157,6 +3157,9 @@ ChatApplication.prototype.loadRoomUsers = function() {
           });
         });
         roomUsersList.html(html);
+
+        // update nb of users in the room
+        jqchat("#room-users-title-nb-users").html("(" + (users().count() - 1) + ")");
       }, false);
     }
   } else {
