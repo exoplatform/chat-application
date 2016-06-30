@@ -83,6 +83,15 @@
       }
 
       #room-users-list {
+        .msUserAvatar {
+          padding: 0;
+          width: 100%;
+
+          .msAvatarLink {
+            margin: 0 auto;
+          }
+        }
+
         .room-user-name, .room-user-status {
           display: none;
         }
@@ -120,6 +129,8 @@
 
     #room-users-list {
       padding: 10px 0;
+      overflow-x: hidden;
+      overflow-y: auto;
 
       .room-user {
         height: 50px;

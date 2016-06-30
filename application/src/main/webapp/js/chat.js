@@ -1552,7 +1552,7 @@ ChatApplication.prototype.resize = function() {
   $chatApplication.height(heightChat);
   jqchat("#chats").height(heightChat - 105 - 61);
   jqchat("#chat-users").height(heightChat - 44);
-  jqchat("#room-users").height(heightChat - 44);
+  jqchat("#room-users-list").height(heightChat - 44 - 61 - 20); // remove header and padding
   jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
 
 };
