@@ -72,7 +72,7 @@
 
         <div id="room-users-button" class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon">
-            <li><div id='room-users-btn-offline' class='actionIcon btn-offline' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='&{exoplatform.chat.show.users}'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li>
+            <li><div id='room-users-btn-offline' class='actionIcon btn-offline' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='top' title='&{exoplatform.chat.show.users}'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li>
           </ul>
         </div>
       </div>
