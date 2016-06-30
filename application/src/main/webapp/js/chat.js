@@ -1180,26 +1180,28 @@ var chatApplication = new ChatApplication();
       chatApplication.showRoomOfflinePeople = !chatApplication.showRoomOfflinePeople;
       // toggle button state
       if(chatApplication.showRoomOfflinePeople == true) {
-        $(this).addClass("btn active");
+        $(this).addClass("active");
       } else {
-        $(this).removeClass("btn active");
+        $(this).removeClass("active");
       }
       // toggle offline users visibility
       chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
     });
 
     $("#room-users-collapse-bar").on("click", function() {
-      chatApplication.roomUsersCollapsed = !chatApplication.roomUsersCollapsed;
       // toggle room users
       var roomUsersContainer = $(".uiRoomUsersContainerArea");
+      var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
       var collpaseBarIcon = $(this).children("i");
-      if(chatApplication.roomUsersCollapsed) {
+      if(roomUsersHeaderTitle.is(":visible")) {
+        roomUsersContainer.removeClass("room-users-expanded");
         roomUsersContainer.addClass("room-users-collapsed");
-        collpaseBarIcon.removeClass("uiIconArrowRight");
+        collpaseBarIcon.removeClass("uiIconArrowRight uiIconArrowDefault");
         collpaseBarIcon.addClass("uiIconArrowLeft");
       } else {
         roomUsersContainer.removeClass("room-users-collapsed");
-        collpaseBarIcon.removeClass("uiIconArrowLeft");
+        roomUsersContainer.addClass("room-users-expanded");
+        collpaseBarIcon.removeClass("uiIconArrowLeft uiIconArrowDefault");
         collpaseBarIcon.addClass("uiIconArrowRight");
       }
     });
