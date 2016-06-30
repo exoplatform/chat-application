@@ -1830,7 +1830,11 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           this.hidePanel(".chat-sync-panel");
           this.showRooms(rooms);
 
-
+          // reload room users if the panel is displayed
+          var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
+          if(roomUsersContainer.is(":visible")) {
+            this.loadRoomUsers();
+          }
 
           this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
           if (fromChromeApp) {
