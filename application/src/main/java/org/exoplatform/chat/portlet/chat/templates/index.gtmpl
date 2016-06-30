@@ -68,7 +68,7 @@
     </div>
     <div class="uiBox" id="room-users">
       <div class="title no-user-selection" id="room-users-header">
-        <span id="room-users-title" class="title-text room-users-title">People <span id="room-users-title-nb-users"></span></span>
+        <span id="room-users-title" class="title-text room-users-title">&{exoplatform.chat.room.people} <span id="room-users-title-nb-users"></span></span>
 
         <div id="room-users-button" class="team-button">
 	        <ul class="nav pull-right uiDropdownWithIcon">
