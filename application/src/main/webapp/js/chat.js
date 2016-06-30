@@ -3161,13 +3161,13 @@ ChatApplication.prototype.loadRoomUsers = function() {
         // User Profile Popup initialize
         var portal = eXo.env.portal;
         var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
-        var userLinks = jqchat(roomUsersList).find('.msAvatarLink');
-        jqchat.each(userLinks, function (idx, el) {
-          var userUrl = jqchat(el).attr('href');
-          var userId = userUrl.substring(userUrl.lastIndexOf('/') + 1);
+        var usersContainers = jqchat(roomUsersList).find('.room-user');
+        jqchat.each(usersContainers, function (idx, el) {
+          var userId = jqchat(el).attr('data-name');
 
           jqchat(el).userPopup({
             restURL: restUrl,
+            userId: userId,
             labels: {
               StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
               Connect: chatBundleData["exoplatform.chat.user.popup.connect"],

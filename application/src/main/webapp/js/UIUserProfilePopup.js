@@ -21,6 +21,7 @@
      $.fn.userPopup = function (options) {
          var defaults = {
              restURL: "",
+             userId: "",
              labels: "",
              getContentFunc: function() {},
              activation: "hover",
@@ -201,8 +202,15 @@
                  }
                  
                  function loadData(el) {
-                   var userUrl = $(el).attr('href');
-                   var userId = userUrl.substring(userUrl.lastIndexOf('/') + 1);
+                   var userId = opts.userId;
+                   if(!userId) {
+                     var userUrl = $(el).attr('href');
+                     if(!userUrl) {
+                       // no way to get the user id, abort
+                       return;
+                     }
+                     userId = userUrl.substring(userUrl.lastIndexOf('/') + 1);
+                   }
                    var restUrl = opts.restURL.replace('{0}', window.encodeURI(userId));
                    
                    //
