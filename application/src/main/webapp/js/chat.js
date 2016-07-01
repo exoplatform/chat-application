@@ -946,14 +946,13 @@ var chatApplication = new ChatApplication();
     }
 
     $("#team-edit-button").on("click", function() {
+      // Only the room owner can manage room users and can see the System popup.
+      // We do a check to be sure the current user is the room owner.
+      if (chatApplication.username === chatApplication.chatRoom.owner) {
+        chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
+          var users = TAFFY(jsonData.users);
+          var users = users();
 
-      chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-        var users = TAFFY(jsonData.users);
-        var users = users();
-
-        // If the current user is the room owner we open the Settings Edit popup
-        // else we open the Settings View popup
-        if (chatApplication.username === chatApplication.chatRoom.owner) {
           var $userResults = $(".team-users-results");
           $userResults.css("display", "none");
           $userResults.html("");
@@ -972,25 +971,8 @@ var chatApplication = new ChatApplication();
 
           // Set form position to screen center
           chatApplication.setModalToCenter('.team-modal');
-        } else {
-          var $uiUserList = $("#team-settings-users-list");
-          var $uiUserOwner = $("#team-settings-user-owner");
-          $uiUserList.empty();
-          $uiUserOwner.empty();
-
-          users.order("fullname").each(function (user, number) {
-            if (user.name !== chatApplication.chatRoom.owner) {
-              addTeamUserMention($uiUserList, user.name, user.fullname, false);
-            } else {
-              addTeamUserMention($uiUserOwner, user.name, user.fullname, false);
-            }
-          });
-
-          // Center the popup + show it
-          chatApplication.setModalToCenter('.team-modal');
-          uiChatPopupWindow.show("team-settings-modal-view", true);
-        }
-      });
+        });
+      }
     });
 
     $("#team-delete-button").on("click", function(e) {
@@ -2182,7 +2164,7 @@ ChatApplication.prototype.loadRoom = function() {
     }
 
     jqchat("#room-detail").css("display", "block");
-    jqchat(".team-button").css("display", "none");
+    jqchat("#chat-team-button").css("display", "none");
     this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
     jqchat(".target-user-fullname").text(this.targetFullname);
 
@@ -2233,11 +2215,8 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
           this.chatRoom.owner = creator;
-          jqchat(".team-button").css("display", "block");
           if (creator === this.username) {
-            jqchat("#team-delete-button").show();
-          } else {
-            jqchat("#team-delete-button").hide();
+            jqchat("#chat-team-button").show();
           }
         },
         error: function(xhr, status, error){
