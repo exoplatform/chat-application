@@ -2191,7 +2191,7 @@ ChatApplication.prototype.loadRoom = function() {
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE
     {
-      jqchat(".uiRoomUsersContainerArea").hide();
+      this.loadRoomUsers();
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
