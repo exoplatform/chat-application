@@ -668,6 +668,8 @@ var chatApplication = new ChatApplication();
       var endTime = $("#event-add-end-time").val();
       var location = $("#event-add-location").val();
       if (space === "" || startDate === "" || startTime === "" || endDate === "" || endTime === "" || summary === "" || summary === $("#event-add-summary").attr("data-value") || location === "" || location ===$("#event-add-location").attr("data-value")) {
+        bootbox.alertError(chatBundleData["exoplatform.chat.event.invalid.entry"], function(){
+        });
         return;
       }
       if (!uiMiniCalendar.isDate(startDate)) {
