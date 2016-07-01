@@ -67,6 +67,8 @@ import juzu.SessionScoped;
 import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.plugin.ajax.Ajax;
+import juzu.request.RequestContext;
+import juzu.request.RequestParameter;
 import juzu.request.SecurityContext;
 import juzu.template.Template;
 
@@ -112,7 +114,11 @@ public class ChatApplication
   @Inject
   ResourceBundle bundle;
   
-  public static final String TASK_PLUGIN = "task";
+  public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";
+  
+  public static final String CHAT_EXTENSION_MENU = "chat_extension_menu";
+
+  private static final String EX_ACTION_NAME = "extension_action";
 
   @Inject
   public ChatApplication(OrganizationService organizationService, SpaceService spaceService, PlugableUIService uiService)
@@ -153,26 +159,23 @@ public class ChatApplication
     Date today = Calendar.getInstance().getTime();
     String todayDate = df.format(today);
 
-    RenderContext taskItemCtx = new RenderContext(TASK_PLUGIN);
-    taskItemCtx.setRsBundle(bundle);    
-    org.exoplatform.commons.api.ui.Response taskItemRes = this.uiService.render(taskItemCtx);    
+    RenderContext exMenuCtx = new RenderContext(CHAT_EXTENSION_MENU);
+    exMenuCtx.setRsBundle(bundle);
+    List<org.exoplatform.commons.api.ui.Response> menuResponse = this.uiService.render(exMenuCtx);    
+        
+    RenderContext exPopupCtx = new RenderContext(CHAT_EXTENSION_POPUP);
+    exPopupCtx.setActionUrl(ChatApplication_.processAction().toString());
+    exPopupCtx.setRsBundle(bundle);
+    List<org.exoplatform.commons.api.ui.Response> popupResponse = this.uiService.render(exPopupCtx); 
     
-    String taskItem = "";
-    String taskPopup = "";    
-    
-    RenderContext taskPopupCtx = new RenderContext(TASK_PLUGIN);
-    taskPopupCtx.getParams().put("renderPopup", true);
-    taskPopupCtx.getParams().put("today", todayDate);
-    taskPopupCtx.setActionUrl(ChatApplication_.createTask(null, null, null, null, null).toString());
-    taskPopupCtx.setRsBundle(bundle);
-    org.exoplatform.commons.api.ui.Response taskPopupRes = this.uiService.render(taskPopupCtx); 
-    
+    StringBuilder exMenu = new StringBuilder();
+    StringBuilder exPopup = new StringBuilder();    
     try {
-      if (taskItemRes != null) {
-        taskItem = new String(taskItemRes.getData(), "UTF-8");
+      for (org.exoplatform.commons.api.ui.Response menu : menuResponse) {        
+        exMenu.append(new String(menu.getData(), "UTF-8"));
       }
-      if (taskPopupRes != null) {
-        taskPopup = new String(taskPopupRes.getData(), "UTF-8");
+      for (org.exoplatform.commons.api.ui.Response popup : popupResponse) {
+        exPopup.append(new String(popup.getData(), "UTF-8"));
       }      
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, ex.getMessage(), ex);
@@ -191,8 +194,8 @@ public class ChatApplication
             .set("demoMode", demoMode)
             .set("today", todayDate)
             .set("dbName", dbName)
-            .set("taskPopup", taskPopup)
-            .set("taskMenuItem", taskItem)
+            .set("exPopup", exPopup)
+            .set("exMenu", exMenu)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)
@@ -315,7 +318,7 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createTask(String username, String dueDate, String task, String roomName, String isSpace) {    
+  public Response.Content processAction(RequestContext reqContext) {    
 //    try {
 //      calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
 //    } catch (ParseException e) {
@@ -326,16 +329,16 @@ public class ChatApplication
 //      return Response.notFound("Error during task creation");
 //    }
 //
-//    
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("username", username);
-    params.put("dueDate", dueDate);
-    params.put("task", task);
-    params.put("roomName", roomName);
-    params.put("isSpace", isSpace);
+//        
+    Map<String, RequestParameter> params = reqContext.getParameters();
+    Map<String, List<String>> p = new HashMap<String, List<String>>();
+    for (String name : params.keySet()) {
+      p.put(name, Arrays.asList(params.get(name).toArray()));
+    }
     //
-    ActionContext actContext = new ActionContext(TASK_PLUGIN);
-    actContext.setParams(params);
+    String actionName = params.get(EX_ACTION_NAME).getValue();
+    ActionContext actContext = new ActionContext(CHAT_EXTENSION_POPUP, actionName);
+    actContext.setParams(p);
     uiService.processAction(actContext);
     
     return Response.ok("{\"status\":\"ok\"}")
