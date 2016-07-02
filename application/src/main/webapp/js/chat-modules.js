@@ -730,8 +730,6 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
       out += "                <i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
     } else if ("type-link" === actionType) {
       out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
-    } else if ("type-task" === actionType) {
-      out += "                <i class='uiIconChat32x32Task uiIconChat32x32LightGray'></i>";
     } else if ("type-event" === actionType) {
       out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar time'>" + options.startDate.substr(3, 2) + "</span></i>";
     } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
@@ -838,16 +836,6 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
           link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
         out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
       }
-    } else if (options.type==="type-task") {
-      out += "<b>" + options.task + "</b>";
-      out += "<div class='msTimeEvent'>";
-      out += "  <div>";
-      out += "    <i class='uiIconChatAssign uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData["exoplatform.chat.assign.to"] + ": </span>" + options.fullname;
-      out += "  </div>";
-      out += "  <div>";
-      out += "    <i class='uiIconChatClock uiIconChatLightGray mgR10'></i><span class='muted'>" + chatBundleData["exoplatform.chat.due.date"] +  ":</span> <b>" + options.dueDate + "</b>";
-      out += "  </div>";
-      out += "</div>";
     } else if (options.type==="type-event") {
       out += "<b>" + options.summary + "</b>";
       out += "<div class='msTimeEvent'>";
