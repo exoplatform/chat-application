@@ -1375,6 +1375,21 @@ function ChatApplication() {
   this.showTeamsHistory = false;
 
   this.showRoomOfflinePeople = false;
+  this.plugins = [];
+}
+
+ChatApplication.prototype.registerPlugin = function(plugin) {
+	this.plugins.push(plugin);
+}
+
+ChatApplication.prototype.trigger = function(event, context) {
+	jqchat.each(this.plugins, function(idx, plugin) {
+		if (plugin.getEvent && plugin.getEvent() == event) {
+			if (context.continueSend && plugin.onEvent) {
+				plugin.onEvent(context);
+			}
+		}
+	});
 }
 
 /**
@@ -3017,9 +3032,18 @@ ChatApplication.prototype.setStatusInvisible = function() {
  */
 ChatApplication.prototype.sendMessage = function(msg, callback) {
 
-
-  var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
   var options = {};
+  var context = {"msg": msg, "options": options, "callback": callback, "continueSend": true};
+
+  this.trigger("beforeSend", context);
+  if (!context.continueSend) {
+	  return;
+  }
+  msg = context.msg;
+  options = context.options;
+  callback = context.callback;  
+  
+  var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
   var sendMessageToServer = true;
   if (isSystemMessage) {
     sendMessageToServer = false;
@@ -3055,7 +3079,6 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
   if (sendMessageToServer) {
     this.chatRoom.sendMessage(msg, options, isSystemMessage, callback);
   }
-
 };
 
 

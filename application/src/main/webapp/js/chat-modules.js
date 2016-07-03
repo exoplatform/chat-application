@@ -42,8 +42,15 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.startMeetingTimestamp = "";
   this.startCallTimestamp = "";
   this.dbName = dbName;
+  
+  this.plugins = {};
 }
 
+ChatRoom.prototype.registerPlugin = function(plugin) {
+	if (plugin.getType) {
+		this.plugins[plugin.getType()] = plugin;
+	}
+}
 
 ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, dbName, callback) {
   this.username = username;
@@ -742,6 +749,9 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
       out += "                <i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
     } else if ("call-proceed" === actionType) {
       out += "                <i class='uiIconChat32x32AddCall uiIconChat32x32LightGray'></i>";
+    } else if (this.plugins[actionType] && this.plugins[actionType].getActionMeetingStyleClasses) {
+      var plugin = this.plugins[actionType];
+      out += plugin.getActionMeetingStyleClasses(options);
     }
     out += "                </div>";
   }
@@ -959,6 +969,9 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
       }
     } else if (options.type==="call-proceed") {
       out += "<b>" + chatBundleData["exoplatform.chat.call.comming"]  + "...</b>";
+    } else if (this.plugins[options.type] && this.plugins[options.type].messageBeautifier) {
+	  var plugin = this.plugins[options.type];
+	  out += plugin.messageBeautifier(objMessage, options);
     } else {
       out += message;
     }

@@ -25,6 +25,7 @@ import javax.portlet.PortletPreferences;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +50,7 @@ import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.PlugableUIService;
 import org.exoplatform.commons.api.ui.RenderContext;
@@ -318,7 +320,7 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content processAction(RequestContext reqContext) {    
+  public Response processAction(RequestContext reqContext) {    
 //    try {
 //      calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
 //    } catch (ParseException e) {
@@ -339,10 +341,15 @@ public class ChatApplication
     String actionName = params.get(EX_ACTION_NAME).getValue();
     ActionContext actContext = new ActionContext(CHAT_EXTENSION_POPUP, actionName);
     actContext.setParams(p);
-    uiService.processAction(actContext);
+    org.exoplatform.commons.api.ui.Response response = uiService.processAction(actContext);
     
-    return Response.ok("{\"status\":\"ok\"}")
-        .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    if (response != null) {
+      return Response.ok(new String(response.getData(), Charset.forName("UTF-8")))
+          .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");      
+    } else {
+      return Response.status(HTTPStatus.NOT_FOUND)
+          .withHeader("Cache-Control", "no-cache");
+    }
   }
 
   @Ajax
