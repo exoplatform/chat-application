@@ -143,6 +143,13 @@ var chatApplication = new ChatApplication();
     });
 
     $('#msg').keyup(function(event) {
+      var context = {'continueSend': true, 'event': event};
+      chatApplication.trigger('keyUp', context);
+      
+      if (!context.continueSend) {
+    	  return false;
+      }
+    	
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
       if ( event.which === 13 && msg.trim().length>=1) {
