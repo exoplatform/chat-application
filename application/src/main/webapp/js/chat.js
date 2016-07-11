@@ -3135,7 +3135,7 @@ ChatApplication.prototype.loadRoomUsers = function() {
 
         // generate room users list DOM
         var html = "";
-        var sortedStatuses = ["available", "away", "donotdisturb", "offline"];
+        var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
         sortedStatuses.forEach(function(status) {
           users({status: status}).order("fullname").each(function (user) {
             html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
@@ -3186,7 +3186,7 @@ ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
   var html = "";
   if (user.name !== chatApplication.username) {
     html += "<div class='room-user' data-name='"+user.name+"'"
-    if(!showOfflineUsers && user.status == 'offline') {
+    if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
       html += "style='display: none;'";
     }
     html += ">";
@@ -3207,7 +3207,7 @@ ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
  * @param showPeople Show people if true, otherwise hide them
  */
 ChatApplication.prototype.toggleOfflineRoomUsers = function(showPeople) {
-  var offlineUsers = jqchat("#room-users-list .room-user-status .user-offline").parents(".room-user");
+  var offlineUsers = jqchat("#room-users-list").find(".room-user-status .user-offline, .room-user-status .user-invisible").parents(".room-user");
   if(showPeople == true) {
     offlineUsers.show();
   } else {
