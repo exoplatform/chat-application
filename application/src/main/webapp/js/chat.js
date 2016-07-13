@@ -1161,11 +1161,16 @@ var chatApplication = new ChatApplication();
     $("#room-users-btn-offline").on("click", function() {
       chatApplication.showRoomOfflinePeople = !chatApplication.showRoomOfflinePeople;
       // toggle button state
+        var showRoomOfflinePeopleButton = $(this);
       if(chatApplication.showRoomOfflinePeople == true) {
-        $(this).addClass("active");
+        showRoomOfflinePeopleButton.addClass("active");
+        showRoomOfflinePeopleButton.attr("title", showRoomOfflinePeopleButton.attr("data-title-active"));
       } else {
-        $(this).removeClass("active");
+        showRoomOfflinePeopleButton.removeClass("active");
+        showRoomOfflinePeopleButton.attr("title", showRoomOfflinePeopleButton.attr("data-title-inactive"));
       }
+      showRoomOfflinePeopleButton.tooltip("fixTitle");
+      showRoomOfflinePeopleButton.tooltip("show");
       // toggle offline users visibility
       chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
     });
@@ -1942,7 +1947,13 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += '<span class="room-total total-people badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.history"] + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.users"] + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='";
+  if(chatApplication.showOffline) {
+    out += chatBundleData["exoplatform.chat.hide.users"];
+  } else {
+    out += chatBundleData["exoplatform.chat.show.users"];
+  }
+  out += "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
