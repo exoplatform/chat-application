@@ -57,6 +57,7 @@ import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.UserContext;
 
+import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -633,7 +634,7 @@ public class ChatServer
       } catch (UnsupportedEncodingException e) {
         LOG.info("Cannot decode message: " + teamName);
       }
-      teamName = org.exoplatform.services.deployment.Utils.sanitize(teamName);
+      teamName = HTMLSanitizer.sanitize(teamName);
       if("".equals(teamName)) return Response.content(400, "Data is invalid!");
       if (room==null || "".equals(room) || "---".equals(room))
       {
