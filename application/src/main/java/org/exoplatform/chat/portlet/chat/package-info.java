@@ -37,7 +37,8 @@
         value =  {
             @Script(value = "js/taffy-min.js", id="jquery"),
             @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
-            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules"} ),
+            @Script(value = "js/UIUserProfilePopup.js", id="chatUserPopupPlugin", depends = {"jquery"} ),
+            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules", "chatUserPopupPlugin"} ),
             @Script(value = "js/sh_main.min.js", id="shMain"),
             @Script(value = "js/sh_html.min.js", id="shHtml"),
             @Script(value = "js/sh_java.min.js", id="shJava"),

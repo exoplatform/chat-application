@@ -13,9 +13,6 @@
             <depends>
                 <module>uiChatPopupWindow</module>
             </depends>
-            <depends>
-                <module>chatUserPopupPlugin</module>
-            </depends>
         </module>
     </portlet>
     <module>
@@ -35,12 +32,6 @@
         <depends>
             <module>I18NMessage</module>
         </depends>
-    </module>
-    <module>
-        <name>chatUserPopupPlugin</name>
-        <script>
-            <path>/js/UIUserProfilePopup.js</path>
-        </script>
     </module>
     <module>
         <name>uiChatPopupWindow</name>
