@@ -970,8 +970,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
     } else if (options.type==="call-proceed") {
       out += "<b>" + chatBundleData["exoplatform.chat.call.comming"]  + "...</b>";
     } else if (this.plugins[options.type] && this.plugins[options.type].messageBeautifier) {
-	  var plugin = this.plugins[options.type];
-	  out += plugin.messageBeautifier(objMessage, options);
+  	  var plugin = this.plugins[options.type];
+  	  out += plugin.messageBeautifier(objMessage, options);
     } else {
       out += message;
     }
