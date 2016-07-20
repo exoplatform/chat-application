@@ -67,7 +67,7 @@ var chatApplication = new ChatApplication();
      *
      */
     //needed for #chat text area
-    var keydown = -1;
+    chatApplication.keydown = -1;
     //needed for #edit-modal-text area
     var keydownModal = -1;
     //needed for Fluid Integration
@@ -125,6 +125,7 @@ var chatApplication = new ChatApplication();
   //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
       chatApplication.updateUnreadMessages();
     });
+    
 
     $('#msg').keydown(function(event) {
       //prevent the default behavior of the enter button
@@ -139,7 +140,7 @@ var chatApplication = new ChatApplication();
       }
   //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
-        keydown = 18;
+        chatApplication.keydown = 18;
       }
     });
 
@@ -164,8 +165,8 @@ var chatApplication = new ChatApplication();
         }
       }
 
-      if ( keydown === 18 ) {
-        keydown = -1;
+      if ( chatApplication.keydown === 18 ) {
+    	  chatApplication.keydown = -1;
       }
       if ( event.which === 13 ) {
         $(this).val('');
@@ -1396,7 +1397,7 @@ ChatApplication.prototype.trigger = function(event, context) {
 ChatApplication.prototype.initMention = function() {
   window.require(["SHARED/jquery", "SHARED/exoMention"], function($) {
     var $msg = $('#msg');
-    $('#mixMentions').mention({
+    $msg.mention({
       type : 1,
       source: function(query, callback) {
         var _this = this;
@@ -1412,15 +1413,79 @@ ChatApplication.prototype.initMention = function() {
             var users = [];
             $.each(data.users, function(idx, user) {
               users.push({
-                "id": user.name,
-                "name": user.fullname,
-                "type": "contact"
+                "uid": user.name,
+                "value": user.fullname
               });
             });
             callback.call(_this, users);
           }
         });
       }
+    });
+
+    var $editable = $msg.next('div');
+    $editable.css({'background-color':'white', 'height': '60px'});
+    
+    $editable.focus(function() {
+      chatApplication.updateUnreadMessages();
+    });
+
+    $editable.keydown(function(event) {
+      if ($editable.next('div').css('display') == 'none') {
+    	  //prevent the default behavior of the enter button
+    	  if ( event.which == 13 ) {
+    		  event.preventDefault();
+    	  }
+    	  //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+    	  if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+    		  this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+    		  $editable.scrollTop($editable[0].scrollHeight - $editable.height());
+    	  }
+    	  
+    	  //        console.log("keydown : "+ event.which+" ; "+keydown);
+          if ( event.which == 18 ) {
+        	  chatApplication.keydown = 18;
+          }
+      } else {
+    	  if ($editable.next('ul').css('display') == 'block') {
+    		  chatApplication.isMentioning = true;
+    	  }
+      }
+    });
+
+    $editable.keyup(function(event) {
+    	if (!chatApplication.isMentioning) {
+    		var msg = $('#msg').mention('getValue');
+    		//    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+    		if ( event.which === 13 && msg.trim().length>=1) {
+    			//console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+    			if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+    				return false;
+    			}
+    			//      console.log("*"+msg+"*");
+    			chatApplication.sendMessage(msg);
+    			
+    		}
+    		// UP Arrow
+    		if (event.which === 38 && msg.length === 0) {
+    			var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+    			var $uimsgdata = $uimsg.find(".msg-data");
+    			if ($uimsgdata.length === 1) {
+    				chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+    			}
+    		}
+    		
+    		if ( chatApplication.keydown === 18 ) {
+    			chatApplication.keydown = -1;
+    		}
+    		if ( event.which === 13 ) {
+    			$('#msg').mention('setValue', '');
+    		}    		
+    	} else {
+    		if ($editable.next('ul').css('display') == 'none') {
+      		  chatApplication.isMentioning = false;
+      	  }
+    	}
     });
   });
 }
