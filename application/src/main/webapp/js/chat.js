@@ -60,7 +60,7 @@ var chatApplication = new ChatApplication();
 
     // Attach weemo call button into chatApplication
     chatApplication.displayVideoCallOnChatApp();
-    chatApplication.initMention();
+//    chatApplication.initMention();
 
     /**
      * Init Global Variables
@@ -1401,105 +1401,115 @@ ChatApplication.prototype.trigger = function(event, context) {
 }
 
 ChatApplication.prototype.initMention = function() {
-  var _this = this;
-  window.require(["SHARED/jquery", "SHARED/exoMention"], function($) {
-    var $msg = $('#msg');
-    $msg.mention({
-      type : 1,
-      source: function(query, callback) {
-        var _this = this;
-        $.ajax({
-          url: chatApplication.jzUsers,
-          data: {"filter": query,
-            "user": chatApplication.username,
-            "token": chatApplication.token,
-            "dbName": chatApplication.dbName
-          },
-          dataType: "json",
-          success: function(data) {
-            var users = [];
-            $.each(data.users, function(idx, user) {
-              users.push({
-                "uid": user.name,
-                "value": user.fullname
-              });
-            });
-            callback.call(_this, users);
-          }
-        });
-      }
-    });
-
-    _this.$mentionEditor = $msg.next('div');
-    var $mentionEditor = _this.$mentionEditor;
-    $mentionEditor.css({'background-color':'white', 'height': '60px'});
+  if (!this.$mentionEditor) {
+    var _this = this;
     
-    $mentionEditor.focus(function() {
-      chatApplication.updateUnreadMessages();
-    });
-
-    $mentionEditor.keydown(function(event) {
-      if ($mentionEditor.next('div').css('display') == 'none') {
-        //prevent the default behavior of the enter button
-        if ( event.which == 13 ) {
-          event.preventDefault();
+    window.require(["SHARED/jquery", "SHARED/exoMention"], function($) {
+      var $msg = $('#msg');
+      $msg.mention({
+        type : 1,
+        source: function(query, callback) {
+          var _this = this;
+          $.ajax({
+            url: chatApplication.jzUsers,
+            data: {"filter": query,
+              "user": chatApplication.username,
+              "token": chatApplication.token,
+              "dbName": chatApplication.dbName
+            },
+            dataType: "json",
+            success: function(data) {
+              var users = [];
+              $.each(data.users, function(idx, user) {
+                users.push({
+                  "uid": user.name,
+                  "value": user.fullname
+                });
+              });
+              callback.call(_this, users);
+            }
+          });
         }
-        //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
-        if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-          this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
-          $mentionEditor.scrollTop($mentionEditor[0].scrollHeight - $mentionEditor.height());
-        }
-        
-        //        console.log("keydown : "+ event.which+" ; "+keydown);
+      });
+      
+      _this.$mentionEditor = $msg.next('div');
+      var $mentionEditor = _this.$mentionEditor;
+      $mentionEditor.css({'background-color':'white', 'height': '60px'});
+      
+      $mentionEditor.focus(function() {
+        chatApplication.updateUnreadMessages();
+      });
+      
+      $mentionEditor.keydown(function(event) {
+        if ($mentionEditor.next('div').css('display') == 'none') {
+          //prevent the default behavior of the enter button
+          if ( event.which == 13 ) {
+            event.preventDefault();
+          }
+          //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+          if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+            this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+            $mentionEditor.scrollTop($mentionEditor[0].scrollHeight - $mentionEditor.height());
+          }
+          
+          //        console.log("keydown : "+ event.which+" ; "+keydown);
           if ( event.which == 18 ) {
             chatApplication.keydown = 18;
           }
-      } else {
-        if ($mentionEditor.next('ul').css('display') == 'block') {
-          chatApplication.isMentioning = true;
-        }
-      }
-    });
-
-    $mentionEditor.keyup(function(event) {
-      if (!chatApplication.isMentioning) {
-        var msg = $('#msg').mention('getValue');
-        //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-        if ( event.which === 13 && msg.trim().length>=1) {
-          //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-          if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-            return false;
+        } else {
+          if ($mentionEditor.next('ul').css('display') == 'block') {
+            chatApplication.isMentioning = true;
           }
-          //      console.log("*"+msg+"*");
-          chatApplication.sendMessage(msg);
+        }
+      });
+      
+      $mentionEditor.keyup(function(event) {
+        if (!chatApplication.isMentioning) {
+          var msg = $('#msg').mention('getValue');
+          //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+          if ( event.which === 13 && msg.trim().length>=1) {
+            //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+            if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+              return false;
+            }
+            //      console.log("*"+msg+"*");
+            chatApplication.sendMessage(msg);
+            
+          }
+          // UP Arrow
+          if (event.which === 38 && msg.length === 0) {
+            var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+            var $uimsgdata = $uimsg.find(".msg-data");
+            if ($uimsgdata.length === 1) {
+              chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+            }
+          }
           
-        }
-        // UP Arrow
-        if (event.which === 38 && msg.length === 0) {
-          var $uimsg = chatApplication.chatRoom.getUserLastMessage();
-          var $uimsgdata = $uimsg.find(".msg-data");
-          if ($uimsgdata.length === 1) {
-            chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+          if ( chatApplication.keydown === 18 ) {
+            chatApplication.keydown = -1;
           }
-        }
-        
-        if ( chatApplication.keydown === 18 ) {
-          chatApplication.keydown = -1;
-        }
-        if ( event.which === 13 ) {
-          $('#msg').mention('setValue', '');
-        }       
-      } else {
-        if ($mentionEditor.next('ul').css('display') == 'none') {
+          if ( event.which === 13 ) {
+            $('#msg').mention('setValue', '');
+          }       
+        } else {
+          if ($mentionEditor.next('ul').css('display') == 'none') {
             chatApplication.isMentioning = false;
           }
-      }
+        }
+      });
+      
+      jqchat('#msg').on('focus', function() {
+        $mentionEditor.focus();
+        
+        var range = document.createRange();
+        var sel = window.getSelection();
+        range.setStart($mentionEditor[0].childNodes[0], $mentionEditor[0].childNodes.length);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      });
     });
-    
-    jqchat('#msg').on('focus', function() {
-      $mentionEditor.focus();
-    });
-  });
+  }
 }
 
 /**
