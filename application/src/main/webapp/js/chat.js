@@ -144,7 +144,7 @@ var chatApplication = new ChatApplication();
       }
     });
 
-    $('#msg').keyup(function(event) {    	
+    $('#msg').keyup(function(event) {     
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
       if ( event.which === 13 && msg.trim().length>=1) {
@@ -166,7 +166,7 @@ var chatApplication = new ChatApplication();
       }
 
       if ( chatApplication.keydown === 18 ) {
-    	  chatApplication.keydown = -1;
+        chatApplication.keydown = -1;
       }
       if ( event.which === 13 ) {
         $(this).val('');
@@ -692,9 +692,16 @@ var handleRoomNotifLayout = function() {
       if (val.charAt(val.length-1)!==' ') val +=" ";
       val += sml + " ";
       $msg.val(val);
-      $msg.focusEnd();
+      
+      if (!chatApplication.$mentionEditor) {
+        $msg.focusEnd();
+      } else {
+        var el = $msg.next('div');
+        val = el.html().replace(/<br>/g, '');
+        val = el.html().replace(/&nbsp;/g, ' ');
+        el.html(val + sml + " ");
+      }            
       $(".msg-emoticons").parent().removeClass("active");
-
     });
 
     $(".room-detail-fullname").on("click", function() {
@@ -703,7 +710,6 @@ var handleRoomNotifLayout = function() {
         $(".uiRightContainerArea").css("display", "none");
       }
     });
-
 
     $('#chat-search').keyup(function(event) {
       if (event.keyCode == 27 || event.which == 27) {
@@ -1381,20 +1387,21 @@ function ChatApplication() {
 }
 
 ChatApplication.prototype.registerPlugin = function(plugin) {
-	this.plugins.push(plugin);
+  this.plugins.push(plugin);
 }
 
 ChatApplication.prototype.trigger = function(event, context) {
-	jqchat.each(this.plugins, function(idx, plugin) {
-		if (plugin.getEvent && plugin.getEvent() == event) {
-			if (context.continueSend && plugin.onEvent) {
-				plugin.onEvent(context);
-			}
-		}
-	});
+  jqchat.each(this.plugins, function(idx, plugin) {
+    if (plugin.getEvent && plugin.getEvent() == event) {
+      if (context.continueSend && plugin.onEvent) {
+        plugin.onEvent(context);
+      }
+    }
+  });
 }
 
 ChatApplication.prototype.initMention = function() {
+  var _this = this;
   window.require(["SHARED/jquery", "SHARED/exoMention"], function($) {
     var $msg = $('#msg');
     $msg.mention({
@@ -1423,69 +1430,74 @@ ChatApplication.prototype.initMention = function() {
       }
     });
 
-    var $editable = $msg.next('div');
-    $editable.css({'background-color':'white', 'height': '60px'});
+    _this.$mentionEditor = $msg.next('div');
+    var $mentionEditor = _this.$mentionEditor;
+    $mentionEditor.css({'background-color':'white', 'height': '60px'});
     
-    $editable.focus(function() {
+    $mentionEditor.focus(function() {
       chatApplication.updateUnreadMessages();
     });
 
-    $editable.keydown(function(event) {
-      if ($editable.next('div').css('display') == 'none') {
-    	  //prevent the default behavior of the enter button
-    	  if ( event.which == 13 ) {
-    		  event.preventDefault();
-    	  }
-    	  //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
-    	  if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-    		  this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
-    		  $editable.scrollTop($editable[0].scrollHeight - $editable.height());
-    	  }
-    	  
-    	  //        console.log("keydown : "+ event.which+" ; "+keydown);
+    $mentionEditor.keydown(function(event) {
+      if ($mentionEditor.next('div').css('display') == 'none') {
+        //prevent the default behavior of the enter button
+        if ( event.which == 13 ) {
+          event.preventDefault();
+        }
+        //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
+        if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+          this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+          $mentionEditor.scrollTop($mentionEditor[0].scrollHeight - $mentionEditor.height());
+        }
+        
+        //        console.log("keydown : "+ event.which+" ; "+keydown);
           if ( event.which == 18 ) {
-        	  chatApplication.keydown = 18;
+            chatApplication.keydown = 18;
           }
       } else {
-    	  if ($editable.next('ul').css('display') == 'block') {
-    		  chatApplication.isMentioning = true;
-    	  }
+        if ($mentionEditor.next('ul').css('display') == 'block') {
+          chatApplication.isMentioning = true;
+        }
       }
     });
 
-    $editable.keyup(function(event) {
-    	if (!chatApplication.isMentioning) {
-    		var msg = $('#msg').mention('getValue');
-    		//    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-    		if ( event.which === 13 && msg.trim().length>=1) {
-    			//console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-    			if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-    				return false;
-    			}
-    			//      console.log("*"+msg+"*");
-    			chatApplication.sendMessage(msg);
-    			
-    		}
-    		// UP Arrow
-    		if (event.which === 38 && msg.length === 0) {
-    			var $uimsg = chatApplication.chatRoom.getUserLastMessage();
-    			var $uimsgdata = $uimsg.find(".msg-data");
-    			if ($uimsgdata.length === 1) {
-    				chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
-    			}
-    		}
-    		
-    		if ( chatApplication.keydown === 18 ) {
-    			chatApplication.keydown = -1;
-    		}
-    		if ( event.which === 13 ) {
-    			$('#msg').mention('setValue', '');
-    		}    		
-    	} else {
-    		if ($editable.next('ul').css('display') == 'none') {
-      		  chatApplication.isMentioning = false;
-      	  }
-    	}
+    $mentionEditor.keyup(function(event) {
+      if (!chatApplication.isMentioning) {
+        var msg = $('#msg').mention('getValue');
+        //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+        if ( event.which === 13 && msg.trim().length>=1) {
+          //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+          if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+            return false;
+          }
+          //      console.log("*"+msg+"*");
+          chatApplication.sendMessage(msg);
+          
+        }
+        // UP Arrow
+        if (event.which === 38 && msg.length === 0) {
+          var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+          var $uimsgdata = $uimsg.find(".msg-data");
+          if ($uimsgdata.length === 1) {
+            chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+          }
+        }
+        
+        if ( chatApplication.keydown === 18 ) {
+          chatApplication.keydown = -1;
+        }
+        if ( event.which === 13 ) {
+          $('#msg').mention('setValue', '');
+        }       
+      } else {
+        if ($mentionEditor.next('ul').css('display') == 'none') {
+            chatApplication.isMentioning = false;
+          }
+      }
+    });
+    
+    jqchat('#msg').on('focus', function() {
+      $mentionEditor.focus();
     });
   });
 }
@@ -3135,7 +3147,7 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
 
   this.trigger("beforeSend", context);
   if (!context.continueSend) {
-	  return;
+    return;
   }
   msg = context.msg;
   options = context.options;
