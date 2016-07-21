@@ -138,7 +138,7 @@
                      }
                      var right_compare = (w_compare + left) < parseInt($(window).scrollLeft());
                      var left_compare = (tip_w + left) > parseInt($(window).width());
-                     if ((right_compare && w_compare < 0) || (t_class == "_right" && !left_compare) || (t_class == "_left" && left < (tip_w + opts.edgeOffset + 5))) {
+                     if ((right_compare && w_compare < 0) || (t_class == "_right" && !left_compare)) {
                          t_class = "_right";
                          arrow_top = Math.round(tip_h - 13) / 2;
                          arrow_left = -12;
