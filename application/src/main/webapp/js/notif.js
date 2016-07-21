@@ -544,6 +544,8 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
           // we are not in the chat application, open the mini-chat popup
           showMiniChatPopup(targetUser, 'username');
         }
+        var popup = jqchat(this).closest('#tiptip_holder');
+        popup.hide();
       }
     });
   }
