@@ -3202,7 +3202,7 @@ ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
     }
     html += ">";
     html += "  <div class='msUserAvatar pull-left'>";
-    html += "    <a class='msAvatarLink avatarCircle' href='" + eXo.env.portal.context + "/" + eXo.env.portal.portalName + "/profile/" + user.name + "'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></a>";
+    html += "    <span class='msAvatarLink avatarCircle'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></span>";
     html += "  </div>";
     html += "  <div class='room-user-status pull-right'>";
     html += "    <i class='user-" + user.status + "'></i>";
