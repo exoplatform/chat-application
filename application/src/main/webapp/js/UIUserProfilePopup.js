@@ -17,7 +17,14 @@
   * This TipTip jQuery plug-in is dual licensed under the MIT and GPL licenses:
   *   http://www.opensource.org/licenses/mit-license.php
   *   http://www.gnu.org/licenses/gpl.html
-  */ (function ($) {
+  */
+
+ /**
+  * Component displaying a popup with the user profile info and some actions.
+  * This component is a duplication for the Social user popup component because
+  * it was not possible to re-use it (mainly because of jquery integration issues).
+  */
+ (function ($) {
      $.fn.userPopup = function (options) {
          var defaults = {
              restURL: "",
