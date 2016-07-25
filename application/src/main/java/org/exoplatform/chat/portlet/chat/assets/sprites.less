@@ -225,7 +225,7 @@
 }
 
 /* Icon User Status */
-.user-available, .user-donotdisturb, .user-away, .user-invisible,
+.user-available, .user-donotdisturb, .user-away, .user-invisible, .user-offline,
 .chat-status-chat, .chat-status, .chat-status-team, .chat-status-task {
   display: inline-block;
   vertical-align: middle;
@@ -244,11 +244,11 @@
 .user-away, .chat-status-away {
   color: @iconStatusAway!important;
 }
-.user-invisible, .chat-status-invisible {
+.user-invisible, .chat-status-invisible, .user-offline, .chat-status-offline{
   color: @iconStatusInvisibleContainerLight!important;
 }
 .user-team {
-  &.user-available, &.user-donotdisturb, &.user-away, &.user-invisible {
+  &.user-available, &.user-donotdisturb, &.user-away, &.user-invisible, &.user-offline {
       .font-icon();
     color: @colorIconDefault;
     &:before {

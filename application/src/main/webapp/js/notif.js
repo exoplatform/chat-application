@@ -519,7 +519,7 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
   if ($uiAction.length > 0 && $btnChat.length === 0) {
     var toUserName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).first().attr("href").substr(28);
     var toFullName = jqchat("[href^='/portal/intranet/activities/']", $tiptip_content).last().html();
-    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+    var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
     var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData["exoplatform.videocall.makeCall"]+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData["exoplatform.videocall.Call"]+'</a>';
 
     // Position of chat button depend on weemo installation
@@ -534,7 +534,18 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
     jqchat(".chatPopupOverlay").on("click", function() {
       if (!jqchat(this).hasClass("disabled")) {
         var targetUser = jqchat(this).attr("data-username");
-        showMiniChatPopup(targetUser,'username');
+        var targetFullname = jqchat(this).attr("data-fullname");
+        if(jqchat("#chat-application").length) {
+          // we are in the chat application, load the one-to-one room with this user
+          chatApplication.targetUser = targetUser;
+          chatApplication.targetFullname = targetFullname;
+          chatApplication.loadRoom();
+        } else {
+          // we are not in the chat application, open the mini-chat popup
+          showMiniChatPopup(targetUser, 'username');
+        }
+        var popup = jqchat(this).closest('#tiptip_holder');
+        popup.hide();
       }
     });
   }

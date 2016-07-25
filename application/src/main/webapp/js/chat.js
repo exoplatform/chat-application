@@ -946,14 +946,13 @@ var chatApplication = new ChatApplication();
     }
 
     $("#team-edit-button").on("click", function() {
+      // Only the room owner can manage room users and can see the System popup.
+      // We do a check to be sure the current user is the room owner.
+      if (chatApplication.username === chatApplication.chatRoom.owner) {
+        chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
+          var users = TAFFY(jsonData.users);
+          var users = users();
 
-      chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-        var users = TAFFY(jsonData.users);
-        var users = users();
-
-        // If the current user is the room owner we open the Settings Edit popup
-        // else we open the Settings View popup
-        if (chatApplication.username === chatApplication.chatRoom.owner) {
           var $userResults = $(".team-users-results");
           $userResults.css("display", "none");
           $userResults.html("");
@@ -972,25 +971,8 @@ var chatApplication = new ChatApplication();
 
           // Set form position to screen center
           chatApplication.setModalToCenter('.team-modal');
-        } else {
-          var $uiUserList = $("#team-settings-users-list");
-          var $uiUserOwner = $("#team-settings-user-owner");
-          $uiUserList.empty();
-          $uiUserOwner.empty();
-
-          users.order("fullname").each(function (user, number) {
-            if (user.name !== chatApplication.chatRoom.owner) {
-              addTeamUserMention($uiUserList, user.name, user.fullname, false);
-            } else {
-              addTeamUserMention($uiUserOwner, user.name, user.fullname, false);
-            }
-          });
-
-          // Center the popup + show it
-          chatApplication.setModalToCenter('.team-modal');
-          uiChatPopupWindow.show("team-settings-modal-view", true);
-        }
-      });
+        });
+      }
     });
 
     $("#team-delete-button").on("click", function(e) {
@@ -1176,6 +1158,41 @@ var chatApplication = new ChatApplication();
       return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
 
+    $("#room-users-btn-offline").on("click", function() {
+      chatApplication.showRoomOfflinePeople = !chatApplication.showRoomOfflinePeople;
+      // toggle button state
+        var showRoomOfflinePeopleButton = $(this);
+      if(chatApplication.showRoomOfflinePeople == true) {
+        showRoomOfflinePeopleButton.addClass("active");
+        showRoomOfflinePeopleButton.attr("title", showRoomOfflinePeopleButton.attr("data-title-active"));
+      } else {
+        showRoomOfflinePeopleButton.removeClass("active");
+        showRoomOfflinePeopleButton.attr("title", showRoomOfflinePeopleButton.attr("data-title-inactive"));
+      }
+      showRoomOfflinePeopleButton.tooltip("fixTitle");
+      showRoomOfflinePeopleButton.tooltip("show");
+      // toggle offline users visibility
+      chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
+    });
+
+    $("#room-users-collapse-bar").on("click", function() {
+      // toggle room users
+      var roomUsersContainer = $(".uiRoomUsersContainerArea");
+      var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
+      var collpaseBarIcon = $(this).children("i");
+      if(roomUsersHeaderTitle.is(":visible")) {
+        roomUsersContainer.removeClass("room-users-expanded");
+        roomUsersContainer.addClass("room-users-collapsed");
+        collpaseBarIcon.removeClass("uiIconArrowRight uiIconArrowDefault");
+        collpaseBarIcon.addClass("uiIconArrowLeft");
+      } else {
+        roomUsersContainer.removeClass("room-users-collapsed");
+        roomUsersContainer.addClass("room-users-expanded");
+        collpaseBarIcon.removeClass("uiIconArrowLeft uiIconArrowDefault");
+        collpaseBarIcon.addClass("uiIconArrowRight");
+      }
+    });
+
   });
 
 })(jqchat);
@@ -1266,7 +1283,7 @@ function ChatApplication() {
   this.showSpacesHistory = false;
   this.showTeamsHistory = false;
 
-
+  this.showRoomOfflinePeople = false;
 }
 
 /**
@@ -1522,6 +1539,8 @@ ChatApplication.prototype.resize = function() {
   $chatApplication.height(heightChat);
   jqchat("#chats").height(heightChat - 105 - 61);
   jqchat("#chat-users").height(heightChat - 44);
+  jqchat("#room-users-list").height(heightChat - 44 - 61 - 20); // remove header and padding
+  jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
 
 };
 
@@ -1800,7 +1819,11 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           this.hidePanel(".chat-sync-panel");
           this.showRooms(rooms);
 
-
+          // reload room users if the panel is displayed
+          var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
+          if(roomUsersContainer.is(":visible")) {
+            this.loadRoomUsers();
+          }
 
           this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
           if (fromChromeApp) {
@@ -1924,7 +1947,13 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += '<span class="room-total total-people badgeDefault badgePrimary mini"></span>';
   out += "<div class='nav pull-right uiDropdownWithIcon'><div class='uiAction iconDynamic'><i class='"+classArrow+" uiIconLightGray'></i></div></div>";
   out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-history btn-top-history-people' style='margin-right: 5px;'><li><div class='actionIcon btn-history"+xPeopleHistory+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.history"] + "'><i class='uiIconChatClock uiIconChatLightGray'></i></div></li></ul>";
-  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='" + chatBundleData["exoplatform.chat.show.users"] + "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
+  out += "<ul class='nav pull-right uiDropdownWithIcon btn-top-offline' style='margin-right: 5px;'><li><div class='actionIcon btn-offline"+xOffline+"' data-type='people' href='javaScript:void(0)' data-toggle='tooltip' data-placement='bottom' title='";
+  if(chatApplication.showOffline) {
+    out += chatBundleData["exoplatform.chat.hide.users"];
+  } else {
+    out += chatBundleData["exoplatform.chat.show.users"];
+  }
+  out += "'><i class='uiIconChatMember uiIconChatLightGray'></i></div></li></ul>";
   out += "</td></tr>";
 
   var roomsPeople = rooms();
@@ -2146,7 +2175,7 @@ ChatApplication.prototype.loadRoom = function() {
     }
 
     jqchat("#room-detail").css("display", "block");
-    jqchat(".team-button").css("display", "none");
+    jqchat("#chat-team-button").css("display", "none");
     this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
     jqchat(".target-user-fullname").text(this.targetFullname);
 
@@ -2162,6 +2191,7 @@ ChatApplication.prototype.loadRoom = function() {
     if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
     ////// USER
     {
+      jqchat(".uiRoomUsersContainerArea").hide();
       jqchat(".meeting-action-task").css("display", "none");
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
@@ -2172,6 +2202,7 @@ ChatApplication.prototype.loadRoom = function() {
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE
     {
+      this.loadRoomUsers();
       jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
@@ -2195,17 +2226,15 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
           this.chatRoom.owner = creator;
-          jqchat(".team-button").css("display", "block");
           if (creator === this.username) {
-            jqchat("#team-delete-button").show();
-          } else {
-            jqchat("#team-delete-button").hide();
+            jqchat("#chat-team-button").show();
           }
         },
         error: function(xhr, status, error){
           //console.log("ERROR::"+xhr.responseText);
         }
       });
+      this.loadRoomUsers();
       jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
@@ -2620,7 +2649,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     chatApplication.setModalToCenter('.team-modal');
   });
 
-  jqchat(".btn-history").on("click", function() {
+  jqchat("#chat-users .btn-history").on("click", function() {
     var type = jqchat(this).attr("data-type");
     if (type === "people") {
       chatApplication.showPeople = true;
@@ -2639,7 +2668,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   });
 
-  jqchat(".btn-offline").on("click", function() {
+  jqchat("#chat-users .btn-offline").on("click", function() {
     chatApplication.showPeople = true;
     jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
     chatApplication.showOffline = !chatApplication.showOffline;
@@ -2648,7 +2677,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
   });
 
 
-  jqchat('.users-online').on("click", function() {
+  jqchat('#chat-users .users-online').on("click", function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();
@@ -2659,13 +2688,13 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     }
   });
 
-  jqchat('.users-online').on("mouseenter", function() {
+  jqchat('#chat-users .users-online').on("mouseenter", function() {
     var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
     $uiIconChatFavorite.css("display", "block");
     $uiIconChatFavorite.css("margin-right", "1px");
   });
 
-  jqchat('.users-online').on("mouseleave", function() {
+  jqchat('#chat-users .users-online').on("mouseleave", function() {
     var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
     $uiIconChatFavorite.css("display", "none");
   });
@@ -2674,7 +2703,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
-  jqchat('.user-favorite').on("click", function() {
+  jqchat('#chat-users .user-favorite').on("click", function() {
     var targetFav = jqchat(this).attr("user-data");
     thiss.toggleFavorite(targetFav);
   });
@@ -3096,4 +3125,103 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         });
     }
   }, 3000);
+};
+
+/**
+ * Load Room Users : server call
+ */
+ChatApplication.prototype.loadRoomUsers = function() {
+  var thiss = this;
+  this.chatRoom.owner = "";
+  var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
+  if (this.targetUser !== undefined) {
+    roomUsersContainer.show();
+    var roomUsersList = jqchat("#room-users-list");
+    if(roomUsersList !== undefined) {
+      // reset users list
+      roomUsersList.html("");
+      // fetch room users
+      chatApplication.getUsers(this.targetUser, function (jsonData) {
+        var users = TAFFY(jsonData.users);
+
+        // generate room users list DOM
+        var html = "";
+        var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
+        sortedStatuses.forEach(function(status) {
+          users({status: status}).order("fullname").each(function (user) {
+            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
+          });
+        });
+        roomUsersList.html(html);
+
+        // User Profile Popup initialize
+        var portal = eXo.env.portal;
+        var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
+        var usersContainers = jqchat(roomUsersList).find('.room-user');
+        jqchat.each(usersContainers, function (idx, el) {
+          var userId = jqchat(el).attr('data-name');
+
+          jqchat(el).userPopup({
+            restURL: restUrl,
+            userId: userId,
+            labels: {
+              StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
+              Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
+              Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
+              CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
+              RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
+            },
+            content: false,
+            defaultPosition: "left",
+            keepAlive: true,
+            maxWidth: "240px"
+          });
+        });
+
+        // update nb of users in the room
+        jqchat("#room-users-title-nb-users").html("(" + (users().count() - 1) + ")");
+      }, false);
+    }
+  } else {
+    // hide room users since the room id is not defined
+    roomUsersContainer.hide();
+  }
+};
+
+/**
+ * Generate room user DOM
+ * @param user User to render
+ * @returns {string} The DOM representing the user
+ */
+ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
+  var html = "";
+  if (user.name !== chatApplication.username) {
+    html += "<div class='room-user' data-name='"+user.name+"'"
+    if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
+      html += "style='display: none;'";
+    }
+    html += ">";
+    html += "  <div class='msUserAvatar pull-left'>";
+    html += "    <span class='msAvatarLink avatarCircle'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></span>";
+    html += "  </div>";
+    html += "  <div class='room-user-status pull-right'>";
+    html += "    <i class='user-" + user.status + "'></i>";
+    html += "  </div>";
+    html += "  <div class='room-user-name'>" + user.fullname + "</div>";
+    html += "</div>"
+  }
+  return html;
+};
+
+/**
+ *
+ * @param showPeople Show people if true, otherwise hide them
+ */
+ChatApplication.prototype.toggleOfflineRoomUsers = function(showPeople) {
+  var offlineUsers = jqchat("#room-users-list").find(".room-user-status .user-offline, .room-user-status .user-invisible").parents(".room-user");
+  if(showPeople == true) {
+    offlineUsers.show();
+  } else {
+    offlineUsers.hide();
+  }
 };

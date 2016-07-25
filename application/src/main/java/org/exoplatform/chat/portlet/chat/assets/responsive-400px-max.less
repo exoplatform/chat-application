@@ -55,11 +55,57 @@
     }
 
     .uiRightContainerArea {
-      clear: both;
       height: 400px!important;
 
       #chats {
         height: 275px!important;
+      }
+    }
+
+    .uiRoomUsersContainerArea {
+      width: 97%;
+
+      #room-users-list {
+        height: 317px!important;
+      }
+
+      #room-users-collapse-bar {
+        line-height: 399px!important;
+      }
+
+      &:not(.room-users-expanded) {
+        width: 70px;
+
+        #room-users-collapse-bar {
+          .uiIconArrowDefault:before {
+            content: "\e75b";
+          }
+        }
+
+        #room-users-header {
+          #room-users-title {
+            display: none;
+          }
+
+          #room-users-button {
+            padding-right: 17px;
+          }
+        }
+
+        #room-users-list {
+          .msUserAvatar {
+            padding: 0;
+            width: 100%;
+
+            .msAvatarLink {
+              margin: 0 auto;
+            }
+          }
+
+          .room-user-name, .room-user-status {
+            display: none;
+          }
+        }
       }
     }
   }

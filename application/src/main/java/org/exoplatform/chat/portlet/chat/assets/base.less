@@ -1,4 +1,6 @@
 // Base CSS
+@headerWidth: 60px;
+
 .actionIcon.disabled {
   opacity: 0.65;
   cursor: default;
@@ -13,10 +15,143 @@
   }
 }
 
+.uiBox {
+  .title {
+    padding: 0;
+
+    .title-text {
+      font-weight: bold;
+      font-size: 1.11em;
+    }
+  }
+}
+
+// avatar
+.msUserAvatar {
+  padding-left: 12px;
+  padding-right: 15px;
+  text-align: center;
+
+  .msAvatarLink {
+    @widthOfAvatar: 32px;
+
+    .square(@widthOfAvatar);
+    display: block;
+
+    img {
+      .border-radius(@widthOfAvatar);
+      .square(@widthOfAvatar);
+    }
+  }
+}
+
 .uiRightContainerArea {
   float: none;
-    overflow: auto;
-    padding: 15px 0 0;
+  overflow: auto;
+  padding: 15px 0 0;
+}
+
+.uiRoomUsersContainerArea {
+  display: none;
+  float: right;
+  padding: 15px 0 0 15px;
+  width: 300px;
+
+  #room-users-collapse-bar {
+    float: left;
+    position: absolute;
+    margin-left: -10px;
+    cursor: pointer;
+
+    .uiIconArrowDefault:before {
+      content: "\e75c";
+    }
+  }
+
+  &.room-users-collapsed {
+    width: 70px;
+
+    .uiBox {
+      #room-users-header {
+        #room-users-title {
+          display: none;
+        }
+
+        #room-users-button {
+          padding-right: 17px;
+        }
+      }
+
+      #room-users-list {
+        .msUserAvatar {
+          padding: 0;
+          width: 100%;
+
+          .msAvatarLink {
+            margin: 0 auto;
+          }
+        }
+
+        .room-user-name, .room-user-status {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .uiBox {
+    #room-users-header {
+      height: @headerWidth;
+      line-height: @headerWidth;
+      padding: 0;
+      .box-shadow(none);
+
+      #room-users-title {
+        padding-left: 20px;
+        font-weight: bold;
+        font-size: 1.11em;
+
+        #room-users-title-nb-users {
+          font-weight: normal;
+        }
+      }
+
+      #room-users-button {
+        padding-right: 10px;
+
+        li {
+          line-height: @headerWidth;
+          padding-right: 5px;
+          float: right;
+        }
+      }
+    }
+
+    #room-users-list {
+      padding: 10px 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      .room-user {
+        height: 50px;
+        padding: 5px 0 0 0;
+
+        .room-user-name {
+          line-height: 50px;
+          color: #333333;
+        }
+
+        .room-user-status {
+          line-height: 50px;
+          padding: 0px 15px;
+
+          i:before {
+            content: "\e76e";
+          }
+        }
+      }
+    }
+  }
 }
 
 .chat-sync {
@@ -540,8 +675,11 @@ table.list-rooms {
 
 .team-button {
   float: right;
-  display: none;
   height: 50px;
+}
+
+#chat-team-button.team-button {
+  display: none;
 }
 
 .btn-weemo-conf {
@@ -562,9 +700,7 @@ table.list-rooms {
   overflow: hidden;
   display: block;
   padding-left: 10px;
-  line-height: 61px;
-  font-weight: bold;
-  font-size: 14px;
+  line-height: @headerWidth;
   .text-overflow;
 }
 
@@ -580,7 +716,7 @@ table.list-rooms {
 .td-status {
   width: 16px;
   min-width: 16px;
-    .user-available,.user-away,.user-donotdisturb, .user-invisible{
+    .user-available,.user-away,.user-donotdisturb, .user-invisible, .user-offline {
         font-size: 12px;
     }
   > i {
