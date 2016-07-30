@@ -754,7 +754,6 @@ var handleRoomNotifLayout = function() {
         event.cancelBubble = true;
       };
     };
-    setMiniCalendarToDateField('task-add-date');
 
     $(".create-event-button").on("click", function() {
       var space = chatApplication.targetFullname;
@@ -1408,28 +1407,29 @@ ChatApplication.prototype.initMention = function() {
       var $msg = $('#msg');
       $msg.suggester({
         type : "mix",
-        source: function(query, callback) {
-          var _this = this;
-          $.ajax({
-            url: chatApplication.jzUsers,
-            data: {"filter": query,
-              "user": chatApplication.username,
-              "token": chatApplication.token,
-              "dbName": chatApplication.dbName
-            },
-            dataType: "json",
-            success: function(data) {
-              var users = [];
-              $.each(data.users, function(idx, user) {
-                users.push({
-                  "uid": user.name,
-                  "value": user.fullname
-                });
+        optionProviders : ['exo:chat']
+      });
+      $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
+        var _this = this;
+        $.ajax({
+          url: chatApplication.jzUsers,
+          data: {"filter": query,
+            "user": chatApplication.username,
+            "token": chatApplication.token,
+            "dbName": chatApplication.dbName
+          },
+          dataType: "json",
+          success: function(data) {
+            var users = [];
+            $.each(data.users, function(idx, user) {
+              users.push({
+                "uid": user.name,
+                "value": user.fullname
               });
-              callback.call(_this, users);
-            }
-          });
-        }
+            });
+            callback.call(_this, users);
+          }
+        });
       });
       
       _this.$mentionEditor = $msg.next('div');
@@ -1465,7 +1465,7 @@ ChatApplication.prototype.initMention = function() {
       
       $mentionEditor.keyup(function(event) {
         if (!chatApplication.isMentioning) {
-          var msg = $('#msg').mention('getValue');
+          var msg = $('#msg').suggester('getValue');
           //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
           if ( event.which === 13 && msg.trim().length>=1) {
             //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
@@ -1489,7 +1489,7 @@ ChatApplication.prototype.initMention = function() {
             chatApplication.keydown = -1;
           }
           if ( event.which === 13 ) {
-            $('#msg').mention('setValue', '');
+            $('#msg').suggester('setValue', '');
           }       
         } else {
           if ($mentionEditor.next('ul').css('display') == 'none') {
@@ -1500,10 +1500,15 @@ ChatApplication.prototype.initMention = function() {
       
       jqchat('#msg').on('focus', function() {
         $mentionEditor.focus();
+        $mentionEditor.html($mentionEditor.html().replace(/<br>/g, ''));
         
         var range = document.createRange();
-        var sel = window.getSelection();
-        range.setStart($mentionEditor[0].childNodes[0], $mentionEditor[0].childNodes.length);
+        var sel = window.getSelection();        
+        if (!$mentionEditor[0].childNodes.length) {
+          range.setStart($mentionEditor[0], $mentionEditor[0].childNodes.length);
+        } else {
+          range.setStart($mentionEditor[0].childNodes[0], $mentionEditor[0].childNodes.length);          
+        }
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
