@@ -60,7 +60,7 @@ var chatApplication = new ChatApplication();
 
     // Attach weemo call button into chatApplication
     chatApplication.displayVideoCallOnChatApp();
-//    chatApplication.initMention();
+    chatApplication.initMention();
 
     /**
      * Init Global Variables
@@ -1404,10 +1404,10 @@ ChatApplication.prototype.initMention = function() {
   if (!this.$mentionEditor) {
     var _this = this;
     
-    window.require(["SHARED/jquery", "SHARED/exoMention"], function($) {
+    window.require(["SHARED/jquery", "SHARED/suggester"], function($) {
       var $msg = $('#msg');
-      $msg.mention({
-        type : 1,
+      $msg.suggester({
+        type : "mix",
         source: function(query, callback) {
           var _this = this;
           $.ajax({
