@@ -1407,7 +1407,7 @@ ChatApplication.prototype.initMention = function() {
       var $msg = $('#msg');
       $msg.suggester({
         type : "mix",
-        optionProviders : ['exo:chat']
+        sourceProviders : ['exo:chat']
       });
       $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
         var _this = this;
