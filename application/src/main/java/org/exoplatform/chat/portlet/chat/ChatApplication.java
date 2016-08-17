@@ -170,14 +170,14 @@ public class ChatApplication
     exPopupCtx.setRsBundle(bundle);
     List<org.exoplatform.commons.api.ui.Response> popupResponse = this.uiService.render(exPopupCtx); 
     
-    StringBuilder exMenu = new StringBuilder();
-    StringBuilder exPopup = new StringBuilder();    
+    StringBuilder extMenu = new StringBuilder();
+    StringBuilder extPopup = new StringBuilder();    
     try {
       for (org.exoplatform.commons.api.ui.Response menu : menuResponse) {        
-        exMenu.append(new String(menu.getData(), "UTF-8"));
+        extMenu.append(new String(menu.getData(), "UTF-8"));
       }
       for (org.exoplatform.commons.api.ui.Response popup : popupResponse) {
-        exPopup.append(new String(popup.getData(), "UTF-8"));
+        extPopup.append(new String(popup.getData(), "UTF-8"));
       }      
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, ex.getMessage(), ex);
@@ -196,8 +196,8 @@ public class ChatApplication
             .set("demoMode", demoMode)
             .set("today", todayDate)
             .set("dbName", dbName)
-            .set("exPopup", exPopup)
-            .set("exMenu", exMenu)
+            .set("extPopup", extPopup)
+            .set("extMenu", extMenu)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)
