@@ -1220,15 +1220,20 @@ String.prototype.endsWith = function(suffix) {
                 operation = JSON.parse(operation);
                 if(operation.done) {
                   var settings = JSON.parse(operation.userDesktopNotificationSettings);
-                  desktop.setPreferredNotificationSettings(settings);
-                } else {
-                  if(operation.userDesktopNotificationSettings === "{}") {//first time using the settings - so set to the default values
+                   if(!operation.userDesktopNotificationSettings.preferredNotification) {//set to the default values for the Notifications channels
+                     settings.preferredNotification =["on-site", "desktop", "bip"];
+                     settings.preferredNotificationTrigger = [];
+                     settings.preferredNotification = JSON.stringify(settings.preferredNotification);
+                     settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+                   }
+                } else { //the very first time
+                  if(operation.userDesktopNotificationSettings === "{}") {//the very first time using the settings - so set to the default values
                     var settings = {preferredNotification: ["on-site", "desktop", "bip"] , preferredNotificationTrigger: []};
                     settings.preferredNotification = JSON.stringify(settings.preferredNotification);
                     settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
-                    desktop.setPreferredNotificationSettings(settings);
                   }
                 }
+                desktop.setPreferredNotificationSettings(settings);
               },
               error: function (xhr, status, error){
                 alert('an error has been occured');
