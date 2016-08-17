@@ -1220,7 +1220,7 @@ String.prototype.endsWith = function(suffix) {
                 operation = JSON.parse(operation);
                 if(operation.done) {
                   var settings = JSON.parse(operation.userDesktopNotificationSettings);
-                   if(!operation.userDesktopNotificationSettings.preferredNotification) {//set to the default values for the Notifications channels
+                   if(!settings.preferredNotification) {//set to the default values for the Notifications channels
                      settings.preferredNotification =["on-site", "desktop", "bip"];
                      settings.preferredNotificationTrigger = [];
                      settings.preferredNotification = JSON.stringify(settings.preferredNotification);
