@@ -324,7 +324,7 @@ ChatNotification.prototype.refreshNotif = function() {
         var lastMsg = data.notifications[0]; // the last one is at 0 index
         var total = Math.abs(data.notifications.length);
         if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktop.canIbypassDonotDistrub() ||  desktop.checkMention(this.username,lastMsg.content) ) && 
-            this.profileStatus !== "offline" && desktop.canIbypassRoomNotif(lastMsg.content)) {
+            this.profileStatus !== "offline" && desktop.canIbypassRoomNotif(lastMsg)) {
           notifyMe = true;
         }
 

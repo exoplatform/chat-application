@@ -83,11 +83,13 @@ var desktop = (function () {
 		return (preferredNotification.indexOf('on-site')!== -1) ;
 	}
 	
-	var canIbypassRoomNotif = function(message) {
-	  return (!preferredRoomNotificationTrigger[chatApplication.targetUser]) || // 1-1 chat, but room
-	         (preferredRoomNotificationTrigger[chatApplication.targetUser] == ROOM_NOTIF_TRIGGER_NORMAL) || 
-	         (preferredRoomNotificationTrigger[chatApplication.targetUser].startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
-              containKeyWord(message, preferredRoomNotificationTrigger[chatApplication.targetUser]));
+	var canIbypassRoomNotif = function(msgObj) {
+	  var message =  msgObj.content;
+	  var sourceRoom = msgObj.categoryId;
+	  return (!preferredRoomNotificationTrigger[sourceRoom]) || // 1-1 chat, but room
+	         (preferredRoomNotificationTrigger[sourceRoom] == ROOM_NOTIF_TRIGGER_NORMAL) ||
+	         (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
+              containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));
 	}
 	
 	var containKeyWord = function(message, keywords) {

@@ -391,7 +391,7 @@ var chatApplication = new ChatApplication();
        $("input#room-notif-trigger-when-key-word-value").attr("readonly", true);
      }
      var roomName = chatApplication.targetFullname;
-     var roomId = chatApplication.targetUser;
+     var roomId = chatApplication.room;
 
      jqchat.ajax({
        url: chatApplication.jzChatSetRoomNotificationTrigger,
@@ -437,7 +437,7 @@ var chatApplication = new ChatApplication();
         jqchat("#room-detail .room-detail-fullname").html(
                 chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
 
-        var roomPrefTrigger = desktop.getRoomPreferredNotificationTrigger()[chatApplication.targetUser];
+        var roomPrefTrigger = desktop.getRoomPreferredNotificationTrigger()[chatApplication.room];
         if (roomPrefTrigger) {
           if (roomPrefTrigger === desktop.ROOM_NOTIF_TRIGGER_NORMAL ||
               roomPrefTrigger === desktop.ROOM_NOTIF_TRIGGER_SILENCE) {
