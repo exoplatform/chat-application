@@ -398,7 +398,27 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
     });
 
     notification.onclick = function () {
-      window.open(path);
+        notification.close();
+    	if(typeof chatApplication === "undefined") {
+    	  newTab = window.open(path);
+    	  return;
+    	}
+        chatApplication.targetUser = "team-"+msg.categoryId;
+      	var displayTitle ="";
+      	if(!msg.roomDisplayName) {
+      	  displayTitle = msg.fromFullName;
+      	}
+      	else  {
+      	  displayTitle = msg.roomDisplayName;
+      	}
+
+        chatApplication.targetFullname = displayTitle;
+        chatApplication.loadRoom();
+        if (chatApplication.isMobileView()) {
+          jqchat(".right-chat").css("display", "block");
+          jqchat(".left-chat").css("display", "none");
+          jqchat(".room-name").html(chatApplication.targetFullname);
+        }
     };
   }
 };
