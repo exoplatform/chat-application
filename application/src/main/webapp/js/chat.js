@@ -433,6 +433,10 @@ var chatApplication = new ChatApplication();
     //team/room desktop notification settings
     $("#team-notification-button").on("click", function() {
       chatApplication.setConfigMode(true);
+      $("div.chat-message").css({
+        "pointer-events": "none",
+        "opacity": "0.3"
+      });
       jqchat("#chats").load("/chat/partials/chat.notification.room.html", function() {
         jqchat("#room-detail .room-detail-fullname").html(
                 chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
