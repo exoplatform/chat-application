@@ -322,6 +322,18 @@ ChatNotification.prototype.refreshNotif = function() {
           return el2.timestamp - el1.timestamp;
         });
         var lastMsg = data.notifications[0]; // the last one is at 0 index
+
+
+        //check if a notification has been spawn on other tab
+        var lastNotifTime = localStorage.getItem('lastNotifTime');
+        lastNotifTime = JSON.parse(lastNotifTime);
+
+        if(lastMsg !== undefined && ( lastNotifTime == null || lastNotifTime !== lastMsg.timestamp)) {
+        localStorage.setItem('lastNotifTime',JSON.stringify(lastMsg.timestamp));
+        } else {
+          return;
+        }
+
         var total = Math.abs(data.notifications.length);
         if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktop.canIbypassDonotDistrub() ||  desktop.checkMention(this.username,lastMsg.content) ) && 
             this.profileStatus !== "offline" && desktop.canIbypassRoomNotif(lastMsg)) {
