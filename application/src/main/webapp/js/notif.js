@@ -328,6 +328,16 @@ ChatNotification.prototype.refreshNotif = function() {
         var lastNotifTime = localStorage.getItem('lastNotifTime');
         lastNotifTime = JSON.parse(lastNotifTime);
 
+        var nbrOfFullScreenChat = localStorage.getItem('nbrOfFullScreenChat');
+        nbrOfFullScreenChat = JSON.parse(nbrOfFullScreenChat);
+        
+        var nbrOfFullSocial = localStorage.getItem('nbrOfFullSocial');
+        nbrOfFullSocial = JSON.parse(nbrOfFullSocial);
+
+        if(typeof chatApplication === "undefined" && nbrOfFullScreenChat!=null && nbrOfFullScreenChat > 0) { 
+          return;
+        }
+
         if(lastMsg !== undefined && ( lastNotifTime == null || lastNotifTime !== lastMsg.timestamp)) {
         localStorage.setItem('lastNotifTime',JSON.stringify(lastMsg.timestamp));
         } else {
@@ -410,6 +420,7 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
     });
 
     notification.onclick = function () {
+        window.focus();
         notification.close();
     	if(typeof chatApplication === "undefined") {
     	  newTab = window.open(path);
@@ -848,6 +859,56 @@ var chatNotification = new ChatNotification();
     chatNotification.initUserInterface();
 
     chatNotification.initUserProfile();
+
+    window.onload = function() {
+        if (typeof chatApplication !== "undefined") {
+            var nbrOfFullScreenChat = localStorage.getItem('nbrOfFullScreenChat');
+            nbrOfFullScreenChat = JSON.parse(nbrOfFullScreenChat);
+
+            if (nbrOfFullScreenChat == null) {
+                localStorage.setItem('nbrOfFullScreenChat', "0");
+            } else {
+                nbrOfFullScreenChat++;
+                localStorage.setItem('nbrOfFullScreenChat', JSON.stringify(nbrOfFullScreenChat));
+            }
+
+        } else {
+            var nbrOfFullSocial = localStorage.getItem('nbrOfFullSocial');
+            nbrOfFullSocial = JSON.parse(nbrOfFullSocial);
+
+            if (nbrOfFullSocial == null) {
+                localStorage.setItem('nbrOfFullSocial', "0");
+            } else {
+                nbrOfFullSocial++;
+                localStorage.setItem('nbrOfFullSocial', JSON.stringify(nbrOfFullSocial));
+            }
+
+        }
+    }
+
+
+    window.onbeforeunload = function(e) {
+        if (typeof chatApplication !== "undefined") {
+            var nbrOfFullScreenChat = localStorage.getItem('nbrOfFullScreenChat');
+            nbrOfFullScreenChat = JSON.parse(nbrOfFullScreenChat);
+
+            if (nbrOfFullScreenChat != null && nbrOfFullScreenChat > 0) {
+                nbrOfFullScreenChat--;
+                localStorage.setItem('nbrOfFullScreenChat', JSON.stringify(nbrOfFullScreenChat));
+            }
+
+        } else {
+            var nbrOfFullSocial = localStorage.getItem('nbrOfFullSocial');
+            nbrOfFullSocial = JSON.parse(nbrOfFullSocial);
+
+            if (nbrOfFullSocial != null && nbrOfFullSocial > 0) {
+                nbrOfFullSocial--;
+                localStorage.setItem('nbrOfFullSocial', JSON.stringify(nbrOfFullSocial));
+            }
+
+        }
+    }
+
 
     $(".chat-status").on("click", function() {
       var status = $(this).attr("data-status");

@@ -1236,7 +1236,7 @@ String.prototype.endsWith = function(suffix) {
                 desktop.setPreferredNotificationSettings(settings);
               },
               error: function (xhr, status, error){
-                alert('an error has been occured');
+                console.log('an error has been occured', error);
               }
 
             });

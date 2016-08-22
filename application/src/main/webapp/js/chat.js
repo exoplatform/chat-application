@@ -413,7 +413,7 @@ var chatApplication = new ChatApplication();
          }
        },
        error:function (xhr, status, error){
-         alert('an error has been occured');
+         console.log('an error has been occured', error);
        }
 
      });
@@ -485,11 +485,11 @@ var chatApplication = new ChatApplication();
                 jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
             }
           } else {
-            alert("Request received but operation done without success..");
+            console.log("Request received but operation done without success..");
           }
         },
         error: function (xhr, status, error){
-          alert('an error has been occured');
+          console.log('an error has been occured', error);
         }
 
       });
@@ -514,11 +514,11 @@ var chatApplication = new ChatApplication();
           if(operation.done) {
             desktop.setPreferredNotificationTrigger(notifTrigger);//set into the memory
           } else {
-            alert("Request received but operation done without success..");
+            console.log("Request received but operation done without success..");
           }
         },
         error:function (xhr, status, error){
-          alert('an error has been occured');
+          console.log('an error has been occured', error);
         }
 
       });
