@@ -75,7 +75,7 @@ import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.MessageBean;
@@ -553,7 +553,7 @@ public class ChatServer
   }
 
   @Resource
-  @MimeType("text/plain")
+  @MimeType("application/json")
   @Route("/getUserDesktopNotificationSettings")
   public Response.Content getUserDesktopNotificationSettings(String user, String token, String dbName) throws JSONException {
     if (!tokenService.hasUserWithToken(user, token, dbName)) {
@@ -561,15 +561,15 @@ public class ChatServer
     }
 
     JSONObject response = new JSONObject();
-    String res =  userService.getUserDesktopNotificationSettings(user, dbName);
-    if("{}".equals(res)){
+    JSONObject res =  userService.getUserDesktopNotificationSettings(user, dbName).toJSON();
+    if(res==null || res.isEmpty()){
       response.put("done",false);
     } else {
       response.put("done",true);
     }
     response.put("userDesktopNotificationSettings",res);
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(response.toString()).withHeader("Cache-Control", "no-cache")
             .withCharset(Tools.UTF_8);
   }
 
@@ -582,9 +582,10 @@ public class ChatServer
     }
 
     JSONObject response = new JSONObject();
-    if(userService.setPreferredNotification(user, notifManner, dbName)){
+    try {
+      userService.setPreferredNotification(user, notifManner, dbName);
       response.put("done",true);
-    } else {
+    } catch (Exception e) {
       response.put("done",false);
     }
 

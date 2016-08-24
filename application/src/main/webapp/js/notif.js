@@ -345,15 +345,15 @@ ChatNotification.prototype.refreshNotif = function() {
         }
 
         var total = Math.abs(data.notifications.length);
-        if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktop.canIbypassDonotDistrub() ||  desktop.checkMention(this.username,lastMsg.content) ) && 
-            this.profileStatus !== "offline" && desktop.canIbypassRoomNotif(lastMsg)) {
+        if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub() ||  desktopNotification.checkMention(this.username,lastMsg.content) ) && 
+            this.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(lastMsg)) {
           notifyMe = true;
         }
 
         //console.log('refreshNotif :: '+total);
         var $chatNotification = jqchat("#chat-notification");
         if (total>0) {
-          if(desktop.canIShowOnSiteNotif() && notifyMe) {
+          if(desktopNotification.canShowOnSiteNotif() && notifyMe) {
              $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
              $chatNotification.css('display', 'block');
           }
@@ -368,10 +368,10 @@ ChatNotification.prototype.refreshNotif = function() {
         }
 
         if(notifyMe) {
-          if(desktop.canIPlaySound()){
+          if(desktopNotification.canPlaySound()){
             this.playNotifSound();
           }
-          if(desktop.canIShowDesktopNotif()){
+          if(desktopNotification.canShowDesktopNotif()){
             this.showDesktopNotif(this.chatPage,total,lastMsg);
           }
         }
@@ -402,7 +402,7 @@ ChatNotification.prototype.playNotifSound = function() {
  * Show desktop Notif
  */
 ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
-  var displayMsg = desktop.highlightMessage(msg);
+  var displayMsg = desktopNotification.highlightMessage(msg);
   if(Notification.permission !== "granted")
     Notification.requestPermission();
 

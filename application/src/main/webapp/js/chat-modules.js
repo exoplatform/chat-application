@@ -195,7 +195,7 @@ ChatRoom.prototype.emptyChatZone = function() {
 ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   if (this.id === "") return;
 
-  if (typeof chatApplication != "undefined" && chatApplication.isConfigMode()) {
+  if (typeof chatApplication != "undefined" && chatApplication.configMode) {
     return;//do nothing when we're on the config page
   }
   //var thiss = chatApplication;
@@ -1217,23 +1217,22 @@ String.prototype.endsWith = function(suffix) {
                 },
 
               success: function(operation){
-                operation = JSON.parse(operation);
                 if(operation.done) {
-                  var settings = JSON.parse(operation.userDesktopNotificationSettings);
+                  var settings = operation.userDesktopNotificationSettings;
                    if(!settings.preferredNotification) {//set to the default values for the Notifications channels
-                     settings.preferredNotification =["on-site", "desktop", "bip"];
+                     settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
                      settings.preferredNotificationTrigger = [];
                      settings.preferredNotification = JSON.stringify(settings.preferredNotification);
                      settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
                    }
                 } else { //the very first time
-                  if(operation.userDesktopNotificationSettings === "{}") {//the very first time using the settings - so set to the default values
-                    var settings = {preferredNotification: ["on-site", "desktop", "bip"] , preferredNotificationTrigger: []};
+                  if(JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
+                    var settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
                     settings.preferredNotification = JSON.stringify(settings.preferredNotification);
                     settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
                   }
                 }
-                desktop.setPreferredNotificationSettings(settings);
+                desktopNotification.setPreferredNotificationSettings(settings);
               },
               error: function (xhr, status, error){
                 console.log('an error has been occured', error);

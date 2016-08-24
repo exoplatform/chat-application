@@ -2,6 +2,7 @@ package org.exoplatform.chat;
 
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.SpaceBean;
@@ -10,13 +11,13 @@ import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.simple.JSONObject;
 
 import static org.junit.Assert.*;
 
@@ -515,23 +516,8 @@ public class ChatTestCase extends AbstractChatTestCase
     userService.setRoomNotificationTrigger(benjamin, roomId1, normal, null, 1000);
     userService.setRoomNotificationTrigger(benjamin, roomId1, "silence", null, 500);
     
-    String userDNS = userService.getUserDesktopNotificationSettings(benjamin, null);
+    NotificationSettingsBean userDNS = userService.getUserDesktopNotificationSettings(benjamin, null);
     assertNotNull(userDNS);
-    
-    Object userDNSObj = JSONValue.parse(userDNS);
-    assertTrue(userDNSObj instanceof JSONObject);
-    JSONObject jsonUserDNS = (JSONObject)userDNSObj;
-    
-    Object roomSettingsObj = jsonUserDNS.get("preferredRoomNotificationTrigger");
-    assertTrue(roomSettingsObj instanceof String);
-    JSONObject roomSettings = (JSONObject)JSONValue.parse((String)roomSettingsObj);
-    assertEquals(1, roomSettings.values().size());
-    
-    Object roomSettingObj = roomSettings.values().iterator().next();
-    assertTrue(roomSettingObj instanceof JSONObject);
-    
-    JSONObject roomSetting = (JSONObject)roomSettingObj;
-    Object notifCond = roomSetting.get("notifCond");
-    assertEquals(normal, notifCond);
+    assertTrue(userDNS instanceof NotificationSettingsBean);
   }
 }

@@ -23,13 +23,16 @@ import com.mongodb.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
+//org.json.simple.JSONObject
+import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -44,8 +47,6 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
 {
 
   private static final Logger LOG = Logger.getLogger("UserService");
-  
-  private static final String PREFERRED_ROOM_NOTIFICATION_TRIGGER = "preferredRoomNotificationTrigger";
 
   private DB db(String dbName)
   {
@@ -78,8 +79,14 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       coll.save(doc, WriteConcern.SAFE);
     }
   }
-
-  public boolean setPreferredNotification(String user, String notifManner, String dbName) {
+  /*
+  * This methode is responsible for setting a notification channel for a specific user
+  * available channels :
+  *  -on-site
+  *  -desktop
+  *  -bip
+  */
+  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
@@ -105,13 +112,21 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         }
         doc.put("preferredNotification", existingPrefNotif);
         coll.save(doc, WriteConcern.SAFE);
-        return true;
+      } else {
+        throw new Exception("Wrong Params, operation not done");
       }
-      return false;
+    } else {
+      throw new Exception("Doc not found, operation not done");
     }
-    return false;
   }
 
+  /*
+  * This methode is responsible for setting a notification triggers for a specific user
+  * available triggers :
+  *  -mention
+  *  -even-on-do-not-distrub
+  *
+  */
   public boolean setNotificationTrigger(String user, String notifCond, String dbName){
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -141,6 +156,13 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
     return false;
   }
+  /*
+  * This methode is responsible for setting a notification triggers for a specific user in a specific room
+  * available triggers :
+  *  -mention
+  *  -key-words
+  *
+  */
   public boolean setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time){
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -176,27 +198,28 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
     return false;
   }
-
-  public String getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
+  /*
+  * This methode is responsible for getting all desktop settings in a single object
+  */
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
+    NotificationSettingsBean settings = new NotificationSettingsBean();
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
-    JSONObject userSettings = new JSONObject();
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
-      if(doc.get("preferredNotification")!=null){
-        userSettings.put("preferredNotification",doc.get("preferredNotification").toString());
+      if(doc.get(UserService.PREFERRED_NOTIFICATION)!=null){
+        settings.setEnabledChannels(doc.get(UserService.PREFERRED_NOTIFICATION).toString());
       }
-      if(doc.get("preferredNotificationTrigger")!=null){
-        userSettings.put("preferredNotificationTrigger",doc.get("preferredNotificationTrigger").toString());
+      if(doc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER)!=null){
+        settings.setEnabledTriggers(doc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER).toString());
       }
       if(doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
-        userSettings.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
+        settings.setEnabledRoomTriggers(doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
       }
-      return userSettings.toString();
     }
-    return "{}";
+    return settings;
   }
 
   public boolean isFavorite(String user, String targetUser, String dbName)

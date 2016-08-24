@@ -541,7 +541,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return creator;
   }
 
-
   public void setRoomName(String room, String name, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
 
