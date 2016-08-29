@@ -30,6 +30,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.targetFullname = "";
   this.isPublic = isPublic;
   this.miniChat = undefined;
+  this.users = [];
 
   this.ANONIM_USER = "__anonim_";
 

@@ -2166,6 +2166,11 @@ ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   this.chatRoom.owner = "";
   if (this.targetUser!==undefined) {
+    // reset room users panel
+    this.chatRoom.users = [];
+    jqchat("#room-users-list").html("");
+    jqchat("#room-users-title-nb-users").html("()");
+
     jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {
       var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
@@ -3138,21 +3143,42 @@ ChatApplication.prototype.loadRoomUsers = function() {
     roomUsersContainer.show();
     var roomUsersList = jqchat("#room-users-list");
     if(roomUsersList !== undefined) {
-      // reset users list
-      roomUsersList.html("");
       // fetch room users
       chatApplication.getUsers(this.targetUser, function (jsonData) {
         var users = TAFFY(jsonData.users);
 
-        // generate room users list DOM
-        var html = "";
+        // generate room users array
+        var roomUsers = [];
         var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
         sortedStatuses.forEach(function(status) {
           users({status: status}).order("fullname").each(function (user) {
-            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
+            roomUsers.push(user);
           });
         });
-        roomUsersList.html(html);
+
+        // check if there are changes
+        var roomUserHasChanged = false;
+        if(roomUsers.length === thiss.chatRoom.users.length) {
+          roomUserHasChanged = !roomUsers.every(function(roomUser, index) {
+             return (roomUser.name == thiss.chatRoom.users[index].name
+              && roomUser.fullname == thiss.chatRoom.users[index].fullname
+              && roomUser.status == thiss.chatRoom.users[index].status);
+          });
+        } else {
+          roomUserHasChanged = true;
+        }
+
+        // if the room users have changed, update the panel
+        if(roomUserHasChanged === true) {
+          thiss.chatRoom.users = roomUsers;
+
+          // generate room users list DOM
+          var html = "";
+          roomUsers.forEach(function (user) {
+            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
+          });
+          roomUsersList.html(html);
+        }
 
         // User Profile Popup initialize
         var portal = eXo.env.portal;
