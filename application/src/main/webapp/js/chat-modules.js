@@ -1217,21 +1217,26 @@ String.prototype.endsWith = function(suffix) {
                 },
 
               success: function(operation){
+              var settings = null;
+              var digest = false;
                 if(operation.done) {
-                  var settings = operation.userDesktopNotificationSettings;
+                   settings = operation.userDesktopNotificationSettings;
                    if(!settings.preferredNotification) {//set to the default values for the Notifications channels
                      settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
                      settings.preferredNotificationTrigger = [];
-                     settings.preferredNotification = JSON.stringify(settings.preferredNotification);
-                     settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+                     digest = true;
                    }
                 } else { //the very first time
                   if(JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
-                    var settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
-                    settings.preferredNotification = JSON.stringify(settings.preferredNotification);
-                    settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+                    settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
+                    digest = true;
                   }
                 }
+                if(digest){
+                  settings.preferredNotification = JSON.stringify(settings.preferredNotification);
+                  settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+                }
+
                 desktopNotification.setPreferredNotificationSettings(settings);
               },
               error: function (xhr, status, error){

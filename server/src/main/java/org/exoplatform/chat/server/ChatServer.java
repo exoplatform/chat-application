@@ -602,9 +602,10 @@ public class ChatServer
     }
 
     JSONObject response = new JSONObject();
-    if(userService.setRoomNotificationTrigger(user, room, notifCondition, dbName, time)){
-      response.put("done",true);
-    } else {
+    try{
+      userService.setRoomNotificationTrigger(user, room, notifCondition, dbName, time);
+      response.put("done", true);
+    } catch(Exception e) {
       response.put("done",false);
     }
 
@@ -621,9 +622,10 @@ public class ChatServer
     }
 
     JSONObject response = new JSONObject();
-    if(userService.setNotificationTrigger(user, notifCondition,dbName)){
-      response.put("done",true);
-    } else {
+    try {
+      userService.setNotificationTrigger(user, notifCondition,dbName);
+      response.put("done", true);
+    } catch (Exception e) {
       response.put("done",false);
     }
 

@@ -54,10 +54,10 @@ public interface UserService
 
   public void toggleFavorite(String user, String targetUser, String dbName);
 
-  public void setPreferredNotification(String user, String notifManner, String dbName) throws JSONException, Exception;
+  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
 
-  public boolean setNotificationTrigger(String user, String notifCond, String dbName);
-  public boolean setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time);
+  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;
+  public void setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time) throws Exception;
 
   public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException;
 

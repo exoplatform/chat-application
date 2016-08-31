@@ -37,7 +37,9 @@ import org.json.simple.JSONObject;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -94,7 +96,15 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       if(ChatService.BIP.equals(notifManner) || ChatService.DESKTOP_NOTIFICATION.equals(notifManner) || ChatService.ON_SITE.equals(notifManner)) {
-        Object prefNotif = doc.get("preferredNotification");
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        Object existingRoomNotif =null;
+        if(settings!=null) {
+          prefNotif =  settings.get("preferredNotification");
+          prefTriger = settings.get("preferredNotificationTrigger");
+          existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
         List<String> existingPrefNotif = null;
         if(prefNotif==null) {
           existingPrefNotif = new ArrayList<String>();
@@ -110,7 +120,20 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         } else {
           existingPrefNotif.add(notifManner);
         }
-        doc.put("preferredNotification", existingPrefNotif);
+        Map childs = new HashMap();
+
+        if(existingPrefNotif!=null) {
+          childs.put("preferredNotification",existingPrefNotif);
+        }
+        if(prefTriger!=null) {
+          childs.put("preferredNotificationTrigger", prefTriger);
+        }
+        if(existingRoomNotif!=null){
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
+
         coll.save(doc, WriteConcern.SAFE);
       } else {
         throw new Exception("Wrong Params, operation not done");
@@ -127,7 +150,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
   *  -even-on-do-not-distrub
   *
   */
-  public boolean setNotificationTrigger(String user, String notifCond, String dbName){
+  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
@@ -135,7 +158,15 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
-        Object prefNotif = doc.get("preferredNotificationTrigger");
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        Object existingRoomNotif =null;
+        if(settings!=null) {
+          prefNotif =  settings.get("preferredNotificationTrigger");
+          prefTriger = settings.get("preferredNotification");
+          existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
         List<String> existingPrefNotif = null;
         if(prefNotif==null) {
           existingPrefNotif = new ArrayList<String>();
@@ -148,13 +179,27 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         } else {
           existingPrefNotif.add(notifCond);
         }
-        doc.put("preferredNotificationTrigger", existingPrefNotif);
+
+        Map childs = new HashMap();
+        if(existingPrefNotif!=null) {
+          childs.put("preferredNotificationTrigger", existingPrefNotif);
+        }
+        if(prefTriger!=null) {
+          childs.put("preferredNotification",prefTriger);
+        }
+        if(existingRoomNotif!=null){
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
+
         coll.save(doc, WriteConcern.SAFE);
-        return true;
+      } else {
+        throw new Exception("Wrong Params, operation not done");
       }
-      return false;
+    }  else {
+      throw new Exception("Doc not found, operation not done");
     }
-    return false;
   }
   /*
   * This methode is responsible for setting a notification triggers for a specific user in a specific room
@@ -163,7 +208,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
   *  -key-words
   *
   */
-  public boolean setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time){
+  public void setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
@@ -171,13 +216,21 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
 
-      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifCond) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifCond) || 
-	      notifCond.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
-	DBObject existingRoomNotif = (DBObject)doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifCond) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifCond) || notifCond.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        DBObject existingRoomNotif =null;
+        if(settings!=null) {
+          prefTriger =  settings.get("preferredNotificationTrigger");
+          prefNotif = settings.get("preferredNotification");
+          existingRoomNotif = (DBObject)settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
+
         if(existingRoomNotif == null) {
           existingRoomNotif = new BasicDBObject();
         }
-        
+
         DBObject notifData = (DBObject)existingRoomNotif.get(room);
         if (notifData == null) {
           notifData = new BasicDBObject();
@@ -187,16 +240,29 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
           notifData.put("notifCond", notifCond);
           notifData.put("time", time);
         }
-        
-        existingRoomNotif.put(room, notifData);
-        
-        doc.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+
+        Map childs = new HashMap();
+        if(prefTriger!=null) {
+          childs.put("preferredNotificationTrigger", prefTriger);
+        }
+
+        if(prefNotif!=null) {
+          childs.put("preferredNotification",prefNotif);
+        }
+
+        if(existingRoomNotif!=null){
+          existingRoomNotif.put(room, notifData);
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
         coll.save(doc, WriteConcern.SAFE);
-        return true;
+      } else {
+        throw new Exception("Wrong Params, operation not done");
       }
-      return false;
+    } else {
+      throw new Exception("Doc not found, operation not done");
     }
-    return false;
   }
   /*
   * This methode is responsible for getting all desktop settings in a single object
@@ -209,14 +275,15 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
-      if(doc.get(UserService.PREFERRED_NOTIFICATION)!=null){
-        settings.setEnabledChannels(doc.get(UserService.PREFERRED_NOTIFICATION).toString());
+      BasicDBObject wrapperDoc = ((BasicDBObject) doc.get("notificationsSettings"));
+      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION)!=null){
+        settings.setEnabledChannels(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION).toString());
       }
-      if(doc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER)!=null){
-        settings.setEnabledTriggers(doc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER).toString());
+      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER)!=null){
+        settings.setEnabledTriggers(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER).toString());
       }
-      if(doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
-        settings.setEnabledRoomTriggers(doc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
+      if(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
+        settings.setEnabledRoomTriggers(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
       }
     }
     return settings;
