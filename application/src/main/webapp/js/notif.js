@@ -414,9 +414,15 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
   if(Notification.permission !== "granted")
     Notification.requestPermission();
   else {
+    var avatarUrl = null;
+  	if(msg.roomDisplayName=="") {
+  	  avatarUrl = '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from;
+  	} else {
+  	  avatarUrl = '/rest/chat/api/1.0/user/getSpaceAvartar/'+msg.roomDisplayName;
+  	}
     var notification = new Notification('You have new notifications', {
-      icon: '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from,
-      body: displayMsg ,
+      icon: avatarUrl,
+      body: displayMsg,
     });
 
     notification.onclick = function () {
