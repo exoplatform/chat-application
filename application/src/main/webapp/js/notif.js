@@ -413,17 +413,30 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
 
   if(Notification.permission !== "granted")
     Notification.requestPermission();
-  else {
+    else {
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    var isLinux = ( navigator.platform.indexOf('Linux') != -1 );
     var avatarUrl = null;
-  	if(msg.roomDisplayName=="") {
-  	  avatarUrl = '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from;
-  	} else {
-  	  avatarUrl = '/rest/chat/api/1.0/user/getSpaceAvartar/'+msg.roomDisplayName;
-  	}
-    var notification = new Notification('You have new notifications', {
-      icon: avatarUrl,
-      body: displayMsg,
-    });
+    if(msg.roomDisplayName=="") {
+      avatarUrl = '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from;
+    } else {
+      avatarUrl = '/rest/chat/api/1.0/user/getSpaceAvartar/'+msg.roomDisplayName;
+    }
+    var notification =null;
+    //check if we're running Firefox on Linux then disable the Icons
+    // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
+    if(isLinux && isFirefox) {
+      notification = new Notification('You have new notifications', {
+      body: displayMsg
+     });
+    }
+    else {
+      notification = new Notification('You have new notifications', {
+        icon: avatarUrl,
+        body: displayMsg,
+      });
+    }
+
 
     notification.onclick = function () {
         window.focus();
