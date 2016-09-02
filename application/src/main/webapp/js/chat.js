@@ -383,9 +383,9 @@ var chatApplication = new ChatApplication();
      
      if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
        notifCondition += ":"+roomTriggerWhenKeyWordValue;
-       $("input#room-notif-trigger-when-key-word-value").removeAttr("readonly");
+       $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
      } else {
-       $("input#room-notif-trigger-when-key-word-value").attr("readonly", true);
+       $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
      }
      var roomName = chatApplication.targetFullname;
      var roomId = chatApplication.room;
@@ -439,10 +439,10 @@ var chatApplication = new ChatApplication();
         if (roomPrefTrigger) {
           if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
               roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
-              $("input#room-notif-trigger-when-key-word-value").attr("readonly", true);
+              $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
               $("input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
           } else {
-              $("input#room-notif-trigger-when-key-word-value").removeAttr("readonly");
+              $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
               $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
               var keywords = roomPrefTrigger.split(":")[1];
               $("input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
