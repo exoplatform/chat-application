@@ -113,10 +113,6 @@ var desktopNotification = (function() {
     return false;
   }
 
-  var checkMention = function(username, msg) {
-    return (msg.indexOf('@' + username) > -1) && (preferredNotificationTrigger.indexOf(NOTIFY_WHEN_MENTION) !== -1);
-  };
-
   var highlightMessage = function(msgObject) {
     var highlightedMsg = "";
     switch (msgObject.options.type) {
@@ -151,7 +147,6 @@ var desktopNotification = (function() {
     canShowDesktopNotif: canShowDesktopNotif,
     canShowOnSiteNotif: canShowOnSiteNotif,
     canBypassRoomNotif: canBypassRoomNotif,
-    checkMention: checkMention,
     highlightMessage: highlightMessage,
     ROOM_NOTIF_TRIGGER_NORMAL: ROOM_NOTIF_TRIGGER_NORMAL,
     ROOM_NOTIF_TRIGGER_SILENCE: ROOM_NOTIF_TRIGGER_SILENCE,

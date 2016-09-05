@@ -345,8 +345,8 @@ ChatNotification.prototype.refreshNotif = function() {
         }
 
         var total = Math.abs(data.notifications.length);
-        if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub() ||  desktopNotification.checkMention(this.username,lastMsg.content) ) && 
-            this.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(lastMsg)) {
+        if (total>this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+        this.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(lastMsg)) {
           notifyMe = true;
         }
 
