@@ -2359,6 +2359,16 @@ ChatApplication.prototype.loadRoom = function() {
     enableMessageComposer(true);
   }
 
+  /*
+    Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
+  */
+  if(localStorage.getItem('eXoChat.targetUser')!=""&&localStorage.getItem('eXoChat.targetFullname')!=""){
+    this.targetUser = localStorage.getItem('eXoChat.targetUser');
+    this.targetFullname = localStorage.getItem('eXoChat.targetFullname');
+    localStorage.setItem('eXoChat.targetFullname',"");
+    localStorage.setItem('eXoChat.targetUser',"");
+  }
+
   var thiss = this;
   this.chatRoom.owner = "";
   if (this.targetUser!==undefined) {
