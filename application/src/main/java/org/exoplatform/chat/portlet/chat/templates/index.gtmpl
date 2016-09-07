@@ -104,7 +104,7 @@
 
         <div id="chat-team-button-dropdown" class="btn-group pull-right chat-team-button-dropdown">
           <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#"><i class="caret" style="margin-right:4px;"></i></a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu standard-width">
 
             <li>
               <a href="#" id="chat-record-button" class="msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled>
