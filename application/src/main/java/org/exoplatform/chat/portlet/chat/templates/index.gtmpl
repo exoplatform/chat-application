@@ -104,20 +104,20 @@
 
         <div id="chat-team-button-dropdown" class="btn-group pull-right chat-team-button-dropdown">
           <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#"><i class="caret" style="margin-right:4px;"></i></a>
-          <ul class="dropdown-menu standard-width">
+          <ul class="dropdown-menu">
 
             <li>
-              <a href="#" id="chat-record-button" class="msButtonRecord" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled>
+              <a href="#" id="chat-record-button" class="msButtonRecord auto-wrap" data-placement="left" data-original-title="&{exoplatform.chat.meeting.start}" disabled>
                 <i class="uiIconChatRecordStart uiIconChatLightGray"></i>
                 <span>&{exoplatform.chat.meeting.start}</span>
               </a>
             </li>
             
-            <li><a href="#" id="team-add-to-favorites-button"><i class="uiIconChatFavorite pull-left user-status"></i>&nbsp;&{exoplatform.chat.add.favorites}</a></li>
-            <li><a href="#" id="team-remove-from-favorites-button"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
-            <li><a href="#" id="team-notification-button"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
-            <li class="only-admin"><a href="#" id="team-edit-button"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.edit}">&nbsp;&{exoplatform.chat.edit}</span></a></li>
-            <li class="only-admin"><a href="#" id="team-delete-button"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
+            <li><a href="#" id="team-add-to-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-status"></i>&nbsp;&{exoplatform.chat.add.favorites}</a></li>
+            <li><a href="#" id="team-remove-from-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
+            <li><a href="#" id="team-notification-button" class="auto-wrap"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
+            <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.edit}">&nbsp;&{exoplatform.chat.edit}</span></a></li>
+            <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip" title="&{exoplatform.chat.team.delete}">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
 
           </ul>
         </div> 
