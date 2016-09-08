@@ -104,7 +104,11 @@ var desktopNotification = (function() {
 
   var containKeyWord = function(message, keywords) {
     message = message.toLowerCase();
-    var keys = keywords.split(":")[1].split(",");
+    var keyW = keywords.split(":")[1];
+    if(keyW==="") {
+      return false;
+    }
+    var keys = keyW.split(",");
     for (var i = 0; i < keys.length; i++) {
       if (message.includes(keys[i].trim().toLowerCase())) {
         return true;
