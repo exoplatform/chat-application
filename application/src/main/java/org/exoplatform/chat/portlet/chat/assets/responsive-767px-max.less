@@ -19,29 +19,78 @@
     display: inline-block;
   }
 
-  .uiLeftContainerArea {
-    width: 100%;
-    float: none;
+  /*.uiLeftContainerArea {*/
+    /*width: 100%;*/
+    /*float: none;*/
 
     #chat-users {
-      height: initial !important;
-      margin: 0!important;
+      /*height: initial !important;*/
+      margin: 15px 0;
     }
+    #chat-users.in.collapse{
+      height: auto !important;
+    }
+  /*}*/
+  /*need to be secured*/
+  .span9 > .row-fluid > .box {
+    padding-right: 2.564102564102564%;
   }
+  .uiRoomUsersContainerArea.room-users-expanded {
+    min-width: 77px !important;
 
-  .uiRoomUsersContainerArea {
-    #room-users-list {
-      height: 317px!important;
-    }
+      #room-users-list {
+        height: 317px!important;
+      }
 
-    #room-users-collapse-bar {
-      line-height: 400px!important;
-    }
+      #room-users-collapse-bar {
+        line-height: 400px!important;
+      }
+     /* #room-users, .room-users-title,.room-user-name,.room-user-status{
+        display: none !important;
+      }*/
+      .room-users-title,
+       .room-user-name,
+       .room-user-status{
+        display: none;
+      }
+       #room-users {
+        display: block;
+       }
   }
-
+      
+       
+      .uiRoomUsersContainerArea.room-users-collapsed {
+          display: block;
+          position: absolute;
+          float: right;
+          right: 0px;
+          top: 0px;
+      }
+      .uiRoomUsersContainerArea.room-users-collapsed #room-users {
+          display: none !important;
+      }
+      .uiRoomUsersContainerArea.room-users-collapsed #room-users-collapse-bar {
+          position: absolute;
+          right: 0;
+          cursor: pointer;
+          top: 0;
+      }
   .uiRightContainerArea {
     #chats {
       height: 275px!important;
     }
   }
 }
+/*@media (min-width: 401px) and (max-width: 767px) {
+  .uiRoomUsersContainerArea.room-users-expanded{
+    min-width: 77px !important
+  }
+  .uiRoomUsersContainerArea.room-users-collapsed #room-users{
+    display: none !important;
+  }
+    .uiRoomUsersContainerArea.room-users-expanded .room-users-title, 
+    .uiRoomUsersContainerArea.room-users-expanded .room-user-name,
+    .uiRoomUsersContainerArea.room-users-expanded .room-user-status{
+      display: none;
+    }
+}*/

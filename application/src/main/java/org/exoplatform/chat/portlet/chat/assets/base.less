@@ -100,12 +100,29 @@
   overflow: auto;
   padding: 15px 0 0;
 }
-
+.span9 > .row-fluid > .box,
+.span9 > .row-fluid .uiRoomUsersContainerArea.room-users-collapsed,
+.span9 > .row-fluid .uiRoomUsersContainerArea.room-users-expanded{
+  display: table-cell;
+  vertical-align: top;
+}
+.span9 > .row-fluid .box {
+    width: 100%;
+}
+.span9 > .row-fluid > .box{
+  padding-right: 2.564102564102564%;
+}
+.span9 > .row-fluid{
+ display: table;
+ position: relative;
+}
+.span9 > .row-fluid .uiRoomUsersContainerArea.room-users-expanded,
+.span9 > .row-fluid .box + div[style^="display: block"]{
+  min-width: 300px;
+  padding-left: 12px;
+}
 .uiRoomUsersContainerArea {
   display: none;
-  float: right;
-  padding: 15px 0 0 15px;
-  width: 300px;
 
   #room-users-collapse-bar {
     float: left;
@@ -120,6 +137,7 @@
 
   &.room-users-collapsed {
     width: 70px;
+    min-width: 70px !important;
 
     .uiBox {
       #room-users-header {
@@ -160,6 +178,7 @@
         padding-left: 20px;
         font-weight: bold;
         font-size: 1.11em;
+        display: block;
 
         #room-users-title-nb-users {
           font-weight: normal;
@@ -189,11 +208,13 @@
         .room-user-name {
           line-height: 50px;
           color: #333333;
+          display: block;
         }
 
         .room-user-status {
           line-height: 50px;
           padding: 0px 15px;
+          display: block;
 
           i:before {
             content: "\e76e";
@@ -265,7 +286,6 @@
   height: (@height - 44);
   overflow: auto;
   cursor: default;
-  margin-bottom: 0!important;
 }
 .chat-status-chat {
   padding: 0;

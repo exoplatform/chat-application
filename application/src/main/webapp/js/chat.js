@@ -1243,9 +1243,9 @@ var handleRoomNotifLayout = function() {
     $("#room-users-collapse-bar").on("click", function() {
       // toggle room users
       var roomUsersContainer = $(".uiRoomUsersContainerArea");
-      var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
+      //var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
       var collpaseBarIcon = $(this).children("i");
-      if(roomUsersHeaderTitle.is(":visible")) {
+      if(roomUsersContainer.is(".room-users-expanded")) {
         roomUsersContainer.removeClass("room-users-expanded");
         roomUsersContainer.addClass("room-users-collapsed");
         collpaseBarIcon.removeClass("uiIconArrowRight uiIconArrowDefault");

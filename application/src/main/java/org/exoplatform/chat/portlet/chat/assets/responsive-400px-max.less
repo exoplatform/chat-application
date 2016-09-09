@@ -12,17 +12,27 @@
   .LeftNavigationTDContainer {
     display: none;
   }
-
-  #NavigationPortlet {
-    display: none;
+  .hidden-phone.collapse.in {
+    display: block !important;
   }
-
+  
+  .hidden-phone.collapse {
+    display: none !important;
+  }  
+  
   #chat-application {
-    min-width: 320px;
-    width: 100%;
-//    padding: 5px;
-    padding: 0;
+    /*min-width: 320px;*/
+    /*width: 100%;*/
+	   padding: 15px;
 
+	.uiIconViewList {
+      padding: 10px;
+    }
+ 
+    .uiIconViewList::before {
+      padding-right: 10px;
+    }
+	
     .uiGrayLightBox {
       margin: 0!important;
       -webkit-border-radius: 0;
@@ -44,23 +54,10 @@
       border-radius: 0;
       margin: 0;
     }
-
-    .uiLeftContainerArea {
-      width: 100%;
-      float: none;
       #chat-users {
         height: initial !important;
         margin: 0!important;
       }
-    }
-
-    .uiRightContainerArea {
-      height: 400px!important;
-
-      #chats {
-        height: 275px!important;
-      }
-    }
 
     .uiRoomUsersContainerArea {
       width: 97%;
