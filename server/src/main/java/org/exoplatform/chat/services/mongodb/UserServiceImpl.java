@@ -276,6 +276,10 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       BasicDBObject wrapperDoc = ((BasicDBObject) doc.get("notificationsSettings"));
+      if(wrapperDoc==null){//when there is no settings - first start of the server
+        wrapperDoc = new BasicDBObject();
+      }
+
       if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION)!=null){
         settings.setEnabledChannels(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION).toString());
       }
