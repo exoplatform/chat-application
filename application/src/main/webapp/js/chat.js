@@ -1434,7 +1434,6 @@ ChatApplication.prototype.initMention = function() {
       
       _this.$mentionEditor = $msg.next('div');
       var $mentionEditor = _this.$mentionEditor;
-      $mentionEditor.css({'background-color':'white', 'height': '60px'});
       
       $mentionEditor.focus(function() {
         chatApplication.updateUnreadMessages();
