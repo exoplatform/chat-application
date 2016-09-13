@@ -28,7 +28,7 @@
   </parent>
   <artifactId>exo-addons-chat-extension-community</artifactId>
   <packaging>war</packaging>
-  <name>eXo Addons - Chat Extension Community</name>
+  <name>eXo Add-on:: Chat Extension Community</name>
   <description>eXo Chat Extension Community</description>
   <build>
     <finalName>chat-extension</finalName>

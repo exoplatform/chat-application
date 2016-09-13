@@ -8,7 +8,7 @@
   </parent>
   <artifactId>server</artifactId>
   <packaging>war</packaging>
-  <name>Chat Server</name>
+  <name>eXo Add-on:: Chat Server</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

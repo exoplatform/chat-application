@@ -11,7 +11,7 @@
   <artifactId>chat-application</artifactId>
   <version>1.4.x-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Chat Application / Server</name>
+  <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
   <modules>
     <module>server</module>

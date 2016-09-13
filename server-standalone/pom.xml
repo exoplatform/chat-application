@@ -8,7 +8,7 @@
   </parent>
   <artifactId>server-standalone</artifactId>
   <packaging>war</packaging>
-  <name>Chat Server Standalone</name>
+  <name>eXo Add-on:: Chat Server Standalone</name>
   <dependencies>
     <dependency>
       <groupId>javax.enterprise</groupId>

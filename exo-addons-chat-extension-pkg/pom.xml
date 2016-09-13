@@ -8,7 +8,7 @@
   </parent>
   <artifactId>exo-addons-chat-extension-pkg</artifactId>
   <packaging>pom</packaging>
-  <name>eXo Addons - Chat Extension Package</name>
+  <name>eXo Add-on:: Chat Extension Package</name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>

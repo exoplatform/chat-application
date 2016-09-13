@@ -28,7 +28,7 @@
   </parent>
   <artifactId>exo-addons-chat-extension-config</artifactId>
   <packaging>jar</packaging>
-  <name>eXo Addons - Chat Extension Configuration</name>
+  <name>eXo Add-on:: Chat Extension Configuration</name>
   <description>eXo Chat Extension Configuration</description>
   <dependencies>
     <dependency>
