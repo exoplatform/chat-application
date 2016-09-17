@@ -1443,7 +1443,7 @@ ChatApplication.prototype.initMention = function() {
         if ($mentionEditor.next('ul').css('display') == 'none') {
           
           //prevent the default behavior of the enter button
-          if ( event.which == 13 ) {
+          if ( event.which == 13 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
             event.preventDefault();
           }
           //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
@@ -1475,16 +1475,19 @@ ChatApplication.prototype.initMention = function() {
       
       $mentionEditor.keyup(function(event) {
         if (!chatApplication.isMentioning) {
-          var msg = $('#msg').suggester('getValue');
+//          var msg = $('#msg').suggester('getValue');
+          var msg = $mentionEditor.html();
           //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-          if ( event.which === 13 && msg.trim().length>=1) {
+          if ( event.which === 13 && msg.trim().length>=1 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
             //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
             if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
               return false;
             }
 
+            msg = addLineBreak(msg);
+            msg = parseMention(msg);
             chatApplication.sendMessage(msg);
-            
+            $('#msg').suggester('setValue', '');
           }
           // UP Arrow
           if (event.which === 38 && msg.length === 0) {
@@ -1497,9 +1500,6 @@ ChatApplication.prototype.initMention = function() {
           
           if ( chatApplication.keydown === 18 ) {
             chatApplication.keydown = -1;
-          }
-          if ( event.which === 13 ) {
-            $('#msg').suggester('setValue', '');
           }       
         } else {
           if ($mentionEditor.next('ul').css('display') == 'none') {
@@ -1525,6 +1525,26 @@ ChatApplication.prototype.initMention = function() {
       });
     });
   }
+}
+
+var addLineBreak = function(msg) {
+  msg = msg.replace(/<br>/g, '\n');
+  return msg;
+}
+
+var parseMention = function(msg) {
+  var start, end, str = '';  
+  var prefix = '<span data-mention="';
+  var suffix = '</span>';
+  
+  while ((start = msg.indexOf(prefix)) != -1) {
+    str += msg.substring(0, start) + '@';
+    start += prefix.length;
+    end = msg.indexOf('"', start);
+    str += msg.substring(start, end);
+    msg = msg.substring(msg.indexOf(suffix, end) + suffix.length, msg.length);
+  }
+  return str;
 }
 
 /**
