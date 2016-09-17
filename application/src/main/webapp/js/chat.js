@@ -1440,25 +1440,36 @@ ChatApplication.prototype.initMention = function() {
       });
       
       $mentionEditor.keydown(function(event) {
-        if ($mentionEditor.next('div').css('display') == 'none') {
+        if ($mentionEditor.next('ul').css('display') == 'none') {
+          
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {
             event.preventDefault();
           }
           //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
           if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-            this.value = this.value.substring(0, this.selectionStart)+"\n"+this.value.substring(this.selectionEnd,this.value.length);
+//            var value = $('#msg').suggester('getValue');
+//            
+//            var sel = window.getSelection();
+//            var node = sel.focusNode;
+//            var pos = sel.focusOffset;
+//
+//            value = value.substring(0, pos) + "<br>" + value.substring(pos, value.length);
+//            $('#msg').suggester('setValue', value);
+//            
+//            var range = document.createRange();
+//            range.setStart($mentionEditor[0], pos - 1);
+//            sel.removeAllRanges();
+//            sel.addRange(range);
+            
             $mentionEditor.scrollTop($mentionEditor[0].scrollHeight - $mentionEditor.height());
           }
           
-          //        console.log("keydown : "+ event.which+" ; "+keydown);
           if ( event.which == 18 ) {
             chatApplication.keydown = 18;
           }
         } else {
-          if ($mentionEditor.next('ul').css('display') == 'block') {
-            chatApplication.isMentioning = true;
-          }
+          chatApplication.isMentioning = true;
         }
       });
       
@@ -1471,7 +1482,7 @@ ChatApplication.prototype.initMention = function() {
             if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
               return false;
             }
-            //      console.log("*"+msg+"*");
+
             chatApplication.sendMessage(msg);
             
           }
