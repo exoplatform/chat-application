@@ -208,7 +208,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
   *  -key-words
   *
   */
-  public void setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time) throws Exception {
+  public void setRoomNotificationTrigger(String user, String room,String notifCond, String notifConditionType, String dbName, long time) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
@@ -216,7 +216,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
 
-      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifCond) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifCond) || notifCond.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
+      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifConditionType) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifConditionType) || notifConditionType.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
         BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
         Object prefNotif = null;
         Object prefTriger = null;
@@ -237,8 +237,11 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         }
         
         if (notifData.get("time") == null || (long)notifData.get("time") < time) {
-          notifData.put("notifCond", notifCond);
+          notifData.put("notifCond", notifConditionType);
           notifData.put("time", time);
+          if(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)){
+            notifData.put(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD, notifCond);
+          }
         }
 
         Map childs = new HashMap();

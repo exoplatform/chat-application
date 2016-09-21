@@ -49,7 +49,7 @@ public interface ChatService
   public static final String NOTIFY_ME_WHEN_MENTION= "notify-when-mention";
   public static final String NOTIFY_ME_EVEN_NOT_DISTRUB = "notify-even-not-distrub";
 
-  public static final String NOTIFY_ME_ON_ROOM_KEY_WORD = "when-key-word";
+  public static final String NOTIFY_ME_ON_ROOM_KEY_WORD = "keywords";
   public static final String DO_NOT_NOTIFY_ME_ON_ROOM = "silence";
   public static final String NOTIFY_ME_ON_ROOM_NORMAL = "normal";
 

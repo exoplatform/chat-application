@@ -379,10 +379,8 @@ var chatApplication = new ChatApplication();
    $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
      var roomTriggerWhenKeyWordValue = jqchat("#" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
-     var notifCondition = roomTriggerType;
      
      if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
-       notifCondition += ":"+roomTriggerWhenKeyWordValue;
        $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
      } else {
        $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
@@ -396,7 +394,8 @@ var chatApplication = new ChatApplication();
          "user": chatApplication.username,
          "token": chatApplication.token,
          "room": roomId,
-         "notifCondition" : notifCondition,
+         "notifCondition" : roomTriggerWhenKeyWordValue,
+         "notifConditionType" : roomTriggerType,
          "dbName": chatApplication.dbName,
          "time": (new Date()).getTime()
        },
@@ -404,7 +403,7 @@ var chatApplication = new ChatApplication();
        success:function(operation){
          operation = JSON.parse(operation);
          if(operation.done) {
-           desktopNotification.setRoomPreferredNotificationTrigger(roomId, notifCondition);//set into the memory
+           desktopNotification.setRoomPreferredNotificationTrigger(roomId, roomTriggerType);//set into the memory
          } else {
            alert("Request received but operation done without success..");
          }

@@ -596,14 +596,14 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/setRoomNotificationTrigger")
-  public Response.Content setRoomNotificationTrigger(String user, String token, String room, String notifCondition, String dbName, Long time) throws JSONException {
+  public Response.Content setRoomNotificationTrigger(String user, String token, String room, String notifCondition,String notifConditionType, String dbName, Long time) throws JSONException {
     if (!tokenService.hasUserWithToken(user, token, dbName)) {
       return Response.notFound("Something is wrong.");
     }
 
     JSONObject response = new JSONObject();
     try{
-      userService.setRoomNotificationTrigger(user, room, notifCondition, dbName, time);
+      userService.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
       response.put("done", true);
     } catch(Exception e) {
       response.put("done",false);

@@ -49,6 +49,7 @@ public interface UserService
   public static final String PREFERRED_ROOM_NOTIFICATION_TRIGGER = "preferredRoomNotificationTrigger";
   public static final String PREFERRED_NOTIFICATION = "preferredNotification";
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
+  public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
 
 
 
@@ -57,7 +58,7 @@ public interface UserService
   public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
 
   public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;
-  public void setRoomNotificationTrigger(String user, String room,String notifCond, String dbName, long time) throws Exception;
+  public void setRoomNotificationTrigger(String user, String room,String notifCond,String notifConditionType, String dbName, long time) throws Exception;
 
   public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException;
 

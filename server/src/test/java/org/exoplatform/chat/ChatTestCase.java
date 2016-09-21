@@ -513,8 +513,8 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add(john);
     String roomId1 = chatService.getRoom(users, null);
     
-    userService.setRoomNotificationTrigger(benjamin, roomId1, normal, null, 1000);
-    userService.setRoomNotificationTrigger(benjamin, roomId1, "silence", null, 500);
+    userService.setRoomNotificationTrigger(benjamin, roomId1,"", normal, null, 1000);
+    userService.setRoomNotificationTrigger(benjamin, roomId1,"", "silence", null, 500);
     
     NotificationSettingsBean userDNS = userService.getUserDesktopNotificationSettings(benjamin, null);
     assertNotNull(userDNS);

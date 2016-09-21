@@ -1,7 +1,7 @@
 var desktopNotification = (function() {
   ROOM_NOTIF_TRIGGER_NORMAL = "normal";
   ROOM_NOTIF_TRIGGER_SILENCE = "silence";
-  ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "when-key-word";
+  ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
   ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE = "room-notif-trigger-when-key-word-value";
   NOTIFY_EVEN_NOT_DISTRUB = "notify-even-not-distrub";
   NOTIFY_WHEN_MENTION = "notify-when-mention";
@@ -52,7 +52,12 @@ var desktopNotification = (function() {
   var setRoomPreferredNotificationTriggerSettings = function(settings) {
     for (var roomId in settings) {
       var notifData = settings[roomId];
-      setRoomPreferredNotificationTrigger(roomId, notifData["notifCond"]);
+      var notifCond = notifData["notifCond"];
+      if(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === notifCond) {
+        notifCond+=":"+notifData[notifCond];
+      }
+      setRoomPreferredNotificationTrigger(roomId, notifCond);
+
     }
   }
 
