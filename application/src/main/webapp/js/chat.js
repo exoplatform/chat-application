@@ -403,7 +403,8 @@ var chatApplication = new ChatApplication();
        success:function(operation){
          operation = JSON.parse(operation);
          if(operation.done) {
-           desktopNotification.setRoomPreferredNotificationTrigger(roomId, roomTriggerType);//set into the memory
+           var val = roomTriggerType+':'+roomTriggerWhenKeyWordValue;
+           desktopNotification.setRoomPreferredNotificationTrigger(roomId, val);//set into the memory
          } else {
            alert("Request received but operation done without success..");
          }
@@ -426,37 +427,35 @@ var chatApplication = new ChatApplication();
       jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
     });
 
+var handleRoomNotifLayout = function() {
+  chatApplication.chatRoom.loadSetting(function() {
+    jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
+    var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
+    if (roomPrefTrigger) {
+      if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
+            roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
+        $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+        $("input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
+      } else {
+        $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+        $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
+        var keywords = roomPrefTrigger.split(":")[1];
+        $("input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
+      }
+    }
+    $("input#room-notif-trigger-when-key-word-value").unbind("blur");
+    $("input#room-notif-trigger-when-key-word-value").blur(function(evt) {
+      $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
+    });
+    jqchat(':checkbox').iphoneStyle();
+  },false);
+};
+
     //team/room desktop notification settings
     $("#team-notification-button").on("click", function() {
       chatApplication.configMode = true;
       enableMessageComposer(false)
-      jqchat("#chats").load("/chat/partials/chat.notification.room.html", function() {
-        jqchat("#room-detail .room-detail-fullname").html(
-                chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
-
-        var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
-        if (roomPrefTrigger) {
-          if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
-              roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
-              $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-              $("input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
-          } else {
-              $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
-              $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
-              var keywords = roomPrefTrigger.split(":")[1];
-              $("input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
-          }
-        }
-        
-        $("input#room-notif-trigger-when-key-word-value").unbind("blur");
-
-        $("input#room-notif-trigger-when-key-word-value").blur(function(evt) {
-            $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
-        });
-
-        
-        jqchat(':checkbox').iphoneStyle();
-      });
+      jqchat("#chats").load("/chat/partials/chat.notification.room.html", handleRoomNotifLayout);
     });
 
     $(document).on("click", "div.notif-manner div.uiSwitchBtn", function() {

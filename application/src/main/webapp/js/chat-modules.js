@@ -1139,6 +1139,56 @@ ChatRoom.prototype.updateUnreadMessages = function() {
     }
   });
 };
+var loadSetting = function(callback,overrideSettings) {
+  var $ = jqchat;
+  var $chatApplication = $("#chat-application").length ? $("#chat-application") : $("#chat-status");
+  var yourUsername = $chatApplication.attr("data-username");
+  var servertoken = $( "div.mini-chat" ).attr("data-token");
+  var serverDbName = $chatApplication.attr("data-db-name");
+  var chatServerURL = $chatApplication.attr("data-chat-server-url");
+  var urlToApi = chatServerURL+"/getUserDesktopNotificationSettings";
+
+  $.ajax({
+    url: urlToApi,
+    data: {
+      "user": yourUsername,
+      "token": servertoken,
+      "dbName": serverDbName
+      },
+
+    success: function(operation){
+      var settings = null;
+      var digest = false;
+      if(operation.done) {
+         settings = operation.userDesktopNotificationSettings;
+         if(!settings.preferredNotification) {//set to the default values for the Notifications channels
+           settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
+           settings.preferredNotificationTrigger = [];
+           digest = true;
+         }
+      } else { //the very first time
+        if(JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
+          settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
+          digest = true;
+        }
+      }
+      if(digest){
+        settings.preferredNotification = JSON.stringify(settings.preferredNotification);
+        settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
+      }
+
+      desktopNotification.setPreferredNotificationSettings(settings,overrideSettings);
+      if(typeof callback === "function") {
+        callback();
+      }
+    },
+    error: function (xhr, status, error){
+      console.log('an error has been occured', error);
+    }
+  });
+};
+
+ChatRoom.prototype.loadSetting = loadSetting;
 
 /**
  ##################                           ##################
@@ -1201,49 +1251,8 @@ String.prototype.endsWith = function(suffix) {
             }
           }
 
-            var $chatApplication = $("#chat-application").length ? $("#chat-application") : $("#chat-status");
-            var yourUsername = $chatApplication.attr("data-username");
-            var servertoken = $( "div.mini-chat" ).attr("data-token");
-            var serverDbName = $chatApplication.attr("data-db-name");
-            var chatServerURL = $chatApplication.attr("data-chat-server-url");
-            var urlToApi = chatServerURL+"/getUserDesktopNotificationSettings";
+          loadSetting(null,true);
 
-            $.ajax({
-              url: urlToApi,
-              data: {
-                "user": yourUsername,
-                "token": servertoken,
-                "dbName": serverDbName
-                },
-
-              success: function(operation){
-              var settings = null;
-              var digest = false;
-                if(operation.done) {
-                   settings = operation.userDesktopNotificationSettings;
-                   if(!settings.preferredNotification) {//set to the default values for the Notifications channels
-                     settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
-                     settings.preferredNotificationTrigger = [];
-                     digest = true;
-                   }
-                } else { //the very first time
-                  if(JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
-                    settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
-                    digest = true;
-                  }
-                }
-                if(digest){
-                  settings.preferredNotification = JSON.stringify(settings.preferredNotification);
-                  settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
-                }
-
-                desktopNotification.setPreferredNotificationSettings(settings);
-              },
-              error: function (xhr, status, error){
-                console.log('an error has been occured', error);
-              }
-
-            });
         });
 
       }

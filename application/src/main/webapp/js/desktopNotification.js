@@ -73,10 +73,10 @@ var desktopNotification = (function() {
     return preferredRoomNotificationTrigger;
   }
 
-  var setPreferredNotificationSettings = function(settings) { //this is always called on the reload of the page
-    if (!(settings.preferredNotification === null || typeof settings.preferredNotification === 'undefined'))
+  var setPreferredNotificationSettings = function(settings,overrideSettin) { //this is always called on the reload of the page
+    if (!(settings.preferredNotification === null || typeof settings.preferredNotification === 'undefined') && overrideSettin)
       setPreferredNotification(JSON.parse(settings.preferredNotification));
-    if (!(settings.preferredNotificationTrigger === null || typeof settings.preferredNotificationTrigger === 'undefined'))
+    if (!(settings.preferredNotificationTrigger === null || typeof settings.preferredNotificationTrigger === 'undefined')&& overrideSettin)
       setPreferredNotificationTrigger(JSON.parse(settings.preferredNotificationTrigger));
     if (!(settings.preferredRoomNotificationTrigger === null || typeof settings.preferredRoomNotificationTrigger === 'undefined'))
       setRoomPreferredNotificationTriggerSettings(JSON.parse(settings.preferredRoomNotificationTrigger));
