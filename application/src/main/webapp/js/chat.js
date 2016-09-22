@@ -1536,7 +1536,10 @@ var parseMention = function(msg) {
   var start, end, str = '';  
   var prefix = '<span data-mention="';
   var suffix = '</span>';
-  
+
+  if (msg.indexOf(prefix) == -1) {
+    return msg;
+  }
   while ((start = msg.indexOf(prefix)) != -1) {
     str += msg.substring(0, start) + '@';
     start += prefix.length;
