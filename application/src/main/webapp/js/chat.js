@@ -3470,6 +3470,9 @@ ChatApplication.prototype.loadRoomUsers = function() {
   var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
   if (this.targetUser !== undefined) {
     roomUsersContainer.show();
+	if(!roomUsersContainer.is(".room-users-collapsed")) {
+		roomUsersContainer.addClass("room-users-expanded");//need a default class for responsive
+	}
     var roomUsersList = jqchat("#room-users-list");
     if(roomUsersList !== undefined) {
       // fetch room users

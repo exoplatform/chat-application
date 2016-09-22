@@ -55,56 +55,48 @@
       margin: 0;
     }
       #chat-users {
-        height: initial !important;
-        margin: 0!important;
+        margin: 15px 0;
       }
 
-    .uiRoomUsersContainerArea {
-      width: 97%;
+
+      .uiRoomUsersContainerArea.room-users-expanded {
+    min-width: 77px !important;
 
       #room-users-list {
         height: 317px!important;
       }
 
       #room-users-collapse-bar {
-        line-height: 399px!important;
+        line-height: 400px!important;
       }
 
-      &:not(.room-users-expanded) {
-        width: 70px;
-
-        #room-users-collapse-bar {
-          .uiIconArrowDefault:before {
-            content: "\e75b";
-          }
-        }
-
-        #room-users-header {
-          #room-users-title {
-            display: none;
-          }
-
-          #room-users-button {
-            padding-right: 17px;
-          }
-        }
-
-        #room-users-list {
-          .msUserAvatar {
-            padding: 0;
-            width: 100%;
-
-            .msAvatarLink {
-              margin: 0 auto;
-            }
-          }
-
-          .room-user-name, .room-user-status {
-            display: none;
-          }
-        }
+      .room-users-title,
+       .room-user-name,
+       .room-user-status{
+        display: none !important;
       }
-    }
+       #room-users {
+        display: block;
+       }
+  }
+      
+       
+      .uiRoomUsersContainerArea.room-users-collapsed {
+          display: block;
+          position: absolute;
+          float: right;
+          right: 0px;
+          top: 0px;
+      }
+      .uiRoomUsersContainerArea.room-users-collapsed #room-users {
+          display: none !important;
+      }
+      .uiRoomUsersContainerArea.room-users-collapsed #room-users-collapse-bar {
+          position: absolute;
+          right: 0;
+          cursor: pointer;
+          top: 0;
+      }
   }
 
   .msRow {
