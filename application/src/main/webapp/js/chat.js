@@ -442,6 +442,8 @@ var handleRoomNotifLayout = function() {
         var keywords = roomPrefTrigger.split(":")[1];
         $("input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
       }
+    } else {
+      $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
     }
     $("input#room-notif-trigger-when-key-word-value").unbind("blur");
     $("input#room-notif-trigger-when-key-word-value").blur(function(evt) {
