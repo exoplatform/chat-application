@@ -50,8 +50,8 @@
     <span class="menu-standard pull-right">
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
-      <div class="uiSearchForm uiSearchInput pull-right"  data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
-           <div onclick="event.cancelBubble=true;"><button id="configButton" class="btn btn-default pull-right"> <i class="uiIconSetting"></i> </button> </div>
+      <div id="configButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+        <i class="uiIconSetting uiIconLightGray"></i>
       </div>
       <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
         <div onclick="event.cancelBubble=true;"><input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}"></div>
