@@ -1484,7 +1484,7 @@ ChatApplication.prototype.initMention = function() {
               return false;
             }
 
-            msg = addLineBreak(msg);
+            msg = msg.replace(/<br>/g, '\n');
             msg = parseMention(msg);
             chatApplication.sendMessage(msg);
             $('#msg').suggester('setValue', '');
@@ -1525,11 +1525,6 @@ ChatApplication.prototype.initMention = function() {
       });
     });
   }
-}
-
-var addLineBreak = function(msg) {
-  msg = msg.replace(/<br>/g, '\n');
-  return msg;
 }
 
 var parseMention = function(msg) {
@@ -2490,8 +2485,6 @@ ChatApplication.prototype.loadRoom = function() {
     ////// USER
     {
       jqchat(".uiRoomUsersContainerArea").hide();
-      jqchat(".meeting-action-task").css("display", "none");
-//      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
@@ -2502,7 +2495,6 @@ ChatApplication.prototype.loadRoom = function() {
     ////// SPACE
     {
       this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
@@ -2541,7 +2533,6 @@ ChatApplication.prototype.loadRoom = function() {
         }
       });
       this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
