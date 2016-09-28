@@ -23,16 +23,23 @@ import com.mongodb.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
+import org.json.JSONException;
+//org.json.simple.JSONObject
+import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -73,6 +80,220 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       doc.put("favorites", favorites);
       coll.save(doc, WriteConcern.SAFE);
     }
+  }
+  /*
+  * This methode is responsible for setting a notification channel for a specific user
+  * available channels :
+  *  -on-site
+  *  -desktop
+  *  -bip
+  */
+  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      if(ChatService.BIP.equals(notifManner) || ChatService.DESKTOP_NOTIFICATION.equals(notifManner) || ChatService.ON_SITE.equals(notifManner)) {
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        Object existingRoomNotif =null;
+        if(settings!=null) {
+          prefNotif =  settings.get("preferredNotification");
+          prefTriger = settings.get("preferredNotificationTrigger");
+          existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
+        List<String> existingPrefNotif = null;
+        if(prefNotif==null) {
+          existingPrefNotif = new ArrayList<String>();
+          //default values to the untouched settings
+          existingPrefNotif.add("on-site");
+          existingPrefNotif.add("desktop");
+          existingPrefNotif.add("bip");
+        } else {
+          existingPrefNotif = ((List<String>)prefNotif);
+        }
+        if(existingPrefNotif.contains(notifManner)) {
+          existingPrefNotif.remove(notifManner);
+        } else {
+          existingPrefNotif.add(notifManner);
+        }
+        Map childs = new HashMap();
+
+        if(existingPrefNotif!=null) {
+          childs.put("preferredNotification",existingPrefNotif);
+        }
+        if(prefTriger!=null) {
+          childs.put("preferredNotificationTrigger", prefTriger);
+        }
+        if(existingRoomNotif!=null){
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
+
+        coll.save(doc, WriteConcern.SAFE);
+      } else {
+        throw new Exception("Wrong Params, operation not done");
+      }
+    } else {
+      throw new Exception("Doc not found, operation not done");
+    }
+  }
+
+  /*
+  * This methode is responsible for setting a notification triggers for a specific user
+  * available triggers :
+  *  -mention
+  *  -even-on-do-not-distrub
+  *
+  */
+  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        Object existingRoomNotif =null;
+        if(settings!=null) {
+          prefNotif =  settings.get("preferredNotificationTrigger");
+          prefTriger = settings.get("preferredNotification");
+          existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
+        List<String> existingPrefNotif = null;
+        if(prefNotif==null) {
+          existingPrefNotif = new ArrayList<String>();
+        } else {
+          existingPrefNotif = ((List<String>)prefNotif);
+        }
+
+        if(existingPrefNotif.contains(notifCond)) {
+          existingPrefNotif.remove(notifCond);
+        } else {
+          existingPrefNotif.add(notifCond);
+        }
+
+        Map childs = new HashMap();
+        if(existingPrefNotif!=null) {
+          childs.put("preferredNotificationTrigger", existingPrefNotif);
+        }
+        if(prefTriger!=null) {
+          childs.put("preferredNotification",prefTriger);
+        }
+        if(existingRoomNotif!=null){
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
+
+        coll.save(doc, WriteConcern.SAFE);
+      } else {
+        throw new Exception("Wrong Params, operation not done");
+      }
+    }  else {
+      throw new Exception("Doc not found, operation not done");
+    }
+  }
+  /*
+  * This methode is responsible for setting a notification triggers for a specific user in a specific room
+  * available triggers :
+  *  -mention
+  *  -key-words
+  *
+  */
+  public void setRoomNotificationTrigger(String user, String room,String notifCond, String notifConditionType, String dbName, long time) throws Exception {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+
+      if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifConditionType) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifConditionType) || notifConditionType.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
+        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        Object prefNotif = null;
+        Object prefTriger = null;
+        DBObject existingRoomNotif =null;
+        if(settings!=null) {
+          prefTriger =  settings.get("preferredNotificationTrigger");
+          prefNotif = settings.get("preferredNotification");
+          existingRoomNotif = (DBObject)settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        }
+
+        if(existingRoomNotif == null) {
+          existingRoomNotif = new BasicDBObject();
+        }
+
+        DBObject notifData = (DBObject)existingRoomNotif.get(room);
+        if (notifData == null) {
+          notifData = new BasicDBObject();
+        }
+        
+        if (notifData.get("time") == null || (long)notifData.get("time") < time) {
+          notifData.put("notifCond", notifConditionType);
+          notifData.put("time", time);
+          if(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)){
+            notifData.put(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD, notifCond);
+          }
+        }
+
+        Map childs = new HashMap();
+        if(prefTriger!=null) {
+          childs.put("preferredNotificationTrigger", prefTriger);
+        }
+
+        if(prefNotif!=null) {
+          childs.put("preferredNotification",prefNotif);
+        }
+
+        if(existingRoomNotif!=null){
+          existingRoomNotif.put(room, notifData);
+          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        }
+
+        doc.put("notificationsSettings",childs);
+        coll.save(doc, WriteConcern.SAFE);
+      } else {
+        throw new Exception("Wrong Params, operation not done");
+      }
+    } else {
+      throw new Exception("Doc not found, operation not done");
+    }
+  }
+  /*
+  * This methode is responsible for getting all desktop settings in a single object
+  */
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
+    NotificationSettingsBean settings = new NotificationSettingsBean();
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      BasicDBObject wrapperDoc = ((BasicDBObject) doc.get("notificationsSettings"));
+      if(wrapperDoc==null){//when there is no settings - first start of the server
+        wrapperDoc = new BasicDBObject();
+      }
+
+      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION)!=null){
+        settings.setEnabledChannels(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION).toString());
+      }
+      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER)!=null){
+        settings.setEnabledTriggers(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER).toString());
+      }
+      if(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
+        settings.setEnabledRoomTriggers(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
+      }
+    }
+    return settings;
   }
 
   public boolean isFavorite(String user, String targetUser, String dbName)

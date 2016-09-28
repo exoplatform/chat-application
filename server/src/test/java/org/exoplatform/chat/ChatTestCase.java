@@ -2,6 +2,7 @@ package org.exoplatform.chat;
 
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.SpaceBean;
@@ -10,13 +11,13 @@ import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.simple.JSONObject;
 
 import static org.junit.Assert.*;
 
@@ -494,5 +495,29 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, roomsBenJo.getRooms().size());
     assertEquals(1, roomsBenMaWi.getRooms().size());
 
+  }
+  
+  @Test
+  public void testSetRoomNotificationTrigger() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    
+    String benjamin = "benjamin";
+    String john = "john";
+    String normal = ChatService.NOTIFY_ME_ON_ROOM_NORMAL;
+    users.add(benjamin);
+    users.add(john);
+    String roomId1 = chatService.getRoom(users, null);
+    
+    userService.setRoomNotificationTrigger(benjamin, roomId1,"", normal, null, 1000);
+    userService.setRoomNotificationTrigger(benjamin, roomId1,"", "silence", null, 500);
+    
+    NotificationSettingsBean userDNS = userService.getUserDesktopNotificationSettings(benjamin, null);
+    assertNotNull(userDNS);
+    assertTrue(userDNS instanceof NotificationSettingsBean);
   }
 }

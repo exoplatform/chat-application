@@ -74,7 +74,8 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
 
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.MessageBean;
@@ -532,6 +533,104 @@ public class ChatServer
       return Response.notFound("Oups");
     }
     return Response.ok("Updated!");
+  }
+  
+  @Resource
+  @MimeType("text/plain")
+  @Route("/isFavorite")
+  public Response.Content isFavorite(String user, String token, String targetUser, String dbName) {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Petit malin !");
+    }
+    boolean isFavorite = false;
+    try {
+      isFavorite = userService.isFavorite(user, targetUser, dbName);
+    } catch (Exception e) {
+      LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+      return Response.notFound("Oups");
+    }
+    return Response.ok(String.valueOf(isFavorite));
+  }
+
+  @Resource
+  @MimeType("application/json")
+  @Route("/getUserDesktopNotificationSettings")
+  public Response.Content getUserDesktopNotificationSettings(String user, String token, String dbName) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+
+    JSONObject response = new JSONObject();
+    JSONObject res =  userService.getUserDesktopNotificationSettings(user, dbName).toJSON();
+    if(res==null || res.isEmpty()){
+      response.put("done",false);
+    } else {
+      response.put("done",true);
+    }
+    response.put("userDesktopNotificationSettings",res);
+
+    return Response.ok(response.toString()).withHeader("Cache-Control", "no-cache")
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/setPreferredNotification")
+  public Response.Content setPreferredNotification(String user, String token, String notifManner, String dbName) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+
+    JSONObject response = new JSONObject();
+    try {
+      userService.setPreferredNotification(user, notifManner, dbName);
+      response.put("done",true);
+    } catch (Exception e) {
+      response.put("done",false);
+    }
+
+    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/setRoomNotificationTrigger")
+  public Response.Content setRoomNotificationTrigger(String user, String token, String room, String notifCondition,String notifConditionType, String dbName, Long time) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+
+    JSONObject response = new JSONObject();
+    try{
+      userService.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
+      response.put("done", true);
+    } catch(Exception e) {
+      response.put("done",false);
+    }
+
+    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+            .withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/setNotificationTrigger")
+  public Response.Content setNotificationTrigger(String user, String token, String notifCondition, String dbName) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+
+    JSONObject response = new JSONObject();
+    try {
+      userService.setNotificationTrigger(user, notifCondition,dbName);
+      response.put("done", true);
+    } catch (Exception e) {
+      response.put("done",false);
+    }
+
+    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+            .withCharset(Tools.UTF_8);
   }
 
   @Resource

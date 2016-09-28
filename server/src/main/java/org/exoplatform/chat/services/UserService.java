@@ -19,9 +19,12 @@
 
 package org.exoplatform.chat.services;
 
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -43,8 +46,21 @@ public interface UserService
   public static final String ANONIM_USER = "__anonim_";
   public static final String SUPPORT_USER = "__support_";
 
+  public static final String PREFERRED_ROOM_NOTIFICATION_TRIGGER = "preferredRoomNotificationTrigger";
+  public static final String PREFERRED_NOTIFICATION = "preferredNotification";
+  public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
+  public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
+
+
 
   public void toggleFavorite(String user, String targetUser, String dbName);
+
+  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
+
+  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;
+  public void setRoomNotificationTrigger(String user, String room,String notifCond,String notifConditionType, String dbName, long time) throws Exception;
+
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException;
 
   public boolean isFavorite(String user, String targetUser, String dbName);
 

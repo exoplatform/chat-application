@@ -223,7 +223,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
   }
 
-
   public String read(String room, UserService userService, String dbName)
   {
     return read(room, userService, false, null, null, dbName);

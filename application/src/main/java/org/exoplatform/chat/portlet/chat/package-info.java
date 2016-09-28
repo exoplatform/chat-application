@@ -36,9 +36,11 @@
 @Scripts(location = AssetLocation.SERVER,
         value =  {
             @Script(value = "js/taffy-min.js", id="jquery"),
-            @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
             @Script(value = "js/UIUserProfilePopup.js", id="chatUserPopupPlugin", depends = {"jquery"} ),
-            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules", "chatUserPopupPlugin"} ),
+            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules","chat_notif", "chatUserPopupPlugin"} ),
+            @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery","desktopNotification"} ),
+            @Script(value = "js/switch_button.js", id="chat_notif", depends = {"jquery"} ), 
+            @Script(value = "js/desktopNotification.js", id="desktopNotification", depends = {"jquery"} ),
             @Script(value = "js/sh_main.min.js", id="shMain"),
             @Script(value = "js/sh_html.min.js", id="shHtml"),
             @Script(value = "js/sh_java.min.js", id="shJava"),
