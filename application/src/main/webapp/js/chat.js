@@ -420,8 +420,8 @@ var chatApplication = new ChatApplication();
     });
 
     $(document).on("keyup", "input[name='keyWords']", function(event) {//when entering keywords save them imediately
-	    console.log(event.target.value);
-	});
+        console.log(event.target.value);
+    });
 
     //global desktop notification settings
     $("#configButton").on("click", function() {
@@ -1485,7 +1485,21 @@ ChatApplication.prototype.initMention = function() {
             }
 
             msg = msg.replace(/<br>/g, '\n');
-            msg = parseMention(msg);
+
+            $div = $('#msgtemp');
+            if ($div.length == 0) {
+              $div = $('<div id="msgtemp"></div>');
+              $('body').append($div);
+            }
+            $div.html(msg);
+
+            $mention = $div.find('span[class="mention-item"]');
+            $mention.each(function( index ) {
+              $( this ).replaceWith('@' + $( this ).attr('data-mention'));
+            });
+
+            msg = $div.text();
+
             chatApplication.sendMessage(msg);
             $('#msg').suggester('setValue', '');
           }
@@ -1507,7 +1521,7 @@ ChatApplication.prototype.initMention = function() {
           }
         }
       });
-      
+
       jqchat('#msg').on('focus', function() {
         $mentionEditor.focus();
         $mentionEditor.html($mentionEditor.html().replace(/<br>/g, ''));
@@ -1525,24 +1539,8 @@ ChatApplication.prototype.initMention = function() {
       });
     });
   }
-}
 
-var parseMention = function(msg) {
-  var start, end, str = '';  
-  var prefix = '<span data-mention="';
-  var suffix = '</span>';
 
-  if (msg.indexOf(prefix) == -1) {
-    return msg;
-  }
-  while ((start = msg.indexOf(prefix)) != -1) {
-    str += msg.substring(0, start) + '@';
-    start += prefix.length;
-    end = msg.indexOf('"', start);
-    str += msg.substring(start, end);
-    msg = msg.substring(msg.indexOf(suffix, end) + suffix.length, msg.length);
-  }
-  return str;
 }
 
 /**
