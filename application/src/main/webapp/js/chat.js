@@ -719,6 +719,7 @@ var handleRoomNotifLayout = function() {
       chatApplication.search(filter);
     });
 
+    /*
     $('#task-add-user').keyup(function(event) {
       var prefix = "task";
       var filter = $(this).val();
@@ -738,6 +739,7 @@ var handleRoomNotifLayout = function() {
       });
 
     });
+    */
 
     function setMiniCalendarToDateField(dateFieldId) {
       var dateField = document.getElementById(dateFieldId);
