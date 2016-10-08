@@ -38,6 +38,7 @@ public class NotificationBean {
   private String categoryId;
   private String options = StringUtils.EMPTY;
   private String roomDisplayName = StringUtils.EMPTY;
+  private String roomType;
   private Long timestamp;
 
   public String getUser() {
@@ -116,9 +117,18 @@ public class NotificationBean {
     return roomDisplayName;
   }
 
+  public void setRoomType(String roomType) {
+    this.roomType = roomType;
+  }
+
+  public String getRoomType() {
+    return roomType;
+  }
+
   public void setRoomDisplayName(String roomDisplayName) {
     this.roomDisplayName = roomDisplayName;
   }
+
 
   public String getFromFullName() {
     return fromFullName;
@@ -152,6 +162,7 @@ public class NotificationBean {
         obj.put("options", StringUtils.EMPTY);
       }
       obj.put("roomDisplayName", StringEscapeUtils.escapeHtml4(this.getRoomDisplayName()));
+      obj.put("roomType", this.getRoomType());
       obj.put("timestamp", this.getTimestamp());
 
     } catch (JSONException e) {
