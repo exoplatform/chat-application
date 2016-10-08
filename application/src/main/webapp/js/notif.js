@@ -455,8 +455,16 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
        displayTitle = msg.roomDisplayName;
       }
 
-      localStorage.setItem('eXoChat.targetUser',"team-"+msg.categoryId);
-      localStorage.setItem('eXoChat.targetFullname',displayTitle);
+      var targetUser;
+      if(msg.roomType === 't') {
+        targetUser = "team-" + msg.categoryId;
+      } else if(msg.roomType === 's') {
+        targetUser = "space-" + msg.categoryId;
+      } else {
+        targetUser = msg.from;
+      }
+      localStorage.setItem('eXoChat.targetUser', targetUser);
+      localStorage.setItem('eXoChat.targetFullname', displayTitle);
 
       if(typeof chatApplication === "undefined") {
         newTab = window.open(path);

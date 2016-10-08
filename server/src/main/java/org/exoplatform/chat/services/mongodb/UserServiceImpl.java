@@ -23,10 +23,7 @@ import com.mongodb.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
-import org.exoplatform.chat.model.NotificationSettingsBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.UserBean;
+import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
@@ -548,6 +545,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
       }
       String type = doc.get("type").toString();
+      roomBean.setType(type);
       if ("s".equals(type))
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
