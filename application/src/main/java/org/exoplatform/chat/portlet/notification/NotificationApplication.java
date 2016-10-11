@@ -110,7 +110,7 @@ public class NotificationApplication
     Locale locale = userContext.getLocale();
     ResourceBundle bundle= applicationContext.resolveBundle(locale) ;
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
-    String shortSpaceName = getCurrentShortSpaceName();
+    String spaceId = getCurrentSpaceId();
 
     return index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
@@ -119,7 +119,7 @@ public class NotificationApplication
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("title", title)
             .set("messages", messages)
-            .set("shortSpaceName", shortSpaceName)
+            .set("spaceId", spaceId)
             .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
             .set("dbName", dbName)
             .ok()
@@ -218,10 +218,10 @@ public class NotificationApplication
     }
   }
 
-  protected String getCurrentShortSpaceName() {
+  protected String getCurrentSpaceId() {
     Space currSpace = getSpaceByContext();
     if (currSpace != null) {
-      return currSpace.getShortName();
+      return currSpace.getId();
     } else {
       return StringUtils.EMPTY;
     }

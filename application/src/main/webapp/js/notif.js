@@ -17,7 +17,7 @@ function ChatNotification() {
   this.token = "";
   this.username = "";
   this.sessionId = "";
-  this.shortSpaceName = ""; // short Name of current space being in
+  this.spaceId = ""; // Id of current space being in
   this.jzInitUserProfile = "";
   this.jzNotification = "";
   this.jzGetStatus = "";
@@ -58,7 +58,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatIntervalStatus = options.statusInterval;
   this.dbName = options.dbName;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
-  this.shortSpaceName = options.shortSpaceName;
+  this.spaceId = options.spaceId;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
   this.jzChatRead = options.jzChatRead;
   this.jzChatSend = options.jzChatSend;
@@ -677,9 +677,9 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
 
   var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
   var $btnChat = jqchat(".chat-button", $breadcumbEntry);
-  var spaceName = this.shortSpaceName;
-  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceName !== "") {
-    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceName + "\", \"space-name\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
+  var spaceId = this.spaceId;
+  if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceId !== "") {
+    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceId + "\", \"space-id\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
     $breadcumbEntry.append(strChatLink);
   }
 
@@ -874,7 +874,7 @@ var chatNotification = new ChatNotification();
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
-      "shortSpaceName": $notificationApplication.attr("data-short-space-name"),
+      "spaceId": $notificationApplication.attr("data-space-id"),
       "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
       "dbName": $notificationApplication.attr("data-db-name"),
       "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
