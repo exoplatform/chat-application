@@ -1490,7 +1490,7 @@ ChatApplication.prototype.initMention = function() {
 
             $div = $('#msgtemp');
             if ($div.length == 0) {
-              $div = $('<div id="msgtemp"></div>');
+              $div = $('<div id="msgtemp" style="display: none;"></div>');
               $('body').append($div);
             }
             $div.html(msg);
