@@ -1018,7 +1018,7 @@ var handleRoomNotifLayout = function() {
       $userResults.css("display", "none");
       $userResults.html("");
     }
-
+    /*
     function addTaskUserLabel(name, fullname) {
       var $usersList = $('.task-users-list');
       var html = $usersList.html();
@@ -1035,7 +1035,7 @@ var handleRoomNotifLayout = function() {
         $(this).parents('.uiMention').remove();
       });
     }
-
+    */
     function strip(html)
     {
       var tmp = document.createElement("DIV");
