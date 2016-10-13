@@ -12,92 +12,12 @@
   .LeftNavigationTDContainer {
     display: none;
   }
-  .hidden-phone.collapse.in {
-    display: block !important;
+
+  #NavigationPortlet {
+    display: none;
   }
-  
-  .hidden-phone.collapse {
-    display: none !important;
-  }  
-  
-  #chat-application {
-    /*min-width: 320px;*/
-    /*width: 100%;*/
-	   padding: 15px;
 
-	.uiIconViewList {
-      padding: 10px;
-    }
- 
-    .uiIconViewList::before {
-      padding-right: 10px;
-    }
-	
-    .uiGrayLightBox {
-      margin: 0!important;
-      -webkit-border-radius: 0;
-
-      .btn-weemo-download {
-        display: none!important;
-      }
-      .uiSearchInput {
-        display: none;
-      }
-      .containerMoreItem {
-        padding-right: 0px!important;
-      }
-    }
-
-    .uiBox {
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      margin: 0;
-    }
-      #chat-users {
-        margin: 15px 0;
-      }
-
-
-      .uiRoomUsersContainerArea.room-users-expanded {
-    min-width: 77px !important;
-
-      #room-users-list {
-        height: 317px!important;
-      }
-
-      #room-users-collapse-bar {
-        line-height: 400px!important;
-      }
-
-      .room-users-title,
-       .room-user-name,
-       .room-user-status{
-        display: none !important;
-      }
-       #room-users {
-        display: block;
-       }
-  }
-      
-       
-      .uiRoomUsersContainerArea.room-users-collapsed {
-          display: block;
-          position: absolute;
-          float: right;
-          right: 0px;
-          top: 0px;
-      }
-      .uiRoomUsersContainerArea.room-users-collapsed #room-users {
-          display: none !important;
-      }
-      .uiRoomUsersContainerArea.room-users-collapsed #room-users-collapse-bar {
-          position: absolute;
-          right: 0;
-          cursor: pointer;
-          top: 0;
-      }
-  }
+ searchButton
 
   .msRow {
     .msRightInfo {
@@ -114,5 +34,8 @@
     .msUserMes {
       clear: both;
     }
+  }
+  #menuButton, #searchButton{
+  display: block
   }
 }

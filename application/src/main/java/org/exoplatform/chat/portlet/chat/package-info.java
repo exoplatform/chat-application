@@ -38,7 +38,7 @@
         value =  {
             @Script(value = "js/taffy-min.js", id="jquery"),
             @Script(value = "js/UIUserProfilePopup.js", id="chatUserPopupPlugin", depends = {"jquery"} ),
-            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules","chat_notif", "chatUserPopupPlugin"} ),
+            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules","chat_notif", "chatUserPopupPlugin", "jquery"} ),
             @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery","desktopNotification"} ),
             @Script(value = "js/switch_button.js", id="chat_notif", depends = {"jquery"} ), 
             @Script(value = "js/desktopNotification.js", id="desktopNotification", depends = {"jquery"} ),
@@ -61,7 +61,7 @@
         scripts = {
                 @Script(src = "js/taffy-min.js", id="jquery"),
                 @Script(src = "js/chat-modules.js", id="chat-modules", depends = {"jquery"} ),
-                @Script(src = "js/chat.js", depends = {"chat-modules"} ),
+                @Script(src = "js/chat.js", depends = {"chat-modules", "jquery"} ),
                 @Script(src = "js/sh_main.min.js"),
                 @Script(src = "js/sh_html.min.js"),
                 @Script(src = "js/sh_java.min.js"),

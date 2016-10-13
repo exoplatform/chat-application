@@ -5,6 +5,13 @@ var chatApplication = new ChatApplication();
 
   $(document).ready(function(){
 
+  if(window.innerWidth <= 767){
+        $("#topTitle").show().text("Chat");
+        $(".label-user").hide();
+    }else{
+        $("#topTitle").hide().text("Chat");
+        $(".label-user").show();
+    }
     /**
      * Init Chat
      */
@@ -431,6 +438,31 @@ var chatApplication = new ChatApplication();
       jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
     });
 
+    $("#menuButton").on("click", function() {
+       /* console.log("OK!");*/
+        $(".uiLeftContainerArea").toggleClass("displayContent");
+        if(window.innerWidth <= 767){
+            if($("#topTitle").text() == "Chat"){
+                $("#topTitle").text("Discussions");
+            }else{$("#topTitle").text("Chat");}
+        }
+    });
+
+   /* $("tr.users-online.accordion-body").on("click", function() {
+            console.log("HERE!");
+                        $(".uiLeftContainerArea").removeClass("displayContent");
+        });*/
+
+    $("#searchButton").on("click", function() {
+           /* console.log("OK SEARCH!");*/
+            $("#chat-application .uiGrayLightBox .uiSearchInput").toggleClass("displayContent");
+    });
+    $("#chat-application .uiSearchForm .uiIconClose").on("click", function() {
+            /*console.log("Remove SEARCH OK!");*/
+            $("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
+    });
+
+
 var handleRoomNotifLayout = function() {
   chatApplication.chatRoom.loadSetting(function() {
     jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
@@ -568,6 +600,13 @@ var handleRoomNotifLayout = function() {
 
       chatApplication.chatRoom.sendMessage(msg, options, "true");
       hideMeetingPanel();
+
+        $("i.uiIconPLF24x24Search.search_chatIcon.btn").on("click", function() {
+            console.log("test");
+            alert("test");
+            $("#chat-search, #chat-application").toggleClass("open_searchChat");
+        });
+
 
     });
 
@@ -3018,6 +3057,11 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
 
   jqchat('#chat-users .users-online').on("click", function() {
+
+   /* console.log("HERE!");*/
+    jqchat(".uiLeftContainerArea").removeClass("displayContent");
+
+
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
     thiss.loadRoom();

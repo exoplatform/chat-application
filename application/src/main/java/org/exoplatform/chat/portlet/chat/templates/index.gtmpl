@@ -21,14 +21,21 @@
   <div class="chat-about-panel" style="display:none;"></div>
 <% if (!"public".equals(view)) { %>
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
+
     <span class="menu-standard pull-left">
-      <span class="avatar-user">
+      <div id="menuButton" class="uiActionWithLabel pull-left" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+        <i class="uiIconViewList uiIconLightGray"></i>
+      </div>
+
+    </span>
+    <span class="menu-standard pull-center">
+      <!--<span class="avatar-user">
         <div class="activityAvatar avatarCircle" >
           <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/<%=user%>" data-original-title="">
             <img class="avatar-image" onerror="this.src='/chat/img/user-default.jpg;'" src='/rest/chat/api/1.0/user/getAvatarURL/<%=user%>' >
           </a>
         </div>
-      </span>
+      </span>-->
 
       <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
         <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
@@ -42,6 +49,7 @@
 
       <label class="pull-left" style="margin-top: 12px;">
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_blank'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
+        <span class="label-user-title" id="topTitle">Chat</span>
         <% if ("DEV".equals(demoMode)) { %>
         <span class="label-demo">(Demo Mode)</span>
         <% } %>
@@ -50,11 +58,20 @@
     <span class="menu-standard pull-right">
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
+
+
       <div id="configButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
         <i class="uiIconSetting uiIconLightGray"></i>
       </div>
+      <div id="searchButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+        <i class="uiIconSearch uiIconLightGray"></i>
+      </div>
+
       <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
-        <div onclick="event.cancelBubble=true;"><input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}"></div>
+        <div onclick="event.cancelBubble=true;">
+          <input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}">
+        </div>
+          <i class="uiIconClose uiIconLightGray"></i>
       </div>
     </span>
   </div>
