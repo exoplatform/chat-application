@@ -719,28 +719,6 @@ var handleRoomNotifLayout = function() {
       chatApplication.search(filter);
     });
 
-    /*
-    $('#task-add-user').keyup(function(event) {
-      var prefix = "task";
-      var filter = $(this).val();
-      if (filter.indexOf(',') !== -1) {
-        var inputUserId = $.trim(filter.substring(filter.lastIndexOf(',') + 1));
-        if (inputUserId.length > 0) filter = inputUserId;
-        else return;
-      }
-
-      searchUsers(filter, prefix, event, true, function(name, fullname) {
-        addTaskUserLabel(name, fullname);
-        var pTaskHeight = parseInt($(".meeting-action-task-panel").attr("data-height"));
-        var taskUserListHeight = $(".task-users-list").height();
-        var $popup = $(".meeting-action-popup");
-        $popup.height(pTaskHeight + taskUserListHeight);
-        $popup.css("top", (-Math.abs($popup.height())-4)+"px");
-      });
-
-    });
-    */
-
     function setMiniCalendarToDateField(dateFieldId) {
       var dateField = document.getElementById(dateFieldId);
       dateField.onfocus=function(){
@@ -1018,24 +996,7 @@ var handleRoomNotifLayout = function() {
       $userResults.css("display", "none");
       $userResults.html("");
     }
-    /*
-    function addTaskUserLabel(name, fullname) {
-      var $usersList = $('.task-users-list');
-      var html = $usersList.html();
-      html += "<span class='uiMention'><a href='javascript:void(0)' class='task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></a></span>";
-      $usersList.html(html);
-      var $taskAddUser = $('#task-add-user');
-      $taskAddUser.val("");
-      $taskAddUser.focus();
-      var $userResults = $(".task-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
 
-      $(".task-user-remove").on("click", function() {
-        $(this).parents('.uiMention').remove();
-      });
-    }
-    */
     function strip(html)
     {
       var tmp = document.createElement("DIV");
@@ -1387,16 +1348,14 @@ function ChatApplication() {
   this.plugins = [];
 }
 
-ChatApplication.prototype.registerPlugin = function(plugin) {
+ChatApplication.prototype.registerEvent = function(plugin) {
   this.plugins.push(plugin);
 }
 
 ChatApplication.prototype.trigger = function(event, context) {
   jqchat.each(this.plugins, function(idx, plugin) {
-    if (plugin.getEvent && plugin.getEvent() == event) {
-      if (context.continueSend && plugin.onEvent) {
-        plugin.onEvent(context);
-      }
+    if (context.continueSend && plugin[event]) {
+      plugin[event](context);
     }
   });
 }
