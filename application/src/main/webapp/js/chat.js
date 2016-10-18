@@ -1369,8 +1369,15 @@ ChatApplication.prototype.initMention = function() {
       $msg.suggester({
         type : "mix",
         sourceProviders : ['exo:chat'],
-        showAtCaret: true
-      });
+        showAtCaret: true,
+        renderMenuItem: function(item) {
+          var $li = $('<li class="option">');
+          $li.html('<a><img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
+              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span></a>')
+          return $li;
+        }
+
+    });
       $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
         var _this = this;
         $.ajax({
@@ -1386,7 +1393,8 @@ ChatApplication.prototype.initMention = function() {
             $.each(data.users, function(idx, user) {
               users.push({
                 "uid": user.name,
-                "value": user.fullname
+                "value": user.fullname,
+                "status": user.status
               });
             });
             callback.call(_this, users);
