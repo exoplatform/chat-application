@@ -101,6 +101,9 @@
   padding: 15px 0 0;
 }
 
+.uiGlobalRoomsContainer.hideContent {
+    display: none;
+}
 .uiRoomUsersContainerArea {
   display: none;
   float: right;
@@ -217,6 +220,9 @@
 }
 .menu-standard {
   display: inline;
+  i{font-size: 16px;
+      &.uiIconSocGroup {font-size: 20px}
+    }
   .actionIcon{
   	padding: 2px;
   	margin: 0 3px;
@@ -240,6 +246,8 @@
         display: none
     }
   }
+
+
 }
 
 .left-chat
@@ -1041,8 +1049,11 @@ footer
     display: block;
     opacity: 1;
 }
-/*#chat-status{
-    @media (max-width: 599px) {
-
-    }
-}*/
+#chat-status{
+    display: block!important;
+}
+.UIToolbarContainer .UserInfoPortletTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .UIHelpPlatformToolbarPortletTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .SearchPortletTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .UICreatePlatformToolBarPortletIDTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .UISetupPlatformToolBarPortletIDTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .NotificationPopoverPortletTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .AdminToolBarPortletTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .middle-topNavigation-containerTDContainer [class^="uiIconPLF24x24"], .UIToolbarContainer .right-topNavigation-containerTDContainer [class^="uiIconPLF24x24"]{
+        @media (max-width: 599px) {
+                font-size: 22px;
+        }
+}

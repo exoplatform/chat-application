@@ -439,8 +439,8 @@ var chatApplication = new ChatApplication();
     });
 
     $("#menuButton").on("click", function() {
-       /* console.log("OK!");*/
         $(".uiLeftContainerArea").toggleClass("displayContent");
+        $(".uiGlobalRoomsContainer").toggleClass("hideContent");
         if(window.innerWidth <= 767){
             if($("#topTitle").text() == "Chat"){
                 $("#topTitle").text("Discussions");
@@ -448,17 +448,10 @@ var chatApplication = new ChatApplication();
         }
     });
 
-   /* $("tr.users-online.accordion-body").on("click", function() {
-            console.log("HERE!");
-                        $(".uiLeftContainerArea").removeClass("displayContent");
-        });*/
-
     $("#searchButton").on("click", function() {
-           /* console.log("OK SEARCH!");*/
             $("#chat-application .uiGrayLightBox .uiSearchInput").toggleClass("displayContent");
     });
     $("#chat-application .uiSearchForm .uiIconClose").on("click", function() {
-            /*console.log("Remove SEARCH OK!");*/
             $("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
     });
 
@@ -602,8 +595,6 @@ var handleRoomNotifLayout = function() {
       hideMeetingPanel();
 
         $("i.uiIconPLF24x24Search.search_chatIcon.btn").on("click", function() {
-            console.log("test");
-            alert("test");
             $("#chat-search, #chat-application").toggleClass("open_searchChat");
         });
 
@@ -3058,9 +3049,8 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
   jqchat('#chat-users .users-online').on("click", function() {
 
-   /* console.log("HERE!");*/
     jqchat(".uiLeftContainerArea").removeClass("displayContent");
-
+    jqchat(".uiGlobalRoomsContainer").removeClass("hideContent");
 
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
@@ -3515,8 +3505,10 @@ ChatApplication.prototype.loadRoomUsers = function() {
   if (this.targetUser !== undefined) {
     roomUsersContainer.show();
 	if(!roomUsersContainer.is(".room-users-collapsed")) {
-		roomUsersContainer.addClass("room-users-expanded");//need a default class for responsive
+//		roomUsersContainer.addClass("room-users-expanded");//need a default class for responsive
+		roomUsersContainer.addClass("room-users-collapsed");//need a default class for responsive
 	}
+
     var roomUsersList = jqchat("#room-users-list");
     if(roomUsersList !== undefined) {
       // fetch room users

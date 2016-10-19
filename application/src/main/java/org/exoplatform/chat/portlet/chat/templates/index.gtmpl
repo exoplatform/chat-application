@@ -24,7 +24,7 @@
 
     <span class="menu-standard pull-left">
       <div id="menuButton" class="uiActionWithLabel pull-left" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
-        <i class="uiIconViewList uiIconLightGray"></i>
+        <i class="uiIconSocGroup uiIconLightGray"></i>
       </div>
 
     </span>
@@ -81,7 +81,7 @@
     </div>
   </div>
   <% } %>
-
+<div class="uiGlobalRoomsContainer">
   <div class="uiRoomUsersContainerArea">
     <div id="room-users-collapse-bar">
       <i class="uiIconArrowDefault"></i>
@@ -281,6 +281,7 @@
 
       </div>
     </div>
+  </div>
   </div>
 </div>
 
