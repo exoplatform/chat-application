@@ -29,18 +29,11 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import juzu.request.*;
 import org.apache.commons.fileupload.FileItem;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.common.utils.ChatUtils;
@@ -69,9 +62,6 @@ import juzu.SessionScoped;
 import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.RequestContext;
-import juzu.request.RequestParameter;
-import juzu.request.SecurityContext;
 import juzu.template.Template;
 
 @SessionScoped
@@ -113,9 +103,6 @@ public class ChatApplication
   @Inject
   WikiService wikiService_;
   
-  @Inject
-  ResourceBundle bundle;
-  
   public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";
   
   public static final String CHAT_EXTENSION_MENU = "chat_extension_menu";
@@ -132,7 +119,7 @@ public class ChatApplication
   }
 
   @View
-  public Response.Content index(SecurityContext securityContext)
+  public Response.Content index(ApplicationContext appContext, UserContext userContext, SecurityContext securityContext)
   {
     remoteUser_ = securityContext.getRemoteUser();
     boolean isPublic = (remoteUser_==null);
@@ -161,6 +148,8 @@ public class ChatApplication
     Date today = Calendar.getInstance().getTime();
     String todayDate = df.format(today);
 
+    Locale locale = userContext.getLocale();
+    ResourceBundle bundle = appContext.resolveBundle(locale);
     RenderContext exMenuCtx = new RenderContext(CHAT_EXTENSION_MENU);
     exMenuCtx.setRsBundle(bundle);
     List<org.exoplatform.commons.api.ui.Response> menuResponse = this.uiService.render(exMenuCtx);    
