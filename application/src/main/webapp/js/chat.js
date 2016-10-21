@@ -1465,7 +1465,7 @@ ChatApplication.prototype.initMention = function() {
 
             $mention = $div.find('span[class="mention-item"]');
             $mention.each(function( index ) {
-              $( this ).replaceWith('@' + $( this ).attr('data-mention'));
+              $( this ).replaceWith('@' + $( this ).attr('data-mention') + ' ');
             });
 
             msg = $div.text();
