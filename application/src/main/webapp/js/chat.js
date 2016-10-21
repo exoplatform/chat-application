@@ -1791,10 +1791,19 @@ ChatApplication.prototype.resize = function() {
   var heightChat = height - top - off;
 
   $chatApplication.height(heightChat);
-  jqchat("#chats").height(heightChat - 105 - 61);
-  jqchat("#chat-users").height(heightChat - 44);
-  jqchat("#room-users-list").height(heightChat - 44 - 61 - 20); // remove header and padding
-  jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
+  /* TCHAT HEIGHT ON MOBILE  */
+  if(window.innerWidth > 767){
+      jqchat("#chats").height(heightChat - 105 - 61);
+      jqchat("#chat-users").height(heightChat - 44);
+      jqchat("#room-users-list").height(heightChat - 44 - 61 - 20); // remove header and padding
+      jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
+
+  }else{
+      jqchat("#chats").height(heightChat - 61 -53);
+      jqchat("#chat-users").height(heightChat -44);
+      jqchat("#room-users-list").height(heightChat - 44 -29); // remove header and padding
+      jqchat("#room-users-collapse-bar").css("line-height", (heightChat -44) + "px");
+   }
 
 };
 
@@ -3051,6 +3060,13 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
 
     jqchat(".uiLeftContainerArea").removeClass("displayContent");
     jqchat(".uiGlobalRoomsContainer").removeClass("hideContent");
+
+    if(window.innerWidth <= 767){
+        jqchat("#topTitle").text("Chat");
+    }
+
+
+
 
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
