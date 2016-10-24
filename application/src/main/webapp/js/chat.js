@@ -1372,11 +1372,11 @@ ChatApplication.prototype.initMention = function() {
         showAtCaret: true,
         renderMenuItem: function(item) {
           var $li = $('<li class="option">');
-          $li.html('<a><img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
-              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span></a>')
+          $li.html('<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
+              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>')
           return $li;
-        }
-
+        },
+        renderItem: '<span data-mention="${uid}" class="mention-item" contenteditable="false">${value}<a href="javascript:void(0)" class="remove">×</a></span>',
     });
       $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
         var _this = this;
@@ -1409,44 +1409,20 @@ ChatApplication.prototype.initMention = function() {
         chatApplication.updateUnreadMessages();
       });
       
-      $mentionEditor.keydown(function(event) {
-        if ($mentionEditor.next('ul').css('display') == 'none') {
-          
-          //prevent the default behavior of the enter button
-          if ( event.which == 13 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
-            event.preventDefault();
-          }
-          //adding (shift or ctl or alt) + enter for adding carriage return in a specific cursor
-          if ( event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-//            var value = $('#msg').suggester('getValue');
-//            
-//            var sel = window.getSelection();
-//            var node = sel.focusNode;
-//            var pos = sel.focusOffset;
-//
-//            value = value.substring(0, pos) + "<br>" + value.substring(pos, value.length);
-//            $('#msg').suggester('setValue', value);
-//            
-//            var range = document.createRange();
-//            range.setStart($mentionEditor[0], pos - 1);
-//            sel.removeAllRanges();
-//            sel.addRange(range);
-            
-            $mentionEditor.scrollTop($mentionEditor[0].scrollHeight - $mentionEditor.height());
-          }
-          
-          if ( event.which == 18 ) {
-            chatApplication.keydown = 18;
-          }
-        } else {
+      $mentionEditor.on('shown.atwho', function(event, data) {
           chatApplication.isMentioning = true;
-        }
       });
-      
+      $mentionEditor.on('hidden.atwho', function(event, data) {
+          setTimeout(function() {
+            chatApplication.isMentioning = false;
+          }, 100);
+      });
+
       $mentionEditor.keyup(function(event) {
         if (!chatApplication.isMentioning) {
 //          var msg = $('#msg').suggester('getValue');
           var msg = $mentionEditor.html();
+
           //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
           if ( event.which === 13 && msg.trim().length>=1 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
             //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
@@ -1471,7 +1447,7 @@ ChatApplication.prototype.initMention = function() {
             msg = $div.text();
 
             chatApplication.sendMessage(msg);
-            $('#msg').suggester('setValue', '');
+            $('#msg').suggester('clearValue');
           }
           // UP Arrow
           if (event.which === 38 && msg.length === 0) {
