@@ -309,18 +309,7 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response processAction(RequestContext reqContext) {    
-//    try {
-//      calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
-//    } catch (ParseException e) {
-//      LOG.warning("parse exception during task creation");
-//      return Response.notFound("Error during task creation");
-//    } catch (Exception e) {
-//      LOG.warning("exception during task creation");
-//      return Response.notFound("Error during task creation");
-//    }
-//
-//        
+  public Response processAction(RequestContext reqContext) {
     Map<String, RequestParameter> params = reqContext.getParameters();
     Map<String, List<String>> p = new HashMap<String, List<String>>();
     for (String name : params.keySet()) {

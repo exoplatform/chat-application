@@ -1371,13 +1371,11 @@ ChatApplication.prototype.initMention = function() {
         sourceProviders : ['exo:chat'],
         showAtCaret: true,
         renderMenuItem: function(item) {
-          var $li = $('<li class="option">');
-          $li.html('<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
-              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>')
-          return $li;
+          return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
+              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
         },
         renderItem: '<span data-mention="${uid}" class="mention-item" contenteditable="false">${value}<a href="javascript:void(0)" class="remove">×</a></span>',
-    });
+      });
       $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
         var _this = this;
         $.ajax({
