@@ -102,7 +102,8 @@
 }
 
 .uiGlobalRoomsContainer.hideContent {
-    display: none;
+    left: 100%;
+    right: auto;
 }
 .uiRoomUsersContainerArea {
   display: none;
@@ -217,6 +218,12 @@
     float: left;
     overflow: auto;
     width: 257px;
+    -ms-transition-duration: .5s;
+    -moz-transition-duration: .5s;
+    -webkit-transition-duration: .5s;
+    transition-duration: .5s;
+    &.hideContent{opacity: 0; display: none}
+    &.displayContent{opacity: 1; display: block}
 }
 .menu-standard {
   display: inline;
@@ -1039,15 +1046,16 @@ footer
     margin: -18px 2px 2px; 
     width: 16px;
 }
-#menuButton,#searchButton{
+#menuButton,#searchButton, #searchButton2{
     display: none;
     position: relative;
     top: 10px;
     padding: 5px 8px 1px 8px
 }
+#searchButton2{top : 13px}
 #menuButton.displayContent{
-    display: block;
-    opacity: 1;
+    left: 0;
+    right: 0
 }
 #chat-status{
     display: block!important;
@@ -1057,3 +1065,6 @@ footer
                 font-size: 22px;
         }
 }
+#searchButton2, .displayResponsive{display: none}
+.uiExtraLeftContainer {display: none}
+.clearfix{clear: both}

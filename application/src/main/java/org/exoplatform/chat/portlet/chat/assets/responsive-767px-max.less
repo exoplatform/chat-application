@@ -11,6 +11,8 @@
   @import "sized";
   @import "panels";
 
+
+  .displayResponsive{display: block;}
   .LeftNavigationTDContainer {
     display: none;
   }
@@ -22,8 +24,8 @@
   .uiLeftContainerArea {
     width: 100%;
     float: none;
-    display: none;
-    opacity: 0;
+/*    display: none;
+    opacity: 0;*/
     padding: 5px 5px 0 0!important;
     -ms-transition-duration: .5s;
     -moz-transition-duration: .5s;
@@ -37,17 +39,24 @@
 
   .uiRoomUsersContainerArea {
         padding: 5px 0 0 5px;
-    #room-users-list {
-    /* test*/
-     /* height: 317px!important;*/
-    }
+        #room-users-list {
+        /* test*/
+         /* height: 317px!important;*/
+        }
 
-    #room-users-collapse-bar {
-      line-height: 400px!important;
-          margin-left: -7px;
-    }
   }
-
+    .room-users-collapsed{
+        #room-users-collapse-bar {
+          line-height: 400px!important;
+          margin-left: -17px;
+        }
+    }
+    .room-users-expanded{
+        #room-users-collapse-bar {
+          line-height: 400px!important;
+          margin-left: 0;
+        }
+    }
   .uiRightContainerArea {
     #chats {
 
@@ -56,7 +65,8 @@
     }
   }
   #menuButton{
-    display: block
+    display: block;
+    padding-top: 1px;
     }
      #chat-application {
         min-width: 320px;
@@ -65,57 +75,181 @@
         padding: 0;
 
         .uiGrayLightBox {
-          margin: 0!important;
-          -webkit-border-radius: 0;
-
-          .btn-weemo-download {
-            display: none!important;
-          }
-          .uiSearchInput {
-            display: none;
-            opacity: 0;
-            -ms-transition-duration: .5s;
-            -moz-transition-duration: .5s;
-            -webkit-transition-duration: .5s;
-            transition-duration: .5s;
-            .uiIconClose{display: none}
-              &.displayContent{
-                  display: block;
-                  opacity: 1;
-                  position: absolute;
-                  left: 1%;
-                  right: 1%;
-                  top: 0;
-                  #chat-search{
-                      width: 100%;
-                      height: 44px;
-                  }
-                  .uiIconClose{
-                    position: absolute;
-                    right: 2%;
-                    display: block;
-                    top: 11px;
-                    z-index: 99999;
-                  }
+              margin: 0!important;
+              -webkit-border-radius: 0;
+              position: relative;
+              padding: 3px 5px 8px;
+              .btn-weemo-download {
+                display: none!important;
               }
-          }
-          .containerMoreItem {
-            padding-right: 0px!important;
-          }
-        }
 
+              .containerMoreItem {
+                padding-right: 0px!important;
+              }
+        }
+        .uiSearchInput {
+                    display: none;
+                    opacity: 0;
+                    -ms-transition-duration: .5s;
+                    -moz-transition-duration: .5s;
+                    -webkit-transition-duration: .5s;
+                    transition-duration: .5s;
+                    .uiIconClose{display: none}
+                      &.displayContent{
+                          display: block;
+                          opacity: 1;
+                          position: absolute;
+                          left: 1%;
+                          right: 1%;
+                          top: 0;
+                          z-index: 1;
+                          margin-top: 5px;
+                          #chat-search{
+                              width: 100%;
+                              height: 44px;
+                          }
+                          .uiIconClose{
+                            position: absolute;
+                            right: 2%;
+                            display: block;
+                            top: 11px;
+                            z-index: 99999;
+                          }
+                      }
+                  }
         .uiBox {
           -webkit-border-radius: 0;
           -moz-border-radius: 0;
           border-radius: 0;
           margin: 0;
         }
+        .uiExtraLeftContainer{
+            display: block;
+            width: 100%;
+            float: none;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            z-index: -1;
 
+           /* -ms-transition-duration: .5s;
+            -moz-transition-duration: .5s;
+            -webkit-transition-duration: .5s;
+            transition-duration: .5s;*/
+             &.displayContent{
+                display: block;
+                opacity: 1;
+                z-index: 1;
+                .uiExtraLeftGlobal{
+                    right: 20%;
+                    left: auto;
+                }
+             }
+             .bg{
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(73, 73, 73, 0.22);
+             }
+             .uiExtraLeftGlobal{
+                background : #FFF;
+                /*border-right: solid 1px #607D8B;*/
+                z-index: 1;
+                width: 80%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: auto;
+                right: 104%;
+                -ms-transition-duration: .5s;
+                -moz-transition-duration: .5s;
+                -webkit-transition-duration: .5s;
+                transition-duration: .5s;
+
+                -webkit-box-shadow: 2px 0px 5px 0px rgba(0,0,0,0.45);
+                -moz-box-shadow: 2px 0px 5px 0px rgba(0,0,0,0.45);
+                box-shadow: 2px 0px 5px 0px rgba(0, 0, 0, 0.45);
+
+                .extraLeftTop, .extraLeftMedium{
+                    position: relative;
+                    display: block;
+                    /*border-bottom: solid 1px #494949;*/
+                    padding-left: 20px;
+                    padding-bottom: 20px;
+                }
+                .extraLeftTop{
+                    background: rgba(158, 158, 158, 0.19);
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    padding-right: 10px;
+                    span.user_mail {
+                        display: block;
+                        color: #2f5e92;
+                        margin-bottom: 2px;
+                        margin: 10px 0;
+                        overflow-wrap: break-word;
+                    }
+                    .actionIcon{padding: 2px 0}
+                    .chat-status-chat{line-height: 17px;}
+                    .actionIcon:hover, .actionIconSmall:hover{border: 0; background: none;}
+                }
+                .extraLeftMedium{border: 0}
+                .label-user, .label-user-title{font-size: 17px}
+                .avatar-user{
+                    padding-right: 5px;
+                    width: 59px;
+                    margin-top: 20px;
+                    .avatarCircle{
+                        width:45px; height:45px;
+                        img{width:45px; height:45px;}
+                    }
+                }
+                .close {
+                    font-size: 16px;
+                    font-weight: bold;
+                    opacity: .5;
+                    font-family: arial;
+                    z-index: 1;
+                    position: absolute;
+                    right: 8px;
+                    top: 8px;
+                    i{font-size: 16px;}
+                }
+                .ligne {
+                    width: 100%;
+                    margin: 10px 0!important;
+                    font-size: 16px!important;
+                    padding: 0;
+                    i{font-size: 18px}
+                    a{color: inherit;display: block;}
+                }
+                div#configButton{margin-bottom: 15px!important;}
+                .uiActionWithLabel:hover,.uiActionWithLabel:focus, .uiActionWithLabel:active,
+                .uiActionWithLabel:hover:active{
+                    border-color: transparent;
+                    box-shadow: none;
+                    background: none;
+                    color: #2f5e92;
+                }
+             }
+             .clearfix{opacity: 0; margin: 0; padding: 0}
+        }
         .uiLeftContainerArea {
           width: 100%;
           float: none;
-          display: none;
-              opacity: 0;
+          position: absolute;
+          top: 52px;
+          left: 0;
+          right: 0;
+          /*display: none;
+              opacity: 0;*/
+
               -ms-transition-duration: .5s;
               -moz-transition-duration: .5s;
               -webkit-transition-duration: .5s;
@@ -130,7 +264,23 @@
             margin: 0!important;
           }
         }
-
+        .uiGlobalRoomsContainer{
+            position: absolute;
+            top: -5px;
+            right: -16px;
+            left: 105%;
+            padding-left: 5px;
+            width: 100%;
+            -ms-transition-duration: .5s;
+            -moz-transition-duration: .5s;
+            -webkit-transition-duration: .5s;
+            transition-duration: .5s;
+            &.displayContent{
+                left: -5px!important;
+                right: -5px!important;
+                background: #FFF;
+            }
+        }
         .uiRightContainerArea {
         /*test */
          /* height: 400px!important;*/
@@ -157,7 +307,7 @@
           &:not(.room-users-expanded) {
             /*width: 70px;*/
             /*width: 55px;*/
-            width :1px;
+            width :0px;
             .uiBox {
                 #room-users-list{
                     .room-user{height: 40px}
@@ -204,9 +354,12 @@
             }
         }
       }
-      #menuButton, #searchButton{
-         display: block
+      #menuButton, #searchButton, #searchButton2{
+         display: block;
+         i{font-size: 16px}
       }
+
+      /*#searchButton{z-index: 100}*/
 
       .msRow {
         .msRightInfo{
@@ -222,19 +375,94 @@
         }
       }
 
-#chats{
-    .offset1 {
-        margin-left: 10px;
-    }
-    .offset2 {
-        margin-left: 63px;
-    }
-    span.channel-label{left:0!important}
-    button#close-global-notif-config{
-        position: relative;
-        left: 0;
-        right: 0;
-    }
-}
 
+    #chats{
+     .offset1,.offset2 {
+         margin-left: 10px;
+     }
+     span.channel-label{left:0!important}
+     button#close-global-notif-config{
+         position: relative;
+         left: 0;
+         right: 0;
+         float: right;
+         margin: 10px;
+     }
+
+
+     .span6 {
+         width: 100%;
+         left: 0;
+         right: 0;
+         margin: 0;
+         padding: 10px;
+         h4{left: 0!important}
+         .offset2.notif-manner, div#id2 {
+             left: 0!important;
+         }
+     }
+
+
+    }
+
+
+    div#back {
+        float: left;
+        width: 45px;
+        height: 55px;
+        line-height: 50px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 25px;
+    }
+
+    .avatarCircle{
+        width: 28px; height: 28px;
+        img{width: 28px; height: 28px;}
+    }
+
+    #room-users-button ul.nav.pull-right.uiDropdownWithIcon{display: none}
+    .room-detail-avatar {
+        float: left;
+        margin-top: 6px;}
+
+
+    .room-detail{height: 54px;}
+    .room-detail-avatar{margin-left: 0;margin-top: 6px;}
+    .room-detail-fullname{
+            padding-left: 5px;
+            line-height: 55px;
+    }
+    .chat-team-button-dropdown{margin-top: 13px;}
+    #configButton {
+        position: relative;
+        top: 10px;
+        padding: 0;
+        display: block;
+        text-align: justify;
+        width: 100%;
+    }
+
+    .actionIcon:active, .actionIconSmall:active, .actionIcon:focus, .actionIconSmall:focus, .actionIcon.active, .actionIconSmall.active{
+        border:0; box-shadow: none; background: none;
+    }
+    .actionIcon:hover:active, .actionIconSmall:hover:active, .actionIcon:hover:focus, .actionIconSmall:hover:focus{
+        border:0; box-shadow: none; background: none;
+    }
+    .uiActionWithLabel:hover:active, .uiActionWithLabel:hover:focus{border: 0!important; background: 0!important; box-shadow: none!important}
+    div#team-modal-form{top: 0!important; margin-top: 1%!important}
+    .uiMenuIcon{
+        font-size: 16px;
+            background: url(/eXoSkin/skin/images/themes/default/SearchInput/Search.png) no-repeat scroll right -1px;
+            width: 20px;
+            height: 20px;
+
+    }
+
+
+    .uiIconMenu:before {
+        content: "\2630";
+        font-weight: bolder;
+        font-size: 20px;
+    }
 }

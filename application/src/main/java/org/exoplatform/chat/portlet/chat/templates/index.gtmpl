@@ -24,7 +24,7 @@
 
     <span class="menu-standard pull-left">
       <div id="menuButton" class="uiActionWithLabel pull-left" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
-        <i class="uiIconSocGroup uiIconLightGray"></i>
+        <i class="uiIconMenu uiIconLightGray"></i>
       </div>
 
     </span>
@@ -36,33 +36,72 @@
           </a>
         </div>
       </span>-->
+<!-- Hide  when chat room is open -->
 
-      <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
+    <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 16px 3px 0 4px;">
         <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
-        <ul class="dropdown-menu chat-status-panel">
-          <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{exoplatform.chat.available}</a></li>
-          <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{exoplatform.chat.away}</a></li>
-          <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{exoplatform.chat.donotdisturb}</a></li>
-          <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{exoplatform.chat.invisible}</a></li>
-        </ul>
-      </div>
+            <ul class="dropdown-menu chat-status-panel">
+                <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{exoplatform.chat.available}</a></li>
+                <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{exoplatform.chat.away}</a></li>
+                <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{exoplatform.chat.donotdisturb}</a></li>
+                <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{exoplatform.chat.invisible}</a></li>
+            </ul>
+    </div>
 
       <label class="pull-left" style="margin-top: 12px;">
         <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_blank'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
-        <span class="label-user-title" id="topTitle">Chat</span>
+        <!--<span class="label-user-title" id="topTitle">Chat</span>-->
         <% if ("DEV".equals(demoMode)) { %>
         <span class="label-demo">(Demo Mode)</span>
         <% } %>
       </label>
+<!-- Display when chat room is open
+    <div style="display: none">
+        <span id="chat-room-detail-avatar" class="room-detail-avatar" style="display:none">
+          <div class="activityAvatar avatarCircle">
+            <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
+              <img class="avatar-image target-avatar-image" src='/chat/img/user-default.jpg;' >
+            </a>
+          </div>
+        </span>
+
+        <span id="chat-video-button" class="room-detail-button" style="display:none">
+            <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
+            <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.call}</a>
+            <a type="button" class="btn btn-primary pull-right btn-weemo-conf disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.join}">
+            <i class="uiIconChatVideo  uiIconChatWhite"></i> &{exoplatform.chat.button.join}</a>
+        </span>
+
+        <div id="chat-team-button-dropdown" class="btn-group pull-right chat-team-button-dropdown">
+          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#"><i class="caret" style="margin-right:4px;"></i></a>
+          <ul class="dropdown-menu">
+
+            <li>
+              <a href="#" id="chat-record-button" class="msButtonRecord auto-wrap" data-placement="left" disabled>
+                <i class="uiIconChatRecordStart uiIconChatLightGray"></i>
+                <span>&{exoplatform.chat.meeting.start}</span>
+              </a>
+            </li>
+
+            <li><a href="#" id="team-add-to-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-status"></i>&nbsp;&{exoplatform.chat.add.favorites}</a></li>
+            <li><a href="#" id="team-remove-from-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
+            <li><a href="#" id="team-notification-button" class="auto-wrap"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
+            <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.edit}</span></a></li>
+            <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
+
+          </ul>
+        </div>
+
+
+        <a id="chat-room-detail-fullname" class="title-text target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
+
+    </div> -->
+
     </span>
     <span class="menu-standard pull-right">
       <!--a type="button" class="btn btn-app-logout" title="Logout" href="#">
         <i class="icon-off"></i> Logout</a-->
 
-
-      <div id="configButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
-        <i class="uiIconSetting uiIconLightGray"></i>
-      </div>
       <div id="searchButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
         <i class="uiIconSearch uiIconLightGray"></i>
       </div>
@@ -74,6 +113,52 @@
           <i class="uiIconClose uiIconLightGray"></i>
       </div>
     </span>
+  </div>
+
+  <div class="uiExtraLeftContainer no-user-selection" >
+      <div class="bg"></div>
+      <div class="uiExtraLeftGlobal">
+          <span class="close"><i class="uiIconEcmsRemove uiIconDarkGray"></i> </span>
+          <div class="extraLeftTop">
+              <span class="avatar-user">
+                    <div class="activityAvatar avatarCircle" >
+                        <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/<%=user%>" data-original-title="">
+                            <img class="avatar-image" onerror="this.src='/chat/img/user-default.jpg;'" src='/rest/chat/api/1.0/user/getAvatarURL/<%=user%>' >
+                        </a>
+                    </div>
+                </span>
+              <div class="selectUserStatus pull-left" style="position: relative;height: 26px;margin: 30px 3px 0 0;">
+                  <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
+                  <ul class="dropdown-menu chat-status-panel">
+                      <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{exoplatform.chat.available}</a></li>
+                      <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{exoplatform.chat.away}</a></li>
+                      <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{exoplatform.chat.donotdisturb}</a></li>
+                      <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{exoplatform.chat.invisible}</a></li>
+                  </ul>
+              </div>
+
+              <label class="pull-left" style="margin-top: 27px;margin-bottom: 0; width: 60%;">
+                  <a href='/portal/intranet/profile/<%=user%>' class='label-user' target='_blank'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
+                  <!--<span class="label-user-title" id="topTitle">Chat</span>-->
+                  <% if ("DEV".equals(demoMode)) { %>
+                  <span class="label-demo">(Demo Mode)</span>
+                  <% } %>
+              </label>
+              <hr class="clearfix"/>
+              <span class="user_mail">email@exoplatform.com</span>
+          </div>
+          <div class="extraLeftMedium">
+              <div id="configButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+                  <i class="uiIconSetting uiIconLightGray" style="margin-right: 10px;"></i> Preferences
+              </div>
+              <div id="tribeButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+                  <a href="https://community.exoplatform.com" ><i class="uiIconHomeInfo uiIconLightGray" style="margin-right: 10px;"></i> Intranet</a>
+              </div>
+              <div id="tribeButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+                  <i class="uiIconInformation uiIconLightGray" style="margin-right: 10px;"></i> About
+              </div>
+          </div>
+      </div>
   </div>
   <div class="uiLeftContainerArea no-user-selection" style="padding: 15px 15px 0 0;">
     <div id="chat-users" class=" uiAccordion">
@@ -102,8 +187,10 @@
 
   <div class="uiRightContainerArea" style="padding: 15px 0 0 0; float:initial;">
     <div class="uiBox">
+
       <div class="title room-detail no-user-selection" id="room-detail">
 
+            <div id="back" class="displayResponsive"> <i class="uiIconEcmsGoBack"></i></div>
         <span id="chat-room-detail-avatar" class="room-detail-avatar" style="display:none">
           <div class="activityAvatar avatarCircle">
             <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
@@ -137,8 +224,21 @@
             <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
 
           </ul>
-        </div> 
+        </div>
 
+          <!-- display in responsive -->
+          <div id="searchButton2" class="displayResponsive uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+              <i class="uiIconSearch uiIconLightGray"></i>
+          </div>
+
+          <div class="displayResponsive uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
+              <div onclick="event.cancelBubble=true;">
+                  <input class="input-with-value input-default span4" id="chat-search2" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}">
+              </div>
+              <i class="uiIconClose uiIconLightGray"></i>
+          </div>
+
+          <!-- -->
 
         <a id="chat-room-detail-fullname" class="title-text target-user-fullname room-detail-fullname" href="javascript:void(0)"></a>
 
