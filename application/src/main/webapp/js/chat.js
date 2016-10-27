@@ -60,13 +60,14 @@ var chatApplication = new ChatApplication();
 
     // Attach weemo call button into chatApplication
     chatApplication.displayVideoCallOnChatApp();
+//    chatApplication.initMention();
 
     /**
      * Init Global Variables
      *
      */
     //needed for #chat text area
-    var keydown = -1;
+    chatApplication.keydown = -1;
     //needed for #edit-modal-text area
     var keydownModal = -1;
     //needed for Fluid Integration
@@ -124,6 +125,7 @@ var chatApplication = new ChatApplication();
   //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
       chatApplication.updateUnreadMessages();
     });
+    
 
     $('#msg').keydown(function(event) {
       //prevent the default behavior of the enter button
@@ -138,11 +140,11 @@ var chatApplication = new ChatApplication();
       }
   //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
-        keydown = 18;
+        chatApplication.keydown = 18;
       }
     });
 
-    $('#msg').keyup(function(event) {
+    $('#msg').keyup(function(event) {     
       var msg = $(this).val();
   //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
       if ( event.which === 13 && msg.trim().length>=1) {
@@ -163,11 +165,11 @@ var chatApplication = new ChatApplication();
         }
       }
 
-      if ( keydown === 18 ) {
-        keydown = -1;
+      if ( chatApplication.keydown === 18 ) {
+        chatApplication.keydown = -1;
       }
       if ( event.which === 13 ) {
-        document.getElementById("msg").value = '';
+        $(this).val('');
       }
 
     });
@@ -418,8 +420,8 @@ var chatApplication = new ChatApplication();
     });
 
     $(document).on("keyup", "input[name='keyWords']", function(event) {//when entering keywords save them imediately
-	    console.log(event.target.value);
-	});
+        console.log(event.target.value);
+    });
 
     //global desktop notification settings
     $("#configButton").on("click", function() {
@@ -690,9 +692,16 @@ var handleRoomNotifLayout = function() {
       if (val.charAt(val.length-1)!==' ') val +=" ";
       val += sml + " ";
       $msg.val(val);
-      $msg.focusEnd();
+      
+      if (!chatApplication.$mentionEditor) {
+        $msg.focusEnd();
+      } else {
+        var el = $msg.next('div');
+        val = el.html().replace(/<br>/g, '');
+        val = el.html().replace(/&nbsp;/g, ' ');
+        el.html(val + sml + " ");
+      }            
       $(".msg-emoticons").parent().removeClass("active");
-
     });
 
     $(".room-detail-fullname").on("click", function() {
@@ -702,119 +711,12 @@ var handleRoomNotifLayout = function() {
       }
     });
 
-
     $('#chat-search').keyup(function(event) {
       if (event.keyCode == 27 || event.which == 27) {
         $(this).val('');
       }
       var filter = $(this).val();
       chatApplication.search(filter);
-    });
-
-    $(".create-task-button").on("click", function() {
-      var username = $("#task-add-user").val();
-      var task = $("#task-add-task").val();
-      var dueDate = $("#task-add-date").val();
-      var roomName = chatApplication.targetFullname;
-      var isSpace = false;
-      var roomId = chatApplication.targetUser;
-      var targetUser = chatApplication.targetUser;
-      if (targetUser.indexOf("space-")>-1) {
-        isSpace = true;
-      }
-
-      // Validate empty
-      if (task ===  $("#task-add-task").attr("data-value") || task === "" || dueDate === "") {
-        return;
-      }
-
-      // Validate datetime
-      if (!uiMiniCalendar.isDate(dueDate)) {
-        bootbox.alertError(chatBundleData["exoplatform.chat.date.invalid.message"], function (e) {
-          e.stopPropagation();
-          $("#task-add-date").select();
-        });
-        return;
-      }
-
-      // Get selected users
-      var selectedUsers = "";
-      var selectedFullNames = "";
-      $(".task-user-label").each(function (index) {
-        var name = $(this).attr("data-name");
-        var fullname = $(this).attr("data-fullname");
-        if (index === 0) {
-          selectedUsers = name;
-          selectedFullNames = fullname;
-        }
-        else {
-          selectedUsers += "," + name;
-          selectedFullNames += ", " + fullname;
-        }
-      });
-
-      if (selectedUsers === "") {
-        if (username !== "") {
-          bootbox.alertError(chatBundleData["exoplatform.chat.task.invalidUser.message"].replace("{0}", username), function (e) {
-            e.stopPropagation();
-            $("#task-add-user").select();
-          });
-        }
-        return;
-      }
-      hideMeetingPanel();
-      // Disable button while server updating
-      setActionButtonEnabled('.create-task-button', false);
-
-      // Call server
-      $.ajax({
-        url: chatApplication.jzCreateTask,
-        data: {"username": selectedUsers,
-          "dueDate": dueDate,
-          "task": task,
-          "roomName": roomName,
-          "isSpace": isSpace
-        },
-        success:function(response){
-
-          var options = {
-            type: "type-task",
-            username: selectedUsers,
-            fullname: selectedFullNames,
-            dueDate: dueDate,
-            task: task
-          };
-          var msg = task;
-
-          chatApplication.chatRoom.sendMessage(msg, options, "true");
-          setActionButtonEnabled('.create-task-button', true);
-
-        },
-        error:function (xhr, status, error){
-          console.log("error");
-          setActionButtonEnabled('.create-task-button', true);
-        }
-      });	
-    });
-
-    $('#task-add-user').keyup(function(event) {
-      var prefix = "task";
-      var filter = $(this).val();
-      if (filter.indexOf(',') !== -1) {
-        var inputUserId = $.trim(filter.substring(filter.lastIndexOf(',') + 1));
-        if (inputUserId.length > 0) filter = inputUserId;
-        else return;
-      }
-
-      searchUsers(filter, prefix, event, true, function(name, fullname) {
-        addTaskUserLabel(name, fullname);
-        var pTaskHeight = parseInt($(".meeting-action-task-panel").attr("data-height"));
-        var taskUserListHeight = $(".task-users-list").height();
-        var $popup = $(".meeting-action-popup");
-        $popup.height(pTaskHeight + taskUserListHeight);
-        $popup.css("top", (-Math.abs($popup.height())-4)+"px");
-      });
-
     });
 
     function setMiniCalendarToDateField(dateFieldId) {
@@ -832,7 +734,6 @@ var handleRoomNotifLayout = function() {
         event.cancelBubble = true;
       };
     };
-    setMiniCalendarToDateField('task-add-date');
 
     $(".create-event-button").on("click", function() {
       var space = chatApplication.targetFullname;
@@ -1094,23 +995,6 @@ var handleRoomNotifLayout = function() {
       var $userResults = $(".team-users-results");
       $userResults.css("display", "none");
       $userResults.html("");
-    }
-
-    function addTaskUserLabel(name, fullname) {
-      var $usersList = $('.task-users-list');
-      var html = $usersList.html();
-      html += "<span class='uiMention'><a href='javascript:void(0)' class='task-user-label' data-fullname='" + fullname + "' data-name='"+name+"'>"+fullname+"&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray task-user-remove'></i></a></span>";
-      $usersList.html(html);
-      var $taskAddUser = $('#task-add-user');
-      $taskAddUser.val("");
-      $taskAddUser.focus();
-      var $userResults = $(".task-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
-
-      $(".task-user-remove").on("click", function() {
-        $(this).parents('.uiMention').remove();
-      });
     }
 
     function strip(html)
@@ -1461,6 +1345,146 @@ function ChatApplication() {
   this.showTeamsHistory = false;
 
   this.showRoomOfflinePeople = false;
+  this.plugins = [];
+}
+
+ChatApplication.prototype.registerEvent = function(plugin) {
+  this.plugins.push(plugin);
+}
+
+ChatApplication.prototype.trigger = function(event, context) {
+  jqchat.each(this.plugins, function(idx, plugin) {
+    if (context.continueSend && plugin[event]) {
+      plugin[event](context);
+    }
+  });
+}
+
+ChatApplication.prototype.initMention = function() {
+  if (!this.$mentionEditor) {
+    var _this = this;
+    
+    window.require(["SHARED/jquery", "SHARED/suggester"], function($) {
+      var $msg = $('#msg');
+      $msg.suggester({
+        type : "mix",
+        sourceProviders : ['exo:chat'],
+        showAtCaret: true,
+        renderMenuItem: function(item) {
+          return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
+              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
+        },
+        renderItem: '<span data-mention="${uid}" class="mention-item" contenteditable="false">${value}<a href="javascript:void(0)" class="remove">×</a></span>',
+      });
+      $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
+        var _this = this;
+        $.ajax({
+          url: chatApplication.jzUsers,
+          data: {"filter": query,
+            "user": chatApplication.username,
+            "token": chatApplication.token,
+            "dbName": chatApplication.dbName
+          },
+          dataType: "json",
+          success: function(data) {
+            var users = [];
+            $.each(data.users, function(idx, user) {
+              users.push({
+                "uid": user.name,
+                "value": user.fullname,
+                "status": user.status
+              });
+            });
+            callback.call(_this, users);
+          }
+        });
+      });
+      
+      _this.$mentionEditor = $msg.next('div');
+      var $mentionEditor = _this.$mentionEditor;
+      
+      $mentionEditor.focus(function() {
+        chatApplication.updateUnreadMessages();
+      });
+      
+      $mentionEditor.on('shown.atwho', function(event, data) {
+          chatApplication.isMentioning = true;
+      });
+      $mentionEditor.on('hidden.atwho', function(event, data) {
+          setTimeout(function() {
+            chatApplication.isMentioning = false;
+          }, 100);
+      });
+
+      $mentionEditor.keyup(function(event) {
+        if (!chatApplication.isMentioning) {
+//          var msg = $('#msg').suggester('getValue');
+          var msg = $mentionEditor.html();
+
+          //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+          if ( event.which === 13 && msg.trim().length>=1 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
+            //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
+            if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
+              return false;
+            }
+
+            msg = msg.replace(/<br>/g, '\n');
+
+            $div = $('#msgtemp');
+            if ($div.length == 0) {
+              $div = $('<div id="msgtemp" style="display: none;"></div>');
+              $('body').append($div);
+            }
+            $div.html(msg);
+
+            $mention = $div.find('span[class="mention-item"]');
+            $mention.each(function( index ) {
+              $( this ).replaceWith('@' + $( this ).attr('data-mention') + ' ');
+            });
+
+            msg = $div.text();
+
+            chatApplication.sendMessage(msg);
+            $('#msg').suggester('clearValue');
+          }
+          // UP Arrow
+          if (event.which === 38 && msg.length === 0) {
+            var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+            var $uimsgdata = $uimsg.find(".msg-data");
+            if ($uimsgdata.length === 1) {
+              chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+            }
+          }
+          
+          if ( chatApplication.keydown === 18 ) {
+            chatApplication.keydown = -1;
+          }       
+        } else {
+          if ($mentionEditor.next('ul').css('display') == 'none') {
+            chatApplication.isMentioning = false;
+          }
+        }
+      });
+
+      jqchat('#msg').on('focus', function() {
+        $mentionEditor.focus();
+        $mentionEditor.html($mentionEditor.html().replace(/<br>/g, ''));
+        
+        var range = document.createRange();
+        var sel = window.getSelection();        
+        if (!$mentionEditor[0].childNodes.length) {
+          range.setStart($mentionEditor[0], $mentionEditor[0].childNodes.length);
+        } else {
+          range.setStart($mentionEditor[0].childNodes[0], $mentionEditor[0].childNodes.length);          
+        }
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      });
+    });
+  }
+
+
 }
 
 /**
@@ -2403,8 +2427,6 @@ ChatApplication.prototype.loadRoom = function() {
     ////// USER
     {
       jqchat(".uiRoomUsersContainerArea").hide();
-      jqchat(".meeting-action-task").css("display", "none");
-//      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
@@ -2415,7 +2437,6 @@ ChatApplication.prototype.loadRoom = function() {
     ////// SPACE
     {
       this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
       var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
@@ -2454,7 +2475,6 @@ ChatApplication.prototype.loadRoom = function() {
         }
       });
       this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
@@ -3103,9 +3123,18 @@ ChatApplication.prototype.setStatusInvisible = function() {
  */
 ChatApplication.prototype.sendMessage = function(msg, callback) {
 
-
-  var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
   var options = {};
+  var context = {"msg": msg, "options": options, "callback": callback, "continueSend": true};
+
+  this.trigger("beforeSend", context);
+  if (!context.continueSend) {
+    return;
+  }
+  msg = context.msg;
+  options = context.options;
+  callback = context.callback;  
+  
+  var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
   var sendMessageToServer = true;
   if (isSystemMessage) {
     sendMessageToServer = false;
@@ -3141,7 +3170,6 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
   if (sendMessageToServer) {
     this.chatRoom.sendMessage(msg, options, isSystemMessage, callback);
   }
-
 };
 
 

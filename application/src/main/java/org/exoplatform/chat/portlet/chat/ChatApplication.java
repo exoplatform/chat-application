@@ -19,18 +19,22 @@
 
 package org.exoplatform.chat.portlet.chat;
 
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
-import juzu.SessionScoped;
-import juzu.View;
-import juzu.impl.common.Tools;
-import juzu.plugin.ajax.Ajax;
-import juzu.request.SecurityContext;
-import juzu.template.Template;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.portlet.PortletPreferences;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import juzu.request.*;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.common.utils.ChatUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
@@ -39,6 +43,10 @@ import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.common.http.HTTPStatus;
+import org.exoplatform.commons.api.ui.ActionContext;
+import org.exoplatform.commons.api.ui.PlugableUIService;
+import org.exoplatform.commons.api.ui.RenderContext;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
@@ -47,22 +55,14 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.portlet.PortletPreferences;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
+import juzu.Path;
+import juzu.Resource;
+import juzu.Response;
+import juzu.SessionScoped;
+import juzu.View;
+import juzu.impl.common.Tools;
+import juzu.plugin.ajax.Ajax;
+import juzu.template.Template;
 
 @SessionScoped
 public class ChatApplication
@@ -86,6 +86,8 @@ public class ChatApplication
   OrganizationService organizationService_;
 
   SpaceService spaceService_;
+  
+  PlugableUIService uiService;
 
   String dbName;
 
@@ -100,18 +102,24 @@ public class ChatApplication
 
   @Inject
   WikiService wikiService_;
+  
+  public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";
+  
+  public static final String CHAT_EXTENSION_MENU = "chat_extension_menu";
+
+  private static final String EX_ACTION_NAME = "extension_action";
 
   @Inject
-  public ChatApplication(OrganizationService organizationService, SpaceService spaceService)
+  public ChatApplication(OrganizationService organizationService, SpaceService spaceService, PlugableUIService uiService)
   {
+    this.uiService = uiService;
     organizationService_ = organizationService;
     spaceService_ = spaceService;
     dbName = ChatUtils.getDBName();
   }
 
-
   @View
-  public Response.Content index(SecurityContext securityContext)
+  public Response.Content index(ApplicationContext appContext, UserContext userContext, SecurityContext securityContext)
   {
     remoteUser_ = securityContext.getRemoteUser();
     boolean isPublic = (remoteUser_==null);
@@ -140,6 +148,29 @@ public class ChatApplication
     Date today = Calendar.getInstance().getTime();
     String todayDate = df.format(today);
 
+    Locale locale = userContext.getLocale();
+    ResourceBundle bundle = appContext.resolveBundle(locale);
+    RenderContext exMenuCtx = new RenderContext(CHAT_EXTENSION_MENU);
+    exMenuCtx.setRsBundle(bundle);
+    List<org.exoplatform.commons.api.ui.Response> menuResponse = this.uiService.render(exMenuCtx);    
+        
+    RenderContext exPopupCtx = new RenderContext(CHAT_EXTENSION_POPUP);
+    exPopupCtx.setActionUrl(ChatApplication_.processAction().toString());
+    exPopupCtx.setRsBundle(bundle);
+    List<org.exoplatform.commons.api.ui.Response> popupResponse = this.uiService.render(exPopupCtx); 
+    
+    StringBuilder extMenu = new StringBuilder();
+    StringBuilder extPopup = new StringBuilder();    
+    try {
+      for (org.exoplatform.commons.api.ui.Response menu : menuResponse) {        
+        extMenu.append(new String(menu.getData(), "UTF-8"));
+      }
+      for (org.exoplatform.commons.api.ui.Response popup : popupResponse) {
+        extPopup.append(new String(popup.getData(), "UTF-8"));
+      }      
+    } catch (Exception ex) {
+      LOG.log(Level.SEVERE, ex.getMessage(), ex);
+    }
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
@@ -154,6 +185,8 @@ public class ChatApplication
             .set("demoMode", demoMode)
             .set("today", todayDate)
             .set("dbName", dbName)
+            .set("extPopup", extPopup)
+            .set("extMenu", extMenu)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)
@@ -276,25 +309,25 @@ public class ChatApplication
 
   @Ajax
   @Resource
-  public Response.Content createTask(String username, String dueDate, String task, String roomName, String isSpace) {
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-    Date today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    try {
-      calendarService_.saveTask(remoteUser_, username, task, roomName, isSpace, today, sdf.parse(dueDate+" 23:59"));
-    } catch (ParseException e) {
-      LOG.warning("parse exception during task creation");
-      return Response.notFound("Error during task creation");
-    } catch (Exception e) {
-      LOG.warning("exception during task creation");
-      return Response.notFound("Error during task creation");
+  public Response processAction(RequestContext reqContext) {
+    Map<String, RequestParameter> params = reqContext.getParameters();
+    Map<String, List<String>> p = new HashMap<String, List<String>>();
+    for (String name : params.keySet()) {
+      p.put(name, Arrays.asList(params.get(name).toArray()));
     }
-
-
-    return Response.ok("{\"status\":\"ok\"}")
-            .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
-
+    //
+    String actionName = params.get(EX_ACTION_NAME).getValue();
+    ActionContext actContext = new ActionContext(CHAT_EXTENSION_POPUP, actionName);
+    actContext.setParams(p);
+    org.exoplatform.commons.api.ui.Response response = uiService.processAction(actContext);
+    
+    if (response != null) {
+      return Response.ok(new String(response.getData(), Charset.forName("UTF-8")))
+          .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");      
+    } else {
+      return Response.status(HTTPStatus.NOT_FOUND)
+          .withHeader("Cache-Control", "no-cache");
+    }
   }
 
   @Ajax
