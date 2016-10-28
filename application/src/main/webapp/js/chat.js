@@ -369,13 +369,23 @@ var chatApplication = new ChatApplication();
     };
 
     $(document).on("click", "#close-global-notif-config", function() {//close the setting page and go for the previous screen
-      chatApplication.loadRoom();
-    });
+        if(window.innerWidth > 767){
+          chatApplication.loadRoom();
+        }else{
 
+            jqchat("#chat-room-detail-avatar").css("display", "block");
+            jqchat(".chat-message.footer").css("display", "block");
+            jqchat(".uiLeftContainerArea").addClass("displayContent");
+            jqchat(".uiGlobalRoomsContainer").removeClass("displayContent");
+            jqchat("#chats").css("min-height", "0");
+
+        }
+    });
+/*
     $(document).on("click", "#close-room-notif-config", function() {//close the setting page and go for the previous screen
         chatApplication.loadRoom();
       });
-
+*/
    $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
      var roomTriggerWhenKeyWordValue = jqchat("#" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
@@ -425,23 +435,82 @@ var chatApplication = new ChatApplication();
     $("#configButton").on("click", function() {
       chatApplication.configMode = true;
       jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
+
+      if(window.innerWidth <= 767){
+            jqchat(".uiExtraLeftContainer").removeClass("displayContent");
+            jqchat(".uiGlobalRoomsContainer").css("display", "block");
+
+            setTimeout(function(){
+                jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
+            }, 200);
+
+            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2").css("display", "none");
+            jqchat("#chats").css("min-height", window.innerHeight+"px");
+      }
+
     });
+
+    $("button#close-global-notif-config, #back").on("click", function() {
+      if(window.innerWidth <= 767){
+            jqchat("#chat-room-detail-avatar").css("display", "block");
+            jqchat(".chat-message.footer").css("display", "block");
+            jqchat("#searchButton2").css("display", "block");
+            jqchat(".uiLeftContainerArea").addClass("displayContent");
+            jqchat(".uiGlobalRoomsContainer").css("display", "none");
+
+            setTimeout(function(){
+                jqchat(".uiGlobalRoomsContainer").removeClass("displayContent");
+            }, 200);
+
+            jqchat("#chats").css("min-height", "0");
+      }
+
+    });
+
+
+
 
     $("#menuButton").on("click", function() {
-        $(".uiLeftContainerArea").toggleClass("displayContent");
-        $(".uiGlobalRoomsContainer").toggleClass("hideContent");
-        if(window.innerWidth <= 767){
-            if($("#topTitle").text() == "Chat"){
-                $("#topTitle").text("Discussions");
-            }else{$("#topTitle").text("Chat");}
-        }
+//        $(".uiLeftContainerArea").toggleClass("displayContent");
+//        $(".uiGlobalRoomsContainer").toggleClass("hideContent");
+//        if(window.innerWidth <= 767){
+//            if($("#topTitle").text() == "Chat"){
+//                $("#topTitle").text("Discussions");
+//            }else{$("#topTitle").text("Chat");}
+//        }
+
+        $(".uiExtraLeftContainer").toggleClass("displayContent");
+
+        var $chatStatusPanel = $(".chat-status-panel");
+
+        $chatStatusPanel.css("display", "none");
+        $(" .chat-status-chat").parent().removeClass('active');
+
+    });
+    $(".uiExtraLeftContainer > .bg, .uiExtraLeftContainer > .uiExtraLeftGlobal > .close").on("click", function() {
+            $(".uiExtraLeftContainer").removeClass("displayContent");
+
+            var $chatStatusPanel = $(".chat-status-panel");
+
+            $chatStatusPanel.css("display", "none");
+            $(" .chat-status-chat").parent().removeClass('active');
+
     });
 
-    $("#searchButton").on("click", function() {
+    $("#searchButton, #searchButton2").on("click", function() {
             $("#chat-application .uiGrayLightBox .uiSearchInput").toggleClass("displayContent");
+
+            var $chatStatusPanel = $(".chat-status-panel");
+
+            $chatStatusPanel.css("display", "none");
+            $(" .chat-status-chat").parent().removeClass('active');
     });
     $("#chat-application .uiSearchForm .uiIconClose").on("click", function() {
             $("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
+           /* $("#chat-application .uiSearchInput.displayContent #chat-search").attr("value", "");*/
+            $('input#chat-search.input-with-value.span4').val('');
+            var filter = $('input#chat-search.input-with-value.span4').val();
+            chatApplication.search(filter);
     });
 
 
@@ -580,7 +649,7 @@ var handleRoomNotifLayout = function() {
       hideMeetingPanel();
 
         $("i.uiIconPLF24x24Search.search_chatIcon.btn").on("click", function() {
-            $("#chat-search, #chat-application").toggleClass("open_searchChat");
+            $("#chat-search, #chat-search2, #chat-application").toggleClass("open_searchChat");
         });
 
 
@@ -1759,10 +1828,12 @@ ChatApplication.prototype.resize = function() {
       jqchat("#room-users-collapse-bar").css("line-height", (heightChat - 44) + "px");
 
   }else{
-      jqchat("#chats").height(heightChat - 61 -53);
+      jqchat("#chats").height(heightChat -53);
       jqchat("#chat-users").height(heightChat -44);
-      jqchat("#room-users-list").height(heightChat - 44 -29); // remove header and padding
+//      jqchat("#room-users-list").height(heightChat - 44 -29); // remove header and padding
+      jqchat("#room-users-list").height(heightChat); // remove header and padding
       jqchat("#room-users-collapse-bar").css("line-height", (heightChat -44) + "px");
+      jqchat(".uiExtraLeftGlobal, .uiExtraLeftContainer").height(heightChat + 80); // remove header and padding
    }
 
 };
@@ -1816,15 +1887,15 @@ ChatApplication.prototype.initChat = function() {
  * Init Chat Preferences
  */
 ChatApplication.prototype.initChatPreferences = function() {
-  this.showFavorites = true;
+  this.showFavorites = false;
   if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
-  this.showPeople = true;
+  this.showPeople = false;
   if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
   this.showOffline = false;
   if (jzGetParam("chatShowOffline"+this.username) === "true") this.showOffline = true;
-  this.showSpaces = true;
+  this.showSpaces = false;
   if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
-  this.showTeams = true;
+  this.showTeams = false;
   if (jzGetParam("chatShowTeams"+this.username) === "false") this.showTeams = false;
 };
 
@@ -2984,18 +3055,44 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     chatApplication.showRooms(chatApplication.rooms);
   });
 
+jqchat('#back').on("click", function() {
 
-  jqchat('#chat-users .users-online').on("click", function() {
+    jqchat(".uiLeftContainerArea").addClass("displayContent");
+    jqchat(".uiLeftContainerArea").removeClass("hideContent");
+    jqchat(".uiGlobalRoomsContainer").css("display", "none");
 
-    jqchat(".uiLeftContainerArea").removeClass("displayContent");
-    jqchat(".uiGlobalRoomsContainer").removeClass("hideContent");
 
+    setTimeout(function(){
+        jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
+    }, 200);
+
+//    if(window.innerWidth <= 767){
+//            jqchat("#topTitle").text("discussions");
+//        }
+
+});
+  jqchat('#chat-users .users-online > td:nth-child(1),#chat-users .users-online > td:nth-child(2)').on("click", function() {
     if(window.innerWidth <= 767){
-        jqchat("#topTitle").text("Chat");
+
+        var $chatStatusPanel = jqchat(".chat-status-panel");
+
+        $chatStatusPanel.css("display", "none");
+        jqchat(" .chat-status-chat").parent().removeClass('active');
+
+        jqchat(".uiLeftContainerArea").removeClass("displayContent");
+        jqchat(".uiLeftContainerArea").addClass("hideContent");
+        jqchat(".uiGlobalRoomsContainer").css("display", "block");
+
+
+        setTimeout(function(){
+            jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
+        }, 200);
+
     }
 
-
-
+//    if(window.innerWidth <= 767){
+//        jqchat("#topTitle").text("Chat");
+//    }
 
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
@@ -3275,7 +3372,7 @@ ChatApplication.prototype.showAboutPanel = function() {
   var thiss = this;
   jqchat("#about-close-btn").on("click", function() {
     thiss.hidePanel('.chat-about-panel');
-    jqchat('#chat-search').attr("value", "");
+    jqchat('#chat-search, #chat-search2').attr("value", "");
   });
 };
 
