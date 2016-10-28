@@ -152,11 +152,11 @@
                   <i class="uiIconSetting uiIconLightGray" style="margin-right: 10px;"></i> Preferences
               </div>
               <div id="tribeButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
-                  <a href="https://community.exoplatform.com" ><i class="uiIconHomeInfo uiIconLightGray" style="margin-right: 10px;"></i> Intranet</a>
+                  <a href="/" ><i class="uiIconHomeInfo uiIconLightGray" style="margin-right: 10px;"></i> Intranet</a>
               </div>
-              <div id="tribeButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
+              <!-- <div id="tribeButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
                   <i class="uiIconInformation uiIconLightGray" style="margin-right: 10px;"></i> About
-              </div>
+              </div>-->
           </div>
       </div>
   </div>
@@ -173,6 +173,7 @@
     </div>
     <div class="uiBox" id="room-users">
       <div class="title no-user-selection" id="room-users-header">
+        <div id="closeListPart" class="displayResponsive"> <i class="uiIconEcmsGoBack"></i></div>
         <span id="room-users-title" class="title-text room-users-title">&{exoplatform.chat.room.people} <span id="room-users-title-nb-users"></span></span>
 
         <div id="room-users-button" class="team-button">
@@ -195,6 +196,7 @@
           <div class="activityAvatar avatarCircle">
             <a rel="tooltip" data-placement="bottom" class="target-avatar-link" href="" data-original-title="">
               <img class="avatar-image target-avatar-image" src='/chat/img/user-default.jpg;' >
+
             </a>
           </div>
         </span>
@@ -222,7 +224,12 @@
             <li><a href="#" id="team-notification-button" class="auto-wrap"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
             <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.edit}</span></a></li>
             <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
-
+            <li class="participantsList">
+              <a href="#" class="auto-wrap" data-placement="left" disabled>
+                <i class="uiIconViewList uiIconChatLightGray"></i>
+                <span>Liste des participants</span>
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -364,7 +371,8 @@
             </div>
           </div>
           <div id="chat-msg-meeting-actions" class="actionIcon meeting-action-toggle disabled" data-toggle="dropdown"><span data-placement="left" data-original-title="&{exoplatform.chat.actions.show}"><i class="uiIconChatAction uiIconChatLightGray"></i></span></div>
-          <ul class="dropdown-menu pull-right">
+            <div id="submit" class="btn btn-primary"><i class="uiIconEcmsDottedArrow"></i></div>
+            <ul class="dropdown-menu pull-right">
             <li class="meeting-action-link meeting-action-event" data-toggle="meeting-action-event-panel"><a href="#"><i class="uiIconChatCreateEvent uiIconChatLightGray"></i> &{exoplatform.chat.add.event}</a></li>
             <%=extMenu %>
             <li class="meeting-action-link" data-toggle="meeting-action-link-panel"><a href="#"><i class="uiIconChatLink uiIconChatLightGray"></i> &{exoplatform.chat.share.link}</a></li>
