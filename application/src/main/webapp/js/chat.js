@@ -178,6 +178,36 @@ var chatApplication = new ChatApplication();
       }
     });
 
+
+        $("#submit").on("click", function() {
+
+            var msg = $("#msg").val();
+
+              //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+                  if ( msg.trim().length>=1) {
+                    chatApplication.sendMessage(msg);
+
+                  }
+                  // UP Arrow
+                  if (event.which === 38 && msg.length === 0) {
+                    var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+                    var $uimsgdata = $uimsg.find(".msg-data");
+                    if ($uimsgdata.length === 1) {
+                      chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+                    }
+                  }
+
+                  if ( keydown === 18 ) {
+                    keydown = -1;
+                  }
+                  if ( event.which === 13 ) {
+                    document.getElementById("msg").value = '';
+                  }
+
+       });
+
+
+
     $(".meeting-action-toggle").on("click", function() {
       if ($(this).hasClass("disabled")) return;
 
@@ -376,16 +406,35 @@ var chatApplication = new ChatApplication();
             jqchat("#chat-room-detail-avatar").css("display", "block");
             jqchat(".chat-message.footer").css("display", "block");
             jqchat(".uiLeftContainerArea").addClass("displayContent");
-            jqchat(".uiGlobalRoomsContainer").removeClass("displayContent");
+            jqchat(".uiGlobalRoomsContainer").css("display", "none");
+            setTimeout(function(){
+                jqchat(".uiGlobalRoomsContainer").removeClass("displayContent");
+            }, 200);
+
             jqchat("#chats").css("min-height", "0");
 
         }
     });
-/*
+
     $(document).on("click", "#close-room-notif-config", function() {//close the setting page and go for the previous screen
-        chatApplication.loadRoom();
+
+         if(window.innerWidth > 767){
+                  chatApplication.loadRoom();
+                }else{
+
+                    jqchat("#chat-room-detail-avatar").css("display", "block");
+                    jqchat(".chat-message.footer").css("display", "block");
+                    jqchat(".uiLeftContainerArea").addClass("displayContent");
+                    jqchat(".uiGlobalRoomsContainer").css("display", "none");
+                    setTimeout(function(){
+                        jqchat(".uiGlobalRoomsContainer").removeClass("displayContent");
+                    }, 200);
+
+                    jqchat("#chats").css("min-height", "0");
+
+                }
       });
-*/
+
    $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
      var roomTriggerWhenKeyWordValue = jqchat("#" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
@@ -1454,7 +1503,7 @@ var handleRoomNotifLayout = function() {
       chatApplication.toggleOfflineRoomUsers(chatApplication.showRoomOfflinePeople);
     });
 
-    $("#room-users-collapse-bar").on("click", function() {
+    $("#room-users-collapse-bar, .participantsList").on("click", function() {
       // toggle room users
       var roomUsersContainer = $(".uiRoomUsersContainerArea");
       //var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
@@ -1469,7 +1518,23 @@ var handleRoomNotifLayout = function() {
         roomUsersContainer.addClass("room-users-expanded");
         collpaseBarIcon.removeClass("uiIconArrowLeft uiIconArrowDefault");
         collpaseBarIcon.addClass("uiIconArrowRight");
+
+        allContacts.css("display", "block");
       }
+    });
+    $("#closeListPart").on("click", function() {
+
+        var roomUsersContainer = $(".uiRoomUsersContainerArea");
+          //var roomUsersHeaderTitle = roomUsersContainer.find("#room-users-title");
+        var collpaseBarIcon = $(this).children("i");
+        var allContacts = $("#room-users-button > ul > li:nth-child(1)");
+        roomUsersContainer.removeClass("room-users-expanded");
+        roomUsersContainer.addClass("room-users-collapsed");
+        collpaseBarIcon.removeClass("uiIconArrowRight uiIconArrowDefault");
+        collpaseBarIcon.addClass("uiIconArrowLeft");
+        allContacts.css("display", "none");
+
+
     });
 
   });
@@ -1834,6 +1899,7 @@ ChatApplication.prototype.resize = function() {
       jqchat("#room-users-list").height(heightChat); // remove header and padding
       jqchat("#room-users-collapse-bar").css("line-height", (heightChat -44) + "px");
       jqchat(".uiExtraLeftGlobal, .uiExtraLeftContainer").height(heightChat + 80); // remove header and padding
+      jqchat(".uiExtraLeftGlobal, .uiExtraLeftContainer").css("min-height", window.innerHeight+"px"); // remove header and padding
    }
 
 };
@@ -1887,17 +1953,18 @@ ChatApplication.prototype.initChat = function() {
  * Init Chat Preferences
  */
 ChatApplication.prototype.initChatPreferences = function() {
-  this.showFavorites = false;
+  this.showFavorites = true;
   if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
-  this.showPeople = false;
+  this.showPeople = true;
   if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
   this.showOffline = false;
   if (jzGetParam("chatShowOffline"+this.username) === "true") this.showOffline = true;
-  this.showSpaces = false;
+  this.showSpaces = true;
   if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
-  this.showTeams = false;
+  this.showTeams = true;
   if (jzGetParam("chatShowTeams"+this.username) === "false") this.showTeams = false;
 };
+
 
 /**
  * Init Chat Profile
@@ -2401,6 +2468,7 @@ ChatApplication.prototype.reloadCurrentItem = function(room) {
     var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
     if (chatApplication.targetFullname !== spaceFullName) {
       jqchat('.target-user-fullname').text(spaceFullName);
+      //console.log("here1");
       chatApplication.targetUser = room.user;
       chatApplication.targetFullname = spaceFullName;
       chatApplication.loadRoom();
@@ -2510,6 +2578,7 @@ ChatApplication.prototype.loadRoom = function() {
     jqchat("#chat-team-button").css("display", "none");
     this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
     jqchat(".target-user-fullname").text(this.targetFullname);
+  //  console.log("here2");
 
     if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
       jqchat(".btn-weemo-conf").css("display", "none");
@@ -2559,7 +2628,7 @@ ChatApplication.prototype.loadRoom = function() {
           //console.log("SUCCESS::getRoom::"+response);
           var creator = response;
           this.chatRoom.owner = creator;
-          jqchat(".team-button").css("display", "block");
+          jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
           jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
           if (creator === this.username) {
             jqchat("#chat-team-button-dropdown .only-admin").show();
