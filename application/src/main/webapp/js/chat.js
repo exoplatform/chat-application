@@ -396,7 +396,7 @@ var chatApplication = new ChatApplication();
         jqchat(':checkbox').iphoneStyle();
         enableMessageComposer(false);
         jqchat("#chat-team-button-dropdown").hide();
-        jqchat("#userRoomStatus").show();
+        jqchat("#userRoomStatus").removeClass("hide").show();
     };
 
     $(document).on("click", "#close-global-notif-config", function() {//close the setting page and go for the previous screen
@@ -2599,7 +2599,7 @@ ChatApplication.prototype.loadRoom = function() {
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
-      jqchat("#userRoomStatus").show();
+      jqchat("#userRoomStatus").removeClass("hide").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
       jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getAvatarURL/" + this.targetUser );
@@ -2643,7 +2643,7 @@ ChatApplication.prototype.loadRoom = function() {
             jqchat("#userRoomStatus").hide();
           } else {
             jqchat("#chat-team-button-dropdown .only-admin").hide();
-            jqchat("#userRoomStatus").show();
+            jqchat("#userRoomStatus").removeClass("hide").show();
           }
         },
         error: function(xhr, status, error){
