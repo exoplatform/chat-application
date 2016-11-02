@@ -396,6 +396,7 @@ var chatApplication = new ChatApplication();
         jqchat(':checkbox').iphoneStyle();
         enableMessageComposer(false);
         jqchat("#chat-team-button-dropdown").hide();
+        jqchat("#userRoomStatus").show();
     };
 
     $(document).on("click", "#close-global-notif-config", function() {//close the setting page and go for the previous screen
@@ -494,6 +495,7 @@ var chatApplication = new ChatApplication();
             }, 200);
 
             jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2").css("display", "none");
+            jqchat("#userRoomStatus").addClass("hide");
             jqchat("#chats").css("min-height", window.innerHeight+"px");
       }
 
@@ -2597,6 +2599,7 @@ ChatApplication.prototype.loadRoom = function() {
 //      jqchat(".meeting-actions").css("display", "none");
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
+      jqchat("#userRoomStatus").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
       jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getAvatarURL/" + this.targetUser );
@@ -2630,13 +2633,17 @@ ChatApplication.prototype.loadRoom = function() {
           this.chatRoom.owner = creator;
           jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
           jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
+          jqchat("#userRoomStatus").hide();
           if (creator === this.username) {
             jqchat("#chat-team-button-dropdown .only-admin").show();
+            jqchat("#userRoomStatus").hide();
             jqchat("#chat-team-button").show();
             jqchat("#team-delete-button").show();
             jqchat("#chat-team-button-dropdown").show();
+            jqchat("#userRoomStatus").hide();
           } else {
             jqchat("#chat-team-button-dropdown .only-admin").hide();
+            jqchat("#userRoomStatus").show();
           }
         },
         error: function(xhr, status, error){
