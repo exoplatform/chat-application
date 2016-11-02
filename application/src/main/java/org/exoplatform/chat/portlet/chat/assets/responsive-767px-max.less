@@ -1,5 +1,5 @@
 @media (max-width: 767px) {
-/*(min-width: 401px) and*/
+
   @height:                      645px;
   @width:                       600px;
   @heightMessage:               60px;
@@ -24,8 +24,6 @@
   .uiLeftContainerArea {
     width: 100%;
     float: none;
-/*    display: none;
-    opacity: 0;*/
     padding: 5px 5px 0 0!important;
     -ms-transition-duration: .5s;
     -moz-transition-duration: .5s;
@@ -39,11 +37,6 @@
 
   .uiRoomUsersContainerArea {
         padding: 5px 0 0 5px;
-        #room-users-list {
-        /* test*/
-         /* height: 317px!important;*/
-        }
-
   }
     .room-users-collapsed{
         #room-users-collapse-bar {
@@ -57,13 +50,7 @@
           margin-left: 0;
         }
     }
-  .uiRightContainerArea {
-    #chats {
 
-    /*test*/
-      /*height: 275px!important;*/
-    }
-  }
   #menuButton{
     display: block;
     padding-top: 1px;
@@ -71,7 +58,6 @@
      #chat-application {
         min-width: 320px;
         width: 100%;
-    //    padding: 5px;
         padding: 0;
 
         .uiGrayLightBox {
@@ -135,10 +121,6 @@
             opacity: 0;
             z-index: -1;
 
-           /* -ms-transition-duration: .5s;
-            -moz-transition-duration: .5s;
-            -webkit-transition-duration: .5s;
-            transition-duration: .5s;*/
              &.displayContent{
                 display: block;
                 opacity: 1;
@@ -158,7 +140,6 @@
              }
              .uiExtraLeftGlobal{
                 background : #FFF;
-                /*border-right: solid 1px #607D8B;*/
                 z-index: 1;
                 width: 80%;
                 height: 100%;
@@ -179,7 +160,6 @@
                 .extraLeftTop, .extraLeftMedium{
                     position: relative;
                     display: block;
-                    /*border-bottom: solid 1px #494949;*/
                     padding-left: 20px;
                     padding-bottom: 20px;
                 }
@@ -253,17 +233,15 @@
           top: 52px;
           left: 0;
           right: 0;
-          /*display: none;
-              opacity: 0;*/
 
-              -ms-transition-duration: .5s;
-              -moz-transition-duration: .5s;
-              -webkit-transition-duration: .5s;
-              transition-duration: .5s;
-              &.displayContent{
-                display: block;
-                opacity: 1;
-              }
+          -ms-transition-duration: .5s;
+          -moz-transition-duration: .5s;
+          -webkit-transition-duration: .5s;
+          transition-duration: .5s;
+          &.displayContent{
+            display: block;
+            opacity: 1;
+          }
 
           #chat-users {
             height: initial !important;
@@ -289,23 +267,12 @@
             }
         }
         .uiRightContainerArea {
-        /*test */
-         /* height: 400px!important;*/
           padding: 5px 0 0 0!important;
-
-          #chats {
-          /*test*/
-           /* height: 275px!important;*/
-          }
         }
 
         .uiRoomUsersContainerArea {
           width: 97%;
 
-          #room-users-list {
-          /*test*/
-           /* height: 317px!important;*/
-          }
 
           #room-users-collapse-bar {
             line-height: 399px!important;
@@ -313,8 +280,6 @@
           }
 
           &:not(.room-users-expanded) {
-            /*width: 70px;*/
-            /*width: 55px;*/
             width :0px;
             .uiBox {
                 #room-users-list{
@@ -333,7 +298,6 @@
               }
 
               #room-users-button {
-                /*padding-right: 17px;*/
                 padding-right: 10px;
                 li:nth-child(1){display: none}
               }
@@ -355,20 +319,11 @@
             }
           }
         }
-        .msUserAvatar {
-            .msAvatarLink {
-                /*width: 25px;
-                height: 25px;
-                img {width: 25px;height: 25px;}*/
-            }
-        }
       }
       #menuButton, #searchButton, #searchButton2{
          display: block;
          i{font-size: 16px}
       }
-
-      /*#searchButton{z-index: 100}*/
 
       .msRow {
         .msRightInfo{
@@ -466,7 +421,12 @@
         border:0; box-shadow: none; background: none;
     }
     .uiActionWithLabel:hover:active, .uiActionWithLabel:hover:focus{border: 0!important; background: 0!important; box-shadow: none!important}
-    div#team-modal-form{top: 0!important; margin-top: 10%!important;     margin: 0 auto!important;}
+    div#team-modal-form{
+            position: fixed!important;
+            top: 0!important;
+            margin: 0!important;
+            transform: none!important;
+    }
     .uiMenuIcon{
         font-size: 16px;
             background: url(/eXoSkin/skin/images/themes/default/SearchInput/Search.png) no-repeat scroll right -1px;
