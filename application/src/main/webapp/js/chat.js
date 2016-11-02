@@ -413,7 +413,7 @@ var chatApplication = new ChatApplication();
             }, 200);
 
             jqchat("#chats").css("min-height", "0");
-
+            chatApplication.loadRoom();
         }
     });
 
@@ -514,6 +514,7 @@ var chatApplication = new ChatApplication();
             }, 200);
 
             jqchat("#chats").css("min-height", "0");
+            chatApplication.loadRoom();
       }
 
     });
