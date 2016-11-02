@@ -199,17 +199,10 @@
 
             </a>
           </div>
+        <div class="room-user-status pull-right" id="userRoomStatus">    <i class="user-offline"></i>  </div>
         </span>
 
-        <div class="selectUserStatus pull-left" id="userRoomStatus">
-          <div class="buttonChangeStatus actionIcon dropdown" rel="tooltip" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.change.status}"><span class="chat-status-chat chat-status-invisible" style="padding: 0;margin: 0;"></span></div>
-          <ul class="dropdown-menu chat-status-panel">
-            <li class="chat-menu" status="available"><a href="javaScript:void(0)"><i class="chat-status chat-status-available"></i>&{exoplatform.chat.available}</a></li>
-            <li class="chat-menu" status="away"><a href="javaScript:void(0)"><i class="chat-status chat-status-away"></i>&{exoplatform.chat.away}</a></li>
-            <li class="chat-menu" status="donotdisturb"><a href="javaScript:void(0)"><i class="chat-status chat-status-donotdisturb"></i>&{exoplatform.chat.donotdisturb}</a></li>
-            <li class="chat-menu" status="invisible"><a href="javaScript:void(0)"><i class="chat-status chat-status-invisible"></i>&{exoplatform.chat.invisible}</a></li>
-          </ul>
-        </div>
+
 
         <span id="chat-video-button" class="room-detail-button" style="display:none">
             <a type="button" class="btn btn-primary pull-right btn-weemo disabled" data-toggle="tooltip" title="&{exoplatform.chat.video.call}">
