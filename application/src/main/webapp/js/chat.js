@@ -179,32 +179,32 @@ var chatApplication = new ChatApplication();
     });
 
 
-        $("#submit").on("click", function() {
+    $("#submit").on("click", function() {
 
-            var msg = $("#msg").val();
+        var msg = $("#msg").val();
 
-              //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-                  if ( msg.trim().length>=1) {
-                    chatApplication.sendMessage(msg);
+        //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
+          if ( msg.trim().length>=1) {
+            chatApplication.sendMessage(msg);
 
-                  }
-                  // UP Arrow
-                  if (event.which === 38 && msg.length === 0) {
-                    var $uimsg = chatApplication.chatRoom.getUserLastMessage();
-                    var $uimsgdata = $uimsg.find(".msg-data");
-                    if ($uimsgdata.length === 1) {
-                      chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
-                    }
-                  }
+          }
+          // UP Arrow
+          if (event.which === 38 && msg.length === 0) {
+            var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+            var $uimsgdata = $uimsg.find(".msg-data");
+            if ($uimsgdata.length === 1) {
+              chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+            }
+          }
 
-                  if ( keydown === 18 ) {
-                    keydown = -1;
-                  }
-                  if ( event.which === 13 ) {
-                    document.getElementById("msg").value = '';
-                  }
+          if ( keydown === 18 ) {
+            keydown = -1;
+          }
+          if ( event.which === 13 ) {
+            document.getElementById("msg").value = '';
+          }
 
-       });
+    });
 
 
 
@@ -399,10 +399,8 @@ var chatApplication = new ChatApplication();
         jqchat("#userRoomStatus").removeClass("hide").show();
     };
 
-    $(document).on("click", "#close-global-notif-config", function() {//close the setting page and go for the previous screen
-        if(window.innerWidth > 767){
-          chatApplication.loadRoom();
-        }else{
+    $(document).on("click", "#close-global-notif-config, #back", function() {//close the setting page and go for the previous screen
+        if(window.innerWidth <= 767){
 
             jqchat("#chat-room-detail-avatar").css("display", "block");
             jqchat(".chat-message.footer").css("display", "block");
@@ -413,8 +411,8 @@ var chatApplication = new ChatApplication();
             }, 200);
 
             jqchat("#chats").css("min-height", "0");
-            chatApplication.loadRoom();
         }
+        chatApplication.loadRoom();
     });
 
     $(document).on("click", "#close-room-notif-config", function() {//close the setting page and go for the previous screen
@@ -500,7 +498,7 @@ var chatApplication = new ChatApplication();
       }
 
     });
-
+/*
     $("button#close-global-notif-config, #back").on("click", function() {
       if(window.innerWidth <= 767){
             jqchat("#chat-room-detail-avatar").css("display", "block");
@@ -514,12 +512,12 @@ var chatApplication = new ChatApplication();
             }, 200);
 
             jqchat("#chats").css("min-height", "0");
-            chatApplication.loadRoom();
-      }
 
+      }
+            chatApplication.loadRoom();
     });
 
-
+*/
 
 
     $("#menuButton").on("click", function() {
@@ -1286,6 +1284,8 @@ var handleRoomNotifLayout = function() {
           });
 
           uiChatPopupWindow.show("team-modal-form", true);
+          jqchat("#team-modal-form .setting").css("display", "block");
+          jqchat("#team-modal-form .add").css("display", "none");
           $uitext.focus();
 
           // Set form position to screen center
@@ -3099,7 +3099,8 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     $userResults.html("");
     jqchat("#team-add-user").val("");
     uiChatPopupWindow.show("team-modal-form", true);
-
+    jqchat("#team-modal-form .add").css("display", "block");
+    jqchat("#team-modal-form .setting").css("display", "none");
     $uitext.focus();
 
     chatApplication.setModalToCenter('.team-modal');
