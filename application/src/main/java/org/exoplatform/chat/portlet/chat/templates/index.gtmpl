@@ -20,6 +20,7 @@
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
 <% if (!"public".equals(view)) { %>
+  <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
 
     <span class="menu-standard pull-left">
@@ -105,7 +106,9 @@
       <div id="searchButton" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
         <i class="uiIconSearch uiIconLightGray"></i>
       </div>
-
+      <div id="configButton1" class="uiActionWithLabel pull-right" data-placement="bottom" data-toggle="tooltip" title="" data-original-title="Preferences">
+        <i class="uiIconSetting uiIconLightGray"></i>
+      </div>
       <div class="uiSearchForm uiSearchInput pull-right" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.tip.search}">
         <div onclick="event.cancelBubble=true;">
           <input class="input-with-value input-default span4" id="chat-search" type="text" placeholder="&{exoplatform.chat.search}" data-value="&{exoplatform.chat.search}">
