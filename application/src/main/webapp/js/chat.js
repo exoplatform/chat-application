@@ -2589,7 +2589,31 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
     msgHtml = msgHtml.replace(/<br>/g, '\n');
     var msgFullname = $uimsg.attr("data-fn");
-    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+    $div = jqchat("#msg_editable");
+    if ($div.length > 0) {
+      $div.html("[quote="+msgFullname+"]"+msgHtml+" [/quote]&nbsp;");
+
+      // Set focus on contenteditable div and put the caret at the end of text.
+      (function(el) {
+        el.focus();
+        if (typeof window.getSelection != "undefined"
+          && typeof document.createRange != "undefined") {
+          var range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } else if (typeof document.body.createTextRange != "undefined") {
+          var textRange = document.body.createTextRange();
+          textRange.moveToElementText(el);
+          textRange.collapse(false);
+          textRange.select();
+        }
+      })($div.get(0));
+    } else {
+      jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+    }
 
   });
 
