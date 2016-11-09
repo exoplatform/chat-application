@@ -1416,6 +1416,7 @@ ChatApplication.prototype.initMention = function() {
           }, 100);
       });
 
+      var spaceRegex = new RegExp(String.fromCharCode(160),"g");
       $mentionEditor.keyup(function(event) {
         if (!chatApplication.isMentioning) {
 //          var msg = $('#msg').suggester('getValue');
@@ -1442,7 +1443,10 @@ ChatApplication.prototype.initMention = function() {
               $( this ).replaceWith('@' + $( this ).attr('data-mention') + ' ');
             });
 
-            msg = $div.text();
+            // Replace a special character which presents &nbsp; with a normal space.
+            // The special character is coming from usage of contenteditable div for Chat input,
+            // it uses HTML entities for spaces when composing, and we can not prevent it.
+            msg = $div.text().replace(spaceRegex," ");
 
             chatApplication.sendMessage(msg);
             $('#msg').suggester('clearValue');
