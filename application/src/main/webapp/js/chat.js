@@ -1417,7 +1417,7 @@ ChatApplication.prototype.initMention = function() {
       });
 
       var spaceRegex = new RegExp(String.fromCharCode(160),"g");
-      $mentionEditor.keyup(function(event) {
+      $mentionEditor.keydown(function(event) {
         if (!chatApplication.isMentioning) {
 //          var msg = $('#msg').suggester('getValue');
           var msg = $mentionEditor.html();
@@ -1450,6 +1450,7 @@ ChatApplication.prototype.initMention = function() {
 
             chatApplication.sendMessage(msg);
             $('#msg').suggester('clearValue');
+            return false;
           }
           // UP Arrow
           if (event.which === 38 && msg.length === 0) {
