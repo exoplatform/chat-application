@@ -148,7 +148,6 @@
                   <% } %>
               </label>
               <hr class="clearfix"/>
-              <span class="user_mail">email@exoplatform.com</span>
           </div>
           <div class="extraLeftMedium">
               <div id="configButton" class="uiActionWithLabel ligne" data-placement="bottom" data-toggle="tooltip" title="&{exoplatform.chat.settings.button.tip}">
