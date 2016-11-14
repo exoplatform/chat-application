@@ -2202,7 +2202,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsFavorites.count() === 0 && this.showFavorites) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.favorite"] + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><th colspan='3'>" + chatBundleData["exoplatform.chat.no.favorite"] + "</th></tr>";
   }
 
   var xOffline = ""; if (chatApplication.showOffline) xOffline=" btn active";
@@ -2250,7 +2250,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
     }
   });
   if (roomsPeople.count() === 0 && this.showPeople) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.connection"] + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><th colspan='3'>" + chatBundleData["exoplatform.chat.no.connection"] + "</th></tr>";
   }
 
   /**
@@ -2287,7 +2287,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsTeams.count() === 0 && this.showTeams) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.team"] + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><th colspan='3'>" + chatBundleData["exoplatform.chat.no.team"] + "</th></tr>";
   }
 
   /**
@@ -2323,7 +2323,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
   });
 
   if (roomsSpaces.count() === 0 && this.showSpaces) {
-    out += "<tr class='users-online accordion-body empty'><td colspan='3'>" + chatBundleData["exoplatform.chat.no.space"] + "</td></tr>";
+    out += "<tr class='users-online accordion-body empty'><th colspan='3'>" + chatBundleData["exoplatform.chat.no.space"] + "</th></tr>";
   }
 
   out += '</table>';
