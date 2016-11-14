@@ -1083,7 +1083,19 @@ var handleRoomNotifLayout = function() {
         jqchat("#users-online-team-"+chatApplication.room).hide();
         chatApplication.room="";
         chatApplication.chatRoom.id="";
-      })
+      });
+
+      if(window.innerWidth <= 767){
+      		jqchat(".uiLeftContainerArea").addClass("displayContent");
+      		jqchat(".uiLeftContainerArea").removeClass("hideContent");
+
+      		jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
+
+      		setTimeout(function(){
+      			 jqchat(".uiGlobalRoomsContainer").css("display", "none");
+      		}, 500);
+        }
+
     });
 
     $("#team-delete-button-cancel").on("click", function() {
