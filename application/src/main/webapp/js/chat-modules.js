@@ -66,9 +66,11 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
     url: thiss.jzChatGetRoom,
     data: {"targetUser": targetUser,
       "user": username,
-      "token": token,
       "isAdmin": isAdmin,
       "dbName": thiss.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + token
     }
   }, function (err, response){
     if (!err) {
@@ -156,10 +158,12 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "room": room,
       "message": encodeURIComponent(msg),
       "options": encodeURIComponent(JSON.stringify(options)),
-      "token": token,
       "timestamp": newMsgTimestamp,
       "isSystem": isSystemMessage,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + token
     }
   }, function (err, response){
     if (!err) {
@@ -219,9 +223,11 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       data: {
         room: this.id,
         user: this.username,
-        token: this.token,
         fromTimestamp: fromTimestamp,
         dbName: this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
       }
     }, function (err, res){
       // check for an error
@@ -299,8 +305,10 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
       data: {
         room: room,
         user: this.username,
-        token: this.token,
         dbName: this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
       }
     }, function (err, res){
       if (err) {
@@ -325,9 +333,11 @@ ChatRoom.prototype.showAsText = function(callback) {
     data: {
       room: thiss.id,
       user: thiss.username,
-      token: thiss.token,
       isTextOnly: "true",
       dbName: thiss.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + thiss.token
     }
   }, function (err, response){
     if (!err) {
@@ -348,11 +358,13 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
     data: {
       room: room,
       user: thiss.username,
-      token: thiss.token,
       serverBase: serverBase,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
       dbName: thiss.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + thiss.token
     }
   }, function (err, response){
     if (!err) {
@@ -373,11 +385,13 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
     data: {
       room: room,
       user: thiss.username,
-      token: thiss.token,
       serverBase: serverBase,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
       dbName: thiss.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + thiss.token
     }
   }, function (err, response){
     if (!err) {
@@ -1126,9 +1140,11 @@ ChatRoom.prototype.updateUnreadMessages = function() {
     url: this.jzChatUpdateUnreadMessages,
     data: {"room": this.id,
       "user": this.username,
-      "token": this.token,
       "timestamp": new Date().getTime(),
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
 
     success:function(response){
@@ -1153,9 +1169,11 @@ var loadSetting = function(callback,overrideSettings) {
     url: urlToApi,
     data: {
       "user": yourUsername,
-      "token": servertoken,
       "dbName": serverDbName
-      },
+    },
+    headers: {
+      'Authorization': 'Bearer ' + servertoken
+    },
 
     success: function(operation){
       var settings = null;
@@ -1326,12 +1344,13 @@ function showMiniChatPopup(room, type) {
     data: {
       targetUser: room,
       user: username,
-      token: token,
       withDetail: true,
       type: type,
       dbName: dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + token
     }
-
   }, function (err, response){
     if (!err) {
       var cRoom = snack.parseJSON(response);

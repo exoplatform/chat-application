@@ -57,7 +57,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
   this.dbName = options.dbName;
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
+  this.notifEventURL = this.jzNotification+'?user='+this.username+'&dbName='+this.dbName;
   this.spaceId = options.spaceId;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
   this.jzChatRead = options.jzChatRead;
@@ -81,7 +81,7 @@ ChatNotification.prototype.initUserInterface = function() {
 };
 
 ChatNotification.prototype.updateNotifEventURL = function() {
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&token='+this.token+'&dbName='+this.dbName;
+  this.notifEventURL = this.jzNotification+'?user='+this.username+'&dbName='+this.dbName;
 };
 
 /**
@@ -95,9 +95,7 @@ ChatNotification.prototype.initUserProfile = function(callback) {
     dataType: "json",
     context: this,
     success: function(data){
-//      console.log("Profile Update : "+data.msg);
       this.token = data.token;
-//      console.log("Token : "+data.token);
 
       var fullname = this.username; //setting fullname with username from that point
 
@@ -137,6 +135,9 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
     this.updateNotifEventURL();
     jqchat.ajax({
       url: this.notifEventURL+"&withDetails=true",
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
       dataType: "json",
       context: this,
       success: function(data){
@@ -308,11 +309,12 @@ ChatNotification.prototype.getDate = function(timestampServer) {
  * Refresh Notifications
  */
 ChatNotification.prototype.refreshNotif = function() {
-//  if ( ! jqchat("span.chat-status").hasClass("chat-status-offline-black") ) {
-//  console.log("refreshNotif :: URL="+this.notifEventURL);
   this.updateNotifEventURL();
   jqchat.ajax({
     url: this.notifEventURL+"&withDetails=true",
+    headers: {
+      'Authorization': 'Bearer ' + this.token
+    },
     dataType: "json",
     context: this,
     success: function(data){
@@ -480,9 +482,11 @@ ChatNotification.prototype.refreshStatusChat = function() {
     url: thiss.jzGetStatus,
     data: {
       "user": thiss.username,
-      "token": thiss.token,
       "timestamp": new Date().getTime(),
       "dbName": thiss.dbName 
+    },
+    headers: {
+      'Authorization': 'Bearer ' + thiss.token
     }
   }, function (err, response){
     if (err) {
@@ -504,9 +508,11 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
     url: this.jzGetStatus,
     data: {
       "user": this.username,
-      "token": this.token,
       "targetUser": targetUser,
       "dbName": this.dbName 
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     context: this,
     success: function(response){
@@ -535,10 +541,12 @@ ChatNotification.prototype.setStatus = function(status, callback) {
     jqchat.ajax({
       url: this.jzSetStatus,
       data: { "user": this.username,
-        "token": this.token,
         "status": status,
         "timestamp": new Date().getTime(),
         "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
       },
       context: this,
 
@@ -746,9 +754,11 @@ ChatNotification.prototype.sendFullMessage = function(user, token, targetUser, r
       "room": room,
       "message": encodeURIComponent(msg),
       "options": encodeURIComponent(JSON.stringify(options)),
-      "token": token,
       "timestamp": new Date().getTime(),
       "isSystem": isSystemMessage
+    },
+    headers: {
+      'Authorization': 'Bearer ' + token
     }
   }, function (err, response) {
     if (!err) {
@@ -803,12 +813,13 @@ ChatNotification.prototype.getChatMessages = function(room, callback) {
   if (this.username !== this.ANONIM_USER) {
     snack.request({
       url: this.jzChatRead,
-            async: false,
-
+      async: false,
       data: {
         room: room,
-        user: this.username,
-        token: this.token
+        user: this.username
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
       }
     }, function (err, res){
       if (err) {
