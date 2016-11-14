@@ -812,13 +812,6 @@ var handleRoomNotifLayout = function() {
 
     });
 
-    $(".room-detail-fullname").on("click", function() {
-      if (chatApplication.isMobileView()) {
-        $(".uiLeftContainerArea").css("display", "block");
-        $(".uiRightContainerArea").css("display", "none");
-      }
-    });
-
     $('#chat-search, #chat-search2').keyup(function(event) {
       if (event.keyCode == 27 || event.which == 27) {
         $(this).val('');
