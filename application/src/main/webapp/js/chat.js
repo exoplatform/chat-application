@@ -184,9 +184,9 @@ var chatApplication = new ChatApplication();
 
     $("#submit").on("click", function() {
 
-            var msg = $("#msg_editable").text();
+            var msg = $("#msg").val();
             chatApplication.sendMessage(msg);
-            $("#msg_editable").text("");
+            $("#msg").val("");
             $("#msg, #msg_editable").focus();
 
     });
