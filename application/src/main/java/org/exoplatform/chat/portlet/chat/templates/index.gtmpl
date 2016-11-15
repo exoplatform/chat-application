@@ -419,7 +419,7 @@
 <div class="uiPopup hide edit-modal" style="top:100px;">
   <div class="popupHeader clearfix">
 	<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
-	<span class="PopupTitle popupTitle">&{exoplatform.chat.settings}</span>
+	<span class="PopupTitle popupTitle">&{exoplatform.chat.msg.edit}</span>
   </div>
 
   <div class="PopupContent popupContent">
