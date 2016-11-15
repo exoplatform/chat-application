@@ -1,5 +1,5 @@
 // Base CSS
-#configButton, #configButton1 {
+#configButton, #configButtonResp {
   position: relative;
   top: 10px;
   padding: 5px 8px 1px 8px;
@@ -233,22 +233,22 @@
 .menu-standard {
   display: inline;
   i{font-size: 16px;
-      &.uiIconSocGroup {font-size: 20px}
-    }
+    &.uiIconSocGroup {font-size: 20px}
+  }
   .actionIcon{
   	padding: 2px;
   	margin: 0 3px;
-      line-height: 16px;
-      min-width: 16px;
-      .chat-status-chat {
-          font-size: 12px;
-          height: 14px;
-          left: 1px;
-          line-height: 14px;
-          text-align: center;
-          top: 0;
-          width: 14px;
-      }
+    line-height: 16px;
+    min-width: 16px;
+    .chat-status-chat {
+        font-size: 12px;
+        height: 14px;
+        left: 1px;
+        line-height: 14px;
+        text-align: center;
+        top: 0;
+        width: 14px;
+    }
   }
   &.pull-right {
     .uiSearchForm  {
@@ -683,7 +683,7 @@ table.list-rooms {
         	vertical-align: middle;
         	height: 68px;
         	width: 100%;
-        	 text-align: center;
+        	text-align: center;
 	        text-transform: uppercase;
 	        font-size: 18px;
         }
@@ -1053,13 +1053,13 @@ footer
     margin: -18px 2px 2px; 
     width: 16px;
 }
-#menuButton,#searchButton, #searchButton2{
+#menuButton,#searchButton, #searchButtonResp{
     display: none;
     position: relative;
     top: 10px;
     padding: 5px 8px 1px 8px
 }
-#searchButton2{top : 13px}
+#searchButtonResp{top : 13px}
 #menuButton.displayContent{
     left: 0;
     right: 0
@@ -1068,12 +1068,11 @@ footer
     display: block!important;
 }
 
-#searchButton2, .displayResponsive{display: none}
+#searchButtonResp, .displayResponsive{display: none}
 .uiExtraLeftContainer {display: none}
 .clearfix{clear: both}
 
 .uiPopup .popupHeader .uiIconClose + .PopupTitle{
     &.setting{display: none}
     &.add{display: none}
-
 }
