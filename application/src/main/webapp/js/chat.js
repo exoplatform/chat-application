@@ -120,12 +120,12 @@ var chatApplication = new ChatApplication();
       chatApplication.hidePanels();
     });
 
-    $('#msg').focus(function() {
+    $('#msg, #msg_editable').focus(function() {
   //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
        var chatheight = document.getElementById("chats");
        chatheight.scrollTop = chatheight.scrollHeight;
        chatApplication.updateUnreadMessages();
-       console.log(chatheight.scrollHeight);
+       chatheight.scrollHeight;
     });
 
     $('#msg').keydown(function(event) {
@@ -431,7 +431,7 @@ var chatApplication = new ChatApplication();
    $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
      var roomTriggerWhenKeyWordValue = jqchat("#" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
-     
+
      if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
        $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
      } else {
@@ -466,7 +466,7 @@ var chatApplication = new ChatApplication();
        }
 
      });
-     
+
     });
 
     $(document).on("keyup", "input[name='keyWords']", function(event) {//when entering keywords save them imediately
@@ -486,7 +486,7 @@ var chatApplication = new ChatApplication();
                 jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
             }, 200);
 
-            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2").css("display", "none");
+            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2, #chat-video-button").css("display", "none");
             jqchat("#userRoomStatus").addClass("hide");
             jqchat("#chats").css("min-height", window.innerHeight+"px");
       }
@@ -626,8 +626,8 @@ var handleRoomNotifLayout = function() {
 
       });
     });
-    
-    
+
+
 
     $(".meeting-close-panel").on("click", function() {
       hideMeetingPanel();
@@ -1563,7 +1563,8 @@ ChatApplication.prototype.initMention = function() {
           }, 100);
       });
 
-      $mentionEditor.keyup(function(event) {
+      var spaceRegex = new RegExp(String.fromCharCode(160),"g");
+      $mentionEditor.keydown(function(event) {
         if (!chatApplication.isMentioning) {
 //          var msg = $('#msg').suggester('getValue');
           var msg = $mentionEditor.html();
@@ -1589,10 +1590,14 @@ ChatApplication.prototype.initMention = function() {
               $( this ).replaceWith('@' + $( this ).attr('data-mention') + ' ');
             });
 
-            msg = $div.text();
+            // Replace a special character which presents &nbsp; with a normal space.
+            // The special character is coming from usage of contenteditable div for Chat input,
+            // it uses HTML entities for spaces when composing, and we can not prevent it.
+            msg = $div.text().replace(spaceRegex," ");
 
             chatApplication.sendMessage(msg);
             $('#msg').suggester('clearValue');
+            return false;
           }
           // UP Arrow
           if (event.which === 38 && msg.length === 0) {
@@ -2339,7 +2344,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
           }
-        } 
+        }
       }
     }
   });
@@ -2541,6 +2546,11 @@ var enableMessageComposer = function(bool){
 /**
  * Load Room : server call
  */
+function userRoomStatus(targetUser, status) {
+        jqchat("#userRoomStatus > i").attr("class", "");
+        jqchat("#userRoomStatus > i").addClass("user-"+status);
+}
+
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode==true) {
@@ -2574,10 +2584,12 @@ ChatApplication.prototype.loadRoom = function() {
       $targetUser.find(".room-total").addClass("badgeWhite");
     }
 
+
     jqchat("#room-detail").css("display", "block");
     jqchat("#chat-team-button").css("display", "none");
     this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
     jqchat(".target-user-fullname").text(this.targetFullname);
+
 
     if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
       jqchat(".btn-weemo-conf").css("display", "none");
@@ -2653,7 +2665,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".target-avatar-link").attr("href", "#");
       jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
     }
-    
+
     if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
       jqchat.ajax({
         url: this.jzChatIsFavorite,
@@ -2763,7 +2775,31 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
     msgHtml = msgHtml.replace(/<br>/g, '\n');
     var msgFullname = $uimsg.attr("data-fn");
-    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+    $div = jqchat("#msg_editable");
+    if ($div.length > 0) {
+      $div.html("[quote="+msgFullname+"]"+msgHtml+" [/quote]&nbsp;");
+
+      // Set focus on contenteditable div and put the caret at the end of text.
+      (function(el) {
+        el.focus();
+        if (typeof window.getSelection != "undefined"
+          && typeof document.createRange != "undefined") {
+          var range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } else if (typeof document.body.createTextRange != "undefined") {
+          var textRange = document.body.createTextRange();
+          textRange.moveToElementText(el);
+          textRange.collapse(false);
+          textRange.select();
+        }
+      })($div.get(0));
+    } else {
+      jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+    }
 
   });
 
@@ -3025,7 +3061,7 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
   $icon.parent().tooltip('hide')
     .attr('data-original-title', tooltipText)
     .tooltip('fixTitle');
-  
+
   $span.html(tooltipText);
 };
 
@@ -3145,6 +3181,7 @@ jqchat('#back').on("click", function() {
 //        }
 
 });
+var roomUserInterval = -1;
   jqchat('#chat-users .users-online > td:nth-child(1),#chat-users .users-online > td:nth-child(2)').on("click", function() {
     if(window.innerWidth <= 767){
 
@@ -3181,12 +3218,20 @@ jqchat('#back').on("click", function() {
 
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
+
+    chatNotification.getStatus(thiss.targetUser, userRoomStatus);
+//    setInterval(chatNotification.getStatus(thiss.targetUser, userRoomStatus)), this.chatIntervalUsers);
+
+
+
     thiss.loadRoom();
     if (thiss.isMobileView()) {
       jqchat(".right-chat").css("display", "block");
       jqchat(".left-chat").css("display", "none");
       jqchat(".room-name").html(thiss.targetFullname);
     }
+   /* clearInterval(roomUserInterval);
+    roomUserInterval = setInterval(function(){ chatNotification.getStatus(thiss.targetUser, userRoomStatus); }, 2500);*/
   });
 
   jqchat('#chat-users .users-online').on("mouseenter", function() {
