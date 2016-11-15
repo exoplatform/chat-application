@@ -398,7 +398,7 @@ var chatApplication = new ChatApplication();
 
             jqchat("#chats").css("min-height", "0");
 
-            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2, #chat-video-button").css("display", "block");
+            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2").css("display", "block");
             jqchat("#userRoomStatus").removeClass("hide");
 
             $serachText = jqchat('#chat-search').attr('placeholder');
@@ -486,7 +486,7 @@ var chatApplication = new ChatApplication();
                 jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
             }, 200);
 
-            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2, #chat-video-button").css("display", "none");
+            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2").css("display", "none");
             jqchat("#userRoomStatus").addClass("hide");
             jqchat("#chats").css("min-height", window.innerHeight+"px");
       }
