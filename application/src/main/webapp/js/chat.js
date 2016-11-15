@@ -1573,9 +1573,9 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       this.token = data.token;
 
       if(window.innerWidth > 767){
-        jqchat(".label-user").html(fullname);
+        jqchat(".uiGrayLightBox .label-user").html(fullname);
       }
-
+      jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
       jqchat(".avatar-image:first").attr("src", gravatar(email));
       this.hidePanels();
 
@@ -1915,12 +1915,13 @@ ChatApplication.prototype.initChatProfile = function() {
 
         var $chatApplication = jqchat("#chat-application");
         $chatApplication.attr("data-token", this.token);
-        var $labelUser = jqchat(".label-user");
+        var $labelUser = jqchat(".uiGrayLightBox  .label-user");
         if(window.innerWidth > 767){
             $labelUser.text(data.fullname);
         }else{
             $labelUser.removeAttr("href").text("Discussion");
         }
+        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
         this.refreshWhoIsOnline();
         chatNotification.refreshStatusChat();
 
