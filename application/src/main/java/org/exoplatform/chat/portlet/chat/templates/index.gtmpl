@@ -336,7 +336,7 @@
           </ul>
         </div>
 
-        <div style="display: block;margin-left: 45px;margin-right: 54px; padding: 4px 0;">
+        <div style="display: block;margin-left: 45px;margin-right: 54px;">
           <textarea type="text" name="text" id="msg" autocomplete="off" disabled></textarea>
         </div>
 
