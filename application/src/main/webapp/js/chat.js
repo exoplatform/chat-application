@@ -120,7 +120,7 @@ var chatApplication = new ChatApplication();
       chatApplication.hidePanels();
     });
 
-    $('#msg, #msg_editable').focus(function() {
+    $('#msg').focus(function() {
   //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
        var chatheight = document.getElementById("chats");
        chatheight.scrollTop = chatheight.scrollHeight;
@@ -147,13 +147,10 @@ var chatApplication = new ChatApplication();
 
     $('#msg').keyup(function(event) {
       var msg = $(this).val();
-  //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
       if ( event.which === 13 && msg.trim().length>=1) {
-        //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
         if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
           return false;
         }
-  //      console.log("*"+msg+"*");
         chatApplication.sendMessage(msg);
 
       }
@@ -169,10 +166,6 @@ var chatApplication = new ChatApplication();
       if ( chatApplication.keydown === 18 ) {
         chatApplication.keydown = -1;
       }
-      if ( event.which === 13 ) {
-        $(this).val('');
-      }
-
     });
 
     $(document).on('click.meeting-action-toggle', function(e) {
@@ -1508,140 +1501,6 @@ ChatApplication.prototype.trigger = function(event, context) {
   });
 }
 
-ChatApplication.prototype.initMention = function() {
-  if (!this.$mentionEditor) {
-    var _this = this;
-
-    window.require(["SHARED/jquery", "SHARED/suggester"], function($) {
-      var $msg = $('#msg');
-      $msg.suggester({
-        type : "mix",
-        sourceProviders : ['exo:chat'],
-        showAtCaret: true,
-        renderMenuItem: function(item) {
-          return '<img onerror="this.src=\'/chat/img/Avatar.gif;\'" src="/rest/chat/api/1.0/user/getAvatarURL/'+item.uid+'" width="20px" height="20px"> ' +
-              item.value + ' <span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>';
-        },
-        renderItem: '<span data-mention="${uid}" class="mention-item" contenteditable="false">${value}<a href="javascript:void(0)" class="remove">×</a></span>',
-      });
-      $msg.suggester('addProvider', 'exo:chat', function(query, callback) {
-        var _this = this;
-        $.ajax({
-          url: chatApplication.jzUsers,
-          data: {"filter": query,
-            "user": chatApplication.username,
-            "dbName": chatApplication.dbName
-          },
-          dataType: "json",
-          headers: {
-            'Authorization': 'Bearer ' + chatApplication.token
-          },
-          success: function(data) {
-            var users = [];
-            $.each(data.users, function(idx, user) {
-              users.push({
-                "uid": user.name,
-                "value": user.fullname,
-                "status": user.status
-              });
-            });
-            callback.call(_this, users);
-          }
-        });
-      });
-
-      _this.$mentionEditor = $msg.next('div');
-      var $mentionEditor = _this.$mentionEditor;
-
-      $mentionEditor.focus(function() {
-        chatApplication.updateUnreadMessages();
-      });
-
-      $mentionEditor.on('shown.atwho', function(event, data) {
-          chatApplication.isMentioning = true;
-      });
-      $mentionEditor.on('hidden.atwho', function(event, data) {
-          setTimeout(function() {
-            chatApplication.isMentioning = false;
-          }, 100);
-      });
-
-      var spaceRegex = new RegExp(String.fromCharCode(160),"g");
-      $mentionEditor.keydown(function(event) {
-        if (!chatApplication.isMentioning) {
-//          var msg = $('#msg').suggester('getValue');
-          var msg = $mentionEditor.html();
-
-          //    console.log("keyup : "+event.which + ";"+msg.length+";"+keydown);
-          if ( event.which === 13 && msg.trim().length>=1 && !(event.shiftKey||event.ctrlKey||event.altKey)) {
-            //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
-            if ( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) ) {
-              return false;
-            }
-
-            msg = msg.replace(/<br>/g, '\n');
-
-            $div = $('#msgtemp');
-            if ($div.length == 0) {
-              $div = $('<div id="msgtemp" style="display: none;"></div>');
-              $('body').append($div);
-            }
-            $div.html(msg);
-
-            $mention = $div.find('span[class="mention-item"]');
-            $mention.each(function( index ) {
-              $( this ).replaceWith('@' + $( this ).attr('data-mention') + ' ');
-            });
-
-            // Replace a special character which presents &nbsp; with a normal space.
-            // The special character is coming from usage of contenteditable div for Chat input,
-            // it uses HTML entities for spaces when composing, and we can not prevent it.
-            msg = $div.text().replace(spaceRegex," ");
-
-            chatApplication.sendMessage(msg);
-            $('#msg').suggester('clearValue');
-            return false;
-          }
-          // UP Arrow
-          if (event.which === 38 && msg.length === 0) {
-            var $uimsg = chatApplication.chatRoom.getUserLastMessage();
-            var $uimsgdata = $uimsg.find(".msg-data");
-            if ($uimsgdata.length === 1) {
-              chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
-            }
-          }
-
-          if ( chatApplication.keydown === 18 ) {
-            chatApplication.keydown = -1;
-          }
-        } else {
-          if ($mentionEditor.next('ul').css('display') == 'none') {
-            chatApplication.isMentioning = false;
-          }
-        }
-      });
-
-      jqchat('#msg').on('focus', function() {
-        $mentionEditor.focus();
-        $mentionEditor.html($mentionEditor.html().replace(/<br>/g, ''));
-
-        var range = document.createRange();
-        var sel = window.getSelection();
-        if (!$mentionEditor[0].childNodes.length) {
-          range.setStart($mentionEditor[0], $mentionEditor[0].childNodes.length);
-        } else {
-          range.setStart($mentionEditor[0].childNodes[0], $mentionEditor[0].childNodes.length);
-        }
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      });
-    });
-  }
-
-
-}
-
 /**
  * Create demo user
  *
@@ -2799,31 +2658,7 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
     //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
     msgHtml = msgHtml.replace(/<br>/g, '\n');
     var msgFullname = $uimsg.attr("data-fn");
-    $div = jqchat("#msg_editable");
-    if ($div.length > 0) {
-      $div.html("[quote="+msgFullname+"]"+msgHtml+" [/quote]&nbsp;");
-
-      // Set focus on contenteditable div and put the caret at the end of text.
-      (function(el) {
-        el.focus();
-        if (typeof window.getSelection != "undefined"
-          && typeof document.createRange != "undefined") {
-          var range = document.createRange();
-          range.selectNodeContents(el);
-          range.collapse(false);
-          var sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
-        } else if (typeof document.body.createTextRange != "undefined") {
-          var textRange = document.body.createTextRange();
-          textRange.moveToElementText(el);
-          textRange.collapse(false);
-          textRange.select();
-        }
-      })($div.get(0));
-    } else {
-      jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
-    }
+    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
 
   });
 
@@ -3451,10 +3286,10 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
     }
   }
 
-  jqchat("#msg").val("");
   if (sendMessageToServer) {
     this.chatRoom.sendMessage(msg, options, isSystemMessage, callback);
   }
+  jqchat("#msg").val("");
 };
 
 
