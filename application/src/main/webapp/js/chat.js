@@ -400,6 +400,11 @@ var chatApplication = new ChatApplication();
 
             jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButton2, #chat-video-button").css("display", "block");
             jqchat("#userRoomStatus").removeClass("hide");
+
+            $serachText = jqchat('#chat-search').attr('placeholder');
+            if($serachText.search("@") == -1){
+                jqchat("#chat-search").attr("placeholder", "@"+$serachText);
+            }
         }
         chatApplication.loadRoom();
     });
@@ -671,6 +676,8 @@ var handleRoomNotifLayout = function() {
 
 
     });
+
+
 
     $(".raise-hand-button").on("click", function() {
       var $uiText = $("#raise-hand-comment-text");
@@ -1385,7 +1392,14 @@ var handleRoomNotifLayout = function() {
 
     });
 
+    /* ADDING @ TO Search placeholder */
+        if(window.innerWidth <= 767){
+            $serachText = $('#chat-search').attr('placeholder');
+            $("#chat-search").attr("placeholder", "@"+$serachText);
+        }
+
   });
+
 
 })(jqchat);
 
@@ -3154,6 +3168,10 @@ jqchat('#back').on("click", function() {
         setTimeout(function(){
             jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
         }, 200);
+
+        $serachText = jqchat('#chat-search').attr('placeholder');
+        $serachText = $serachText.replace("@", "");
+        jqchat("#chat-search").attr("placeholder", $serachText);
 
     }
 
