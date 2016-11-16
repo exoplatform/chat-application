@@ -441,12 +441,14 @@ var chatApplication = new ChatApplication();
        url: chatApplication.jzChatSetRoomNotificationTrigger,
        data: {
          "user": chatApplication.username,
-         "token": chatApplication.token,
          "room": roomId,
          "notifCondition" : roomTriggerWhenKeyWordValue,
          "notifConditionType" : roomTriggerType,
          "dbName": chatApplication.dbName,
          "time": (new Date()).getTime()
+       },
+       headers: {
+         'Authorization': 'Bearer ' + chatApplication.token
        },
 
        success:function(operation){
@@ -567,16 +569,18 @@ var handleRoomNotifLayout = function() {
 
     });
 
-    $(document).on("click", "div.notif-manner div.uiSwitchBtn", function() {
+    $(document).on("click touchstart", "div.notif-manner div.uiSwitchBtn", function() {
       var notifManner = $(this).find('input[notif-type]').attr("notif-type");
       jqchat.ajax({
         url: chatApplication.jzChatSetPreferredNotification,
         data: {
           "user": chatApplication.username,
-          "token": chatApplication.token,
           "notifManner" : notifManner,
           "dbName": chatApplication.dbName
           },
+        headers: {
+          'Authorization': 'Bearer ' + chatApplication.token
+        },
 
         success: function(operation){
           operation = JSON.parse(operation);
@@ -596,7 +600,7 @@ var handleRoomNotifLayout = function() {
       });
     });
 
-    $(document).on("click", "div.notif-trigger div.uiSwitchBtn", function() {
+    $(document).on("click touchstart", "div.notif-trigger div.uiSwitchBtn", function() {
     if($(this).hasClass("switchBtnDisabled")) {//if the checkbox are disabled
       return;
     }
@@ -605,9 +609,11 @@ var handleRoomNotifLayout = function() {
         url: chatApplication.jzChatSetNotificationTrigger,
         data: {
           "user": chatApplication.username,
-          "token": chatApplication.token,
           "notifCondition" : notifTrigger,
           "dbName": chatApplication.dbName
+        },
+        headers: {
+          'Authorization': 'Bearer ' + chatApplication.token
         },
 
         success:function(operation){
@@ -1527,10 +1533,12 @@ ChatApplication.prototype.initMention = function() {
           url: chatApplication.jzUsers,
           data: {"filter": query,
             "user": chatApplication.username,
-            "token": chatApplication.token,
             "dbName": chatApplication.dbName
           },
           dataType: "json",
+          headers: {
+            'Authorization': 'Bearer ' + chatApplication.token
+          },
           success: function(data) {
             var users = [];
             $.each(data.users, function(idx, user) {
@@ -1704,9 +1712,11 @@ ChatApplication.prototype.updateUnreadMessages = function(callback) {
     url: this.jzChatUpdateUnreadMessages,
     data: {"room": this.room,
       "user": this.username,
-      "token": this.token,
       "timestamp": new Date().getTime(),
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
 
     success:function(response){
@@ -1758,9 +1768,11 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
     url: this.jzDelete,
     data: {"room": this.room,
       "user": this.username,
-      "token": this.token,
       "messageId": id,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
 
     success:function(response){
@@ -1788,8 +1800,10 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
     url: this.jzDeleteTeamRoom,
     data: {"room": this.room,
       "user": this.username,
-      "token": this.token,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     success:function(response){
       if (typeof callback === "function") {
@@ -1816,10 +1830,12 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
     url: this.jzEdit,
     data: {"room": this.room,
       "user": this.username,
-      "token": this.token,
       "messageId": id,
       "message": encodeURIComponent(newMessage),
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
 
     success:function(response){
@@ -1853,8 +1869,10 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
       "room": room,
       "users": users,
       "user": this.username,
-      "token": this.token,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
 
     success:function(response){
@@ -2049,8 +2067,10 @@ ChatApplication.prototype.getUsers = function(roomId, callback, asString) {
     url: this.jzUsers,
     data: {"room": roomId,
       "user": this.username,
-      "token": this.token,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     dataType: "json",
     context: this,
@@ -2088,8 +2108,10 @@ ChatApplication.prototype.getAllUsers = function(filter, callback) {
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
-      "token": this.token,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     dataType: "json",
     context: this,
@@ -2107,8 +2129,10 @@ ChatApplication.prototype.synGetAllUsers = function(filter, callback) {
     url: this.jzUsers,
     data: {"filter": filter,
       "user": this.username,
-      "token": this.token,
       "dbName": this.dbName
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     dataType: "json",
     context: this,
@@ -2162,11 +2186,14 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
       url: this.jzChatWhoIsOnline,
       dataType: "json",
       data: { "user": this.username,
-        "token": this.token,
         "filter": this.userFilter,
         "isAdmin": this.isAdmin,
         "timestamp": new Date().getTime(),
-        "dbName": this.dbName},
+        "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
       context: this,
       success: function(response){
         if (targetUser !== undefined && targetFullname !== undefined) {
@@ -2629,8 +2656,10 @@ ChatApplication.prototype.loadRoom = function() {
         url: this.jzChatGetCreator,
         data: {"room": this.targetUser,
           "user": this.username,
-          "token": this.token,
           "dbName": this.dbName
+        },
+        headers: {
+          'Authorization': 'Bearer ' + this.token
         },
         context: this,
         success: function(response){
@@ -2667,9 +2696,11 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat.ajax({
         url: this.jzChatIsFavorite,
         data: {"user": this.username,
-          "token": this.token,
           "targetUser": this.targetUser,
           "dbName": this.dbName
+        },
+        headers: {
+          'Authorization': 'Bearer ' + this.token
         },
         context: this,
         success: function(response){
@@ -3025,9 +3056,11 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     url: this.jzChatToggleFavorite,
     data: {"targetUser": targetFav,
       "user": this.username,
-      "token": this.token,
       "timestamp": new Date().getTime(),
       "token": this.token
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
     },
     context: this,
     success: function(response){
@@ -3304,10 +3337,12 @@ ChatApplication.prototype.setStatus = function(status, callback) {
     jqchat.ajax({
       url: this.jzSetStatus,
       data: { "user": this.username,
-        "token": this.token,
         "status": status,
         "timestamp": new Date().getTime(),
         "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
       },
       context: this,
 
@@ -3539,14 +3574,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
   jqchat(".btn-weemo").unbind("click").one("click", function () {
     if (!jqchat(this).hasClass("disabled")) {
       if (isTurnOnWeemoCallButton) {
-        var chatMessage = {
-          "url": chatApplication.jzChatSend,
-          "user": chatApplication.username,
-          "fullname": chatApplication.fullname,
-          "targetUser": chatApplication.targetUser,
-          "room": chatApplication.room,
-          "token": chatApplication.token
-        };
         var targetUser = chatApplication.targetUser.trim();
         var targetFullname = chatApplication.targetFullname.trim();
         if (targetUser.indexOf("space-") === -1
@@ -3581,14 +3608,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
 
   jqchat(".btn-weemo-conf").unbind("click").one("click", function () {
     if (!jqchat(this).hasClass("disabled")) {
-      var chatMessage = {
-        "url": chatApplication.jzChatSend,
-        "user": chatApplication.username,
-        "fullname": chatApplication.fullname,
-        "targetUser": chatApplication.targetUser,
-        "room": chatApplication.room,
-        "token": chatApplication.token
-      };
       var targetUser = chatApplication.targetUser.trim();
       var targetFullname = chatApplication.targetFullname.trim();
       var isSpace = (targetUser.indexOf("space-") !== -1);
