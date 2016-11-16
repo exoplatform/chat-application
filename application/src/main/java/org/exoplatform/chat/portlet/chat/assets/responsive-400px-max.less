@@ -16,114 +16,19 @@
   #NavigationPortlet {
     display: none;
   }
-
-  #chat-application {
-    min-width: 320px;
-    width: 100%;
-//    padding: 5px;
-    padding: 0;
-
-    .uiGrayLightBox {
-      margin: 0!important;
-      -webkit-border-radius: 0;
-
-      .btn-weemo-download {
-        display: none!important;
-      }
-      .uiSearchInput {
-        display: none;
-      }
-      .containerMoreItem {
-        padding-right: 0px!important;
-      }
-    }
-
-    .uiBox {
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      margin: 0;
-    }
-
-    .uiLeftContainerArea {
-      width: 100%;
-      float: none;
-      #chat-users {
-        height: initial !important;
-        margin: 0!important;
-      }
-    }
-
-    .uiRightContainerArea {
-      height: 400px!important;
-
-      #chats {
-        height: 275px!important;
-      }
-    }
-
-    .uiRoomUsersContainerArea {
-      width: 97%;
-
-      #room-users-list {
-        height: 317px!important;
-      }
-
-      #room-users-collapse-bar {
-        line-height: 399px!important;
-      }
-
-      &:not(.room-users-expanded) {
-        width: 70px;
-
-        #room-users-collapse-bar {
-          .uiIconArrowDefault:before {
-            content: "\e75b";
-          }
-        }
-
-        #room-users-header {
-          #room-users-title {
-            display: none;
-          }
-
-          #room-users-button {
-            padding-right: 17px;
-          }
-        }
-
-        #room-users-list {
-          .msUserAvatar {
-            padding: 0;
-            width: 100%;
-
-            .msAvatarLink {
-              margin: 0 auto;
-            }
-          }
-
-          .room-user-name, .room-user-status {
-            display: none;
-          }
-        }
-      }
-    }
-  }
-
   .msRow {
     .msRightInfo {
       .msTimePost {
         width: 100%;
         position: relative;
       }
-
-      .msAction {
-        display: none !important;
-      }
     }
 
     .msUserMes {
       clear: both;
     }
+  }
+  #menuButton, #searchButton{
+    display: block
   }
 }
