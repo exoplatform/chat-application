@@ -20,7 +20,7 @@
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
 <% if (!"public".equals(view)) { %>
-  <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
 
     <span class="menu-standard pull-left">
