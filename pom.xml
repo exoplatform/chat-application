@@ -4,12 +4,12 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>7-RC01</version>
+    <version>8-SNAPSHOT</version>
     <relativePath />
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>1.4.x-SNAPSHOT</version>
+  <version>1.5.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
@@ -33,9 +33,9 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.gatein.portal.version>4.4.x-PLF-SNAPSHOT</org.gatein.portal.version>
-    <org.exoplatform.ecms.version>4.4.x-SNAPSHOT</org.exoplatform.ecms.version>
-    <org.exoplatform.platform.version>4.4.x-SNAPSHOT</org.exoplatform.platform.version>
+    <org.gatein.portal.version>4.5.x-PLF-SNAPSHOT</org.gatein.portal.version>
+    <org.exoplatform.ecms.version>4.5.x-SNAPSHOT</org.exoplatform.ecms.version>
+    <org.exoplatform.platform.version>4.5.x-SNAPSHOT</org.exoplatform.platform.version>
     <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <juzu.version>1.1.0</juzu.version>

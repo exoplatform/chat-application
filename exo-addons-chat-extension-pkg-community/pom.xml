@@ -4,7 +4,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>1.4.x-SNAPSHOT</version>
+    <version>1.5.x-SNAPSHOT</version>
   </parent>
   <artifactId>exo-addons-chat-extension-pkg-community</artifactId>
   <packaging>pom</packaging>
@@ -19,14 +19,14 @@
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>exo-addons-chat-extension-community</artifactId>
-      <version>1.4.x-SNAPSHOT</version>
+      <version>1.5.x-SNAPSHOT</version>
       <type>war</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>exo-addons-chat-extension-config-community</artifactId>
-      <version>1.4.x-SNAPSHOT</version>
+      <version>1.5.x-SNAPSHOT</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
