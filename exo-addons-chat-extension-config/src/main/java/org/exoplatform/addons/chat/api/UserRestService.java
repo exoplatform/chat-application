@@ -72,57 +72,5 @@ public class UserRestService implements ResourceContainer {
             .build();
   }
   
-  @GET
-  @Path("/getAvatarURL/{userId}/")
-  @RolesAllowed("users")
-  public Response getAvatarURL(@PathParam("userId") String userId, @Context UriInfo uri) {
-    return getAvartar(false, userId, uri);
-  }
-
-  @GET
-  @Path("/getSpaceAvartar/{spaceName}/")
-  @RolesAllowed("users")
-  public Response getSpaceAvartar(@PathParam("spaceName") String spaceName, @Context UriInfo uri) {
-    return getAvartar(true, spaceName, uri);
-  }
-
-  private Response getAvartar(boolean isSpace, String spaceOrUserId, UriInfo uri) {
-    CacheControl cacheControl = new CacheControl();
-    DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
-
-    // Get server base
-    String scheme = uri.getBaseUri().getScheme();
-    String serverName = uri.getBaseUri().getHost();
-    int serverPort = uri.getBaseUri().getPort();
-    String serverBase = scheme + "://" + serverName;
-    if (serverPort != 80) serverBase += ":" + serverPort;
-
-    // Get avatar
-    InputStream in = null;
-    URL url = null;
-    String avartarURL = "/rest/jcr/repository/social/production/soc:providers/soc:";
-    avartarURL = (isSpace) ? avartarURL.concat("space") : avartarURL.concat("organization");
-    avartarURL = avartarURL.concat("/soc:").concat(spaceOrUserId).concat("/soc:profile/soc:avatar");
-    try {
-      url = new URL(serverBase.concat(avartarURL));
-      URLConnection con = url.openConnection();
-      con.setDoOutput(true);
-      in = con.getInputStream();
-    } catch (Exception e) {
-      try {
-        String defaultAvartarURL = "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/UserAvtDefault.png";
-        if (isSpace) defaultAvartarURL = "/chat/img/SpaceChatAvatar.png";
-        url = new URL(serverBase + defaultAvartarURL);
-        URLConnection con = url.openConnection();
-        con.setDoOutput(true);
-        in = con.getInputStream();
-      } catch (Exception e1) {
-        return Response.status(Status.NOT_FOUND).build();
-      }
-    }
-
-    return Response.ok(in, "Image").cacheControl(cacheControl)
-            .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
-            .build();
-  }
+ 
 }

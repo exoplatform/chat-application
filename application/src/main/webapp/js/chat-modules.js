@@ -492,7 +492,7 @@ ChatRoom.prototype.showMessages = function() {
                 if (thiss.isPublic) {
                   out += "  <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
                 } else {
-                  out += "  <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                  out += "  <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
                 }
                 out += "  </div>";
               } else {
@@ -516,7 +516,7 @@ ChatRoom.prototype.showMessages = function() {
           } else {
             if (prevUser !== "") {
               if (prevUser !== "__system") {
-                out += "    <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+                out += "    <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
                 out += "  </div>";
               } else {
                 out += thiss.getActionMeetingStyleClasses(prevOptions);
@@ -588,7 +588,7 @@ ChatRoom.prototype.showMessages = function() {
           if (thiss.isPublic) {
             out += "        <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
           } else {
-            out += "        <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+            out += "        <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
           }
           out += "        </div>";
           out += "      </div>";
@@ -609,7 +609,7 @@ ChatRoom.prototype.showMessages = function() {
             if (thiss.isPublic)
               out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
             else
-              out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/chat/api/1.0/user/getAvatarURL/" + prevUser + "' alt='" + prevFullName + "'></a>";
+              out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
             out += "      </div>";
           } else {
             out += thiss.getActionMeetingStyleClasses(prevOptions);

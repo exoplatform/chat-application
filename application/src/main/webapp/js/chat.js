@@ -1043,7 +1043,7 @@ var handleRoomNotifLayout = function() {
             html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
             html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
             html += " </span></span>";
-            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/chat/api/1.0/user/getAvatarURL/"+user.name+"' width='30px' style='width:30px;'></span>";
+            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/v1/social/users/"+user.name+"/avatar' width='30px' style='width:30px;'></span>";
             html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
             html += "</div>";
           });
@@ -2490,7 +2490,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat("#userRoomStatus").removeClass("hide").show();
       jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
-      jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getAvatarURL/" + this.targetUser );
+      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser  + "/avatar");
     }
     else if (this.targetUser.indexOf("team-")===-1)
     ////// SPACE
@@ -2501,7 +2501,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-      jqchat(".target-avatar-image").attr("src", "/rest/chat/api/1.0/user/getSpaceAvartar/"+spaceName);
+      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/"+spaceName+"/avatar");
     }
     else
     ////// TEAM
@@ -3617,7 +3617,7 @@ ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
     }
     html += ">";
     html += "  <div class='msUserAvatar pull-left'>";
-    html += "    <span class='msAvatarLink avatarCircle'><img onerror='this.src=\'/chat/img/user-default.jpg\'' src='/" + eXo.env.portal.rest +"/chat/api/1.0/user/getAvatarURL/" + user.name + "' alt='" + user.fullname + "'></span>";
+    html += "    <span class='msAvatarLink avatarCircle'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/" + eXo.env.portal.rest +"/v1/social/users/" + user.name + "/avatar' alt='" + user.fullname + "'></span>";
     html += "  </div>";
     html += "  <div class='room-user-status pull-right'>";
     html += "    <i class='user-" + user.status + "'></i>";
