@@ -77,7 +77,7 @@
               <span class="avatar-user">
                     <div class="activityAvatar avatarCircle" >
                         <a rel="tooltip" data-placement="bottom" href="/portal/intranet/profile/<%=user%>" data-original-title="">
-                            <img class="avatar-image" onerror="this.src='/chat/img/user-default.jpg;'" src='/rest/chat/api/1.0/user/getAvatarURL/<%=user%>' >
+                            <img class="avatar-image" onerror="this.src='/chat/img/user-default.jpg;'" src='/rest/v1/social/users/<%=user%>/avatar' >
                         </a>
                     </div>
                 </span>

@@ -157,7 +157,7 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
 
               html += '<div class="chat-notification-detail block-item ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html +=   '<span class="avatarXSmall">';
-              html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg\'" src=\'/rest/chat/api/1.0/user/getAvatarURL/'+notif.from+'\' class="avatar-image">';
+              html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg\'" src=\'/rest/v1/social/users/'+notif.from+'/avatar\' class="avatar-image">';
               html +=   '</span>';
               html += '  <div class="chat-label-status">';
               html += '    <div class="content">';
@@ -422,10 +422,10 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
     var title = null;
 
     if(msg.roomDisplayName=="") {
-      avatarUrl = '/rest/chat/api/1.0/user/getAvatarURL/'+msg.from;
+      avatarUrl = '/rest/v1/social/users/'+msg.from+'/avatar';
       title = msg.fromFullName;
     } else {
-      avatarUrl = '/rest/chat/api/1.0/user/getSpaceAvartar/'+msg.roomDisplayName;
+      avatarUrl = '/rest/v1/social/users/'+msg.roomDisplayName+'/avatar';
       title = msg.roomDisplayName;
     }
     var notification =null;
