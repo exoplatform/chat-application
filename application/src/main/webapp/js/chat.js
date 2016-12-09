@@ -2484,7 +2484,7 @@ ChatApplication.prototype.loadRoom = function() {
     ////// USER
     {
       jqchat(".uiRoomUsersContainerArea").hide();
-      jqchat(".meeting-action-task").css("display", "none");
+      jqchat(".meeting-action-task").css("display", "block");
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
       jqchat("#userRoomStatus").removeClass("hide").show();
