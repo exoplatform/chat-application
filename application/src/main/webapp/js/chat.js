@@ -2460,6 +2460,8 @@ ChatApplication.prototype.loadRoom = function() {
   var thiss = this;
   this.chatRoom.owner = "";
   if (this.targetUser!==undefined) {
+    // hide admin actions - we need to check if the current is the admin of the room before displaying them
+    jqchat("#chat-team-button-dropdown .only-admin").hide();
     // reset room users panel
     this.chatRoom.users = [];
     jqchat("#room-users-list").html("");
@@ -2552,7 +2554,6 @@ ChatApplication.prototype.loadRoom = function() {
             jqchat("#chat-team-button-dropdown").show();
             jqchat("#userRoomStatus").hide();
           } else {
-            jqchat("#chat-team-button-dropdown .only-admin").hide();
             jqchat("#userRoomStatus").removeClass("hide").show();
           }
         },
@@ -3542,7 +3543,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
  */
 ChatApplication.prototype.loadRoomUsers = function() {
   var thiss = this;
-  this.chatRoom.owner = "";
   var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
   if (this.targetUser !== undefined) {
     roomUsersContainer.show();
