@@ -106,7 +106,7 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users, null);
 
     String resp = chatService.read(roomId, userService, false, null, null);
-    String json = "{\"messages\": []}";
+    String json = "{\"room\": \"" + roomId + "\",\"messages\": []}";
     assertEquals(json, resp);
 
     resp = chatService.read(roomId, userService, true, null, null);
