@@ -1218,6 +1218,10 @@ var handleRoomNotifLayout = function() {
         var teamName = data.name;
         var roomId = "team-"+data.room;
         chatApplication.refreshWhoIsOnline(roomId, teamName);
+        // Refresh the chatRoom after creating the team room
+        chatApplication.targetUser = roomId;
+        chatApplication.targetFullname = teamName;
+        chatApplication.loadRoom();
       });
 
       $uitext.val("");
@@ -2024,6 +2028,10 @@ ChatApplication.prototype.updateTitle = function() {
  * Refresh Who Is Online : server call
  */
 ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullname) {
+  // Avoid having two whoIsOnline requests in parallel
+  if(this.whoIsOnlineRequest) {
+    return;
+  }
   var withSpaces = jzGetParam("chat.button.space", "true");
   var withUsers = jzGetParam("chat.button.user", "true");
   var withPublic = jzGetParam("chat.button.public", "false");
@@ -2037,7 +2045,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
-    jqchat.ajax({
+    this.whoIsOnlineRequest = jqchat.ajax({
       url: this.jzChatWhoIsOnline,
       dataType: "json",
       data: { "user": this.username,
@@ -2051,6 +2059,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
       },
       context: this,
       success: function(response){
+        this.whoIsOnlineRequest = null;
         if (targetUser !== undefined && targetFullname !== undefined) {
           this.targetUser = targetUser;
           this.targetFullname = targetFullname;
@@ -2455,6 +2464,17 @@ ChatApplication.prototype.loadRoom = function() {
     this.chatRoom.users = [];
     jqchat("#room-users-list").html("");
     jqchat("#room-users-title-nb-users").html("()");
+
+    if(this.chatRoom.lastCallOwner !== this.targetUser) {
+      // Disable composer while switching from a room to another
+      enableMessageComposer(false);
+      // Empty room messages and add loading icon
+      this.chatRoom.emptyChatZone(true);
+
+      // Add a flag for room loading operation with the id of the room
+      this.chatRoom.loadingNewRoom = true;
+      this.chatRoom.callingOwner = this.targetUser;
+    }
 
     jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {

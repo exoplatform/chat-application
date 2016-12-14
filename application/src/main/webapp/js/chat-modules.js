@@ -75,6 +75,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
   }, function (err, response){
     if (!err) {
       thiss.id = response;
+      thiss.callingOwner = thiss.id;
 
       if (typeof callback === "function") {
         callback(thiss.id);
@@ -177,7 +178,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
 /**
  * Empty and disable the Chat zone
  */
-ChatRoom.prototype.emptyChatZone = function() {
+ChatRoom.prototype.emptyChatZone = function(showLoading) {
   var $msg = jqchat('#msg');
   $msg.attr("disabled", "disabled");
   $msg.val('');
@@ -197,13 +198,30 @@ ChatRoom.prototype.emptyChatZone = function() {
   jqchat("#chat-record-button .btn").attr("disabled","");
   var $chats = jqchat("#chats");
   $chats.empty();
-  $chats.append("<div class=\"noContent\"><span class=\"text\">" + chatBundleData["exoplatform.chat.no.conversation"] + "</span></div>");
+
+  // Show loading image if we are loading the messages of the room, else display "No messages"
+  if(showLoading) {
+    $chats.append("<div class='center'><img src='/chat/img/sync.gif' width='64px' class='chatLoading'></div>");
+  } else {
+    $chats.append("<div class=\"noContent\"><span class=\"text\">" + chatBundleData["exoplatform.chat.no.conversation"] + "</span></div>");
+  }
 };
 
 /**
  * Refresh Chat : refresh messages and panels
  */
 ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
+  // if there is a currently executing request
+  // we don't have to interrupt it only when forceRefresh is invoqued
+  // which can happen only on user action, to switch from a room to another for example
+  if(this.currentRequest) {
+    if(forceRefresh) {
+      this.currentRequest.xhr.abort();
+      this.currentRequest = null;
+    } else {
+      return;
+    }
+  }
   if (this.id === "") return;
 
   if (typeof chatApplication != "undefined" && chatApplication.configMode) {
@@ -211,14 +229,14 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   }
   //var thiss = chatApplication;
   if (this.username !== this.ANONIM_USER) {
+    var thiss = this;
     var lastTS = jzGetParam("lastTS"+this.username) || 0;
     var lastUpdatedTS = jzGetParam("lastUpdatedTS"+this.username) || 0;
 
     // retrieve last messages only
     var fromTimestamp = Math.max(lastTS, lastUpdatedTS);
 
-    var thiss = this;
-    snack.request({
+    this.currentRequest = snack.request({
       url: this.jzChatRead,
       data: {
         room: this.id,
@@ -230,6 +248,14 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         'Authorization': 'Bearer ' + this.token
       }
     }, function (err, res){
+      // res is null in case the XHR is cancelled, thus nothing to do here
+      if(!res) {
+        return;
+      }
+
+      // allow to execute periodic queries
+      thiss.currentRequest = null;
+
       // check for an error
       if (err) {
         if (err === 403 &&  ( thiss.messages.length === 0 || "type-kicked" !== thiss.messages[0].options.type)) {
@@ -258,7 +284,12 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           $msgEmoticons.parent().tooltip("disable");
           $meetingActionToggle.addClass("disabled");
           $meetingActionToggle.children("span").tooltip("disable");
+        } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
+        // the room init operation is canceled, thus no messages will be displayed
+          thiss.showMessages();
         }
+        thiss.loadingNewRoom = false;
+        thiss.lastCallOwner = thiss.targetUser;
         if (typeof thiss.onRefreshCB === "function") {
           thiss.onRefreshCB(1);
         }
@@ -271,6 +302,12 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       res = res.split("\t").join(" ");
       // handle the response data
       var data = snack.parseJSON(res);
+
+      // If the requested room (returned from HTTP response) is not the same as the currently requested room
+      if(thiss.loadingNewRoom && thiss.callingOwner && (!data.room || thiss.callingOwner.indexOf(data.room) < 0)) {
+        return;
+      }
+
       if (data.messages.length > 0) {
         var ts = data.timestamp;
         var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
@@ -280,6 +317,17 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
 
         thiss.addMessagesToLocalList(data);
         thiss.showMessages();
+      } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
+        // If room has changed but no messages was added there yet
+        thiss.showMessages();
+      }
+      // set last succeeded request chat owner
+      // to be able to detect when user switches from a room to another 
+      thiss.lastCallOwner = thiss.targetUser;
+      if(thiss.loadingNewRoom) {
+        // Enable composer if the new room loading has finished
+        enableMessageComposer(true);
+        thiss.loadingNewRoom = false;
       }
 
       if (typeof thiss.onRefreshCB === "function") {
@@ -297,10 +345,19 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
 };
 
 ChatRoom.prototype.getChatMessages = function(room, callback) {
+  // Abort periodic read messages request
+  // getChatMessages method is called on user action,
+  // so it has more priority
+  if(this.currentRequest) {
+    this.currentRequest.xhr.abort();
+    this.currentRequest = null;
+  }
+
   if (room === "") return;
 
   if (this.username !== this.ANONIM_USER) {
-    snack.request({
+    // set current request variable to cancel it if the user make another action
+    this.currentRequest = snack.request({
       url: this.jzChatRead,
       data: {
         room: room,

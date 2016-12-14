@@ -268,7 +268,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       if (isTextOnly)
         sb.append("no messages");
       else
-        sb.append("{\"messages\": []}");
+        sb.append("{\"room\": \"").append(room).append("\",\"messages\": []}");
     }
     else
     {
