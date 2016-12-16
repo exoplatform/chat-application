@@ -2480,7 +2480,8 @@ ChatApplication.prototype.loadRoom = function() {
 
     jqchat(".users-online").removeClass("accordion-active");
     if (this.isDesktopView()) {
-      var $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+      var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
+      var $targetUser = jqchat("#users-online-"+escapedTargetUser);
       $targetUser.addClass("accordion-active");
       jqchat(".room-total").removeClass("badgeWhite");
       $targetUser.find(".room-total").addClass("badgeWhite");
@@ -2959,8 +2960,8 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     //console.log("firstLoad with user : *"+value+"*");
     this.targetUser = value;
     this.targetFullname = jzGetParam("lastFullName"+this.username);
-
-    $targetUser = jqchat("#users-online-"+this.targetUser.replace(".", "-"));
+    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
+    $targetUser = jqchat("#users-online-"+escapedTargetUser);
     if (!$targetUser.length) {
       this.targetUser = "";
       this.targetFullname = "";
