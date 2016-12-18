@@ -399,10 +399,10 @@
         <div class="uiSearchForm uiSearchInput team-users-search">
           <div onclick="event.cancelBubble=true;">
             <input id="team-add-user" type="text" >
-            <label class="team-add-user-label">&{exoplatform.chat.team.help}</label>
           </div>
         </div>
         <div class="team-users-results uiAutoComplete" style="display:none;"></div>
+        <span class="team-add-user-label">&{exoplatform.chat.team.help}</span>
       </div>
     </div>
     <div class="uiAction uiActionBorder">

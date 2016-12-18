@@ -419,10 +419,10 @@ table.list-rooms {
 
 .team-users-search {
   margin-top: 5px;
-   .team-add-user-label {
-    margin-top: 10px;
-  }
-
+}
+.team-add-user-label {
+  display: block;
+  margin-top: 5px;
 }
 .team-user-logo, .task-user-logo {
   margin: 2px 10px 0 -100%;
@@ -437,9 +437,9 @@ table.list-rooms {
   }
 }
 .team-users-results, .task-users-results {
-  margin-top: -36px;
   left: auto;
   top: auto;
+  min-width: 270px;
   max-height: 173px;
   overflow: auto;
   .team-user, .task-user {
@@ -451,7 +451,6 @@ table.list-rooms {
       white-space: nowrap;
       > .inner {
         margin-left: 26px;
-        margin-right: 26px;
         display: block;
       }
     }
