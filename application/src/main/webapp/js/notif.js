@@ -485,8 +485,11 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
  * Refresh Status
  */
 ChatNotification.prototype.refreshStatusChat = function() {
+  if(this.statusRequest) {
+    return;
+  }
   var thiss = this;
-  snack.request({
+  this.statusRequest = snack.request({
     url: thiss.jzGetStatus,
     data: {
       "user": thiss.username,
@@ -497,6 +500,7 @@ ChatNotification.prototype.refreshStatusChat = function() {
       'Authorization': 'Bearer ' + thiss.token
     }
   }, function (err, response){
+    thiss.statusRequest = null;
     if (err) {
       thiss.changeStatusChat("offline");
     } else {
@@ -512,7 +516,11 @@ ChatNotification.prototype.refreshStatusChat = function() {
  */
 ChatNotification.prototype.getStatus = function(targetUser, callback) {
 //  console.log("refreshStatus :: URL="+this.jzGetStatus);
-  jqchat.ajax({
+  if(this.statusRequest) {
+    return;
+  }
+  var thiss = this;
+  this.statusRequest = jqchat.ajax({
     url: this.jzGetStatus,
     data: {
       "user": this.username,
@@ -524,11 +532,13 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
     },
     context: this,
     success: function(response){
+      thiss.statusRequest = null;
       if (typeof callback === "function") {
         callback(targetUser, response);
       }
     },
     error: function(response){
+      thiss.statusRequest = null;
       if (typeof callback === "function") {
         callback(targetUser, "offline");
       }

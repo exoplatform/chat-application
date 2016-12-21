@@ -3060,7 +3060,6 @@ jqchat('#back').on("click", function() {
     }, 500);
     jqchat("#chat-video-button").attr("style", "");
 });
-var roomUserInterval = -1;
   jqchat('#chat-users .users-online > td:nth-child(1),#chat-users .users-online > td:nth-child(2)').on("click", function() {
     if(window.innerWidth <= 767){
 
@@ -3102,8 +3101,6 @@ var roomUserInterval = -1;
       jqchat(".left-chat").css("display", "none");
       jqchat(".room-name").html(thiss.targetFullname);
     }
-    clearInterval(roomUserInterval);
-    roomUserInterval = setInterval(function(){ chatNotification.getStatus(thiss.targetUser, userRoomStatus); }, 2500);
   });
 
   jqchat('#chat-users .users-online').on("mouseenter", function() {
