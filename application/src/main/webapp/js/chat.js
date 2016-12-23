@@ -361,22 +361,26 @@ var chatApplication = new ChatApplication();
     var handleGlobalNotifLayout = function () {
         jqchat("#room-detail .room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
         desktopNotification.getPreferredNotification().forEach(function (prefNotif, index, array) {
-          $("input[notif-type='"+prefNotif+"']").attr("checked","checked");
+          $("#global-config input[notif-type='"+prefNotif+"']").attr("checked","checked");
         });
         desktopNotification.getPreferredNotificationTrigger().forEach(function (prefNotif, index, array) {
-          $("input[notif-trigger='"+prefNotif+"']").attr("checked","checked");
+          $("#global-config input[notif-trigger='"+prefNotif+"']").attr("checked","checked");
         });
 
         if(desktopNotification.getPreferredNotification().length===0){ //if there is no preffered channel
-          $("input[notif-trigger]").attr('disabled',true);
+          $("#global-config input[notif-trigger]").attr('disabled',true);
+          $("#global-config input[notif-trigger]").parent().addClass("switchBtnDisabled");
+        } else {
+          $("#global-config input[notif-trigger]").removeAttr('disabled');
+          $("#global-config input[notif-trigger]").parent().removeClass("switchBtnDisabled");
         }
-        jqchat(':checkbox').iphoneStyle();
+        jqchat('#global-config :checkbox').iphoneStyle();
         enableMessageComposer(false);
         jqchat("#chat-team-button-dropdown").hide();
         jqchat("#userRoomStatus").removeClass("hide").show();
     };
 
-    $(document).on("click", "#close-global-notif-config, #back", function() {//close the setting page and go for the previous screen
+    $(document).on("click", "#global-config #close-global-notif-config, #back", function() {//close the setting page and go for the previous screen
         if(window.innerWidth <= 767){
 
             jqchat("#chat-room-detail-avatar").css("display", "block");
@@ -401,7 +405,7 @@ var chatApplication = new ChatApplication();
         chatApplication.loadRoom();
     });
 
-    $(document).on("click", "#close-room-notif-config", function() {//close the setting page and go for the previous screen
+    $(document).on("click", "#room-config #close-room-notif-config", function() {//close the setting page and go for the previous screen
 
         if(window.innerWidth > 767){
             chatApplication.loadRoom();
@@ -417,14 +421,14 @@ var chatApplication = new ChatApplication();
         }
       });
 
-   $(document).on("click", "input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
+   $(document).on("click", "#room-config input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
-     var roomTriggerWhenKeyWordValue = jqchat("#" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val()
+     var roomTriggerWhenKeyWordValue = jqchat("#room-config #" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val();
 
      if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
-       $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+       $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
      } else {
-       $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+       $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
      }
      var roomName = chatApplication.targetFullname;
      var roomId = chatApplication.room;
@@ -460,31 +464,38 @@ var chatApplication = new ChatApplication();
 
     });
 
-    $(document).on("keyup", "input[name='keyWords']", function(event) {//when entering keywords save them imediately
+    $(document).on("keyup", "#room-config input[name='keyWords']", function(event) {//when entering keywords save them imediately
         console.log(event.target.value);
     });
 
     //global desktop notification settings
    $("#configButton, #configButtonResp").on("click", function() {
-        jqchat("#chat-video-button").css("display", "none");
-        chatApplication.configMode = true;
-        jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
+       jqchat("#chat-video-button").css("display", "none");
+       chatApplication.configMode = true;
+       var $div = jqchat("#global-config-template");
 
-        if(window.innerWidth <= 767){
-            jqchat(".uiExtraLeftContainer").removeClass("displayContent");
-            jqchat(".uiGlobalRoomsContainer").css("display", "block");
+       $div = $div.clone();
+       $div.attr("id", "global-config");
+       $div.css("display", "inline-block");
 
-            setTimeout(function(){
-                jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
-            }, 200);
+       jqchat('#chats').html("");
+       $div.appendTo('#chats');
 
-            jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
-            jqchat("#userRoomStatus").addClass("hide");
-            jqchat("#chats").css("min-height", window.innerHeight+"px");
-        }
+       handleGlobalNotifLayout();
 
+       if (window.innerWidth <= 767) {
+           jqchat(".uiExtraLeftContainer").removeClass("displayContent");
+           jqchat(".uiGlobalRoomsContainer").css("display", "block");
+
+           setTimeout(function () {
+             jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
+           }, 200);
+
+           jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
+           jqchat("#userRoomStatus").addClass("hide");
+           jqchat("#chats").css("min-height", window.innerHeight + "px");
+       }
    });
-
 
     $("#menuButton").on("click", function() {
 
@@ -529,22 +540,21 @@ var handleRoomNotifLayout = function() {
     if (roomPrefTrigger) {
       if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
             roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
-        $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-        $("input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
+        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+        $("#room-config input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
       } else {
-        $("input#room-notif-trigger-when-key-word-value").prop('disabled', false);
-        $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
+        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+        $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
         var keywords = roomPrefTrigger.split(":")[1];
-        $("input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
+        $("#room-config input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
       }
     } else {
-      $("input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+      $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
     }
-    $("input#room-notif-trigger-when-key-word-value").unbind("blur");
-    $("input#room-notif-trigger-when-key-word-value").blur(function(evt) {
-      $("input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
+    $("#room-config input#room-notif-trigger-when-key-word-value").unbind("blur");
+    $("#room-config input#room-notif-trigger-when-key-word-value").blur(function(evt) {
+      $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
     });
-    jqchat(':checkbox').iphoneStyle();
   },false);
 };
 
@@ -552,7 +562,16 @@ var handleRoomNotifLayout = function() {
     $("#team-notification-button").on("click", function() {
       chatApplication.configMode = true;
       enableMessageComposer(false)
-      jqchat("#chats").load("/chat/partials/chat.notification.room.html", handleRoomNotifLayout);
+      var $div = jqchat("#room-config-template");
+
+      $div = $div.clone();
+      $div.attr("id", "room-config");
+      $div.css("display", "inline-block");
+
+      jqchat('#chats').html("");
+      $div.appendTo('#chats');
+
+      handleRoomNotifLayout();
 
       jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
       jqchat("#userRoomStatus").addClass("hide");
@@ -560,7 +579,7 @@ var handleRoomNotifLayout = function() {
 
     });
 
-    $(document).on("click touchstart", "div.notif-manner div.uiSwitchBtn", function() {
+    $(document).on("click touchstart", "#global-config div.notif-manner div.uiSwitchBtn", function() {
       var notifManner = $(this).find('input[notif-type]').attr("notif-type");
       jqchat.ajax({
         url: chatApplication.jzChatSetPreferredNotification,
@@ -577,9 +596,7 @@ var handleRoomNotifLayout = function() {
           operation = JSON.parse(operation);
           if(operation.done) {
             desktopNotification.setPreferredNotification(notifManner);//set into the memory
-            if(desktopNotification.getPreferredNotification().length<= 1){ //if there is one or no preferred channel
-                jqchat("#chats").load("/chat/partials/chat.notification.global.html", handleGlobalNotifLayout);
-            }
+            handleGlobalNotifLayout();
           } else {
             console.log("Request received but operation done without success..");
           }
@@ -591,7 +608,7 @@ var handleRoomNotifLayout = function() {
       });
     });
 
-    $(document).on("click touchstart", "div.notif-trigger div.uiSwitchBtn", function() {
+    $(document).on("click touchstart", "#global-config div.notif-trigger div.uiSwitchBtn", function() {
     if($(this).hasClass("switchBtnDisabled")) {//if the checkbox are disabled
       return;
     }
@@ -611,6 +628,7 @@ var handleRoomNotifLayout = function() {
           operation = JSON.parse(operation);
           if(operation.done) {
             desktopNotification.setPreferredNotificationTrigger(notifTrigger);//set into the memory
+            handleGlobalNotifLayout();
           } else {
             console.log("Request received but operation done without success..");
           }

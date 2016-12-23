@@ -346,6 +346,77 @@
   </div>
 </div>
 
+   <div id="global-config-template" style="display:none;">
+    <div class="row">
+    <div class="span6">
+    <h4 class="global offset1" style="position: relative; left:0%;">&{exoplatform.chat.desktopNotif.global.notifications}</h4>
+        <div id="id2" class="offset2 notif-trigger" style="position: relative; left: -6%;">
+            <input notif-trigger="notify-even-not-distrub" type="checkbox" class="switchBtnLabelOn yesno staus-true" />
+    <span class="channel-label"><b class="global">&{exoplatform.chat.desktopNotif.global.donotdist}</b></span>
+    <span class="channel-label clearfix" style="position: relative; left: 18%;"><i class="global"  >&{exoplatform.chat.desktopNotif.global.donotdist.description}</i></span>
+    </div>
+    </div>
+    <div class="span6">
+    <h4 class="global offset2" style="position: relative; left:-17%;">&{exoplatform.chat.desktopNotif.global.notifyme}</h4>
+
+        <div class="offset2 notif-manner" style="position: relative; left: -6%;">
+            <input notif-type="desktop" type="checkbox" class="switchBtnLabelOn yesno staus-true" />
+    <span class="channel-label"><b class="global">
+            &{exoplatform.chat.desktopNotif.global.desktop}</b></span>
+    <span class="channel-label clearfix" style="position: relative; left: 18%;"><i class="global">&{exoplatform.chat.desktopNotif.global.desktop.description}</i></span>
+    </div>
+        <div class="offset2 notif-manner" style="position: relative; left: -6%;">
+            <input notif-type="on-site" type="checkbox" class="switchBtnLabelOn yesno staus-true" />
+    <span class="channel-label"><b class="global">&{exoplatform.chat.desktopNotif.global.onsite}</b></span>
+    <span class="channel-label clearfix" style="position: relative; left: 18%;"><i class="global">&{exoplatform.chat.desktopNotif.global.onsite.description}</i></span>
+    </div>
+        <div class="offset2 notif-manner" style="position: relative; left: -6%;">
+            <input notif-type="bip" type="checkbox" class="switchBtnLabelOn yesno staus-true" />
+    <span class="channel-label"><b class="global">
+            &{exoplatform.chat.desktopNotif.global.beep}</b></span>
+    <span class="channel-label clearfix" style="position: relative; left: 18%;"><i class="global">&{exoplatform.chat.desktopNotif.global.beep.description}</i></span>
+    </div>
+    </div>
+    </div>
+<div class="row offset3">
+    <div class="span6">
+        <div class="offset2 wrapper">
+            <button id="close-global-notif-config" class="btn btn-default centered global">&{exoplatform.chat.desktopNotif.close} </button>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+    <div id="room-config-template" style="display:none;">
+    <div class="row">
+    <div class="span8 offset1 chat-room-config">
+
+    <input type="radio" room-notif-trigger="normal"  name="optionsRadios" id="optionsRadios1" value="option1" checked />
+    <span class="label-head"> &{exoplatform.chat.desktopNotif.local.normal.label}</span> <br/>
+    <span class="label-text local">&{exoplatform.chat.desktopNotif.local.normal}</span><br/>
+
+    <input type="radio" room-notif-trigger="silence"  name="optionsRadios" id="optionsRadios2" value="option2" />
+    <span class="label-head"> &{exoplatform.chat.desktopNotif.local.silence.label} </span><br/>
+    <span class="label-text local">&{exoplatform.chat.desktopNotif.local.silence}</span><br/>
+
+    <input type="radio" room-notif-trigger="keywords"  name="optionsRadios" id="optionsRadios3" value="option3" />
+    <span class="label-head"> &{exoplatform.chat.desktopNotif.local.alerton.label} :</span><br/>
+
+    <input class="radio-input-text" id="room-notif-trigger-when-key-word-value" type="text" placeholder=&{exoplatform.chat.desktopNotif.local.alerton.placeholder} class="radio-input-text" name="keyWord" /><br/>
+    <span class="label-text local">&{exoplatform.chat.desktopNotif.local.alerton}</span><br/><br/>
+    </div>
+</div>
+    <div class="row offset3">
+    <div class="span6">
+    <div class="offset2">
+    <button id="close-room-notif-config" class="btn btn-default local">&{exoplatform.chat.desktopNotif.close}
+    </button>
+        </div>
+    </div>
+</div>
+    </div>
+    
 <!-- ################################## -->
 <!-- ######### TEXT MODAL ############ -->
 <!-- ################################## -->
