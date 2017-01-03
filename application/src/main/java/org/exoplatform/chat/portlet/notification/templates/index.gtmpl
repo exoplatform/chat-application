@@ -8,6 +8,7 @@
   data-chat-page="<%=chatPage%>"
   data-chat-server-url="<%=chatServerURL%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
+  data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-space-id="<%=spaceId%>"
