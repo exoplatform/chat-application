@@ -54,6 +54,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
   this.jzSetStatus = options.urlSetStatus;
+  this.chatIntervalChat = options.chatInterval;
   this.chatIntervalNotif = options.notificationInterval;
   this.chatIntervalStatus = options.statusInterval;
   this.dbName = options.dbName;
@@ -901,6 +902,7 @@ var chatNotification = new ChatNotification();
       "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
+      "chatInterval": $notificationApplication.attr("data-chat-interval-chat"),
       "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
       "spaceId": $notificationApplication.attr("data-space-id"),

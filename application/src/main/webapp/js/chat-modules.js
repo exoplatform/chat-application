@@ -1419,7 +1419,7 @@ function showMiniChatPopup(room, type) {
       var jzChatGetRoom = chatServerUrl+"/getRoom";
       var jzChatUpdateUnreadMessages = chatServerUrl+"/updateUnreadMessages";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", 3000, false, dbName);
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", chatNotification.chatIntervalChat, false, dbName);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {

@@ -141,11 +141,11 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "");
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_URL, "/chatServer");
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "3000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "5000");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_STATUS, "15000");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_NOTIF, "3000");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_USERS, "5000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_STATUS, "60000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_NOTIF, "5000");
+      overridePropertyIfNotSet(PROPERTY_INTERVAL_USERS, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
       overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
       overridePropertyIfNotSet(PROPERTY_PUBLIC_MODE, "false");
