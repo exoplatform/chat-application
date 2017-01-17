@@ -20,6 +20,8 @@ import java.util.jar.Manifest;
 @ApplicationScoped
 public class BundleService {
 
+  private static String version;
+
   Map<String, String> resourceBundles = new HashMap<String, String>();
 
   @Ajax
@@ -59,9 +61,12 @@ public class BundleService {
 
   private static String getVersion()
   {
+    if(version != null) {
+      return version;
+    }
     InputStream inputStream = BundleService.class.getClassLoader().getResourceAsStream("/META-INF/MANIFEST.MF");
 
-    String version = "N/A";
+    version = "N/A";
     try {
       Manifest manifest = new Manifest(inputStream);
       Attributes attributes = manifest.getMainAttributes();
