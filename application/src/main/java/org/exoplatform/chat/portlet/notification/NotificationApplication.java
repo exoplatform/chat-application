@@ -30,7 +30,9 @@ import juzu.request.ApplicationContext;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.template.Template;
+
 import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.chat.common.utils.ChatUtils;
 import org.exoplatform.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.model.SpaceBean;
@@ -41,17 +43,20 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.common.router.ExoRouter;
 import org.exoplatform.social.common.router.ExoRouter.Route;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -233,6 +238,12 @@ public class NotificationApplication
     //
     PortalRequestContext pcontext = Util.getPortalRequestContext();
     String requestPath = pcontext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+
+    if (!pcontext.getSiteType().equals(SiteType.GROUP) ||
+        !pcontext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
+      return null;
+    }
+
     Route route = ExoRouter.route(requestPath);
     if (route == null) return null;
 
