@@ -50,6 +50,11 @@
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>chatCometd</servlet-name>
+    <servlet-class>org.exoplatform.addons.chat.server.CometdConfigurationServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
   <servlet-mapping>
     <servlet-name>JuzuServlet</servlet-name>
     <url-pattern>/</url-pattern>
