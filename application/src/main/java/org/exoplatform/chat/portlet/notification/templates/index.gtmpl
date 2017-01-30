@@ -4,6 +4,7 @@
 <div id="chat-status"
   data-username="<%=user%>"
   data-token="<%=token%>"
+  data-cometd-token="<%=cometdToken%>"
   data-session-id="<%=sessionId%>"
   data-chat-page="<%=chatPage%>"
   data-chat-server-url="<%=chatServerURL%>"

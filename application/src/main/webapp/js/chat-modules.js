@@ -152,6 +152,18 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     this.showMessages();
   }
   // Send message to server
+  //TODO remove require, inject cometd dependency at script level
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/eXo/Application/Chat', JSON.stringify({"user": user,
+      "targetUser": targetUser,
+      "room": room,
+      "message": encodeURIComponent(msg),
+      "options": encodeURIComponent(JSON.stringify(options)),
+      "timestamp": newMsgTimestamp,
+      "isSystem": isSystemMessage,
+      "dbName": this.dbName
+    }));
+  });
   var thiss = this;
   snack.request({
     url: thiss.jzChatSend,

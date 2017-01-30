@@ -54,6 +54,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -76,6 +77,7 @@ public class ChatApplication
 
 
   String token_ = "---";
+  String cometdToken = null;
   String remoteUser_ = null;
   String fullname_ = null;
   boolean isAdmin_=false;
@@ -101,6 +103,9 @@ public class ChatApplication
 
   @Inject
   CalendarService calendarService_;
+
+  @Inject
+  ContinuationService continuationService;
 
   @Inject
   WikiService wikiService_;
@@ -178,9 +183,12 @@ public class ChatApplication
     if(!portalURI.endsWith("/")){
       portalURI.concat("/");
     }
+    cometdToken = continuationService.getUserToken(remoteUser_);
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
-            .set("token", token_).set("chatServerURL", chatServerURL)
+            .set("token", token_)
+            .set("cometdToken", cometdToken)
+            .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
             .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)

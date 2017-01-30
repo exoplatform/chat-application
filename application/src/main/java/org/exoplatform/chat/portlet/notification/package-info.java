@@ -22,7 +22,8 @@
 @Bindings(
   {
     @Binding(value = org.exoplatform.services.organization.OrganizationService.class),
-    @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class)
+    @Binding(value = org.exoplatform.social.core.space.spi.SpaceService.class),
+    @Binding(value = org.exoplatform.ws.frameworks.cometd.ContinuationService.class)
   }
 )
 @Scripts({

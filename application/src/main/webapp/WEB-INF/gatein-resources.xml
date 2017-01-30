@@ -13,6 +13,9 @@
             <depends>
                 <module>uiChatPopupWindow</module>
             </depends>
+            <depends>
+                <module>commons-cometd3</module>
+            </depends>
         </module>
     </portlet>
     <module>

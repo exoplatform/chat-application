@@ -52,6 +52,7 @@ import org.exoplatform.social.common.router.ExoRouter.Route;
 import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -76,6 +77,7 @@ public class NotificationApplication
   Template index;
 
   String token_ = "---";
+  String cometdToken = null;
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
 
@@ -87,6 +89,9 @@ public class NotificationApplication
 
   @Inject
   BundleService bundleService_;
+
+  @Inject
+  ContinuationService continuationService;
 
   @Inject
   Provider<PortletPreferences> providerPreferences;
@@ -119,8 +124,10 @@ public class NotificationApplication
     String spaceId = getCurrentSpaceId();
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
+    cometdToken = continuationService.getUserToken(remoteUser_);
 
     return index.with().set("user", remoteUser_).set("token", token_)
+            .set("cometdToken", cometdToken)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalChat", chatIntervalChat)
             .set("chatIntervalStatus", chatIntervalStatus)

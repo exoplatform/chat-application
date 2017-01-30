@@ -12,6 +12,7 @@ var chatApplication = new ChatApplication();
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
+    chatApplication.cometdToken = $chatApplication.attr("data-cometd-token");
     var chatServerURL = $chatApplication.attr("data-chat-server-url");
     chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
@@ -54,6 +55,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
     chatApplication.jzEdit = chatServerURL+"/edit";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
+    chatApplication.wsEndpoint = chatServerURL+"/cometd/cometd";
     chatApplication.room = "";
 
     chatApplication.initChat();
@@ -76,8 +78,26 @@ var chatApplication = new ChatApplication();
     var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
+    //TODO remove require, inject cometd dependency at script level
+    require(['SHARED/commons-cometd3'], function(cCometD) {
+        cCometD.configure({
+            url: chatApplication.wsEndpoint,
+            'exoId': chatApplication.username, // current username
+            'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+        });
 
-    /**
+        cCometD.subscribe('/eXo/Application/Chat', null, function (event) {
+            var message = JSON.parse(event.data);
+            console.log('>>>>>>>> chat message via websocket : ' + message.message);
+
+            // Do what you want with the message...
+
+        });
+    });
+
+
+
+      /**
      ##################                           ##################
      ##################                           ##################
      ##################   JQUERY UI EVENTS        ##################
