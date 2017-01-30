@@ -1,4 +1,4 @@
-package org.exoplatform.addons.chat.server;
+package org.exoplatform.chat.server;
 
 import org.cometd.annotation.ServerAnnotationProcessor;
 import org.cometd.bayeux.server.BayeuxServer;

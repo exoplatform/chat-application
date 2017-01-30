@@ -52,7 +52,7 @@
   </servlet>
   <servlet>
     <servlet-name>chatCometd</servlet-name>
-    <servlet-class>org.exoplatform.addons.chat.server.CometdConfigurationServlet</servlet-class>
+    <servlet-class>org.exoplatform.chat.server.CometdConfigurationServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
