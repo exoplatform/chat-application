@@ -55,7 +55,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
     chatApplication.jzEdit = chatServerURL+"/edit";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
-    chatApplication.wsEndpoint = chatServerURL+"/cometd/cometd";
+    chatApplication.wsEndpoint = chatServerURL+"/cometd";
     chatApplication.room = "";
 
     chatApplication.initChat();
