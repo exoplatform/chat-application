@@ -37,6 +37,9 @@ import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -88,6 +91,10 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   public void write(String message, String user, String room, String isSystem, String options, String dbName)
   {
+    save(message, user, room, isSystem, options, dbName);
+  }
+
+  public String save(String message, String user, String room, String isSystem, String options, String dbName) {
     String roomType = getTypeRoomChat(room, dbName);
     DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+roomType);
 
@@ -115,6 +122,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     coll.insert(doc);
 
     this.updateRoomTimestamp(room, dbName);
+
+    return doc.get("_id").toString();
   }
 
   public void delete(String room, String user, String messageId, String dbName)
@@ -261,7 +270,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
-    int limit = (isTextOnly)?readTotalTxt:readTotalJson;
+    int limit = (isTextOnly) ? readTotalTxt:readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     if (!cursor.hasNext())
     {
@@ -272,6 +281,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
     else
     {
+      // Just being used as a local cache
       Map<String, UserBean> users = new HashMap<String, UserBean>();
 
       String timestamp, user, fullname, email, msgId, date;
@@ -293,8 +303,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
         user = dbo.get("user").toString();
         msgId = dbo.get("_id").toString();
+
         UserBean userBean = users.get(user);
-        if (userBean==null)
+        if (userBean == null)
         {
           userBean = userService.getUser(user, dbName);
           users.put(user, userBean);
@@ -314,7 +325,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         }
         catch (Exception e)
         {
-          LOG.info("Message Date Format Error : "+e.getMessage());
+          LOG.info("Message Date Format Error : " + e.getMessage());
         }
 
         if (isTextOnly)
@@ -340,30 +351,33 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         else
         {
           if (!first)sb.append(",");
-          sb.append("{\"id\": \"").append(msgId).append("\",");
-          sb.append("\"timestamp\": ").append(timestamp).append(",");
+          JSONObject msg = new JSONObject();
+          msg.put("id", msgId);
+          msg.put("timestamp", Long.parseLong(timestamp));
           if (dbo.containsField("lastUpdatedTimestamp")) {
-            sb.append("\"lastUpdatedTimestamp\": ").append(dbo.get("lastUpdatedTimestamp").toString()).append(",");
+            msg.put("lastUpdatedTimestamp", dbo.get("lastUpdatedTimestamp").toString());
           }
-          sb.append("\"user\": \"").append(user).append("\",");
-          sb.append("\"fullname\": \"").append(fullname).append("\",");
-          sb.append("\"email\": \"").append(email).append("\",");
-          sb.append("\"date\": \"").append(date).append("\",");
-          sb.append("\"message\": \"").append(StringEscapeUtils.escapeJson(dbo.get("message").toString())).append("\",");
+          msg.put("user", user);
+          msg.put("fullname", fullname);
+          msg.put("email", email);
+          msg.put("date", date);
+          msg.put("message", dbo.get("message").toString());
           if (dbo.containsField("options"))
           {
-            String options = dbo.get("options").toString();
-            if (options.startsWith("{"))
-              sb.append("\"options\": ").append(options).append(",");
-            else
-              sb.append("\"options\": \"").append(options).append("\",");
+            JSONParser parser = new JSONParser();
+            try {
+              msg.put("options", (JSONObject) parser.parse(dbo.get("options").toString()));
+            } catch (ParseException e) {
+              e.printStackTrace();
+            }
           }
           else
           {
-            sb.append("\"options\": \"\",");
+            msg.put("options", "");
           }
-          sb.append("\"type\": \"").append(dbo.get("type")).append("\",");
-          sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
+          msg.put("type", dbo.get("type"));
+          msg.put("isSystem", dbo.get("isSystem"));
+          sb.append(msg.toJSONString());
         }
 
         first = false;

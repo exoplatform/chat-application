@@ -4,7 +4,6 @@ var chatApplication = new ChatApplication();
 (function($){
 
   $(document).ready(function(){
-
     /**
      * Init Chat
      */
@@ -79,20 +78,21 @@ var chatApplication = new ChatApplication();
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
     //TODO remove require, inject cometd dependency at script level
-    require(['SHARED/commons-cometd3'], function(cCometD) {
-        cCometD.configure({
-            url: chatApplication.wsEndpoint,
-            'exoId': chatApplication.username, // current username
-            'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
-        });
+    require(['SHARED/commons-cometd3'], function (cCometD) {
+      cCometD.configure({
+        url: chatApplication.wsEndpoint,
+        'exoId': chatApplication.username, // current username
+        'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+      });
 
-        cCometD.subscribe('/service/chat', null, function (event) {
-            var message = JSON.parse(event.data);
-            console.log('>>>>>>>> chat message via websocket : ' + message.data.msg);
-
-            // Do what you want with the message...
-
-        });
+      cCometD.subscribe('/eXo/Application/chat', null, function (event) {
+        console.log("Got new message " + (new Date()).getTime());
+        var message = JSON.parse(event.data);
+        if (chatApplication.chatRoom.id === message.room) {
+          chatApplication.chatRoom.addMessagesToLocalList({"messages": [message]}, true);
+        }
+        chatApplication.chatRoom.showMessages();
+      });
     });
 
 
@@ -2694,7 +2694,10 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   // check if scroll was at max before the new message
   var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
   var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
-  $chats.html('<span>' + out + '</span>');
+
+  // Adding message text to DOM
+  $chats.html(out);
+
   sh_highlightDocument();
   // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
   if (scrollAtMax) {

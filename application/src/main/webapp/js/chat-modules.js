@@ -87,7 +87,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastTS"+thiss.username, "0");
       jzStoreParam("lastUpdatedTS"+thiss.username, "0");
       thiss.chatEventInt = window.clearInterval(thiss.chatEventInt);
-      thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
+      // thiss.chatEventInt = setInterval(jqchat.proxy(thiss.refreshChat, thiss), thiss.chatIntervalChat);
       thiss.refreshChat(true, function() {
         // always scroll to the last message when loading a chat room
         var $chats = jqchat("#chats");
@@ -140,51 +140,28 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     tmpOptions = tmpOptions.replace(/</g, "&lt;");
     tmpOptions = tmpOptions.replace(/>/g, "&gt;");
     tmpOptions = snack.parseJSON(tmpOptions);
-    this.addMessagesToLocalList({"messages": [
-      {"user": this.username,
-      "fullname": chatBundleData["exoplatform.chat.you"],
-      "date": "pending",
-      "timestamp": newMsgTimestamp,
-      "message": tmpMessage,
-      "options": tmpOptions,
-      "isSystem": isSystemMessage}
-    ]}, true);
-    this.showMessages();
   }
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({"event": "message-sent",
-      "room": targetUser,
+      "targetUser": targetUser,
+      "room": room,
       "sender": user,
+      "fullname": chatApplication.fullname,
       "ts": newMsgTimestamp,
       "dbName": this.dbName,
       "data": {
         "msg": encodeURIComponent(msg)
       }
-    }));
-  });
-  var thiss = this;
-  snack.request({
-    url: thiss.jzChatSend,
-    data: {"user": user,
-      "targetUser": targetUser,
-      "room": room,
-      "message": encodeURIComponent(msg),
-      "options": encodeURIComponent(JSON.stringify(options)),
-      "timestamp": newMsgTimestamp,
-      "isSystem": isSystemMessage,
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  }, function (err, response){
-    if (!err) {
-      if (typeof callback === "function") {
-        callback();
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+        if (typeof callback === "function") {
+          callback();
+        }
       }
-    }
+    });
   });
 };
 
@@ -524,6 +501,22 @@ ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
 
 /**
  * Convert local messages list in HTML output to display the list of messages
+ *
+ * A message object:
+ * {
+ *    "id": "589affe904e5fe0b2efc1ac0",
+ *    "timestamp": 1486553065827,
+ *    "user": "trongtt",
+ *    "fullname": "Trong Changed Tran",
+ *    "email": "trongtt@gmail.com",
+ *    "date": "06:24 PM",
+ *    "message": "sdg",
+ *    "options": "",
+ *    "type": "null",
+ *    "isSystem": "false",
+ *    "___id": "T000006R000004",
+ *    "___s": true
+ * }
  */
 ChatRoom.prototype.showMessages = function() {
   var out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
@@ -625,6 +618,7 @@ ChatRoom.prototype.showMessages = function() {
         if (message.type === "DELETED" || message.type === "EDITED") {
           msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
+        console.log()
         msRightInfo += "          <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
@@ -713,7 +707,6 @@ ChatRoom.prototype.showMessages = function() {
 
         if (typeof message.options == "object")
           options = message.options;
-        var nbOptions = thiss.getObjectSize(options);
 
         if (options.type==="call-on") {
           if (options.timestamp!==undefined) {
@@ -855,21 +848,6 @@ ChatRoom.prototype.getDate = function(timestampServer) {
   return sTime;
 
 }
-
-
-ChatRoom.prototype.getObjectSize = function(obj) {
-  var size = 0;
-  if (this.IsIE8Browser()) {
-    for (prop in obj) {
-      if (obj.hasOwnProperty(prop))
-        size++;
-    }
-  } else {
-    size = Object.keys(obj).length
-  }
-  return size;
-}
-
 
 
 /**

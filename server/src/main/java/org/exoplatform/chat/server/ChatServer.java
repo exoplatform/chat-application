@@ -57,7 +57,9 @@ import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.UserContext;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.commons.utils.HTMLSanitizer;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -74,6 +76,7 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
@@ -152,9 +155,9 @@ public class ChatServer
 
   @Resource
   @Route("/send")
-  public Response.Content send(String user, String token, String targetUser, String message, String room,
+  public Response.Content send(String sender, String token, String targetUser, String message, String room,
                                String isSystem, String options, String dbName) throws IOException {
-    if (!tokenService.hasUserWithToken(user, token, dbName))
+    if (!tokenService.hasUserWithToken(sender, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
@@ -164,7 +167,7 @@ public class ChatServer
       if (message!=null)
       {
         // Only members of the room can send messages
-        if (!isMemberOfRoom(user, room, dbName)) {
+        if (!isMemberOfRoom(sender, room, dbName)) {
           return Response.content(403, "Petit malin !");
         }
 
@@ -176,40 +179,36 @@ public class ChatServer
           // Get original value
         }
         if (isSystem==null) isSystem="false";
-        chatService.write(message, user, room, isSystem, options, dbName);
+        chatService.write(message, sender, room, isSystem, options, dbName);
         if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
         {
           String content = ((message.length()>30)?message.substring(0,29)+"...":message);
           String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
 
-
+          List<String> usersToBeNotified = null;
           if (targetUser.startsWith(ChatService.SPACE_PREFIX))
           {
-            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.SPACE_PREFIX
+            usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.SPACE_PREFIX
                     .length()), ChatService.TYPE_ROOM_SPACE, dbName);
-            for (String tuser:users)
-            {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content,
-                      intranetPage + "?room=" + room, options, dbName);
-            }
           }
           else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
           {
-            List<String> users = userService.getUsersFilterBy(user, targetUser.substring(ChatService.TEAM_PREFIX
+            usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.TEAM_PREFIX
                     .length()), ChatService.TYPE_ROOM_TEAM, dbName);
-            for (String tuser:users)
-            {
-              notificationService.addNotification(tuser, user, "chat", "room", room, content,
-                      intranetPage + "?room=" + room, options, dbName);
-            }
           }
           else
           {
-            notificationService.addNotification(targetUser, user, "chat", "room", room, content,
-                    intranetPage + "?room=" + room, options, dbName);
+            usersToBeNotified.add(targetUser);
           }
 
-          notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+          String data = new StringBuilder("{room: \"").append(room).append("\",")
+              .append("msg: \"").append(StringEscapeUtils.escapeJson(content)).append("\"}").toString();
+          for (String receiver: usersToBeNotified) {
+            notificationService.addNotification(receiver, sender, "chat", "room", room, content,
+                intranetPage + "?room=" + room, options, dbName);
+          }
+
+          notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
         }
       }
 
@@ -233,7 +232,7 @@ public class ChatServer
 
     Long from = null;
     try {
-      if (fromTimestamp!=null && !"".equals(fromTimestamp))
+      if (fromTimestamp != null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");

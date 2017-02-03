@@ -28,7 +28,7 @@ public class CometdConfigurationServlet extends GenericServlet {
   public void init() throws ServletException {
     ExoContainer exoContainer = ExoContainerContext.getCurrentContainerIfPresent();
     LOG.debug("CometdConfigurationServlet init");
-    if(exoContainer != null) {
+    if(true) {
       LOG.debug("Chat mode detected : 1 server");
       // Add a portal container init task to initialize Cometd stuff
       PortalContainer.addInitTask(getServletContext(), new RootContainer.PortalContainerPostInitTask() {
