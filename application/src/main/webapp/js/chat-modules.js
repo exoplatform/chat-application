@@ -154,7 +154,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
-    cCometD.publish('/eXo/Application/Chat', JSON.stringify({"user": user,
+    cCometD.publish('/service/chat', JSON.stringify({"user": user,
       "targetUser": targetUser,
       "room": room,
       "message": encodeURIComponent(msg),

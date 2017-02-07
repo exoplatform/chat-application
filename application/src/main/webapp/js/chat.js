@@ -86,7 +86,7 @@ var chatApplication = new ChatApplication();
             'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
         });
 
-        cCometD.subscribe('/eXo/Application/Chat', null, function (event) {
+        cCometD.subscribe('/service/chat', null, function (event) {
             var message = JSON.parse(event.data);
             console.log('>>>>>>>> chat message via websocket : ' + message.message);
 
