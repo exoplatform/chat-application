@@ -154,14 +154,14 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
-    cCometD.publish('/service/chat', JSON.stringify({"user": user,
-      "targetUser": targetUser,
-      "room": room,
-      "message": encodeURIComponent(msg),
-      "options": encodeURIComponent(JSON.stringify(options)),
-      "timestamp": newMsgTimestamp,
-      "isSystem": isSystemMessage,
-      "dbName": this.dbName
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-sent",
+      "room": targetUser,
+      "sender": user,
+      "ts": newMsgTimestamp,
+      "dbName": this.dbName,
+      "data": {
+        "msg": encodeURIComponent(msg)
+      }
     }));
   });
   var thiss = this;

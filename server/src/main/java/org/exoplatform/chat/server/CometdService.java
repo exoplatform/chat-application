@@ -6,6 +6,11 @@ import org.cometd.annotation.Subscription;
 import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ServerMessage;
 import org.cometd.bayeux.server.ServerSession;
+import org.exoplatform.container.PortalContainer;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.inject.Inject;
 
@@ -25,8 +30,29 @@ public class CometdService {
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     System.out.println(">>>>>>>>> message received on /service/chat : " + message.getJSON());
 
-    //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
-    //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
+    try {
+      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+
+      JSONParser jsonParser = new JSONParser();
+      JSONObject jsonMessage = (JSONObject) jsonParser.parse((String) message.getData());
+
+      String event = (String) jsonMessage.get("event");
+
+      //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
+      //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
+
+      if(event.equals("message-sent")) {
+        // TODO store message in db
+
+        String room = (String) jsonMessage.get("room");
+        if(bayeux.isPresent(room)) {
+          bayeux.sendMessage(room, "/service/chat", jsonMessage.toJSONString(), null);
+        }
+
+      }
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
   }
 
 }

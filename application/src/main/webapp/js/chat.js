@@ -88,7 +88,7 @@ var chatApplication = new ChatApplication();
 
         cCometD.subscribe('/service/chat', null, function (event) {
             var message = JSON.parse(event.data);
-            console.log('>>>>>>>> chat message via websocket : ' + message.message);
+            console.log('>>>>>>>> chat message via websocket : ' + message.data.msg);
 
             // Do what you want with the message...
 
