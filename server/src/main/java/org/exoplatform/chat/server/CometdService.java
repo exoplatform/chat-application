@@ -29,6 +29,7 @@ import java.util.List;
 @Service
 public class CometdService {
 
+  public static final String COMETD_CHANNEL_NAME = "/service/chat";
   UserService userService;
 
   @Inject
@@ -38,9 +39,9 @@ public class CometdService {
     userService = GuiceManager.getInstance().getInstance(UserService.class);
   }
 
-  @Listener("/service/chat")
+  @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
-    System.out.println(">>>>>>>>> message received on /service/chat : " + message.getJSON());
+    System.out.println(">>>>>>>>> message received on " + COMETD_CHANNEL_NAME + " : " + message.getJSON());
 
     try {
       EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
@@ -56,7 +57,7 @@ public class CometdService {
       if(event.equals("user-status-changed")) {
         String room = (String) jsonMessage.get("room");
         if(bayeux.isPresent(room)) {
-          bayeux.sendMessage(room, "/service/chat", jsonMessage.toJSONString(), null);
+          bayeux.sendMessage(room, COMETD_CHANNEL_NAME, jsonMessage.toJSONString(), null);
         }
 
         userService.setStatus((String) jsonMessage.get("room"),
@@ -98,7 +99,7 @@ public class CometdService {
 
         for (String receiver: receivers) {
           if(bayeux.isPresent(receiver)) {
-            bayeux.sendMessage(receiver, "/eXo/Application/chat", jsonMessage.toJSONString(), null);
+            bayeux.sendMessage(receiver, COMETD_CHANNEL_NAME, jsonMessage.toJSONString(), null);
           }
         }
       }
