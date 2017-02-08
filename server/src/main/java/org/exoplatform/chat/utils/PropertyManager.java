@@ -72,7 +72,6 @@ public class PropertyManager {
   public static final String PROPERTY_CHAT_PORTAL_PAGE = "chatPortalPage";
   public static final String PROPERTY_INTERVAL_CHAT = "chatIntervalChat";
   public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
-  public static final String PROPERTY_INTERVAL_STATUS = "chatIntervalStatus";
   public static final String PROPERTY_INTERVAL_NOTIF = "chatIntervalNotif";
   public static final String PROPERTY_INTERVAL_USERS = "chatIntervalUsers";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
@@ -143,7 +142,6 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "5000");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_STATUS, "60000");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_NOTIF, "5000");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_USERS, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");

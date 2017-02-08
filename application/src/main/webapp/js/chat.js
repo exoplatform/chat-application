@@ -15,7 +15,6 @@ var chatApplication = new ChatApplication();
     var chatServerURL = $chatApplication.attr("data-chat-server-url");
     chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
-    chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
     chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
 
@@ -78,20 +77,31 @@ var chatApplication = new ChatApplication();
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
     //TODO remove require, inject cometd dependency at script level
-    require(['SHARED/commons-cometd3'], function (cCometD) {
+    require(['SHARED/commons-cometd3'], function(cCometD) {
       cCometD.configure({
         url: chatApplication.wsEndpoint,
         'exoId': chatApplication.username, // current username
         'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
       });
 
-      cCometD.subscribe('/eXo/Application/chat', null, function (event) {
-        console.log("Got new message " + (new Date()).getTime());
+      cCometD.subscribe('/service/chat', null, function (event) {
         var message = JSON.parse(event.data);
-        if (chatApplication.chatRoom.id === message.room) {
-          chatApplication.chatRoom.addMessagesToLocalList({"messages": [message]}, true);
+        console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
+
+        // Do what you want with the message...
+        if (message.event == 'user-status-changed') {
+          if (message.room == chatApplication.username) {
+            // update current user status
+            chatNotification.changeStatusChat(message.data.status);
+          }
+        } else {
+          console.log("Got new message " + (new Date()).getTime());
+          var message = JSON.parse(event.data);
+          if (chatApplication.chatRoom.id === message.room) {
+            chatApplication.chatRoom.addMessagesToLocalList({"messages": [message]}, true);
+          }
+          chatApplication.chatRoom.showMessages();
         }
-        chatApplication.chatRoom.showMessages();
       });
     });
 
@@ -3218,34 +3228,26 @@ ChatApplication.prototype.isDesktopView = function() {
 ChatApplication.prototype.setStatus = function(status, callback) {
 
   if (status !== undefined) {
-    // Update mongodb chat status
-
-    jqchat.ajax({
-      url: this.jzSetStatus,
-      data: { "user": this.username,
-        "status": status,
-        "timestamp": new Date().getTime(),
-        "dbName": this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      },
-      context: this,
-
-      success: function(response){
-        //console.log("SUCCESS:setStatus::"+response);
-        chatNotification.changeStatusChat(response);
-        if (typeof callback === "function") {
-          callback(response);
-        }
-
-      },
-      error: function(response){
-        chatNotification.changeStatusChat("offline");
-        if (typeof callback === "function") {
-          callback("offline");
-        }
-      }
+    // Send update status message (forward event to others client and update mongodb chat status)
+    var thiss = this;
+    require(['SHARED/commons-cometd3'], function(cCometD) {
+        cCometD.publish('/service/chat', JSON.stringify({
+            "event": "user-status-changed",
+            "sender": thiss.username,
+            "room": thiss.username,
+            "ts": new Date().getTime(),
+            "dbName": this.dbName,
+            "data": {
+                "status": status
+            }
+        }), function(publishAck) {
+            if (publishAck.successful) {
+                console.log("The message reached the server");
+                if (typeof callback === "function") {
+                    callback(status);
+                }
+            }
+        })
     });
 
     // Update platform user status

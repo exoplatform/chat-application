@@ -5,7 +5,6 @@
   data-chat-server-url="<%=chatServerURL%>"
   data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-session="<%=chatIntervalSession%>"
-  data-chat-interval-status="<%=chatIntervalStatus%>"
   data-chat-interval-users="<%=chatIntervalUsers%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
   data-public-mode="<%=publicMode%>"

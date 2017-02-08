@@ -21,13 +21,14 @@ function ChatNotification() {
   this.jzInitUserProfile = "";
   this.jzNotification = "";
   this.jzGetStatus = "";
-  this.jzSetStatus = "";
+
+  this.wsEndpoint = "";
+  this.cometdToken = "";
 
   this.notifEventURL = "";
   this.notifEventInt = "";
   this.chatIntervalNotif = "";
   this.statusEventInt = "";
-  this.chatIntervalStatus = "";
   this.dbName = "";
 
   this.oldNotifTotal = 0;
@@ -53,10 +54,8 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzInitUserProfile = options.urlInitUserProfile;
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
-  this.jzSetStatus = options.urlSetStatus;
   this.chatIntervalChat = options.chatInterval;
   this.chatIntervalNotif = options.notificationInterval;
-  this.chatIntervalStatus = options.statusInterval;
   this.dbName = options.dbName;
   this.notifEventURL = this.jzNotification+'?user='+this.username+'&dbName='+this.dbName;
   this.spaceId = options.spaceId;
@@ -65,6 +64,8 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzChatSend = options.jzChatSend;
   this.portalURI = options.portalURI;
   this.chatPage = this.portalURI + "/chat";
+  this.wsEndpoint = options.wsEndpoint;
+  this.cometdToken = options.cometdToken;
 };
 
 /**
@@ -111,7 +112,6 @@ ChatNotification.prototype.initUserProfile = function(callback) {
       this.refreshNotif();
 
       this.statusEventInt = window.clearInterval(this.statusEventInt);
-      this.statusEventInt = setInterval(jqchat.proxy(this.refreshStatusChat, this), this.chatIntervalStatus);
       this.refreshStatusChat();
     },
     error: function () {
@@ -485,32 +485,10 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
 };
 
 /**
- * Refresh Status
+ * Refresh Current User Status
  */
 ChatNotification.prototype.refreshStatusChat = function() {
-  if(this.statusRequest) {
-    return;
-  }
-  var thiss = this;
-  this.statusRequest = snack.request({
-    url: thiss.jzGetStatus,
-    data: {
-      "user": thiss.username,
-      "timestamp": new Date().getTime(),
-      "dbName": thiss.dbName 
-    },
-    headers: {
-      'Authorization': 'Bearer ' + thiss.token
-    }
-  }, function (err, response){
-    thiss.statusRequest = null;
-    if (err) {
-      thiss.changeStatusChat("offline");
-    } else {
-      thiss.changeStatusChat(response);
-    }
-  });
-
+  this.getStatus(this.username, this.changeStatusChat)
 };
 
 /**
@@ -518,7 +496,6 @@ ChatNotification.prototype.refreshStatusChat = function() {
  * @param targetUser
  */
 ChatNotification.prototype.getStatus = function(targetUser, callback) {
-//  console.log("refreshStatus :: URL="+this.jzGetStatus);
   if(this.statusRequest) {
     return;
   }
@@ -557,35 +534,21 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
 ChatNotification.prototype.setStatus = function(status, callback) {
 
   if (status !== undefined) {
-    // Update mongo chat status
+    chatNotification.changeStatusChat(status);
 
-    jqchat.ajax({
-      url: this.jzSetStatus,
-      data: { "user": this.username,
-        "status": status,
-        "timestamp": new Date().getTime(),
-        "dbName": this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      },
-      context: this,
-
-      success: function(response){
-        //console.log("SUCCESS:setStatus::"+response);
-        chatNotification.changeStatusChat(response);
-        if (typeof callback === "function") {
-          callback(response);
+    // Send update status message (forward event to others client and update mongodb chat status)
+    var thiss = this;
+    require(['SHARED/commons-cometd3'], function(cCometD) {
+      cCometD.publish('/service/chat', JSON.stringify({
+        "event": "user-status-changed",
+        "sender": thiss.username,
+        "room": thiss.username,
+        "ts": new Date().getTime(),
+        "dbName": this.dbName,
+        "data": {
+          "status": status
         }
-
-      },
-      error: function(response){
-        chatNotification.changeStatusChat("offline");
-        if (typeof callback === "function") {
-          callback("offline");
-        }
-      }
-
+      }));
     });
 
     // Update platform user status
@@ -913,8 +876,34 @@ var chatNotification = new ChatNotification();
       "dbName": $notificationApplication.attr("data-db-name"),
       "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
       "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
-      "portalURI": $notificationApplication.attr("data-portal-uri")
+      "portalURI": $notificationApplication.attr("data-portal-uri"),
+      "wsEndpoint": $notificationApplication.attr("data-chat-server-url")+"/cometd",
+      "cometdToken": $notificationApplication.attr("data-cometd-token")
     });
+
+    // init cometd connection and subscriptions
+    require(['SHARED/commons-cometd3'], function(cCometD) {
+      cCometD.configure({
+        url: chatNotification.wsEndpoint,
+        'exoId': chatNotification.username, // current username
+        'exoToken': chatNotification.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+      });
+
+      cCometD.subscribe('/service/chat', null, function (event) {
+        var message = JSON.parse(event.data);
+        console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
+
+        // Do what you want with the message...
+        if(message.event == 'user-status-changed') {
+          if(message.room == chatNotification.username) {
+            // update current user status
+            chatNotification.changeStatusChat(message.data.status);
+          }
+        }
+
+      });
+    });
+
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
 

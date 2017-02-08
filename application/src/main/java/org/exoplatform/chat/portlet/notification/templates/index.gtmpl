@@ -11,7 +11,6 @@
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
   data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-notif="<%=chatIntervalNotif%>"
-  data-chat-interval-status="<%=chatIntervalStatus%>"
   data-space-id="<%=spaceId%>"
   data-db-name="<%=dbName%>"
   data-portal-uri="<%=portalURI%>"

@@ -2,7 +2,6 @@ package org.exoplatform.chat.server;
 
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
-import org.cometd.annotation.Subscription;
 import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ServerMessage;
 import org.cometd.bayeux.server.ServerSession;
@@ -15,6 +14,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
+import org.exoplatform.chat.listener.GuiceManager;
+import org.exoplatform.chat.services.UserService;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -28,8 +29,14 @@ import java.util.List;
 @Service
 public class CometdService {
 
+  UserService userService;
+
   @Inject
   private BayeuxServer bayeuxServer;
+
+  public CometdService() {
+    userService = GuiceManager.getInstance().getInstance(UserService.class);
+  }
 
   @Listener("/service/chat")
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
@@ -46,7 +53,16 @@ public class CometdService {
       //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
       //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
 
-      if(event.equals("message-sent")) {
+      if(event.equals("user-status-changed")) {
+        String room = (String) jsonMessage.get("room");
+        if(bayeux.isPresent(room)) {
+          bayeux.sendMessage(room, "/service/chat", jsonMessage.toJSONString(), null);
+        }
+
+        userService.setStatus((String) jsonMessage.get("room"),
+                (String) ((JSONObject) jsonMessage.get("data")).get("status"),
+                (String) jsonMessage.get("dbName"));
+      } else if(event.equals("message-sent")) {
         // TODO store message in db
         ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
         UserService userService = GuiceManager.getInstance().getInstance(UserService.class);
