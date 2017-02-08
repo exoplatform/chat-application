@@ -178,38 +178,8 @@ public class ChatServer
           // Chat server cannot do anything in this case
           // Get original value
         }
-        if (isSystem==null) isSystem="false";
-        chatService.write(message, sender, room, isSystem, options, dbName);
-        if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
-        {
-          String content = ((message.length()>30)?message.substring(0,29)+"...":message);
-          String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-
-          List<String> usersToBeNotified = null;
-          if (targetUser.startsWith(ChatService.SPACE_PREFIX))
-          {
-            usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.SPACE_PREFIX
-                    .length()), ChatService.TYPE_ROOM_SPACE, dbName);
-          }
-          else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-          {
-            usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.TEAM_PREFIX
-                    .length()), ChatService.TYPE_ROOM_TEAM, dbName);
-          }
-          else
-          {
-            usersToBeNotified.add(targetUser);
-          }
-
-          String data = new StringBuilder("{room: \"").append(room).append("\",")
-              .append("msg: \"").append(StringEscapeUtils.escapeJson(content)).append("\"}").toString();
-          for (String receiver: usersToBeNotified) {
-            notificationService.addNotification(receiver, sender, "chat", "room", room, content,
-                intranetPage + "?room=" + room, options, dbName);
-          }
-
-          notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
-        }
+        if (isSystem == null) isSystem = "false";
+        chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
       }
 
     }
@@ -230,17 +200,17 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
+    // Only members of the room can view the messages
+    if (!isMemberOfRoom(user, room, dbName)) {
+      return Response.content(403, "Petit malin !");
+    }
+
     Long from = null;
     try {
       if (fromTimestamp != null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
-    }
-
-    // Only members of the room can view the messages
-    if (!isMemberOfRoom(user, room, dbName)) {
-      return Response.content(403, "Petit malin !");
     }
 
     String data = chatService.read(room, userService, "true".equals(isTextOnly), from, dbName);
@@ -260,7 +230,7 @@ public class ChatServer
 
     Long from = null;
     Long to = null;
-    String html = "";
+
     try {
       if (fromTimestamp!=null && !"".equals(fromTimestamp))
         from = Long.parseLong(fromTimestamp);
@@ -327,7 +297,7 @@ public class ChatServer
           senderMail = userBean.getEmail();
         }
       }
-      html = reportBean.getAsHtml(title, serverBase,locale);
+      String html = reportBean.getAsHtml(title, serverBase,locale);
 
       // inline images
       String prevUser = "";

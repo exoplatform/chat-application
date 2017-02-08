@@ -78,30 +78,7 @@ public class CometdService {
         String msg = (String) ((JSONObject)jsonMessage.get("data")).get("msg");
         String targetUser = (String) jsonMessage.get("targetUser");
 
-        String id = chatService.save(msg, sender, room, isSystem, options, dbName);
-        MessageBean sentMsg = chatService.getMessage(room, id, dbName);
-
-        List<String> receivers = null;
-        if (targetUser.startsWith(ChatService.SPACE_PREFIX))
-        {
-          receivers = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.SPACE_PREFIX
-              .length()), ChatService.TYPE_ROOM_SPACE, dbName);
-        }
-        else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-        {
-          receivers = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.TEAM_PREFIX
-              .length()), ChatService.TYPE_ROOM_TEAM, dbName);
-        }
-        else
-        {
-          receivers.add(targetUser);
-        }
-
-        for (String receiver: receivers) {
-          if(bayeux.isPresent(receiver)) {
-            bayeux.sendMessage(receiver, COMETD_CHANNEL_NAME, jsonMessage.toJSONString(), null);
-          }
-        }
+        chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
       }
     } catch (ParseException e) {
       e.printStackTrace();

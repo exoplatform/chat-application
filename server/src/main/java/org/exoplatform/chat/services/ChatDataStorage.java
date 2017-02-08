@@ -25,39 +25,11 @@ import org.exoplatform.chat.model.RoomsBean;
 
 import java.util.List;
 
-public interface ChatService
+public interface ChatDataStorage
 {
-  public static final String M_ROOM_PREFIX = "messages_room_";
-  public static final String M_ROOMS_COLLECTION = "rooms";
-
-  public static final String SPACE_PREFIX = "space-";
-  public static final String TEAM_PREFIX = "team-";
-  public static final String EXTERNAL_PREFIX = "external-";
-
-  public static final String TYPE_ROOM_USER = "u";
-  public static final String TYPE_ROOM_SPACE = "s";
-  public static final String TYPE_ROOM_TEAM = "t";
-  public static final String TYPE_ROOM_EXTERNAL = "e";
-
-  public static final String TYPE_DELETED = "DELETED";
-  public static final String TYPE_EDITED = "EDITED";
-
-  public static final String DESKTOP_NOTIFICATION = "desktop";
-  public static final String ON_SITE = "on-site";
-  public static final String BIP = "bip";
-
-  public static final String NOTIFY_ME_WHEN_MENTION= "notify-when-mention";
-  public static final String NOTIFY_ME_EVEN_NOT_DISTRUB = "notify-even-not-distrub";
-
-  public static final String NOTIFY_ME_ON_ROOM_KEY_WORD = "keywords";
-  public static final String DO_NOT_NOTIFY_ME_ON_ROOM = "silence";
-  public static final String NOTIFY_ME_ON_ROOM_NORMAL = "normal";
-
-  public static final String USER_AVATAR_URL= "/rest/v1/social/users/{}/avatar";
-
   public void write(String message, String user, String room, String isSystem, String dbName);
 
-  public void write(String message, String user, String room, String isSystem, String options, String dbName, String targetUser);
+  public void write(String message, String user, String room, String isSystem, String options, String dbName);
 
   public String save(String message, String user, String room, String isSystem, String options, String dbName);
 

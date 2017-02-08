@@ -175,8 +175,6 @@ public class ChatTestCase extends AbstractChatTestCase
     assertNotNull(msgJson.get("timestamp"));
     assertNotNull(msgJson.get("user"));
     assertNotNull(msgJson.get("fullname"));
-    assertNotNull(msgJson.get("email"));
-    assertNotNull(msgJson.get("date"));
     assertNull(msgJson.get("type"));
     assertNotNull(msgJson.get("isSystem"));
 
