@@ -171,22 +171,14 @@ public class ChatTestCase extends AbstractChatTestCase
 
     JSONObject msgJson = (JSONObject)messages.get(0);
 
-    String val = (String)msgJson.get("id");
-    assertNotNull(val);
-    Long vall = (Long)msgJson.get("timestamp");
-    assertNotNull(vall);
-    val = (String)msgJson.get("user");
-    assertNotNull(val);
-    val = (String)msgJson.get("fullname");
-    assertNotNull(val);
-    val = (String)msgJson.get("email");
-    assertNotNull(val);
-    val = (String)msgJson.get("date");
-    assertNotNull(val);
-    val = (String)msgJson.get("type");
-    assertNotNull(val);
-    val = (String)msgJson.get("isSystem");
-    assertNotNull(val);
+    assertNotNull(msgJson.get("id"));
+    assertNotNull(msgJson.get("timestamp"));
+    assertNotNull(msgJson.get("user"));
+    assertNotNull(msgJson.get("fullname"));
+    assertNotNull(msgJson.get("email"));
+    assertNotNull(msgJson.get("date"));
+    assertNull(msgJson.get("type"));
+    assertNotNull(msgJson.get("isSystem"));
 
 
   }
@@ -219,13 +211,10 @@ public class ChatTestCase extends AbstractChatTestCase
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
 
-    String message2 = (String)((JSONObject)messages.get(0)).get("message");
-    String type2 = (String)((JSONObject)messages.get(0)).get("type");
-    String id2 = (String)((JSONObject)messages.get(0)).get("id");
-
-    assertEquals(id, id2);
-    assertEquals("bar", message2);
-    assertEquals(ChatService.TYPE_EDITED, type2);
+    JSONObject msgJson = (JSONObject)messages.get(0);
+    assertEquals(id, msgJson.get("id"));
+    assertEquals("bar", msgJson.get("message"));
+    assertEquals(ChatService.TYPE_EDITED, msgJson.get("type"));
 
   }
 
