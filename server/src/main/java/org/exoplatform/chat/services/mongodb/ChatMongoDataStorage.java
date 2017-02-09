@@ -353,6 +353,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     DBObject object = coll.findOne(query);
     if (object != null) {
       message = new MessageBean();
+      message.setId(messageId);
       message.setUser(object.get("user").toString());
       message.setMessage(object.get("message").toString());
       message.setTimestamp(Long.parseLong(object.get("timestamp").toString()));

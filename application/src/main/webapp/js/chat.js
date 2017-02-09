@@ -86,7 +86,7 @@ var chatApplication = new ChatApplication();
 
       cCometD.subscribe('/service/chat', null, function (event) {
         var message = JSON.parse(event.data);
-        console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
+        console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
         if (message.event == 'user-status-changed') {
@@ -98,7 +98,7 @@ var chatApplication = new ChatApplication();
           console.log("Got new message " + (new Date()).getTime());
           var message = JSON.parse(event.data);
           if (chatApplication.chatRoom.id === message.room) {
-            chatApplication.chatRoom.addMessagesToLocalList({"messages": [message]}, true);
+            chatApplication.chatRoom.addMessagesToLocalList(message, true);
           }
           chatApplication.chatRoom.showMessages();
         }

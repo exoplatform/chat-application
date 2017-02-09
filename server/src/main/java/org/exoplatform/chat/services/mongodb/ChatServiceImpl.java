@@ -61,7 +61,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   public void write(String message, String sender, String room, String isSystem, String options, String dbName, String targetUser)
   {
-    chatStorage.save(message, sender, room, isSystem, options, dbName);
+    String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
+    MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
     if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
     {
       String content = ((message.length()>30)?message.substring(0,29)+"...":message);
@@ -83,8 +84,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         usersToBeNotified.add(targetUser);
       }
 
-      String data = new StringBuilder("{room: \"").append(room).append("\",")
-          .append("msg: \"").append(StringEscapeUtils.escapeJson(content)).append("\"}").toString();
+
+      String data = new StringBuilder("{\"room\": \"").append(room).append("\",")
+          .append("\"messages\": [").append(msg.toJSONString()).append("]}").toString();
 
       EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
       for (String receiver: usersToBeNotified) {
