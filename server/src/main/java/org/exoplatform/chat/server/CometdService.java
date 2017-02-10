@@ -66,8 +66,6 @@ public class CometdService {
       } else if(event.equals("message-sent")) {
         // TODO store message in db
         ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
-        UserService userService = GuiceManager.getInstance().getInstance(UserService.class);
-
 
         String room = (String) jsonMessage.get("room");
         String isSystem = (String) jsonMessage.get("isSystem");

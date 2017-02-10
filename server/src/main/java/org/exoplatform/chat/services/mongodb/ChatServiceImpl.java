@@ -19,13 +19,10 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.DB;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
+import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.server.CometdService;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.utils.PropertyManager;
@@ -63,6 +60,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
   {
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
     MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
+    UserBean user = userService.getUser(sender, dbName);
+    msg.setFullName(user.getFullname());
     if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
     {
       String content = ((message.length()>30)?message.substring(0,29)+"...":message);
@@ -89,6 +88,12 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
           .append("\"messages\": [").append(msg.toJSONString()).append("]}").toString();
 
       EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+
+      // Deliver the saved message to sender's subscribed channel itself.
+      if(bayeux.isPresent(sender)) {
+        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
+      }
+
       for (String receiver: usersToBeNotified) {
         notificationService.addNotification(receiver, sender, "chat", "room", room, content,
             intranetPage + "?room=" + room, options, dbName);

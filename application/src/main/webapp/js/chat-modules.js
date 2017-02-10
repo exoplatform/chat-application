@@ -152,7 +152,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "ts": newMsgTimestamp,
       "dbName": this.dbName,
       "data": {
-        "msg": encodeURIComponent(msg)
+        "msg": msg
       }
     }), function(publishAck) {
       if (publishAck.successful) {
