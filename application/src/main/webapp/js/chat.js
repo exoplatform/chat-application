@@ -98,9 +98,10 @@ var chatApplication = new ChatApplication();
           console.log("Got new message " + (new Date()).getTime());
           var message = JSON.parse(event.data);
           if (chatApplication.chatRoom.id === message.room) {
-            chatApplication.chatRoom.addMessagesToLocalList(message, true);
+            chatApplication.chatRoom.addMessage(message.messages[0]);
+            // chatApplication.chatRoom.addMessagesToLocalList(message, true);
           }
-          chatApplication.chatRoom.showMessages();
+          // chatApplication.chatRoom.showMessages();
         }
       });
     });
@@ -2725,47 +2726,6 @@ ChatApplication.prototype.onShowMessagesCallback = function(out) {
   jqchat(".msg-text").mouseout(function() {
     jqchat(".msg-date", this).css("display", "");
     jqchat(".msg-actions", this).css("visibility", "hide");
-  });
-
-  jqchat(".msg-action-quote").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgHtml = $uimsg.html();
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-    msgHtml = msgHtml.replace(/<br>/g, '\n');
-    var msgFullname = $uimsg.attr("data-fn");
-    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
-
-  });
-
-  jqchat(".msg-action-delete").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgId = $uimsg.attr("data-id");
-    chatApplication.deleteMessage(msgId, function() {
-      chatApplication.chatRoom.refreshChat(true);
-    });
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-
-  });
-
-  jqchat(".msg-action-edit").on("click", function() {
-    var $uimsgdata = jqchat(this).siblings(".msg-data");
-    chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
-  });
-
-  jqchat(".msg-action-savenotes").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgTimestamp = $uimsg.attr("data-timestamp");
-
-    var options = {
-      type: "type-notes",
-      fromTimestamp: msgTimestamp,
-      fromUser: chatApplication.username,
-      fromFullname: chatApplication.fullname
-    };
-
-    var msg = "";
-
-    chatApplication.chatRoom.sendMessage(msg, options, "true");
   });
 
   jqchat(".send-meeting-notes").on("click", function () {

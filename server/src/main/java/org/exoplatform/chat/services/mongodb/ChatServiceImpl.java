@@ -58,6 +58,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   public void write(String message, String sender, String room, String isSystem, String options, String dbName, String targetUser)
   {
+    if (isSystem == null) isSystem = "false";
+
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
     MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
     UserBean user = userService.getUser(sender, dbName);

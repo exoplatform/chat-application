@@ -248,11 +248,8 @@
 .msRow {
   @widthOfAvatar: 32px;
   padding: 10px 0;
+
   /* Layout Row Chat */
-  .msContBox {
-      float: left;
-      width: 100%;
-  }
   .msContBox + .msUserAvatar {
       float: left;
       margin-left: -100%;
@@ -270,10 +267,11 @@
     }
   }
   .msUserAvatar {
-   width: 40px!important;
-   padding-left: 12px;
-   padding-right: 15px;
-   text-align: center;
+    float: left;
+    width: 40px!important;
+    padding-left: 12px;
+    padding-right: 15px;
+    text-align: center;
   }
   .msContBox {
     > .inner {

@@ -162,30 +162,22 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    try
+    if (message!=null)
     {
-      if (message!=null)
-      {
-        // Only members of the room can send messages
-        if (!isMemberOfRoom(sender, room, dbName)) {
-          return Response.content(403, "Petit malin !");
-        }
-
-        try {
-          message = URLDecoder.decode(message,"UTF-8");
-          options = URLDecoder.decode(options,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          // Chat server cannot do anything in this case
-          // Get original value
-        }
-        if (isSystem == null) isSystem = "false";
-        chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
+      // Only members of the room can send messages
+      if (!isMemberOfRoom(sender, room, dbName)) {
+        return Response.content(403, "Petit malin !");
       }
 
-    }
-    catch (Exception e)
-    {
-      return Response.notFound("Problem on Chat server. Please, try later").withMimeType("text/event-stream");
+      try {
+        message = URLDecoder.decode(message,"UTF-8");
+        options = URLDecoder.decode(options,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // Chat server cannot do anything in this case
+        // Get original value
+      }
+
+      chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
     }
 
     return Response.ok("ok").withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");

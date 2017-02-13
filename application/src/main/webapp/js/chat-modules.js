@@ -54,6 +54,7 @@ ChatRoom.prototype.registerPlugin = function(plugin) {
 }
 
 ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, dbName, callback) {
+  console.log("init room");
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
@@ -92,6 +93,48 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
         // always scroll to the last message when loading a chat room
         var $chats = jqchat("#chats");
         $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+
+        $chats.off("click.quote");
+        $chats.on("click.quote", ".msg-action-quote", function() {
+          var $uimsg = jqchat(this).siblings(".msg-data");
+          var msgHtml = $uimsg.html();
+          //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+          msgHtml = msgHtml.replace(/<br>/g, '\n');
+          var msgFullname = $uimsg.attr("data-fn");
+          jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+        });
+
+
+        $chats.on("click.delete", ".msg-action-delete", function() {
+          var $uimsg = jqchat(this).siblings(".msg-data");
+          var msgId = $uimsg.attr("data-id");
+          chatApplication.deleteMessage(msgId, function() {
+            chatApplication.chatRoom.refreshChat(true);
+          });
+          //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+        });
+
+        $chats.on("click.edit", ".msg-action-edit", function() {
+          var $uimsgdata = jqchat(this).siblings(".msg-data");
+          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+        });
+
+
+        $chats.on("click.savenotes", ".msg-action-savenotes", function() {
+          var $uimsg = jqchat(this).siblings(".msg-data");
+          var msgTimestamp = $uimsg.attr("data-timestamp");
+
+          var options = {
+            type: "type-notes",
+            fromTimestamp: msgTimestamp,
+            fromUser: chatApplication.username,
+            fromFullname: chatApplication.fullname
+          };
+
+          var msg = "";
+
+          chatApplication.chatRoom.sendMessage(msg, options, "true");
+        });
       });
     }
   });
@@ -499,6 +542,92 @@ ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
   }
 }
 
+ChatRoom.prototype.addMessage = function(message, $chats) {
+  var $chats = jqchat("#chats");
+  var $lastMessage = $chats.children().last();
+  var prevUser = $lastMessage.data("user");
+
+  var out = '';
+  if (message.isSystem === "true") { // A system message
+    $msgDiv = jqchat('<div class="msRow" data-user="__system">');
+    $chats.append($msgDiv);
+
+  } else {  // An user message
+    if (message.user != prevUser) {
+      $msgDiv = jqchat('<div class="msRow">');
+      $chats.append($msgDiv);
+
+      if (message.user == this.username) {
+        $msgDiv.addClass("rowOdd odd msMy");
+      }
+      $msgDiv.data("user", message.user);
+
+      out += "    <div class='msMessagesGroup clearfix'>";
+      out += "      <div class='msUserAvatar'>";
+      if (this.isPublic) {
+        out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
+      } else {
+        out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
+      }
+      out += "      </div>";
+      out += "      <div class='msContBox'>";
+      out += "        <div class='inner'>";
+      out += "          <div class='msTiltleLn'>";
+      if (this.isPublic) {
+        out += "          <a class='msNameUser muted' href='#'>" + chatBundleData["exoplatform.chat.support.fullname"] + "</a>";
+      }
+      else {
+        out += "          <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+      }
+      out += "          </div>";
+    } else {
+      $msgDiv = $lastMessage.find(".inner");
+    }
+
+    var msgtemp = message.message;
+    var noEditCssClass = "";
+    if (message.type === "DELETED") {
+      msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
+      noEditCssClass = "noEdit";
+    } else {
+      msgtemp = this.messageBeautifier(message);
+    }
+    out += '          <div class="msUserCont msg-text ' + noEditCssClass + '">';
+
+    var msRightInfo = "";
+    msRightInfo += "      <div class='msRightInfo pull-right'>";
+    msRightInfo += "        <div class='msTimePost'>";
+    if (message.type === "DELETED" || message.type === "EDITED") {
+      msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
+    }
+
+    msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+    msRightInfo += "        </div>";
+    if (message.type !== "DELETED") {
+      msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
+      msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
+      if (message.user === this.username) {
+        msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
+        msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData["exoplatform.chat.delete"] + "</a> |";
+      }
+      msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData["exoplatform.chat.quote"] + "</a>";
+      msRightInfo += "       </div>";
+    }
+    msRightInfo += "       </div>";
+    var msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+    if (this.miniChat === undefined) {
+      out += msRightInfo;
+      out += msUserMes;
+    } else {
+      out += msUserMes;
+      out += msRightInfo;
+    }
+
+    out += '          </div>';
+    $msgDiv.append(out);
+  }
+}
+
 /**
  * Convert local messages list in HTML output to display the list of messages
  *
@@ -538,9 +667,14 @@ ChatRoom.prototype.showMessages = function() {
 
     var messages = TAFFY(this.messages);
     var thiss = this;
+
+    jqchat("#chats").html(''); // Clear the room
     messages().order("timestamp asec").each(function (message, i) {
 
-      if (message.isSystem!=="true")
+      thiss.addMessage(message);
+      return;
+      // Messages from users
+      if (message.isSystem !== "true")
       {
         if (prevUser != message.user)
         {
@@ -565,7 +699,7 @@ ChatRoom.prototype.showMessages = function() {
               out += "  </div>";
               out += "</div>";
             }
-            out += "  <div class='msRow'>";
+            out += "  <div class='msRow' data-user='" + message.user + "'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
@@ -589,7 +723,7 @@ ChatRoom.prototype.showMessages = function() {
               out += "</div>";
             }
             // msMy is used to identify group of messages of the current user
-            out += "  <div class='msRow rowOdd odd msMy'>";
+            out += "  <div class='msRow rowOdd odd msMy' data-user='" + message.user + "'>";
             out += "    <div class='msMessagesGroup clearfix'>";
             out += "      <div class='msContBox'>";
             out += "        <div class='inner'>";
@@ -598,10 +732,7 @@ ChatRoom.prototype.showMessages = function() {
             out += "          </div>";
           }
         }
-        else
-        {
-//          out += "<hr style='margin:0px;'>";
-        }
+
         var msgtemp = message.message;
         var noEditCssClass = "";
         if (message.type === "DELETED") {
@@ -769,9 +900,8 @@ ChatRoom.prototype.showMessages = function() {
 
   }
 
-
   if (typeof this.onShowMessagesCB === "function") {
-    this.onShowMessagesCB(out);
+    // this.onShowMessagesCB(out);
   }
 
 
