@@ -134,7 +134,6 @@ public class ChatApplication
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
-    String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
     String publicModeEnabled = PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE);
     String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
     String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
@@ -190,7 +189,6 @@ public class ChatApplication
             .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
-            .set("chatIntervalUsers", chatIntervalUsers)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("publicMode", isPublic)
             .set("publicModeEnabled", publicModeEnabled)

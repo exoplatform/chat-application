@@ -15,7 +15,6 @@ var chatApplication = new ChatApplication();
     var chatServerURL = $chatApplication.attr("data-chat-server-url");
     chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
-    chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
 
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
@@ -33,7 +32,6 @@ var chatApplication = new ChatApplication();
     chatApplication.jzCreateEvent = $chatApplication.jzURL("ChatApplication.createEvent");
     chatApplication.jzSaveWiki = $chatApplication.jzURL("ChatApplication.saveWiki");
     chatApplication.jzGetStatus = chatServerURL+"/getStatus";
-    chatApplication.jzSetStatus = chatServerURL+"/setStatus";
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
     chatApplication.jzChatSend = chatServerURL+"/send";
     chatApplication.jzChatRead = chatServerURL+"/read";
@@ -76,6 +74,9 @@ var chatApplication = new ChatApplication();
     var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
+    /**
+     * Handle Real Time communications events
+     */
     //TODO remove require, inject cometd dependency at script level
     require(['SHARED/commons-cometd3'], function(cCometD) {
       cCometD.configure({
@@ -93,6 +94,27 @@ var chatApplication = new ChatApplication();
           if (message.room == chatApplication.username) {
             // update current user status
             chatNotification.changeStatusChat(message.data.status);
+          } else {
+            // update rooms list
+            chatApplication.rooms.forEach(function(room, idx) {
+              if(room.isSpace == 'false' && room.isTeam == 'false' && room.user == message.room) {
+                chatApplication.rooms[idx].status = message.data.status;
+                chatApplication.renderRooms();
+                return;
+              }
+            });
+
+            // update room users status if a room is selected
+            if(chatApplication.chatRoom && chatApplication.chatRoom.users) {
+              chatApplication.chatRoom.users.forEach(function(user, idx) {
+                if(user.name == message.room) {
+                  chatApplication.chatRoom.users[idx].status = message.data.status;
+                  var roomUsersContainer = jqchat("#room-users-list");
+                  chatApplication.renderRoomUsers(roomUsersContainer);
+                  return;
+                }
+              });
+            }
           }
         } else {
           console.log("Got new message " + (new Date()).getTime());
@@ -1267,7 +1289,7 @@ var handleRoomNotifLayout = function() {
       chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
         var teamName = data.name;
         var roomId = "team-"+data.room;
-        chatApplication.refreshWhoIsOnline(roomId, teamName);
+        //TODO update UI to add the new room + send event room-member-joined
         // Refresh the chatRoom after creating the team room
         chatApplication.targetUser = roomId;
         chatApplication.targetFullname = teamName;
@@ -1482,7 +1504,6 @@ function ChatApplication() {
   this.targetFullname = "";
   this.token = "";
   this.jzInitChatProfile = "";
-  this.jzWhoIsOnline = "";
   this.jzChatGetRoom = "";
   this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
@@ -1493,7 +1514,6 @@ function ChatApplication() {
   this.jzChatSendMeetingNotes = "";
   this.jzChatGetMeetingNotes = "";
   this.jzGetStatus = "";
-  this.jzSetStatus = "";
   this.jzMaintainSession = "";
   this.jzUpload = "";
   this.jzCreateTask = "";
@@ -1506,10 +1526,8 @@ function ChatApplication() {
   this.jzSaveTeamRoom = "";
   this.userFilter = "";    //not set
   this.chatIntervalChat = "";
-  this.chatIntervalUsers = "";
   this.plfUserStatusUpdateUrl = "";
   this.chatIntervalSession = "";
-  this.chatIntervalStatus = "";
 
   this.chatSessionInt = -1; //not set
   this.filterInt;
@@ -1526,7 +1544,6 @@ function ChatApplication() {
   this.firstLoad = true;
 
   this.profileStatus = "offline";
-  this.whoIsOnlineMD5 = 0;
   this.totalNotif = 0;
   this.oldNotif = 0;
 
@@ -1593,7 +1610,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       jqchat(".avatar-image:first").attr("src", gravatar(email));
       this.hidePanels();
 
-      this.refreshWhoIsOnline();
+      this.loadRooms();
 
       if (this.isPublic) {
         this.targetUser = this.SUPPORT_USER;
@@ -1874,8 +1891,7 @@ ChatApplication.prototype.initChat = function() {
   this.initChatPreferences();
 
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
-  this.chatOnlineInt = setInterval(jqchat.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
-  this.refreshWhoIsOnline();
+  this.loadRooms();
 
   if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
 };
@@ -1938,7 +1954,7 @@ ChatApplication.prototype.initChatProfile = function() {
             $labelUser.removeAttr("href").text("Discussion");
         }
         jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
-        this.refreshWhoIsOnline();
+        this.loadRooms();
         chatNotification.refreshStatusChat();
 
       },
@@ -2076,11 +2092,11 @@ ChatApplication.prototype.updateTitle = function() {
 };
 
 /**
- * Refresh Who Is Online : server call
+ * Load the list of rooms (left panel)
  */
-ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullname) {
+ChatApplication.prototype.loadRooms = function(targetUser, targetFullname) {
   // Avoid having two whoIsOnline requests in parallel
-  if(this.whoIsOnlineRequest) {
+  if(this.loadRoomsRequest) {
     return;
   }
   var withSpaces = jzGetParam("chat.button.space", "true");
@@ -2096,7 +2112,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
-    this.whoIsOnlineRequest = jqchat.ajax({
+    this.loadRoomsRequest = jqchat.ajax({
       url: this.jzChatWhoIsOnline,
       dataType: "json",
       data: { "user": this.username,
@@ -2110,7 +2126,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
       },
       context: this,
       success: function(response){
-        this.whoIsOnlineRequest = null;
+        this.loadRoomsRequest = null;
         if (targetUser !== undefined && targetFullname !== undefined) {
           this.targetUser = targetUser;
           this.targetFullname = targetFullname;
@@ -2119,67 +2135,62 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
           jzStoreParam("lastTS"+this.username, "0");
           this.firstLoad = true;
         }
-//        console.log("refreshWhoIsOnline : "+this.targetUser+" : "+this.targetFullname);
 
-        var tmpMD5 = response.md5;
-        if (tmpMD5 !== this.whoIsOnlineMD5) {
-          var rooms = TAFFY(response.rooms);
-          this.whoIsOnlineMD5 = tmpMD5;
-          this.isLoaded = true;
-          this.hidePanel(".chat-error-panel");
-          this.hidePanel(".chat-sync-panel");
-          this.showRooms(rooms);
+        this.isLoaded = true;
+        this.hidePanel(".chat-error-panel");
+        this.hidePanel(".chat-sync-panel");
+        chatApplication.rooms = response.rooms;
+        this.renderRooms();
 
-          // reload room users if the panel is displayed
-          var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
-          if(roomUsersContainer.is(":visible")) {
-            this.loadRoomUsers();
-          }
-
-          this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
-          if (fromChromeApp) {
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-              chatNotification.refreshNotifDetails();
-            }
-          } else if (window.fluid!==undefined) {
-            if (this.totalNotif>0)
-              window.fluid.dockBadge = this.totalNotif;
-            else
-              window.fluid.dockBadge = "";
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-              window.fluid.showGrowlNotification({
-                title: chatBundleData["exoplatform.chat.title"],
-                description: chatBundleData["exoplatform.chat.new.messages"],
-                priority: 1,
-                sticky: false,
-                identifier: "messages"
-              });
-            }
-          } else if (window.webkitNotifications!==undefined) {
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-
-              var havePermission = window.webkitNotifications.checkPermission();
-              if (havePermission == 0) {
-                // 0 is PERMISSION_ALLOWED
-                var notification = window.webkitNotifications.createNotification(
-                  '/chat/img/chat.png',
-                  chatBundleData["exoplatform.chat.title"],
-                  chatBundleData["exoplatform.chat.new.messages"]
-                );
-
-                notification.onclick = function () {
-                  window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
-                  notification.close();
-                }
-                notification.show();
-              } else {
-                window.webkitNotifications.requestPermission();
-              }
-            }
-          }
-          this.oldNotif = this.totalNotif;
-          this.updateTitle();
+        // reload room users if the panel is displayed
+        var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
+        if(roomUsersContainer.is(":visible")) {
+          this.loadRoomUsers();
         }
+
+        this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
+        if (fromChromeApp) {
+          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+            chatNotification.refreshNotifDetails();
+          }
+        } else if (window.fluid!==undefined) {
+          if (this.totalNotif>0)
+            window.fluid.dockBadge = this.totalNotif;
+          else
+            window.fluid.dockBadge = "";
+          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+            window.fluid.showGrowlNotification({
+              title: chatBundleData["exoplatform.chat.title"],
+              description: chatBundleData["exoplatform.chat.new.messages"],
+              priority: 1,
+              sticky: false,
+              identifier: "messages"
+            });
+          }
+        } else if (window.webkitNotifications!==undefined) {
+          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+            var havePermission = window.webkitNotifications.checkPermission();
+            if (havePermission == 0) {
+              // 0 is PERMISSION_ALLOWED
+              var notification = window.webkitNotifications.createNotification(
+                '/chat/img/chat.png',
+                chatBundleData["exoplatform.chat.title"],
+                chatBundleData["exoplatform.chat.new.messages"]
+              );
+
+              notification.onclick = function () {
+                window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
+                notification.close();
+              }
+              notification.show();
+            } else {
+              window.webkitNotifications.requestPermission();
+            }
+          }
+        }
+        this.oldNotif = this.totalNotif;
+        this.updateTitle();
+
         if (this.isTeamAdmin) {
           jqchat(".btn-top-add-actions").css("display", "inline-block");
         }
@@ -2197,8 +2208,9 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
  * Show rooms : convert json to html
  * @param rooms : a json object
  */
-ChatApplication.prototype.showRooms = function(rooms) {
-  this.rooms = rooms;
+ChatApplication.prototype.renderRooms = function() {
+  var rooms = TAFFY(chatApplication.rooms);
+
   var roomPrevUser = "";
   var out = '<table class="table list-rooms">';
   var classArrow;
@@ -2930,7 +2942,7 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     },
     context: this,
     success: function(response){
-      this.refreshWhoIsOnline();
+      //TODO update UI without requesting server + send event favorite-added
     },
     error: function(xhr, status, error){
     }
@@ -3009,14 +3021,14 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
     jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
 
-    chatApplication.showRooms(chatApplication.rooms);
+    chatApplication.renderRooms();
 
   });
 
   jqchat(".btn-add-team").on("click", function() {
     chatApplication.showTeams = true;
     jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
-    chatApplication.showRooms(chatApplication.rooms);
+    chatApplication.renderRooms();
 
     var $uitext = jqchat("#team-modal-name");
     $uitext.val("");
@@ -3049,7 +3061,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
       chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
       jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
     }
-    chatApplication.showRooms(chatApplication.rooms);
+    chatApplication.renderRooms();
 
   });
 
@@ -3058,7 +3070,7 @@ ChatApplication.prototype.jQueryForUsersTemplate = function() {
     jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
     chatApplication.showOffline = !chatApplication.showOffline;
     jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
-    chatApplication.showRooms(chatApplication.rooms);
+    chatApplication.renderRooms();
   });
 
 jqchat('#back').on("click", function() {
@@ -3159,7 +3171,7 @@ ChatApplication.prototype.search = function(filter) {
     }
     this.userFilter = userFilter;
     this.filterInt = clearTimeout(this.filterInt);
-    this.filterInt = setTimeout(jqchat.proxy(this.refreshWhoIsOnline, this), 500);
+    this.filterInt = setTimeout(jqchat.proxy(this.loadRooms, this), 500);
   }
 };
 
@@ -3353,7 +3365,6 @@ ChatApplication.prototype.showSyncPanel = function() {
 };
 
 ChatApplication.prototype.showErrorPanel = function() {
-  this.whoIsOnlineMD5 = "";
   this.hidePanels();
   //console.log("show-error-panel");
   var $chatErrorPanel = jqchat(".chat-error-panel");
@@ -3553,20 +3564,11 @@ ChatApplication.prototype.loadRoomUsers = function() {
 		roomUsersContainer.addClass("room-users-collapsed");//need a default class for responsive
 	}
 
-    var roomUsersList = jqchat("#room-users-list");
-    if(roomUsersList !== undefined) {
+    var roomUsersContainer = jqchat("#room-users-list");
+    if(roomUsersContainer !== undefined) {
       // fetch room users
       chatApplication.getUsers(this.targetUser, function (jsonData) {
-        var users = TAFFY(jsonData.users);
-
-        // generate room users array
-        var roomUsers = [];
-        var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
-        sortedStatuses.forEach(function(status) {
-          users({status: status}).order("fullname").each(function (user) {
-            roomUsers.push(user);
-          });
-        });
+        var roomUsers = jsonData.users;
 
         // check if there are changes
         var roomUserHasChanged = false;
@@ -3585,17 +3587,13 @@ ChatApplication.prototype.loadRoomUsers = function() {
           thiss.chatRoom.users = roomUsers;
 
           // generate room users list DOM
-          var html = "";
-          roomUsers.forEach(function (user) {
-            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
-          });
-          roomUsersList.html(html);
+          thiss.renderRoomUsers(roomUsersContainer);
         }
 
         // User Profile Popup initialize
         var portal = eXo.env.portal;
         var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
-        var usersContainers = jqchat(roomUsersList).find('.room-user');
+        var usersContainers = jqchat(roomUsersContainer).find('.room-user');
         jqchat.each(usersContainers, function (idx, el) {
           var userId = jqchat(el).attr('data-name');
 
@@ -3617,13 +3615,37 @@ ChatApplication.prototype.loadRoomUsers = function() {
         });
 
         // update nb of users in the room
-        jqchat("#room-users-title-nb-users").html("(" + (users().count() - 1) + ")");
+        jqchat("#room-users-title-nb-users").html("(" + (thiss.chatRoom.users.length - 1) + ")");
       }, false);
     }
   } else {
     // hide room users since the room id is not defined
     roomUsersContainer.hide();
   }
+};
+
+/**
+ * Generate room users DOM
+ * @param roomUsers Users to render
+ * @returns {string} The DOM representing the user
+ */
+ChatApplication.prototype.renderRoomUsers = function(container) {
+    var html = "";
+
+    // sort room users by status
+    var users = TAFFY(chatApplication.chatRoom.users);
+    var sortedRoomUsers = [];
+    var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
+    sortedStatuses.forEach(function(status) {
+        users({status: status}).order("fullname").each(function (user) {
+            sortedRoomUsers.push(user);
+        });
+    });
+
+    sortedRoomUsers.forEach(function (user) {
+        html += chatApplication.renderRoomUser(user, chatApplication.showRoomOfflinePeople);
+    });
+    container.html(html);
 };
 
 /**

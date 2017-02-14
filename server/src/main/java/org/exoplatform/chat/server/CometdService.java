@@ -55,11 +55,10 @@ public class CometdService {
       //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
 
       if(event.equals("user-status-changed")) {
-        String room = (String) jsonMessage.get("room");
-        if(bayeux.isPresent(room)) {
-          bayeux.sendMessage(room, COMETD_CHANNEL_NAME, jsonMessage.toJSONString(), null);
-        }
+        // forward the status change to all connected users
+        bayeux.getSessions().stream().forEach(s -> s.deliver(s, (ServerMessage.Mutable) message));
 
+        // update data
         userService.setStatus((String) jsonMessage.get("room"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"),
                 (String) jsonMessage.get("dbName"));
