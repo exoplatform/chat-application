@@ -1290,7 +1290,23 @@ var handleRoomNotifLayout = function() {
       chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
         var teamName = data.name;
         var roomId = "team-"+data.room;
-        //TODO update UI to add the new room + send event room-member-joined
+
+        // Add the new room and re-render the list of rooms
+        chatApplication.rooms.push({
+            escapedFullname : teamName,
+            isActive : "true",
+            isAvailableUser : "true",
+            isFavorite : "false",
+            isSpace : "false",
+            isTeam: "true",
+            room : data.room,
+            status : "team",
+            timestamp : new Date().getTime(),
+            unreadTotal : "0",
+            user : roomId
+        });
+        chatApplication.renderRooms();
+
         // Refresh the chatRoom after creating the team room
         chatApplication.targetUser = roomId;
         chatApplication.targetFullname = teamName;
