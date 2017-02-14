@@ -51,7 +51,8 @@ var chatApplication = new ChatApplication();
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
     chatApplication.jzEdit = chatServerURL+"/edit";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
-    chatApplication.wsEndpoint = chatServerURL+"/cometd";
+    //TODO ws endpoint must be dynamic, depending on the chat mode (1 or 2 servers)
+    chatApplication.wsEndpoint = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + "/cometd/cometd";
     chatApplication.room = "";
 
     chatApplication.initChat();

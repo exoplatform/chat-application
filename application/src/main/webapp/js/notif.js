@@ -877,7 +877,8 @@ var chatNotification = new ChatNotification();
       "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
       "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
       "portalURI": $notificationApplication.attr("data-portal-uri"),
-      "wsEndpoint": $notificationApplication.attr("data-chat-server-url")+"/cometd",
+      //TODO ws endpoint must be dynamic, depending on the chat mode (1 or 2 servers)
+      "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + "/cometd/cometd",
       "cometdToken": $notificationApplication.attr("data-cometd-token")
     });
 
