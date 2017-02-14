@@ -2865,7 +2865,14 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
     },
     context: this,
     success: function(response){
-      //TODO update UI without requesting server + send event favorite-added
+      // Update the room and re-render the list of rooms
+      chatApplication.rooms.forEach(function(room, idx) {
+        if(room.user == targetFav) {
+          chatApplication.rooms[idx].isFavorite = chatApplication.rooms[idx].isFavorite == 'true' ? 'false' : 'true';
+          chatApplication.renderRooms();
+          return;
+        }
+      });
     },
     error: function(xhr, status, error){
     }
