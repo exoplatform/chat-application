@@ -54,7 +54,6 @@ ChatRoom.prototype.registerPlugin = function(plugin) {
 }
 
 ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, dbName, callback) {
-  console.log("init room");
   this.username = username;
   this.token = token;
   this.targetUser = targetUser;
@@ -104,7 +103,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
           jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
         });
 
-
+        $chats.off("click.delete");
         $chats.on("click.delete", ".msg-action-delete", function() {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgId = $uimsg.attr("data-id");
@@ -114,12 +113,13 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
           //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
         });
 
+        $chats.off("click.edit");
         $chats.on("click.edit", ".msg-action-edit", function() {
           var $uimsgdata = jqchat(this).siblings(".msg-data");
           chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
         });
 
-
+        $chats.off("click.savenotes");
         $chats.on("click.savenotes", ".msg-action-savenotes", function() {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgTimestamp = $uimsg.attr("data-timestamp");
@@ -135,6 +135,97 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
 
           chatApplication.chatRoom.sendMessage(msg, options, "true");
         });
+
+        $chats.off("click.send-meeting-notes");
+        $chats.on("click.send-meeting-notes", ".send-meeting-notes", function () {
+          var $this = jqchat(this);
+          var $meetingNotes =  $this.closest(".msMeetingNotes");
+          $meetingNotes.animate({
+            opacity: "toggle"
+          }, 200, function() {
+            var room = $this.attr("data-room");
+            var from = $this.attr("data-from");
+            var to = $this.attr("data-to");
+            var id = $this.attr("data-id");
+
+            from = Math.round(from)-1;
+            to = Math.round(to)+1;
+            chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
+              if (response === "sent") {
+                console.log("sent");
+                jqchat("#"+id).animate({
+                  opacity: "toggle"
+                }, 200 , function() {
+                  $meetingNotes.animate({
+                    opacity: "toggle"
+                  }, 3000);
+                });
+              }
+            });
+          });
+        });
+
+        $chats.off("click.save-meeting-notes");
+        $chats.on("click.save-meeting-notes", ".save-meeting-notes", function () {
+          var $this = jqchat(this);
+          var $meetingNotes =  $this.closest(".msMeetingNotes");
+          $meetingNotes.animate({
+            opacity: "toggle"
+          }, 200, function() {
+            var room = $this.attr("data-room");
+            var from = $this.attr("data-from");
+            var to = $this.attr("data-to");
+            var id = $this.attr("data-id");
+
+            from = Math.round(from)-1;
+            to = Math.round(to)+1;
+            chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
+              if (response !== "ko") {
+//          console.log(response);
+                jqchat.ajax({
+                  type: "POST",
+                  url: chatApplication.jzSaveWiki,
+                  data: {"targetFullname": chatApplication.targetFullname,
+                    "content": response
+                  },
+                  context: this,
+                  dataType: "json",
+                  success: function(data){
+//              console.log(data.path);
+                    if (data.path !== "") {
+                      var baseUrl = location.protocol + "//" + location.hostname;
+                      if (location.port) {
+                        baseUrl += ":" + location.port;
+                      }
+                      var options = {
+                        type: "type-link",
+                        link: baseUrl+data.path,
+                        from: chatApplication.username,
+                        fullname: chatApplication.fullname
+                      };
+                      var msg = chatBundleData["exoplatform.chat.meeting.notes"];
+
+                      chatApplication.chatRoom.sendMessage(msg, options, "true");
+
+                    }
+
+                    jqchat("#"+id).animate({
+                      opacity: "toggle"
+                    }, 3000 , function() {
+                      $meetingNotes.animate({
+                        opacity: "toggle"
+                      }, 2000);
+                      jqchat("#"+id).hide();
+                    });
+                  },
+                  error: function(xhr, status, error){
+                  }
+                });
+              }
+            });
+          });
+        });
+
       });
     }
   });
@@ -196,7 +287,9 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "dbName": this.dbName,
       "data": {
         "msg": msg
-      }
+      },
+      "options": options,
+      "isSystem": isSystemMessage
     }), function(publishAck) {
       if (publishAck.successful) {
         console.log("The message reached the server");
@@ -548,10 +641,38 @@ ChatRoom.prototype.addMessage = function(message, $chats) {
   var prevUser = $lastMessage.data("user");
 
   var out = '';
-  if (message.isSystem === "true") { // A system message
+  if (message.isSystem === "true" || message.isSystem === true) { // A system message
     $msgDiv = jqchat('<div class="msRow" data-user="__system">');
     $chats.append($msgDiv);
 
+    var options = {};
+    if (typeof message.options == "object")
+      options = message.options;
+
+    out += '    <div class="msMessagesGroup clearfix">';
+    out += this.getActionMeetingStyleClasses(options);
+
+    out += "          <div class='msContBox'>";
+    out += "            <div class='inner'>";
+    if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
+      out += "            <div class='msTiltleLn'>";
+      out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+      out += "            </div>";
+    }
+    out += "              <div class='msUserCont noEdit msg-text'>";
+    out += "                <div class='msRightInfo pull-right'>";
+    out += "                  <div class='msTimePost'>";
+    out += "                    <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+    out += "                  </div>";
+    out += "                </div>";
+
+    out += "                <div class='msUserMes'>" + this.messageBeautifier(message, options) + "</div>";
+    out += "              </div>";
+    out += "            </div>";
+    out += "          </div>";
+    // End msMessageGroup div
+    out += '    </div>';
+    $msgDiv.append(out);
   } else {  // An user message
     if (message.user != prevUser) {
       $msgDiv = jqchat('<div class="msRow">');
@@ -674,7 +795,7 @@ ChatRoom.prototype.showMessages = function() {
       thiss.addMessage(message);
       return;
       // Messages from users
-      if (message.isSystem !== "true")
+      if (message.isSystem != "true" && message.isSystem != true)
       {
         if (prevUser != message.user)
         {
@@ -749,7 +870,6 @@ ChatRoom.prototype.showMessages = function() {
         if (message.type === "DELETED" || message.type === "EDITED") {
           msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
         }
-        console.log()
         msRightInfo += "          <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
         msRightInfo += "        </div>";
         if (message.type !== "DELETED") {
@@ -900,9 +1020,9 @@ ChatRoom.prototype.showMessages = function() {
 
   }
 
-  if (typeof this.onShowMessagesCB === "function") {
-    // this.onShowMessagesCB(out);
-  }
+  // if (typeof this.onShowMessagesCB === "function") {
+  //   this.onShowMessagesCB(out);
+  // }
 
 
 };

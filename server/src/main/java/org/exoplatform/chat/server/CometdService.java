@@ -67,10 +67,9 @@ public class CometdService {
         ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
 
         String room = (String) jsonMessage.get("room");
-        String isSystem = (String) jsonMessage.get("isSystem");
-        if (isSystem == null) isSystem = "false";
+        String isSystem = jsonMessage.get("isSystem").toString();
         String dbName = (String) jsonMessage.get("dbName");
-        String options = (String) jsonMessage.get("options");
+        String options = jsonMessage.get("options").toString();
         String sender = (String) jsonMessage.get("sender");
         String msg = (String) ((JSONObject)jsonMessage.get("data")).get("msg");
         String targetUser = (String) jsonMessage.get("targetUser");

@@ -355,6 +355,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       message.setUser(object.get("user").toString());
       message.setMessage(object.get("message").toString());
       message.setTimestamp(Long.parseLong(object.get("timestamp").toString()));
+      message.setSystem(Boolean.parseBoolean(object.get("isSystem").toString()));
+      if (object.containsField("options")) {
+        JSONParser parser = new JSONParser();
+        message.setOptions(object.get("options").toString());
+      }
+      if (object.containsField("type")) {
+        message.setType(object.get("type").toString());
+      }
     }
 
     return message;
