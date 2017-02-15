@@ -84,9 +84,17 @@ public interface ChatDataStorage
   
   public String getTypeRoomChat(String roomId, String dbName);
 
+  /**
+   * @param user
+   * @param withPublic
+   * @param isAdmin
+   * @param notificationService
+   * @param tokenService
+   * @param dbName
+   *
+   * @return All existing personal rooms of given <code>user</code>
+   */
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName);
-
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName);
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName);
 

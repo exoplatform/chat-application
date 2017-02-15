@@ -1,5 +1,6 @@
 package org.exoplatform.chat.server;
 
+import juzu.Response;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
 import org.cometd.bayeux.server.BayeuxServer;
@@ -18,6 +19,8 @@ import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.services.UserService;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -43,6 +46,8 @@ public class CometdService {
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     System.out.println(">>>>>>>>> message received on " + COMETD_CHANNEL_NAME + " : " + message.getJSON());
 
+    //TODO need to verify authorization of the sender.
+
     try {
       EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
 
@@ -54,7 +59,9 @@ public class CometdService {
       //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
       //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
 
-      if(event.equals("user-status-changed")) {
+      ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
+
+      if (event.equals("user-status-changed")) {
         // forward the status change to all connected users
         bayeux.getSessions().stream().forEach(s -> s.deliver(s, (ServerMessage.Mutable) message));
 
@@ -62,10 +69,8 @@ public class CometdService {
         userService.setStatus((String) jsonMessage.get("room"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"),
                 (String) jsonMessage.get("dbName"));
-      } else if(event.equals("message-sent")) {
+      } else if (event.equals("message-sent")) {
         // TODO store message in db
-        ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
-
         String room = (String) jsonMessage.get("room");
         String isSystem = jsonMessage.get("isSystem").toString();
         String dbName = (String) jsonMessage.get("dbName");
@@ -75,6 +80,19 @@ public class CometdService {
         String targetUser = (String) jsonMessage.get("targetUser");
 
         chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
+      } else if (event.equals("message-updated")) {
+        String room = jsonMessage.get("room").toString();
+        String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
+        String dbName = jsonMessage.get("dbName").toString();
+        String sender = jsonMessage.get("sender").toString();
+        // Only author of the message can edit it
+        MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
+        if (currentMessage == null || !currentMessage.getUser().equals(sender)) {
+          return;
+        }
+
+        String msg = ((JSONObject)jsonMessage.get("data")).get("msg").toString();
+        chatService.edit(room, sender, messageId, msg, dbName);
       }
     } catch (ParseException e) {
       e.printStackTrace();

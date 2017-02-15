@@ -891,7 +891,7 @@ var chatNotification = new ChatNotification();
       });
 
       cCometD.subscribe('/service/chat', null, function (event) {
-        var message = JSON.parse(event.data);
+        var message = event.data;
         console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
 
         // Do what you want with the message...

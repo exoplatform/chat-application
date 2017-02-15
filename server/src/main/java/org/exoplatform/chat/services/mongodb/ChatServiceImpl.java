@@ -27,6 +27,10 @@ import org.exoplatform.chat.server.CometdService;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.container.PortalContainer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -61,9 +65,6 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     if (isSystem == null) isSystem = "false";
 
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
-    MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
-    UserBean user = userService.getUser(sender, dbName);
-    msg.setFullName(user.getFullname());
     if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
     {
       String content = ((message.length()>30)?message.substring(0,29)+"...":message);
@@ -85,9 +86,16 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
         usersToBeNotified.add(targetUser);
       }
 
+      MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
+      UserBean user = userService.getUser(sender, dbName);
+      msg.setFullName(user.getFullname());
 
-      String data = new StringBuilder("{\"room\": \"").append(room).append("\",")
-          .append("\"messages\": [").append(msg.toJSONString()).append("]}").toString();
+      JSONObject data = new JSONObject();
+      data.put("event", "message-sent");
+      data.put("room", room);
+      JSONArray array = new JSONArray();
+      array.add(msg.toJSONObject());
+      data.put("messages", array);
 
       EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
 
@@ -126,9 +134,45 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     chatStorage.deleteTeamRoom(roomId, user, dbName);
   }
 
-  public void edit(String room, String user, String messageId, String message, String dbName)
+  public void edit(String room, String sender, String messageId, String message, String dbName)
   {
-    chatStorage.edit(room, user, messageId, message, dbName);
+    chatStorage.edit(room, sender, messageId, message, dbName);
+
+    String roomType = getTypeRoomChat(room, dbName);
+
+    if (!roomType.equals("e")) {
+      List<String> usersToBeNotified = new ArrayList<String>();
+      if (roomType.equals("s")) {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName);
+      } else if (roomType.equals("t")) {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName);
+      } else {
+        usersToBeNotified.add(room);
+      }
+
+
+      MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
+
+      JSONObject data = new JSONObject();
+      data.put("event", "message-updated");
+      data.put("room", room);
+      JSONArray array = new JSONArray();
+      array.add(msg.toJSONObject());
+      data.put("messages", array);
+
+      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+
+      // Deliver the saved message to sender's subscribed channel itself.
+      if(bayeux.isPresent(sender)) {
+        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
+      }
+
+      for (String receiver: usersToBeNotified) {
+        if(bayeux.isPresent(receiver)) {
+          bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
+        }
+      }
+    }
   }
 
   public String read(String room, UserService userService, String dbName)

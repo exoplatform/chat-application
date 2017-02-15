@@ -87,7 +87,7 @@ public class MessageBean {
     this.timestamp = timestamp;
   }
 
-  public String toJSONString() {
+  public JSONObject toJSONObject() {
     JSONObject msg = new JSONObject();
     msg.put("id", id);
     msg.put("timestamp", timestamp);
@@ -113,6 +113,6 @@ public class MessageBean {
     msg.put("type", type);
     msg.put("isSystem", isSystem);
 
-    return msg.toJSONString();
+    return msg;
   }
 }

@@ -136,6 +136,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     room.setTeam(true);
     room.setFullname((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
+    room.setType((String) dbRoom.get("type"));
     long timestamp = -1;
     if (dbRoom.containsField("timestamp")) {
       room.setTimestamp((Long) dbRoom.get("timestamp"));
@@ -323,7 +324,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
             msg.setType(dbo.get("type").toString());
           }
           msg.setSystem(Boolean.parseBoolean(dbo.get("isSystem").toString()));
-          sb.append(msg.toJSONString());
+          sb.append(msg.toJSONObject().toJSONString());
         }
 
         first = false;
@@ -575,16 +576,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId, dbName));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
+          roomBean.setType((String) dbo.get("type"));
           rooms.add(roomBean);
         }
       }
     }
 
     return rooms;
-  }
-
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName) {
-    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService, dbName);
   }
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName) {
@@ -637,6 +635,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setStatus(availableUser.getStatus());
         roomBean.setAvailableUser(true);
         roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
+        roomBean.setType("u");
         String status = roomBean.getStatus();
         if (withOffline || (!withOffline && !UserServiceImpl.STATUS_INVISIBLE.equals(roomBean.getStatus()) && !UserServiceImpl.STATUS_OFFLINE.equals(roomBean.getStatus()))) {
           rooms.add(roomBean);
@@ -656,6 +655,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(true);
+      roomBeanS.setType("s");
       roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
       if (roomBeanS.getUnreadTotal() > 0)
         unreadSpaces += roomBeanS.getUnreadTotal();
@@ -677,6 +677,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       roomBeanS.setAvailableUser(true);
       roomBeanS.setSpace(false);
       roomBeanS.setTeam(true);
+      roomBeanS.setType(team.getType());
       roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
       if (roomBeanS.getUnreadTotal() > 0)
         unreadTeams += roomBeanS.getUnreadTotal();

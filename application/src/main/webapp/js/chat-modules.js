@@ -181,7 +181,6 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
             to = Math.round(to)+1;
             chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
               if (response !== "ko") {
-//          console.log(response);
                 jqchat.ajax({
                   type: "POST",
                   url: chatApplication.jzSaveWiki,
@@ -191,7 +190,6 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
                   context: this,
                   dataType: "json",
                   success: function(data){
-//              console.log(data.path);
                     if (data.path !== "") {
                       var baseUrl = location.protocol + "//" + location.hostname;
                       if (location.port) {
@@ -635,7 +633,14 @@ ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
   }
 }
 
-ChatRoom.prototype.addMessage = function(message, $chats) {
+ChatRoom.prototype.updateMessage = function(message) {
+  $msg = jqchat("#" + message.id);
+
+  var out = this.generateMessageHTML(message);
+  $msg.replaceWith(out);
+}
+
+ChatRoom.prototype.addMessage = function(message) {
   var $chats = jqchat("#chats");
   var $lastMessage = $chats.children().last();
   var prevUser = $lastMessage.data("user");
@@ -659,7 +664,7 @@ ChatRoom.prototype.addMessage = function(message, $chats) {
       out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
       out += "            </div>";
     }
-    out += "              <div class='msUserCont noEdit msg-text'>";
+    out += "              <div id='" + message.id + "' class='msUserCont noEdit msg-text'>";
     out += "                <div class='msRightInfo pull-right'>";
     out += "                  <div class='msTimePost'>";
     out += "                    <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
@@ -705,48 +710,56 @@ ChatRoom.prototype.addMessage = function(message, $chats) {
       $msgDiv = $lastMessage.find(".inner");
     }
 
-    var msgtemp = message.message;
-    var noEditCssClass = "";
-    if (message.type === "DELETED") {
-      msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
-      noEditCssClass = "noEdit";
-    } else {
-      msgtemp = this.messageBeautifier(message);
-    }
-    out += '          <div class="msUserCont msg-text ' + noEditCssClass + '">';
+    out += this.generateMessageHTML(message);
 
-    var msRightInfo = "";
-    msRightInfo += "      <div class='msRightInfo pull-right'>";
-    msRightInfo += "        <div class='msTimePost'>";
-    if (message.type === "DELETED" || message.type === "EDITED") {
-      msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
-    }
-
-    msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
-    msRightInfo += "        </div>";
-    if (message.type !== "DELETED") {
-      msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
-      msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
-      if (message.user === this.username) {
-        msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
-        msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData["exoplatform.chat.delete"] + "</a> |";
-      }
-      msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData["exoplatform.chat.quote"] + "</a>";
-      msRightInfo += "       </div>";
-    }
-    msRightInfo += "       </div>";
-    var msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
-    if (this.miniChat === undefined) {
-      out += msRightInfo;
-      out += msUserMes;
-    } else {
-      out += msUserMes;
-      out += msRightInfo;
-    }
-
-    out += '          </div>';
     $msgDiv.append(out);
   }
+}
+
+ChatRoom.prototype.generateMessageHTML = function(message) {
+  var out = '';
+  var msgtemp = message.message;
+  var noEditCssClass = "";
+  if (message.type === "DELETED") {
+    msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
+    noEditCssClass = "noEdit";
+  } else {
+    msgtemp = this.messageBeautifier(message);
+  }
+  out += '          <div id="' + message.id + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+
+  var msRightInfo = "";
+  msRightInfo += "      <div class='msRightInfo pull-right'>";
+  msRightInfo += "        <div class='msTimePost'>";
+  if (message.type === "DELETED" || message.type === "EDITED") {
+    msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
+  }
+
+  msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+  msRightInfo += "        </div>";
+  if (message.type !== "DELETED") {
+    msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
+    msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
+    if (message.user === this.username) {
+      msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
+      msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData["exoplatform.chat.delete"] + "</a> |";
+    }
+    msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData["exoplatform.chat.quote"] + "</a>";
+    msRightInfo += "       </div>";
+  }
+  msRightInfo += "       </div>";
+  var msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+  if (this.miniChat === undefined) {
+    out += msRightInfo;
+    out += msUserMes;
+  } else {
+    out += msUserMes;
+    out += msRightInfo;
+  }
+
+  out += '          </div>';
+
+  return out;
 }
 
 /**

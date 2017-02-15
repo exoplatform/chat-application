@@ -87,7 +87,7 @@ var chatApplication = new ChatApplication();
       });
 
       cCometD.subscribe('/service/chat', null, function (event) {
-        var message = JSON.parse(event.data);
+        var message = event.data;
         console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
@@ -117,14 +117,17 @@ var chatApplication = new ChatApplication();
               });
             }
           }
-        } else {
-          console.log("Got new message " + (new Date()).getTime());
-          var message = JSON.parse(event.data);
+        } else if (message.event == 'message-sent') {
           if (chatApplication.chatRoom.id === message.room) {
             chatApplication.chatRoom.addMessage(message.messages[0]);
             // chatApplication.chatRoom.addMessagesToLocalList(message, true);
           }
           // chatApplication.chatRoom.showMessages();
+        } else if (message.event == 'message-updated'){
+          if (chatApplication.chatRoom.id === message.room) {
+            console.log(message);
+            chatApplication.chatRoom.updateMessage(message.messages[0]);
+          }
         }
       });
     });
@@ -1336,7 +1339,7 @@ var handleRoomNotifLayout = function() {
       $('.edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
-        chatApplication.chatRoom.refreshChat(true);
+        // chatApplication.chatRoom.refreshChat(true);
         jqchat("#msg").focus();
       });
 
@@ -1770,31 +1773,53 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
  * @param callback
  */
 ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
-  jqchat.ajax({
-    type: 'POST',
-    url: this.jzEdit,
-    data: {"room": this.room,
-      "user": this.username,
-      "messageId": id,
-      "message": encodeURIComponent(newMessage),
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
+  var thiss = this;
+  // Send message to server
+  //TODO remove require, inject cometd dependency at script level
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-updated",
+      "room": thiss.room,
+      "sender": thiss.username,
+      "dbName": thiss.dbName,
+      "data": {
+        "msgId": id,
+        "msg": newMessage
       }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
   });
+  //
+  // jqchat.ajax({
+  //   type: 'POST',
+  //   url: this.jzEdit,
+  //   data: {"room": this.room,
+  //     "user": this.username,
+  //     "messageId": id,
+  //     "message": encodeURIComponent(newMessage),
+  //     "dbName": this.dbName
+  //   },
+  //   headers: {
+  //     'Authorization': 'Bearer ' + this.token
+  //   },
+  //
+  //   success:function(response){
+  //     //console.log("success");
+  //     if (typeof callback === "function") {
+  //       callback();
+  //     }
+  //   },
+  //
+  //   error:function (xhr, status, error){
+  //
+  //   }
+  //
+  // });
 
 };
 
@@ -2520,7 +2545,7 @@ function userRoomStatus(targetUser, status) {
         jqchat("#userRoomStatus > i").addClass("user-"+status);
 }
 
-ChatApplication.prototype.loadRoom = function() {
+  ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode==true) {
     this.configMode=false;//we're not on the config mode anymore
