@@ -44,6 +44,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   private static final Logger LOG = Logger.getLogger("ChatMongoDataStorage");
 
+  public static final String M_ROOM_PREFIX = "messages_room_";
+  public static final String M_ROOMS_COLLECTION = "rooms";
+
   private long readMillis;
   private int readTotalJson, readTotalTxt;
 

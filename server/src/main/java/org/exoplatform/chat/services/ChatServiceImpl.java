@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.chat.services.mongodb;
+package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.model.RoomBean;

@@ -7,6 +7,7 @@ import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.services.*;
+import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.junit.Before;
@@ -28,14 +29,14 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("john");
     String roomId = ServiceBootstrap.getChatService().getRoom(users, null);
     String roomType = ServiceBootstrap.getChatService().getTypeRoomChat(roomId, null);
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomType).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+roomType).drop();
     users = new ArrayList<String>();
     users.add("benjamin");
     users.add("mary");
     roomId = ServiceBootstrap.getChatService().getRoom(users, null);
     roomType = ServiceBootstrap.getChatService().getTypeRoomChat(roomId, null);
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOM_PREFIX+roomType).drop();
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOMS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+roomType).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION).drop();
 
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
 

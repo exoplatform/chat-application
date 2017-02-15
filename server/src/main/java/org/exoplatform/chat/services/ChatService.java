@@ -27,9 +27,6 @@ import java.util.List;
 
 public interface ChatService
 {
-  public static final String M_ROOM_PREFIX = "messages_room_";
-  public static final String M_ROOMS_COLLECTION = "rooms";
-
   public static final String SPACE_PREFIX = "space-";
   public static final String TEAM_PREFIX = "team-";
   public static final String EXTERNAL_PREFIX = "external-";

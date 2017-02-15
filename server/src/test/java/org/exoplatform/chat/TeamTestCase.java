@@ -11,6 +11,7 @@ import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class TeamTestCase extends AbstractChatTestCase
   public void setUp()
   {
     ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOMS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION).drop();
     ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau", null);
     ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com", null);
     ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
