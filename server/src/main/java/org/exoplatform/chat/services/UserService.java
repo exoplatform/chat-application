@@ -84,7 +84,7 @@ public interface UserService
 
   public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
 
-  public List<UserBean> getUsers(String spaceId, String dbName);
+  public List<UserBean> getUsers(String roomId, String dbName);
 
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 

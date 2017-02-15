@@ -88,6 +88,9 @@ var chatApplication = new ChatApplication();
 
       cCometD.subscribe('/service/chat', null, function (event) {
         var message = event.data;
+        if (typeof message != 'object') {
+          message = JSON.parse(message);
+        }
         console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
@@ -97,8 +100,8 @@ var chatApplication = new ChatApplication();
             chatNotification.changeStatusChat(message.data.status);
           } else {
             // update rooms list
-            chatApplication.rooms.forEach(function(room, idx) {
-              if(room.isSpace == 'false' && room.isTeam == 'false' && room.user == message.room) {
+            chatApplication.rooms.forEach(function (room, idx) {
+              if (room.isSpace == 'false' && room.isTeam == 'false' && room.user == message.room) {
                 chatApplication.rooms[idx].status = message.data.status;
                 chatApplication.renderRooms();
                 return;
@@ -107,14 +110,44 @@ var chatApplication = new ChatApplication();
 
             // update room users status if a room is selected
             if(chatApplication.chatRoom && chatApplication.chatRoom.users) {
-              chatApplication.chatRoom.users.forEach(function(user, idx) {
-                if(user.name == message.room) {
+              chatApplication.chatRoom.users.forEach(function (user, idx) {
+                if (user.name == message.room) {
                   chatApplication.chatRoom.users[idx].status = message.data.status;
                   var roomUsersContainer = jqchat("#room-users-list");
                   chatApplication.renderRoomUsers(roomUsersContainer);
                   return;
                 }
               });
+            }
+          }
+        } else if (message.event == 'room-member-left') {
+          var leftMembers = message.data.members.split(',');
+
+          // check if the current user is removed from a room
+          var currentUserLeft = leftMembers.indexOf(chatApplication.username) >= 0;
+          if (currentUserLeft) {
+            // if the current user is removed from a room, remove the room from the list and re-render the list
+            chatApplication.rooms.forEach(function (room, idx) {
+              if (room.room == message.room) {
+                chatApplication.rooms.splice(idx, 1);
+                chatApplication.renderRooms();
+                return;
+              }
+            });
+          }
+
+          // check if one or more users of the current selected room (if any) have been removed from it, and
+          // update the room members list in such a case
+          if(!currentUserLeft && chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
+            var usersDeleted = false;
+            chatApplication.chatRoom.users.forEach(function (user, idx) {
+              if (leftMembers.indexOf(user.name) >= 0) {
+                chatApplication.chatRoom.users.splice(idx, 1);
+                usersDeleted = true;
+              }
+            });
+            if(usersDeleted) {
+              chatApplication.renderRoomUsers(jqchat("#room-users-list"));
             }
           }
         } else if (message.event == 'message-sent') {
