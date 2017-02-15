@@ -498,6 +498,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       roomBean.setRoom(teamId);
       roomBean.setUser(doc.get("user").toString());
       roomBean.setFullname(doc.get("team").toString());
+      roomBean.setType(doc.get("type").toString());
       if (doc.containsField("timestamp"))
       {
         roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
@@ -550,13 +551,11 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
         roomBean.setFullname(doc.get("displayName").toString());
-        roomBean.setSpace(true);
       }
       else if ("t".equals(type))
       {
         roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
         roomBean.setFullname(doc.get("team").toString());
-        roomBean.setTeam(true);
       }
       else if ("u".equals(type))
       {

@@ -87,8 +87,8 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals("The room id should be the same", teamRoomId, teamRoom.getRoom());
     assertEquals("The room name should be the same", teamRoomName, teamRoom.getFullname());
     assertEquals("The room owner should be the same", user, teamRoom.getUser());
-    assertTrue("The room should be a team room", teamRoom.isTeam());
-    assertFalse("The room should not be a space room", teamRoom.isSpace());
+    assertTrue("The room should be a team room", teamRoom.getType().equals("t"));
+    assertFalse("The room should not be a space room", teamRoom.getType().equals("s"));
 
   }
 

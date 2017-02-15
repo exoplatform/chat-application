@@ -100,8 +100,8 @@ var chatApplication = new ChatApplication();
             chatNotification.changeStatusChat(message.data.status);
           } else {
             // update rooms list
-            chatApplication.rooms.forEach(function (room, idx) {
-              if (room.isSpace == 'false' && room.isTeam == 'false' && room.user == message.room) {
+            chatApplication.rooms.forEach(function(room, idx) {
+              if(room.type == "u" && room.user == message.room) {
                 chatApplication.rooms[idx].status = message.data.status;
                 chatApplication.renderRooms();
                 return;
@@ -1330,8 +1330,7 @@ var handleRoomNotifLayout = function() {
             isActive : "true",
             isAvailableUser : "true",
             isFavorite : "false",
-            isSpace : "false",
-            isTeam: "true",
+            type: "t",
             room : data.room,
             status : "team",
             timestamp : new Date().getTime(),
@@ -2321,8 +2320,7 @@ ChatApplication.prototype.renderRooms = function() {
   out += "</td></tr>";
 
   var roomsPeople = rooms();
-  roomsPeople = roomsPeople.filter({status:{"!is":"space"}});
-  roomsPeople = roomsPeople.filter({status:{"!is":"team"}});
+  roomsPeople = roomsPeople.filter({type:{"is":"u"}});
   roomsPeople = roomsPeople.filter({isFavorite:{"!is":"true"}});
   roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("PEOPLE : "+room.escapedFullname);
@@ -2358,7 +2356,7 @@ ChatApplication.prototype.renderRooms = function() {
   out += "</td></tr>";
 
   var roomsTeams = rooms();
-  roomsTeams = roomsTeams.filter({status:{"is":"team"}});
+  roomsTeams = roomsTeams.filter({type:{"is":"t"}});
   roomsTeams = roomsTeams.filter({isFavorite:{"!is":"true"}});
   roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("TEAMS : "+room.escapedFullname);
@@ -2394,7 +2392,7 @@ ChatApplication.prototype.renderRooms = function() {
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
-  roomsSpaces = roomsSpaces.filter({status:{"is":"space"}});
+  roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
   roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
   roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("SPACES : "+room.escapedFullname);
@@ -2544,7 +2542,7 @@ function userRoomStatus(targetUser, status) {
         jqchat("#userRoomStatus > i").addClass("user-"+status);
 }
 
-  ChatApplication.prototype.loadRoom = function() {
+ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode==true) {
     this.configMode=false;//we're not on the config mode anymore
@@ -3408,7 +3406,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
             var isSpace = (targetUser.indexOf("space-") !== -1);
             var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
-            jzStoreParam("isSpace", isSpace);
             weemoExtension.showVideoPopup(chatApplication.portalURI + 'videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
           }
         }

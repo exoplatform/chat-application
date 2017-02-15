@@ -33,8 +33,6 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
-  boolean isSpace = false;
-  boolean isTeam = false;
   boolean isFavorite = false;
   long timestamp = -1;
 
@@ -102,14 +100,6 @@ public class RoomBean implements Comparable<RoomBean>
     this.type = type;
   }
 
-  public boolean isSpace() {
-    return isSpace;
-  }
-
-  public void setSpace(boolean space) {
-    isSpace = space;
-  }
-
   public boolean isFavorite() {
     return isFavorite;
   }
@@ -124,14 +114,6 @@ public class RoomBean implements Comparable<RoomBean>
 
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
-  }
-
-  public boolean isTeam() {
-    return isTeam;
-  }
-
-  public void setTeam(boolean team) {
-    isTeam = team;
   }
 
   @Override
@@ -154,8 +136,7 @@ public class RoomBean implements Comparable<RoomBean>
       obj.put("isActive", String.valueOf(this.isActive()));
       obj.put("isAvailableUser", String.valueOf(this.isAvailableUser()));
       obj.put("isFavorite", String.valueOf(this.isFavorite()));
-      obj.put("isSpace", String.valueOf(this.isSpace()));
-      obj.put("isTeam", String.valueOf(this.isTeam()));
+      obj.put("type", this.getType());
     } catch (JSONException e) {
       return obj.toString();
     }

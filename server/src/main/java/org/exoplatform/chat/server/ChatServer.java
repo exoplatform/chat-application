@@ -1110,9 +1110,9 @@ public class ChatServer
       LOG.warning("Cannot check if user " + username + " is member of room " + roomId + " since the room does not exist.");
       return false;
     }
-    if (room.isTeam()) {
+    if (room.getType().equals("t")) {
       roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
-    } else if(room.isSpace()) {
+    } else if(room.getType().equals("s")) {
       roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE, dbName);
     } else {
       roomMembers = new ArrayList<>();
