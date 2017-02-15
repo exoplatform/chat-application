@@ -20,19 +20,18 @@
 package org.exoplatform.chat.bootstrap;
 
 import org.exoplatform.chat.listener.GuiceManager;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.TokenService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.*;
 
 public class ServiceBootstrap {
   private static UserService userService;
   private static TokenService tokenService;
   private static ChatService chatService;
+  private static ChatDataStorage chatStorage;
   private static NotificationService notificationService;
 
   public static void forceNew()
   {
+    chatStorage = GuiceManager.getInstance().getInstance(ChatDataStorage.class);
     chatService = GuiceManager.getInstance().getInstance(ChatService.class);
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
@@ -48,9 +47,9 @@ public class ServiceBootstrap {
     return tokenService;
   }
 
-  public static ChatService getChatService() {
-    return chatService;
-  }
+  public static ChatService getChatService() { return chatService; }
+
+  public static ChatDataStorage getChatDataStorage() { return chatStorage; }
 
   public static NotificationService getNotificationService() {
     return notificationService;

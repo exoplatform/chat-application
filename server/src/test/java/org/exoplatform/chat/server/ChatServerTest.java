@@ -11,6 +11,7 @@ import org.exoplatform.chat.services.UserService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
+@Ignore
 public class ChatServerTest extends AbstractChatTestCase {
 
   @Test

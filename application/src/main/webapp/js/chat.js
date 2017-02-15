@@ -120,9 +120,7 @@ var chatApplication = new ChatApplication();
         } else if (message.event == 'message-sent') {
           if (chatApplication.chatRoom.id === message.room) {
             chatApplication.chatRoom.addMessage(message.messages[0]);
-            // chatApplication.chatRoom.addMessagesToLocalList(message, true);
           }
-          // chatApplication.chatRoom.showMessages();
         } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
           if (chatApplication.chatRoom.id === message.room) {
             chatApplication.chatRoom.updateMessage(message.messages[0]);

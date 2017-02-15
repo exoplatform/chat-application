@@ -6,10 +6,7 @@ import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.TokenService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.junit.Before;
@@ -184,15 +181,15 @@ public class ChatTestCase extends AbstractChatTestCase
   @Test
   public void testEdit() throws Exception
   {
-    ChatService chatService = ServiceBootstrap.getChatService();
+    ChatDataStorage chatDataStorage = ServiceBootstrap.getChatDataStorage();
     UserService userService = ServiceBootstrap.getUserService();
     List<String> users = new ArrayList<String>();
     users.add("benjamin");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatDataStorage.getRoom(users, null);
 
-    chatService.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, userService, null);
+    chatDataStorage.write("foo", "benjamin", roomId, "false", null);
+    String resp = chatDataStorage.read(roomId, userService, null);
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
@@ -202,9 +199,9 @@ public class ChatTestCase extends AbstractChatTestCase
 
     assertEquals("foo", message);
 
-    chatService.edit(roomId, "benjamin", id, "bar", null);
+    chatDataStorage.edit(roomId, "benjamin", id, "bar", null);
 
-    resp = chatService.read(roomId, userService, null);
+    resp = chatDataStorage.read(roomId, userService, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
@@ -219,25 +216,25 @@ public class ChatTestCase extends AbstractChatTestCase
   @Test
   public void testDelete() throws Exception
   {
-    ChatService chatService = ServiceBootstrap.getChatService();
+    ChatDataStorage chatDataStorage = ServiceBootstrap.getChatDataStorage();
     UserService userService = ServiceBootstrap.getUserService();
     List<String> users = new ArrayList<String>();
     users.add("benjamin");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatDataStorage.getRoom(users, null);
 
-    chatService.write("foo", "benjamin", roomId, "false", null);
-    chatService.write("bar", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, userService, null);
+    chatDataStorage.write("foo", "benjamin", roomId, "false", null);
+    chatDataStorage.write("bar", "benjamin", roomId, "false", null);
+    String resp = chatDataStorage.read(roomId, userService, null);
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
 
     String id = (String)((JSONObject)messages.get(0)).get("id");
 
-    chatService.delete(roomId, "benjamin", id, null);
+    chatDataStorage.delete(roomId, "benjamin", id, null);
 
-    resp = chatService.read(roomId, userService, null);
+    resp = chatDataStorage.read(roomId, userService, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
