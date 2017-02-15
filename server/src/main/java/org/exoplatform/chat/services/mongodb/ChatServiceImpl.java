@@ -121,9 +121,45 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return chatStorage.save(message, user, room, isSystem, options, dbName);
   }
 
-  public void delete(String room, String user, String messageId, String dbName)
+  public void delete(String room, String sender, String messageId, String dbName)
   {
-    chatStorage.delete(room, user, messageId, dbName);
+    chatStorage.delete(room, sender, messageId, dbName);
+
+    String roomType = getTypeRoomChat(room, dbName);
+
+    if (!roomType.equals("e")) {
+      List<String> usersToBeNotified = new ArrayList<String>();
+      if (roomType.equals("s")) {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName);
+      } else if (roomType.equals("t")) {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName);
+      } else {
+        usersToBeNotified.add(room);
+      }
+
+
+      MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
+
+      JSONObject data = new JSONObject();
+      data.put("event", "message-deleted");
+      data.put("room", room);
+      JSONArray array = new JSONArray();
+      array.add(msg.toJSONObject());
+      data.put("messages", array);
+
+      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+
+      // Deliver the saved message to sender's subscribed channel itself.
+      if(bayeux.isPresent(sender)) {
+        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
+      }
+
+      for (String receiver: usersToBeNotified) {
+        if(bayeux.isPresent(receiver)) {
+          bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
+        }
+      }
+    }
   }
 
   public RoomBean getTeamRoomById(String roomId, String dbName) {

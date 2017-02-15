@@ -83,8 +83,8 @@ public class CometdService {
       } else if (event.equals("message-updated")) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
-        String dbName = jsonMessage.get("dbName").toString();
         String sender = jsonMessage.get("sender").toString();
+        String dbName = jsonMessage.get("dbName").toString();
         // Only author of the message can edit it
         MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
         if (currentMessage == null || !currentMessage.getUser().equals(sender)) {
@@ -93,6 +93,19 @@ public class CometdService {
 
         String msg = ((JSONObject)jsonMessage.get("data")).get("msg").toString();
         chatService.edit(room, sender, messageId, msg, dbName);
+      } else if (event.equals("message-deleted")) {
+        String room = jsonMessage.get("room").toString();
+        String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
+        String sender = jsonMessage.get("sender").toString();
+        String dbName = jsonMessage.get("dbName").toString();
+
+        // Only author of the message can delete it
+        MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
+        if (currentMessage == null || !currentMessage.getUser().equals(sender)) {
+          return;
+        }
+
+        chatService.delete(room, sender, messageId, dbName);
       }
     } catch (ParseException e) {
       e.printStackTrace();

@@ -107,10 +107,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
         $chats.on("click.delete", ".msg-action-delete", function() {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgId = $uimsg.attr("data-id");
-          chatApplication.deleteMessage(msgId, function() {
-            chatApplication.chatRoom.refreshChat(true);
-          });
-          //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
+          chatApplication.deleteMessage(msgId);
         });
 
         $chats.off("click.edit");
@@ -635,7 +632,6 @@ ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
 
 ChatRoom.prototype.updateMessage = function(message) {
   $msg = jqchat("#" + message.id);
-
   var out = this.generateMessageHTML(message);
   $msg.replaceWith(out);
 }

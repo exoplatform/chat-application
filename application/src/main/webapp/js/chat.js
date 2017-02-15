@@ -123,9 +123,8 @@ var chatApplication = new ChatApplication();
             // chatApplication.chatRoom.addMessagesToLocalList(message, true);
           }
           // chatApplication.chatRoom.showMessages();
-        } else if (message.event == 'message-updated'){
+        } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
           if (chatApplication.chatRoom.id === message.room) {
-            console.log(message);
             chatApplication.chatRoom.updateMessage(message.messages[0]);
           }
         }
@@ -1712,30 +1711,26 @@ ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
  * @param callback
  */
 ChatApplication.prototype.deleteMessage = function(id, callback) {
-  jqchat.ajax({
-    url: this.jzDelete,
-    data: {"room": this.room,
-      "user": this.username,
-      "messageId": id,
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
+  var thiss = this;
+  // Send message to server
+  //TODO remove require, inject cometd dependency at script level
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-deleted",
+      "room": thiss.room,
+      "sender": thiss.username,
+      "dbName": thiss.dbName,
+      "data": {
+        "msgId": id
       }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
   });
-
 };
 
 /**
@@ -1794,33 +1789,6 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       }
     });
   });
-  //
-  // jqchat.ajax({
-  //   type: 'POST',
-  //   url: this.jzEdit,
-  //   data: {"room": this.room,
-  //     "user": this.username,
-  //     "messageId": id,
-  //     "message": encodeURIComponent(newMessage),
-  //     "dbName": this.dbName
-  //   },
-  //   headers: {
-  //     'Authorization': 'Bearer ' + this.token
-  //   },
-  //
-  //   success:function(response){
-  //     //console.log("success");
-  //     if (typeof callback === "function") {
-  //       callback();
-  //     }
-  //   },
-  //
-  //   error:function (xhr, status, error){
-  //
-  //   }
-  //
-  // });
-
 };
 
 /**
