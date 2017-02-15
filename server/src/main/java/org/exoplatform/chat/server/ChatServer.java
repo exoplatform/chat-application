@@ -416,22 +416,7 @@ public class ChatServer
 
     try
     {
-      List<UserBean> users = userService.getUsers(room, dbName);
       chatService.delete(room, user, messageId, dbName);
-
-      JSONObject leaveRoomMessage = new JSONObject();
-      leaveRoomMessage.put("event", "room-member-left");
-      leaveRoomMessage.put("room", "");
-      leaveRoomMessage.put("sender", user);
-      leaveRoomMessage.put("ts", System.currentTimeMillis());
-      JSONObject data = new JSONObject();
-      data.put("members", users.stream().map(u -> u.getName()).collect(Collectors.joining(",")));
-      leaveRoomMessage.put("data", data);
-
-      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-      users.stream()
-              .filter(u -> bayeux.isPresent(u.getName()))
-              .forEach(u -> bayeux.sendMessage(u.getName(), CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
     }
     catch (Exception e)
     {
