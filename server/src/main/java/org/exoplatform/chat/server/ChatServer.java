@@ -150,7 +150,7 @@ public class ChatServer
     }
 
     RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
-            notificationService, userService, tokenService, dbName);
+            notificationService, tokenService, dbName);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
@@ -207,7 +207,7 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
 
-    String data = chatService.read(room, userService, "true".equals(isTextOnly), from, dbName);
+    String data = chatService.read(room, "true".equals(isTextOnly), from, dbName);
 
     return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
@@ -237,7 +237,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, userService, false, from, to, dbName);
+    String data = chatService.read(room, false, from, to, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     String roomType = chatService.getTypeRoomChat(room, dbName);
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -345,7 +345,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, userService, false, from, to, dbName);
+    String data = chatService.read(room, false, from, to, dbName);
     String typeRoom = chatService.getTypeRoomChat(room, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {

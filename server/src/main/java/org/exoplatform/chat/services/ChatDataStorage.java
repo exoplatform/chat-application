@@ -52,11 +52,11 @@ public interface ChatDataStorage
 
   public void edit(String room, String user, String messageId, String message, String dbName);
 
-  public String read(String room, UserService userService, String dbName);
+  public String read(String room, String dbName);
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, String dbName);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
 
   public MessageBean getMessage(String roomId, String messageId, String dbName);
 
@@ -96,7 +96,7 @@ public interface ChatDataStorage
    */
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName);
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName);
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName);
 
   public int getNumberOfRooms(String dbName);
 

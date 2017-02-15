@@ -24,6 +24,7 @@ import org.exoplatform.chat.services.*;
 
 public class ServiceBootstrap {
   private static UserService userService;
+  private static UserDataStorage userDataStorage;
   private static TokenService tokenService;
   private static ChatService chatService;
   private static ChatDataStorage chatStorage;
@@ -34,12 +35,17 @@ public class ServiceBootstrap {
     chatStorage = GuiceManager.getInstance().getInstance(ChatDataStorage.class);
     chatService = GuiceManager.getInstance().getInstance(ChatService.class);
     userService = GuiceManager.getInstance().getInstance(UserService.class);
+    userDataStorage = GuiceManager.getInstance().getInstance(UserDataStorage.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
   }
 
   public static UserService getUserService() {
     return userService;
+  }
+
+  public static UserDataStorage getUserDataStorage() {
+    return userDataStorage;
   }
 
   public static TokenService getTokenService()

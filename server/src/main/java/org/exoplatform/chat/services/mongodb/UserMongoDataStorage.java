@@ -1,4 +1,4 @@
-/*
+  /*
  * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -25,11 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.UserDataStorage;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.json.JSONException;
-//org.json.simple.JSONObject
-import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -40,12 +38,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-@Named("userService")
+@Named("userStorage")
 @ApplicationScoped
-public class UserServiceImpl implements org.exoplatform.chat.services.UserService
-{
+public class UserMongoDataStorage implements UserDataStorage {
 
-  private static final Logger LOG = Logger.getLogger("UserService");
+  private static final Logger LOG = Logger.getLogger(UserMongoDataStorage.class.getName());
+
+  public static final String M_USERS_COLLECTION = "users";
+  public static final String M_ROOMS_COLLECTION = "rooms";
 
   private DB db(String dbName)
   {
@@ -56,6 +56,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public void toggleFavorite(String user, String targetUser, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -78,13 +79,8 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       coll.save(doc, WriteConcern.SAFE);
     }
   }
-  /*
-  * This methode is responsible for setting a notification channel for a specific user
-  * available channels :
-  *  -on-site
-  *  -desktop
-  *  -bip
-  */
+
+  @Override
   public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -140,13 +136,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
-  /*
-  * This methode is responsible for setting a notification triggers for a specific user
-  * available triggers :
-  *  -mention
-  *  -even-on-do-not-distrub
-  *
-  */
+  @Override
   public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -198,14 +188,9 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
       throw new Exception("Doc not found, operation not done");
     }
   }
-  /*
-  * This methode is responsible for setting a notification triggers for a specific user in a specific room
-  * available triggers :
-  *  -mention
-  *  -key-words
-  *
-  */
-  public void setRoomNotificationTrigger(String user, String room,String notifCond, String notifConditionType, String dbName, long time) throws Exception {
+
+  @Override
+  public void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, String dbName, long time) throws Exception {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
@@ -236,8 +221,8 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         if (notifData.get("time") == null || (long)notifData.get("time") < time) {
           notifData.put("notifCond", notifConditionType);
           notifData.put("time", time);
-          if(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)){
-            notifData.put(UserService.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD, notifCond);
+          if(UserDataStorage.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)){
+            notifData.put(UserDataStorage.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD, notifCond);
           }
         }
 
@@ -267,6 +252,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
   /*
   * This methode is responsible for getting all desktop settings in a single object
   */
+  @Override
   public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
     NotificationSettingsBean settings = new NotificationSettingsBean();
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -280,11 +266,11 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
         wrapperDoc = new BasicDBObject();
       }
 
-      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION)!=null){
-        settings.setEnabledChannels(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION).toString());
+      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION)!=null){
+        settings.setEnabledChannels(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION).toString());
       }
-      if(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER)!=null){
-        settings.setEnabledTriggers(wrapperDoc.get(UserService.PREFERRED_NOTIFICATION_TRIGGER).toString());
+      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER)!=null){
+        settings.setEnabledTriggers(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER).toString());
       }
       if(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
         settings.setEnabledRoomTriggers(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
@@ -293,6 +279,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return settings;
   }
 
+  @Override
   public boolean isFavorite(String user, String targetUser, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -311,6 +298,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return false;
   }
 
+  @Override
   public void addUserFullName(String user, String fullname, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -334,6 +322,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public void addUserEmail(String user, String email, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -357,6 +346,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public void setSpaces(String user, List<SpaceBean> spaces, String dbName)
   {
     List<String> spaceIds = new ArrayList<String>();
@@ -417,6 +407,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public void addTeamRoom(String user, String teamRoomId, String dbName) {
     List<String> teamIds = new ArrayList<String>();
     teamIds.add(teamRoomId);
@@ -450,19 +441,18 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public void addTeamUsers(String teamRoomId, List<String> users, String dbName) {
-    for (String user:users)
-    {
-      LOG.info("Team Add : " + user);
+    for (String user:users) {
       this.addTeamRoom(user, teamRoomId, dbName);
     }
   }
 
+  @Override
   public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     for (String user:users)
     {
-      LOG.info("Team Remove : " + user);
       BasicDBObject query = new BasicDBObject();
       query.put("user", user);
       DBCursor cursor = coll.find(query);
@@ -508,6 +498,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return roomBean;
   }
 
+  @Override
   public List<RoomBean> getTeams(String user, String dbName) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -531,6 +522,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return rooms;
   }
 
+  @Override
   public RoomBean getRoom(String user, String roomId, String dbName) {
     RoomBean roomBean = new RoomBean();
     roomBean.setRoom(roomId);
@@ -600,6 +592,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return spaceBean;
   }
 
+  @Override
   public List<SpaceBean> getSpaces(String user, String dbName)
   {
     List<SpaceBean> spaces = new ArrayList<SpaceBean>();
@@ -624,6 +617,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return spaces;
   }
 
+  @Override
   public List<UserBean> getUsers(String roomId, String dbName)
   {
     //removing "space-" prefix
@@ -664,6 +658,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
   
+  @Override
   public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName) {
     List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
@@ -681,6 +676,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
   
+  @Override
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName) {
     filter = filter.replaceAll(" ", ".*");
     List<UserBean> users = new ArrayList<UserBean>();
@@ -711,6 +707,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
 
+  @Override
   public String setStatus(String user, String status, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -734,6 +731,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return status;
   }
 
+  @Override
   public void setAsAdmin(String user, boolean isAdmin, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -756,6 +754,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     }
   }
 
+  @Override
   public boolean isAdmin(String user, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -771,6 +770,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return false;
   }
 
+  @Override
   public String getStatus(String user, String dbName)
   {
     String status = STATUS_NONE;
@@ -794,6 +794,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return status;
   }
 
+  @Override
   public String getUserFullName(String user, String dbName)
   {
     String fullname = null;
@@ -811,11 +812,13 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return fullname;
   }
 
+  @Override
   public UserBean getUser(String user, String dbName)
   {
     return getUser(user, false, dbName);
   }
 
+  @Override
   public UserBean getUser(String user, boolean withFavorites, String dbName)
   {
     UserBean userBean = new UserBean();
@@ -844,6 +847,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return userBean;
   }
 
+  @Override
   public List<String> getUsersFilterBy(String user, String room, String type, String dbName)
   {
     ArrayList<String> users = new ArrayList<String>();
@@ -865,6 +869,7 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     return users;
   }
 
+  @Override
   public int getNumberOfUsers(String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -872,6 +877,4 @@ public class UserServiceImpl implements org.exoplatform.chat.services.UserServic
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
-
-
 }

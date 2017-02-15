@@ -8,6 +8,7 @@ import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
+import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class ChatTestCase extends AbstractChatTestCase
     ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+roomType).drop();
     ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION).drop();
 
-    ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
 
     UserService userService = ServiceBootstrap.getUserService();
     userService.addUserFullName("benjamin", "Benjamin Paillereau", null);
@@ -103,11 +104,11 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("john");
     String roomId = chatService.getRoom(users, null);
 
-    String resp = chatService.read(roomId, userService, false, null, null);
+    String resp = chatService.read(roomId, false, null, null);
     String json = "{\"room\": \"" + roomId + "\",\"messages\": []}";
     assertEquals(json, resp);
 
-    resp = chatService.read(roomId, userService, true, null, null);
+    resp = chatService.read(roomId, true, null, null);
     String text = "no messages";
     assertEquals(text, resp);
   }
@@ -123,12 +124,12 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users, null);
 
     chatService.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, userService, true, null, null);
+    String resp = chatService.read(roomId, true, null, null);
     assertEquals(47, resp.length());
     assertTrue(resp.endsWith("] Benjamin Paillereau: foo\n"));
 
     chatService.write("bar", "john", roomId, "false", null);
-    resp = chatService.read(roomId, userService, true, null, null);
+    resp = chatService.read(roomId, true, null, null);
     assertEquals(85, resp.length());
     assertTrue(resp.endsWith("] John Smith: bar\n"));
   }
@@ -144,7 +145,7 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users, null);
 
     chatService.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, userService, null);
+    String resp = chatService.read(roomId, null);
 
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     String room = (String)jsonObject.get("room");
@@ -157,7 +158,7 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, messages.size());
 
     chatService.write("bar", "john", roomId, "false", null);
-    resp = chatService.read(roomId, userService, null);
+    resp = chatService.read(roomId, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
@@ -190,7 +191,7 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatDataStorage.getRoom(users, null);
 
     chatDataStorage.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatDataStorage.read(roomId, userService, null);
+    String resp = chatDataStorage.read(roomId, null);
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
@@ -202,7 +203,7 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatDataStorage.edit(roomId, "benjamin", id, "bar", null);
 
-    resp = chatDataStorage.read(roomId, userService, null);
+    resp = chatDataStorage.read(roomId, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
@@ -226,7 +227,7 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatDataStorage.write("foo", "benjamin", roomId, "false", null);
     chatDataStorage.write("bar", "benjamin", roomId, "false", null);
-    String resp = chatDataStorage.read(roomId, userService, null);
+    String resp = chatDataStorage.read(roomId, null);
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
@@ -235,7 +236,7 @@ public class ChatTestCase extends AbstractChatTestCase
 
     chatDataStorage.delete(roomId, "benjamin", id, null);
 
-    resp = chatDataStorage.read(roomId, userService, null);
+    resp = chatDataStorage.read(roomId, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
@@ -351,30 +352,30 @@ public class ChatTestCase extends AbstractChatTestCase
 
     RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsMaryAll = chatService.getRooms("mary", null,
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     RoomsBean roomsBenUsers = chatService.getRooms("benjamin", null,
             true, false, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsMaryUsers = chatService.getRooms("mary", null,
             true, false, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsMarySpaces = chatService.getRooms("mary", null,
             false, true, false, false, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     Thread.sleep(110);
 
     RoomsBean roomsBenOffline = chatService.getRooms("benjamin", null,
             true, false, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     RoomsBean roomsBenOnline = chatService.getRooms("benjamin", null,
             true, false, false, false, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     assertEquals(5, roomsBenAll.getRooms().size());
     assertEquals(3, roomsBenUsers.getRooms().size());
@@ -449,26 +450,26 @@ public class ChatTestCase extends AbstractChatTestCase
 
     RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     RoomsBean roomsBenTest = chatService.getRooms("benjamin", "Test",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsBenTeSp = chatService.getRooms("benjamin", "Te Sp",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsBenTeSpe = chatService.getRooms("benjamin", "Te Spe",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsBenJohn = chatService.getRooms("benjamin", "john",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsBenJo = chatService.getRooms("benjamin", "Jo",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
     RoomsBean roomsBenMaWi = chatService.getRooms("benjamin", "Ma Wi",
             true, true, false, true, false,
-            notificationService, userService, tokenService, null);
+            notificationService, tokenService, null);
 
     Thread.sleep(110);
 

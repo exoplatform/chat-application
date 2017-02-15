@@ -12,6 +12,7 @@ public class MongoModule extends AbstractModule
     bind(ChatService.class).to(ChatServiceImpl.class);
     bind(NotificationService.class).to(NotificationServiceImpl.class);
     bind(TokenService.class).to(TokenServiceImpl.class);
+    bind(UserDataStorage.class).to(UserMongoDataStorage.class);
     bind(UserService.class).to(UserServiceImpl.class);
   }
 }

@@ -24,13 +24,10 @@ import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.server.CometdService;
-import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.container.PortalContainer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -42,7 +39,7 @@ import java.util.logging.Logger;
 
 @Named("chatService")
 @ApplicationScoped
-public class ChatServiceImpl implements org.exoplatform.chat.services.ChatService
+public class ChatServiceImpl implements ChatService
 {
   private static final Logger LOG = Logger.getLogger("ChatService");
 
@@ -211,18 +208,18 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
   }
 
-  public String read(String room, UserService userService, String dbName)
+  public String read(String room, String dbName)
   {
-    return read(room, userService, false, null, null, dbName);
+    return read(room, false, null, null, dbName);
   }
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, String dbName)
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName)
   {
-    return read(room, userService, isTextOnly, fromTimestamp, null, dbName);
+    return read(room, isTextOnly, fromTimestamp, null, dbName);
   }
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
-    return chatStorage.read(room, userService, isTextOnly, fromTimestamp, toTimestamp, dbName);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+    return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, dbName);
   }
 
   public MessageBean getMessage(String roomId, String messageId, String dbName) {
@@ -268,13 +265,13 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return chatStorage.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName) {
-    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService, dbName);
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
+    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, tokenService, dbName);
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName)
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName)
   {
-    return chatStorage.getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, userService, tokenService, dbName);
+    return chatStorage.getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, tokenService, dbName);
   }
 
   public int getNumberOfRooms(String dbName)

@@ -193,7 +193,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, userService, null);
+    String jsonMessages = chatService.read(roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -229,7 +229,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, userService, null);
+    String jsonMessages = chatService.read(roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -263,7 +263,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, userService, null);
+    String jsonMessages = chatService.read(roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -299,7 +299,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, userService, null);
+    String jsonMessages = chatService.read(roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
