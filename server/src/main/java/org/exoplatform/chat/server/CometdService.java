@@ -106,6 +106,16 @@ public class CometdService {
         }
 
         chatService.delete(room, sender, messageId, dbName);
+      } else if (event.equals("favorite-added")) {
+        String sender = jsonMessage.get("sender").toString();
+        String targetUser = jsonMessage.get("targetUser").toString();
+        String dbName = jsonMessage.get("dbName").toString();
+        userService.addFavorite(sender, targetUser, dbName);
+      } else if (event.equals("favorite-removed")) {
+        String sender = jsonMessage.get("sender").toString();
+        String targetUser = jsonMessage.get("targetUser").toString();
+        String dbName = jsonMessage.get("dbName").toString();
+        userService.removeFavorite(sender, targetUser, dbName);
       }
     } catch (ParseException e) {
       e.printStackTrace();

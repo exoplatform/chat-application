@@ -30,7 +30,9 @@ public interface UserDataStorage {
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
   public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
 
-  void toggleFavorite(String user, String targetUser, String dbName);
+  void addFavorite(String user, String targetUser, String dbName);
+
+  void removeFavorite(String user, String targetUser, String dbName);
 
   /*
     * This methode is responsible for setting a notification channel for a specific user

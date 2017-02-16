@@ -57,7 +57,7 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void toggleFavorite(String user, String targetUser, String dbName)
+  public void addFavorite(String user, String targetUser, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
@@ -70,13 +70,33 @@ public class UserMongoDataStorage implements UserDataStorage {
       if (doc.containsField("favorites")) {
         favorites = (List<String>)doc.get("favorites");
       }
-      if (favorites.contains(targetUser))
-        favorites.remove(targetUser);
-      else
+      if (!favorites.contains(targetUser)) {
         favorites.add(targetUser);
+        doc.put("favorites", favorites);
+        coll.save(doc, WriteConcern.SAFE);
+      }
+    }
+  }
 
-      doc.put("favorites", favorites);
-      coll.save(doc, WriteConcern.SAFE);
+  @Override
+  public void removeFavorite(String user, String targetUser, String dbName)
+  {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      List<String> favorites = new ArrayList<String>();
+      if (doc.containsField("favorites")) {
+        favorites = (List<String>)doc.get("favorites");
+        if (favorites.contains(targetUser)) {
+          favorites.remove(targetUser);
+          doc.put("favorites", favorites);
+          coll.save(doc, WriteConcern.SAFE);
+        }
+      }
     }
   }
 
@@ -539,17 +559,17 @@ public class UserMongoDataStorage implements UserDataStorage {
       }
       String type = doc.get("type").toString();
       roomBean.setType(type);
-      if ("s".equals(type))
+      if (ChatService.TYPE_ROOM_SPACE.equals(type))
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
         roomBean.setFullname(doc.get("displayName").toString());
       }
-      else if ("t".equals(type))
+      else if (ChatService.TYPE_ROOM_TEAM.equals(type))
       {
         roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
         roomBean.setFullname(doc.get("team").toString());
       }
-      else if ("u".equals(type))
+      else if (ChatService.TYPE_ROOM_USER.equals(type))
       {
         List<String> users = ((List<String>)doc.get("users"));
         users.remove(user);
@@ -557,7 +577,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         roomBean.setUser(targetUser);
         roomBean.setFullname(this.getUserFullName(targetUser, dbName));
       }
-      else if ("e".equals(type))
+      else if (ChatService.TYPE_ROOM_EXTERNAL.equals(type))
       {
         roomBean.setUser(ChatService.EXTERNAL_PREFIX+roomId);
         roomBean.setFullname(doc.get("identifier").toString());

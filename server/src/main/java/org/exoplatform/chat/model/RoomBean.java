@@ -135,7 +135,7 @@ public class RoomBean implements Comparable<RoomBean>
       obj.put("unreadTotal", String.valueOf(this.getUnreadTotal()));
       obj.put("isActive", String.valueOf(this.isActive()));
       obj.put("isAvailableUser", String.valueOf(this.isAvailableUser()));
-      obj.put("isFavorite", String.valueOf(this.isFavorite()));
+      obj.put("isFavorite", this.isFavorite());
       obj.put("type", this.getType());
     } catch (JSONException e) {
       return obj.toString();

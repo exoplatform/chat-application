@@ -100,13 +100,8 @@ var chatApplication = new ChatApplication();
             chatNotification.changeStatusChat(message.data.status);
           } else {
             // update rooms list
-            chatApplication.rooms.forEach(function(room, idx) {
-              if(room.type == "u" && room.user == message.room) {
-                chatApplication.rooms[idx].status = message.data.status;
-                chatApplication.renderRooms();
-                return;
-              }
-            });
+            chatApplication.rooms({type: 'u', user: message.room}).update({status: message.data.status});
+            chatApplication.renderRooms();
 
             // update room users status if a room is selected
             if(chatApplication.chatRoom && chatApplication.chatRoom.users) {
@@ -127,13 +122,8 @@ var chatApplication = new ChatApplication();
           var currentUserLeft = leftMembers.indexOf(chatApplication.username) >= 0;
           if (currentUserLeft) {
             // if the current user is removed from a room, remove the room from the list and re-render the list
-            chatApplication.rooms.forEach(function (room, idx) {
-              if (room.room == message.room) {
-                chatApplication.rooms.splice(idx, 1);
-                chatApplication.renderRooms();
-                return;
-              }
-            });
+            chatApplication.rooms({room: message.room}).remove();
+            chatApplication.renderRooms();
           }
 
           // check if one or more users of the current selected room (if any) have been removed from it, and
@@ -158,6 +148,14 @@ var chatApplication = new ChatApplication();
           if (chatApplication.chatRoom.id === message.room) {
             chatApplication.chatRoom.updateMessage(message.messages[0]);
           }
+        } else if (message.event == 'favorite-added') {
+          var room = chatApplication.rooms({user: message.room});
+          room.update({isFavorite: true});
+          chatApplication.renderRooms();
+        } else if (message.event == 'favorite-removed') {
+          var room = chatApplication.rooms({user: message.room});
+          room.update({isFavorite: false});
+          chatApplication.renderRooms();
         }
       });
     });
@@ -1325,11 +1323,11 @@ var handleRoomNotifLayout = function() {
         var roomId = "team-"+data.room;
 
         // Add the new room and re-render the list of rooms
-        chatApplication.rooms.push({
+        chatApplication.rooms.insert({
             escapedFullname : teamName,
             isActive : "true",
             isAvailableUser : "true",
-            isFavorite : "false",
+            isFavorite : false,
             type: "t",
             room : data.room,
             status : "team",
@@ -2311,7 +2309,7 @@ ChatApplication.prototype.loadRooms = function(targetUser, targetFullname) {
         this.isLoaded = true;
         this.hidePanel(".chat-error-panel");
         this.hidePanel(".chat-sync-panel");
-        chatApplication.rooms = response.rooms;
+        chatApplication.rooms = TAFFY(response.rooms);
         this.renderRooms();
 
         // reload room users if the panel is displayed
@@ -2381,7 +2379,7 @@ ChatApplication.prototype.loadRooms = function(targetUser, targetFullname) {
  * @param rooms : a json object
  */
 ChatApplication.prototype.renderRooms = function() {
-  var rooms = TAFFY(chatApplication.rooms);
+  var rooms = chatApplication.rooms;
 
   var roomPrevUser = "";
   var out = '<table class="table list-rooms">';
@@ -2408,7 +2406,7 @@ ChatApplication.prototype.renderRooms = function() {
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
-  roomsFavorites = roomsFavorites.filter({isFavorite:{is:"true"}});
+  roomsFavorites = roomsFavorites.filter({isFavorite:{is: true}});
   roomsFavorites.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
 //    console.log("FAVORITES : "+room.escapedFullname);
     var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
@@ -2453,7 +2451,7 @@ ChatApplication.prototype.renderRooms = function() {
 
   var roomsPeople = rooms();
   roomsPeople = roomsPeople.filter({type:{"is":"u"}});
-  roomsPeople = roomsPeople.filter({isFavorite:{"!is":"true"}});
+  roomsPeople = roomsPeople.filter({isFavorite:{"!is": true}});
   roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("PEOPLE : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
@@ -2489,7 +2487,7 @@ ChatApplication.prototype.renderRooms = function() {
 
   var roomsTeams = rooms();
   roomsTeams = roomsTeams.filter({type:{"is":"t"}});
-  roomsTeams = roomsTeams.filter({isFavorite:{"!is":"true"}});
+  roomsTeams = roomsTeams.filter({isFavorite:{"!is": true}});
   roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("TEAMS : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
@@ -2525,7 +2523,7 @@ ChatApplication.prototype.renderRooms = function() {
 
   var roomsSpaces = rooms();
   roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
-  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
+  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is": true}});
   roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("SPACES : "+room.escapedFullname);
     if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
@@ -2639,7 +2637,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       out += 'uiIconChatTeam uiIconChatLightGray';
     }
     out += ' user-'+room.status+ '';
-    if (room.isFavorite == "true") {
+    if (room.isFavorite == true) {
       out += ' user-favorite';
     } else {
       out += ' user-status';
@@ -2660,13 +2658,13 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     }
     else {
       out+= '<i class="uiIconChatFavorite pull-right';
-      if (room.isFavorite == "true") {
+      if (room.isFavorite == true) {
         out += ' user-favorite';
       } else {
         out += ' user-status';
       }
       out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
-      if (room.isFavorite == "true") {
+      if (room.isFavorite == true) {
         out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"] + '"';
       } else {
         out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"] + '"';
@@ -2867,12 +2865,11 @@ ChatApplication.prototype.loadRoom = function() {
       });
     }
 
-    var thiss = this;
     this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
-      thiss.room = room;
+      chatApplication.room = room;
       var $msg = jqchat('#msg');
-      thiss.activateRoomButtons();
-      if (thiss.isDesktopView()) $msg.focus();
+      chatApplication.activateRoomButtons();
+      if (chatApplication.isDesktopView()) $msg.focus();
     });
   }
 };
@@ -3003,29 +3000,21 @@ ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
  */
 ChatApplication.prototype.toggleFavorite = function(targetFav) {
   console.log("FAVORITE::"+targetFav);
-  jqchat.ajax({
-    url: this.jzChatToggleFavorite,
-    data: {"targetUser": targetFav,
-      "user": this.username,
-      "timestamp": new Date().getTime(),
-      "token": this.token
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-    context: this,
-    success: function(response){
-      // Update the room and re-render the list of rooms
-      chatApplication.rooms.forEach(function(room, idx) {
-        if(room.user == targetFav) {
-          chatApplication.rooms[idx].isFavorite = chatApplication.rooms[idx].isFavorite == 'true' ? 'false' : 'true';
-          chatApplication.renderRooms();
-          return;
-        }
-      });
-    },
-    error: function(xhr, status, error){
-    }
+
+  var room = chatApplication.rooms({user: targetFav});
+
+  var thiss = this;
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    var event = room.first().isFavorite ? "favorite-removed" : "favorite-added";
+    cCometD.publish('/service/chat', JSON.stringify({"event": event,
+      "targetUser": targetFav,
+      "sender": thiss.username,
+      "dbName": thiss.dbName
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+      }
+    });
   });
 };
 

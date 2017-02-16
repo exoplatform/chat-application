@@ -152,7 +152,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       LOG.warning("No room with id [" + roomId + "] available to delete");
       return;
     }
-    if (!room.getType().equals("t")) {
+    if (!room.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
       LOG.warning("The room with id [" + roomId + "] is not a Team Room so it won't be deleted.");
       return;
     }
@@ -637,7 +637,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setStatus(availableUser.getStatus());
         roomBean.setAvailableUser(true);
         roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
-        roomBean.setType("u");
+        roomBean.setType(ChatService.TYPE_ROOM_USER);
         String status = roomBean.getStatus();
         if (withOffline || (!withOffline && !UserMongoDataStorage.STATUS_INVISIBLE.equals(roomBean.getStatus()) && !UserMongoDataStorage.STATUS_OFFLINE.equals(roomBean.getStatus()))) {
           rooms.add(roomBean);
@@ -656,7 +656,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       roomBeanS.setStatus(UserService.STATUS_SPACE);
       roomBeanS.setTimestamp(space.getTimestamp());
       roomBeanS.setAvailableUser(true);
-      roomBeanS.setType("s");
+      roomBeanS.setType(ChatService.TYPE_ROOM_SPACE);
       roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
       if (roomBeanS.getUnreadTotal() > 0)
         unreadSpaces += roomBeanS.getUnreadTotal();

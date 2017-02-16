@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RoomBean;
+import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -164,7 +165,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
       }
       RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId(), dbName);
       notificationBean.setRoomType(roomBean.getType());
-      if (roomBean.getType().equals("s") || roomBean.getType().equals("t")) {
+      if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
         notificationBean.setRoomDisplayName(roomBean.getFullname());
       }
       notificationBean.setLink(doc.get("link").toString());

@@ -47,9 +47,19 @@ public interface UserService
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
   public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
 
-
-
+  /**
+   * @deprecated use {@link #addFavorite(String, String, String)} and {@link #removeFavorite(String, String, String)} instead
+   *
+   * @param user
+   * @param targetUser
+   * @param dbName
+   */
+  @Deprecated
   public void toggleFavorite(String user, String targetUser, String dbName);
+
+  public void addFavorite(String user, String room, String dbname);
+
+  public void removeFavorite(String user, String room, String dbName);
 
   public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
 

@@ -268,6 +268,8 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     tmpOptions = tmpOptions.replace(/>/g, "&gt;");
     tmpOptions = snack.parseJSON(tmpOptions);
   }
+
+  var thiss = this;
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
@@ -277,7 +279,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "sender": user,
       "fullname": chatApplication.fullname,
       "ts": newMsgTimestamp,
-      "dbName": this.dbName,
+      "dbName": thiss.dbName,
       "data": {
         "msg": msg
       },
