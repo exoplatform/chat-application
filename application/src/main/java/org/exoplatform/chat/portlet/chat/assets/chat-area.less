@@ -72,7 +72,7 @@
   }
   .msAction {
     cursor: pointer;
-    visibility: hidden;
+    display: none;
     color: @linkColor;
     font-size: 12px;
     a {
@@ -81,7 +81,6 @@
   }
   .msTimePost {
     font-size: 12px;
-    position: absolute;
     right: 0;
     .msg-date {
       white-space: nowrap;
@@ -102,7 +101,7 @@
   }
   .msContBox .msUserCont:hover {
     .msAction {
-      visibility: visible;
+      display: block;
     }
     .msTimePost {
       display: none;

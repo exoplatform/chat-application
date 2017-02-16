@@ -36,7 +36,6 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.ANONIM_USER = "__anonim_";
 
   this.onRefreshCB;
-  this.onShowMessagesCB;
 
   this.highlight = "";
 
@@ -239,7 +238,6 @@ ChatRoom.prototype.clearInterval = function() {
 };
 
 ChatRoom.prototype.onShowMessages = function(callback) {
-  this.onShowMessagesCB = callback;
 };
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
@@ -636,19 +634,59 @@ ChatRoom.prototype.updateMessage = function(message) {
   $msg.replaceWith(out);
 }
 
-ChatRoom.prototype.addMessage = function(message) {
+/*
+ * A message object:
+ * {
+ *    "id": "589affe904e5fe0b2efc1ac0",
+ *    "timestamp": 1486553065827,
+ *    "user": "trongtt",
+ *    "fullname": "Trong Changed Tran",
+ *    "email": "trongtt@gmail.com",
+ *    "date": "06:24 PM",
+ *    "message": "sdg",
+ *    "options": "",
+ *    "type": "null",
+ *    "isSystem": "false"
+ * }
+ */
+ChatRoom.prototype.addMessage = function(message, checkToScroll) {
   var $chats = jqchat("#chats");
+
+  if (checkToScroll) {
+    // check if scroll was at max before the new message
+    var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
+    var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
+  }
+
+
   var $lastMessage = $chats.children().last();
   var prevUser = $lastMessage.data("user");
 
   var out = '';
-  if (message.isSystem === "true" || message.isSystem === true) { // A system message
-    $msgDiv = jqchat('<div class="msRow" data-user="__system">');
+  // Check if it is a system message
+  if (message.isSystem === "true" || message.isSystem === true) {
+    var hideWemmoMessage = "";
+    if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' )) {
+      hideWemmoMessage = "style='display:none;'";
+    }
+
+    $msgDiv = jqchat('<div class="msRow" ' + hideWemmoMessage + ' data-user="__system">');
     $chats.append($msgDiv);
 
     var options = {};
     if (typeof message.options == "object")
       options = message.options;
+
+    if (options.type==="call-on") {
+      if (options.timestamp!==undefined) {
+        jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
+        jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
+      }
+    } else if (options.type==="call-off") {
+      if (options.timestamp!==undefined) {
+        jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
+      }
+    }
 
     out += '    <div class="msMessagesGroup clearfix">';
     out += this.getActionMeetingStyleClasses(options);
@@ -661,19 +699,50 @@ ChatRoom.prototype.addMessage = function(message) {
       out += "            </div>";
     }
     out += "              <div id='" + message.id + "' class='msUserCont noEdit msg-text'>";
-    out += "                <div class='msRightInfo pull-right'>";
-    out += "                  <div class='msTimePost'>";
-    out += "                    <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
-    out += "                  </div>";
-    out += "                </div>";
-
-    out += "                <div class='msUserMes'>" + this.messageBeautifier(message, options) + "</div>";
+    var msRightInfo = "     <div class='msRightInfo pull-right'>";
+    msRightInfo += "          <div class='msTimePost'>";
+    msRightInfo += "            <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+    msRightInfo += "          </div>";
+    msRightInfo += "        </div>";
+    var msUserMes = "       <div class='msUserMes'>" + this.messageBeautifier(message, options) + "</div>";
+    if (this.miniChat === undefined) {
+      out += msRightInfo;
+      out += msUserMes;
+    } else {
+      out += msUserMes;
+      out += msRightInfo;
+    }
     out += "              </div>";
     out += "            </div>";
     out += "          </div>";
     // End msMessageGroup div
     out += '    </div>';
     $msgDiv.append(out);
+
+    if (options.type !== "call-join" && (options.type.indexOf('call-') !== -1)) {
+      if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
+        if (typeof weemoExtension!=="undefined") {
+          weemoExtension.setUidToCall(options.uidToCall);
+          weemoExtension.setDisplaynameToCall(options.displaynameToCall);
+          if (options.meetingPointId!==undefined) {
+            weemoExtension.setMeetingPointId(options.meetingPointId);
+          }
+        }
+        jqchat(".btn-weemo").css("display", "none");
+        jqchat(".btn-weemo-conf").css("display", "block");
+        if (typeof weemoExtension!=="undefined") {
+          if (options.uidToCall!=="weemo"+thiss.username)
+            jqchat(".btn-weemo-conf").removeClass("disabled");
+          else
+            jqchat(".btn-weemo-conf").addClass("disabled");
+        }
+        else
+          jqchat(".btn-weemo-conf").addClass("disabled");
+      } else {
+        jqchat(".btn-weemo").css("display", "block");
+        jqchat(".btn-weemo-conf").css("display", "none");
+      }
+    }
   } else {  // An user message
     if (message.user != prevUser) {
       $msgDiv = jqchat('<div class="msRow">');
@@ -689,7 +758,7 @@ ChatRoom.prototype.addMessage = function(message) {
       if (this.isPublic) {
         out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
       } else {
-        out += "      <a class='msAvatarLink avatarCircle' href='/portal/intranet/profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
+        out += "      <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
       }
       out += "      </div>";
       out += "      <div class='msContBox'>";
@@ -709,6 +778,13 @@ ChatRoom.prototype.addMessage = function(message) {
     out += this.generateMessageHTML(message);
 
     $msgDiv.append(out);
+  }
+
+  if (checkToScroll) {
+    // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
+    if (scrollAtMax) {
+      $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+    }
   }
 }
 
@@ -760,22 +836,6 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
 
 /**
  * Convert local messages list in HTML output to display the list of messages
- *
- * A message object:
- * {
- *    "id": "589affe904e5fe0b2efc1ac0",
- *    "timestamp": 1486553065827,
- *    "user": "trongtt",
- *    "fullname": "Trong Changed Tran",
- *    "email": "trongtt@gmail.com",
- *    "date": "06:24 PM",
- *    "message": "sdg",
- *    "options": "",
- *    "type": "null",
- *    "isSystem": "false",
- *    "___id": "T000006R000004",
- *    "___s": true
- * }
  */
 ChatRoom.prototype.showMessages = function() {
   var out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
@@ -795,245 +855,16 @@ ChatRoom.prototype.showMessages = function() {
     }
   } else {
 
-    var messages = TAFFY(this.messages);
-    var thiss = this;
-
     jqchat("#chats").html(''); // Clear the room
+    var thiss = this;
+    var messages = TAFFY(this.messages);
     messages().order("timestamp asec").each(function (message, i) {
-
       thiss.addMessage(message);
-      return;
-      // Messages from users
-      if (message.isSystem != "true" && message.isSystem != true)
-      {
-        if (prevUser != message.user)
-        {
-          if (prevUser !== "") {
-            out += "        </div>";
-            out += "      </div>";
-            if (prevUser !== "__system")
-              out += "    <div class='msUserAvatar'>";
-          }
-          if (message.user != thiss.username) {
-            if (prevUser !== "") {
-              if (prevUser !== "__system") {
-                if (thiss.isPublic) {
-                  out += "  <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
-                } else {
-                  out += "  <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
-                }
-                out += "  </div>";
-              } else {
-                out += thiss.getActionMeetingStyleClasses(prevOptions);
-              }
-              out += "  </div>";
-              out += "</div>";
-            }
-            out += "  <div class='msRow' data-user='" + message.user + "'>";
-            out += "    <div class='msMessagesGroup clearfix'>";
-            out += "      <div class='msContBox'>";
-            out += "        <div class='inner'>";
-            out += "          <div class='msTiltleLn clearfix'>";
-            if (thiss.isPublic) {
-              out += "          <a class='msNameUser muted' href='#'>" + chatBundleData["exoplatform.chat.support.fullname"] + "</a>";
-            }
-            else {
-              out += "          <a class='msNameUser muted' href='" + thiss.portalURI + "profile/"+message.user+"'>" +message.fullname  + "</a>";
-            }
-            out += "          </div>";
-          } else {
-            if (prevUser !== "") {
-              if (prevUser !== "__system") {
-                out += "    <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
-                out += "  </div>";
-              } else {
-                out += thiss.getActionMeetingStyleClasses(prevOptions);
-              }
-              out += "  </div>";
-              out += "</div>";
-            }
-            // msMy is used to identify group of messages of the current user
-            out += "  <div class='msRow rowOdd odd msMy' data-user='" + message.user + "'>";
-            out += "    <div class='msMessagesGroup clearfix'>";
-            out += "      <div class='msContBox'>";
-            out += "        <div class='inner'>";
-            out += "          <div class='msTiltleLn clearfix'>";
-            out += "            <a class='msNameUser muted' href='" + thiss.portalURI + "profile/"+message.user+"'>" +message.fullname  + "</a>";
-            out += "          </div>";
-          }
-        }
-
-        var msgtemp = message.message;
-        var noEditCssClass = "";
-        if (message.type === "DELETED") {
-          msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
-          noEditCssClass = "noEdit";
-        } else {
-          msgtemp = thiss.messageBeautifier(message);
-        }
-        out += "            <div class='msUserCont msg-text clearfix " + noEditCssClass + "'>";
-
-        msRightInfo = "";
-        msRightInfo += "      <div class='msRightInfo pull-right'>";
-        msRightInfo += "        <div class='msTimePost'>";
-        if (message.type === "DELETED" || message.type === "EDITED") {
-          msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
-        }
-        msRightInfo += "          <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
-        msRightInfo += "        </div>";
-        if (message.type !== "DELETED") {
-          msRightInfo += "      <div class='msAction msg-actions' style='visibility:hidden;'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
-          msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
-          if (message.user === thiss.username) {
-            msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
-            msRightInfo += "      <a href='#' class='msg-action-delete'>" + chatBundleData["exoplatform.chat.delete"] + "</a> |";
-          }
-          msRightInfo += "        <a href='#' class='msg-action-quote'>" + chatBundleData["exoplatform.chat.quote"] + "</a>";
-          msRightInfo += "       </div>";
-        }
-        msRightInfo += "       </div>";
-        msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
-        if (thiss.miniChat === undefined) {
-          out += msRightInfo;
-          out += msUserMes;
-        } else {
-          out += msUserMes;
-          out += msRightInfo;
-        }
-
-        out += "            </div>";
-        prevUser = message.user;
-        prevFullName = message.fullname;
-        prevOptions = message.options;
-
-        if (i === (thiss.messages.length -1)) {
-          out += "          </div>";
-          out += "        </div>";
-          out += "        <div class='msUserAvatar'>";
-          if (thiss.isPublic) {
-            out += "        <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
-          } else {
-            out += "        <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
-          }
-          out += "        </div>";
-          out += "      </div>";
-          out += "    </div>";
-        }
-      }
-      else
-      {
-        var hideWemmoMessage = "";
-        if (message.options !== undefined && (message.options.type === 'call-on' || message.options.type === 'call-off' || message.options.type === 'call-proceed' )) {
-          hideWemmoMessage = "style='display:none;'";
-        }
-        if (prevUser !== "") {
-          out += "          </div>";
-          out += "        </div>";
-          if (prevUser !== "__system") {
-            out += "      <div class='msUserAvatar '>";
-            if (thiss.isPublic)
-              out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
-            else
-              out += "      <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + prevUser + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + prevUser + "/avatar' alt='" + prevFullName + "'></a>";
-            out += "      </div>";
-          } else {
-            out += thiss.getActionMeetingStyleClasses(prevOptions);
-          }
-          out += "      </div>";
-          out += "    </div>";
-        }
-        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user'  && message.options.type !=='type-kicked' ) {
-          out += "    <div class='msRow' " + hideWemmoMessage + ">";
-        }
-        else {
-          out += " <div class='msRow odd' " + hideWemmoMessage + ">";
-        }
-        out += "        <div class='msMessagesGroup clearfix'>";
-        out += "          <div class='msContBox'>";
-        out += "            <div class='inner'>";
-        if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
-          out += "            <div class='msTiltleLn clearfix'>";
-          out += "              <a class='msNameUser muted' href='" + thiss.portalURI + "profile/"+message.user+"'>" +message.fullname  + "</a>";
-          out += "            </div>";
-        }
-        out += "              <div class='msUserCont noEdit msg-text clearfix'>";
-        msRightInfo = "";
-        msRightInfo += "         <div class='msRightInfo pull-right'>";
-        msRightInfo += "           <div class='msTimePost'>";
-        msRightInfo += "             <span class='msg-date time'>" + thiss.getDate(message.timestamp) + "</span>";
-        msRightInfo += "           </div>";
-        msRightInfo += "         </div>";
-        var options = {};
-
-        if (typeof message.options == "object")
-          options = message.options;
-
-        if (options.type==="call-on") {
-          if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandlerFrom", message.timestamp, 600000);
-            jzStoreParam("weemoCallHandlerOwner", message.user, 600000);
-          }
-        } else if (options.type==="call-off") {
-          if (options.timestamp!==undefined) {
-            jzStoreParam("weemoCallHandlerTo", message.timestamp, 600000);
-          }
-        }
-
-        msUserMes = "            <div class='msUserMes'>" + thiss.messageBeautifier(message, options) + "</div>";
-        if (thiss.miniChat === undefined) {
-          out += msRightInfo;
-          out += msUserMes;
-        } else {
-          out += msUserMes;
-          out += msRightInfo;
-        }
-
-        if (options.type !== "call-join" && (options.type.indexOf('call-') !== -1)) {
-          if (options.uidToCall!==undefined && options.displaynameToCall!==undefined) {
-            if (typeof weemoExtension!=="undefined") {
-              weemoExtension.setUidToCall(options.uidToCall);
-              weemoExtension.setDisplaynameToCall(options.displaynameToCall);
-              if (options.meetingPointId!==undefined) {
-                weemoExtension.setMeetingPointId(options.meetingPointId);
-              }
-            }
-            jqchat(".btn-weemo").css("display", "none");
-            jqchat(".btn-weemo-conf").css("display", "block");
-            if (typeof weemoExtension!=="undefined") {
-              if (options.uidToCall!=="weemo"+thiss.username)
-                jqchat(".btn-weemo-conf").removeClass("disabled");
-              else
-                jqchat(".btn-weemo-conf").addClass("disabled");
-            }
-            else
-              jqchat(".btn-weemo-conf").addClass("disabled");
-          } else {
-            jqchat(".btn-weemo").css("display", "block");
-            jqchat(".btn-weemo-conf").css("display", "none");
-          }
-        }
-
-        out += "            </div>";
-        prevUser = "__system";
-        prevOptions = message.options;
-
-        if (i === (thiss.messages.length -1)) {
-          out += "          </div>";
-          out += "        </div>";
-          out += thiss.getActionMeetingStyleClasses(message.options);
-          out += "      </div>";
-          out += "    </div>";
-        }
-      }
     });
 
   }
 
-  // if (typeof this.onShowMessagesCB === "function") {
-  //   this.onShowMessagesCB(out);
-  // }
-
-
+  sh_highlightDocument();
 };
 
 ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
@@ -1041,32 +872,32 @@ ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
   var out = "";
 
   if (actionType.indexOf("type-") !== -1 || actionType.indexOf("call-") !== -1) {
-    out += "                <div class='msUserAvatar'>";
+    out += "<div class='msUserAvatar'>";
     if ("type-question" === actionType) {
-      out += "                <i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32Question uiIconChat32x32LightGray'></i>";
     } else if ("type-hand" === actionType) {
-      out += "                <i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32RaiseHand uiIconChat32x32LightGray'></i>";
     } else if ("type-file" === actionType) {
-      out += "                <i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32ShareFile uiIconChat32x32LightGray'></i>";
     } else if ("type-link" === actionType) {
-      out += "                <i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32HyperLink uiIconChat32x32LightGray'></i>";
     } else if ("type-event" === actionType) {
-      out += "                <i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar time'>" + options.startDate.substr(3, 2) + "</span></i>";
+      out += "<i class='uiIconChat32x32Event uiIconChat32x32LightGray'><span class='dayOnCalendar time'>" + options.startDate.substr(3, 2) + "</span></i>";
     } else if ("type-notes" === actionType || "type-meeting-start" === actionType || "type-meeting-stop" === actionType) {
-      out += "                <i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32Metting uiIconChat32x32LightGray'></i>";
     } else if ("call-on" === actionType) {
-      out += "                <i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32StartCall uiIconChat32x32LightGray'></i>";
     } else if ("call-join" === actionType) {
-      out += "                <i class='uiIconChat32x32AddPeopleToMeeting uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32AddPeopleToMeeting uiIconChat32x32LightGray'></i>";
     } else if ("call-off" === actionType) {
-      out += "                <i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32FinishCall uiIconChat32x32LightGray'></i>";
     } else if ("call-proceed" === actionType) {
-      out += "                <i class='uiIconChat32x32AddCall uiIconChat32x32LightGray'></i>";
+      out += "<i class='uiIconChat32x32AddCall uiIconChat32x32LightGray'></i>";
     } else if (this.plugins[actionType] && this.plugins[actionType].getActionMeetingStyleClasses) {
       var plugin = this.plugins[actionType];
       out += plugin.getActionMeetingStyleClasses(options);
     }
-    out += "                </div>";
+    out += "</div>";
   }
 
   return out;

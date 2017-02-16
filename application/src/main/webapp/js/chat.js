@@ -152,7 +152,7 @@ var chatApplication = new ChatApplication();
           }
         } else if (message.event == 'message-sent') {
           if (chatApplication.chatRoom.id === message.room) {
-            chatApplication.chatRoom.addMessage(message.messages[0]);
+            chatApplication.chatRoom.addMessage(message.messages[0], true);
           }
         } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
           if (chatApplication.chatRoom.id === message.room) {
@@ -1901,7 +1901,6 @@ ChatApplication.prototype.initChat = function() {
 
   this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
-  this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
   var homeLinkHtml = jqchat("#HomeLink").html();
   homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
@@ -2748,36 +2747,6 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
     }
 */
   }
-}
-
-ChatApplication.prototype.onShowMessagesCallback = function(out) {
-
-  var $chats = jqchat("#chats");
-  // check if scroll was at max before the new message
-  var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
-  var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
-
-  // Adding message text to DOM
-  $chats.html(out);
-
-  sh_highlightDocument();
-  // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
-  if (scrollAtMax) {
-    var newScrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
-    $chats.scrollTop(newScrollTopMax);
-  }
-
-  jqchat(".msg-text").mouseover(function() {
-    if (jqchat(".msg-actions", this).children().length > 0) {
-      jqchat(".msg-date", this).css("display", "none");
-      jqchat(".msg-actions", this).css("visibility", "");
-    }
-  });
-
-  jqchat(".msg-text").mouseout(function() {
-    jqchat(".msg-date", this).css("display", "");
-    jqchat(".msg-actions", this).css("visibility", "hide");
-  });
 }
 
 /**
