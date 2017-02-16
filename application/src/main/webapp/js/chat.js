@@ -1898,6 +1898,7 @@ ChatApplication.prototype.resize = function() {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
+  console.log("init ChatApplication");
 
   this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
@@ -1933,6 +1934,138 @@ ChatApplication.prototype.initChat = function() {
   this.loadRooms();
 
   if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
+
+  var $leftPanel = jqchat('#chat-users');
+
+  $leftPanel.on("click", ".header-room", function() {
+    if (jqchat(this).hasClass("header-favorites"))
+      chatApplication.showFavorites = !chatApplication.showFavorites;
+    else if (jqchat(this).hasClass("header-people"))
+      chatApplication.showPeople = !chatApplication.showPeople;
+    else if (jqchat(this).hasClass("header-spaces"))
+      chatApplication.showSpaces = !chatApplication.showSpaces;
+    else if (jqchat(this).hasClass("header-teams"))
+      chatApplication.showTeams = !chatApplication.showTeams;
+
+    jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
+    jzStoreParam("chatShowPeople"+chatApplication.username, chatApplication.showPeople, 600000);
+    jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
+    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+
+    chatApplication.renderRooms();
+  });
+
+
+  $leftPanel.on("click", ".btn-add-team", function(event) {
+    event.stopPropagation();
+    chatApplication.showTeams = true;
+    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+    chatApplication.renderRooms();
+
+    var $uitext = jqchat("#team-modal-name");
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+    jqchat(".team-user-label").parent().remove();
+    var $userResults = jqchat(".team-users-results");
+    $userResults.css("display", "none");
+    $userResults.html("");
+    jqchat("#team-add-user").val("");
+    uiChatPopupWindow.show("team-modal-form", true);
+    jqchat("#team-modal-form .add").css("display", "block");
+    jqchat("#team-modal-form .setting").css("display", "none");
+    $uitext.focus();
+
+    chatApplication.setModalToCenter('.team-modal');
+  });
+
+  $leftPanel.on("click", ".btn-history", function(event) {
+    event.stopPropagation();
+    var type = jqchat(this).attr("data-type");
+    if (type === "people") {
+      chatApplication.showPeople = true;
+      chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
+      jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+    } else if (type === "space") {
+      chatApplication.showSpaces = true;
+      chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
+      jzStoreParam("chatShowSpaces"+chatApplication.username, true, 600000);
+    } else if (type === "team") {
+      chatApplication.showTeams = true;
+      chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
+      jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
+    }
+    chatApplication.renderRooms();
+
+  });
+
+  $leftPanel.on("click", ".btn-offline", function(event) {
+    event.stopPropagation();
+    chatApplication.showPeople = true;
+    jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+    chatApplication.showOffline = !chatApplication.showOffline;
+    jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
+    chatApplication.renderRooms();
+  });
+
+  var thiss = this;
+  $leftPanel.on("click", ".users-online > td:nth-child(2)", function() {
+    if(window.innerWidth <= 767){
+
+      jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
+      jqchat('input#chat-search.input-with-value.span4').val('');
+      var filter = jqchat('input#chat-search.input-with-value.span4').val();
+      chatApplication.search(filter);
+
+
+      var $chatStatusPanel = jqchat(".chat-status-panel");
+
+      $chatStatusPanel.css("display", "none");
+      jqchat(" .chat-status-chat").parent().removeClass('active');
+
+      jqchat(".uiLeftContainerArea").removeClass("displayContent");
+      jqchat(".uiLeftContainerArea").addClass("hideContent");
+      jqchat(".uiGlobalRoomsContainer").css("display", "block");
+
+
+      setTimeout(function(){
+        jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
+      }, 200);
+
+      $serachText = jqchat('#chat-search').attr('placeholder');
+      $serachText = $serachText.replace("@", "");
+      jqchat("#chat-search").attr("placeholder", $serachText);
+    }
+
+    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
+    thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
+
+    chatNotification.getStatus(thiss.targetUser, userRoomStatus);
+
+    thiss.loadRoom();
+    if (thiss.isMobileView()) {
+      jqchat(".right-chat").css("display", "block");
+      jqchat(".left-chat").css("display", "none");
+      jqchat(".room-name").html(thiss.targetFullname);
+    }
+  });
+
+  $leftPanel.on("click.toggleFavorite", ".uiIconChatFavorite", function() {
+    var targetFav = jqchat(this).attr("user-data");
+    thiss.toggleFavorite(targetFav);
+  });
+
+  // Responsive mode
+  jqchat('#back').on("click", function() {
+    jqchat(".uiLeftContainerArea").addClass("displayContent");
+    jqchat(".uiLeftContainerArea").removeClass("hideContent");
+
+    jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
+
+    setTimeout(function(){
+      jqchat(".uiGlobalRoomsContainer").css("display", "none");
+    }, 500);
+    jqchat("#chat-video-button").attr("style", "");
+  });
 };
 
 
@@ -2419,7 +2552,34 @@ ChatApplication.prototype.renderRooms = function() {
 
   jqchat("#chat-users").html(out);
 
-  this.jQueryForUsersTemplate();
+  var $targetUser;
+  var value = jzGetParam("lastUsername"+this.username);
+
+  if (value && this.firstLoad) {
+    //console.log("firstLoad with user : *"+value+"*");
+    this.targetUser = value;
+    this.targetFullname = jzGetParam("lastFullName"+this.username);
+    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
+    $targetUser = jqchat("#users-online-"+escapedTargetUser);
+    if (!$targetUser.length) {
+      this.targetUser = "";
+      this.targetFullname = "";
+      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
+      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
+    } else {
+      if (this.username!==this.ANONIM_USER) {
+        this.loadRoom();
+      }
+      this.firstLoad = false;
+    }
+  }
+
+  if (this.isDesktopView() && $targetUser!==undefined) {
+    $targetUser.addClass("accordion-active");
+    jqchat(".room-total").removeClass("badgeWhite");
+    $targetUser.find(".room-total").addClass("badgeWhite");
+  }
+
   this.activateTootips();
 
   if (roomsPeople.count()<=5) {
@@ -2456,7 +2616,6 @@ ChatApplication.prototype.renderRooms = function() {
     jqchat(".total-teams").html(totalTeams);
     jqchat(".total-teams").css("display", "inline-block");
   }
-
 };
 
 ChatApplication.prototype.reloadCurrentItem = function(room) {
@@ -2892,182 +3051,6 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
     .tooltip('fixTitle');
 
   $span.html(tooltipText);
-};
-
-/**
- * jQuery bindings on dom elements created by Who Is Online methods
- */
-ChatApplication.prototype.jQueryForUsersTemplate = function() {
-  var $targetUser;
-  var value = jzGetParam("lastUsername"+this.username);
-  var thiss = this;
-
-  if (value && this.firstLoad) {
-    //console.log("firstLoad with user : *"+value+"*");
-    this.targetUser = value;
-    this.targetFullname = jzGetParam("lastFullName"+this.username);
-    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
-    $targetUser = jqchat("#users-online-"+escapedTargetUser);
-    if (!$targetUser.length) {
-      this.targetUser = "";
-      this.targetFullname = "";
-      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-    } else {
-      if (this.username!==this.ANONIM_USER) {
-        this.loadRoom();
-      }
-      this.firstLoad = false;
-    }
-  }
-
-  if (this.isDesktopView() && $targetUser!==undefined) {
-    $targetUser.addClass("accordion-active");
-    jqchat(".room-total").removeClass("badgeWhite");
-    $targetUser.find(".room-total").addClass("badgeWhite");
-  }
-
-  jqchat(".header-room").on("click", function() {
-    if (jqchat(this).hasClass("header-favorites"))
-      chatApplication.showFavorites = !chatApplication.showFavorites;
-    else if (jqchat(this).hasClass("header-people"))
-      chatApplication.showPeople = !chatApplication.showPeople;
-    else if (jqchat(this).hasClass("header-spaces"))
-      chatApplication.showSpaces = !chatApplication.showSpaces;
-    else if (jqchat(this).hasClass("header-teams"))
-      chatApplication.showTeams = !chatApplication.showTeams;
-
-    jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
-    jzStoreParam("chatShowPeople"+chatApplication.username, chatApplication.showPeople, 600000);
-    jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
-
-    chatApplication.renderRooms();
-
-  });
-
-  jqchat(".btn-add-team").on("click", function() {
-    chatApplication.showTeams = true;
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
-    chatApplication.renderRooms();
-
-    var $uitext = jqchat("#team-modal-name");
-    $uitext.val("");
-    $uitext.attr("data-id", "---");
-    jqchat(".team-user-label").parent().remove();
-    var $userResults = jqchat(".team-users-results");
-    $userResults.css("display", "none");
-    $userResults.html("");
-    jqchat("#team-add-user").val("");
-    uiChatPopupWindow.show("team-modal-form", true);
-    jqchat("#team-modal-form .add").css("display", "block");
-    jqchat("#team-modal-form .setting").css("display", "none");
-    $uitext.focus();
-
-    chatApplication.setModalToCenter('.team-modal');
-  });
-
-  jqchat("#chat-users .btn-history").on("click", function() {
-    var type = jqchat(this).attr("data-type");
-    if (type === "people") {
-      chatApplication.showPeople = true;
-      chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
-      jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
-    } else if (type === "space") {
-      chatApplication.showSpaces = true;
-      chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
-      jzStoreParam("chatShowSpaces"+chatApplication.username, true, 600000);
-    } else if (type === "team") {
-      chatApplication.showTeams = true;
-      chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
-      jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
-    }
-    chatApplication.renderRooms();
-
-  });
-
-  jqchat("#chat-users .btn-offline").on("click", function() {
-    chatApplication.showPeople = true;
-    jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
-    chatApplication.showOffline = !chatApplication.showOffline;
-    jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
-    chatApplication.renderRooms();
-  });
-
-jqchat('#back').on("click", function() {
-
-    jqchat(".uiLeftContainerArea").addClass("displayContent");
-    jqchat(".uiLeftContainerArea").removeClass("hideContent");
-
-    jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
-
-    setTimeout(function(){
-         jqchat(".uiGlobalRoomsContainer").css("display", "none");
-    }, 500);
-    jqchat("#chat-video-button").attr("style", "");
-});
-  jqchat('#chat-users .users-online > td:nth-child(1),#chat-users .users-online > td:nth-child(2)').on("click", function() {
-    if(window.innerWidth <= 767){
-
-        jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
-        jqchat('input#chat-search.input-with-value.span4').val('');
-        var filter = jqchat('input#chat-search.input-with-value.span4').val();
-        chatApplication.search(filter);
-
-
-        var $chatStatusPanel = jqchat(".chat-status-panel");
-
-        $chatStatusPanel.css("display", "none");
-        jqchat(" .chat-status-chat").parent().removeClass('active');
-
-        jqchat(".uiLeftContainerArea").removeClass("displayContent");
-        jqchat(".uiLeftContainerArea").addClass("hideContent");
-        jqchat(".uiGlobalRoomsContainer").css("display", "block");
-
-
-        setTimeout(function(){
-            jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
-        }, 200);
-
-        $serachText = jqchat('#chat-search').attr('placeholder');
-        $serachText = $serachText.replace("@", "");
-        jqchat("#chat-search").attr("placeholder", $serachText);
-
-    }
-
-    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
-    thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
-
-    chatNotification.getStatus(thiss.targetUser, userRoomStatus);
-
-
-    thiss.loadRoom();
-    if (thiss.isMobileView()) {
-      jqchat(".right-chat").css("display", "block");
-      jqchat(".left-chat").css("display", "none");
-      jqchat(".room-name").html(thiss.targetFullname);
-    }
-  });
-
-  jqchat('#chat-users .users-online').on("mouseenter", function() {
-    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
-    $uiIconChatFavorite.css("display", "block");
-    $uiIconChatFavorite.css("margin-right", "1px");
-  });
-
-  jqchat('#chat-users .users-online').on("mouseleave", function() {
-    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
-    $uiIconChatFavorite.css("display", "none");
-  });
-
-  jqchat('.user-status').on("click", function() {
-    var targetFav = jqchat(this).attr("user-data");
-    thiss.toggleFavorite(targetFav);
-  });
-  jqchat('#chat-users .user-favorite').on("click", function() {
-    var targetFav = jqchat(this).attr("user-data");
-    thiss.toggleFavorite(targetFav);
-  });
 };
 
 /**
