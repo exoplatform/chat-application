@@ -140,9 +140,17 @@ var chatApplication = new ChatApplication();
               chatApplication.renderRoomUsers(jqchat("#room-users-list"));
             }
           }
+        } else if (message.event == 'message-read') {
+          var room = chatApplication.rooms({room: message.room});
+          room.update({unreadTotal: 0});
+          chatApplication.renderRooms();
         } else if (message.event == 'message-sent') {
           if (chatApplication.chatRoom.id === message.room) {
             chatApplication.chatRoom.addMessage(message.messages[0], true);
+          } else {
+            var room = chatApplication.rooms({room: message.room});
+            room.update({unreadTotal: (room.first().unreadTotal + 1)});
+            chatApplication.renderRooms();
           }
         } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
           if (chatApplication.chatRoom.id === message.room) {
@@ -155,6 +163,10 @@ var chatApplication = new ChatApplication();
         } else if (message.event == 'favorite-removed') {
           var room = chatApplication.rooms({user: message.room});
           room.update({isFavorite: false});
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-deleted') {
+          var room = chatApplication.rooms({room: message.room});
+          room.remove();
           chatApplication.renderRooms();
         }
       });
@@ -1332,7 +1344,7 @@ var handleRoomNotifLayout = function() {
             room : data.room,
             status : "team",
             timestamp : new Date().getTime(),
-            unreadTotal : "0",
+            unreadTotal : 0,
             user : roomId
         });
         chatApplication.renderRooms();
@@ -1683,30 +1695,21 @@ ChatApplication.prototype.activateTootips = function() {
  * @param callback
  */
 ChatApplication.prototype.updateUnreadMessages = function(callback) {
-  jqchat.ajax({
-    url: this.jzChatUpdateUnreadMessages,
-    data: {"room": this.room,
-      "user": this.username,
-      "timestamp": new Date().getTime(),
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
+  //TODO remove require, inject cometd dependency at script level
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-read",
+      "room": chatApplication.room,
+      "sender": chatApplication.username,
+      "dbName": chatApplication.dbName,
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+        if (typeof callback === "function") {
+          callback();
+        }
       }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
+    });
   });
-
 };
 
 /**
@@ -1767,6 +1770,21 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
  * @param callback
  */
 ChatApplication.prototype.deleteTeamRoom = function(callback) {
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "room-deleted",
+      "room": chatApplication.room,
+      "sender": chatApplication.username,
+      "dbName": chatApplication.dbName
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        console.log("The message reached the server");
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
+  });
+
   jqchat.ajax({
     url: this.jzDeleteTeamRoom,
     data: {"room": this.room,

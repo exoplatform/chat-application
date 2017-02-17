@@ -9,8 +9,10 @@ import org.cometd.bayeux.server.ServerSession;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.MessageBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.container.PortalContainer;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,12 +36,14 @@ public class CometdService {
 
   public static final String COMETD_CHANNEL_NAME = "/service/chat";
   UserService userService;
+  NotificationService notificationService;
 
   @Inject
   private BayeuxServer bayeuxServer;
 
   public CometdService() {
     userService = GuiceManager.getInstance().getInstance(UserService.class);
+    notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
   }
 
   @Listener(COMETD_CHANNEL_NAME)
@@ -69,6 +73,24 @@ public class CometdService {
         userService.setStatus((String) jsonMessage.get("room"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"),
                 (String) jsonMessage.get("dbName"));
+      } else if (event.equals("message-read")) {
+        String room = (String) jsonMessage.get("room");
+        String sender = (String) jsonMessage.get("sender");
+        String dbName = (String) jsonMessage.get("dbName");
+
+        notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
+        if (userService.isAdmin(sender, dbName))
+        {
+          notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room, dbName);
+        }
+
+        JSONObject data = new JSONObject();
+        data.put("event", "message-read");
+        data.put("room", room);
+
+        if (bayeux.isPresent(sender)) {
+          bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
+        }
       } else if (event.equals("message-sent")) {
         // TODO store message in db
         String room = (String) jsonMessage.get("room");
@@ -116,6 +138,12 @@ public class CometdService {
         String targetUser = jsonMessage.get("targetUser").toString();
         String dbName = jsonMessage.get("dbName").toString();
         userService.removeFavorite(sender, targetUser, dbName);
+      } else if (event.equals("room-deleted")) {
+        String room = jsonMessage.get("room").toString();
+        String sender = jsonMessage.get("sender").toString();
+        String dbName = jsonMessage.get("dbName").toString();
+
+        chatService.deleteTeamRoom(room, sender, dbName);
       }
     } catch (ParseException e) {
       e.printStackTrace();

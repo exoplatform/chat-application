@@ -163,8 +163,27 @@ public class ChatServiceImpl implements ChatService
     return chatStorage.getTeamRoomById(roomId, dbName);
   }
 
-  public void deleteTeamRoom(String roomId, String user, String dbName) {
-    chatStorage.deleteTeamRoom(roomId, user, dbName);
+  public void deleteTeamRoom(String room, String user, String dbName) {
+    chatStorage.deleteTeamRoom(room, user, dbName);
+
+    List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM, dbName);
+
+    EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+
+    JSONObject data = new JSONObject();
+    data.put("event", "room-deleted");
+    data.put("room", room);
+
+    // Deliver the saved message to sender's subscribed channel itself.
+    if(bayeux.isPresent(user)) {
+      bayeux.sendMessage(user, CometdService.COMETD_CHANNEL_NAME, data, null);
+    }
+
+    for (String receiver: usersToBeNotified) {
+      if(bayeux.isPresent(receiver)) {
+        bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
+      }
+    }
   }
 
   public void edit(String room, String sender, String messageId, String message, String dbName)
