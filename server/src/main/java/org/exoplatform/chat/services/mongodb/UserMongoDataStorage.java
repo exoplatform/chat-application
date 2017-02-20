@@ -650,7 +650,6 @@ public class UserMongoDataStorage implements UserDataStorage {
     {
       roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
     }
-    List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
 
     BasicDBObject spaces = new BasicDBObject("spaces", roomId);
@@ -660,8 +659,8 @@ public class UserMongoDataStorage implements UserDataStorage {
     orList.add(teams);
     BasicDBObject query = new BasicDBObject("$or", orList);
 
-
     DBCursor cursor = coll.find(query);
+    List<UserBean> users = new ArrayList<UserBean>();
     while (cursor.hasNext())
     {
       DBObject doc = cursor.next();

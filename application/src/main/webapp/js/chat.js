@@ -115,8 +115,28 @@ var chatApplication = new ChatApplication();
               });
             }
           }
+        } else if (message.event == 'room-member-joined') {
+          var room = message.data;
+
+          console.log(room);
+
+          // Add the new room and re-render the list of rooms
+          chatApplication.rooms.insert({
+            escapedFullname : room.escapedFullname,
+            isActive : room.isActive,
+            isAvailableUser : room.isAvailableUser,
+            isFavorite : room.isFavorite,
+            type: room.type,
+            room : room.room,
+            status : "team",
+            timestamp : room.timestamp,
+            unreadTotal : room.unreadTotal,
+            user : room.user
+          });
+          chatApplication.renderRooms();
+
         } else if (message.event == 'room-member-left') {
-          var leftMembers = message.data.members.split(',');
+          var leftMembers = message.data.members;
 
           // check if the current user is removed from a room
           var currentUserLeft = leftMembers.indexOf(chatApplication.username) >= 0;
@@ -2651,7 +2671,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online accordion-body">';
     out += '<td class="td-status">';
     out += '<i class="';
-    if (room.status === "space" || room.status === "team") {
+    if (room.type === "t" || room.type === "s") {
       out += 'uiIconChatTeam uiIconChatLightGray';
     }
     out += ' user-'+room.status+ '';

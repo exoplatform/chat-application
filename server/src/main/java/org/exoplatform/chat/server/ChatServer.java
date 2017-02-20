@@ -79,6 +79,7 @@ import juzu.template.Template;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.json.JSONException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.chat.listener.GuiceManager;
@@ -697,6 +698,8 @@ public class ChatServer
       }
       teamName = HTMLSanitizer.sanitize(teamName);
       if("".equals(teamName)) return Response.content(400, "Data is invalid!");
+
+      // Room creation
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user, dbName);
@@ -720,8 +723,9 @@ public class ChatServer
       if (users!=null && !"".equals(users)) {
         String[] ausers = users.split(",");
         List<String> usersNew = Arrays.asList(ausers);
-        List<String> usersToAdd = new ArrayList<String>(usersNew);
-        List<String> usersToRemove = new ArrayList<String>();
+        List<String> usersToAdd = new JSONArray();
+        usersToAdd.addAll(usersNew);
+        List<String> usersToRemove = new JSONArray();
         List<String> usersExisting = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
         for (String userExist:usersExisting)
@@ -738,6 +742,22 @@ public class ChatServer
         if (usersToRemove.size()>0)
         {
           userService.removeTeamUsers(room, usersToRemove, dbName);
+
+          // Send a websocket message of type 'room-member-left' to all the room members
+          JSONObject leaveRoomMessage = new JSONObject();
+          leaveRoomMessage.put("event", "room-member-left");
+          leaveRoomMessage.put("room", room);
+          leaveRoomMessage.put("sender", user);
+          leaveRoomMessage.put("ts", System.currentTimeMillis());
+          JSONObject data = new JSONObject();
+          data.put("members", usersToRemove);
+          leaveRoomMessage.put("data", data);
+
+          EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+          usersExisting.stream()
+              .filter(u -> bayeux.isPresent(u))
+              .forEach(u -> bayeux.sendMessage(u, CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
+
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToRemove)
@@ -748,21 +768,6 @@ public class ChatServer
             notificationService.setNotificationsAsRead(usert, "chat", "room", room, dbName);
           }
 
-          // Send a websocket message of type 'room-member-left' to all the room members
-          JSONObject leaveRoomMessage = new JSONObject();
-          leaveRoomMessage.put("event", "room-member-left");
-          leaveRoomMessage.put("room", room);
-          leaveRoomMessage.put("sender", user);
-          leaveRoomMessage.put("ts", System.currentTimeMillis());
-          JSONObject data = new JSONObject();
-          data.put("members", String.join(",", usersToRemove));
-          leaveRoomMessage.put("data", data);
-
-          EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-          usersExisting.stream()
-                  .filter(u -> bayeux.isPresent(u))
-                  .forEach(u -> bayeux.sendMessage(u, CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
-
           // Send members removal message in the room
           String removeTeamUserOptions
                   = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
@@ -772,6 +777,22 @@ public class ChatServer
         if (usersToAdd.size()>0)
         {
           userService.addTeamUsers(room, usersToAdd, dbName);
+
+          // Send a websocket message of type 'room-member-left' to all the room members
+          JSONObject leaveRoomMessage = new JSONObject();
+          leaveRoomMessage.put("event", "room-member-joined");
+          leaveRoomMessage.put("room", room);
+          leaveRoomMessage.put("sender", user);
+          leaveRoomMessage.put("ts", System.currentTimeMillis());
+          JSONObject data = userService.getRoom(user, room, dbName).toJSONObject();
+          data.put("members", usersToAdd);
+          leaveRoomMessage.put("data", data);
+
+          EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+          usersToAdd.stream()
+              .filter(u -> bayeux.isPresent(u))
+              .forEach(u -> bayeux.sendMessage(u, CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
+
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
           for (String usert:usersToAdd)
