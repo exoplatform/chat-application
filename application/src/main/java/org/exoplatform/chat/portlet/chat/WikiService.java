@@ -1,6 +1,9 @@
 package org.exoplatform.chat.portlet.chat;
 
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.config.model.PortalConfig;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.wiki.mow.api.Wiki;
 import org.exoplatform.wiki.mow.api.Page;
 import org.exoplatform.wiki.mow.api.PermissionEntry;
@@ -53,16 +56,18 @@ public class WikiService {
 
   private String createOrEditPage(String creator, String parentTitle, String title, String content, ArrayList<String> users, boolean forceNew, String spaceGroupId)
   {
+    PortalRequestContext pContext = Util.getPortalRequestContext();
     String wikiType = PortalConfig.PORTAL_TYPE;
-    String wikiOwner = "intranet";
-    String path = "";
+    String wikiOwner;
 
-    if (spaceGroupId != null)
-    {
+    if (spaceGroupId != null) {
       wikiType = PortalConfig.GROUP_TYPE;
       wikiOwner = "/" + spaceGroupId;
+    } else {
+      wikiOwner = CommonsUtils.getCurrentSite().getName();
     }
 
+    String path = "";
     try
     {
       synchronized(wikiService_) {
@@ -107,12 +112,14 @@ public class WikiService {
         page.setOwner(creator);
         page.setAuthor(creator);
         page.setMinorEdit(false);
+
+        String portalURI = pContext.getPortalURI();
         if (wikiType.equals(PortalConfig.GROUP_TYPE)) {
             // http://demo.exoplatform.net/portal/intranet/wiki/group/spaces/bank_project/Meeting_06-11-2013
-            path = "/portal/intranet/wiki/" + wikiType + wikiOwner + "/" + TitleResolver.getId(title, false);
+            path = portalURI + "/wiki/" + wikiType + wikiOwner + "/" + TitleResolver.getId(title, false);
           } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
             // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
-            path = "/portal/intranet/wiki/" + TitleResolver.getId(title, false);
+            path = portalURI + "/wiki/" + TitleResolver.getId(title, false);
           }
         page.setUrl(path);
         Wiki wiki = new Wiki();

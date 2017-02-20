@@ -200,7 +200,7 @@ public class ReportBean {
     }
   }
 
-  public String getAsXWiki(String serverBase)
+  public String getAsXWiki(String serverBase, String portalURI)
   {
     StringBuilder xwiki = new StringBuilder();
 
@@ -284,7 +284,7 @@ public class ReportBean {
         xwiki.append("(/) ");
       else
         xwiki.append("(x)");
-      xwiki.append(" [[").append(userBean.getFullname()).append(">>"+serverBase+"/portal/intranet/profile/").append(userBean.getName()).append("]]\n");
+      xwiki.append(" [[").append(userBean.getFullname()).append(">>" + serverBase + portalURI + "/profile/").append(userBean.getName()).append("]]\n");
     }
     xwiki.append("\n{{/panel}}\n{{/column}}\n{{/section}}\n");
 

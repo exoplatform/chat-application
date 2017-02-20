@@ -118,6 +118,8 @@ public class NotificationApplication
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
     String spaceId = getCurrentSpaceId();
 
+    String portalURI = Util.getPortalRequestContext().getPortalURI();
+
     return index.with().set("user", remoteUser_).set("token", token_)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
             .set("chatIntervalChat", chatIntervalChat)
@@ -129,6 +131,7 @@ public class NotificationApplication
             .set("spaceId", spaceId)
             .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
             .set("dbName", dbName)
+            .set("portalURI", portalURI)
             .ok()
             .withCharset(Tools.UTF_8);
   }

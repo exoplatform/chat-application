@@ -13,6 +13,7 @@
   data-chat-interval-status="<%=chatIntervalStatus%>"
   data-space-id="<%=spaceId%>"
   data-db-name="<%=dbName%>"
+  data-portal-uri="<%=portalURI%>"
         class="chatStatusPortlet uiDropdownWithIcon dropdown pull-right">
   <div style="display: none;">
     <audio id="chat-audio-notif" controls preload="auto" autobuffer>

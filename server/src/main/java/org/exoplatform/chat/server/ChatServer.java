@@ -359,7 +359,7 @@ public class ChatServer
   @Resource
   @Route("/getMeetingNotes")
   public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                          String toTimestamp, String serverBase, String dbName, ApplicationContext applicationContext, UserContext userContext) throws IOException {
+                                          String toTimestamp, String serverBase, String dbName, String portalURI, ApplicationContext applicationContext, UserContext userContext) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
@@ -416,7 +416,7 @@ public class ChatServer
 
       reportBean.fill((BasicDBList) datao.get("messages"), users);
       ArrayList<String> usersInGroup = new ArrayList<String>();
-      xwiki = reportBean.getAsXWiki(serverBase);
+      xwiki = reportBean.getAsXWiki(serverBase, portalURI);
       try {
         for (UserBean userBean : users) {
           if (!"".equals(userBean.getName())) {
