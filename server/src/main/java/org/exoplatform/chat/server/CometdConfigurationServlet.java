@@ -33,7 +33,7 @@ public class CometdConfigurationServlet extends GenericServlet {
     if(true) {
       LOG.debug("Chat mode detected : 1 server");
       // Add a portal container init task to initialize Cometd stuff
-      PortalContainer.addInitTask(getServletContext(), new RootContainer.PortalContainerPostInitTask() {
+      RootContainer.getInstance().addInitTask(getServletContext(), new RootContainer.PortalContainerPostInitTask() {
         @Override
         public void execute(ServletContext servletContext, PortalContainer portalContainer) {
           // Grab the BayeuxServer object
@@ -47,7 +47,7 @@ public class CometdConfigurationServlet extends GenericServlet {
           processor.process(service);
           services.add(service);
         }
-      });
+      }, PortalContainer.DEFAULT_PORTAL_CONTAINER_NAME);
     } else {
       LOG.debug("Chat mode detected : 2 servers");
 
