@@ -1,29 +1,22 @@
 package org.exoplatform.chat.server;
 
-import juzu.Response;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
-import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ServerMessage;
 import org.cometd.bayeux.server.ServerSession;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.MessageBean;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.UserService;
-import org.exoplatform.container.PortalContainer;
-import org.json.simple.JSONArray;
+import org.exoplatform.chat.model.RealTimeMessageBean;
+import org.exoplatform.chat.services.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.mortbay.cometd.continuation.EXoContinuationBayeux;
-import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.services.UserService;
 
-import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.List;
+import java.util.Date;
+import java.util.Map;
+
+import static org.exoplatform.chat.services.CometdMessageServiceImpl.COMETD_CHANNEL_NAME;
 
 /**
  * This service is used to receive all Cometd messages and then publish the messages to the right clients.
@@ -34,16 +27,14 @@ import java.util.List;
 @Service
 public class CometdService {
 
-  public static final String COMETD_CHANNEL_NAME = "/service/chat";
   UserService userService;
   NotificationService notificationService;
-
-  @Inject
-  private BayeuxServer bayeuxServer;
+  RealTimeMessageService realTimeMessageService;
 
   public CometdService() {
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+    realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
   }
 
   @Listener(COMETD_CHANNEL_NAME)
@@ -53,27 +44,31 @@ public class CometdService {
     //TODO need to verify authorization of the sender.
 
     try {
-      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-
       JSONParser jsonParser = new JSONParser();
       JSONObject jsonMessage = (JSONObject) jsonParser.parse((String) message.getData());
 
-      String event = (String) jsonMessage.get("event");
+      RealTimeMessageBean.EventType eventType = RealTimeMessageBean.EventType.get((String) jsonMessage.get("event"));
 
       //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
       //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
 
       ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
 
-      if (event.equals("user-status-changed")) {
+      if (eventType.equals(RealTimeMessageBean.EventType.USER_STATUS_CHANGED)) {
         // forward the status change to all connected users
-        bayeux.getSessions().stream().forEach(s -> s.deliver(s, (ServerMessage.Mutable) message));
+        RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(
+                RealTimeMessageBean.EventType.USER_STATUS_CHANGED,
+                (String) jsonMessage.get("room"),
+                (String) jsonMessage.get("sender"),
+                new Date(),
+                (Map) jsonMessage.get("data"));
+        realTimeMessageService.sendMessageToAll(realTimeMessageBean);
 
         // update data
         userService.setStatus((String) jsonMessage.get("room"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"),
                 (String) jsonMessage.get("dbName"));
-      } else if (event.equals("message-read")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
         String room = (String) jsonMessage.get("room");
         String sender = (String) jsonMessage.get("sender");
         String dbName = (String) jsonMessage.get("dbName");
@@ -84,14 +79,10 @@ public class CometdService {
           notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room, dbName);
         }
 
-        JSONObject data = new JSONObject();
-        data.put("event", "message-read");
-        data.put("room", room);
-
-        if (bayeux.isPresent(sender)) {
-          bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
-        }
-      } else if (event.equals("message-sent")) {
+        // send real time message to all others clients of the same user
+        RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.MESSAGE_READ, room, sender, new Date(), null);
+        realTimeMessageService.sendMessage(realTimeMessageBean, sender);
+      } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_SENT)) {
         // TODO store message in db
         String room = (String) jsonMessage.get("room");
         String isSystem = jsonMessage.get("isSystem").toString();
@@ -102,7 +93,7 @@ public class CometdService {
         String targetUser = (String) jsonMessage.get("targetUser");
 
         chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
-      } else if (event.equals("message-updated")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_UPDATED)) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
         String sender = jsonMessage.get("sender").toString();
@@ -115,7 +106,7 @@ public class CometdService {
 
         String msg = ((JSONObject)jsonMessage.get("data")).get("msg").toString();
         chatService.edit(room, sender, messageId, msg, dbName);
-      } else if (event.equals("message-deleted")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_DELETED)) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
         String sender = jsonMessage.get("sender").toString();
@@ -128,17 +119,17 @@ public class CometdService {
         }
 
         chatService.delete(room, sender, messageId, dbName);
-      } else if (event.equals("favorite-added")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.FAVOTITE_ADDED)) {
         String sender = jsonMessage.get("sender").toString();
         String targetUser = jsonMessage.get("targetUser").toString();
         String dbName = jsonMessage.get("dbName").toString();
         userService.addFavorite(sender, targetUser, dbName);
-      } else if (event.equals("favorite-removed")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.FAVORITE_REMOVED)) {
         String sender = jsonMessage.get("sender").toString();
         String targetUser = jsonMessage.get("targetUser").toString();
         String dbName = jsonMessage.get("dbName").toString();
         userService.removeFavorite(sender, targetUser, dbName);
-      } else if (event.equals("room-deleted")) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_DELETED)) {
         String room = jsonMessage.get("room").toString();
         String sender = jsonMessage.get("sender").toString();
         String dbName = jsonMessage.get("dbName").toString();

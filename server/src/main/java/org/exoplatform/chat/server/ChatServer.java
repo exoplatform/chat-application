@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -38,32 +37,25 @@ import com.mongodb.util.JSON;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.UserContext;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.exoplatform.chat.model.*;
+import org.exoplatform.chat.services.*;
 import org.exoplatform.commons.utils.HTMLSanitizer;
-import org.exoplatform.container.PortalContainer;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.notification.LinkProviderUtils;
 import org.exoplatform.social.notification.Utils;
 
@@ -77,27 +69,13 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.chat.listener.GuiceManager;
-import org.exoplatform.chat.model.MessageBean;
-import org.exoplatform.chat.model.NotificationBean;
-import org.exoplatform.chat.model.ReportBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.model.RoomsBean;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.UserBean;
-import org.exoplatform.chat.model.UsersBean;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.TokenService;
-import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 
 @ApplicationScoped
@@ -108,6 +86,7 @@ public class ChatServer
   @Inject
   @Path("index.gtmpl")
   Template index;
+
   @Inject
   @Path("users.gtmpl")
   Template users;
@@ -116,6 +95,8 @@ public class ChatServer
   UserService userService;
   TokenService tokenService;
   NotificationService notificationService;
+  RealTimeMessageService realTimeMessageService;
+
   @Inject
   ChatTools chatTools;
 
@@ -125,6 +106,7 @@ public class ChatServer
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+    realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
   }
 
   @View
@@ -744,19 +726,15 @@ public class ChatServer
           userService.removeTeamUsers(room, usersToRemove, dbName);
 
           // Send a websocket message of type 'room-member-left' to all the room members
-          JSONObject leaveRoomMessage = new JSONObject();
-          leaveRoomMessage.put("event", "room-member-left");
-          leaveRoomMessage.put("room", room);
-          leaveRoomMessage.put("sender", user);
-          leaveRoomMessage.put("ts", System.currentTimeMillis());
-          JSONObject data = new JSONObject();
-          data.put("members", usersToRemove);
-          leaveRoomMessage.put("data", data);
-
-          EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-          usersExisting.stream()
-              .filter(u -> bayeux.isPresent(u))
-              .forEach(u -> bayeux.sendMessage(u, CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
+          Map<String, Object> data = new HashMap();
+          data.put("members", String.join(",", usersToRemove));
+          RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
+                  RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
+                  room,
+                  user,
+                  new Date(),
+                  data);
+          realTimeMessageService.sendMessage(leaveRoomMessage, usersExisting);
 
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
@@ -779,19 +757,15 @@ public class ChatServer
           userService.addTeamUsers(room, usersToAdd, dbName);
 
           // Send a websocket message of type 'room-member-left' to all the room members
-          JSONObject leaveRoomMessage = new JSONObject();
-          leaveRoomMessage.put("event", "room-member-joined");
-          leaveRoomMessage.put("room", room);
-          leaveRoomMessage.put("sender", user);
-          leaveRoomMessage.put("ts", System.currentTimeMillis());
           JSONObject data = userService.getRoom(user, room, dbName).toJSONObject();
-          data.put("members", usersToAdd);
-          leaveRoomMessage.put("data", data);
-
-          EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-          usersToAdd.stream()
-              .filter(u -> bayeux.isPresent(u))
-              .forEach(u -> bayeux.sendMessage(u, CometdService.COMETD_CHANNEL_NAME, leaveRoomMessage, null));
+          data.put("members", String.join(",", usersToRemove));
+          RealTimeMessageBean joinRoomMessage = new RealTimeMessageBean(
+                  RealTimeMessageBean.EventType.ROOM_MEMBER_JOIN,
+                  room,
+                  user,
+                  new Date(),
+                  data);
+          realTimeMessageService.sendMessage(joinRoomMessage, usersToAdd);
 
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;

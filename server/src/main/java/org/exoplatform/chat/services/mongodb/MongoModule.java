@@ -14,5 +14,6 @@ public class MongoModule extends AbstractModule
     bind(TokenService.class).to(TokenServiceImpl.class);
     bind(UserDataStorage.class).to(UserMongoDataStorage.class);
     bind(UserService.class).to(UserServiceImpl.class);
+    bind(RealTimeMessageService.class).to(CometdMessageServiceImpl.class);
   }
 }

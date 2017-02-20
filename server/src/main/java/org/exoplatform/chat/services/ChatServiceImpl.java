@@ -19,22 +19,13 @@
 
 package org.exoplatform.chat.services;
 
-import org.exoplatform.chat.model.MessageBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.model.RoomsBean;
-import org.exoplatform.chat.model.UserBean;
-import org.exoplatform.chat.server.CometdService;
+import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.container.PortalContainer;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Named("chatService")
@@ -51,6 +42,9 @@ public class ChatServiceImpl implements ChatService
 
   @Inject
   private NotificationService notificationService;
+
+  @Inject
+  private RealTimeMessageService realTimeMessageService;
 
   public void write(String message, String user, String room, String isSystem, String dbName)
   {
@@ -87,27 +81,23 @@ public class ChatServiceImpl implements ChatService
       UserBean user = userService.getUser(sender, dbName);
       msg.setFullName(user.getFullname());
 
-      JSONObject data = new JSONObject();
-      data.put("event", "message-sent");
-      data.put("room", room);
-      JSONArray array = new JSONArray();
-      array.add(msg.toJSONObject());
-      data.put("messages", array);
-
-      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
 
       // Deliver the saved message to sender's subscribed channel itself.
-      if(bayeux.isPresent(sender)) {
-        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
-      }
+      Map<String, Object> data = new HashMap<>();
+      data.put("msg", msg.toJSONObject());
+      RealTimeMessageBean messageBean = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.MESSAGE_SENT,
+              room,
+              user.getName(),
+              new Date(),
+              data);
+      realTimeMessageService.sendMessage(messageBean, sender);
 
       for (String receiver: usersToBeNotified) {
         notificationService.addNotification(receiver, sender, "chat", "room", room, content,
             intranetPage + "?room=" + room, options, dbName);
 
-        if(bayeux.isPresent(receiver)) {
-          bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
-        }
+        realTimeMessageService.sendMessage(messageBean, receiver);
       }
 
       notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
@@ -137,25 +127,17 @@ public class ChatServiceImpl implements ChatService
 
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
 
-      JSONObject data = new JSONObject();
-      data.put("event", "message-deleted");
-      data.put("room", room);
-      JSONArray array = new JSONArray();
-      array.add(msg.toJSONObject());
-      data.put("messages", array);
-
-      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-
       // Deliver the saved message to sender's subscribed channel itself.
-      if(bayeux.isPresent(sender)) {
-        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
-      }
-
-      for (String receiver: usersToBeNotified) {
-        if(bayeux.isPresent(receiver)) {
-          bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
-        }
-      }
+      Map<String, Object> data = new HashMap<>();
+      data.put("msg", msg.toJSONObject());
+      RealTimeMessageBean messageBean = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.MESSAGE_DELETED,
+              room,
+              sender,
+              new Date(),
+              data);
+      realTimeMessageService.sendMessage(messageBean, sender);
+      realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
     }
   }
 
@@ -168,22 +150,15 @@ public class ChatServiceImpl implements ChatService
 
     List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
-    EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-
-    JSONObject data = new JSONObject();
-    data.put("event", "room-deleted");
-    data.put("room", room);
-
     // Deliver the saved message to sender's subscribed channel itself.
-    if(bayeux.isPresent(user)) {
-      bayeux.sendMessage(user, CometdService.COMETD_CHANNEL_NAME, data, null);
-    }
-
-    for (String receiver: usersToBeNotified) {
-      if(bayeux.isPresent(receiver)) {
-        bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
-      }
-    }
+    RealTimeMessageBean messageBean = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.ROOM_DELETED,
+            room,
+            user,
+            new Date(),
+            null);
+    realTimeMessageService.sendMessage(messageBean, user);
+    realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
   }
 
   public void edit(String room, String sender, String messageId, String message, String dbName)
@@ -205,25 +180,17 @@ public class ChatServiceImpl implements ChatService
 
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
 
-      JSONObject data = new JSONObject();
-      data.put("event", "message-updated");
-      data.put("room", room);
-      JSONArray array = new JSONArray();
-      array.add(msg.toJSONObject());
-      data.put("messages", array);
-
-      EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
-
       // Deliver the saved message to sender's subscribed channel itself.
-      if(bayeux.isPresent(sender)) {
-        bayeux.sendMessage(sender, CometdService.COMETD_CHANNEL_NAME, data, null);
-      }
-
-      for (String receiver: usersToBeNotified) {
-        if(bayeux.isPresent(receiver)) {
-          bayeux.sendMessage(receiver, CometdService.COMETD_CHANNEL_NAME, data, null);
-        }
-      }
+      Map<String, Object> data = new HashMap<>();
+      data.put("msg", msg.toJSONObject());
+      RealTimeMessageBean messageBean = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.MESSAGE_UPDATED,
+              room,
+              sender,
+              new Date(),
+              data);
+      realTimeMessageService.sendMessage(messageBean, sender);
+      realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
     }
   }
 

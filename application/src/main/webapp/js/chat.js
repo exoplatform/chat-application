@@ -166,7 +166,7 @@ var chatApplication = new ChatApplication();
           chatApplication.renderRooms();
         } else if (message.event == 'message-sent') {
           if (chatApplication.chatRoom.id === message.room) {
-            chatApplication.chatRoom.addMessage(message.messages[0], true);
+            chatApplication.chatRoom.addMessage(message.data.msg, true);
           } else {
             var room = chatApplication.rooms({room: message.room});
             room.update({unreadTotal: (room.first().unreadTotal + 1)});
@@ -174,7 +174,7 @@ var chatApplication = new ChatApplication();
           }
         } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
           if (chatApplication.chatRoom.id === message.room) {
-            chatApplication.chatRoom.updateMessage(message.messages[0]);
+            chatApplication.chatRoom.updateMessage(message.data.msg);
           }
         } else if (message.event == 'favorite-added') {
           var room = chatApplication.rooms({user: message.room});

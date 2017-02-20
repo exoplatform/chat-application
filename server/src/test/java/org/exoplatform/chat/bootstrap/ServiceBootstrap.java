@@ -20,7 +20,10 @@
 package org.exoplatform.chat.bootstrap;
 
 import org.exoplatform.chat.listener.GuiceManager;
+import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.services.*;
+
+import java.util.List;
 
 public class ServiceBootstrap {
   private static UserService userService;
@@ -29,6 +32,7 @@ public class ServiceBootstrap {
   private static ChatService chatService;
   private static ChatDataStorage chatStorage;
   private static NotificationService notificationService;
+  private static RealTimeMessageService realTimeMessageService;
 
   public static void forceNew()
   {
@@ -38,6 +42,7 @@ public class ServiceBootstrap {
     userDataStorage = GuiceManager.getInstance().getInstance(UserDataStorage.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+    realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);;
   }
 
   public static UserService getUserService() {
@@ -59,5 +64,9 @@ public class ServiceBootstrap {
 
   public static NotificationService getNotificationService() {
     return notificationService;
+  }
+
+  public static RealTimeMessageService getRealTimeMessageService() {
+    return realTimeMessageService;
   }
 }

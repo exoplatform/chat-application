@@ -19,20 +19,14 @@
 
 package org.exoplatform.chat.services;
 
-import org.exoplatform.chat.model.NotificationSettingsBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.UserBean;
-import org.exoplatform.chat.server.CometdService;
-import org.exoplatform.container.PortalContainer;
+import org.exoplatform.chat.model.*;
 import org.json.JSONException;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -43,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
   @Inject
   private UserDataStorage userStorage;
+
+  @Inject
+  private RealTimeMessageService realTimeMessageService;
 
   public void toggleFavorite(String user, String targetUser, String dbName) {
     if (isFavorite(user, targetUser, dbName)) {
@@ -56,15 +53,14 @@ public class UserServiceImpl implements UserService {
   public void addFavorite(String user, String room, String dbname) {
     userStorage.addFavorite(user, room, dbname);
 
-    JSONObject data = new JSONObject();
-    data.put("event", "favorite-added");
-    data.put("room", room);
-
-    EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
     // Deliver the saved message to sender's subscribed channel itself.
-    if(bayeux.isPresent(user)) {
-      bayeux.sendMessage(user, CometdService.COMETD_CHANNEL_NAME, data, null);
-    }
+    RealTimeMessageBean messageBean = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.FAVOTITE_ADDED,
+            room,
+            user,
+            new Date(),
+            null);
+    realTimeMessageService.sendMessage(messageBean, user);
   }
 
   @Override
@@ -75,11 +71,14 @@ public class UserServiceImpl implements UserService {
     data.put("event", "favorite-removed");
     data.put("room", room);
 
-    EXoContinuationBayeux bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
     // Deliver the saved message to sender's subscribed channel itself.
-    if(bayeux.isPresent(user)) {
-      bayeux.sendMessage(user, CometdService.COMETD_CHANNEL_NAME, data, null);
-    }
+    RealTimeMessageBean messageBean = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.FAVORITE_REMOVED,
+            room,
+            user,
+            new Date(),
+            null);
+    realTimeMessageService.sendMessage(messageBean, user);
   }
 
   /**
