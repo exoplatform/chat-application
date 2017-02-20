@@ -48,6 +48,8 @@ import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.PlugableUIService;
 import org.exoplatform.commons.api.ui.RenderContext;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
@@ -172,6 +174,8 @@ public class ChatApplication
       LOG.log(Level.SEVERE, ex.getMessage(), ex);
     }
 
+    String portalURI = Util.getPortalRequestContext().getPortalURI();
+
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
@@ -187,6 +191,7 @@ public class ChatApplication
             .set("dbName", dbName)
             .set("extPopup", extPopup)
             .set("extMenu", extMenu)
+            .set("portalURI", portalURI)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)

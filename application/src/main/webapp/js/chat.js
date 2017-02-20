@@ -24,6 +24,7 @@ var chatApplication = new ChatApplication();
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
     var chatView = $chatApplication.attr("data-view");
     chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
+    chatApplication.portalURI = $chatApplication.attr("data-portal-uri");
     chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
     chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
     chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
@@ -2135,7 +2136,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
                 );
 
                 notification.onclick = function () {
-                  window.open("http://localhost:8080/portal/intranet/chat");
+                  window.open("http://localhost:8080" + chatApplication.portalURI + "/chat");
                   notification.close();
                 }
                 notification.show();
@@ -2529,7 +2530,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
       jqchat("#userRoomStatus").removeClass("hide").show();
-      jqchat(".target-avatar-link").attr("href", "/portal/intranet/profile/"+this.targetUser);
+      jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "/profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
       jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser  + "/avatar");
     }
@@ -3423,7 +3424,7 @@ ChatApplication.prototype.showDemoPanel = function() {
 };
 
 ChatApplication.prototype.displayVideoCallOnChatApp = function () {
-  if (typeof weemoExtension === 'undefined' || window.location.href.indexOf("/portal/intranet/chat") === -1) {
+  if (typeof weemoExtension === 'undefined' || window.location.href.indexOf(chatApplication.portalURI + "/chat") === -1) {
     return;
   }
 
@@ -3451,13 +3452,13 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
           jzStoreParam("targetUser", targetUser);
 
           if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
-            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
+            weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
           } else {
             var isSpace = (targetUser.indexOf("space-") !== -1);
             var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
             jzStoreParam("isSpace", isSpace);
-            weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+            weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
           }
         }
       } else {
@@ -3479,7 +3480,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
       jzStoreParam("targetFullname", targetFullname);
       jzStoreParam("targetUser", targetUser);
       jzStoreParam("meetingPointId", weemoExtension.meetingPointId);
-      weemoExtension.showVideoPopup('/portal/intranet/videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+      weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
       //weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
     }
   });
