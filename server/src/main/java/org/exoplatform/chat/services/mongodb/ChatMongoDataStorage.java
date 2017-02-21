@@ -27,6 +27,8 @@ import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -218,8 +220,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
-    StringBuilder sb = new StringBuilder();
-
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
     SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
     Calendar calendar = Calendar.getInstance();
@@ -246,53 +246,48 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     sort.put("timestamp", -1);
     int limit = (isTextOnly) ? readTotalTxt : readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
+    StringBuilder sb = new StringBuilder();
     if (!cursor.hasNext()) {
-      if (isTextOnly)
+      if (isTextOnly) {
         sb.append("no messages");
-      else
+      } else {
         sb.append("{\"room\": \"").append(room).append("\",\"messages\": []}");
+      }
     } else {
       // Just being used as a local cache
       Map<String, UserBean> users = new HashMap<String, UserBean>();
 
-      String timestamp, user, fullname, msgId, date;
       boolean first = true;
-
+      JSONObject data = new JSONObject();
       while (cursor.hasNext()) {
         DBObject dbo = cursor.next();
-        timestamp = dbo.get("timestamp").toString();
+        String timestamp = dbo.get("timestamp").toString();
         if (first) //first element (most recent one)
         {
           if (!isTextOnly) {
-            sb.append("{\"room\": \"").append(room).append("\",");
-            sb.append("\"timestamp\": \"").append(timestamp).append("\",");
-            sb.append("\"messages\": [");
+            data.put("room", room);
+            data.put("timestamp", timestamp);
+            data.put("messages", new JSONArray());
           }
         }
 
-        user = dbo.get("user").toString();
-        msgId = dbo.get("_id").toString();
-
+        String user = dbo.get("user").toString();
         UserBean userBean = users.get(user);
         if (userBean == null) {
           userBean = userDataStorage.getUser(user, dbName);
           users.put(user, userBean);
         }
-        fullname = userBean.getFullname();
-
-        date = "";
-        try {
-          Date date1 = new Date(Long.parseLong(timestamp));
-          if (date1.before(today) || isTextOnly) {
-            date = formatterDate.format(date1);
-          } else {
-            date = formatter.format(date1);
-          }
-        } catch (Exception e) {
-          LOG.info("Message Date Format Error : " + e.getMessage());
-        }
+        String fullName = userBean.getFullname();
 
         if (isTextOnly) {
+          String date = "";
+          try {
+            Date date1 = new Date(Long.parseLong(timestamp));
+            date = formatterDate.format(date1);
+          } catch (Exception e) {
+            LOG.info("Message Date Format Error : " + e.getMessage());
+          }
+
           StringBuilder line = new StringBuilder();
           line.append("[").append(date).append("] ");
           String message = dbo.get("message").toString();
@@ -302,39 +297,36 @@ public class ChatMongoDataStorage implements ChatDataStorage {
             if (message.endsWith("<br/>")) message = message.substring(0, message.length() - 5);
             line.append(message).append("\n");
           } else {
-            line.append(fullname).append(": ");
+            line.append(fullName).append(": ");
             message = message.replaceAll("<br/>", "\n");
             line.append(message).append("\n");
           }
           sb.insert(0, line);
         } else {
-          if (!first) sb.append(",");
           MessageBean msg = new MessageBean();
-          msg.setId(msgId);
+          msg.setId(dbo.get("_id").toString());
           msg.setTimestamp(Long.parseLong(timestamp));
           if (dbo.containsField("lastUpdatedTimestamp")) {
             msg.setLastUpdatedTimestamp(Long.parseLong(dbo.get("lastUpdatedTimestamp").toString()));
           }
           msg.setUser(user);
-          msg.setFullName(fullname);
+          msg.setFullName(fullName);
           msg.setMessage(dbo.get("message").toString());
           if (dbo.containsField("options")) {
-            JSONParser parser = new JSONParser();
             msg.setOptions(dbo.get("options").toString());
           }
           if (dbo.containsField("type")) {
             msg.setType(dbo.get("type").toString());
           }
           msg.setSystem(Boolean.parseBoolean(dbo.get("isSystem").toString()));
-          sb.append(msg.toJSONObject().toJSONString());
+
+          ((JSONArray)data.get("messages")).add(msg.toJSONObject());
         }
 
         first = false;
       }
 
-      if (!isTextOnly) {
-        sb.append("]}");
-      }
+      sb.append(data.toJSONString());
     }
 
     return sb.toString();

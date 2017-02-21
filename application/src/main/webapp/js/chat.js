@@ -2044,7 +2044,9 @@ ChatApplication.prototype.initChat = function() {
   });
 
   var thiss = this;
-  $leftPanel.on("click", ".users-online > td:nth-child(2)", function() {
+  $leftPanel.on("click.selectRoom", ".users-online > td:nth-child(2)", function() {
+
+    // Mobile view
     if(window.innerWidth <= 767){
 
       jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
@@ -2062,7 +2064,6 @@ ChatApplication.prototype.initChat = function() {
       jqchat(".uiLeftContainerArea").addClass("hideContent");
       jqchat(".uiGlobalRoomsContainer").css("display", "block");
 
-
       setTimeout(function(){
         jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
       }, 200);
@@ -2072,6 +2073,7 @@ ChatApplication.prototype.initChat = function() {
       jqchat("#chat-search").attr("placeholder", $serachText);
     }
 
+    thiss.room = jqchat(".room-link:first",this).attr("room-data");
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
 
@@ -2427,7 +2429,6 @@ ChatApplication.prototype.renderRooms = function() {
   // If the selected room is not present in the room list we cleanup the Chat Zone
   // and stop refreshing the Chat data
   if (rooms({room:chatApplication.room}).count()===0) {
-    chatApplication.chatRoom.clearInterval();
     chatApplication.room="";
     chatApplication.targetUser="";
     chatApplication.chatRoom.emptyChatZone();
@@ -2738,8 +2739,8 @@ function userRoomStatus(targetUser, status) {
 
 ChatApplication.prototype.loadRoom = function() {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
-  if(this.configMode==true) {
-    this.configMode=false;//we're not on the config mode anymore
+  if(this.configMode == true) {
+    this.configMode = false;//we're not on the config mode anymore
     enableMessageComposer(true);
   }
 
@@ -2975,7 +2976,10 @@ ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
  *
  * @param callback (callStatus)
  */
+// TODO: to remove as this seems to be useless.
 ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
+  alert("You should not see this message");
+
   if (room !== "" && room !== chatApplication.chatRoom.id) {
     chatApplication.chatRoom.getChatMessages(room, function (msgs) {
       var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
