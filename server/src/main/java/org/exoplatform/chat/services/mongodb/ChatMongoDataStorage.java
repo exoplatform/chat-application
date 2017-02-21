@@ -326,7 +326,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         first = false;
       }
 
-      sb.append(data.toJSONString());
+      if (!isTextOnly) {
+        sb.append(data.toJSONString());
+      }
     }
 
     return sb.toString();
