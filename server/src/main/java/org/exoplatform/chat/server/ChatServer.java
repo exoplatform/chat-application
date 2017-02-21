@@ -883,11 +883,6 @@ public class ChatServer
         else
           status = UserService.STATUS_OFFLINE;
       }
-      else
-      {
-        status = userService.getStatus(user, dbName);
-        tokenService.updateValidity(user, token, dbName);
-      }
     }
     catch (Exception e)
     {

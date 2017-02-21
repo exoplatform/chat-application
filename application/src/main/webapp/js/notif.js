@@ -514,13 +514,13 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
     success: function(response){
       thiss.statusRequest = null;
       if (typeof callback === "function") {
-        callback(targetUser, response);
+        callback(response);
       }
     },
     error: function(response){
       thiss.statusRequest = null;
       if (typeof callback === "function") {
-        callback(targetUser, "offline");
+        callback("offline");
       }
     }
   });

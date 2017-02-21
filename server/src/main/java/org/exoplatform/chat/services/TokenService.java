@@ -19,7 +19,7 @@
 
 package org.exoplatform.chat.services;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.exoplatform.chat.model.UserBean;
 
@@ -34,11 +34,9 @@ public interface TokenService
 
   public void addUser(String user, String token, String dbName);
 
-  public void updateValidity(String user, String token, String dbName);
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin);
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin);
-
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
   public boolean isUserOnline(String user, String dbName);
 

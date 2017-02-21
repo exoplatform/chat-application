@@ -10,8 +10,13 @@ import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.services.mongodb.*;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.services.cache.CacheService;
+import org.exoplatform.services.user.UserStateModel;
+import org.exoplatform.services.user.UserStateService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,10 +53,13 @@ public class AbstractChatTestCase
   private static class TestModule extends AbstractModule {
     @Override
     protected void configure() {
+      UserStateService mockUserStateService = Mockito.mock(UserStateService.class);
+      MockitoAnnotations.initMocks(mockUserStateService);
+
       bind(ChatDataStorage.class).to(ChatMongoDataStorage.class);
       bind(ChatService.class).to(ChatServiceImpl.class);
       bind(NotificationService.class).to(NotificationServiceImpl.class);
-      bind(TokenService.class).to(TokenServiceImpl.class);
+      bind(TokenService.class).toInstance(new TokenServiceImpl(mockUserStateService));
       bind(UserDataStorage.class).to(UserMongoDataStorage.class);
       bind(UserService.class).to(UserServiceImpl.class);
       // mock for RealTimeMessageService

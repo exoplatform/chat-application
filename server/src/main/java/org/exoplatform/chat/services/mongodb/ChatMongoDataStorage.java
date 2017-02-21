@@ -585,7 +585,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     UserBean userBean = userDataStorage.getUser(user, true, dbName);
     int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0;
 
-    HashMap<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, limit);
+    Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, limit);
 
     rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
     if (isAdmin)

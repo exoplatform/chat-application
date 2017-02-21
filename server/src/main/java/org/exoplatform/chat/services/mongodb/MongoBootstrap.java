@@ -239,7 +239,6 @@ public class MongoBootstrap
     DBCollection users = getDB().getCollection("users");
     users.dropIndexes();
     users.createIndex(new BasicDBObject("token", 1), notUnique.append("name", "token_1").append("ns", dbName + ".users"));
-    users.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", dbName + ".users"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("token", 1);
@@ -248,10 +247,6 @@ public class MongoBootstrap
     index.put("user", 1);
     index.put("validity", -1);
     users.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", dbName + ".users"));
-    index = new BasicDBObject();
-    index.put("validity", -1);
-    index.put("isDemoUser", 1);
-    users.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", dbName + ".users"));
 
     users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", dbName+".users"));
     users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", dbName+".users"));

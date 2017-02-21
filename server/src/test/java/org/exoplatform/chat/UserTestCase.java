@@ -46,26 +46,6 @@ public class UserTestCase extends AbstractChatTestCase
   }
 
   @Test
-  public void testTokenValidity() throws Exception
-  {
-    log.info("UserTestCase.testTokenValidity");
-    String token = ServiceBootstrap.getTokenService().getToken(username);
-    ServiceBootstrap.getTokenService().addUser(username, token, null);
-
-    assertTrue(ServiceBootstrap.getTokenService().hasUserWithToken(username, token, null));
-    assertTrue(ServiceBootstrap.getTokenService().isUserOnline(username, null));
-
-    Thread.sleep(110);
-
-    assertFalse(ServiceBootstrap.getTokenService().isUserOnline(username, null));
-
-    ServiceBootstrap.getTokenService().updateValidity(username, token, null);
-
-    assertTrue(ServiceBootstrap.getTokenService().isUserOnline(username, null));
-
-  }
-
-  @Test
   public void testUserCreation() throws Exception
   {
     log.info("UserTestCase.testUserCreation");
@@ -99,10 +79,6 @@ public class UserTestCase extends AbstractChatTestCase
     ServiceBootstrap.getUserService().addUserFullName("james", "James Potter", null);
 
     assertEquals(4, ServiceBootstrap.getUserService().getNumberOfUsers(null));
-
-    int size = ServiceBootstrap.getTokenService().getActiveUsersFilterBy(username, null, true, true, false).size();
-    assertEquals(3, size);
-
   }
 
   @Test

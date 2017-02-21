@@ -29,18 +29,33 @@ import com.mongodb.WriteConcern;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
+import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.user.UserStateService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Named("tokenService")
 @ApplicationScoped
-public class TokenServiceImpl implements org.exoplatform.chat.services.TokenService
+public class TokenServiceImpl implements TokenService
 {
-  private int validity_ = -1;
+  //TODO this service will not be available in 2 mode servers, we will need to find another solution (REST API /state ?)
+  private UserStateService userStateService;
+
+  public TokenServiceImpl() {
+    userStateService = PortalContainer.getInstance().getComponentInstanceOfType(UserStateService.class);
+  }
+
+  public TokenServiceImpl(UserStateService userStateService) {
+    this.userStateService = userStateService;
+  }
 
   private DB db(String dbName)
   {
@@ -73,8 +88,6 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
   {
     if (!hasUserWithToken(user, token, dbName))
     {
-      //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
-//      removeUser(user);
       DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
 
       BasicDBObject query = new BasicDBObject();
@@ -84,7 +97,6 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
       {
         DBObject doc = cursor.next();
         doc.put("token", token);
-        doc.put("validity", System.currentTimeMillis());
         doc.put("isDemoUser", user.startsWith(ANONIM_USER));
         coll.save(doc, WriteConcern.SAFE);
       }
@@ -94,54 +106,24 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
         doc.put("_id", user);
         doc.put("user", user);
         doc.put("token", token);
-        doc.put("validity", System.currentTimeMillis());
         doc.put("isDemoUser", user.startsWith(ANONIM_USER));
         coll.insert(doc);
       }
     }
   }
 
-/*
-  private void removeUser(String user, String dbName)
-  {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      coll.remove(doc);
-    }
-  }
-*/
-
-  public void updateValidity(String user, String token, String dbName)
-  {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("token", token);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      doc.put("validity", System.currentTimeMillis());
-      coll.save(doc, WriteConcern.SAFE);
-    }
-  }
-
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin)
   {
     return getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, 0);
   }
 
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
-    HashMap<String, UserBean> users = new HashMap<String, UserBean>();
+    List<String> onlineUsers = userStateService.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
+
+    HashMap<String, UserBean> users = new HashMap<>();
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
     if (isAdmin)
     {
       if (withPublic && !withUsers)
@@ -163,7 +145,8 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
     {
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
-      if (!user.equals(target)) {
+      // Exclude current user and not online users
+      if (!user.equals(target) && onlineUsers.contains(target)) {
         UserBean userBean = new UserBean();
         userBean.setName(target);
         if (doc.get("fullname")!=null)
@@ -179,33 +162,11 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
 
   public boolean isUserOnline(String user, String dbName)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
-    DBCursor cursor = coll.find(query);
-    return cursor.hasNext();
+    return userStateService != null ? userStateService.isOnline(user) : false;
   }
 
   public boolean isDemoUser(String user)
   {
     return user.startsWith(ANONIM_USER);
-  }
-
-  private int getValidity() {
-    if (validity_==-1)
-    {
-      validity_ = 60000;
-      try
-      {
-        validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY));
-      }
-      catch (Exception e)
-      {
-        //do nothing if exception happens, keep 15000 value (=> statusInterval should set)
-        return validity_;
-      }
-    }
-    return validity_;
   }
 }
