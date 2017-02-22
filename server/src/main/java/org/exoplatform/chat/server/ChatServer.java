@@ -691,46 +691,48 @@ public class ChatServer
           return Response.notFound("Petit malin !");
         }
 
-        if (room.startsWith(ChatService.TEAM_PREFIX) && room.length()>ChatService.TEAM_PREFIX.length()+1)
-        {
-          room = room.substring(ChatService.TEAM_PREFIX.length());
-        }
         chatService.setRoomName(room, teamName, dbName);
       }
 
-      if (users!=null && !"".equals(users)) {
-        String[] ausers = users.split(",");
-        List<String> usersNew = Arrays.asList(ausers);
+      if (users != null && !users.isEmpty()) {
+        List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+
+        List<String> usersNew = Arrays.asList(users.split(","));
         List<String> usersToAdd = new JSONArray();
         usersToAdd.addAll(usersNew);
         List<String> usersToRemove = new JSONArray();
-        List<String> usersExisting = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
-        for (String userExist:usersExisting)
-        {
-          if (!usersNew.contains(userExist))
-          {
-            usersToRemove.add(userExist);
-          }
-          else if (usersNew.contains(userExist))
-          {
-            usersToAdd.remove(userExist);
+        JSONObject data = new JSONObject();
+        data.put("title", teamName);
+        RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.ROOM_UPDATED,
+            room,
+            user,
+            null,
+            data);
+
+        for (String u: existingUsers) {
+          if (usersNew.contains(u)) {
+            usersToAdd.remove(u);
+            realTimeMessageService.sendMessage(updatedRoomMessage, u);
+          } else {
+            usersToRemove.add(u);
           }
         }
-        if (usersToRemove.size()>0)
-        {
+
+        if (usersToRemove.size() > 0) {
           userService.removeTeamUsers(room, usersToRemove, dbName);
 
           // Send a websocket message of type 'room-member-left' to all the room members
-          Map<String, Object> data = new HashMap();
-          data.put("members", String.join(",", usersToRemove));
+          data = new JSONObject();
+          data.put("members", usersToRemove);
           RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
                   RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
                   room,
                   user,
                   new Date(),
                   data);
-          realTimeMessageService.sendMessage(leaveRoomMessage, usersExisting);
+          realTimeMessageService.sendMessage(leaveRoomMessage, existingUsers);
 
           StringBuilder sbUsers = new StringBuilder();
           boolean first = true;
@@ -748,12 +750,12 @@ public class ChatServer
                   "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
           this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
         }
-        if (usersToAdd.size()>0)
-        {
+
+        if (usersToAdd.size() > 0) {
           userService.addTeamUsers(room, usersToAdd, dbName);
 
           // Send a websocket message of type 'room-member-left' to all the room members
-          JSONObject data = userService.getRoom(user, room, dbName).toJSONObject();
+          data = userService.getRoom(user, room, dbName).toJSONObject();
           data.put("members", String.join(",", usersToRemove));
           RealTimeMessageBean joinRoomMessage = new RealTimeMessageBean(
                   RealTimeMessageBean.EventType.ROOM_MEMBER_JOIN,
@@ -781,7 +783,6 @@ public class ChatServer
 
       jsonObject.put("name", teamName);
       jsonObject.put("room", room);
-
     }
     catch (Exception e)
     {

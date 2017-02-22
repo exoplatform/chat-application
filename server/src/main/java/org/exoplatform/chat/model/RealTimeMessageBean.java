@@ -19,6 +19,7 @@ public class RealTimeMessageBean {
     USER_STATUS_CHANGED("user-status-changed"),
     ROOM_MEMBER_JOIN("room-member-joined"),
     ROOM_MEMBER_LEFT("room-member-left"),
+    ROOM_UPDATED("room-updated"),
     ROOM_DELETED("room-deleted"),
     FAVOTITE_ADDED("favorite-added"),
     FAVORITE_REMOVED("favorite-removed");

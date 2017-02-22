@@ -184,6 +184,10 @@ var chatApplication = new ChatApplication();
           var room = chatApplication.rooms({user: message.room});
           room.update({isFavorite: false});
           chatApplication.renderRooms();
+        } else if (message.event == 'room-updated') {
+          var room = chatApplication.rooms({room: message.room});
+          room.update({escapedFullname: message.data.title});
+          chatApplication.renderRooms();
         } else if (message.event == 'room-deleted') {
           var room = chatApplication.rooms({room: message.room});
           room.remove();
@@ -1256,7 +1260,7 @@ var handleRoomNotifLayout = function() {
           $userResults.html("");
           var $uitext = $("#team-modal-name");
           $uitext.val(chatApplication.targetFullname);
-          $uitext.attr("data-id", chatApplication.targetUser);
+          $uitext.attr("data-id", chatApplication.room);
           $(".team-users-list").empty();
           users.order("fullname").each(function (user, number) {
             if (user.name !== chatApplication.username) {
@@ -1351,6 +1355,7 @@ var handleRoomNotifLayout = function() {
       });
 
       chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
+        return;
         var teamName = data.name;
         var roomId = "team-"+data.room;
 
