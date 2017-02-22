@@ -542,15 +542,12 @@ public class ChatServer
       return Response.notFound("Something is wrong.");
     }
 
-    JSONObject response = new JSONObject();
     try{
       userService.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
-      response.put("done", true);
     } catch(Exception e) {
-      response.put("done",false);
     }
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok("done").withMimeType("application/json").withHeader("Cache-Control", "no-cache")
             .withCharset(Tools.UTF_8);
   }
 

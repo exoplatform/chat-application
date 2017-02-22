@@ -67,10 +67,6 @@ public class UserServiceImpl implements UserService {
   public void removeFavorite(String user, String room, String dbName) {
     userStorage.removeFavorite(user, room, dbName);
 
-    JSONObject data = new JSONObject();
-    data.put("event", "favorite-removed");
-    data.put("room", room);
-
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
             RealTimeMessageBean.EventType.FAVORITE_REMOVED,
@@ -110,8 +106,24 @@ public class UserServiceImpl implements UserService {
    *  -key-words
    *
    */
-  public void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, String dbName, long time) throws Exception {
-    userStorage.setRoomNotificationTrigger(user, room, notifCond, notifConditionType, dbName, time);
+  public void setRoomNotificationTrigger(String user, String room, String notifCondition, String notifConditionType, String dbName, long time) throws Exception {
+    userStorage.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
+
+    JSONObject settings = new JSONObject();
+    settings.put("notifCondition", notifCondition);
+    settings.put("notifConditionType", notifConditionType);
+
+    JSONObject data = new JSONObject();
+    data.put("settings", settings);
+
+    // Deliver the saved message to sender's subscribed channel itself.
+    RealTimeMessageBean messageBean = new RealTimeMessageBean(
+        RealTimeMessageBean.EventType.ROOM_SETTINGS_UPDATED,
+        room,
+        user,
+        null,
+        data);
+    realTimeMessageService.sendMessage(messageBean, user);
   }
 
   /*

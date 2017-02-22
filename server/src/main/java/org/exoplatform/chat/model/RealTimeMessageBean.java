@@ -22,7 +22,8 @@ public class RealTimeMessageBean {
     ROOM_UPDATED("room-updated"),
     ROOM_DELETED("room-deleted"),
     FAVOTITE_ADDED("favorite-added"),
-    FAVORITE_REMOVED("favorite-removed");
+    FAVORITE_REMOVED("favorite-removed"),
+    ROOM_SETTINGS_UPDATED("room-settings-updated");
 
     private final String eventType;
 

@@ -192,6 +192,10 @@ var chatApplication = new ChatApplication();
           var room = chatApplication.rooms({room: message.room});
           room.remove();
           chatApplication.renderRooms();
+        } else if (message.event == 'room-settings-updated') {
+          var settings = message.data.settings;
+          var val = settings.notifConditionType + ':' + settings.notifCondition;
+          desktopNotification.setRoomPreferredNotificationTrigger(message.room, val);//set into the memory
         }
       });
     });
@@ -567,16 +571,6 @@ var chatApplication = new ChatApplication();
        },
        headers: {
          'Authorization': 'Bearer ' + chatApplication.token
-       },
-
-       success:function(operation){
-         operation = JSON.parse(operation);
-         if(operation.done) {
-           var val = roomTriggerType+':'+roomTriggerWhenKeyWordValue;
-           desktopNotification.setRoomPreferredNotificationTrigger(roomId, val);//set into the memory
-         } else {
-           alert("Request received but operation done without success..");
-         }
        },
        error:function (xhr, status, error){
          console.log('an error has been occured', error);
