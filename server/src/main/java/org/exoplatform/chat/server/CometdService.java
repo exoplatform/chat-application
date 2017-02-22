@@ -119,16 +119,6 @@ public class CometdService {
         }
 
         chatService.delete(room, sender, messageId, dbName);
-      } else if (eventType.equals(RealTimeMessageBean.EventType.FAVOTITE_ADDED)) {
-        String sender = jsonMessage.get("sender").toString();
-        String targetUser = jsonMessage.get("targetUser").toString();
-        String dbName = jsonMessage.get("dbName").toString();
-        userService.addFavorite(sender, targetUser, dbName);
-      } else if (eventType.equals(RealTimeMessageBean.EventType.FAVORITE_REMOVED)) {
-        String sender = jsonMessage.get("sender").toString();
-        String targetUser = jsonMessage.get("targetUser").toString();
-        String dbName = jsonMessage.get("dbName").toString();
-        userService.removeFavorite(sender, targetUser, dbName);
       } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_DELETED)) {
         String room = jsonMessage.get("room").toString();
         String sender = jsonMessage.get("sender").toString();

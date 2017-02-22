@@ -462,20 +462,16 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/toggleFavorite")
-  public Response.Content toggleFavorite(String user, String token, String targetUser, String dbName)
+  public Response.Content toggleFavorite(String user, String token, String targetUser, String favorite, String dbName)
   {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
-    try
-    {
-      userService.toggleFavorite(user, targetUser, dbName);
-    }
-    catch (Exception e)
-    {
-      LOG.log(java.util.logging.Level.WARNING, e.getMessage());
-      return Response.notFound("Oups");
+    if (Boolean.valueOf(favorite)) {
+      userService.addFavorite(user, targetUser, dbName);
+    } else {
+      userService.removeFavorite(user, targetUser, dbName);
     }
     return Response.ok("Updated!");
   }

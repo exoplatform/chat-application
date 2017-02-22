@@ -3042,21 +3042,24 @@ ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
  */
 ChatApplication.prototype.toggleFavorite = function(targetFav) {
   console.log("FAVORITE::"+targetFav);
-
   var room = chatApplication.rooms({user: targetFav});
 
-  var thiss = this;
-  require(['SHARED/commons-cometd3'], function(cCometD) {
-    var event = room.first().isFavorite ? "favorite-removed" : "favorite-added";
-    cCometD.publish('/service/chat', JSON.stringify({"event": event,
+  jqchat.ajax({
+    url: this.jzChatToggleFavorite,
+    data: {
+      "user": this.username,
+      "token": this.token,
       "targetUser": targetFav,
-      "sender": thiss.username,
-      "dbName": thiss.dbName
-    }), function(publishAck) {
-      if (publishAck.successful) {
-        console.log("The message reached the server");
-      }
-    });
+      "favorite": !room.first().isFavorite
+    },
+    headers: {
+      'Authorization': 'Bearer ' + this.token
+    },
+    context: this,
+    success: function(response){
+    },
+    error: function(xhr, status, error){
+    }
   });
 };
 
