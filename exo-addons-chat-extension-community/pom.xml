@@ -24,7 +24,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>1.4.x-SNAPSHOT</version>
+    <version>1.4.1-RC06</version>
   </parent>
   <artifactId>exo-addons-chat-extension-community</artifactId>
   <packaging>war</packaging>
