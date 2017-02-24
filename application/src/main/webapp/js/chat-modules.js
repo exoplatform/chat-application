@@ -61,7 +61,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
   this.messages = [];
 
   var thiss = this;
-  snack.request({
+  jqchat.ajax({
     url: thiss.jzChatGetRoom,
     data: {"targetUser": targetUser,
       "user": username,
@@ -70,10 +70,10 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
     },
     headers: {
       'Authorization': 'Bearer ' + token
-    }
-  }, function (err, response){
-    if (!err) {
-      thiss.id = response;
+    },
+    dataType: 'text',
+    success: function(data) {
+      thiss.id = data;
       thiss.callingOwner = thiss.id;
 
       if (typeof callback === "function") {
@@ -216,7 +216,6 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
             });
           });
         });
-
       });
     }
   });
@@ -259,7 +258,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
     var tmpOptions = JSON.stringify(options);
     tmpOptions = tmpOptions.replace(/</g, "&lt;");
     tmpOptions = tmpOptions.replace(/>/g, "&gt;");
-    tmpOptions = snack.parseJSON(tmpOptions);
+    tmpOptions = JSON.parse(tmpOptions);
   }
 
   var thiss = this;
@@ -341,7 +340,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   if (typeof chatApplication != "undefined" && chatApplication.configMode) {
     return;//do nothing when we're on the config page
   }
-  //var thiss = chatApplication;
+
   if (this.username !== this.ANONIM_USER) {
     var thiss = this;
     var lastTS = jzGetParam("lastTS"+this.username) || 0;
@@ -350,7 +349,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
     // retrieve last messages only
     var fromTimestamp = Math.max(lastTS, lastUpdatedTS);
 
-    this.currentRequest = snack.request({
+    this.currentRequest = jqchat.ajax({
       url: this.jzChatRead,
       data: {
         room: this.id,
@@ -360,19 +359,57 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
       },
       headers: {
         'Authorization': 'Bearer ' + this.token
-      }
-    }, function (err, res){
-      // res is null in case the XHR is cancelled, thus nothing to do here
-      if(!res) {
-        return;
-      }
+      },
+      success: function(data) {
+        // data is null in case the XHR is cancelled, thus nothing to do here
+        if(!data) {
+          return;
+        }
 
-      // allow to execute periodic queries
-      thiss.currentRequest = null;
+        // allow to execute periodic queries
+        thiss.currentRequest = null;
 
-      // check for an error
-      if (err) {
-        if (err === 403 &&  ( thiss.messages.length === 0 || "type-kicked" !== thiss.messages[0].options.type)) {
+        if (thiss.miniChat === undefined) {
+          chatApplication.activateRoomButtons();
+        }
+
+        // If the requested room (returned from HTTP response) is not the same as the currently requested room
+        if(thiss.loadingNewRoom && thiss.callingOwner && (!data.room || thiss.callingOwner.indexOf(data.room) < 0)) {
+          return;
+        }
+
+        if (data.messages.length > 0) {
+          var ts = data.timestamp;
+          var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
+          if (updatedTS < 0) updatedTS = 0;
+          jzStoreParam("lastTS"+thiss.username, ts, 600);
+          jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
+
+          thiss.addMessagesToLocalList(data);
+          thiss.showMessages();
+        } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
+          // If room has changed but no messages was added there yet
+          thiss.showMessages();
+        }
+        // set last succeeded request chat owner
+        // to be able to detect when user switches from a room to another
+        thiss.lastCallOwner = thiss.targetUser;
+        if(thiss.loadingNewRoom) {
+          // Enable composer if the new room loading has finished
+          enableMessageComposer(true);
+          thiss.loadingNewRoom = false;
+        }
+
+        if (typeof thiss.onRefreshCB === "function") {
+          thiss.onRefreshCB(0);
+        }
+
+        if (typeof callback === "function") {
+          callback(data.messages);
+        }
+      },
+      error: function(xhr, status, error) {
+        if (status === 403 &&  ( thiss.messages.length === 0 || "type-kicked" !== thiss.messages[0].options.type)) {
 
           // Show message user has been kicked
           var options = {
@@ -399,7 +436,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           $meetingActionToggle.addClass("disabled");
           $meetingActionToggle.children("span").tooltip("disable");
         } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
-        // the room init operation is canceled, thus no messages will be displayed
+          // the room init operation is canceled, thus no messages will be displayed
           thiss.showMessages();
         }
         thiss.loadingNewRoom = false;
@@ -407,52 +444,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         if (typeof thiss.onRefreshCB === "function") {
           thiss.onRefreshCB(1);
         }
-        return;
-      } else if (thiss.miniChat === undefined) {
-        chatApplication.activateRoomButtons();
       }
-
-
-      res = res.split("\t").join(" ");
-      // handle the response data
-      var data = snack.parseJSON(res);
-
-      // If the requested room (returned from HTTP response) is not the same as the currently requested room
-      if(thiss.loadingNewRoom && thiss.callingOwner && (!data.room || thiss.callingOwner.indexOf(data.room) < 0)) {
-        return;
-      }
-
-      if (data.messages.length > 0) {
-        var ts = data.timestamp;
-        var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
-        if (updatedTS < 0) updatedTS = 0;
-        jzStoreParam("lastTS"+thiss.username, ts, 600);
-        jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
-
-        thiss.addMessagesToLocalList(data);
-        thiss.showMessages();
-      } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
-        // If room has changed but no messages was added there yet
-        thiss.showMessages();
-      }
-      // set last succeeded request chat owner
-      // to be able to detect when user switches from a room to another 
-      thiss.lastCallOwner = thiss.targetUser;
-      if(thiss.loadingNewRoom) {
-        // Enable composer if the new room loading has finished
-        enableMessageComposer(true);
-        thiss.loadingNewRoom = false;
-      }
-
-      if (typeof thiss.onRefreshCB === "function") {
-        thiss.onRefreshCB(0);
-      }
-
-      if (typeof callback === "function") {
-        callback(data.messages);
-      }
-
-
     })
 
   }
@@ -471,7 +463,7 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
 
   if (this.username !== this.ANONIM_USER) {
     // set current request variable to cancel it if the user make another action
-    this.currentRequest = snack.request({
+    this.currentRequest = jqchat.ajax({
       url: this.jzChatRead,
       data: {
         room: room,
@@ -480,17 +472,10 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
       },
       headers: {
         'Authorization': 'Bearer ' + this.token
-      }
-    }, function (err, res){
-      if (err) {
-        return;
-      }
-
-      res = res.split("\t").join(" ");
-      var data = snack.parseJSON(res);
-
-      if (typeof callback === "function") {
-        callback(data.messages);
+      }, success: function(data) {
+        if (typeof callback === "function") {
+          callback(data.messages);
+        }
       }
     })
   }
@@ -499,7 +484,7 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
 ChatRoom.prototype.showAsText = function(callback) {
 
   var thiss = this;
-  snack.request({
+  jqchat.ajax({
     url: thiss.jzChatRead,
     data: {
       room: thiss.id,
@@ -509,11 +494,10 @@ ChatRoom.prototype.showAsText = function(callback) {
     },
     headers: {
       'Authorization': 'Bearer ' + thiss.token
-    }
-  }, function (err, response){
-    if (!err) {
+    },
+    success: function(data) {
       if (typeof callback === "function") {
-        callback(response);
+        callback(data);
       }
     }
   });
@@ -524,7 +508,7 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
   var serverBase = window.location.href.substr(0, 9+window.location.href.substr(9).indexOf("/"));
   
   var thiss = this;
-  snack.request({
+  jqchat.ajax({
     url: thiss.jzChatSendMeetingNotes,
     data: {
       room: room,
@@ -536,11 +520,10 @@ ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp,
     },
     headers: {
       'Authorization': 'Bearer ' + thiss.token
-    }
-  }, function (err, response){
-    if (!err) {
+    },
+    success: function(data) {
       if (typeof callback === "function") {
-        callback(response);
+        callback(data);
       }
     }
   });
@@ -551,7 +534,7 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
   var serverBase = window.location.href.substr(0, 9+window.location.href.substr(9).indexOf("/"));
 
   var thiss = this;
-  snack.request({
+  jqchat.ajax({
     url: thiss.jzChatGetMeetingNotes,
     data: {
       room: room,
@@ -564,11 +547,10 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
     },
     headers: {
       'Authorization': 'Bearer ' + thiss.token
-    }
-  }, function (err, response){
-    if (!err) {
+    },
+    success: function(data) {
       if (typeof callback === "function") {
-        callback(response);
+        callback(data);
       }
     }
   });
@@ -1343,12 +1325,9 @@ String.prototype.endsWith = function(suffix) {
         $(this).attr("data-index", index);
         var $obj = $(this);
         var urlToken = "/rest/chat/api/1.0/user/token";
-        snack.request({
-          url: urlToken
-        }, function (err, response){
-          if (!err) {
-            var data = snack.parseJSON(response);
-
+        jqchat.ajax({
+          url: urlToken,
+          success: function(data) {
             var username = data.username;
             var token = data.token;
             $obj.attr("data-username", username);
@@ -1378,10 +1357,12 @@ String.prototype.endsWith = function(suffix) {
               var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode");
               showMiniChatPopup(miniChatRoom, miniChatType);
             }
+
+            loadSetting(null,true);
+          },
+          error: function(xhr, status, error) {
+            loadSetting(null,true);
           }
-
-          loadSetting(null,true);
-
         });
 
       }
@@ -1449,7 +1430,7 @@ function showMiniChatPopup(room, type) {
 
   // Show chat messages
   var urlRoom = chatServerUrl+"/getRoom";
-  snack.request({
+  jqchat.ajax({
     url: urlRoom,
     data: {
       targetUser: room,
@@ -1460,10 +1441,9 @@ function showMiniChatPopup(room, type) {
     },
     headers: {
       'Authorization': 'Bearer ' + token
-    }
-  }, function (err, response){
-    if (!err) {
-      var cRoom = snack.parseJSON(response);
+    },
+    success: function(data) {
+      var cRoom = data;
       var targetUser = cRoom.user;
       var targetFullname = cRoom.escapedFullname;
       $miniChat.find(".fullname").html(targetFullname);
@@ -1487,11 +1467,9 @@ function showMiniChatPopup(room, type) {
         });
         $miniChat.find(".message-input").keyup(function(event) {
           var msg = jqchat(this).val();
-//        console.log("keyup : "+event.which + ";"+msg.length);
           var isSystemMessage = (msg.indexOf("/")===0 && msg.length>1) ;
 
           if ( event.which === 13 && msg.length>=1) {
-            //console.log("sendMsg=>"+username + " : " + room + " : "+msg);
             if(!msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey))
             {
               return false;

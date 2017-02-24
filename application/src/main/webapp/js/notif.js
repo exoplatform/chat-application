@@ -731,7 +731,7 @@ ChatNotification.prototype.sendFullMessage = function(user, token, targetUser, r
 
 // Send message to server
   var thiss = this;
-  snack.request({
+  jqchat.ajax({
     url: thiss.jzChatSend,
     data: {
       "user": user,
@@ -796,7 +796,7 @@ ChatNotification.prototype.getChatMessages = function(room, callback) {
   if (room === "") return;
 
   if (this.username !== this.ANONIM_USER) {
-    snack.request({
+    jqchat.ajax({
       url: this.jzChatRead,
       async: false,
       data: {
@@ -805,17 +805,14 @@ ChatNotification.prototype.getChatMessages = function(room, callback) {
       },
       headers: {
         'Authorization': 'Bearer ' + this.token
-      }
-    }, function (err, res){
-      if (err) {
-        return;
-      }
+      },
+      success: function(data) {
+        data = data.split("\t").join(" ");
+        data = JSON.parse(data);
 
-      res = res.split("\t").join(" ");
-      var data = snack.parseJSON(res);
-
-      if (typeof callback === "function") {
-        callback(data.messages);
+        if (typeof callback === "function") {
+          callback(data.messages);
+        }
       }
     })
   }
