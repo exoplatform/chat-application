@@ -119,11 +119,11 @@ public class RealTimeMessageBean {
     message.put("event", event.toString());
     message.put("room", room);
     message.put("sender", sender);
-    Date ts = timestamp;
-    if(ts == null) {
-      ts = new Date();
+    if(timestamp == null) {
+      message.put("ts", System.currentTimeMillis());
+    } else {
+      message.put("ts", timestamp.getTime());
     }
-    message.put("ts", ts.getTime());
     if(data != null) {
       message.put("data", new JSONObject(data));
     }

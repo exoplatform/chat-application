@@ -672,13 +672,14 @@ public class ChatServer
         LOG.info("Cannot decode message: " + teamName);
       }
       teamName = HTMLSanitizer.sanitize(teamName);
+
       if("".equals(teamName)) return Response.content(400, "Data is invalid!");
 
       // Room creation
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user, dbName);
-        userService.addTeamRoom(user, room, dbName);
+        userService.addTeamUsers(room, Arrays.asList(users.split(",")), dbName);
       }
       else
       {
@@ -688,94 +689,72 @@ public class ChatServer
           return Response.notFound("Petit malin !");
         }
 
-        chatService.setRoomName(room, teamName, dbName);
-      }
+        if (users != null && !users.isEmpty()) {
+          List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
-      if (users != null && !users.isEmpty()) {
-        List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+          List<String> usersNew = Arrays.asList(users.split(","));
+          List<String> usersToAdd = new JSONArray();
+          usersToAdd.addAll(usersNew);
+          List<String> usersToRemove = new JSONArray();
 
-        List<String> usersNew = Arrays.asList(users.split(","));
-        List<String> usersToAdd = new JSONArray();
-        usersToAdd.addAll(usersNew);
-        List<String> usersToRemove = new JSONArray();
+          JSONObject data = new JSONObject();
+          data.put("title", teamName);
+          data.put("members", usersToAdd);
+          RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.ROOM_UPDATED,
+              room,
+              user,
+              null,
+              data);
 
-        JSONObject data = new JSONObject();
-        data.put("title", teamName);
-        RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
-            RealTimeMessageBean.EventType.ROOM_UPDATED,
-            room,
-            user,
-            null,
-            data);
-
-        for (String u: existingUsers) {
-          if (usersNew.contains(u)) {
-            usersToAdd.remove(u);
-            realTimeMessageService.sendMessage(updatedRoomMessage, u);
-          } else {
-            usersToRemove.add(u);
-          }
-        }
-
-        if (usersToRemove.size() > 0) {
-          userService.removeTeamUsers(room, usersToRemove, dbName);
-
-          // Send a websocket message of type 'room-member-left' to all the room members
-          data = new JSONObject();
-          data.put("members", usersToRemove);
-          RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
-                  RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
-                  room,
-                  user,
-                  new Date(),
-                  data);
-          realTimeMessageService.sendMessage(leaveRoomMessage, existingUsers);
-
-          StringBuilder sbUsers = new StringBuilder();
-          boolean first = true;
-          for (String usert:usersToRemove)
-          {
-            if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(usert, dbName));
-            first = false;
-            notificationService.setNotificationsAsRead(usert, "chat", "room", room, dbName);
+          for (String u: existingUsers) {
+            if (usersNew.contains(u)) {
+              usersToAdd.remove(u);
+              realTimeMessageService.sendMessage(updatedRoomMessage, u);
+            } else {
+              usersToRemove.add(u);
+            }
           }
 
-          // Send members removal message in the room
-          String removeTeamUserOptions
-                  = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
-        }
+          if (usersToRemove.size() > 0) {
+            userService.removeTeamUsers(room, usersToRemove, dbName);
 
-        if (usersToAdd.size() > 0) {
-          userService.addTeamUsers(room, usersToAdd, dbName);
+            StringBuilder sbUsers = new StringBuilder();
+            boolean first = true;
+            for (String u: usersToRemove)
+            {
+              if (!first) sbUsers.append("; ");
+              sbUsers.append(userService.getUserFullName(u, dbName));
+              first = false;
+              notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
+            }
 
-          // Send a websocket message of type 'room-member-left' to all the room members
-          data = userService.getRoom(user, room, dbName).toJSONObject();
-          data.put("members", String.join(",", usersToRemove));
-          RealTimeMessageBean joinRoomMessage = new RealTimeMessageBean(
-                  RealTimeMessageBean.EventType.ROOM_MEMBER_JOIN,
-                  room,
-                  user,
-                  new Date(),
-                  data);
-          realTimeMessageService.sendMessage(joinRoomMessage, usersToAdd);
-
-          StringBuilder sbUsers = new StringBuilder();
-          boolean first = true;
-          for (String usert:usersToAdd)
-          {
-            if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(usert, dbName));
-            first = false;
+            // Send members removal message in the room
+            String removeTeamUserOptions
+                = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
+                "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+            this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
           }
-          String addTeamUserOptions
-                  = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-          this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
-        }
 
+          chatService.setRoomName(room, teamName, dbName);
+
+          if (usersToAdd.size() > 0) {
+            userService.addTeamUsers(room, usersToAdd, dbName);
+
+            StringBuilder sbUsers = new StringBuilder();
+            boolean first = true;
+            for (String usert: usersToAdd)
+            {
+              if (!first) sbUsers.append("; ");
+              sbUsers.append(userService.getUserFullName(usert, dbName));
+              first = false;
+            }
+            String addTeamUserOptions
+                = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
+                "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+            this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
+          }
+        }
       }
 
       jsonObject.put("name", teamName);

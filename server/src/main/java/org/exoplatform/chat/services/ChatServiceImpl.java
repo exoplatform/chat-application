@@ -21,6 +21,8 @@ package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -235,6 +237,22 @@ public class ChatServiceImpl implements ChatService
 
   public void setRoomName(String room, String name, String dbName) {
     chatStorage.setRoomName(room, name, dbName);
+
+    List<String> users = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+    JSONObject data = new JSONObject();
+    data.put("title", name);
+    JSONArray array = new JSONArray();
+    array.addAll(users);
+    data.put("members", array);
+    RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+        RealTimeMessageBean.EventType.ROOM_UPDATED,
+        room,
+        null,
+        null,
+        data);
+    for (String u: users) {
+      realTimeMessageService.sendMessage(updatedRoomMessage, u);
+    }
   }
 
   public String getRoom(List<String> users, String dbName)

@@ -151,6 +151,16 @@ public class UserServiceImpl implements UserService {
 
   public void addTeamRoom(String user, String teamRoomId, String dbName) {
     userStorage.addTeamRoom(user, teamRoomId, dbName);
+
+    // Send a websocket message of type 'room-member-joined' to the new room member
+    JSONObject data = getRoom(user, teamRoomId, dbName).toJSONObject();
+    RealTimeMessageBean joinRoomMessage = new RealTimeMessageBean(
+        RealTimeMessageBean.EventType.ROOM_MEMBER_JOIN,
+        teamRoomId,
+        user,
+        new Date(),
+        data);
+    realTimeMessageService.sendMessage(joinRoomMessage, user);
   }
 
   public void addTeamUsers(String teamRoomId, List<String> users, String dbName) {
@@ -161,6 +171,15 @@ public class UserServiceImpl implements UserService {
 
   public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
     userStorage.removeTeamUsers(teamRoomId, users, dbName);
+
+    // Send a websocket message of type 'room-member-left' to all the room members
+    RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
+        RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
+        teamRoomId,
+        null,
+        new Date(),
+        null);
+    realTimeMessageService.sendMessage(leaveRoomMessage, users);
   }
 
   private RoomBean getTeam(String teamId, String dbName) {

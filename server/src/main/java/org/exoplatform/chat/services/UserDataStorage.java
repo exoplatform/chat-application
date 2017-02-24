@@ -76,8 +76,6 @@ public interface UserDataStorage {
 
   void addTeamRoom(String user, String teamRoomId, String dbName);
 
-  void addTeamUsers(String teamRoomId, List<String> users, String dbName);
-
   void removeTeamUsers(String teamRoomId, List<String> users, String dbName);
 
   List<RoomBean> getTeams(String user, String dbName);

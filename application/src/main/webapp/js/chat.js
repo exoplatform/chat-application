@@ -134,21 +134,18 @@ var chatApplication = new ChatApplication();
             user : room.user
           });
           chatApplication.renderRooms();
-
         } else if (message.event == 'room-member-left') {
+          chatApplication.rooms({room: message.room}).remove();
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-updated') {
+          var room = chatApplication.rooms({room: message.room});
+          room.update({escapedFullname: message.data.title});
+          chatApplication.renderRooms();
+
           var leftMembers = message.data.members;
-
-          // check if the current user is removed from a room
-          var currentUserLeft = leftMembers.indexOf(chatApplication.username) >= 0;
-          if (currentUserLeft) {
-            // if the current user is removed from a room, remove the room from the list and re-render the list
-            chatApplication.rooms({room: message.room}).remove();
-            chatApplication.renderRooms();
-          }
-
           // check if one or more users of the current selected room (if any) have been removed from it, and
           // update the room members list in such a case
-          if(!currentUserLeft && chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
+          if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
             var usersDeleted = false;
             chatApplication.chatRoom.users.forEach(function (user, idx) {
               if (leftMembers.indexOf(user.name) >= 0) {
@@ -160,6 +157,14 @@ var chatApplication = new ChatApplication();
               chatApplication.renderRoomUsers(jqchat("#room-users-list"));
             }
           }
+        } else if (message.event == 'room-deleted') {
+          var room = chatApplication.rooms({room: message.room});
+          room.remove();
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-settings-updated') {
+          var settings = message.data.settings;
+          var val = settings.notifConditionType + ':' + settings.notifCondition;
+          desktopNotification.setRoomPreferredNotificationTrigger(message.room, val);//set into the memory
         } else if (message.event == 'message-read') {
           var room = chatApplication.rooms({room: message.room});
           room.update({unreadTotal: 0});
@@ -184,18 +189,6 @@ var chatApplication = new ChatApplication();
           var room = chatApplication.rooms({user: message.room});
           room.update({isFavorite: false});
           chatApplication.renderRooms();
-        } else if (message.event == 'room-updated') {
-          var room = chatApplication.rooms({room: message.room});
-          room.update({escapedFullname: message.data.title});
-          chatApplication.renderRooms();
-        } else if (message.event == 'room-deleted') {
-          var room = chatApplication.rooms({room: message.room});
-          room.remove();
-          chatApplication.renderRooms();
-        } else if (message.event == 'room-settings-updated') {
-          var settings = message.data.settings;
-          var val = settings.notifConditionType + ':' + settings.notifCondition;
-          desktopNotification.setRoomPreferredNotificationTrigger(message.room, val);//set into the memory
         }
       });
     });
@@ -1376,7 +1369,6 @@ var handleRoomNotifLayout = function() {
 
       $uitext.val("");
       $uitext.attr("data-id", "---");
-
     });
 
     $(".text-modal-close").on("click", function() {
@@ -1400,7 +1392,6 @@ var handleRoomNotifLayout = function() {
         // chatApplication.chatRoom.refreshChat(true);
         jqchat("#msg").focus();
       });
-
     });
 
     $('#edit-modal-area').keydown(function(event) {

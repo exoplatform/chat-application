@@ -462,13 +462,6 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void addTeamUsers(String teamRoomId, List<String> users, String dbName) {
-    for (String user:users) {
-      this.addTeamRoom(user, teamRoomId, dbName);
-    }
-  }
-
-  @Override
   public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     for (String user:users)
