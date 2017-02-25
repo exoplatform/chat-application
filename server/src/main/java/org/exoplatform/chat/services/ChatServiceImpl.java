@@ -60,7 +60,6 @@ public class ChatServiceImpl implements ChatService
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
     if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
     {
-      String content = ((message.length()>30)?message.substring(0,29)+"...":message);
       String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
 
       List<String> usersToBeNotified = new ArrayList<String>();
@@ -95,6 +94,7 @@ public class ChatServiceImpl implements ChatService
               data);
       realTimeMessageService.sendMessage(messageBean, sender);
 
+      String content = ((message.length()>30)?message.substring(0,29)+"...":message);
       for (String receiver: usersToBeNotified) {
         notificationService.addNotification(receiver, sender, "chat", "room", room, content,
             intranetPage + "?room=" + room, options, dbName);

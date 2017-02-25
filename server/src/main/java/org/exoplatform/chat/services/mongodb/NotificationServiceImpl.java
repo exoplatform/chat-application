@@ -60,16 +60,15 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     }
   }
 
-  public void addNotification(String user, String from, String type, String category, String categoryId,
+  public void addNotification(String receiver, String sender, String type, String category, String categoryId,
                               String content, String link, String dbName) {
-    addNotification(user, from, type, category, categoryId, content, link, null, dbName);
+    addNotification(receiver, sender, type, category, categoryId, content, link, null, dbName);
   }
 
-  public void addNotification(String user, String from, String type, String category, String categoryId,
+  public void addNotification(String receiver, String sender, String type, String category, String categoryId,
                               String content, String link, String options, String dbName) {
     // Do not set notification for some message type to avoid duplication with manual meeting (type-meeting-start, type-meeting-stop)
-    if (options != null && (options.contains("call-on") || options.contains("call-off") || options.contains
-            ("call-proceed"))) {
+    if (options != null && (options.contains("call-on") || options.contains("call-off") || options.contains("call-proceed"))) {
       return;
     }
 
@@ -86,8 +85,8 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     content = content.replaceAll("\t", "  ");
 
     doc.put("timestamp", System.currentTimeMillis());
-    doc.put("user", user);
-    doc.put("from", from);
+    doc.put("user", receiver);
+    doc.put("from", sender);
     doc.put("type", type);
     doc.put("category", category);
     doc.put("categoryId", categoryId);

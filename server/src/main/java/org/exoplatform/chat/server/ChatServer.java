@@ -803,34 +803,40 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
-    boolean detailed = ("true".equals(withDetails));
+
+    boolean detailed = Boolean.valueOf(withDetails);
     int totalUnread = 0;
     List<NotificationBean> notifications = null;
     if (!detailed)
     {
       // GETTING TOTAL NOTIFICATION WITHOUT DETAILS
       totalUnread = notificationService.getUnreadNotificationsTotal(user, dbName);
-      if (userService.isAdmin(user, dbName))
-      {
+      if (userService.isAdmin(user, dbName)) {
         totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER, dbName);
       }
-    }
-    else {
+    } else {
       // GETTING ALL NOTIFICATION DETAILS
       notifications = notificationService.getUnreadNotifications(user, userService, dbName);
       totalUnread = notifications.size();
     }
 
-    String data = "{\"total\": \""+totalUnread+"\"";
-    if (detailed && notifications!=null)
-    {
-      data += ","+NotificationBean.notificationstoJSON(notifications);
-    }
-    data += "}";
-    if (event!=null && event.equals("1"))
-    {
+
+    String data;
+    if (event!=null && event.equals("1")) {
       data = "id: "+totalUnread+"\n";
       data += "data: {\"total\": "+totalUnread+"}\n\n";
+    } else {
+      JSONObject json = new JSONObject();
+      json.put("total", totalUnread);
+      if (detailed && notifications != null) {
+        JSONArray notifies = new JSONArray();
+        for (NotificationBean o: notifications) {
+          notifies.add(o.toJSONObject());
+        }
+
+        json.put("notifications", notifies);
+      }
+      data = json.toJSONString();
     }
 
     return Response.ok(data).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");

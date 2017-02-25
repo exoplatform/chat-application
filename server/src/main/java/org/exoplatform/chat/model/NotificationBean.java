@@ -22,10 +22,9 @@ package org.exoplatform.chat.model;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class NotificationBean {
   private String user;
@@ -138,56 +137,35 @@ public class NotificationBean {
     this.fromFullName = fromFullName;
   }
 
-  public String toJSON() {
-    JSONObject obj = new org.json.JSONObject();
-    try {
-      obj.put("user", this.getUser());
-      obj.put("type", this.getType());
-      obj.put("from", this.getFrom());
-      obj.put("fromFullName", this.getFromFullName());
-      obj.put("category", this.getCategory());
-      obj.put("categoryId", this.getCategoryId());
-      obj.put("content", this.getContent().replaceAll("\n", "<br/>"));
-      obj.put("link", this.getLink());
+  public JSONObject toJSONObject() {
+    JSONObject obj = new JSONObject();
+    obj.put("user", this.getUser());
+    obj.put("type", this.getType());
+    obj.put("from", this.getFrom());
+    obj.put("fromFullName", this.getFromFullName());
+    obj.put("category", this.getCategory());
+    obj.put("categoryId", this.getCategoryId());
+    obj.put("content", this.getContent().replaceAll("\n", "<br/>"));
+    obj.put("link", this.getLink());
 
-      String options = this.getOptions();
-      if (StringUtils.isNotEmpty(this.getOptions())) {
-        if (options.startsWith("{")) {
-          JSONObject optionsJson = new JSONObject(options);
-          obj.put("options", optionsJson);
-        } else {
-          obj.put("options", options);
+    String options = this.getOptions();
+    if (StringUtils.isNotEmpty(this.getOptions())) {
+      if (options.startsWith("{")) {
+        JSONObject optionsJson = null;
+        try {
+          optionsJson = (JSONObject) new JSONParser().parse(options);
+        } catch (ParseException e) {
         }
+        obj.put("options", optionsJson);
       } else {
-        obj.put("options", StringUtils.EMPTY);
+        obj.put("options", options);
       }
-      obj.put("roomDisplayName", StringEscapeUtils.escapeHtml4(this.getRoomDisplayName()));
-      obj.put("roomType", this.getRoomType());
-      obj.put("timestamp", this.getTimestamp());
-
-    } catch (JSONException e) {
-      return obj.toString();
+    } else {
+      obj.put("options", StringUtils.EMPTY);
     }
-    return obj.toString();
-  }
-
-  public static String notificationstoJSON(List<NotificationBean> notificationBeans)
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append("\"notifications\": [");
-    boolean first=true;
-    for (NotificationBean notificationBean:notificationBeans) {
-      if (!first) {
-        sb.append(",");
-      } else {
-        first=false;
-      }
-
-      sb.append(notificationBean.toJSON());
-
-    }
-    sb.append("]");
-
-    return sb.toString();
+    obj.put("roomDisplayName", StringEscapeUtils.escapeHtml4(this.getRoomDisplayName()));
+    obj.put("roomType", this.getRoomType());
+    obj.put("timestamp", this.getTimestamp());
+    return obj;
   }
 }

@@ -27,9 +27,9 @@ public interface NotificationService
 {
   public static final String M_NOTIFICATIONS = "notifications";
 
-  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link, String dbName);
+  public void addNotification(String receiver, String sender, String type, String category, String categoryId, String content, String link, String dbName);
 
-  public void addNotification(String user, String from, String type, String category, String categoryId, String content, String link, String options, String dbName);
+  public void addNotification(String receiver, String sender, String type, String category, String categoryId, String content, String link, String options, String dbName);
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName);
 
