@@ -572,7 +572,7 @@ ChatNotification.prototype.setStatus = function(status, callback) {
  * @param status : the new status : available, donotdisturb, invisible, away or offline
  */
 ChatNotification.prototype.changeStatusChat = function(status) {
-  this.profileStatus = status;
+  chatNotification.profileStatus = status;
   if (typeof chatApplication === "object") {
     chatApplication.profileStatus = status;
   }
