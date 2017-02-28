@@ -450,10 +450,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public RoomBean createTeamRoom(String team, String user, String dbName) {
-    return null;
-  }
-
   public String getExternalRoom(String identifier, String dbName) {
     String room = ChatUtils.getExternalRoomId(identifier);
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);

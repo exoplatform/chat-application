@@ -107,9 +107,9 @@ ChatNotification.prototype.initUserProfile = function(callback) {
         callback(this.username, fullname);
       }
 
-      this.notifEventInt = window.clearInterval(this.notifEventInt);
-      this.notifEventInt = setInterval(jqchat.proxy(this.refreshNotif, this), this.chatIntervalNotif);
-      this.refreshNotif();
+      // this.notifEventInt = window.clearInterval(this.notifEventInt);
+      // this.notifEventInt = setInterval(jqchat.proxy(this.refreshNotif, this), this.chatIntervalNotif);
+      // this.refreshNotif();
 
       this.statusEventInt = window.clearInterval(this.statusEventInt);
       this.refreshStatusChat();
@@ -138,10 +138,14 @@ ChatNotification.prototype.refreshNotif = function() {
         var nbrOfFullScreenChat = localStorage.getItem('nbrOfFullScreenChat');
         nbrOfFullScreenChat = JSON.parse(nbrOfFullScreenChat);
 
+        // Do nothing if:
+        // the current page is not the Chat application page
+        // and there is a least one Chat page opening in other tab.
         if(typeof chatApplication === "undefined" && nbrOfFullScreenChat!=null && nbrOfFullScreenChat > 0) {
           return;
         }
 
+        // Notify via desktop notification
         var notifyMe = false;
         data.notifications.sort(function(el1, el2) {
           return el2.timestamp - el1.timestamp;
@@ -159,7 +163,8 @@ ChatNotification.prototype.refreshNotif = function() {
         }
 
         var total = Math.abs(data.notifications.length);
-        if (total > this.oldNotifTotal && ( this.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+        if (total > this.oldNotifTotal &&
+          ( this.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
           this.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(lastMsg)) {
           notifyMe = true;
         }
@@ -186,7 +191,7 @@ ChatNotification.prototype.refreshNotif = function() {
             this.playNotifSound();
           }
           if(desktopNotification.canShowDesktopNotif()){
-            this.showDesktopNotif(this.chatPage,total,lastMsg);
+            this.showDesktopNotif(this.chatPage, lastMsg);
           }
         }
 
@@ -235,10 +240,8 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
             if (jqchat.inArray(notif.categoryId, categoryIdList) === -1) {
               var content = notif.content;
               var messageType = notif.options.type;
-              var evenClass = (categoryIdList.length % 2) ? "even": "";
 
-
-              html += '<div class="chat-notification-detail block-item ' + evenClass + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
+              html += '<div class="chat-notification-detail block-item ' + (categoryIdList.length % 2) ? "even": "" + '" data-link="' + notif.link + '" data-id="' + notif.categoryId + '" >';
               html +=   '<span class="avatarXSmall">';
               html +=     '<img onerror="this.src=\'/chat/img/user-default.jpg\'" src=\'/rest/v1/social/users/'+notif.from+'/avatar\' class="avatar-image">';
               html +=   '</span>';
@@ -399,7 +402,7 @@ ChatNotification.prototype.playNotifSound = function() {
 /**
  * Show desktop Notif
  */
-ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
+ChatNotification.prototype.showDesktopNotif = function(path, msg) {
   var displayMsg = desktopNotification.highlightMessage(msg);
   if(Notification.permission !== "granted")
     Notification.requestPermission();
@@ -444,11 +447,11 @@ ChatNotification.prototype.showDesktopNotif = function(path, nbrNotif, msg) {
       window.focus();
       notification.close();
       var displayTitle ="";
-      if(!msg.roomDisplayName) {
+      if (msg.roomDisplayName) {
+        displayTitle = msg.roomDisplayName;
+      } else {
         displayTitle = msg.fromFullName;
-      }
-      else  {
-       displayTitle = msg.roomDisplayName;
+
       }
 
       var targetUser;
@@ -893,8 +896,34 @@ var chatNotification = new ChatNotification();
             // update current user status
             chatNotification.changeStatusChat(message.data.status);
           }
-        }
+        } else if (message.event == "message-sent") {
+          if (typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) {
 
+            var msg = message.data.msg;
+            // Check if the message has been notified by other tab
+            if (localStorage.getItem('lastNotify-' + message.room) === msg.id) {
+              return;
+            }
+            localStorage.setItem('lastNotify-' + message.room, msg.id);
+
+            var notify = {
+              options: msg.options,
+              roomDisplayName: msg.fullname,
+              content: msg.message
+            };
+
+            if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+              chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
+
+              if(desktopNotification.canPlaySound()){
+                chatNotification.playNotifSound();
+              }
+              if(desktopNotification.canShowDesktopNotif()){
+                chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
+              }
+            }
+          }
+        }
       });
     });
 
