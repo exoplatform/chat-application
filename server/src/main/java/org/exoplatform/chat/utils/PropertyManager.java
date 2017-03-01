@@ -104,6 +104,7 @@ public class PropertyManager {
   public static final String PROPERTY_MAIL_SOCKET_FACTORY_CLASS   = "email.smtp.socketFactory.class";
   public static final String PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK= "email.smtp.socketFactory.fallback";
   public static final String PROPERTY_MAIL_SENDER                 = "email.smtp.from";
+  public static final String PROPERTY_MAIL_HIDE_RECIPIENTS        = "email.smtp.hide.recipients.enable";
 
   public static final String PROPERTY_PLF_USER_STATUS_UPDATE_URL = "plfUsrStatUpdUrl";
 
@@ -169,6 +170,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_CLASS, "");
       overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK, "false");
       overridePropertyIfNotSet(PROPERTY_MAIL_SENDER, "chat@localhost.com");
+      overridePropertyIfNotSet(PROPERTY_MAIL_HIDE_RECIPIENTS, "false");
       
       overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
 
