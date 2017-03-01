@@ -1438,6 +1438,7 @@ function ChatApplication() {
   this.isLoaded = false;
   this.isPublic = false;
   this.publicModeEnabled = false;
+  this.portalURI = "";
   this.dbName = "";
   this.chatFullscreen = "false";
 
@@ -1810,7 +1811,7 @@ ChatApplication.prototype.resize = function() {
  */
 ChatApplication.prototype.initChat = function() {
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
