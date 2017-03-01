@@ -23,19 +23,23 @@ import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
+import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Named("notificationService")
 @ApplicationScoped
 public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
 {
+  @Inject
+  private RealTimeMessageService realTimeMessageService;
 
   private DB db(String dbName)
   {
@@ -103,26 +107,17 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     doc.put("isRead", false);
 
     coll.insert(doc);
+
+    sendNotification(receiver, dbName);
   }
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName)
   {
     DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    if (categoryId!=null) query.put("categoryId", categoryId);
-    if (category!=null) query.put("category", category);
-    if (type!=null) query.put("type", type);
-//    query.put("isRead", false);
+    BasicDBObject query = buildQuery(user, type, category, categoryId);
     coll.remove(query);
-//    DBCursor cursor = coll.find(query);
-//    while (cursor.hasNext())
-//    {
-//      DBObject doc = cursor.next();
-//      doc.put("isRead", true);
-//      coll.save(doc, WriteConcern.SAFE);
-//    }
 
+    sendNotification(user, dbName);
   }
 
   @Override
@@ -134,15 +129,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId, String dbName) {
     List<NotificationBean> notifications = new ArrayList<NotificationBean>();
 
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-
-    query.put("user", user);
-//    query.put("isRead", false);
-    if (type!=null) query.put("type", type);
-    if (category!=null) query.put("category", category);
-    if (categoryId!=null) query.put("categoryId", categoryId);
-    DBCursor cursor = coll.find(query);
+    DBCursor cursor = find(user, type, category, categoryId, dbName);
 
     while (cursor.hasNext())
     {
@@ -183,18 +170,8 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName)
   {
-    int total = -1;
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-
-    query.put("user", user);
-//    query.put("isRead", false);
-    if (type!=null) query.put("type", type);
-    if (category!=null) query.put("category", category);
-    if (categoryId!=null) query.put("categoryId", categoryId);
-    DBCursor cursor = coll.find(query);
-    total = cursor.size();
-
+    DBCursor cursor = find(user, type, category, categoryId, dbName);
+    int total = cursor.size();
     return total;
   }
 
@@ -210,10 +187,37 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   {
     DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
-//    query.put("isRead", false);
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
+  private DBCursor find(String user, String type, String category, String categoryId, String dbName) {
+    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    BasicDBObject query = buildQuery(user, type, category, categoryId);
+    return coll.find(query);
+  }
 
+  private BasicDBObject buildQuery(String user, String type, String category, String categoryId) {
+    BasicDBObject query = new BasicDBObject();
+
+    query.put("user", user);
+    if (type != null) query.put("type", type);
+    if (category != null) query.put("category", category);
+    if (categoryId != null) query.put("categoryId", categoryId);
+    return query;
+  }
+
+  private void sendNotification(String receiver, String dbName) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver, dbName));
+
+    // Deliver the saved message to sender's subscribed channel itself.
+    RealTimeMessageBean messageBean = new RealTimeMessageBean(
+        RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
+        null,
+        receiver,
+        null,
+        data);
+    realTimeMessageService.sendMessage(messageBean, receiver);
+  }
 }

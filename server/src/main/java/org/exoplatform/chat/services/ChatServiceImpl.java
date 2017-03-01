@@ -82,7 +82,6 @@ public class ChatServiceImpl implements ChatService
       UserBean user = userService.getUser(sender, dbName);
       msg.setFullName(user.getFullname());
 
-
       // Deliver the saved message to sender's subscribed channel itself.
       Map<String, Object> data = new HashMap<>();
       data.put("msg", msg.toJSONObject());

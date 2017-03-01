@@ -23,7 +23,8 @@ public class RealTimeMessageBean {
     ROOM_DELETED("room-deleted"),
     FAVOTITE_ADDED("favorite-added"),
     FAVORITE_REMOVED("favorite-removed"),
-    ROOM_SETTINGS_UPDATED("room-settings-updated");
+    ROOM_SETTINGS_UPDATED("room-settings-updated"),
+    NOTIFICATION_COUNT_UPDATED("notification-count-updated");
 
     private final String eventType;
 

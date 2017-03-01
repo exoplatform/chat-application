@@ -1248,6 +1248,7 @@ ChatRoom.prototype.updateUnreadMessages = function() {
     }
   });
 };
+
 var loadSetting = function(callback,overrideSettings) {
   var $ = jqchat;
   var $chatApplication = $("#chat-application").length ? $("#chat-application") : $("#chat-status");
@@ -1270,20 +1271,23 @@ var loadSetting = function(callback,overrideSettings) {
     success: function(operation){
       var settings = null;
       var digest = false;
-      if(operation.done) {
-         settings = operation.userDesktopNotificationSettings;
-         if(!settings.preferredNotification) {//set to the default values for the Notifications channels
-           settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
-           settings.preferredNotificationTrigger = [];
-           digest = true;
-         }
+      if (operation.done) {
+        settings = operation.userDesktopNotificationSettings;
+        if (!settings.preferredNotification) {//set to the default values for the Notifications channels
+          settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
+          settings.preferredNotificationTrigger = [];
+          digest = true;
+        }
       } else { //the very first time
-        if(JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
-          settings = {preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP] , preferredNotificationTrigger: []};
+        if (JSON.stringify(operation.userDesktopNotificationSettings) === "{}") {//the very first time using the settings - so set to the default values
+          settings = {
+            preferredNotification: [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP],
+            preferredNotificationTrigger: []
+          };
           digest = true;
         }
       }
-      if(digest){
+      if (digest) {
         settings.preferredNotification = JSON.stringify(settings.preferredNotification);
         settings.preferredNotificationTrigger = JSON.stringify(settings.preferredNotificationTrigger);
       }
