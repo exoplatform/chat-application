@@ -15,6 +15,8 @@ import org.exoplatform.chat.services.UserService;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.exoplatform.chat.services.CometdMessageServiceImpl.COMETD_CHANNEL_NAME;
 
@@ -26,6 +28,8 @@ import static org.exoplatform.chat.services.CometdMessageServiceImpl.COMETD_CHAN
  */
 @Service
 public class CometdService {
+
+  private static final Logger LOG = Logger.getLogger(CometdService.class.getName());
 
   UserService userService;
   NotificationService notificationService;
@@ -45,7 +49,7 @@ public class CometdService {
    */
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
-    System.out.println(">>>>>>>>> message received on " + COMETD_CHANNEL_NAME + " : " + message.getJSON());
+    LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[]{COMETD_CHANNEL_NAME, message.getJSON()});
 
     try {
       JSONParser jsonParser = new JSONParser();
@@ -127,7 +131,7 @@ public class CometdService {
         chatService.deleteTeamRoom(room, sender, dbName);
       }
     } catch (ParseException e) {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Error while processing Cometd message : " + e.getMessage(), e);
     }
   }
 
