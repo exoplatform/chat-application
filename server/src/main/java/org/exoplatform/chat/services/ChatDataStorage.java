@@ -66,8 +66,6 @@ public interface ChatDataStorage
 
   public String getTeamRoom(String team, String user, String dbName);
 
-  public RoomBean createTeamRoom(String team, String user, String dbName);
-
   public String getExternalRoom(String identifier, String dbName);
 
   public String getTeamCreator(String room, String dbName);
