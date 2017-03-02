@@ -1146,12 +1146,13 @@ public class ChatServer
     }
     return true;
   }
+
+  /**
+   * Convert hide recipients property to boolean
+   * @param hideRecipients hidden recipients property
+   * @return true is the property is set to true in the conf file else false
+   */
   protected boolean isHideRecipientsEnable(String hideRecipients) {
-    try {
-      return Boolean.parseBoolean(hideRecipients); // Successfully converted String to boolean
-    } catch(Exception e) {
-      LOG.info("Settings Error, Please verify the relevance of «email.smtp.hide.recipients.enable», it accept only true/false values");
-    }
-    return false;
+      return Boolean.parseBoolean(hideRecipients);
   }
 }
