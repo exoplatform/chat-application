@@ -37,20 +37,21 @@ public class CometdService {
     realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
   }
 
+  /**
+   * This method receives all the websocket messages sent to the channel COMETD_CHANNEL_NAME
+   * and process them accordingly to their type
+   * @param remoteSession
+   * @param message
+   */
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     System.out.println(">>>>>>>>> message received on " + COMETD_CHANNEL_NAME + " : " + message.getJSON());
-
-    //TODO need to verify authorization of the sender.
 
     try {
       JSONParser jsonParser = new JSONParser();
       JSONObject jsonMessage = (JSONObject) jsonParser.parse((String) message.getData());
 
       RealTimeMessageBean.EventType eventType = RealTimeMessageBean.EventType.get((String) jsonMessage.get("event"));
-
-      //TODO read each message data and send it each room member. It requires to use 'deliver' instead of 'publish'
-      //to avoid broadcasting the message to all connected clients (even the ones not members of the target room)
 
       ChatService chatService = GuiceManager.getInstance().getInstance(ChatService.class);
 
@@ -83,7 +84,6 @@ public class CometdService {
         RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.MESSAGE_READ, room, sender, new Date(), null);
         realTimeMessageService.sendMessage(realTimeMessageBean, sender);
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_SENT)) {
-        // TODO store message in db
         String room = (String) jsonMessage.get("room");
         String isSystem = jsonMessage.get("isSystem").toString();
         String dbName = (String) jsonMessage.get("dbName");
