@@ -26,9 +26,9 @@ function ChatNotification() {
   this.cometdToken = "";
 
   this.notifEventURL = "";
-  this.notifEventInt = "";
+
+  // TODO This can be removed, also from configuration and other relevant places.
   this.chatIntervalNotif = "";
-  this.statusEventInt = "";
   this.dbName = "";
 
   this.oldNotifTotal = 0;
@@ -101,14 +101,10 @@ ChatNotification.prototype.initUserProfile = function() {
     success: function(data){
       this.token = data.token;
 
-      //
-      // this.notifEventInt = window.clearInterval(this.notifEventInt);
-      // this.notifEventInt = setInterval(jqchat.proxy(this.refreshNotif, this), this.chatIntervalNotif);
       if(typeof chatApplication === "undefined") {
         this.refreshNotif();
       }
 
-      this.statusEventInt = window.clearInterval(this.statusEventInt);
       this.refreshStatusChat();
     },
     error: function () {
@@ -855,28 +851,33 @@ var chatNotification = new ChatNotification();
           if (typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) {
 
             var msg = message.data.msg;
-            // Check if the message has been notified by other tab
-            if (localStorage.getItem('lastNotify-' + message.room) === msg.id) {
-              return;
-            }
-            localStorage.setItem('lastNotify-' + message.room, msg.id);
 
-            var notify = {
-              options: msg.options,
-              roomDisplayName: msg.fullname,
-              content: msg.message
-            };
-
-            if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
-              chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
-
-              if(desktopNotification.canPlaySound()){
-                chatNotification.playNotifSound();
+            // A tip that helps making a tiny delay in execution of block code in the function,
+            // to avoid concurrency issue in condition checking.
+            setTimeout(function() {
+              // Check if the message has been notified by other tab
+              if (localStorage.getItem('lastNotify-' + message.room) === msg.id) {
+                return;
               }
-              if(desktopNotification.canShowDesktopNotif()){
-                chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
+              localStorage.setItem('lastNotify-' + message.room, msg.id);
+
+              var notify = {
+                options: msg.options,
+                roomDisplayName: msg.fullname,
+                content: msg.message
+              };
+
+              if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+                chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
+
+                if(desktopNotification.canPlaySound()){
+                  chatNotification.playNotifSound();
+                }
+                if(desktopNotification.canShowDesktopNotif()){
+                  chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
+                }
               }
-            }
+            });
           }
         } else if (message.event == "notification-count-updated") {
           // Check if the current page is not Chat applicatino page
