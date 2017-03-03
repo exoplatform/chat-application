@@ -12,13 +12,13 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, isPublic, portalURI, dbName) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, messagesContainer, isPublic, portalURI, dbName) {
   this.id = "";
   this.messages = [];
+  this.messagesContainer = messagesContainer;
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
   this.jzChatGetRoom = jzChatGetRoom;
-  this.jzChatUpdateUnreadMessages = jzChatUpdateUnreadMessages;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
   this.chatIntervalChat = chatIntervalChat;
@@ -35,6 +35,7 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessa
   this.ANONIM_USER = "__anonim_";
 
   this.onRefreshCB;
+  this.onShowMessagesCB;
 
   this.highlight = "";
 
@@ -51,8 +52,9 @@ ChatRoom.prototype.registerPlugin = function(plugin) {
     }
 }
 
-ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, isAdmin, dbName, callback) {
+ChatRoom.prototype.init = function(username, fullname, token, targetUser, targetFullname, isAdmin, dbName, callback) {
   this.username = username;
+  this.fullname = fullname;
   this.token = token;
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
@@ -86,7 +88,7 @@ ChatRoom.prototype.init = function(username, token, targetUser, targetFullname, 
       jzStoreParam("lastUpdatedTS"+thiss.username, "0");
       thiss.refreshChat(true, function() {
         // always scroll to the last message when loading a chat room
-        var $chats = jqchat("#chats");
+        var $chats = thiss.messagesContainer;
         $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
         $chats.off("click.quote");
@@ -230,6 +232,7 @@ ChatRoom.prototype.setMiniChatDiv = function(elt) {
 };
 
 ChatRoom.prototype.onShowMessages = function(callback) {
+  this.onShowMessagesCB = callback;
 };
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
@@ -269,7 +272,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "targetUser": targetUser,
       "room": room,
       "sender": user,
-      "fullname": chatApplication.fullname,
+      "fullname": thiss.fullname,
       "ts": newMsgTimestamp,
       "dbName": thiss.dbName,
       "data": {
@@ -627,7 +630,7 @@ ChatRoom.prototype.updateMessage = function(message) {
  * }
  */
 ChatRoom.prototype.addMessage = function(message, checkToScroll) {
-  var $chats = jqchat("#chats");
+  var $chats = this.messagesContainer;
 
   if (checkToScroll) {
     // check if scroll was at max before the new message
@@ -647,7 +650,7 @@ ChatRoom.prototype.addMessage = function(message, checkToScroll) {
       hideWemmoMessage = "style='display:none;'";
     }
 
-    $msgDiv = jqchat('<div class="msRow" ' + hideWemmoMessage + ' data-user="__system">');
+    var $msgDiv = jqchat('<div class="msRow" ' + hideWemmoMessage + ' data-user="__system">');
     $chats.append($msgDiv);
 
     var options = {};
@@ -825,23 +828,18 @@ ChatRoom.prototype.showMessages = function() {
     }
     else
       out += "<div class='noMessage'><span class='text'>" + chatBundleData["exoplatform.chat.no.messages"] + "</span></div>";
-
-    // Set recorder button to start status
-    if (this.miniChat === undefined) {
-      chatApplication.updateMeetingButtonStatus('stopped');
-    }
   } else {
-
-    jqchat("#chats").html(''); // Clear the room
+    this.messagesContainer.html(''); // Clear the room
     var thiss = this;
     var messages = TAFFY(this.messages);
     messages().order("timestamp asec").each(function (message, i) {
       thiss.addMessage(message);
     });
-
   }
 
-  sh_highlightDocument();
+  if (typeof this.onShowMessagesCB === "function") {
+    this.onShowMessagesCB(out);
+  }
 };
 
 ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
@@ -1228,24 +1226,20 @@ ChatRoom.prototype.IsIE8Browser = function() {
  * @param callback
  */
 ChatRoom.prototype.updateUnreadMessages = function() {
-  jqchat.ajax({
-    url: this.jzChatUpdateUnreadMessages,
-    data: {"room": this.id,
-      "user": this.username,
-      "timestamp": new Date().getTime(),
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-    },
-
-    error:function (xhr, status, error){
-      //console.log("error");
-    }
+  //TODO remove require, inject cometd dependency at script level
+  require(['SHARED/commons-cometd3'], function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({
+      "event": "message-read",
+      "room": this.id,
+      "sender": this.username,
+      "dbName": this.dbName,
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
   });
 };
 
@@ -1454,9 +1448,9 @@ function showMiniChatPopup(room, type) {
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
       var jzChatGetRoom = chatServerUrl+"/getRoom";
-      var jzChatUpdateUnreadMessages = chatServerUrl+"/updateUnreadMessages";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatUpdateUnreadMessages,  "", "", chatNotification.chatIntervalChat, false, chatNotification.portalURI, dbName);
+        var messagesContainer = $miniChat.find(".history");
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom,  "", "", chatNotification.chatIntervalChat, messagesContainer, false, chatNotification.portalURI, dbName);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {
@@ -1497,38 +1491,10 @@ function showMiniChatPopup(room, type) {
 
       miniChats[index].setMiniChatDiv($miniChat);
       miniChats[index].onRefresh(function() {
-
       });
       miniChats[index].onShowMessages(function(out) {
-        var $history = this.miniChat.find(".history");
-
-        // check if scroll was at max before the new message
-        var scrollTopMax = $history.prop('scrollHeight') - $history.innerHeight();
-        var scrollAtMax = ($history.scrollTop() == scrollTopMax);
-
-        $history.html('<span>'+out+'</span>');
-        var totalMsgs = jqchat(".msUserCont", $history).length;
-
-        // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
-        if (scrollAtMax) {
-          var newScrollTopMax = $history.prop('scrollHeight') - $history.innerHeight();
-          $history.scrollTop(newScrollTopMax);
-        }
-
-        if ($history.is(":hidden")) {
-          var unreadTotal = totalMsgs - $miniChat.attr("readTotal");
-          if (unreadTotal > 0) {
-            $miniChat.find(".notify-info").show();
-            $miniChat.find(".notify-info").html(unreadTotal);
-          }
-          else
-            $miniChat.find(".notify-info").hide();
-        } else {
-          $miniChat.attr("readTotal", totalMsgs);
-          $miniChat.find(".notify-info").hide();
-        }
       });
-      miniChats[index].init(username, token, targetUser, targetFullname, false, dbName, function(){});
+      miniChats[index].init(username, "", token, targetUser, targetFullname, false, dbName, function(){});
     }
   });
 

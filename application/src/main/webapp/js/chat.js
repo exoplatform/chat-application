@@ -45,7 +45,6 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatSetNotificationTrigger = chatServerURL+"/setNotificationTrigger";
     chatApplication.jzChatSetRoomNotificationTrigger = chatServerURL + "/setRoomNotificationTrigger";
     chatApplication.jzChatGetUserDesktopNotificationSettings = chatServerURL+"/getUserDesktopNotificationSettings";
-    chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
     chatApplication.jzUsers = chatServerURL+"/users";
     chatApplication.jzDelete = chatServerURL+"/delete";
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
@@ -243,7 +242,7 @@ var chatApplication = new ChatApplication();
   //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
        var chatheight = document.getElementById("chats");
        chatheight.scrollTop = chatheight.scrollHeight;
-       chatApplication.updateUnreadMessages();
+       chatApplication.chatRoom.updateUnreadMessages();
        chatheight.scrollHeight;
     });
 
@@ -1577,7 +1576,6 @@ function ChatApplication() {
   this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
   this.jzCreateDemoUser = "";
-  this.jzChatUpdateUnreadMessages = "";
   this.jzChatSend = "";
   this.jzChatRead = "";
   this.jzChatSendMeetingNotes = "";
@@ -1699,28 +1697,6 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
 ChatApplication.prototype.activateTootips = function() {
   jqchat("[data-toggle='tooltip']").tooltip();
 }
-/**
- * Update Unread Messages
- *
- * @param callback
- */
-ChatApplication.prototype.updateUnreadMessages = function(callback) {
-  //TODO remove require, inject cometd dependency at script level
-  require(['SHARED/commons-cometd3'], function(cCometD) {
-    cCometD.publish('/service/chat', JSON.stringify({"event": "message-read",
-      "room": chatApplication.room,
-      "sender": chatApplication.username,
-      "dbName": chatApplication.dbName,
-    }), function(publishAck) {
-      if (publishAck.successful) {
-        console.log("The message reached the server");
-        if (typeof callback === "function") {
-          callback();
-        }
-      }
-    });
-  });
-};
 
 /**
  * Edit a chat message in a popup
@@ -1926,8 +1902,9 @@ ChatApplication.prototype.resize = function() {
 ChatApplication.prototype.initChat = function() {
   console.log("init ChatApplication");
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.portalURI);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, jqchat("#chats"), this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
+  this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
   var homeLinkHtml = jqchat("#HomeLink").html();
   homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
@@ -2894,7 +2871,7 @@ ChatApplication.prototype.loadRoom = function() {
       });
     }
 
-    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
+    this.chatRoom.init(this.username, this.fullname, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
       chatApplication.room = room;
       var $msg = jqchat('#msg');
       chatApplication.activateRoomButtons();
@@ -2932,7 +2909,15 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
     }
 */
   }
-}
+};
+
+ChatApplication.prototype.onShowMessagesCallback = function(out) {
+  // Set recorder button to start status
+  chatApplication.updateMeetingButtonStatus('stopped');
+
+  // highlight searched terms
+  sh_highlightDocument();
+};
 
 /**
  * Error On Refresh
