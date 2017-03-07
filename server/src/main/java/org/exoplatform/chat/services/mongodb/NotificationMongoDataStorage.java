@@ -26,21 +26,22 @@ import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.NotificationDataStorage;
 import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Named("notificationService")
+@Named("notificationStorage")
 @ApplicationScoped
-public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
+public class NotificationMongoDataStorage implements NotificationDataStorage
 {
-  @Inject
-  private RealTimeMessageService realTimeMessageService;
-
   private DB db(String dbName)
   {
     if (StringUtils.isEmpty(dbName)) {
@@ -107,8 +108,6 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     doc.put("isRead", false);
 
     coll.insert(doc);
-
-    sendNotification(receiver, dbName);
   }
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName)
@@ -116,8 +115,6 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
     BasicDBObject query = buildQuery(user, type, category, categoryId);
     coll.remove(query);
-
-    sendNotification(user, dbName);
   }
 
   @Override
@@ -205,19 +202,5 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
     if (category != null) query.put("category", category);
     if (categoryId != null) query.put("categoryId", categoryId);
     return query;
-  }
-
-  private void sendNotification(String receiver, String dbName) {
-    Map<String, Object> data = new HashMap<>();
-    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver, dbName));
-
-    // Deliver the saved message to sender's subscribed channel itself.
-    RealTimeMessageBean messageBean = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
-        null,
-        receiver,
-        null,
-        data);
-    realTimeMessageService.sendMessage(messageBean, receiver);
   }
 }

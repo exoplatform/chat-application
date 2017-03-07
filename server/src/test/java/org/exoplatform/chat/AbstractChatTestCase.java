@@ -1,8 +1,6 @@
 package org.exoplatform.chat;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -10,8 +8,6 @@ import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.services.mongodb.*;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.services.cache.CacheService;
-import org.exoplatform.services.user.UserStateModel;
 import org.exoplatform.services.user.UserStateService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,8 +17,6 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static jdk.nashorn.internal.objects.NativeFunction.bind;
 
 public class AbstractChatTestCase
 {
@@ -58,6 +52,7 @@ public class AbstractChatTestCase
 
       bind(ChatDataStorage.class).to(ChatMongoDataStorage.class);
       bind(ChatService.class).to(ChatServiceImpl.class);
+      bind(NotificationDataStorage.class).to(NotificationMongoDataStorage.class);
       bind(NotificationService.class).to(NotificationServiceImpl.class);
       bind(TokenService.class).toInstance(new TokenServiceImpl(mockUserStateService));
       bind(UserDataStorage.class).to(UserMongoDataStorage.class);

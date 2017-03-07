@@ -6,7 +6,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.google.inject.Module;
-import org.exoplatform.chat.services.mongodb.MongoModule;
+import org.exoplatform.chat.services.GuiceModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -47,7 +47,7 @@ public class GuiceManager implements ServletContextListener
     if (injector_==null)
     {
       if(module == null) {
-        injector_ = Guice.createInjector(new MongoModule());
+        injector_ = Guice.createInjector(new GuiceModule());
       } else {
         injector_ = Guice.createInjector(module);
       }
