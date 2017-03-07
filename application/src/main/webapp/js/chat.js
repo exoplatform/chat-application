@@ -2876,6 +2876,11 @@ ChatApplication.prototype.loadRoom = function() {
       var $msg = jqchat('#msg');
       chatApplication.activateRoomButtons();
       if (chatApplication.isDesktopView()) $msg.focus();
+
+      // Clear the unread message number label if any
+      var room = chatApplication.rooms({room: room});
+      room.update({unreadTotal: 0});
+      chatApplication.renderRooms();
     });
   }
 };
