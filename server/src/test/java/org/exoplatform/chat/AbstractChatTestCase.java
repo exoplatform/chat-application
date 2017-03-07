@@ -54,6 +54,7 @@ public class AbstractChatTestCase
       bind(ChatService.class).to(ChatServiceImpl.class);
       bind(NotificationDataStorage.class).to(NotificationMongoDataStorage.class);
       bind(NotificationService.class).to(NotificationServiceImpl.class);
+      bind(TokenStorage.class).to(TokenMongoService.class);
       bind(TokenService.class).toInstance(new TokenServiceImpl(mockUserStateService));
       bind(UserDataStorage.class).to(UserMongoDataStorage.class);
       bind(UserService.class).to(UserServiceImpl.class);
