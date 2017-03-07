@@ -89,14 +89,14 @@ public class MessageBean {
 
   public JSONObject toJSONObject() {
     JSONObject msg = new JSONObject();
-    msg.put("id", id);
+    msg.put("msgId", id);
     msg.put("timestamp", timestamp);
     if (lastUpdatedTimestamp > 0) {
       msg.put("lastUpdatedTimestamp", lastUpdatedTimestamp);
     }
     msg.put("user", user);
     msg.put("fullname", fullName);
-    msg.put("message", message);
+    msg.put("msg", message);
     if (options != null)
     {
       JSONParser parser = new JSONParser();

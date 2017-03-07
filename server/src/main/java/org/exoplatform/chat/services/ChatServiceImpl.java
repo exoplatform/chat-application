@@ -83,14 +83,12 @@ public class ChatServiceImpl implements ChatService
       msg.setFullName(user.getFullname());
 
       // Deliver the saved message to sender's subscribed channel itself.
-      Map<String, Object> data = new HashMap<>();
-      data.put("msg", msg.toJSONObject());
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
-              RealTimeMessageBean.EventType.MESSAGE_SENT,
-              room,
-              user.getName(),
-              new Date(),
-              data);
+          RealTimeMessageBean.EventType.MESSAGE_SENT,
+          room,
+          user.getName(),
+          new Date(),
+          msg.toJSONObject());
       realTimeMessageService.sendMessage(messageBean, sender);
 
       String content = ((message.length()>30)?message.substring(0,29)+"...":message);
@@ -129,14 +127,12 @@ public class ChatServiceImpl implements ChatService
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
 
       // Deliver the saved message to sender's subscribed channel itself.
-      Map<String, Object> data = new HashMap<>();
-      data.put("msg", msg.toJSONObject());
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
-              RealTimeMessageBean.EventType.MESSAGE_DELETED,
-              room,
-              sender,
-              new Date(),
-              data);
+          RealTimeMessageBean.EventType.MESSAGE_DELETED,
+          room,
+          sender,
+          new Date(),
+          msg.toJSONObject());
       realTimeMessageService.sendMessage(messageBean, sender);
       realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
     }

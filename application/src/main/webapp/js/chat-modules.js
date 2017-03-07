@@ -609,7 +609,7 @@ ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
 }
 
 ChatRoom.prototype.updateMessage = function(message) {
-  $msg = jqchat("#" + message.id);
+  $msg = jqchat("#" + message.msgId);
   var out = this.generateMessageHTML(message);
   $msg.replaceWith(out);
 }
@@ -637,7 +637,6 @@ ChatRoom.prototype.addMessage = function(message, checkToScroll) {
     var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
     var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
   }
-
 
   var $lastMessage = $chats.children().last();
   var prevUser = $lastMessage.data("user");
@@ -678,7 +677,7 @@ ChatRoom.prototype.addMessage = function(message, checkToScroll) {
       out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
       out += "            </div>";
     }
-    out += "              <div id='" + message.id + "' class='msUserCont noEdit msg-text'>";
+    out += "              <div id='" + message.msgId + "' class='msUserCont noEdit msg-text'>";
     var msRightInfo = "     <div class='msRightInfo pull-right'>";
     msRightInfo += "          <div class='msTimePost'>";
     msRightInfo += "            <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
@@ -738,7 +737,7 @@ ChatRoom.prototype.addMessage = function(message, checkToScroll) {
       if (this.isPublic) {
         out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
       } else {
-        out += "      <a class='msAvatarLink avatarCircle' href='" + thiss.portalURI + "profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
+        out += "      <a class='msAvatarLink avatarCircle' href='" + this.portalURI + "profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
       }
       out += "      </div>";
       out += "      <div class='msContBox'>";
@@ -778,7 +777,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   } else {
     msgtemp = this.messageBeautifier(message);
   }
-  out += '          <div id="' + message.id + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+  out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '">';
 
   var msRightInfo = "";
   msRightInfo += "      <div class='msRightInfo pull-right'>";
@@ -790,7 +789,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
   msRightInfo += "        </div>";
   if (message.type !== "DELETED") {
-    msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.id+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
+    msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
     msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
     if (message.user === this.username) {
       msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
@@ -922,7 +921,7 @@ ChatRoom.prototype.getDate = function(timestampServer) {
  * @returns {string} : the html markup
  */
 ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
-  var message = objMessage.message;
+  var message = objMessage.msg;
   var msg = "";
   var thiss = this;
   if (options!==undefined) {

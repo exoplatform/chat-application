@@ -163,14 +163,14 @@ public class ChatTestCase extends AbstractChatTestCase
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
 
-    String message = (String)((JSONObject)messages.get(0)).get("message");
+    String message = (String)((JSONObject)messages.get(0)).get("msg");
     assertEquals("bar", message);
-    message = (String)((JSONObject)messages.get(1)).get("message");
+    message = (String)((JSONObject)messages.get(1)).get("msg");
     assertEquals("foo", message);
 
     JSONObject msgJson = (JSONObject)messages.get(0);
 
-    assertNotNull(msgJson.get("id"));
+    assertNotNull(msgJson.get("msgId"));
     assertNotNull(msgJson.get("timestamp"));
     assertNotNull(msgJson.get("user"));
     assertNotNull(msgJson.get("fullname"));
@@ -196,8 +196,8 @@ public class ChatTestCase extends AbstractChatTestCase
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(1, messages.size());
 
-    String message = (String)((JSONObject)messages.get(0)).get("message");
-    String id = (String)((JSONObject)messages.get(0)).get("id");
+    String message = (String)((JSONObject)messages.get(0)).get("msg");
+    String id = (String)((JSONObject)messages.get(0)).get("msgId");
 
     assertEquals("foo", message);
 
@@ -209,8 +209,8 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, messages.size());
 
     JSONObject msgJson = (JSONObject)messages.get(0);
-    assertEquals(id, msgJson.get("id"));
-    assertEquals("bar", msgJson.get("message"));
+    assertEquals(id, msgJson.get("msgId"));
+    assertEquals("bar", msgJson.get("msg"));
     assertEquals(ChatService.TYPE_EDITED, msgJson.get("type"));
 
   }
@@ -232,7 +232,7 @@ public class ChatTestCase extends AbstractChatTestCase
     JSONArray messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
 
-    String id = (String)((JSONObject)messages.get(0)).get("id");
+    String id = (String)((JSONObject)messages.get(0)).get("msgId");
 
     chatDataStorage.delete(roomId, "benjamin", id, null);
 
@@ -241,7 +241,7 @@ public class ChatTestCase extends AbstractChatTestCase
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
 
-    String id3 = (String)((JSONObject)messages.get(0)).get("id");
+    String id3 = (String)((JSONObject)messages.get(0)).get("msgId");
     String type3 = (String)((JSONObject)messages.get(0)).get("type");
 
     assertEquals(id, id3);
