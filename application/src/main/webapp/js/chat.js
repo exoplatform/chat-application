@@ -2531,7 +2531,7 @@ ChatApplication.prototype.loadRoom = function() {
       jqchat(".room-detail-avatar").show();
       jqchat("#chat-team-button-dropdown").hide();
       jqchat("#userRoomStatus").removeClass("hide").show();
-      jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "/profile/"+this.targetUser);
+      jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/"+this.targetUser);
       jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
       jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser  + "/avatar");
     }
