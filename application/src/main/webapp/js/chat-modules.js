@@ -12,13 +12,12 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, messagesContainer, isPublic, portalURI, dbName) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, messagesContainer, isPublic, portalURI, dbName) {
   this.id = "";
   this.messages = [];
   this.messagesContainer = messagesContainer;
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
-  this.jzChatGetRoom = jzChatGetRoom;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
   this.chatIntervalChat = chatIntervalChat;
@@ -63,9 +62,15 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
   this.messages = [];
 
   var thiss = this;
+
+  var chatStatus = jqchat("#chat-status");
+  var chatServerUrl = chatStatus.attr("data-chat-server-url");
+  var urlRoom = chatServerUrl+"/getRoom";
+
   jqchat.ajax({
-    url: thiss.jzChatGetRoom,
-    data: {"targetUser": targetUser,
+    url: urlRoom,
+    data: {
+      "targetUser": targetUser,
       "user": username,
       "isAdmin": isAdmin,
       "dbName": thiss.dbName
@@ -74,48 +79,53 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
       'Authorization': 'Bearer ' + token
     },
     dataType: 'text',
-    success: function(data) {
-      thiss.id = data;
+    success: function (data) {
+      if (thiss.id == null || thiss.id == "") {
+        thiss.id = data;
+      }
+
       thiss.callingOwner = thiss.id;
 
       if (typeof callback === "function") {
         callback(thiss.id);
       }
 
-      jzStoreParam("lastUsername"+thiss.username, thiss.targetUser, 60000);
-      jzStoreParam("lastFullName"+thiss.username, thiss.targetFullname, 60000);
-      jzStoreParam("lastTS"+thiss.username, "0");
-      jzStoreParam("lastUpdatedTS"+thiss.username, "0");
-      thiss.refreshChat(true, function() {
+      jzStoreParam("lastRoom" + thiss.username, thiss.id, 60000);
+      jzStoreParam("lastUsername" + thiss.username, thiss.targetUser, 60000);
+      jzStoreParam("lastFullName" + thiss.username, thiss.targetFullname, 60000);
+      jzStoreParam("lastTS" + thiss.username, "0");
+      jzStoreParam("lastUpdatedTS" + thiss.username, "0");
+
+      thiss.refreshChat(true, function () {
         // always scroll to the last message when loading a chat room
         var $chats = thiss.messagesContainer;
         $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
         $chats.off("click.quote");
-        $chats.on("click.quote", ".msg-action-quote", function() {
+        $chats.on("click.quote", ".msg-action-quote", function () {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgHtml = $uimsg.html();
           //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
           msgHtml = msgHtml.replace(/<br>/g, '\n');
           var msgFullname = $uimsg.attr("data-fn");
-          jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
+          jqchat("#msg").focus().val('').val("[quote=" + msgFullname + "]" + msgHtml + " [/quote] ");
         });
 
         $chats.off("click.delete");
-        $chats.on("click.delete", ".msg-action-delete", function() {
+        $chats.on("click.delete", ".msg-action-delete", function () {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgId = $uimsg.attr("data-id");
           chatApplication.deleteMessage(msgId);
         });
 
         $chats.off("click.edit");
-        $chats.on("click.edit", ".msg-action-edit", function() {
+        $chats.on("click.edit", ".msg-action-edit", function () {
           var $uimsgdata = jqchat(this).siblings(".msg-data");
           chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
         });
 
         $chats.off("click.savenotes");
-        $chats.on("click.savenotes", ".msg-action-savenotes", function() {
+        $chats.on("click.savenotes", ".msg-action-savenotes", function () {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgTimestamp = $uimsg.attr("data-timestamp");
 
@@ -134,23 +144,23 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         $chats.off("click.send-meeting-notes");
         $chats.on("click.send-meeting-notes", ".send-meeting-notes", function () {
           var $this = jqchat(this);
-          var $meetingNotes =  $this.closest(".msMeetingNotes");
+          var $meetingNotes = $this.closest(".msMeetingNotes");
           $meetingNotes.animate({
             opacity: "toggle"
-          }, 200, function() {
+          }, 200, function () {
             var room = $this.attr("data-room");
             var from = $this.attr("data-from");
             var to = $this.attr("data-to");
             var id = $this.attr("data-id");
 
-            from = Math.round(from)-1;
-            to = Math.round(to)+1;
+            from = Math.round(from) - 1;
+            to = Math.round(to) + 1;
             chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
               if (response === "sent") {
                 console.log("sent");
-                jqchat("#"+id).animate({
+                jqchat("#" + id).animate({
                   opacity: "toggle"
-                }, 200 , function() {
+                }, 200, function () {
                   $meetingNotes.animate({
                     opacity: "toggle"
                   }, 3000);
@@ -163,28 +173,29 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         $chats.off("click.save-meeting-notes");
         $chats.on("click.save-meeting-notes", ".save-meeting-notes", function () {
           var $this = jqchat(this);
-          var $meetingNotes =  $this.closest(".msMeetingNotes");
+          var $meetingNotes = $this.closest(".msMeetingNotes");
           $meetingNotes.animate({
             opacity: "toggle"
-          }, 200, function() {
+          }, 200, function () {
             var room = $this.attr("data-room");
             var from = $this.attr("data-from");
             var to = $this.attr("data-to");
             var id = $this.attr("data-id");
 
-            from = Math.round(from)-1;
-            to = Math.round(to)+1;
+            from = Math.round(from) - 1;
+            to = Math.round(to) + 1;
             chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
               if (response !== "ko") {
                 jqchat.ajax({
                   type: "POST",
                   url: chatApplication.jzSaveWiki,
-                  data: {"targetFullname": chatApplication.targetFullname,
+                  data: {
+                    "targetFullname": chatApplication.targetFullname,
                     "content": response
                   },
                   context: this,
                   dataType: "json",
-                  success: function(data){
+                  success: function (data) {
                     if (data.path !== "") {
                       var baseUrl = location.protocol + "//" + location.hostname;
                       if (location.port) {
@@ -192,7 +203,7 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
                       }
                       var options = {
                         type: "type-link",
-                        link: baseUrl+data.path,
+                        link: baseUrl + data.path,
                         from: chatApplication.username,
                         fullname: chatApplication.fullname
                       };
@@ -202,16 +213,16 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
 
                     }
 
-                    jqchat("#"+id).animate({
+                    jqchat("#" + id).animate({
                       opacity: "toggle"
-                    }, 3000 , function() {
+                    }, 3000, function () {
                       $meetingNotes.animate({
                         opacity: "toggle"
                       }, 2000);
-                      jqchat("#"+id).hide();
+                      jqchat("#" + id).hide();
                     });
                   },
-                  error: function(xhr, status, error){
+                  error: function (xhr, status, error) {
                   }
                 });
               }
@@ -1446,10 +1457,9 @@ function showMiniChatPopup(room, type) {
       $miniChat.find(".fullname").html(targetFullname);
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
-      var jzChatGetRoom = chatServerUrl+"/getRoom";
       if (miniChats[index] === undefined) {
         var messagesContainer = $miniChat.find(".history");
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend, jzChatGetRoom,  "", "", chatNotification.chatIntervalChat, messagesContainer, false, chatNotification.portalURI, dbName);
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", chatNotification.chatIntervalChat, messagesContainer, false, chatNotification.portalURI, dbName);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {
@@ -1489,10 +1499,8 @@ function showMiniChatPopup(room, type) {
       miniChats[index].updateUnreadMessages();
 
       miniChats[index].setMiniChatDiv($miniChat);
-      miniChats[index].onRefresh(function() {
-      });
-      miniChats[index].onShowMessages(function(out) {
-      });
+      miniChats[index].onRefresh(function() {});
+      miniChats[index].onShowMessages(function(out) {});
       miniChats[index].init(username, "", token, targetUser, targetFullname, false, dbName, function(){});
     }
   });

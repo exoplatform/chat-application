@@ -584,48 +584,29 @@ public class ChatServer
     try
     {
       if (type != null) {
-        if ("room-id".equals(type))
-        {
+        if ("room-id".equals(type)) {
           room = targetUser;
-        }
-        else if ("space-name".equals(type))
-        {
+        } else if ("space-name".equals(type)) {
           room = chatService.getSpaceRoomByName(targetUser, dbName);
-        }
-        else if ("space-id".equals(type))
-        {
+        } else if ("space-id".equals(type)) {
           room = ChatUtils.getRoomId(targetUser);
-        }
-        else if ("username".equals(type))
-        {
+        } else if ("username".equals(type)) {
           List<String> users = new ArrayList<String>();
           users.add(user);
           users.add(targetUser);
           room = chatService.getRoom(users, dbName);
-        }
-        else if ("external".equals(type))
-        {
+        } else if ("external".equals(type)) {
           room = chatService.getExternalRoom(targetUser, dbName);
         }
-      }
-      else if (targetUser.startsWith(ChatService.SPACE_PREFIX))
-      {
+      } else if (targetUser.startsWith(ChatService.SPACE_PREFIX)) {
         room = chatService.getSpaceRoom(targetUser, dbName);
 
-      }
-      else
-      if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-      {
+      } else if (targetUser.startsWith(ChatService.TEAM_PREFIX)) {
         room = chatService.getTeamRoom(targetUser, user, dbName);
 
-      }
-      else
-      if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
-      {
+      } else if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX)) {
         room = chatService.getExternalRoom(targetUser, dbName);
-      }
-      else
-      {
+      } else {
         String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser
                 .startsWith(UserService.ANONIM_USER)) ? UserService.SUPPORT_USER : user;
 
@@ -634,8 +615,8 @@ public class ChatServer
         users.add(targetUser);
         room = chatService.getRoom(users, dbName);
       }
-      if ("true".equals(withDetail))
-      {
+
+      if ("true".equals(withDetail)) {
         roomBean = userService.getRoom(user, room, dbName);
       }
       notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);

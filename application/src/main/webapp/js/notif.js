@@ -397,12 +397,11 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
     notification.onclick = function () {
       window.focus();
       notification.close();
-      var displayTitle ="";
+      var displayTitle;
       if (msg.roomDisplayName) {
         displayTitle = msg.roomDisplayName;
       } else {
         displayTitle = msg.fromFullName;
-
       }
 
       var targetUser;
@@ -413,6 +412,8 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
       } else {
         targetUser = msg.from;
       }
+
+      localStorage.setItem('eXoChat.room', msg.categoryId);
       localStorage.setItem('eXoChat.targetUser', targetUser);
       localStorage.setItem('eXoChat.targetFullname', displayTitle);
 
@@ -850,7 +851,7 @@ var chatNotification = new ChatNotification();
         } else if (message.event == "message-sent") {
           if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) && chatNotification.username !== message.sender) {
 
-            var msg = message.data.msg;
+            var msg = message.data;
 
             // A tip that helps making a tiny delay in execution of block code in the function,
             // to avoid concurrency issue in condition checking.
@@ -864,7 +865,9 @@ var chatNotification = new ChatNotification();
               var notify = {
                 options: msg.options,
                 roomDisplayName: msg.fullname,
-                content: msg.message
+                content: msg.msg,
+                categoryId: message.room,
+                from: message.sender
               };
 
               if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&

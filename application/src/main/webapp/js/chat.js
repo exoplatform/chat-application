@@ -1572,7 +1572,6 @@ function ChatApplication() {
   this.targetFullname = "";
   this.token = "";
   this.jzInitChatProfile = "";
-  this.jzChatGetRoom = "";
   this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
   this.jzCreateDemoUser = "";
@@ -1902,7 +1901,7 @@ ChatApplication.prototype.resize = function() {
 ChatApplication.prototype.initChat = function() {
   console.log("init ChatApplication");
 
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, jqchat("#chats"), this.isPublic, this.portalURI);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, jqchat("#chats"), this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 
@@ -2271,7 +2270,7 @@ ChatApplication.prototype.updateTitle = function() {
 /**
  * Load the list of rooms (left panel)
  */
-ChatApplication.prototype.loadRooms = function(targetUser, targetFullname) {
+ChatApplication.prototype.loadRooms = function() {
   // Avoid having two whoIsOnline requests in parallel
   if(this.loadRoomsRequest) {
     return;
@@ -2304,15 +2303,6 @@ ChatApplication.prototype.loadRooms = function(targetUser, targetFullname) {
       context: this,
       success: function(response){
         this.loadRoomsRequest = null;
-        if (targetUser !== undefined && targetFullname !== undefined) {
-          this.targetUser = targetUser;
-          this.targetFullname = targetFullname;
-          jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-          jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-          jzStoreParam("lastTS"+this.username, "0");
-          this.firstLoad = true;
-        }
-
         this.isLoaded = true;
         this.hidePanel(".chat-error-panel");
         this.hidePanel(".chat-sync-panel");
@@ -2558,23 +2548,25 @@ ChatApplication.prototype.renderRooms = function() {
 
   var $targetUser;
   var value = jzGetParam("lastUsername"+this.username);
+  var _room = jzGetParam("lastRoom"+this.username);
 
   if (value && this.firstLoad) {
-    //console.log("firstLoad with user : *"+value+"*");
     this.targetUser = value;
+    this.room = _room;
     this.targetFullname = jzGetParam("lastFullName"+this.username);
     var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
     $targetUser = jqchat("#users-online-"+escapedTargetUser);
-    if (!$targetUser.length) {
-      this.targetUser = "";
-      this.targetFullname = "";
-      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-    } else {
+    if ($targetUser.length) {
+      this.firstLoad = false;
       if (this.username!==this.ANONIM_USER) {
         this.loadRoom();
       }
-      this.firstLoad = false;
+    } else {
+      this.targetUser = "";
+      this.targetFullname = "";
+      jzStoreParam("lastRoom"+this.username, this.room, 60000);
+      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
+      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
     }
   }
 
@@ -2714,175 +2706,178 @@ ChatApplication.prototype.loadRoom = function() {
   /*
     Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
   */
-  if(localStorage.getItem('eXoChat.targetUser')!=""&&localStorage.getItem('eXoChat.targetFullname')!=""){
+  if (localStorage.getItem('eXoChat.room') != "" && localStorage.getItem('eXoChat.targetUser') != "" && localStorage.getItem('eXoChat.targetFullname') != "") {
+    this.room = localStorage.getItem('eXoChat.room');
     this.targetUser = localStorage.getItem('eXoChat.targetUser');
     this.targetFullname = localStorage.getItem('eXoChat.targetFullname');
     localStorage.setItem('eXoChat.targetFullname',"");
     localStorage.setItem('eXoChat.targetUser',"");
+    localStorage.setItem('eXoChat.room',"");
   }
 
   var thiss = this;
   this.chatRoom.owner = "";
-  if (this.targetUser!==undefined) {
-    // hide admin actions - we need to check if the current is the admin of the room before displaying them
-    jqchat("#chat-team-button-dropdown .only-admin").hide();
-    // reset room users panel
-    this.chatRoom.users = [];
-    jqchat("#room-users-list").html("");
-    jqchat("#room-users-title-nb-users").html("()");
+  if (this.targetUser === undefined) {
+    return;
+  }
 
-    if(this.chatRoom.lastCallOwner !== this.targetUser) {
-      // Disable composer while switching from a room to another
-      enableMessageComposer(false);
-      // Empty room messages and add loading icon
-      this.chatRoom.emptyChatZone(true);
+  // hide admin actions - we need to check if the current is the admin of the room before displaying them
+  jqchat("#chat-team-button-dropdown .only-admin").hide();
+  // reset room users panel
+  this.chatRoom.users = [];
+  jqchat("#room-users-list").html("");
+  jqchat("#room-users-title-nb-users").html("()");
 
-      // Add a flag for room loading operation with the id of the room
-      this.chatRoom.loadingNewRoom = true;
-      this.chatRoom.callingOwner = this.targetUser;
+  if(this.chatRoom.lastCallOwner !== this.targetUser) {
+    // Disable composer while switching from a room to another
+    enableMessageComposer(false);
+    // Empty room messages and add loading icon
+    this.chatRoom.emptyChatZone(true);
+
+    // Add a flag for room loading operation with the id of the room
+    this.chatRoom.loadingNewRoom = true;
+    this.chatRoom.callingOwner = this.targetUser;
+  }
+
+  jqchat(".users-online").removeClass("accordion-active");
+  if (this.isDesktopView()) {
+    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
+    var $targetUser = jqchat("#users-online-"+escapedTargetUser);
+    $targetUser.addClass("accordion-active");
+    jqchat(".room-total").removeClass("badgeWhite");
+    $targetUser.find(".room-total").addClass("badgeWhite");
+  }
+
+
+  jqchat("#room-detail").css("display", "block");
+  jqchat("#chat-team-button").css("display", "none");
+  this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
+  jqchat(".target-user-fullname").text(this.targetFullname);
+
+
+  if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
+    jqchat(".btn-weemo-conf").css("display", "none");
+    jqchat(".btn-weemo-conf").addClass("disabled");
+    if (typeof weemoExtension !== 'undefined') {
+      jqchat(".btn-weemo").css("display", "block");
+      jqchat(".btn-weemo").addClass("disabled");
+      jqchat(".room-detail-button").show();
     }
+  }
 
-    jqchat(".users-online").removeClass("accordion-active");
-    if (this.isDesktopView()) {
-      var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
-      var $targetUser = jqchat("#users-online-"+escapedTargetUser);
-      $targetUser.addClass("accordion-active");
-      jqchat(".room-total").removeClass("badgeWhite");
-      $targetUser.find(".room-total").addClass("badgeWhite");
-    }
-
-
-    jqchat("#room-detail").css("display", "block");
-    jqchat("#chat-team-button").css("display", "none");
-    this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
-    jqchat(".target-user-fullname").text(this.targetFullname);
-
-
-    if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
-      jqchat(".btn-weemo-conf").css("display", "none");
-      jqchat(".btn-weemo-conf").addClass("disabled");
-      if (typeof weemoExtension !== 'undefined') {
-        jqchat(".btn-weemo").css("display", "block");
-        jqchat(".btn-weemo").addClass("disabled");
-        jqchat(".room-detail-button").show();
-      }
-    }
-    if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
+  if (this.targetUser.indexOf("space-") === -1 && this.targetUser.indexOf("team-") === -1) {
     ////// USER
-    {
-      jqchat(".uiRoomUsersContainerArea").hide();
-      jqchat(".meeting-action-task").css("display", "block");
-      jqchat(".room-detail-avatar").show();
-      jqchat("#chat-team-button-dropdown").hide();
-      jqchat("#userRoomStatus").removeClass("hide").show();
-      jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/"+this.targetUser);
-      jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
-      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser  + "/avatar");
-    }
-    else if (this.targetUser.indexOf("team-")===-1)
+    jqchat(".uiRoomUsersContainerArea").hide();
+    jqchat(".meeting-action-task").css("display", "block");
+    jqchat(".room-detail-avatar").show();
+    jqchat("#chat-team-button-dropdown").hide();
+    jqchat("#userRoomStatus").removeClass("hide").show();
+    jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/" + this.targetUser);
+    jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
+    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser + "/avatar");
+    
+  } else if (this.targetUser.indexOf("team-") === -1) {
     ////// SPACE
-    {
-      this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
-      var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
-      jqchat(".room-detail-avatar").show();
-      jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
-      jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/"+spaceName+"/avatar");
-    }
-    else
+    this.loadRoomUsers();
+    jqchat(".meeting-action-task").css("display", "block");
+    var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
+    jqchat(".room-detail-avatar").show();
+    jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:" + spaceName + "/" + spaceName);
+    jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
+    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/" + spaceName + "/avatar");
+
+  } else {
     ////// TEAM
-    {
-
-      jqchat.ajax({
-        url: this.jzChatGetCreator,
-        data: {"room": this.targetUser,
-          "user": this.username,
-          "dbName": this.dbName
-        },
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
-        context: this,
-        success: function(response){
-          //console.log("SUCCESS::getRoom::"+response);
-          var creator = response;
-          this.chatRoom.owner = creator;
-          jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
-          jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
+    jqchat.ajax({
+      url: this.jzChatGetCreator,
+      data: {"room": this.targetUser,
+        "user": this.username,
+        "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
+      context: this,
+      success: function(response){
+        //console.log("SUCCESS::getRoom::"+response);
+        var creator = response;
+        this.chatRoom.owner = creator;
+        jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
+        jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
+        jqchat("#userRoomStatus").hide();
+        if (creator === this.username) {
+          jqchat("#chat-team-button-dropdown .only-admin").show();
           jqchat("#userRoomStatus").hide();
-          if (creator === this.username) {
-            jqchat("#chat-team-button-dropdown .only-admin").show();
-            jqchat("#userRoomStatus").hide();
-            jqchat("#chat-team-button").show();
-            jqchat("#team-delete-button").show();
-            jqchat("#chat-team-button-dropdown").show();
-            jqchat("#userRoomStatus").hide();
-          } else {
-            jqchat("#userRoomStatus").removeClass("hide").show();
-          }
-        },
-        error: function(xhr, status, error){
-          //console.log("ERROR::"+xhr.responseText);
+          jqchat("#chat-team-button").show();
+          jqchat("#team-delete-button").show();
+          jqchat("#chat-team-button-dropdown").show();
+          jqchat("#userRoomStatus").hide();
+        } else {
+          jqchat("#userRoomStatus").removeClass("hide").show();
         }
-      });
-      this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
-      jqchat(".room-detail-avatar").show();
-      jqchat(".target-avatar-link").attr("href", "#");
-      jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
-    }
+      },
+      error: function(xhr, status, error){
+        //console.log("ERROR::"+xhr.responseText);
+      }
+    });
 
-    if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
-      jqchat.ajax({
-        url: this.jzChatIsFavorite,
-        data: {"user": this.username,
-          "targetUser": this.targetUser,
-          "dbName": this.dbName
-        },
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
-        context: this,
-        success: function(response){
-          var $teamRemoveFromFavoritButton = jqchat("#team-remove-from-favorites-button");
-          var $teamAddToFavoritButton = jqchat("#team-add-to-favorites-button");
+    this.loadRoomUsers();
+    jqchat(".meeting-action-task").css("display", "block");
+    jqchat(".room-detail-avatar").show();
+    jqchat(".target-avatar-link").attr("href", "#");
+    jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
+  }
 
-          $teamRemoveFromFavoritButton.unbind('click');
-          $teamAddToFavoritButton.unbind('click');
-          var toggleFav = function() {
-              thiss.toggleFavorite(thiss.targetUser);
-              $teamRemoveFromFavoritButton.toggle();
-              $teamAddToFavoritButton.toggle();
-          }
-          $teamRemoveFromFavoritButton.click(toggleFav);
-          $teamAddToFavoritButton.click(toggleFav);
-          if (response == "true") {
-            $teamRemoveFromFavoritButton.show();
-            $teamAddToFavoritButton.hide();
-          } else {
-            $teamAddToFavoritButton.show();
-            $teamRemoveFromFavoritButton.hide();
-          }
-        },
-        error: function(xhr, status, error){
-          console.log("ERROR::"+xhr.responseText);
+  if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
+    jqchat.ajax({
+      url: this.jzChatIsFavorite,
+      data: {"user": this.username,
+        "targetUser": this.targetUser,
+        "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
+      context: this,
+      success: function(response){
+        var $teamRemoveFromFavoritButton = jqchat("#team-remove-from-favorites-button");
+        var $teamAddToFavoritButton = jqchat("#team-add-to-favorites-button");
+
+        $teamRemoveFromFavoritButton.unbind('click');
+        $teamAddToFavoritButton.unbind('click');
+        var toggleFav = function() {
+            thiss.toggleFavorite(thiss.targetUser);
+            $teamRemoveFromFavoritButton.toggle();
+            $teamAddToFavoritButton.toggle();
         }
-      });
-    }
-
-    this.chatRoom.init(this.username, this.fullname, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
-      chatApplication.room = room;
-      var $msg = jqchat('#msg');
-      chatApplication.activateRoomButtons();
-      if (chatApplication.isDesktopView()) $msg.focus();
-
-      // Clear the unread message number label if any
-      var room = chatApplication.rooms({room: room});
-      room.update({unreadTotal: 0});
-      chatApplication.renderRooms();
+        $teamRemoveFromFavoritButton.click(toggleFav);
+        $teamAddToFavoritButton.click(toggleFav);
+        if (response == "true") {
+          $teamRemoveFromFavoritButton.show();
+          $teamAddToFavoritButton.hide();
+        } else {
+          $teamAddToFavoritButton.show();
+          $teamRemoveFromFavoritButton.hide();
+        }
+      },
+      error: function(xhr, status, error){
+        console.log("ERROR::"+xhr.responseText);
+      }
     });
   }
+
+  this.chatRoom.id = this.room;
+  this.chatRoom.init(this.username, this.fullname, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
+    chatApplication.room = room;
+    var $msg = jqchat('#msg');
+    chatApplication.activateRoomButtons();
+    if (chatApplication.isDesktopView()) $msg.focus();
+
+    // Clear the unread message number label if any
+    var room = chatApplication.rooms({room: room});
+    room.update({unreadTotal: 0});
+    chatApplication.renderRooms();
+  });
 };
 
 ChatApplication.prototype.activateRoomButtons = function() {
