@@ -41,6 +41,10 @@
       <param-name>juzu.inject</param-name>
       <param-value>guice</param-value>
     </init-param>
+    <init-param>
+      <param-name>juzu.resource_bundle</param-name>
+      <param-value>locale.chat.server.Resource</param-value>
+    </init-param>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
