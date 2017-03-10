@@ -371,22 +371,21 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
     var avatarUrl = null;
     var title = null;
 
-    if(msg.roomDisplayName=="") {
-      avatarUrl = '/rest/v1/social/users/'+msg.from+'/avatar';
+    if (msg.roomDisplayName == "") {
+      avatarUrl = '/rest/v1/social/users/' + msg.from + '/avatar';
       title = msg.fromFullName;
     } else {
-      avatarUrl = '/rest/v1/social/users/'+msg.roomDisplayName+'/avatar';
+      avatarUrl = '/rest/v1/social/users/' + msg.roomDisplayName + '/avatar';
       title = msg.roomDisplayName;
     }
     var notification =null;
     //check if we're running Firefox on Linux then disable the Icons
     // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
-    if(isLinux && isFirefox) {
+    if (isLinux && isFirefox) {
       notification = new Notification(title, {
-      body: displayMsg
-     });
-    }
-    else {
+        body: displayMsg
+      });
+    } else {
       notification = new Notification(title, {
         icon: avatarUrl,
         body: displayMsg,
@@ -857,10 +856,10 @@ var chatNotification = new ChatNotification();
             // to avoid concurrency issue in condition checking.
             setTimeout(function() {
               // Check if the message has been notified by other tab
-              if (localStorage.getItem('lastNotify-' + message.room) === msg.id) {
+              if (localStorage.getItem('lastNotify-' + message.room) === msg.msgId) {
                 return;
               }
-              localStorage.setItem('lastNotify-' + message.room, msg.id);
+              localStorage.setItem('lastNotify-' + message.room, msg.msgId);
 
               var notify = {
                 options: msg.options,

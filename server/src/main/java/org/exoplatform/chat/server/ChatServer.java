@@ -191,6 +191,7 @@ public class ChatServer
     }
 
     String data = chatService.read(room, "true".equals(isTextOnly), from, dbName);
+    notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
 
     return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
