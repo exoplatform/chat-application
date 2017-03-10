@@ -417,7 +417,7 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
       localStorage.setItem('eXoChat.targetFullname', displayTitle);
 
       if(typeof chatApplication === "undefined") {
-        newTab = window.open(path);
+        newTab = window.open(path, "_chat");
         return;
       }
 
