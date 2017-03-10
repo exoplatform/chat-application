@@ -800,7 +800,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
   msRightInfo += "        </div>";
   if (message.type !== "DELETED") {
-    msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.message+"</span>";
+    msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.msg+"</span>";
     msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
     if (message.user === this.username) {
       msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
