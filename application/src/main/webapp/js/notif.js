@@ -839,7 +839,7 @@ var chatNotification = new ChatNotification();
         if (typeof message != 'object') {
           message = JSON.parse(message);
         }
-        console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
+        // console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
 
         // Do what you want with the message...
         if(message.event == 'user-status-changed') {

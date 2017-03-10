@@ -293,7 +293,6 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "isSystem": isSystemMessage
     }), function(publishAck) {
       if (publishAck.successful) {
-        console.log("The message reached the server");
         if (typeof callback === "function") {
           callback();
         }

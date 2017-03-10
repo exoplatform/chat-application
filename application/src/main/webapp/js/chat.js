@@ -90,7 +90,7 @@ var chatApplication = new ChatApplication();
         if (typeof message != 'object') {
           message = JSON.parse(message);
         }
-        console.log('>>>>>>>> chat message via websocket : ' + event.data);
+        // console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
         if (message.event == 'user-status-changed') {
@@ -116,8 +116,6 @@ var chatApplication = new ChatApplication();
           }
         } else if (message.event == 'room-member-joined') {
           var room = message.data;
-
-          console.log(room);
 
           // Add the new room and re-render the list of rooms
           chatApplication.rooms.insert({
@@ -1740,7 +1738,6 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
       }
     }), function(publishAck) {
       if (publishAck.successful) {
-        console.log("The message reached the server");
         if (typeof callback === "function") {
           callback();
         }
@@ -1762,7 +1759,6 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
       "dbName": chatApplication.dbName
     }), function(publishAck) {
       if (publishAck.successful) {
-        console.log("The message reached the server");
         if (typeof callback === "function") {
           callback();
         }
@@ -1899,8 +1895,6 @@ ChatApplication.prototype.resize = function() {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
-  console.log("init ChatApplication");
-
   this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, jqchat("#chats"), this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
@@ -3127,7 +3121,6 @@ ChatApplication.prototype.setStatus = function(status, callback) {
             }
         }), function(publishAck) {
             if (publishAck.successful) {
-                console.log("The message reached the server");
                 if (typeof callback === "function") {
                     callback(status);
                 }
