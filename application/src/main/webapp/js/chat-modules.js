@@ -286,6 +286,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "fullname": thiss.fullname,
       "ts": newMsgTimestamp,
       "dbName": thiss.dbName,
+      "token": thiss.token,
       "data": {
         "msg": msg
       },
@@ -1235,13 +1236,15 @@ ChatRoom.prototype.IsIE8Browser = function() {
  * @param callback
  */
 ChatRoom.prototype.updateUnreadMessages = function() {
+  var thiss = this;
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({
       "event": "message-read",
-      "room": this.id,
-      "sender": this.username,
-      "dbName": this.dbName,
+      "room": thiss.id,
+      "sender": thiss.username,
+      "dbName": thiss.dbName,
+      "token": thiss.token,
     }), function(publishAck) {
       if (publishAck.successful) {
         if (typeof callback === "function") {

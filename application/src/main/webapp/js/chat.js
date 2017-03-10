@@ -1733,6 +1733,7 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
       "room": thiss.room,
       "sender": thiss.username,
       "dbName": thiss.dbName,
+      "token": thiss.token,
       "data": {
         "msgId": id
       }
@@ -1756,7 +1757,8 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
     cCometD.publish('/service/chat', JSON.stringify({"event": "room-deleted",
       "room": chatApplication.room,
       "sender": chatApplication.username,
-      "dbName": chatApplication.dbName
+      "dbName": chatApplication.dbName,
+      "token": thiss.token,
     }), function(publishAck) {
       if (publishAck.successful) {
         if (typeof callback === "function") {
@@ -1803,6 +1805,7 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       "room": thiss.room,
       "sender": thiss.username,
       "dbName": thiss.dbName,
+      "token": thiss.token,
       "data": {
         "msgId": id,
         "msg": newMessage
@@ -3115,7 +3118,8 @@ ChatApplication.prototype.setStatus = function(status, callback) {
             "sender": thiss.username,
             "room": thiss.username,
             "ts": new Date().getTime(),
-            "dbName": this.dbName,
+            "dbName": thiss.dbName,
+            "token": thiss.token,
             "data": {
                 "status": status
             }

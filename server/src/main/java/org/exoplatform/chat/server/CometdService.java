@@ -1,5 +1,6 @@
 package org.exoplatform.chat.server;
 
+import juzu.Response;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
 import org.cometd.bayeux.server.ServerMessage;
@@ -34,11 +35,13 @@ public class CometdService {
   UserService userService;
   NotificationService notificationService;
   RealTimeMessageService realTimeMessageService;
+  TokenService tokenService;
 
   public CometdService() {
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
     realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
+    tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
   }
 
   /**
@@ -54,6 +57,14 @@ public class CometdService {
     try {
       JSONParser jsonParser = new JSONParser();
       JSONObject jsonMessage = (JSONObject) jsonParser.parse((String) message.getData());
+
+      String sender = (String) jsonMessage.get("sender");
+      String token = (String) jsonMessage.get("token");
+      String dbName = (String) jsonMessage.get("dbName");
+      if (!tokenService.hasUserWithToken(sender, token, dbName))
+      {
+        return;
+      }
 
       RealTimeMessageBean.EventType eventType = RealTimeMessageBean.EventType.get((String) jsonMessage.get("event"));
 
@@ -75,8 +86,6 @@ public class CometdService {
                 (String) jsonMessage.get("dbName"));
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
         String room = (String) jsonMessage.get("room");
-        String sender = (String) jsonMessage.get("sender");
-        String dbName = (String) jsonMessage.get("dbName");
 
         notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
         if (userService.isAdmin(sender, dbName))
@@ -90,9 +99,7 @@ public class CometdService {
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_SENT)) {
         String room = (String) jsonMessage.get("room");
         String isSystem = jsonMessage.get("isSystem").toString();
-        String dbName = (String) jsonMessage.get("dbName");
         String options = jsonMessage.get("options").toString();
-        String sender = (String) jsonMessage.get("sender");
         String msg = (String) ((JSONObject)jsonMessage.get("data")).get("msg");
         String targetUser = (String) jsonMessage.get("targetUser");
 
@@ -100,8 +107,6 @@ public class CometdService {
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_UPDATED)) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
-        String sender = jsonMessage.get("sender").toString();
-        String dbName = jsonMessage.get("dbName").toString();
         // Only author of the message can edit it
         MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
         if (currentMessage == null || !currentMessage.getUser().equals(sender)) {
@@ -113,8 +118,6 @@ public class CometdService {
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_DELETED)) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
-        String sender = jsonMessage.get("sender").toString();
-        String dbName = jsonMessage.get("dbName").toString();
 
         // Only author of the message can delete it
         MessageBean currentMessage = chatService.getMessage(room, messageId, dbName);
@@ -125,8 +128,6 @@ public class CometdService {
         chatService.delete(room, sender, messageId, dbName);
       } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_DELETED)) {
         String room = jsonMessage.get("room").toString();
-        String sender = jsonMessage.get("sender").toString();
-        String dbName = jsonMessage.get("dbName").toString();
 
         chatService.deleteTeamRoom(room, sender, dbName);
       }
