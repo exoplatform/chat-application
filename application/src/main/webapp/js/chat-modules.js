@@ -1255,7 +1255,7 @@ ChatRoom.prototype.updateUnreadMessages = function() {
   });
 };
 
-var loadSetting = function(callback,overrideSettings) {
+var loadSetting = function (callback, overrideSettings) {
   var $ = jqchat;
   var $chatApplication = $("#chat-application").length ? $("#chat-application") : $("#chat-status");
   var yourUsername = $chatApplication.attr("data-username");
@@ -1326,17 +1326,15 @@ String.prototype.endsWith = function(suffix) {
 (function($) {
 
   $(document).ready(function() {
-    //GETTING DOM CONTEXT
-    var $miniChat = $(".mini-chat");
-    $miniChat.each( function(index) {
-      var initialized = $(this).attr("data-init");
-      if (initialized === undefined) {
-        $(this).attr("data-init", "auto");
+
+    // Initialize mini-chat window only if it is NOT in Chat application
+    if (typeof chatApplication === "undefined") {
+      var $miniChat = $(".mini-chat");
+      $miniChat.each( function(index) {
         $(this).attr("data-index", index);
         var $obj = $(this);
-        var urlToken = "/rest/chat/api/1.0/user/token";
         jqchat.ajax({
-          url: urlToken,
+          url: "/rest/chat/api/1.0/user/token",
           success: function(data) {
             var username = data.username;
             var token = data.token;
@@ -1368,15 +1366,50 @@ String.prototype.endsWith = function(suffix) {
               showMiniChatPopup(miniChatRoom, miniChatType);
             }
 
-            loadSetting(null,true);
+            loadSetting(null, true);
           },
-          error: function(xhr, status, error) {
-            loadSetting(null,true);
+          error: function (xhr, status, error) {
+            loadSetting(null, true);
           }
         });
+      });
 
-      }
-    });
+      /**
+       * Handle Real Time communications events
+       */
+      //TODO remove require, inject cometd dependency at script level
+      require(['SHARED/commons-cometd3'], function(cCometD) {
+        cCometD.configure({
+          url: chatNotification.wsEndpoint,
+          'exoId': chatNotification.username, // current username
+          'exoToken': chatNotification.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+        });
+
+        cCometD.subscribe('/service/chat', null, function (event) {
+          var message = event.data;
+          if (typeof message != 'object') {
+            message = JSON.parse(message);
+          }
+          // console.log('>>>>>>>> chat message via websocket : ' + event.data);
+
+          var $miniChat = jqchat(".mini-chat").first();
+          var index = $miniChat.attr("data-index");
+
+          if (miniChats[index] !== undefined) {
+            // Do what you want with the message...
+            if (message.event == 'message-sent') {
+              if (miniChats[index].id === message.room) {
+                miniChats[index].addMessage(message.data, true);
+              }
+            } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
+              if (miniChats[index].id === message.room) {
+                miniChats[index].updateMessage(message.data);
+              }
+            }
+          }
+        });
+      });
+    }
   });
 
 })(jqchat);
@@ -1460,8 +1493,7 @@ function showMiniChatPopup(room, type) {
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
       if (miniChats[index] === undefined) {
-        var messagesContainer = $miniChat.find(".history");
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", chatNotification.chatIntervalChat, messagesContainer, false, chatNotification.portalURI, dbName);
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", chatNotification.chatIntervalChat, $miniChat.find(".history"), false, chatNotification.portalURI, dbName);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {
