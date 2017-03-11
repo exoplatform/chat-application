@@ -143,9 +143,9 @@ public class ChatServiceImpl implements ChatService
   }
 
   public void deleteTeamRoom(String room, String user, String dbName) {
-    chatStorage.deleteTeamRoom(room, user, dbName);
-
     List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM, dbName);
+
+    chatStorage.deleteTeamRoom(room, user, dbName);
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(

@@ -1753,21 +1753,6 @@ ChatApplication.prototype.deleteMessage = function(id, callback) {
  * @param callback
  */
 ChatApplication.prototype.deleteTeamRoom = function(callback) {
-  require(['SHARED/commons-cometd3'], function(cCometD) {
-    cCometD.publish('/service/chat', JSON.stringify({"event": "room-deleted",
-      "room": chatApplication.room,
-      "sender": chatApplication.username,
-      "dbName": chatApplication.dbName,
-      "token": thiss.token,
-    }), function(publishAck) {
-      if (publishAck.successful) {
-        if (typeof callback === "function") {
-          callback();
-        }
-      }
-    });
-  });
-
   jqchat.ajax({
     url: this.jzDeleteTeamRoom,
     data: {"room": this.room,
