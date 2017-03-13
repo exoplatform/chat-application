@@ -2236,19 +2236,6 @@ ChatApplication.prototype.activateMaintainSession = function() {
   this.chatSessionInt = setInterval(jqchat.proxy(this.maintainSession, this), this.chatIntervalSession);
 };
 
-
-ChatApplication.prototype.updateTotal = function(total) {
-  this.totalNotif = total;//Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
-};
-
-ChatApplication.prototype.updateTitle = function() {
-  if (this.totalNotif>0) {
-    document.title = "Chat ("+this.totalNotif+")";
-  } else {
-    document.title = "Chat";
-  }
-};
-
 /**
  * Load the list of rooms (left panel)
  */
@@ -2297,9 +2284,9 @@ ChatApplication.prototype.loadRooms = function() {
           this.loadRoomUsers();
         }
 
-        this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
+        this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
         if (fromChromeApp) {
-          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
             chatNotification.refreshNotifDetails();
           }
         } else if (window.fluid!==undefined) {
@@ -2307,7 +2294,7 @@ ChatApplication.prototype.loadRooms = function() {
             window.fluid.dockBadge = this.totalNotif;
           else
             window.fluid.dockBadge = "";
-          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
             window.fluid.showGrowlNotification({
               title: chatBundleData["exoplatform.chat.title"],
               description: chatBundleData["exoplatform.chat.new.messages"],
@@ -2316,8 +2303,8 @@ ChatApplication.prototype.loadRooms = function() {
               identifier: "messages"
             });
           }
-        } else if (window.webkitNotifications!==undefined) {
-          if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+        } else if (window.webkitNotifications !== undefined) {
+          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
             var havePermission = window.webkitNotifications.checkPermission();
             if (havePermission == 0) {
               // 0 is PERMISSION_ALLOWED
@@ -2338,7 +2325,11 @@ ChatApplication.prototype.loadRooms = function() {
           }
         }
         this.oldNotif = this.totalNotif;
-        this.updateTitle();
+        if (this.totalNotif > 0) {
+          document.title = "Chat (" + this.totalNotif + ")";
+        } else {
+          document.title = "Chat";
+        }
 
         if (this.isTeamAdmin) {
           jqchat(".btn-top-add-actions").css("display", "inline-block");

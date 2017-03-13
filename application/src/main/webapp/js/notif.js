@@ -839,7 +839,7 @@ var chatNotification = new ChatNotification();
         if (typeof message != 'object') {
           message = JSON.parse(message);
         }
-        // console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
+        console.log('>>>>>>>> chat message via websocket : ' + message.event + ' - ' + message.room + ' - ' + message.sender + ' - ' + message.data);
 
         // Do what you want with the message...
         if(message.event == 'user-status-changed') {
@@ -882,9 +882,16 @@ var chatNotification = new ChatNotification();
             });
           }
         } else if (message.event == "notification-count-updated") {
-          // Check if the current page is not Chat applicatino page
-          if (typeof chatApplication === "undefined") {
-            var total = message.data.totalUnreadMsg;
+          var total = message.data.totalUnreadMsg;
+
+          // Check if the current page is the full Chat application page
+          if (typeof chatApplication !== "undefined") {
+            if (total > 0) {
+              document.title = "Chat (" + total + ")";
+            } else {
+              document.title = "Chat";
+            }
+          } else {
             chatNotification.oldNotifTotal = total;
             var $chatNotification = jqchat("#chat-notification");
             if (total > 0) {
