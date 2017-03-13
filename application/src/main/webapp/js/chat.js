@@ -2680,13 +2680,13 @@ ChatApplication.prototype.loadRoom = function() {
   /*
     Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
   */
-  if (localStorage.getItem('eXoChat.room') != "" && localStorage.getItem('eXoChat.targetUser') != "" && localStorage.getItem('eXoChat.targetFullname') != "") {
+  if (localStorage.getItem('eXoChat.room') != null && localStorage.getItem('eXoChat.targetUser') != null && localStorage.getItem('eXoChat.targetFullname') != null) {
     this.room = localStorage.getItem('eXoChat.room');
     this.targetUser = localStorage.getItem('eXoChat.targetUser');
     this.targetFullname = localStorage.getItem('eXoChat.targetFullname');
-    localStorage.setItem('eXoChat.targetFullname',"");
-    localStorage.setItem('eXoChat.targetUser',"");
-    localStorage.setItem('eXoChat.room',"");
+    localStorage.removeItem('eXoChat.targetFullname');
+    localStorage.removeItem('eXoChat.targetUser');
+    localStorage.removeItem('eXoChat.room');
   }
 
   var thiss = this;
