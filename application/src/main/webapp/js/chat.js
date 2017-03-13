@@ -1419,7 +1419,7 @@ var handleRoomNotifLayout = function() {
         $('.edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
-          chatApplication.chatRoom.refreshChat(true);
+          // chatApplication.chatRoom.refreshChat(true);
           jqchat("#msg").focus();
         });
 
