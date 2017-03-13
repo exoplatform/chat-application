@@ -167,7 +167,7 @@ var chatApplication = new ChatApplication();
           room.update({unreadTotal: 0});
           chatApplication.renderRooms();
         } else if (message.event == 'message-sent') {
-          if (chatApplication.chatRoom.id === message.room) {
+          if (chatApplication.chatRoom.id === message.room && chatApplication.configMode == false) {
             chatApplication.chatRoom.addMessage(message.data, true);
             chatApplication.chatRoom.updateUnreadMessages();
           } else {
