@@ -103,7 +103,11 @@ public class CometdService {
         String msg = (String) ((JSONObject)jsonMessage.get("data")).get("msg");
         String targetUser = (String) jsonMessage.get("targetUser");
 
-        chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
+        try {
+          chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
+        } catch (ChatException e) {
+          // Should response a message somehow in websocket.
+        }
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_UPDATED)) {
         String room = jsonMessage.get("room").toString();
         String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();

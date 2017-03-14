@@ -14,7 +14,6 @@ import org.json.simple.JSONValue;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -193,7 +192,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, null);
+    String jsonMessages = chatService.read("mary", roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -229,7 +228,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, null);
+    String jsonMessages = chatService.read("mary", roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -263,7 +262,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, null);
+    String jsonMessages = chatService.read("mary", roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
@@ -299,7 +298,7 @@ public class ChatServerTest extends AbstractChatTestCase {
 
     chatService.write("my message", "john", roomId, "false", null);
 
-    String jsonMessages = chatService.read(roomId, null);
+    String jsonMessages = chatService.read("mary", roomId, null);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);

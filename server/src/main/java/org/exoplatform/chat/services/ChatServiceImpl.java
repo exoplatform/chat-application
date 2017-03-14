@@ -19,6 +19,7 @@
 
 package org.exoplatform.chat.services;
 
+import juzu.Response;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.json.simple.JSONArray;
@@ -55,6 +56,10 @@ public class ChatServiceImpl implements ChatService
 
   public void write(String message, String sender, String room, String isSystem, String options, String dbName, String targetUser)
   {
+    if (!isMemberOfRoom(sender, room, dbName)) {
+      throw new ChatException(403, "Petit malin !");
+    }
+
     if (isSystem == null) isSystem = "false";
 
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
@@ -189,17 +194,24 @@ public class ChatServiceImpl implements ChatService
     }
   }
 
-  public String read(String room, String dbName)
+  public String read(String user, String room, String dbName)
   {
-    return read(room, false, null, null, dbName);
+    return read(user, room, false, null, null, dbName);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName)
+  @Override
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName)
   {
-    return read(room, isTextOnly, fromTimestamp, null, dbName);
+    return read(user, room, isTextOnly, fromTimestamp, null, dbName);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+  @Override
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+    // Only members of the room can view the messages
+    if (!isMemberOfRoom(user, room, dbName)) {
+      throw new ChatException(403, "Petit malin !");
+    }
+
     return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, dbName);
   }
 
@@ -279,5 +291,39 @@ public class ChatServiceImpl implements ChatService
   public int getNumberOfMessages(String dbName)
   {
     return chatStorage.getNumberOfMessages(dbName);
+  }
+
+
+  /**
+   * Check if an user is member of a room
+   * @param username Username of the user
+   * @param roomId Id of the room
+   * @param dbName Databse name
+   * @return true if the user is member of the room
+   */
+  private boolean isMemberOfRoom(String username, String roomId, String dbName) {
+    List<String> roomMembers;
+    RoomBean room = userService.getRoom(username, roomId, dbName);
+    if(room == null) {
+      LOG.warning("Cannot check if user " + username + " is member of room " + roomId + " since the room does not exist.");
+      return false;
+    }
+    if (room.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
+    } else if(room.getType().equals(ChatService.TYPE_ROOM_SPACE)) {
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE, dbName);
+    } else {
+      roomMembers = new ArrayList<>();
+      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId, dbName);
+      if(userBeans != null) {
+        for (UserBean userBean : userBeans) {
+          roomMembers.add(userBean.getName());
+        }
+      }
+    }
+    if (roomMembers == null || !roomMembers.contains(username)) {
+      return false;
+    }
+    return true;
   }
 }

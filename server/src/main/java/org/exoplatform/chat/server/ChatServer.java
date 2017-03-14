@@ -69,6 +69,7 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
+import org.jgroups.demos.Chat;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -147,22 +148,20 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    if (message!=null)
-    {
-      // Only members of the room can send messages
-      if (!isMemberOfRoom(sender, room, dbName)) {
-        return Response.content(403, "Petit malin !");
-      }
-
+    if (message != null) {
       try {
-        message = URLDecoder.decode(message,"UTF-8");
-        options = URLDecoder.decode(options,"UTF-8");
+        message = URLDecoder.decode(message, "UTF-8");
+        options = URLDecoder.decode(options, "UTF-8");
       } catch (UnsupportedEncodingException e) {
         // Chat server cannot do anything in this case
         // Get original value
       }
 
-      chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
+      try {
+        chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
+      } catch (ChatException e) {
+        return Response.content(e.getStatus(), e.getMessage());
+      }
     }
 
     return Response.ok("ok").withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -177,22 +176,23 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    // Only members of the room can view the messages
-    if (!isMemberOfRoom(user, room, dbName)) {
-      return Response.content(403, "Petit malin !");
-    }
-
     Long from = null;
     try {
-      if (fromTimestamp != null && !"".equals(fromTimestamp))
+      if (fromTimestamp != null && !fromTimestamp.isEmpty()) {
         from = Long.parseLong(fromTimestamp);
+      }
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
 
-    String data = chatService.read(room, "true".equals(isTextOnly), from, dbName);
-    notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+    String data = null;
+    try {
+      data = chatService.read(user, room, "true".equals(isTextOnly), from, dbName);
+    } catch (ChatException e) {
+      return Response.content(e.getStatus(), e.getMessage());
+    }
 
+    notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
     return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
@@ -221,7 +221,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     String roomType = chatService.getTypeRoomChat(room, dbName);
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -329,7 +329,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, dbName);
     String typeRoom = chatService.getTypeRoomChat(room, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
@@ -1030,38 +1030,5 @@ public class ChatServer
     } catch(Exception e){
       LOG.info(e.getMessage());
     }
-  }
-
-  /**
-   * Check if an user is member of a room
-   * @param username Username of the user
-   * @param roomId Id of the room
-   * @param dbName Databse name
-   * @return true if the user is member of the room
-   */
-  protected boolean isMemberOfRoom(String username, String roomId, String dbName) {
-    List<String> roomMembers;
-    RoomBean room = userService.getRoom(username, roomId, dbName);
-    if(room == null) {
-      LOG.warning("Cannot check if user " + username + " is member of room " + roomId + " since the room does not exist.");
-      return false;
-    }
-    if (room.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
-      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
-    } else if(room.getType().equals(ChatService.TYPE_ROOM_SPACE)) {
-      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE, dbName);
-    } else {
-      roomMembers = new ArrayList<>();
-      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId, dbName);
-      if(userBeans != null) {
-        for (UserBean userBean : userBeans) {
-          roomMembers.add(userBean.getName());
-        }
-      }
-    }
-    if (roomMembers == null || !roomMembers.contains(username)) {
-      return false;
-    }
-    return true;
   }
 }

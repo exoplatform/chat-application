@@ -77,11 +77,11 @@ public interface ChatService
 
   public void edit(String room, String user, String messageId, String message, String dbName);
 
-  public String read(String room, String dbName);
+  public String read(String user, String room, String dbName);
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName);
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
 
   public MessageBean getMessage(String roomId, String messageId, String dbName);
 

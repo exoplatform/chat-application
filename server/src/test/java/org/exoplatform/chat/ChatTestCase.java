@@ -104,11 +104,11 @@ public class ChatTestCase extends AbstractChatTestCase
     users.add("john");
     String roomId = chatService.getRoom(users, null);
 
-    String resp = chatService.read(roomId, false, null, null);
+    String resp = chatService.read("john", roomId, false, null, null);
     String json = "{\"room\": \"" + roomId + "\",\"messages\": []}";
     assertEquals(json, resp);
 
-    resp = chatService.read(roomId, true, null, null);
+    resp = chatService.read("john", roomId, true, null, null);
     String text = "no messages";
     assertEquals(text, resp);
   }
@@ -124,12 +124,12 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users, null);
 
     chatService.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, true, null, null);
+    String resp = chatService.read("john", roomId, true, null, null);
     assertEquals(47, resp.length());
     assertTrue(resp.endsWith("] Benjamin Paillereau: foo\n"));
 
     chatService.write("bar", "john", roomId, "false", null);
-    resp = chatService.read(roomId, true, null, null);
+    resp = chatService.read("benjamin", roomId, true, null, null);
     assertEquals(85, resp.length());
     assertTrue(resp.endsWith("] John Smith: bar\n"));
   }
@@ -145,7 +145,7 @@ public class ChatTestCase extends AbstractChatTestCase
     String roomId = chatService.getRoom(users, null);
 
     chatService.write("foo", "benjamin", roomId, "false", null);
-    String resp = chatService.read(roomId, null);
+    String resp = chatService.read("john", roomId, null);
 
     JSONObject jsonObject = (JSONObject)JSONValue.parse(resp);
     String room = (String)jsonObject.get("room");
@@ -158,7 +158,7 @@ public class ChatTestCase extends AbstractChatTestCase
     assertEquals(1, messages.size());
 
     chatService.write("bar", "john", roomId, "false", null);
-    resp = chatService.read(roomId, null);
+    resp = chatService.read("benjamin", roomId, null);
     jsonObject = (JSONObject)JSONValue.parse(resp);
     messages = (JSONArray)jsonObject.get("messages");
     assertEquals(2, messages.size());
