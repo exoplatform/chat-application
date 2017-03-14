@@ -343,7 +343,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   // which can happen only on user action, to switch from a room to another for example
   if(this.currentRequest) {
     if(forceRefresh) {
-      this.currentRequest.xhr.abort();
+      this.currentRequest.abort();
       this.currentRequest = null;
     } else {
       return;
