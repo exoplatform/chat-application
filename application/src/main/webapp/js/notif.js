@@ -412,9 +412,9 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
         targetUser = msg.from;
       }
 
-      localStorage.setItem('eXoChat.room', msg.categoryId);
-      localStorage.setItem('eXoChat.targetUser', targetUser);
-      localStorage.setItem('eXoChat.targetFullname', displayTitle);
+      localStorage.setItem('notification.room', msg.categoryId);
+      localStorage.setItem('notification.targetUser', targetUser);
+      localStorage.setItem('notification.targetFullname', displayTitle);
 
       if(typeof chatApplication === "undefined") {
         newTab = window.open(path, "_chat");

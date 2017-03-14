@@ -2521,26 +2521,33 @@ ChatApplication.prototype.renderRooms = function() {
   jqchat("#chat-users").html(out);
 
   var $targetUser;
-  var value = jzGetParam("lastUsername"+this.username);
-  var _room = jzGetParam("lastRoom"+this.username);
+  if (this.firstLoad) {
+    var _room, _targetUser, _fullName;
 
-  if (value && this.firstLoad) {
-    this.targetUser = value;
-    this.room = _room;
-    this.targetFullname = jzGetParam("lastFullName"+this.username);
-    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
-    $targetUser = jqchat("#users-online-"+escapedTargetUser);
-    if ($targetUser.length) {
+    /*
+     Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
+     */
+    if (localStorage.getItem('notification.room') != null && localStorage.getItem('notification.targetUser') != null && localStorage.getItem('notification.targetFullname') != null) {
+      _room = localStorage.getItem('notification.room');
+      _targetUser = localStorage.getItem('notification.targetUser');
+      _fullName = localStorage.getItem('notification.targetFullname');
+      localStorage.removeItem('notification.targetFullname');
+      localStorage.removeItem('notification.targetUser');
+      localStorage.removeItem('notification.room');
+    } else {
+      _room = jzGetParam("lastRoom"+this.username);
+      _targetUser = jzGetParam("lastUsername"+this.username);
+      _fullName = jzGetParam("lastFullName"+this.username);
+    }
+
+    if (_targetUser) {
+      this.targetUser = _targetUser;
+      this.room = _room;
+      this.targetFullname = _fullName;
       this.firstLoad = false;
-      if (this.username!==this.ANONIM_USER) {
+      if (this.username !== this.ANONIM_USER) {
         this.loadRoom();
       }
-    } else {
-      this.targetUser = "";
-      this.targetFullname = "";
-      jzStoreParam("lastRoom"+this.username, this.room, 60000);
-      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
     }
   }
 
@@ -2675,18 +2682,6 @@ ChatApplication.prototype.loadRoom = function() {
   if(this.configMode == true) {
     this.configMode = false;//we're not on the config mode anymore
     enableMessageComposer(true);
-  }
-
-  /*
-    Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
-  */
-  if (localStorage.getItem('eXoChat.room') != null && localStorage.getItem('eXoChat.targetUser') != null && localStorage.getItem('eXoChat.targetFullname') != null) {
-    this.room = localStorage.getItem('eXoChat.room');
-    this.targetUser = localStorage.getItem('eXoChat.targetUser');
-    this.targetFullname = localStorage.getItem('eXoChat.targetFullname');
-    localStorage.removeItem('eXoChat.targetFullname');
-    localStorage.removeItem('eXoChat.targetUser');
-    localStorage.removeItem('eXoChat.room');
   }
 
   var thiss = this;
