@@ -2384,7 +2384,6 @@ ChatApplication.prototype.renderRooms = function() {
       roomPrevUser = room.user;
       if (chatApplication.showFavorites) {
         out += rhtml;
-        chatApplication.reloadCurrentItem(room);
       } else {
         if (Math.round(room.unreadTotal)>0) {
           totalFavorites += Math.round(room.unreadTotal);
@@ -2430,7 +2429,6 @@ ChatApplication.prototype.renderRooms = function() {
         roomPrevUser = room.user;
         if (chatApplication.showPeople && (chatApplication.showOffline || (!chatApplication.showOffline && room.status!=="invisible"))) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
@@ -2466,7 +2464,6 @@ ChatApplication.prototype.renderRooms = function() {
         roomPrevUser = room.user;
         if (chatApplication.showTeams) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalTeams += Math.round(room.unreadTotal);
@@ -2502,7 +2499,6 @@ ChatApplication.prototype.renderRooms = function() {
         roomPrevUser = room.user;
         if (chatApplication.showSpaces) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalSpaces += Math.round(room.unreadTotal);
@@ -2527,23 +2523,18 @@ ChatApplication.prototype.renderRooms = function() {
     /*
      Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
      */
-    if (localStorage.getItem('notification.room') != null && localStorage.getItem('notification.targetUser') != null && localStorage.getItem('notification.targetFullname') != null) {
+    if (localStorage.getItem('notification.room') != null) {
       _room = localStorage.getItem('notification.room');
-      _targetUser = localStorage.getItem('notification.targetUser');
-      _fullName = localStorage.getItem('notification.targetFullname');
-      localStorage.removeItem('notification.targetFullname');
-      localStorage.removeItem('notification.targetUser');
       localStorage.removeItem('notification.room');
     } else {
       _room = jzGetParam("lastRoom"+this.username);
-      _targetUser = jzGetParam("lastUsername"+this.username);
-      _fullName = jzGetParam("lastFullName"+this.username);
     }
 
-    if (_targetUser) {
-      this.targetUser = _targetUser;
+    if (_room) {
       this.room = _room;
-      this.targetFullname = _fullName;
+      var TAFFYRoom = rooms({room: _room}).first();
+      this.targetUser = TAFFYRoom.user;
+      this.targetFullname = TAFFYRoom.escapedFullname;
       this.firstLoad = false;
       if (this.username !== this.ANONIM_USER) {
         this.loadRoom();
@@ -2595,17 +2586,6 @@ ChatApplication.prototype.renderRooms = function() {
   }
 };
 
-ChatApplication.prototype.reloadCurrentItem = function(room) {
-  if (chatApplication.room === room.room) {
-    var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-    if (chatApplication.targetFullname !== spaceFullName) {
-      jqchat('.target-user-fullname').text(spaceFullName);
-      chatApplication.targetUser = room.user;
-      chatApplication.targetFullname = spaceFullName;
-      chatApplication.loadRoom();
-    }
-  }
-}
 ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   var out = "";
   if (room.user!==roomPrevUser) {
@@ -2704,7 +2684,7 @@ ChatApplication.prototype.loadRoom = function() {
     this.chatRoom.emptyChatZone(true);
 
     // Add a flag for room loading operation with the id of the room
-    this.chatRoom.loadingNewRoom = true;
+    this.chatRoom.setNewRoom(true);
     this.chatRoom.callingOwner = this.targetUser;
   }
 

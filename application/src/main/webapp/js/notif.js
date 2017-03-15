@@ -403,18 +403,7 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
         displayTitle = msg.fromFullName;
       }
 
-      var targetUser;
-      if(msg.roomType === 't') {
-        targetUser = "team-" + msg.categoryId;
-      } else if(msg.roomType === 's') {
-        targetUser = "space-" + msg.categoryId;
-      } else {
-        targetUser = msg.from;
-      }
-
       localStorage.setItem('notification.room', msg.categoryId);
-      localStorage.setItem('notification.targetUser', targetUser);
-      localStorage.setItem('notification.targetFullname', displayTitle);
 
       if(typeof chatApplication === "undefined") {
         newTab = window.open(path, "_chat");

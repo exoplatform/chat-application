@@ -238,6 +238,10 @@ ChatRoom.prototype.onRefresh = function(callback) {
   this.onRefreshCB = callback;
 };
 
+ChatRoom.prototype.setNewRoom = function(bln) {
+  this.loadingNewRoom = bln;
+}
+
 ChatRoom.prototype.setMiniChatDiv = function(elt) {
   this.miniChat = elt;
 };
@@ -411,7 +415,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         if(thiss.loadingNewRoom) {
           // Enable composer if the new room loading has finished
           enableMessageComposer(true);
-          thiss.loadingNewRoom = false;
+          thiss.setNewRoom(false);
         }
 
         if (typeof thiss.onRefreshCB === "function") {
@@ -453,7 +457,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           // the room init operation is canceled, thus no messages will be displayed
           thiss.showMessages();
         }
-        thiss.loadingNewRoom = false;
+        thiss.setNewRoom(false);
         thiss.lastCallOwner = thiss.targetUser;
         if (typeof thiss.onRefreshCB === "function") {
           thiss.onRefreshCB(1);
