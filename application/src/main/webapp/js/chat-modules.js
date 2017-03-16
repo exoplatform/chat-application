@@ -1275,7 +1275,7 @@ var loadSetting = function (callback, overrideSettings) {
       "dbName": serverDbName
     },
     headers: {
-      'Authorization': 'Bearer ' + servertoken
+      'Authorization': 'Bearer ' + chatNotification.token
     },
 
     success: function(operation){
@@ -1331,6 +1331,12 @@ String.prototype.endsWith = function(suffix) {
 
   $(document).ready(function() {
 
+    // TODO Workaround to fix the problem of chat-module.js is loaded twice.
+    if (!window.chatModuleLoaded) {
+      window.chatModuleLoaded = true;
+      loadSetting(null, true);
+    }
+
     // Initialize mini-chat window only if it is NOT in Chat application
     if (typeof chatApplication === "undefined") {
       var $miniChat = $(".mini-chat");
@@ -1369,11 +1375,6 @@ String.prototype.endsWith = function(suffix) {
               var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode");
               showMiniChatPopup(miniChatRoom, miniChatType);
             }
-
-            loadSetting(null, true);
-          },
-          error: function (xhr, status, error) {
-            loadSetting(null, true);
           }
         });
       });

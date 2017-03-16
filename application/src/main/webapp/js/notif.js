@@ -403,18 +403,18 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
         displayTitle = msg.fromFullName;
       }
 
-      localStorage.setItem('notification.room', msg.categoryId);
-
       if(typeof chatApplication === "undefined") {
-        newTab = window.open(path, "_chat");
-        return;
-      }
+        localStorage.setItem('notification.room', msg.categoryId);
+        window.open(path, "_chat");
+      } else {
+        // TODO Need to handle the case in the full chat app.
+        chatApplication.loadRoom(msg.categoryId);
 
-      chatApplication.loadRoom();
-      if (chatApplication.isMobileView()) {
-        jqchat(".right-chat").css("display", "block");
-        jqchat(".left-chat").css("display", "none");
-        jqchat(".room-name").html(displayTitle);
+        if (chatApplication.isMobileView()) {
+          jqchat(".right-chat").css("display", "block");
+          jqchat(".left-chat").css("display", "none");
+          jqchat(".room-name").html(displayTitle);
+        }
       }
     };
   }

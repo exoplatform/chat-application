@@ -2657,7 +2657,14 @@ function userRoomStatus(targetUser, status) {
         jqchat("#userRoomStatus > i").addClass("user-"+status);
 }
 
-ChatApplication.prototype.loadRoom = function() {
+ChatApplication.prototype.loadRoom = function(room) {
+  if (room) {
+    this.room = room;
+    var TAFFYRoom = this.rooms({room: room}).first();
+    this.targetUser = TAFFYRoom.user;
+    this.targetFullname = TAFFYRoom.escapedFullname;
+  }
+
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode == true) {
     this.configMode = false;//we're not on the config mode anymore
