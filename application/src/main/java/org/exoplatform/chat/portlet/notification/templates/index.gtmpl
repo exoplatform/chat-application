@@ -10,7 +10,6 @@
   data-chat-server-url="<%=chatServerURL%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
   data-chat-interval-chat="<%=chatIntervalChat%>"
-  data-chat-interval-notif="<%=chatIntervalNotif%>"
   data-space-id="<%=spaceId%>"
   data-db-name="<%=dbName%>"
   data-portal-uri="<%=portalURI%>"

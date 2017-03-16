@@ -25,10 +25,6 @@ function ChatNotification() {
   this.wsEndpoint = "";
   this.cometdToken = "";
 
-  this.notifEventURL = "";
-
-  // TODO This can be removed, also from configuration and other relevant places.
-  this.chatIntervalNotif = "";
   this.dbName = "";
 
   this.oldNotifTotal = 0;
@@ -55,9 +51,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
   this.chatIntervalChat = options.chatInterval;
-  this.chatIntervalNotif = options.notificationInterval;
   this.dbName = options.dbName;
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&dbName='+this.dbName;
   this.spaceId = options.spaceId;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
   this.jzChatRead = options.jzChatRead;
@@ -84,8 +78,8 @@ ChatNotification.prototype.initUserInterface = function() {
     });
 };
 
-ChatNotification.prototype.updateNotifEventURL = function() {
-  this.notifEventURL = this.jzNotification+'?user='+this.username+'&dbName='+this.dbName;
+ChatNotification.prototype.getNotifEventURL = function() {
+  return (this.jzNotification+'?user='+this.username+'&dbName='+this.dbName);
 };
 
 /**
@@ -102,7 +96,43 @@ ChatNotification.prototype.initUserProfile = function() {
       this.token = data.token;
 
       if(typeof chatApplication === "undefined") {
-        this.refreshNotif();
+        jqchat.ajax({
+          url: this.getNotifEventURL() + "&withDetails=true",
+          headers: {
+            'Authorization': 'Bearer ' + this.token
+          },
+          dataType: "json",
+          context: this,
+          success: function(data){
+            if (data.notifications.length > 0) {
+              var total = Math.abs(data.notifications.length);
+
+              var $chatNotification = jqchat("#chat-notification");
+              if (total > 0) {
+                if(desktopNotification.canShowOnSiteNotif()) {
+                  $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
+                  $chatNotification.css('display', 'block');
+                }
+              } else {
+                $chatNotification.html('<span></span>');
+                $chatNotification.css('display', 'none');
+                var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+                $chatNotificationsDetails.css("display", "none");
+                $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData["exoplatform.chat.loading"]+'</span>');
+                $chatNotificationsDetails.parent().removeClass("full-width");
+                $chatNotificationsDetails.next().hide();
+              }
+
+              this.oldNotifTotal = total;
+            }
+          },
+          error: function(){
+            var $chatNotification = jqchat("#chat-notification");
+            $chatNotification.html('<span></span>');
+            $chatNotification.css('display', 'none');
+            this.oldNotifTotal = -1;
+          }
+        });
       }
 
       this.refreshStatusChat();
@@ -117,63 +147,17 @@ ChatNotification.prototype.initUserProfile = function() {
 /**
  * Refresh Notifications
  */
-ChatNotification.prototype.refreshNotif = function() {
-  this.updateNotifEventURL();
-  jqchat.ajax({
-    url: this.notifEventURL+"&withDetails=true",
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-    dataType: "json",
-    context: this,
-    success: function(data){
-      if (data.notifications.length > 0) {
-        var total = Math.abs(data.notifications.length);
-
-        var $chatNotification = jqchat("#chat-notification");
-        if (total > 0) {
-          if(desktopNotification.canShowOnSiteNotif()) {
-            $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
-            $chatNotification.css('display', 'block');
-          }
-        } else {
-          $chatNotification.html('<span></span>');
-          $chatNotification.css('display', 'none');
-          var $chatNotificationsDetails = jqchat("#chat-notifications-details");
-          $chatNotificationsDetails.css("display", "none");
-          $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData["exoplatform.chat.loading"]+'</span>');
-          $chatNotificationsDetails.parent().removeClass("full-width");
-          $chatNotificationsDetails.next().hide();
-        }
-
-        this.oldNotifTotal = total;
-      }
-    },
-    error: function(){
-      var $chatNotification = jqchat("#chat-notification");
-      $chatNotification.html('<span></span>');
-      $chatNotification.css('display', 'none');
-      this.oldNotifTotal = -1;
-    }
-  });
-
-};
-
-/**
- * Refresh Notifications
- */
-ChatNotification.prototype.refreshNotifDetails = function(callback) {
+ChatNotification.prototype.showDetail = function(callback) {
   var $chatNotificationsDetails = jqchat("#chat-notifications-details");
 
-  if (this.oldNotifTotal>0) {
+  if (this.oldNotifTotal > 0) {
     $chatNotificationsDetails.css("display", "initial");
     if (jqchat(".chat-notification-loading", $chatNotificationsDetails).length > 0) {
       $chatNotificationsDetails.next().show();
     }
 
-    this.updateNotifEventURL();
     jqchat.ajax({
-      url: this.notifEventURL+"&withDetails=true",
+      url: this.getNotifEventURL() + "&withDetails=true",
       headers: {
         'Authorization': 'Bearer ' + this.token
       },
@@ -182,9 +166,9 @@ ChatNotification.prototype.refreshNotifDetails = function(callback) {
       success: function(data){
         var html = '';
         var categoryIdList = new Array(); // Only display last unread messages from different conversations
-        if (data.notifications.length>0) {
+        if (data.notifications.length > 0) {
           var notifs = TAFFY(data.notifications);
-          var notifs = notifs();
+          notifs = notifs();
           var thiss = this;
           var froms = [];
           notifs.order("timestamp desc").each(function (notif, number) {
@@ -340,15 +324,6 @@ ChatNotification.prototype.getDate = function(timestampServer) {
   return sTime;
 
 }
-
-/**
- * Play Notif Sound
- */
-ChatNotification.prototype.playNotifSound = function() {
-  var notifSound=document.getElementById("chat-audio-notif");
-  notifSound.play();
-};
-
 
 /**
  * Show desktop Notif
@@ -802,7 +777,6 @@ var chatNotification = new ChatNotification();
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
       "chatInterval": $notificationApplication.attr("data-chat-interval-chat"),
-      "notificationInterval": $notificationApplication.attr("data-chat-interval-notif"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
       "spaceId": $notificationApplication.attr("data-space-id"),
       "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
@@ -862,7 +836,7 @@ var chatNotification = new ChatNotification();
                 chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
 
                 if(desktopNotification.canPlaySound()){
-                  chatNotification.playNotifSound();
+                  document.getElementById("chat-audio-notif").play();
                 }
                 if(desktopNotification.canShowDesktopNotif()){
                   chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
@@ -967,7 +941,7 @@ var chatNotification = new ChatNotification();
       console.log("NEED TO REFRESH NOTIFICATIONS");
       if (!$(this).hasClass("disabled")) {
         $(this).addClass("disabled");
-        chatNotification.refreshNotifDetails(function () {
+        chatNotification.showDetail(function () {
           $(".uiNotifChatIcon").removeClass("disabled");
         });
         chatNotification.changeStatusChat(chatNotification.profileStatus);

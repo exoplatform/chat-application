@@ -2,7 +2,6 @@
 var chatApplication = new ChatApplication();
 
 (function($){
-
   $(document).ready(function(){
     /**
      * Init Chat
@@ -442,7 +441,9 @@ var chatApplication = new ChatApplication();
         $("#task-add-user").val("");
         $("#task-add-date").val("");
         jqchat(".task-user-label").parent().remove();
-        hideResults();
+        var $userResults = $(".task-users-results");
+        $userResults.css("display", "none");
+        $userResults.html("");
       } else if (toggleClass === "meeting-action-event-panel") {
         $("#event-add-summary").val("");
         $("#event-add-start-date").val("");
@@ -492,7 +493,7 @@ var chatApplication = new ChatApplication();
           $("#global-config input[notif-trigger]").parent().removeClass("switchBtnDisabled");
         }
         jqchat('#global-config :checkbox').iphoneStyle();
-        enableMessageComposer(false);
+        chatApplication.enableMessageComposer(false);
         jqchat("#chat-team-button-dropdown").hide();
         jqchat("#userRoomStatus").removeClass("hide").show();
     };
@@ -639,36 +640,10 @@ var chatApplication = new ChatApplication();
             chatApplication.search(filter);
     });
 
-
-var handleRoomNotifLayout = function() {
-  chatApplication.chatRoom.loadSetting(function() {
-    jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
-    var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
-    if (roomPrefTrigger) {
-      if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
-            roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
-        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-        $("#room-config input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
-      } else {
-        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
-        $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
-        var keywords = roomPrefTrigger.split(":")[1];
-        $("#room-config input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
-      }
-    } else {
-      $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-    }
-    $("#room-config input#room-notif-trigger-when-key-word-value").unbind("blur");
-    $("#room-config input#room-notif-trigger-when-key-word-value").blur(function(evt) {
-      $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
-    });
-  },false);
-};
-
     //team/room desktop notification settings
     $("#team-notification-button").on("click", function() {
       chatApplication.configMode = true;
-      enableMessageComposer(false)
+      chatApplication.enableMessageComposer(false)
       var $div = jqchat("#room-config-template");
 
       $div = $div.clone();
@@ -678,12 +653,32 @@ var handleRoomNotifLayout = function() {
       jqchat('#chats').html("");
       $div.appendTo('#chats');
 
-      handleRoomNotifLayout();
+      chatApplication.chatRoom.loadSetting(function() {
+        jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
+        var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
+        if (roomPrefTrigger) {
+          if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
+            roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
+            $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+            $("#room-config input[room-notif-trigger='" + roomPrefTrigger + "']").attr("checked", "checked");
+          } else {
+            $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+            $("#room-config input[room-notif-trigger='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD + "']").attr("checked", "checked");
+            var keywords = roomPrefTrigger.split(":")[1];
+            $("#room-config input[id='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE + "']").val(keywords);
+          }
+        } else {
+          $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+        }
+        $("#room-config input#room-notif-trigger-when-key-word-value").unbind("blur");
+        $("#room-config input#room-notif-trigger-when-key-word-value").blur(function (evt) {
+          $("#room-config input[room-notif-trigger='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD + "']").click();
+        });
+      }, false);
 
       jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
       jqchat("#userRoomStatus").addClass("hide");
-      jqchat("#chats").css("min-height", window.innerHeight+"px");
-
+      jqchat("#chats").css("min-height", window.innerHeight + "px");
     });
 
     $(document).on("click touchstart", "#global-config div.notif-manner div.uiSwitchBtn", function() {
@@ -947,20 +942,14 @@ var handleRoomNotifLayout = function() {
       chatApplication.search(filter);
     });
 
-    function setMiniCalendarToDateField(dateFieldId) {
-      var dateField = document.getElementById(dateFieldId);
-      dateField.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
-      };
-      dateField.onkeyup=function(){
-        uiMiniCalendar.show();
-      };
-      dateField.onkeydown=function(event){
-        uiMiniCalendar.onTabOut(event);
-      };
-      dateField.onclick=function(event){
-        event.cancelBubble = true;
-      };
+    function setActionButtonEnabled(btnClass, isEnabled) {
+      if (isEnabled) {
+        $(btnClass).css('cursor', "default");
+        $(btnClass).removeAttr('disabled');
+      } else {
+        $(btnClass).css('cursor', "progress");
+        $(btnClass).attr('disabled','disabled');
+      }
     };
 
     $(".create-event-button").on("click", function() {
@@ -1043,16 +1032,6 @@ var handleRoomNotifLayout = function() {
       });
     });
 
-    function setActionButtonEnabled(btnClass, isEnabled) {
-      if (isEnabled) {
-        $(btnClass).css('cursor', "default");
-        $(btnClass).removeAttr('disabled');
-      } else {
-        $(btnClass).css('cursor', "progress");
-        $(btnClass).attr('disabled','disabled');
-      }
-    };
-
     $("#event-add-start-time").on("change", function() {
       var time = $(this).val();
       var h = Math.round(time.split(":")[0]) + 1;
@@ -1061,11 +1040,24 @@ var handleRoomNotifLayout = function() {
       $("#event-add-end-time").val(hh+":"+time.split(":")[1]);
     });
 
+    function setMiniCalendarToDateField(dateFieldId) {
+      var dateField = document.getElementById(dateFieldId);
+      dateField.onfocus=function(){
+        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
+      };
+      dateField.onkeyup=function(){
+        uiMiniCalendar.show();
+      };
+      dateField.onkeydown=function(event){
+        uiMiniCalendar.onTabOut(event);
+      };
+      dateField.onclick=function(event){
+        event.cancelBubble = true;
+      };
+    };
+
     setMiniCalendarToDateField('event-add-start-date');
     setMiniCalendarToDateField('event-add-end-date');
-
-    addTimeOptions("#event-add-start-time");
-    addTimeOptions("#event-add-end-time");
 
     function addTimeOptions(id) {
       var select = $(id);
@@ -1085,12 +1077,8 @@ var handleRoomNotifLayout = function() {
         }
       }
     }
-
-    function hideResults() {
-      var $userResults = $(".task-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
-    }
+    addTimeOptions("#event-add-start-time");
+    addTimeOptions("#event-add-end-time");
 
     $('#team-add-user').keyup(function(event) {
       var prefix = "team";
@@ -1223,13 +1211,6 @@ var handleRoomNotifLayout = function() {
       var $userResults = $(".team-users-results");
       $userResults.css("display", "none");
       $userResults.html("");
-    }
-
-    function strip(html)
-    {
-      var tmp = document.createElement("DIV");
-      tmp.innerHTML = html;
-      return tmp.textContent||tmp.innerText;
     }
 
     $("#team-edit-button").on("click", function() {
@@ -1387,7 +1368,6 @@ var handleRoomNotifLayout = function() {
       $('.edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
-        // chatApplication.chatRoom.refreshChat(true);
         jqchat("#msg").focus();
       });
     });
@@ -1420,7 +1400,6 @@ var handleRoomNotifLayout = function() {
         $('.edit-modal').modal('hide');
 
         chatApplication.editMessage(id, msg, function() {
-          // chatApplication.chatRoom.refreshChat(true);
           jqchat("#msg").focus();
         });
 
@@ -1536,8 +1515,6 @@ var handleRoomNotifLayout = function() {
         }
 
   });
-
-
 })(jqchat);
 
 /**
@@ -1626,6 +1603,14 @@ function ChatApplication() {
   this.plugins = [];
 }
 
+ChatApplication.prototype.setUserPref = function(key, value, expire) {
+  jzStoreParam(key + this.username, value, expire);
+}
+
+ChatApplication.prototype.getUserPref = function(key) {
+  return jzGetParam(key + this.username);
+}
+
 ChatApplication.prototype.registerEvent = function(plugin) {
   this.plugins.push(plugin);
 }
@@ -1688,13 +1673,6 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
   });
 
 };
-
-/**
- * Activate tooltip in this page
- */
-ChatApplication.prototype.activateTootips = function() {
-  jqchat("[data-toggle='tooltip']").tooltip();
-}
 
 /**
  * Edit a chat message in a popup
@@ -1916,6 +1894,7 @@ ChatApplication.prototype.initChat = function() {
   this.initChatPreferences();
 
   this.chatOnlineInt = clearInterval(this.chatOnlineInt);
+
   this.loadRooms();
 
   if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
@@ -1932,10 +1911,10 @@ ChatApplication.prototype.initChat = function() {
     else if (jqchat(this).hasClass("header-teams"))
       chatApplication.showTeams = !chatApplication.showTeams;
 
-    jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
-    jzStoreParam("chatShowPeople"+chatApplication.username, chatApplication.showPeople, 600000);
-    jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+    chatApplication.setUserPref("chatShowFavorites", chatApplication.showFavorites, 600000);
+    chatApplication.setUserPref("chatShowPeople", chatApplication.showPeople, 600000);
+    chatApplication.setUserPref("chatShowSpaces", chatApplication.showSpaces, 600000);
+    chatApplication.setUserPref("chatShowTeams", chatApplication.showTeams, 600000);
 
     chatApplication.renderRooms();
   });
@@ -1944,7 +1923,7 @@ ChatApplication.prototype.initChat = function() {
   $leftPanel.on("click", ".btn-add-team", function(event) {
     event.stopPropagation();
     chatApplication.showTeams = true;
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
+    chatApplication.setUserPref("chatShowTeams", chatApplication.showTeams, 600000);
     chatApplication.renderRooms();
 
     var $uitext = jqchat("#team-modal-name");
@@ -1969,15 +1948,15 @@ ChatApplication.prototype.initChat = function() {
     if (type === "people") {
       chatApplication.showPeople = true;
       chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
-      jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+      chatApplication.setUserPref("chatShowPeople", true, 600000);
     } else if (type === "space") {
       chatApplication.showSpaces = true;
       chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
-      jzStoreParam("chatShowSpaces"+chatApplication.username, true, 600000);
+      chatApplication.setUserPref("chatShowSpaces", true, 600000);
     } else if (type === "team") {
       chatApplication.showTeams = true;
       chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
-      jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
+      chatApplication.setUserPref("chatShowTeams", true, 600000);
     }
     chatApplication.renderRooms();
 
@@ -1986,9 +1965,9 @@ ChatApplication.prototype.initChat = function() {
   $leftPanel.on("click", ".btn-offline", function(event) {
     event.stopPropagation();
     chatApplication.showPeople = true;
-    jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
+    chatApplication.setUserPref("chatShowPeople", true, 600000);
     chatApplication.showOffline = !chatApplication.showOffline;
-    jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
+    chatApplication.setUserPref("chatShowOffline", chatApplication.showOffline, 600000);
     chatApplication.renderRooms();
   });
 
@@ -2026,7 +2005,10 @@ ChatApplication.prototype.initChat = function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
 
-    chatNotification.getStatus(thiss.targetUser, userRoomStatus);
+    chatNotification.getStatus(thiss.targetUser, function(targetUser, status) {
+      jqchat("#userRoomStatus > i").attr("class", "");
+      jqchat("#userRoomStatus > i").addClass("user-"+status);
+    });
 
     thiss.loadRoom();
     if (thiss.isMobileView()) {
@@ -2060,25 +2042,42 @@ ChatApplication.prototype.initChat = function() {
 /**
  * Init Chat Preferences
  */
-ChatApplication.prototype.initChatPreferences = function() {
-  this.showFavorites = true;
-  if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
-  this.showPeople = true;
-  if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
-  this.showOffline = false;
-  if (jzGetParam("chatShowOffline"+this.username) === "true") this.showOffline = true;
-  this.showSpaces = true;
-  if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
-  this.showTeams = true;
-  if (jzGetParam("chatShowTeams"+this.username) === "false") this.showTeams = false;
+ChatApplication.prototype.initChatPreferences = function () {
+  if (this.getUserPref("chatShowFavorites") === "false") {
+    this.showFavorites = false;
+  } else {
+    this.showFavorites = true;
+  }
+
+  if (this.getUserPref("chatShowPeople") === "false") {
+    this.showPeople = false;
+  } else {
+    this.showPeople = true;
+  }
+
+  if (this.getUserPref("chatShowOffline") === "true") {
+    this.showOffline = true;
+  } else {
+    this.showOffline = false;
+  }
+
+  if (this.getUserPref("chatShowSpaces") === "false") {
+    this.showSpaces = false;
+  } else {
+    this.showSpaces = true;
+  }
+
+  if (this.getUserPref("chatShowTeams") === "false") {
+    this.showTeams = false;
+  } else {
+    this.showTeams = true;
+  }
 };
 
 /**
  * Init Chat Profile
  */
 ChatApplication.prototype.initChatProfile = function() {
-  //var thiss = chatApplication; // TODO: IMPROVE THIS
-
   if (this.username===this.ANONIM_USER) {
     var anonimFullname = jzGetParam("anonimFullname");
     var anonimUsername = jzGetParam("anonimUsername");
@@ -2288,9 +2287,9 @@ ChatApplication.prototype.loadRooms = function() {
         this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
         if (fromChromeApp) {
           if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-            chatNotification.refreshNotifDetails();
+            chatNotification.showDetail();
           }
-        } else if (window.fluid!==undefined) {
+        } else if (window.fluid !== undefined) {
           if (this.totalNotif>0)
             window.fluid.dockBadge = this.totalNotif;
           else
@@ -2527,7 +2526,7 @@ ChatApplication.prototype.renderRooms = function() {
       _room = localStorage.getItem('notification.room');
       localStorage.removeItem('notification.room');
     } else {
-      _room = jzGetParam("lastRoom"+this.username);
+      _room = this.getUserPref("lastRoom");
     }
 
     if (_room) {
@@ -2548,7 +2547,7 @@ ChatApplication.prototype.renderRooms = function() {
     $targetUser.find(".room-total").addClass("badgeWhite");
   }
 
-  this.activateTootips();
+  jqchat("[data-toggle='tooltip']").tooltip();
 
   if (roomsPeople.count()<=5) {
     jqchat(".btn-top-history-people").hide();
@@ -2636,7 +2635,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   return out;
 };
 
-var enableMessageComposer = function(bool){
+ChatApplication.prototype.enableMessageComposer = function(bool){
   if(bool) {//enable
     jqchat("div.chat-message").css({//enable the chat footer again
       "pointer-events": "",
@@ -2648,13 +2647,6 @@ var enableMessageComposer = function(bool){
       "opacity": "0.3"
     });
   }
-}
-/**
- * Load Room : server call
- */
-function userRoomStatus(targetUser, status) {
-        jqchat("#userRoomStatus > i").attr("class", "");
-        jqchat("#userRoomStatus > i").addClass("user-"+status);
 }
 
 ChatApplication.prototype.loadRoom = function(room) {
@@ -2668,7 +2660,7 @@ ChatApplication.prototype.loadRoom = function(room) {
   //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode == true) {
     this.configMode = false;//we're not on the config mode anymore
-    enableMessageComposer(true);
+    chatApplication.enableMessageComposer(true);
   }
 
   var thiss = this;
@@ -2686,7 +2678,7 @@ ChatApplication.prototype.loadRoom = function(room) {
 
   if(this.chatRoom.lastCallOwner !== this.targetUser) {
     // Disable composer while switching from a room to another
-    enableMessageComposer(false);
+    chatApplication.enableMessageComposer(false);
     // Empty room messages and add loading icon
     this.chatRoom.emptyChatZone(true);
 
@@ -3350,7 +3342,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     }
   });
 
-  function cbGetConnectionStatus(targetUser, activity) {
+  chatNotification.getStatus(chatApplication.targetUser, function(targetUser, activity) {
     if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
       if (activity !== "offline" && activity !== "invisible") {
         jqchat(".btn-weemo").removeClass("disabled");
@@ -3360,12 +3352,10 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         jqchat(".btn-weemo-conf").addClass("disabled");
       }
     } else {
-        jqchat(".btn-weemo").removeClass("disabled");
-        //jqchat(".btn-weemo-conf").removeClass("disabled");
+      jqchat(".btn-weemo").removeClass("disabled");
+      //jqchat(".btn-weemo-conf").removeClass("disabled");
     }
-  }
-
-  chatNotification.getStatus(chatApplication.targetUser, cbGetConnectionStatus);
+  });
 
   setTimeout(function () {
     chatApplication.displayVideoCallOnChatApp();

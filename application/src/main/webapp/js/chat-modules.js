@@ -45,6 +45,14 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeeti
   this.plugins = {};
 }
 
+ChatRoom.prototype.setUserPref = function(key, value, expire) {
+  jzStoreParam(key + this.username, value, expire);
+}
+
+ChatRoom.prototype.getUserPref = function(key) {
+  return jzGetParam(key + this.username);
+}
+
 ChatRoom.prototype.registerPlugin = function(plugin) {
     if (plugin.getType) {
         this.plugins[plugin.getType()] = plugin;
@@ -90,11 +98,11 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         callback(thiss.id);
       }
 
-      jzStoreParam("lastRoom" + thiss.username, thiss.id, 60000);
-      jzStoreParam("lastUsername" + thiss.username, thiss.targetUser, 60000);
-      jzStoreParam("lastFullName" + thiss.username, thiss.targetFullname, 60000);
-      jzStoreParam("lastTS" + thiss.username, "0");
-      jzStoreParam("lastUpdatedTS" + thiss.username, "0");
+      thiss.setUserPref("lastRoom", thiss.id, 60000);
+      thiss.setUserPref("lastUsername", thiss.targetUser, 60000);
+      thiss.setUserPref("lastFullName", thiss.targetFullname, 60000);
+      thiss.setUserPref("lastTS", "0");
+      thiss.setUserPref("lastUpdatedTS", "0");
 
       thiss.refreshChat(true, function () {
         // always scroll to the last message when loading a chat room
@@ -360,13 +368,13 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   }
 
   if (this.username !== this.ANONIM_USER) {
-    var thiss = this;
-    var lastTS = jzGetParam("lastTS"+this.username) || 0;
-    var lastUpdatedTS = jzGetParam("lastUpdatedTS"+this.username) || 0;
+    var lastTS = this.getUserPref("lastTS") || 0;
+    var lastUpdatedTS = this.getUserPref("lastUpdatedTS" + this.username) || 0;
 
     // retrieve last messages only
     var fromTimestamp = Math.max(lastTS, lastUpdatedTS);
 
+    var thiss = this;
     this.currentRequest = jqchat.ajax({
       url: this.jzChatRead,
       data: {
@@ -400,8 +408,8 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           var ts = data.timestamp;
           var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
           if (updatedTS < 0) updatedTS = 0;
-          jzStoreParam("lastTS"+thiss.username, ts, 600);
-          jzStoreParam("lastUpdatedTS"+thiss.username, updatedTS, 600);
+          thiss.setUserPref("lastTS", ts, 600);
+          thiss.setUserPref("lastUpdatedTS", updatedTS, 600);
 
           thiss.addMessagesToLocalList(data);
           thiss.showMessages();
@@ -414,7 +422,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         thiss.lastCallOwner = thiss.targetUser;
         if(thiss.loadingNewRoom) {
           // Enable composer if the new room loading has finished
-          enableMessageComposer(true);
+          chatApplication.enableMessageComposer(true);
           thiss.setNewRoom(false);
         }
 
@@ -473,7 +481,7 @@ ChatRoom.prototype.getChatMessages = function(room, callback) {
   // getChatMessages method is called on user action,
   // so it has more priority
   if(this.currentRequest) {
-    this.currentRequest.xhr.abort();
+    this.currentRequest.abort();
     this.currentRequest = null;
   }
 
