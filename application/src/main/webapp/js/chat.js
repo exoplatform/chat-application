@@ -166,6 +166,8 @@ var chatApplication = new ChatApplication();
           room.update({unreadTotal: 0});
           chatApplication.renderRooms();
         } else if (message.event == 'message-sent') {
+          chatApplication.rooms({room: message.room}).update({timestamp: new Date().getTime()});
+
           if (chatApplication.chatRoom.id === message.room && chatApplication.configMode == false) {
             chatApplication.chatRoom.addMessage(message.data, true);
             chatApplication.chatRoom.updateUnreadMessages();
@@ -2420,7 +2422,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsPeople = rooms();
   roomsPeople = roomsPeople.filter({type:{"is":"u"}});
   roomsPeople = roomsPeople.filter({isFavorite:{"!is": true}});
-  roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsPeople.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("PEOPLE : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
@@ -2455,7 +2457,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsTeams = rooms();
   roomsTeams = roomsTeams.filter({type:{"is":"t"}});
   roomsTeams = roomsTeams.filter({isFavorite:{"!is": true}});
-  roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsTeams.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("TEAMS : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
@@ -2490,7 +2492,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsSpaces = rooms();
   roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
   roomsSpaces = roomsSpaces.filter({isFavorite:{"!is": true}});
-  roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsSpaces.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
 //    console.log("SPACES : "+room.escapedFullname);
     if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
