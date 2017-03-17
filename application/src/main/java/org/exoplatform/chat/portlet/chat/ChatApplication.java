@@ -175,6 +175,9 @@ public class ChatApplication
     }
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
+    if(!portalURI.endsWith("/")){
+      portalURI.concat("/");
+    }
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_).set("chatServerURL", chatServerURL)
