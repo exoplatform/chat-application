@@ -81,7 +81,7 @@ public class CometdService {
         realTimeMessageService.sendMessageToAll(realTimeMessageBean);
 
         // update data
-        userService.setStatus((String) jsonMessage.get("room"),
+        userService.setStatus((String) jsonMessage.get("sender"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"),
                 (String) jsonMessage.get("dbName"));
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
