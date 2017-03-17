@@ -89,7 +89,7 @@ var chatApplication = new ChatApplication();
         if (typeof message != 'object') {
           message = JSON.parse(message);
         }
-        // console.log('>>>>>>>> chat message via websocket : ' + event.data);
+        console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
         if (message.event == 'user-status-changed') {
@@ -107,7 +107,7 @@ var chatApplication = new ChatApplication();
                 if (user.name == message.room) {
                   chatApplication.chatRoom.users[idx].status = message.data.status;
                   var roomUsersContainer = jqchat("#room-users-list");
-                  chatApplication.renderRoomUsers(roomUsersContainer);
+                  chatApplication.renderRoomUsers();
                   return;
                 }
               });
@@ -138,20 +138,8 @@ var chatApplication = new ChatApplication();
           room.update({escapedFullname: message.data.title});
           chatApplication.renderRooms();
 
-          var leftMembers = message.data.members;
-          // check if one or more users of the current selected room (if any) have been removed from it, and
-          // update the room members list in such a case
           if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
-            var usersDeleted = false;
-            chatApplication.chatRoom.users.forEach(function (user, idx) {
-              if (leftMembers.indexOf(user.name) >= 0) {
-                chatApplication.chatRoom.users.splice(idx, 1);
-                usersDeleted = true;
-              }
-            });
-            if(usersDeleted) {
-              chatApplication.renderRoomUsers(jqchat("#room-users-list"));
-            }
+            chatApplication.loadRoomUsers();
           }
         } else if (message.event == 'room-deleted') {
           var room = chatApplication.rooms({room: message.room});
@@ -3424,60 +3412,57 @@ ChatApplication.prototype.loadRoomUsers = function() {
 		roomUsersContainer.addClass("room-users-collapsed");//need a default class for responsive
 	}
 
-    var roomUsersContainer = jqchat("#room-users-list");
-    if(roomUsersContainer !== undefined) {
-      // fetch room users
-      chatApplication.getUsers(this.targetUser, function (jsonData) {
-        var roomUsers = jsonData.users;
+    // fetch room users
+    chatApplication.getUsers(this.targetUser, function (jsonData) {
+      var roomUsers = jsonData.users;
 
-        // check if there are changes
-        var roomUserHasChanged = false;
-        if(roomUsers.length === thiss.chatRoom.users.length) {
-          roomUserHasChanged = !roomUsers.every(function(roomUser, index) {
-             return (roomUser.name == thiss.chatRoom.users[index].name
-              && roomUser.fullname == thiss.chatRoom.users[index].fullname
-              && roomUser.status == thiss.chatRoom.users[index].status);
-          });
-        } else {
-          roomUserHasChanged = true;
-        }
-
-        // if the room users have changed, update the panel
-        if(roomUserHasChanged === true) {
-          thiss.chatRoom.users = roomUsers;
-
-          // generate room users list DOM
-          thiss.renderRoomUsers(roomUsersContainer);
-        }
-
-        // User Profile Popup initialize
-        var portal = eXo.env.portal;
-        var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
-        var usersContainers = jqchat(roomUsersContainer).find('.room-user');
-        jqchat.each(usersContainers, function (idx, el) {
-          var userId = jqchat(el).attr('data-name');
-
-          jqchat(el).userPopup({
-            restURL: restUrl,
-            userId: userId,
-            labels: {
-              StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
-              Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
-              Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
-              CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
-              RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
-            },
-            content: false,
-            defaultPosition: "left",
-            keepAlive: true,
-            maxWidth: "240px"
-          });
+      // check if there are changes
+      var roomUserHasChanged = false;
+      if(roomUsers.length === thiss.chatRoom.users.length) {
+        roomUserHasChanged = !roomUsers.every(function(roomUser, index) {
+           return (roomUser.name == thiss.chatRoom.users[index].name
+            && roomUser.fullname == thiss.chatRoom.users[index].fullname
+            && roomUser.status == thiss.chatRoom.users[index].status);
         });
+      } else {
+        roomUserHasChanged = true;
+      }
 
-        // update nb of users in the room
-        jqchat("#room-users-title-nb-users").html("(" + (thiss.chatRoom.users.length - 1) + ")");
-      }, false);
-    }
+      // if the room users have changed, update the panel
+      if(roomUserHasChanged === true) {
+        thiss.chatRoom.users = roomUsers;
+
+        // generate room users list DOM
+        thiss.renderRoomUsers();
+      }
+
+      // User Profile Popup initialize
+      var portal = eXo.env.portal;
+      var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
+      var usersContainers = jqchat('#room-users-list .room-user');
+      jqchat.each(usersContainers, function (idx, el) {
+        var userId = jqchat(el).attr('data-name');
+
+        jqchat(el).userPopup({
+          restURL: restUrl,
+          userId: userId,
+          labels: {
+            StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
+            Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
+            Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
+            CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
+            RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
+          },
+          content: false,
+          defaultPosition: "left",
+          keepAlive: true,
+          maxWidth: "240px"
+        });
+      });
+
+      // update nb of users in the room
+      jqchat("#room-users-title-nb-users").html("(" + (thiss.chatRoom.users.length - 1) + ")");
+    }, false);
   } else {
     // hide room users since the room id is not defined
     roomUsersContainer.hide();
@@ -3489,23 +3474,24 @@ ChatApplication.prototype.loadRoomUsers = function() {
  * @param roomUsers Users to render
  * @returns {string} The DOM representing the user
  */
-ChatApplication.prototype.renderRoomUsers = function(container) {
-    var html = "";
+ChatApplication.prototype.renderRoomUsers = function() {
+  // sort room users by status
+  var users = TAFFY(chatApplication.chatRoom.users);
+  var sortedRoomUsers = [];
+  var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
+  sortedStatuses.forEach(function(status) {
+      users({status: status}).order("fullname").each(function (user) {
+          sortedRoomUsers.push(user);
+      });
+  });
 
-    // sort room users by status
-    var users = TAFFY(chatApplication.chatRoom.users);
-    var sortedRoomUsers = [];
-    var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
-    sortedStatuses.forEach(function(status) {
-        users({status: status}).order("fullname").each(function (user) {
-            sortedRoomUsers.push(user);
-        });
-    });
-
-    sortedRoomUsers.forEach(function (user) {
-        html += chatApplication.renderRoomUser(user, chatApplication.showRoomOfflinePeople);
-    });
-    container.html(html);
+  var html = "";
+  sortedRoomUsers.forEach(function (user) {
+    if (user.name !== chatApplication.username) {
+      html += chatApplication.renderRoomUser(user, chatApplication.showRoomOfflinePeople);
+    }
+  });
+  jqchat("#room-users-list").html(html);
 };
 
 /**
@@ -3515,21 +3501,19 @@ ChatApplication.prototype.renderRoomUsers = function(container) {
  */
 ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
   var html = "";
-  if (user.name !== chatApplication.username) {
-    html += "<div class='room-user' data-name='"+user.name+"'"
-    if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
-      html += "style='display: none;'";
-    }
-    html += ">";
-    html += "  <div class='msUserAvatar pull-left'>";
-    html += "    <span class='msAvatarLink avatarCircle'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/" + eXo.env.portal.rest +"/v1/social/users/" + user.name + "/avatar' alt='" + user.fullname + "'></span>";
-    html += "  </div>";
-    html += "  <div class='room-user-status pull-right'>";
-    html += "    <i class='user-" + user.status + "'></i>";
-    html += "  </div>";
-    html += "  <div class='room-user-name'>" + user.fullname + "</div>";
-    html += "</div>"
+  html += "<div class='room-user' data-name='"+user.name+"'"
+  if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
+    html += "style='display: none;'";
   }
+  html += ">";
+  html += "  <div class='msUserAvatar pull-left'>";
+  html += "    <span class='msAvatarLink avatarCircle'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/" + eXo.env.portal.rest +"/v1/social/users/" + user.name + "/avatar' alt='" + user.fullname + "'></span>";
+  html += "  </div>";
+  html += "  <div class='room-user-status pull-right'>";
+  html += "    <i class='user-" + user.status + "'></i>";
+  html += "  </div>";
+  html += "  <div class='room-user-name'>" + user.fullname + "</div>";
+  html += "</div>"
   return html;
 };
 
