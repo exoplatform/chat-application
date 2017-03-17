@@ -140,6 +140,7 @@ var chatApplication = new ChatApplication();
 
           if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
             chatApplication.loadRoomUsers();
+            jqchat("#chat-room-detail-fullname").text(message.data.title);
           }
         } else if (message.event == 'room-deleted') {
           var room = chatApplication.rooms({room: message.room});
@@ -467,7 +468,7 @@ var chatApplication = new ChatApplication();
 
 
     var handleGlobalNotifLayout = function () {
-        jqchat("#room-detail .room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
+        jqchat("#chat-room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
         desktopNotification.getPreferredNotification().forEach(function (prefNotif, index, array) {
           $("#global-config input[notif-type='"+prefNotif+"']").attr("checked","checked");
         });
@@ -644,7 +645,7 @@ var chatApplication = new ChatApplication();
       $div.appendTo('#chats');
 
       chatApplication.chatRoom.loadSetting(function() {
-        jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
+        jqchat("#chat-room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
         var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
         if (roomPrefTrigger) {
           if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
@@ -1207,31 +1208,32 @@ var chatApplication = new ChatApplication();
       // Only the room owner can manage room users and can see the System popup.
       // We do a check to be sure the current user is the room owner.
       if (chatApplication.username === chatApplication.chatRoom.owner) {
-        chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-          var users = TAFFY(jsonData.users);
-          var users = users();
+        // Clear and reset form
+        var $userResults = $(".team-users-results");
+        $userResults.css("display", "none");
+        $userResults.html("");
+        $(".team-users-list").empty();
 
-          var $userResults = $(".team-users-results");
-          $userResults.css("display", "none");
-          $userResults.html("");
-          var $uitext = $("#team-modal-name");
-          $uitext.val(chatApplication.targetFullname);
-          $uitext.attr("data-id", chatApplication.room);
-          $(".team-users-list").empty();
-          users.order("fullname").each(function (user, number) {
-            if (user.name !== chatApplication.username) {
-              addTeamUserLabel(user.name, user.fullname);
-            }
-          });
+        var title = chatApplication.rooms({room: chatApplication.room}).first().escapedFullname
+        var $uitext = $("#team-modal-name");
+        $uitext.val(title);
+        $uitext.attr("data-id", chatApplication.room);
 
-          uiChatPopupWindow.show("team-modal-form", true);
-          jqchat("#team-modal-form .setting").css("display", "block");
-          jqchat("#team-modal-form .add").css("display", "none");
-          $uitext.focus();
-
-          // Set form position to screen center
-          chatApplication.setModalToCenter('.team-modal');
+        var users = TAFFY(chatApplication.chatRoom.users);
+        users = users();
+        users.order("fullname").each(function (user, number) {
+          if (user.name !== chatApplication.username) {
+            addTeamUserLabel(user.name, user.fullname);
+          }
         });
+
+        uiChatPopupWindow.show("team-modal-form", true);
+        jqchat("#team-modal-form .setting").css("display", "block");
+        jqchat("#team-modal-form .add").css("display", "none");
+        $uitext.focus();
+
+        // Set form position to screen center
+        chatApplication.setModalToCenter('.team-modal');
       }
     });
 
@@ -2690,7 +2692,7 @@ ChatApplication.prototype.loadRoom = function(room) {
   jqchat("#room-detail").css("display", "block");
   jqchat("#chat-team-button").css("display", "none");
   this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
-  jqchat(".target-user-fullname").text(this.targetFullname);
+  jqchat("#chat-room-detail-fullname").text(this.targetFullname);
 
 
   if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
