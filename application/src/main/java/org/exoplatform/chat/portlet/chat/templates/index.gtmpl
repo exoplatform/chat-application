@@ -456,8 +456,7 @@
 <div id="team-modal-form" class="uiPopup hide team-modal">
   <div class="popupHeader clearfix">
     <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
-    <span class="PopupTitle popupTitle setting">&{exoplatform.chat.team.settings.title}</span>
-    <span class="PopupTitle popupTitle add">&{exoplatform.chat.team.add.title}</span>
+    <span class="PopupTitle popupTitle"></span>
   </div>
 
   <div class="PopupContent popupContent">

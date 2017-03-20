@@ -101,10 +101,10 @@ var desktopNotification = (function() {
   var canBypassRoomNotif = function(msgObj) {
     var message = msgObj.content;
     var sourceRoom = msgObj.categoryId;
-    return (!preferredRoomNotificationTrigger[sourceRoom]) || // 1-1 chat, but room
-      (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_NORMAL)) ||
+    return (!preferredRoomNotificationTrigger[sourceRoom]) ||   // Not specified yet
+      (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_NORMAL)) ||   // Normal condition
       (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
-        containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));
+        containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));   // Containing keywords
   }
 
   var containKeyWord = function(message, keywords) {

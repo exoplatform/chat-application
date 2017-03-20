@@ -237,11 +237,11 @@ public class UserMongoDataStorage implements UserDataStorage {
         if (notifData == null) {
           notifData = new BasicDBObject();
         }
-        
-        if (notifData.get("time") == null || (long)notifData.get("time") < time) {
+
+        if (notifData.get("time") == null || (long) notifData.get("time") < time) {
           notifData.put("notifCond", notifConditionType);
           notifData.put("time", time);
-          if(UserDataStorage.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)){
+          if (UserDataStorage.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD.equals(notifConditionType)) {
             notifData.put(UserDataStorage.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD, notifCond);
           }
         }

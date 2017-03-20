@@ -222,7 +222,8 @@ public class ChatApplication
       fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
     }
 
-    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
+    JSONObject out = new JSONObject();
+    out.put("msg", "nothing to update");
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
@@ -253,7 +254,7 @@ public class ChatApplication
           ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
         }
 
-        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
+        out.put("msg", "updated");
         profileInitialized_ = true;
       }
       catch (Exception e)
@@ -263,13 +264,19 @@ public class ChatApplication
         return Response.notFound("Error during init, try later");
       }
     }
+
+    out.put("token", token_);
+    out.put("fullname", fullname_);
+    out.put("isAdmin", isAdmin_);
+    out.put("isTeamAdmin", isTeamAdmin_);
+
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
       // Set user's Spaces in the DB
       saveSpaces(remoteUser_, dbName);
     }
 
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+    return Response.ok(out.toJSONString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
     		       .withCharset(Tools.UTF_8);
 
   }
