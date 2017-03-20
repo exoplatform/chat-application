@@ -102,7 +102,7 @@ var desktopNotification = (function() {
     var message = msgObj.content;
     var sourceRoom = msgObj.categoryId;
     return (!preferredRoomNotificationTrigger[sourceRoom]) || // 1-1 chat, but room
-      (preferredRoomNotificationTrigger[sourceRoom] == ROOM_NOTIF_TRIGGER_NORMAL) ||
+      (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_NORMAL)) ||
       (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
         containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));
   }
