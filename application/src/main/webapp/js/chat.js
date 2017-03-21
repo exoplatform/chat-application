@@ -51,8 +51,10 @@ var chatApplication = new ChatApplication();
     chatApplication.wsEndpoint = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + "/cometd/cometd";
     chatApplication.room = "";
 
-    chatApplication.initChat();
-    chatApplication.initChatProfile();
+    // get user profile, then init chat application
+    chatApplication.initChatProfile(function() {
+      chatApplication.initChat();
+    });
 
     // Attach weemo call button into chatApplication
     chatApplication.displayVideoCallOnChatApp();
@@ -1769,7 +1771,7 @@ ChatApplication.prototype.initChat = function() {
 /**
  * Init Chat Profile
  */
-ChatApplication.prototype.initChatProfile = function() {
+ChatApplication.prototype.initChatProfile = function(callback) {
   if (this.username === this.ANONIM_USER) {
     if (jzGetParam("anonimUsername")) {
       this.createDemoUser(jzGetParam("anonimFullname"), jzGetParam("anonimEmail"));
@@ -1784,8 +1786,8 @@ ChatApplication.prototype.initChatProfile = function() {
       success: function(data){
         this.token = data.token;
         this.fullname = data.fullname;
-        this.isAdmin = (data.isAdmin == "true");
-        this.isTeamAdmin = (data.isTeamAdmin == "true");
+        this.isAdmin = data.isAdmin;
+        this.isTeamAdmin = data.isTeamAdmin;
 
         var $chatApplication = jqchat("#chat-application");
         $chatApplication.attr("data-token", this.token);
@@ -1797,7 +1799,9 @@ ChatApplication.prototype.initChatProfile = function() {
         }
         jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
         chatNotification.refreshStatusChat();
-
+        if (typeof callback === "function") {
+          callback();
+        }
       },
       error: function (response){
         //retry in 3 sec
