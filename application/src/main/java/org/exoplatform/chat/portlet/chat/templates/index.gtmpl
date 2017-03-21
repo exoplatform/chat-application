@@ -3,7 +3,6 @@
   data-token="<%=token%>"
   data-cometd-token="<%=cometdToken%>"
   data-chat-server-url="<%=chatServerURL%>"
-  data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-session="<%=chatIntervalSession%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
   data-public-mode="<%=publicMode%>"

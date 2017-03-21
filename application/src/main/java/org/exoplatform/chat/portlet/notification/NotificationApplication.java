@@ -110,7 +110,6 @@ public class NotificationApplication
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     remoteUser_ = securityContext.getRemoteUser();
-    String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
 
@@ -127,7 +126,6 @@ public class NotificationApplication
     return index.with().set("user", remoteUser_).set("token", token_)
             .set("cometdToken", cometdToken)
             .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
-            .set("chatIntervalChat", chatIntervalChat)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("title", title)
             .set("messages", messages)

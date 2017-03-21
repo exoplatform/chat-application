@@ -12,7 +12,7 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeetingNotes, chatIntervalChat, messagesContainer, isPublic, portalURI, dbName) {
+function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeetingNotes, messagesContainer, isPublic, portalURI, dbName) {
   this.id = "";
   this.messages = [];
   this.messagesContainer = messagesContainer;
@@ -20,7 +20,6 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeeti
   this.jzChatSend = jzChatSend;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
-  this.chatIntervalChat = chatIntervalChat;
   this.username = "";
   this.token = "";
   this.owner = "";
@@ -1500,7 +1499,7 @@ function showMiniChatPopup(room, type) {
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", chatNotification.chatIntervalChat, $miniChat.find(".history"), false, chatNotification.portalURI, dbName);
+        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", $miniChat.find(".history"), false, chatNotification.portalURI, dbName);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {

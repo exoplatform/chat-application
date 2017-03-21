@@ -132,7 +132,6 @@ public class ChatApplication
     boolean isPublic = (remoteUser_==null);
     if (isPublic) remoteUser_ = UserService.ANONIM_USER;
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-    String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String publicModeEnabled = PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE);
     String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
@@ -188,7 +187,7 @@ public class ChatApplication
             .set("cometdToken", cometdToken)
             .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
-            .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
+            .set("chatIntervalSession", chatIntervalSession)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("publicMode", isPublic)
             .set("publicModeEnabled", publicModeEnabled)

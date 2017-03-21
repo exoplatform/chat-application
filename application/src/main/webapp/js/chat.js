@@ -11,7 +11,6 @@ var chatApplication = new ChatApplication();
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
     chatApplication.cometdToken = $chatApplication.attr("data-cometd-token");
-    chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
@@ -1535,7 +1534,6 @@ function ChatApplication() {
   this.jzDeleteTeamRoom = "";
   this.jzSaveTeamRoom = "";
   this.userFilter = "";    //not set
-  this.chatIntervalChat = "";
   this.plfUserStatusUpdateUrl = "";
   this.chatIntervalSession = "";
 
@@ -1593,7 +1591,7 @@ ChatApplication.prototype.trigger = function(event, context) {
  * Init Chat Interval
  */
 ChatApplication.prototype.initChat = function() {
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, jqchat("#chats"), this.isPublic, this.portalURI);
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, jqchat("#chats"), this.isPublic, this.portalURI);
   this.chatRoom.onRefresh(this.onRefreshCallback);
   this.chatRoom.onShowMessages(this.onShowMessagesCallback);
 

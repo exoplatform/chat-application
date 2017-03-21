@@ -70,7 +70,6 @@ public class PropertyManager {
   public static final String PROPERTY_CHAT_SERVER_BASE = "chatServerBase";
   public static final String PROPERTY_CHAT_SERVER_URL = "chatServerUrl";
   public static final String PROPERTY_CHAT_PORTAL_PAGE = "chatPortalPage";
-  public static final String PROPERTY_INTERVAL_CHAT = "chatIntervalChat";
   public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
   public static final String PROPERTY_CRON_NOTIF_CLEANUP = "chatCronNotifCleanup";
@@ -138,7 +137,6 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "");
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_URL, "/chatServer");
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
-      overridePropertyIfNotSet(PROPERTY_INTERVAL_CHAT, "5000");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
       overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");

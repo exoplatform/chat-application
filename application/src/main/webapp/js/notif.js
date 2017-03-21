@@ -50,7 +50,6 @@ ChatNotification.prototype.initOptions = function(options) {
   this.jzInitUserProfile = options.urlInitUserProfile;
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
-  this.chatIntervalChat = options.chatInterval;
   this.dbName = options.dbName;
   this.spaceId = options.spaceId;
   this.plfUserStatusUpdateUrl = options.plfUserStatusUpdateUrl;
@@ -776,7 +775,6 @@ var chatNotification = new ChatNotification();
       "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
-      "chatInterval": $notificationApplication.attr("data-chat-interval-chat"),
       "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
       "spaceId": $notificationApplication.attr("data-space-id"),
       "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
