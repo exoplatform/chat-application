@@ -440,6 +440,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("team", team);
         basicDBObject.put("user", user);
         basicDBObject.put("type", TYPE_ROOM_TEAM);
+        basicDBObject.put("timestamp", System.currentTimeMillis());
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_TEAM, dbName);
       } catch (MongoException me) {
