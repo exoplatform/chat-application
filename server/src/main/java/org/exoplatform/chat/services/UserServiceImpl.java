@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
-            RealTimeMessageBean.EventType.FAVOTITE_ADDED,
+            RealTimeMessageBean.EventType.FAVORITE_ADDED,
             room,
             user,
             new Date(),

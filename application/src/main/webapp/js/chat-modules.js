@@ -113,7 +113,6 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         $chats.on("click.quote", ".msg-action-quote", function () {
           var $uimsg = jqchat(this).siblings(".msg-data");
           var msgHtml = $uimsg.html();
-          //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
           msgHtml = msgHtml.replace(/<br>/g, '\n');
           var msgFullname = $uimsg.attr("data-fn");
           jqchat("#msg").focus().val('').val("[quote=" + msgFullname + "]" + msgHtml + " [/quote] ");
@@ -165,7 +164,6 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
             to = Math.round(to) + 1;
             chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
               if (response === "sent") {
-                console.log("sent");
                 jqchat("#" + id).animate({
                   opacity: "toggle"
                 }, 200, function () {
@@ -1127,10 +1125,8 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
   for (il=0 ; il<lines.length ; il++) {
     l = lines[il];
     if (l.indexOf("google:")===0) {
-      // console.log("*"+l+"* "+l.length);
       msg += "google:<a href='http://www.google.com/search?q="+l.substr(7, l.length-7)+"' target='_blank'>"+l.substr(7, l.length-7)+"</a> ";
     } else if (l.indexOf("wolfram:")===0) {
-      // console.log("*"+l+"* "+l.length);
       msg += "wolfram:<a href='http://www.wolframalpha.com/input/?i="+l.substr(8, l.length-8)+"' target='_blank'>"+l.substr(8, l.length-8)+"</a> ";
     } else {
       var tab = l.split(" ");
@@ -1191,7 +1187,6 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
         msg += w+" ";
       }
     }
-    // console.log(il + "::" + lines.length);
     if (il < lines.length-1) {
       msg += "<br/>";
     }
@@ -1403,7 +1398,6 @@ String.prototype.endsWith = function(suffix) {
           if (typeof message != 'object') {
             message = JSON.parse(message);
           }
-          // console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
           var $miniChat = jqchat(".mini-chat").first();
           var index = $miniChat.attr("data-index");
@@ -1528,7 +1522,6 @@ function showMiniChatPopup(room, type) {
             {
               return false;
             }
-            //      console.log("*"+msg+"*");
             jqchat(this).val("");
             miniChats[index].sendMessage(msg, {}, false, function() {
               $miniChat.find(".message-input").val("");

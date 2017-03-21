@@ -21,7 +21,7 @@ public class RealTimeMessageBean {
     ROOM_MEMBER_LEFT("room-member-left"),
     ROOM_UPDATED("room-updated"),
     ROOM_DELETED("room-deleted"),
-    FAVOTITE_ADDED("favorite-added"),
+    FAVORITE_ADDED("favorite-added"),
     FAVORITE_REMOVED("favorite-removed"),
     ROOM_SETTINGS_UPDATED("room-settings-updated"),
     NOTIFICATION_COUNT_UPDATED("notification-count-updated");

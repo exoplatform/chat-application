@@ -89,7 +89,6 @@ var chatApplication = new ChatApplication();
         if (typeof message != 'object') {
           message = JSON.parse(message);
         }
-        console.log('>>>>>>>> chat message via websocket : ' + event.data);
 
         // Do what you want with the message...
         if (message.event == 'user-status-changed') {
@@ -227,7 +226,6 @@ var chatApplication = new ChatApplication();
     });
 
     $('#msg').focus(function() {
-  //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
        var chatheight = document.getElementById("chats");
        chatheight.scrollTop = chatheight.scrollHeight;
        chatApplication.chatRoom.updateUnreadMessages();
@@ -245,7 +243,6 @@ var chatApplication = new ChatApplication();
         var textarea =  $('#msg');
         $('#msg').scrollTop(textarea[0].scrollHeight - textarea.height());
       }
-  //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
         chatApplication.keydown = 18;
       }
@@ -837,7 +834,6 @@ var chatApplication = new ChatApplication();
         $("#dropzone").find('.bar').html(percentComplete+"%");
       },
       complete: function(xhr) {
-//        console.log(xhr.responseText);
         var response = $.parseJSON(xhr.responseText);
 
         var msg = response.name;
@@ -1414,9 +1410,7 @@ var chatApplication = new ChatApplication();
 
     function reloadWindow() {
       var sURL = unescape(window.location.href);
-      //console.log(sURL);
       window.location.href = sURL;
-      //window.location.reload( false );
     }
 
     // We change the current history by removing get parameters so they won't be visible in the popup
@@ -1960,7 +1954,6 @@ ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
       }
     }), function(publishAck) {
       if (publishAck.successful) {
-        console.log("The message reached the server");
         if (typeof callback === "function") {
           callback();
         }
@@ -1992,7 +1985,6 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     },
 
     success:function(response){
-      //console.log("success");
       if (typeof callback === "function") {
         callback(response);
       }
@@ -2050,7 +2042,6 @@ ChatApplication.prototype.maintainSession = function() {
     url: this.jzMaintainSession,
     context: this,
     success: function(response){
-      //console.log("Chat Session Maintained : "+response);
     },
     error: function(response){
       this.chatSessionInt = clearInterval(this.chatSessionInt);
@@ -2248,7 +2239,6 @@ ChatApplication.prototype.loadRooms = function() {
 
       },
       error: function (response){
-        //console.log("chat-users :: "+response);
         setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
       }
     });
@@ -2288,7 +2278,6 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsFavorites = rooms();
   roomsFavorites = roomsFavorites.filter({isFavorite:{is: true}});
   roomsFavorites.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
-//    console.log("FAVORITES : "+room.escapedFullname);
     var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
     if (rhtml !== "") {
       roomPrevUser = room.user;
@@ -2332,7 +2321,6 @@ ChatApplication.prototype.renderRooms = function() {
   roomsPeople = roomsPeople.filter({type:{"is":"u"}});
   roomsPeople = roomsPeople.filter({isFavorite:{"!is": true}});
   roomsPeople.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("PEOPLE : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2367,7 +2355,6 @@ ChatApplication.prototype.renderRooms = function() {
   roomsTeams = roomsTeams.filter({type:{"is":"t"}});
   roomsTeams = roomsTeams.filter({isFavorite:{"!is": true}});
   roomsTeams.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("TEAMS : "+room.escapedFullname);
     if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2402,7 +2389,6 @@ ChatApplication.prototype.renderRooms = function() {
   roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
   roomsSpaces = roomsSpaces.filter({isFavorite:{"!is": true}});
   roomsSpaces.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("SPACES : "+room.escapedFullname);
     if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2565,7 +2551,6 @@ ChatApplication.prototype.loadRoom = function(room) {
     this.targetFullname = TAFFYRoom.escapedFullname;
   }
 
-  //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
   if(this.configMode == true) {
     this.configMode = false;//we're not on the config mode anymore
     chatApplication.enableMessageComposer(true);
@@ -2655,7 +2640,6 @@ ChatApplication.prototype.loadRoom = function(room) {
       },
       context: this,
       success: function(response){
-        //console.log("SUCCESS::getRoom::"+response);
         var creator = response;
         this.chatRoom.owner = creator;
         jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
@@ -2673,7 +2657,6 @@ ChatApplication.prototype.loadRoom = function(room) {
         }
       },
       error: function(xhr, status, error){
-        //console.log("ERROR::"+xhr.responseText);
       }
     });
 
@@ -3015,7 +2998,6 @@ ChatApplication.prototype.showHelp = function() {
 ChatApplication.prototype.showAsText = function() {
 
   this.chatRoom.showAsText(function(response) {
-    //console.log("SUCCESS:setStatus::"+response);
     jqchat("#text-modal-area").html(response);
     jqchat('#text-modal-area').on("click", function() {
       this.select();
@@ -3135,7 +3117,6 @@ ChatApplication.prototype.showSyncPanel = function() {
 
 ChatApplication.prototype.showErrorPanel = function() {
   this.hidePanels();
-  //console.log("show-error-panel");
   var $chatErrorPanel = jqchat(".chat-error-panel");
   $chatErrorPanel.html(chatBundleData["exoplatform.chat.panel.error1"]+"<br/><br/>"+chatBundleData["exoplatform.chat.panel.error2"]);
   $chatErrorPanel.css("display", "block");
@@ -3143,7 +3124,6 @@ ChatApplication.prototype.showErrorPanel = function() {
 
 ChatApplication.prototype.showLoginPanel = function() {
   this.hidePanels();
-  //console.log("show-login-panel");
   var $chatLoginPanel = jqchat(".chat-login-panel");
   $chatLoginPanel.html(chatBundleData["exoplatform.chat.panel.login1"]+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData["exoplatform.chat.panel.login2"]+"</a>");
   $chatLoginPanel.css("display", "block");
@@ -3172,7 +3152,6 @@ ChatApplication.prototype.showAboutPanel = function() {
 
 ChatApplication.prototype.showDemoPanel = function() {
   this.hidePanels();
-  //console.log("show-demo-panel");
   var $chatDemoPanel = jqchat(".chat-demo-panel");
   var intro = chatBundleData["exoplatform.chat.panel.demo"];
   if (this.isPublic) intro = chatBundleData["exoplatform.chat.panel.public"];
