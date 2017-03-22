@@ -2484,16 +2484,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   if (room.user!==roomPrevUser) {
     out += '<tr id="users-online-' + room.user.replace(".", "-") + '" class="users-online accordion-body">';
     out += '  <td class="td-status">';
-    out += '    <i class="user-' + room.status;
-    if (room.type === "t" || room.type === "s") {
-      out += ' uiIconChatTeam uiIconChatLightGray';
-    }
-    if (room.isFavorite == true) {
-      out += ' user-favorite';
-    } else {
-      out += ' user-status';
-    }
-    out += '"></i>';
+    out += '    <i class="' + (room.type !== "u" ? 'uiIconChatTeam uiIconChatLightGray' : '') + (room.isFavorite == true ? ' user-favorite' : ' user-status') + ' user-' + room.status + '"></i>';
     out += '  </td>';
     out += '  <td>';
     if (room.isActive=="true") {
@@ -2507,19 +2498,14 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
       out += '<span class="room-total badgeDefault badgePrimary mini" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
     }
     else {
-      out+= '<i class="uiIconChatFavorite pull-right';
+      out += '<i class="uiIconChatFavorite pull-right' + (room.isFavorite == true ? ' user-favorite' : ' user-status');
+      out += '" user-data="' + room.user + '" data-toggle="tooltip" data-placement="bottom"';
       if (room.isFavorite == true) {
-        out += ' user-favorite';
+        out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"];
       } else {
-        out += ' user-status';
+        out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"];
       }
-      out +='" user-data="' + room.user + '" data-toggle="tooltip" data-placement="bottom"';
-      if (room.isFavorite == true) {
-        out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"] + '"';
-      } else {
-        out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"] + '"';
-      }
-      out+= '></i>';
+      out += '"></i>';
     }
     out += '  </td>';
     out += '</tr>';
