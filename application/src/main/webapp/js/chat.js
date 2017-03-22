@@ -1547,7 +1547,6 @@ function ChatApplication() {
   this.isTeamAdmin = false;
 
   this.old = '';
-  this.firstLoad = true;
 
   this.profileStatus = "offline";
   this.totalNotif = 0;
@@ -1619,7 +1618,31 @@ ChatApplication.prototype.initChat = function() {
   this.showSpaces = this.getUserPref("chatShowSpaces") === "false" ? false : true;
   this.showTeams = this.getUserPref("chatShowTeams") === "false" ? false : true;
 
-  this.loadRooms();
+  var thiss = this;
+  this.loadRooms(function() {
+      var _room, _targetUser, _fullName;
+
+      /*
+       Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
+       */
+      if (localStorage.getItem('notification.room') != null) {
+        _room = localStorage.getItem('notification.room');
+        localStorage.removeItem('notification.room');
+      } else {
+        _room = thiss.getUserPref("lastRoom");
+      }
+
+      if (_room) {
+        thiss.room = _room;
+        var TAFFYRoom = thiss.rooms({room: _room}).first();
+        thiss.targetUser = TAFFYRoom.user;
+        thiss.targetFullname = TAFFYRoom.escapedFullname;
+        if (thiss.username !== thiss.ANONIM_USER) {
+          thiss.loadRoom();
+        }
+      }
+  });
+
 
   if (this.username !== this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
 
@@ -2138,7 +2161,7 @@ ChatApplication.prototype.synGetAllUsers = function(filter, callback) {
 /**
  * Load the list of rooms (left panel)
  */
-ChatApplication.prototype.loadRooms = function() {
+ChatApplication.prototype.loadRooms = function(callback) {
   // Avoid having two whoIsOnline requests in parallel
   if(this.loadRoomsRequest) {
     return;
@@ -2177,11 +2200,8 @@ ChatApplication.prototype.loadRooms = function() {
         chatApplication.rooms = TAFFY(response.rooms);
 
         this.renderRooms();
-
-        // reload room users if the panel is displayed
-        var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
-        if(roomUsersContainer.is(":visible")) {
-          this.loadRoomUsers();
+        if (callback !== undefined) {
+          callback();
         }
 
         this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
@@ -2190,7 +2210,7 @@ ChatApplication.prototype.loadRooms = function() {
             chatNotification.showDetail();
           }
         } else if (window.fluid !== undefined) {
-          if (this.totalNotif>0)
+          if (this.totalNotif > 0)
             window.fluid.dockBadge = this.totalNotif;
           else
             window.fluid.dockBadge = "";
@@ -2409,38 +2429,6 @@ ChatApplication.prototype.renderRooms = function() {
   out += '</table>';
 
   jqchat("#chat-users").html(out);
-
-  var $targetUser;
-  if (this.firstLoad) {
-    var _room, _targetUser, _fullName;
-
-    /*
-     Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
-     */
-    if (localStorage.getItem('notification.room') != null) {
-      _room = localStorage.getItem('notification.room');
-      localStorage.removeItem('notification.room');
-    } else {
-      _room = this.getUserPref("lastRoom");
-    }
-
-    if (_room) {
-      this.room = _room;
-      var TAFFYRoom = rooms({room: _room}).first();
-      this.targetUser = TAFFYRoom.user;
-      this.targetFullname = TAFFYRoom.escapedFullname;
-      this.firstLoad = false;
-      if (this.username !== this.ANONIM_USER) {
-        this.loadRoom();
-      }
-    }
-  }
-
-  if (this.isDesktopView() && $targetUser!==undefined) {
-    $targetUser.addClass("accordion-active");
-    jqchat(".room-total").removeClass("badgeWhite");
-    $targetUser.find(".room-total").addClass("badgeWhite");
-  }
 
   jqchat("[data-toggle='tooltip']").tooltip();
 
