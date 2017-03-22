@@ -539,8 +539,9 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
       $btnConnect.wrap("<div></div>");
       $uiAction.addClass("twice-line");
     }
-    var toUserName = jqchat("[href^='" + chatNotification.portalURI + "profile/']", $tiptip_content).first().attr("href").substr(28);
-    var toFullName = jqchat("[href^='" + chatNotification.portalURI + "profile/']", $tiptip_content).last().html();
+    var href = jqchat("#tipName a", $tiptip_content).first().attr("href");
+    var toUserName = href.substr(href.lastIndexOf('/') + 1);
+    var toFullName = jqchat("#tipName a", $tiptip_content).last().html();
     var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
     $uiAction.append(strChatLink);
 
