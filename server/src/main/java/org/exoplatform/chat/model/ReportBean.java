@@ -298,7 +298,7 @@ public class ReportBean {
       {
         xwiki.append("{{div style='padding: 4px;color: #CCC;margin:0;'}}");
         xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/rest/v1/social/users/"+messageBean.getUser()+"/avatar||width='30' height='30']] {{/span}}");
-        xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullname()).append("{{/span}}");
+        xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullName()).append("{{/span}}");
         xwiki.append("{{span style='font-size: smaller;vertical-align: top;'}}").append(messageBean.getTimestamp()).append("{{/span}}");
         xwiki.append("{{/div}}");
       }

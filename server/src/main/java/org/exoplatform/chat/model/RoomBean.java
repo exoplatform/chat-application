@@ -71,7 +71,7 @@ public class RoomBean implements Comparable<RoomBean>
     return (isAvailableUser || (!"".equals(room)));
   }
 
-  public String getFullname() {
+  public String getFullName() {
     return fullname;
   }
 
@@ -79,7 +79,7 @@ public class RoomBean implements Comparable<RoomBean>
     return StringEscapeUtils.escapeHtml4(this.fullname);
   }
 
-  public void setFullname(String fullname) {
+  public void setFullName(String fullname) {
     this.fullname = fullname;
   }
 
@@ -117,8 +117,8 @@ public class RoomBean implements Comparable<RoomBean>
 
   @Override
   public int compareTo(RoomBean roomBean) {
-    String l = ((isFavorite)?"0":"1")+fullname;
-    String r = ((roomBean.isFavorite())?"0":"1")+roomBean.getFullname();
+    String l = ((isFavorite) ? "0" : "1") + fullname;
+    String r = ((roomBean.isFavorite()) ? "0" : "1") + roomBean.getFullName();
     return l.compareTo(r);
   }
 

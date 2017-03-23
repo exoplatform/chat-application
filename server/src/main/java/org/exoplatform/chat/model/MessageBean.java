@@ -95,7 +95,9 @@ public class MessageBean {
       msg.put("lastUpdatedTimestamp", lastUpdatedTimestamp);
     }
     msg.put("user", user);
-    msg.put("fullname", fullName);
+    if (fullName != null) {
+      msg.put("fullname", fullName);
+    }
     msg.put("msg", message);
     if (options != null)
     {

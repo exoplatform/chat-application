@@ -69,7 +69,6 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
-import org.jgroups.demos.Chat;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -252,7 +251,7 @@ public class ChatServer
         {
           if (room.equals(roomBean.getRoom()))
           {
-            roomName = roomBean.getFullname();
+            roomName = roomBean.getFullName();
           }
         }
         title = roomName+" : "+ res.getString("exoplatform.chat.meetingnotes") + " ["+date+"]";
@@ -351,7 +350,7 @@ public class ChatServer
         {
           if (room.equals(roomBean.getRoom()))
           {
-            roomName = roomBean.getFullname();
+            roomName = roomBean.getFullName();
           }
         }
       }

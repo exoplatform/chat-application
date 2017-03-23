@@ -215,7 +215,6 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
                       var msg = chatBundleData["exoplatform.chat.meeting.notes"];
 
                       chatApplication.chatRoom.sendMessage(msg, options, "true");
-
                     }
 
                     jqchat("#" + id).animate({
@@ -753,29 +752,35 @@ ChatRoom.prototype.addMessage = function(message, checkToScroll) {
       }
       $msgDiv.data("user", message.user);
 
-      out += "    <div class='msMessagesGroup clearfix'>";
-      out += "      <div class='msUserAvatar'>";
+      out += "<div class='msMessagesGroup clearfix'>" +
+                "<div class='msUserAvatar'>";
       if (this.isPublic) {
-        out += "      <a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
+        out +=    "<a class='msAvatarLink avatarCircle' href='#'><img src='/chat/img/support-avatar.png'></a>";
       } else {
-        out += "      <a class='msAvatarLink avatarCircle' href='" + this.portalURI + "profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
+        out +=    "<a class='msAvatarLink avatarCircle' href='" + this.portalURI + "profile/" + message.user + "'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/rest/v1/social/users/" + message.user + "/avatar' alt='" + message.fullname + "'></a>";
       }
-      out += "      </div>";
-      out += "      <div class='msContBox'>";
-      out += "        <div class='inner'>";
-      out += "          <div class='msTiltleLn'>";
+      out +=    "</div>" +
+                "<div class='msContBox'>" +
+                  "<div class='inner'>" +
+                    "<div class='msTiltleLn'>";
       if (this.isPublic) {
-        out += "          <a class='msNameUser muted' href='#'>" + chatBundleData["exoplatform.chat.support.fullname"] + "</a>";
+        out +=        "<a class='msNameUser muted' href='#'>" + chatBundleData["exoplatform.chat.support.fullname"] + "</a>";
       }
       else {
-        out += "          <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
+        out +=        "<a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
       }
-      out += "          </div>";
+      out +=        "</div>";
     } else {
       $msgDiv = $lastMessage.find(".inner");
     }
 
     out += this.generateMessageHTML(message);
+
+    if (message.user != prevUser) {
+      out +=      '</div>' +
+                '</div>' +
+              '</div>';
+    }
 
     $msgDiv.append(out);
   }

@@ -87,7 +87,7 @@ public class ChatTestCase extends AbstractChatTestCase
 
     RoomBean teamRoom = chatService.getTeamRoomById(teamRoomId, null);
     assertEquals("The room id should be the same", teamRoomId, teamRoom.getRoom());
-    assertEquals("The room name should be the same", teamRoomName, teamRoom.getFullname());
+    assertEquals("The room name should be the same", teamRoomName, teamRoom.getFullName());
     assertEquals("The room owner should be the same", user, teamRoom.getUser());
     assertTrue("The room should be a team room", teamRoom.getType().equals(ChatService.TYPE_ROOM_TEAM));
     assertFalse("The room should not be a space room", teamRoom.getType().equals(ChatService.TYPE_ROOM_SPACE));

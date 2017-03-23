@@ -10,7 +10,6 @@ import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
 import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.junit.Before;
@@ -86,7 +85,7 @@ public class TeamTestCase extends AbstractChatTestCase
     String roomTeamId = ServiceBootstrap.getChatService().getTeamRoom(roomTeamName, user, null);
     RoomBean roomTeam = ServiceBootstrap.getChatService().getTeamRoomById(roomTeamId, null);
     assertNotNull("The room should exists", roomTeam);
-    assertEquals("The room name is not good", roomTeamName, roomTeam.getFullname());
+    assertEquals("The room name is not good", roomTeamName, roomTeam.getFullName());
     assertEquals("The room owner is not good", user, roomTeam.getUser());
 
     // create a space room
@@ -191,7 +190,7 @@ public class TeamTestCase extends AbstractChatTestCase
     assertEquals(1, rooms.getRooms().size());
 
     RoomBean room = rooms.getRooms().get(0);
-    assertEquals("My VIP Team", room.getFullname());
+    assertEquals("My VIP Team", room.getFullName());
 
     ServiceBootstrap.getChatService().setRoomName(room1, "VIP Team", null);
 
@@ -201,7 +200,7 @@ public class TeamTestCase extends AbstractChatTestCase
     assertEquals(1, rooms.getRooms().size());
 
     room = rooms.getRooms().get(0);
-    assertEquals("VIP Team", room.getFullname());
+    assertEquals("VIP Team", room.getFullName());
 
 
   }

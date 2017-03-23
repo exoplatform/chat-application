@@ -23,20 +23,15 @@ import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
-import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationDataStorage;
-import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Named("notificationStorage")
 @ApplicationScoped
@@ -149,7 +144,7 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
       RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId(), dbName);
       notificationBean.setRoomType(roomBean.getType());
       if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
-        notificationBean.setRoomDisplayName(roomBean.getFullname());
+        notificationBean.setRoomDisplayName(roomBean.getFullName());
       }
       notificationBean.setLink(doc.get("link").toString());
 

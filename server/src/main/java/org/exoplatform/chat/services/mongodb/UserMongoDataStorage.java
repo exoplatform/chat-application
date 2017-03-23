@@ -500,7 +500,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       roomBean = new RoomBean();
       roomBean.setRoom(teamId);
       roomBean.setUser(doc.get("user").toString());
-      roomBean.setFullname(doc.get("team").toString());
+      roomBean.setFullName(doc.get("team").toString());
       roomBean.setType(doc.get("type").toString());
       if (doc.containsField("timestamp"))
       {
@@ -555,12 +555,12 @@ public class UserMongoDataStorage implements UserDataStorage {
       if (ChatService.TYPE_ROOM_SPACE.equals(type))
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
-        roomBean.setFullname(doc.get("displayName").toString());
+        roomBean.setFullName(doc.get("displayName").toString());
       }
       else if (ChatService.TYPE_ROOM_TEAM.equals(type))
       {
         roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
-        roomBean.setFullname(doc.get("team").toString());
+        roomBean.setFullName(doc.get("team").toString());
       }
       else if (ChatService.TYPE_ROOM_USER.equals(type))
       {
@@ -568,12 +568,12 @@ public class UserMongoDataStorage implements UserDataStorage {
         users.remove(user);
         String targetUser = users.get(0);
         roomBean.setUser(targetUser);
-        roomBean.setFullname(this.getUserFullName(targetUser, dbName));
+        roomBean.setFullName(this.getUserFullName(targetUser, dbName));
       }
       else if (ChatService.TYPE_ROOM_EXTERNAL.equals(type))
       {
         roomBean.setUser(ChatService.EXTERNAL_PREFIX+roomId);
-        roomBean.setFullname(doc.get("identifier").toString());
+        roomBean.setFullName(doc.get("identifier").toString());
       }
     }
 
