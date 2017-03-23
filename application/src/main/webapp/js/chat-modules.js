@@ -401,6 +401,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           return;
         }
 
+        jqchat("#chats").empty();
         if (data.messages.length > 0) {
           var ts = data.timestamp;
           var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
