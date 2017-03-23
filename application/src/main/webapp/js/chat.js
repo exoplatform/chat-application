@@ -2275,14 +2275,6 @@ ChatApplication.prototype.renderRooms = function() {
   var classArrow;
   var totalFavorites = 0, totalPeople = 0, totalSpaces = 0, totalTeams = 0;
 
-  // If the selected room is not present in the room list we cleanup the Chat Zone
-  // and stop refreshing the Chat data
-  if (rooms({room:chatApplication.room}).count()===0) {
-    chatApplication.room="";
-    chatApplication.targetUser="";
-    chatApplication.chatRoom.emptyChatZone();
-  }
-
   /**
    * FAVORITES
    */
