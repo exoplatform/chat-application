@@ -291,7 +291,7 @@ public class ChatServer
       }
 
       try {
-        sendMailWithAuth(senderName,senderMail , tos, html.toString(), title, inlineImages);
+        sendMailWithAuth(senderName,senderMail , tos, html, title, inlineImages);
       } catch (Exception e) {
         LOG.info(e.getMessage());
       }

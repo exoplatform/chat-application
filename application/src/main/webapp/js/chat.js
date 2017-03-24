@@ -1265,7 +1265,7 @@ var chatApplication = new ChatApplication();
       uiChatPopupWindow.hide("team-settings-modal-view", true);
     });
 
-    $(".msButtonRecord").on("click", function() {
+    $("#chat-record-button").on("click", function() {
       var $icon = $(this).children("i");
 
       var msgType = $icon.hasClass("uiIconChatRecordStart") ? "type-meeting-start" : "type-meeting-stop";
@@ -2715,9 +2715,6 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
 };
 
 ChatApplication.prototype.onShowMessagesCallback = function(out) {
-  // Set recorder button to start status
-  chatApplication.updateMeetingButtonStatus('stopped');
-
   // highlight searched terms
   sh_highlightDocument();
 };
@@ -2846,10 +2843,10 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
  *
  * @param: status: 'started' or 'stoped'
  */
-ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
+ChatApplication.prototype.updateMeetingButtonStatus = function(isStarted) {
   var $icon = jqchat(".msButtonRecord").children("i");
   var $span = jqchat(".msButtonRecord").children("span");
-  if ('started' === status) {
+  if (isStarted) {
     $icon.addClass("uiIconChatRecordStop");
     $icon.removeClass("uiIconChatRecordStart");
   } else {
@@ -3025,9 +3022,8 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
         this.chatRoom.sendMessage("", optionsStop, isSystemMessage, callback);
       }
 
-      ts = Math.round(new Date().getTime() / 1000);
       msg = chatBundleData["exoplatform.chat.call.terminated"];
-      options.timestamp = ts;
+      options.timestamp = Math.round(new Date().getTime() / 1000);
       options.type = "call-off";
       sendMessageToServer = true;
     } else if (msg.indexOf("/export")===0) {

@@ -1015,7 +1015,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
 
       thiss.startMeetingTimestamp = objMessage.timestamp;
       if (thiss.miniChat === undefined) {
-        chatApplication.updateMeetingButtonStatus('started');
+        chatApplication.updateMeetingButtonStatus(true);
       }
     } else if (options.type==="type-meeting-stop") {
       out += "<b>" + chatBundleData["exoplatform.chat.meeting.finished"] + "</b>";
@@ -1035,7 +1035,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
         out += "</div>";
       }
       if (thiss.miniChat === undefined) {
-        chatApplication.updateMeetingButtonStatus('stopped');
+        chatApplication.updateMeetingButtonStatus(false);
       }
     } else if (options.type==="call-on") {
       this.startCallTimestamp = objMessage.timestamp;
