@@ -105,7 +105,7 @@ public class ReportBean {
     while(iterator.hasNext())
     {
       BasicDBObject message = (BasicDBObject)iterator.next();
-      String msg = message.get("message").toString();
+      String msg = message.get("msg").toString();
       Long timestamp = (Long)message.get("timestamp");
       String user = message.get("user").toString();
       String fullname = message.get("fullname").toString();

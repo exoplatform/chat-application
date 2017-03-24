@@ -196,7 +196,7 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
                   url: chatApplication.jzSaveWiki,
                   data: {
                     "targetFullname": chatApplication.targetFullname,
-                    "content": response
+                    "content": JSON.stringify(response)
                   },
                   context: this,
                   dataType: "json",
