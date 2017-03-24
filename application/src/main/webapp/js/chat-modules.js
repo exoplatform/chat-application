@@ -14,7 +14,6 @@
  */
 function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeetingNotes, messagesContainer, isPublic, portalURI, dbName) {
   this.id = "";
-  this.messages = [];
   this.messagesContainer = messagesContainer;
   this.jzChatRead = jzChatRead;
   this.jzChatSend = jzChatSend;
@@ -66,7 +65,6 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
   this.targetFullname = targetFullname;
   this.dbName = dbName;
   this.owner = "";
-  this.messages = [];
 
   var thiss = this;
 
@@ -284,10 +282,14 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
   }
 
   var thiss = this;
+  if (!window.tempId) {
+    window.tempId = 0;
+  }
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({"event": "message-sent",
+      "tempId": 'tempId_' + tempId++,
       "targetUser": targetUser,
       "room": room,
       "sender": user,
@@ -408,11 +410,11 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           thiss.setUserPref("lastTS", ts, 600);
           thiss.setUserPref("lastUpdatedTS", updatedTS, 600);
 
-          thiss.addMessagesToLocalList(data);
-          thiss.showMessages();
+          // thiss.addMessagesToLocalList(data);
+          thiss.showMessages(data.messages);
         } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
           // If room has changed but no messages was added there yet
-          thiss.showMessages();
+          thiss.showMessages([]);
         }
         // set last succeeded request chat owner
         // to be able to detect when user switches from a room to another
@@ -430,46 +432,8 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
         if (typeof callback === "function") {
           callback(data.messages);
         }
-      },
-      error: function(xhr, status, error) {
-        if (status === 403 &&  ( thiss.messages.length === 0 || "type-kicked" !== thiss.messages[0].options.type)) {
-
-          // Show message user has been kicked
-          var options = {
-            "type" : "type-kicked"
-          };
-          var messages = [{
-            "message": "",
-            "options": options,
-            "isSystem": "true"
-          }];
-          thiss.messages = messages;
-          thiss.showMessages();
-
-          // Disable action buttons
-          var $msg = jqchat('#msg');
-          var $msButtonRecord = jqchat(".msButtonRecord");
-          var $msgEmoticons = jqchat(".msg-emoticons");
-          var $meetingActionToggle = jqchat(".meeting-action-toggle");
-          $msg.attr("disabled", "disabled");
-          $msButtonRecord.attr("disabled", "disabled");
-          $msButtonRecord.tooltip("disable");
-          $msgEmoticons.parent().addClass("disabled");
-          $msgEmoticons.parent().tooltip("disable");
-          $meetingActionToggle.addClass("disabled");
-          $meetingActionToggle.children("span").tooltip("disable");
-        } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
-          // the room init operation is canceled, thus no messages will be displayed
-          thiss.showMessages();
-        }
-        thiss.setNewRoom(false);
-        thiss.lastCallOwner = thiss.targetUser;
-        if (typeof thiss.onRefreshCB === "function") {
-          thiss.onRefreshCB(1);
-        }
       }
     })
-
   }
 };
 
@@ -587,45 +551,6 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
 ChatRoom.prototype.getUserLastMessage = function() {
   var $lastMessage = jqchat(".msMy").find(".msg-text").last();
   return $lastMessage;
-}
-
-/**
- * Merge new/updated/deleted messages with the local messages list.
- * @param newMsgs new or updated messages
- * @param addedLocally is the message added locally ? locally means by the current browser, not by fetching data on the server
- */
-ChatRoom.prototype.addMessagesToLocalList = function(newMsgs, addedLocally) {
-  if (newMsgs !== undefined) {
-    if (this.messages.length > 0) {
-      var messages = TAFFY(this.messages);
-
-      // remove messages added locally when merging with messages retrieved from the server,
-      // since these messages are also on the server and will be merged
-      if(!addedLocally) {
-        messages({
-          date: "pending"
-        }).remove();
-      }
-
-      for ( var m in newMsgs.messages) {
-        if (newMsgs.messages.hasOwnProperty(m)) {
-          var msg = newMsgs.messages[m];
-          var localMsg = messages({
-            id : msg.id
-          });
-          if (localMsg.count() > 0) {
-            localMsg.update(msg);
-          } else {
-            messages.insert(msg);
-          }
-        }
-      }
-
-      this.messages = messages().get();
-    } else {
-      this.messages = newMsgs.messages;
-    }
-  }
 }
 
 ChatRoom.prototype.updateMessage = function(message) {
@@ -842,10 +767,10 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
 /**
  * Convert local messages list in HTML output to display the list of messages
  */
-ChatRoom.prototype.showMessages = function() {
+ChatRoom.prototype.showMessages = function(msgs) {
   var out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
 
-  if (this.messages.length===0) {
+  if (msgs.length === 0) {
     if (this.isPublic) {
       out = "<div class='msRow' style='padding:22px 20px;'>";
       out += "<b><center>"+chatBundleData["exoplatform.chat.public.welcome"]+"</center></b>";
@@ -856,7 +781,7 @@ ChatRoom.prototype.showMessages = function() {
   } else {
     this.messagesContainer.html(''); // Clear the room
     var thiss = this;
-    var messages = TAFFY(this.messages);
+    var messages = TAFFY(msgs);
     messages().order("timestamp asec").each(function (message, i) {
       thiss.addMessage(message);
     });

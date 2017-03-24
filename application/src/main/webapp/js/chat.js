@@ -256,6 +256,7 @@ var chatApplication = new ChatApplication();
         chatApplication.sendMessage(msg);
 
       }
+
       // UP Arrow
       if (event.which === 38 && msg.length === 0) {
         var $uimsg = chatApplication.chatRoom.getUserLastMessage();
@@ -1539,7 +1540,6 @@ function ChatApplication() {
 
   this.chatSessionInt = -1; //not set
   this.filterInt;
-  this.messages = [];
 
   this.ANONIM_USER = "__anonim_";
   this.SUPPORT_USER = "__support_";
@@ -2742,75 +2742,6 @@ ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
   }
 };
 
-
-/**
- * return a status if a meeting is started or not :
- * -1 : no meeting in chat history
- * 0 : meeting terminated
- * 1 : obgoing meeting
- *
- * @param callback (callStatus)
- */
-// TODO: to remove as this seems to be useless.
-ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
-  alert("You should not see this message");
-
-  if (room !== "" && room !== chatApplication.chatRoom.id) {
-    chatApplication.chatRoom.getChatMessages(room, function (msgs) {
-      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
-      var recordStatus = -1;
-      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "call-off") {
-          callStatus = 0;
-        } else if (type === "call-on") {
-          callStatus = 1;
-        }
-      }
-      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "type-meeting-stop") {
-          recordStatus = 0;
-        } else if (type === "type-meeting-start") {
-          recordStatus = 1;
-        }
-      }
-      if (callback !== undefined) {
-        callback(callStatus, recordStatus);
-      }
-    });
-  } else {
-    chatApplication.chatRoom.refreshChat(true, function (msgs) {
-      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
-      var recordStatus = -1;
-
-      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "call-off") {
-          callStatus = 0;
-        } else if (type === "call-on") {
-          callStatus = 1;
-        }
-      }
-      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "type-meeting-stop") {
-          recordStatus = 0;
-        } else if (type === "type-meeting-start") {
-          recordStatus = 1;
-        }
-      }
-      if (callback !== undefined) {
-        callback(callStatus, recordStatus);
-      }
-    });
-  }
-};
-
 /**
  * Toggle Favorite : server call
  * @param targetFav : the user or space to put/remove in favorite
@@ -2841,7 +2772,7 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
 /**
  * Update Meeting Button status
  *
- * @param: status: 'started' or 'stoped'
+ * @param isStarted: true or false
  */
 ChatApplication.prototype.updateMeetingButtonStatus = function(isStarted) {
   var $icon = jqchat(".msButtonRecord").children("i");
@@ -2991,15 +2922,14 @@ ChatApplication.prototype.setStatusInvisible = function() {
  */
 ChatApplication.prototype.sendMessage = function(msg, callback) {
 
-  var options = {};
-  var context = {"msg": msg, "options": options, "callback": callback, "continueSend": true};
+  var context = {"msg": msg, "options": {}, "callback": callback, "continueSend": true};
 
   this.trigger("beforeSend", context);
   if (!context.continueSend) {
     return;
   }
   msg = context.msg;
-  options = context.options;
+  var options = context.options;
   callback = context.callback;
 
   var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
