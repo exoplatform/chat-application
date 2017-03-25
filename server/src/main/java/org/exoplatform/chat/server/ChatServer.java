@@ -337,9 +337,7 @@ public class ChatServer
       for(MessageBean messageBean : reportBean.getMessages()) {
         if(!messageBean.getUser().equals(prevUser)) {
           String keyAvatar = messageBean.getUser() + index;
-          Identity identity = Utils.getIdentityManager().getOrCreateIdentity("organization", messageBean.getUser(), true);
-          String getAvatarUrl = LinkProviderUtils.getUserAvatarUrl(identity.getProfile());
-          inlineImages.put(keyAvatar, getAvatarUrl);
+          inlineImages.put(keyAvatar, ChatService.USER_AVATAR_URL.replace("{}",messageBean.getUser()));
           index ++;
         }
         prevUser = messageBean.getUser();
