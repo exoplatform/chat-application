@@ -51,9 +51,7 @@ var chatApplication = new ChatApplication();
     chatApplication.room = "";
 
     // get user profile, then init chat application
-    chatApplication.initChatProfile(function() {
-      chatApplication.initChat();
-    });
+    chatApplication.initChatProfile();
 
     // Attach weemo call button into chatApplication
     chatApplication.displayVideoCallOnChatApp();
@@ -72,6 +70,7 @@ var chatApplication = new ChatApplication();
     var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
+    var _connected = false;
     /**
      * Handle Real Time communications events
      */
@@ -81,6 +80,24 @@ var chatApplication = new ChatApplication();
         url: chatApplication.wsEndpoint,
         'exoId': chatApplication.username, // current username
         'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+      });
+
+      cCometD.addListener('/meta/connect', function(message) {
+        console.log(message);
+        if (cCometD.isDisconnected()) {
+          _connected = false;
+          console.log("Connection is closed.");
+          return;
+        }
+
+        var wasConnected = _connected;
+        _connected = message.successful === true;
+        if (!wasConnected && _connected) {
+          console.log("Connection is established.");
+          chatApplication.initChat();
+        } else if (wasConnected && !_connected) {
+          console.log("Connection is broken.");
+        }
       });
 
       cCometD.subscribe('/service/chat', null, function (event) {
@@ -1586,6 +1603,50 @@ ChatApplication.prototype.trigger = function(event, context) {
   });
 }
 
+
+/**
+ * Init Chat Profile
+ */
+ChatApplication.prototype.initChatProfile = function(callback) {
+  if (this.username === this.ANONIM_USER) {
+    if (jzGetParam("anonimUsername")) {
+      this.createDemoUser(jzGetParam("anonimFullname"), jzGetParam("anonimEmail"));
+    } else {
+      this.showDemoPanel();
+    }
+  } else {
+    jqchat.ajax({
+      url: this.jzInitChatProfile,
+      dataType: "json",
+      context: this,
+      success: function(data){
+        this.token = data.token;
+        this.fullname = data.fullname;
+        this.isAdmin = data.isAdmin;
+        this.isTeamAdmin = data.isTeamAdmin;
+
+        var $chatApplication = jqchat("#chat-application");
+        $chatApplication.attr("data-token", this.token);
+        var $labelUser = jqchat(".uiGrayLightBox .label-user");
+        if(window.innerWidth > 767){
+          $labelUser.text(data.fullname);
+        }else{
+          $labelUser.removeAttr("href").text("Discussion");
+        }
+        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
+        chatNotification.refreshStatusChat();
+        if (typeof callback === "function") {
+          callback();
+        }
+      },
+      error: function (response){
+        //retry in 3 sec
+        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
+      }
+    });
+  }
+};
+
 /**
  * Init Chat Interval
  */
@@ -1781,49 +1842,6 @@ ChatApplication.prototype.initChat = function() {
     }, 500);
     jqchat("#chat-video-button").attr("style", "");
   });
-};
-
-/**
- * Init Chat Profile
- */
-ChatApplication.prototype.initChatProfile = function(callback) {
-  if (this.username === this.ANONIM_USER) {
-    if (jzGetParam("anonimUsername")) {
-      this.createDemoUser(jzGetParam("anonimFullname"), jzGetParam("anonimEmail"));
-    } else {
-      this.showDemoPanel();
-    }
-  } else {
-    jqchat.ajax({
-      url: this.jzInitChatProfile,
-      dataType: "json",
-      context: this,
-      success: function(data){
-        this.token = data.token;
-        this.fullname = data.fullname;
-        this.isAdmin = data.isAdmin;
-        this.isTeamAdmin = data.isTeamAdmin;
-
-        var $chatApplication = jqchat("#chat-application");
-        $chatApplication.attr("data-token", this.token);
-        var $labelUser = jqchat(".uiGrayLightBox .label-user");
-        if(window.innerWidth > 767){
-          $labelUser.text(data.fullname);
-        }else{
-          $labelUser.removeAttr("href").text("Discussion");
-        }
-        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
-        chatNotification.refreshStatusChat();
-        if (typeof callback === "function") {
-          callback();
-        }
-      },
-      error: function (response){
-        //retry in 3 sec
-        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
-      }
-    });
-  }
 };
 
 /**
