@@ -154,6 +154,7 @@ var chatApplication = new ChatApplication();
 
           if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
             chatApplication.loadRoomUsers();
+            chatApplication.targetFullname = message.data.title;
             jqchat("#chat-room-detail-fullname").text(message.data.title);
           }
         } else if (message.event == 'room-deleted') {
