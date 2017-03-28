@@ -83,7 +83,6 @@ var chatApplication = new ChatApplication();
       });
 
       cCometD.addListener('/meta/connect', function(message) {
-        console.log(message);
         if (cCometD.isDisconnected()) {
           _connected = false;
           console.log("Connection is closed.");
@@ -2580,13 +2579,14 @@ ChatApplication.prototype.loadRoom = function(room) {
     jqchat(".room-detail-avatar").show();
     jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:" + spaceName + "/" + spaceName);
     jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/" + spaceName + "/avatar");
+    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/" + this.targetFullname + "/avatar");
 
   } else {
     ////// TEAM
     jqchat.ajax({
       url: this.jzChatGetCreator,
-      data: {"room": this.targetUser,
+      data: {
+        "room": this.targetUser,
         "user": this.username,
         "dbName": this.dbName
       },

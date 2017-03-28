@@ -63,29 +63,31 @@ public class ChatServiceImpl implements ChatService
     if (isSystem == null) isSystem = "false";
 
     String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
-    if (!targetUser.startsWith(ChatService.EXTERNAL_PREFIX))
+
+    RoomBean roomBean = userService.getRoom(sender, room, dbName);
+    String roomType = roomBean.getType();
+    if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType))
     {
       String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
 
       List<String> usersToBeNotified = new ArrayList<String>();
-      if (targetUser.startsWith(ChatService.SPACE_PREFIX))
-      {
-        usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.SPACE_PREFIX
-            .length()), ChatService.TYPE_ROOM_SPACE, dbName);
-      }
-      else if (targetUser.startsWith(ChatService.TEAM_PREFIX))
-      {
-        usersToBeNotified = userService.getUsersFilterBy(sender, targetUser.substring(ChatService.TEAM_PREFIX
-            .length()), ChatService.TYPE_ROOM_TEAM, dbName);
-      }
-      else
-      {
-        usersToBeNotified.add(targetUser);
+      if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
+        usersToBeNotified.add(roomBean.getUser());
+      } else {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
       }
 
       MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
       UserBean user = userService.getUser(sender, dbName);
       msg.setFullName(user.getFullname());
+
+      JSONObject data = msg.toJSONObject();
+      data.put("roomType", roomType);
+      if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
+        data.put("roomDisplayName", user.getFullname());
+      } else {
+        data.put("roomDisplayName", roomBean.getFullName());
+      }
 
       // Deliver the saved message to sender's subscribed channel itself.
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
@@ -93,10 +95,10 @@ public class ChatServiceImpl implements ChatService
           room,
           user.getName(),
           new Date(),
-          msg.toJSONObject());
+          data);
       realTimeMessageService.sendMessage(messageBean, sender);
 
-      String content = ((message.length()>30)?message.substring(0,29)+"...":message);
+      String content = ((message.length() > 30) ? message.substring(0, 29) + "..." : message);
       for (String receiver: usersToBeNotified) {
         notificationService.addNotification(receiver, sender, "chat", "room", room, content,
             intranetPage + "?room=" + room, options, dbName);

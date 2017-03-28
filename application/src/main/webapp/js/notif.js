@@ -342,55 +342,67 @@ ChatNotification.prototype.showDesktopNotif = function(path, msg) {
     else {
     var isFirefox = typeof InstallTrigger !== 'undefined';
     var isLinux = ( navigator.platform.indexOf('Linux') != -1 );
-    var avatarUrl = null;
-    var title = null;
 
-    if (msg.roomDisplayName == "") {
-      avatarUrl = '/rest/v1/social/users/' + msg.from + '/avatar';
-      title = msg.fromFullName;
-    } else {
-      avatarUrl = '/rest/v1/social/users/' + msg.roomDisplayName + '/avatar';
-      title = msg.roomDisplayName;
-    }
-    var notification =null;
-    //check if we're running Firefox on Linux then disable the Icons
-    // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
-    if (isLinux && isFirefox) {
-      notification = new Notification(title, {
-        body: displayMsg
-      });
-    } else {
-      notification = new Notification(title, {
-        icon: avatarUrl,
-        body: displayMsg,
-      });
-    }
+    var clickHandler = function(notif) {
+      notif.onclick = function() {
+        window.focus();
+        notif.close();
+        var displayTitle = msg.roomDisplayName;
 
+        if(typeof chatApplication === "undefined") {
+          localStorage.setItem('notification.room', msg.categoryId);
+          window.open(path, "_chat");
+        } else {
+          // TODO Need to handle the case in the full chat app.
+          chatApplication.loadRoom(msg.categoryId);
 
-    notification.onclick = function () {
-      window.focus();
-      notification.close();
-      var displayTitle;
-      if (msg.roomDisplayName) {
-        displayTitle = msg.roomDisplayName;
-      } else {
-        displayTitle = msg.fromFullName;
-      }
-
-      if(typeof chatApplication === "undefined") {
-        localStorage.setItem('notification.room', msg.categoryId);
-        window.open(path, "_chat");
-      } else {
-        // TODO Need to handle the case in the full chat app.
-        chatApplication.loadRoom(msg.categoryId);
-
-        if (chatApplication.isMobileView()) {
-          jqchat(".right-chat").css("display", "block");
-          jqchat(".left-chat").css("display", "none");
-          jqchat(".room-name").html(displayTitle);
+          if (chatApplication.isMobileView()) {
+            jqchat(".right-chat").css("display", "block");
+            jqchat(".left-chat").css("display", "none");
+            jqchat(".room-name").html(displayTitle);
+          }
         }
       }
     };
+
+    var notification =null;
+    // check if we're running Firefox on Linux then disable the Icons
+    // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
+    if (isLinux && isFirefox) {
+      notification = new Notification(msg.roomDisplayName, {
+        body: displayMsg
+      });
+      clickHandler(notification);
+
+    } else {
+      var avatarUrl = null;
+
+      if (msg.roomType === 'u') {
+        avatarUrl = '/rest/v1/social/users/' + msg.from + '/avatar';
+      } else {
+        avatarUrl = '/rest/v1/social/spaces/' + msg.roomDisplayName + '/avatar';
+      }
+
+      jqchat.ajax({
+        url: avatarUrl,
+        type: 'GET',
+        complete: function (xhr) {
+          if (xhr.status === 404) {
+            if (msg.roomType == "u") {  // default user avatar
+              avatarUrl = '/chat/img/user-default.jpg';
+            } else {  // default group avatar
+              avatarUrl = '/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';
+            }
+          }
+
+          notification = new Notification(msg.roomDisplayName, {
+            icon: avatarUrl,
+            body: displayMsg,
+          });
+          clickHandler(notification);
+        }
+      });
+    }
   }
 };
 
@@ -820,8 +832,9 @@ var chatNotification = new ChatNotification();
               localStorage.setItem('lastNotify-' + message.room, msg.msgId);
 
               var notify = {
+                roomType: msg.roomType,
                 options: msg.options,
-                roomDisplayName: msg.fullname,
+                roomDisplayName: msg.roomDisplayName,
                 content: msg.msg,
                 categoryId: message.room,
                 from: message.sender
