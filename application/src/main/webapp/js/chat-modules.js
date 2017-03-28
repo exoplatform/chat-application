@@ -776,7 +776,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
   if (msgs) {
     this.messages = msgs;
   } else {
-    msgs = this.messages;
+    msgs = this.messages || [];
   }
 
   var out = "";
