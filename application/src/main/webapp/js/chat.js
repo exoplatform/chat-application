@@ -132,7 +132,7 @@ var chatApplication = new ChatApplication();
 
           // Add the new room and re-render the list of rooms
           chatApplication.rooms.insert({
-            escapedFullname : room.escapedFullname,
+            fullName: room.fullName,
             isActive : room.isActive,
             isAvailableUser : room.isAvailableUser,
             isFavorite : room.isFavorite,
@@ -149,7 +149,7 @@ var chatApplication = new ChatApplication();
           chatApplication.renderRooms();
         } else if (message.event == 'room-updated') {
           var room = chatApplication.rooms({room: message.room});
-          room.update({escapedFullname: message.data.title});
+          room.update({fullName: message.data.title});
           chatApplication.renderRooms();
 
           if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
@@ -1225,7 +1225,7 @@ var chatApplication = new ChatApplication();
         $userResults.html("");
         $(".team-users-list").empty();
 
-        var title = chatApplication.rooms({room: chatApplication.room}).first().escapedFullname
+        var title = chatApplication.rooms({room: chatApplication.room}).first().fullName;
         var $uitext = $("#team-modal-name");
         $uitext.val(title);
         $uitext.attr("data-id", chatApplication.room);
@@ -1322,31 +1322,7 @@ var chatApplication = new ChatApplication();
         users += ","+name;
       });
 
-      chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
-        return;
-        var teamName = data.name;
-        var roomId = "team-"+data.room;
-
-        // Add the new room and re-render the list of rooms
-        chatApplication.rooms.insert({
-            escapedFullname : teamName,
-            isActive : "true",
-            isAvailableUser : "true",
-            isFavorite : false,
-            type: "t",
-            room : data.room,
-            status : "team",
-            timestamp : new Date().getTime(),
-            unreadTotal : 0,
-            user : roomId
-        });
-        chatApplication.renderRooms();
-
-        // Refresh the chatRoom after creating the team room
-        chatApplication.targetUser = roomId;
-        chatApplication.targetFullname = teamName;
-        chatApplication.loadRoom();
-      });
+      chatApplication.saveTeamRoom(teamName, teamId, users);
 
       $uitext.val("");
       $uitext.attr("data-id", "---");
@@ -1698,7 +1674,7 @@ ChatApplication.prototype.initChat = function() {
         thiss.room = _room;
         var TAFFYRoom = thiss.rooms({room: _room}).first();
         thiss.targetUser = TAFFYRoom.user;
-        thiss.targetFullname = TAFFYRoom.escapedFullname;
+        thiss.targetFullname = TAFFYRoom.fullName;
         if (thiss.username !== thiss.ANONIM_USER) {
           thiss.loadRoom();
         }
@@ -1809,16 +1785,14 @@ ChatApplication.prototype.initChat = function() {
       jqchat("#chat-search").attr("placeholder", $serachText);
     }
 
-    thiss.room = jqchat(".room-link:first",this).attr("room-data");
-    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
-    thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
-
     chatNotification.getStatus(thiss.targetUser, function(targetUser, status) {
       jqchat("#userRoomStatus > i").attr("class", "");
       jqchat("#userRoomStatus > i").addClass("user-"+status);
     });
 
-    thiss.loadRoom();
+    var room = jqchat(".room-link:first",this).attr("room-data");
+    thiss.loadRoom(room);
+
     if (thiss.isMobileView()) {
       jqchat(".right-chat").css("display", "block");
       jqchat(".left-chat").css("display", "none");
@@ -2306,7 +2280,7 @@ ChatApplication.prototype.renderRooms = function() {
 
   var roomsFavorites = rooms();
   roomsFavorites = roomsFavorites.filter({isFavorite:{is: true}});
-  roomsFavorites.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
+  roomsFavorites.order("isFavorite desc, timestamp desc, fullName logical").each(function (room) {
     var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
     if (rhtml !== "") {
       roomPrevUser = room.user;
@@ -2349,7 +2323,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsPeople = rooms();
   roomsPeople = roomsPeople.filter({type:{"is":"u"}});
   roomsPeople = roomsPeople.filter({isFavorite:{"!is": true}});
-  roomsPeople.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsPeople.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2383,7 +2357,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsTeams = rooms();
   roomsTeams = roomsTeams.filter({type:{"is":"t"}});
   roomsTeams = roomsTeams.filter({isFavorite:{"!is": true}});
-  roomsTeams.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsTeams.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2417,7 +2391,7 @@ ChatApplication.prototype.renderRooms = function() {
   var roomsSpaces = rooms();
   roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
   roomsSpaces = roomsSpaces.filter({isFavorite:{"!is": true}});
-  roomsSpaces.order("timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
+  roomsSpaces.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
@@ -2487,7 +2461,7 @@ ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
     out += '  </td>';
     out += '  <td>';
     if (room.isActive=="true") {
-      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+ decodeRoomName(room.escapedFullname) +'</span>';
+      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link">'+ jqchat('<div />').text(room.fullName).html() +'</span>';
     } else {
       out += '<span class="room-inactive muted">'+room.user+'</span>';
     }
@@ -2531,7 +2505,7 @@ ChatApplication.prototype.loadRoom = function(room) {
     this.room = room;
     var TAFFYRoom = this.rooms({room: room}).first();
     this.targetUser = TAFFYRoom.user;
-    this.targetFullname = TAFFYRoom.escapedFullname;
+    this.targetFullname = TAFFYRoom.fullName;
   }
 
   if(this.configMode == true) {
@@ -2575,9 +2549,7 @@ ChatApplication.prototype.loadRoom = function(room) {
 
   jqchat("#room-detail").css("display", "block");
   jqchat("#chat-team-button").css("display", "none");
-  this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
   jqchat("#chat-room-detail-fullname").text(this.targetFullname);
-
 
   if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
     jqchat(".btn-weemo-conf").css("display", "none");

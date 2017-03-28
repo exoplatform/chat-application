@@ -1436,8 +1436,8 @@ function showMiniChatPopup(room, type) {
     success: function(data) {
       var cRoom = data;
       var targetUser = cRoom.user;
-      var targetFullname = cRoom.escapedFullname;
-      $miniChat.find(".fullname").html(targetFullname);
+      var targetFullname = cRoom.fullName;
+      $miniChat.find(".fullname").text(targetFullname);
       var jzChatRead = chatServerUrl+"/read";
       var jzChatSend = chatServerUrl+"/send";
       if (miniChats[index] === undefined) {

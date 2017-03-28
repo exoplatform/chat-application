@@ -87,10 +87,6 @@ public class ChatServer
   @Path("index.gtmpl")
   Template index;
 
-  @Inject
-  @Path("users.gtmpl")
-  Template users;
-
   ChatService chatService;
   UserService userService;
   TokenService tokenService;

@@ -75,10 +75,6 @@ public class RoomBean implements Comparable<RoomBean>
     return fullname;
   }
 
-  public String getEscapedFullname() {
-    return StringEscapeUtils.escapeHtml4(this.fullname);
-  }
-
   public void setFullName(String fullname) {
     this.fullname = fullname;
   }
@@ -124,7 +120,7 @@ public class RoomBean implements Comparable<RoomBean>
 
   public JSONObject toJSONObject() {
     JSONObject obj = new JSONObject();
-    obj.put("escapedFullname", this.getEscapedFullname());
+    obj.put("fullName", this.getFullName());
     obj.put("room", this.getRoom());
     obj.put("status", this.getStatus());
     obj.put("user", this.getUser());
