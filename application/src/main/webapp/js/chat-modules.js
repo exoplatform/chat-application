@@ -402,7 +402,6 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           return;
         }
 
-        jqchat("#chats").empty();
         if (data.messages.length > 0) {
           var ts = data.timestamp;
           var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
@@ -575,6 +574,12 @@ ChatRoom.prototype.updateMessage = function(message) {
  * }
  */
 ChatRoom.prototype.addMessage = function(message, checkToScroll) {
+  this.messages.push(message);
+
+  this.showMessage(message, checkToScroll);
+}
+
+ChatRoom.prototype.showMessage = function(message, checkToScroll) {
   var $chats = this.messagesContainer;
 
   if (checkToScroll) {
@@ -768,7 +773,13 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
  * Convert local messages list in HTML output to display the list of messages
  */
 ChatRoom.prototype.showMessages = function(msgs) {
-  var out="", prevUser="", prevFullName, prevOptions, msRightInfo ="", msUserMes="";
+  if (msgs) {
+    this.messages = msgs;
+  } else {
+    msgs = this.messages;
+  }
+
+  var out = "";
 
   if (msgs.length === 0) {
     if (this.isPublic) {
@@ -783,7 +794,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
     var thiss = this;
     var messages = TAFFY(msgs);
     messages().order("timestamp asec").each(function (message, i) {
-      thiss.addMessage(message);
+      thiss.showMessage(message);
     });
   }
 
