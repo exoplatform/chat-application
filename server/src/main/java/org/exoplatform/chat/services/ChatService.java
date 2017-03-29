@@ -54,7 +54,7 @@ public interface ChatService
 
   public void write(String message, String user, String room, String isSystem, String dbName);
 
-  public void write(String message, String user, String room, String isSystem, String options, String dbName, String targetUser);
+  public void write(String tempId, String message, String user, String room, String isSystem, String options, String dbName);
 
   public String save(String message, String user, String room, String isSystem, String options, String dbName);
 

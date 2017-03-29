@@ -343,8 +343,6 @@ public class ChatTestCase extends AbstractChatTestCase
 
     String spaceId2 = chatService.getSpaceRoom("test_space_2", null);
     chatService.write("foo", "benjamin", spaceId2, "false", null);
-    chatService.write("foo", "john", spaceId2, "false", null);
-
 
     //public RoomsBean getRooms(String user, String filter,
     //      boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin,
@@ -440,13 +438,11 @@ public class ChatTestCase extends AbstractChatTestCase
 
     ServiceBootstrap.getUserService().setSpaces("benjamin", spaces, null);
 
-
     String spaceId1 = chatService.getSpaceRoom("test_space", null);
     chatService.write("foo", "benjamin", spaceId1, "false", null);
 
     String spaceId2 = chatService.getSpaceRoom("test_space_2", null);
     chatService.write("foo", "benjamin", spaceId2, "false", null);
-    chatService.write("foo", "john", spaceId2, "false", null);
 
     RoomsBean roomsBenAll = chatService.getRooms("benjamin", null,
             true, true, false, true, false,

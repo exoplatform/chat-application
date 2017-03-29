@@ -288,20 +288,26 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
   // Send message to server
   //TODO remove require, inject cometd dependency at script level
   require(['SHARED/commons-cometd3'], function(cCometD) {
-    cCometD.publish('/service/chat', JSON.stringify({"event": "message-sent",
+    var msgObj = {
       "tempId": 'tempId_' + tempId++,
-      "targetUser": targetUser,
+      "msg": msg,
+      "user": user,
+      "fullname": thiss.fullname,
+      "options": options,
+      "isSystem": isSystemMessage,
+      "ts": newMsgTimestamp,
+    };
+
+    thiss.messages.push(msgObj);
+    thiss.showMessage(msgObj, true);
+
+    cCometD.publish('/service/chat', JSON.stringify({
+      "event": "message-sent",
       "room": room,
       "sender": user,
-      "fullname": thiss.fullname,
-      "ts": newMsgTimestamp,
       "dbName": thiss.dbName,
       "token": thiss.token,
-      "data": {
-        "msg": msg
-      },
-      "options": options,
-      "isSystem": isSystemMessage
+      "data": msgObj
     }), function(publishAck) {
       if (publishAck.successful) {
         if (typeof callback === "function") {
@@ -544,16 +550,38 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
 };
 
 /**
- * Find and return from the selected chat the last message of the current user.
- * @return an DOM node
+ * Convert local messages list in HTML output to display the list of messages
  */
-ChatRoom.prototype.getUserLastMessage = function() {
-  var $lastMessage = jqchat(".msMy").find(".msg-text").last();
-  return $lastMessage;
-}
+ChatRoom.prototype.showMessages = function(msgs) {
+  if (msgs) {
+    this.messages = msgs;
+  } else {
+    msgs = this.messages || [];
+  }
 
-ChatRoom.prototype.updateMessage = function(message) {
-  $msg = jqchat("#" + message.msgId);
+  var out = "";
+
+  this.messagesContainer.html(''); // Clear the room
+  if (msgs.length > 0) {
+    var thiss = this;
+    var messages = TAFFY(msgs);
+    messages().order("timestamp asec").each(function (message, i) {
+      thiss.showMessage(message);
+    });
+  }
+
+  if (typeof this.onShowMessagesCB === "function") {
+    this.onShowMessagesCB();
+  }
+};
+
+ChatRoom.prototype.updateMessage = function(message, msgId) {
+  var $msg;
+  if (msgId) {
+    $msg = jqchat("#" + msgId);
+  } else {
+    $msg = jqchat("#" + message.msgId);
+  }
   var out = this.generateMessageHTML(message);
   $msg.replaceWith(out);
 }
@@ -573,10 +601,25 @@ ChatRoom.prototype.updateMessage = function(message) {
  *    "isSystem": "false"
  * }
  */
-ChatRoom.prototype.addMessage = function(message, checkToScroll) {
-  this.messages.push(message);
+ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
+  var tempId = msg.tempId;
+  if (tempId) {
+    msg.tempId = null;
+    var messages = TAFFY(this.messages);
+    var tempMsg = messages({
+      tempId: tempId
+    });
 
-  this.showMessage(message, checkToScroll);
+    if (tempMsg.count() > 0) {
+      tempMsg.update(msg);
+      this.messages = messages().get();
+      this.updateMessage(msg, tempId);
+      return;
+    }
+  }
+
+  this.messages.push(msg);
+  this.showMessage(msg, checkToScroll);
 }
 
 ChatRoom.prototype.showMessage = function(message, checkToScroll) {
@@ -733,7 +776,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   } else {
     msgtemp = this.messageBeautifier(message);
   }
-  out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+  out += '          <div id="' + (message.tempId ? message.tempId : message.msgId) + '" class="msUserCont msg-text ' + noEditCssClass + '">';
 
   var msRightInfo = "";
   msRightInfo += "      <div class='msRightInfo pull-right'>";
@@ -768,32 +811,6 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
 
   return out;
 }
-
-/**
- * Convert local messages list in HTML output to display the list of messages
- */
-ChatRoom.prototype.showMessages = function(msgs) {
-  if (msgs) {
-    this.messages = msgs;
-  } else {
-    msgs = this.messages || [];
-  }
-
-  var out = "";
-
-  this.messagesContainer.html(''); // Clear the room
-  if (msgs.length > 0) {
-    var thiss = this;
-    var messages = TAFFY(msgs);
-    messages().order("timestamp asec").each(function (message, i) {
-      thiss.showMessage(message);
-    });
-  }
-
-  if (typeof this.onShowMessagesCB === "function") {
-    this.onShowMessagesCB();
-  }
-};
 
 ChatRoom.prototype.getActionMeetingStyleClasses = function(options) {
   var actionType = options.type;

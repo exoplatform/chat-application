@@ -19,7 +19,6 @@
 
 package org.exoplatform.chat.services;
 
-import juzu.Response;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.json.simple.JSONArray;
@@ -51,10 +50,10 @@ public class ChatServiceImpl implements ChatService
 
   public void write(String message, String user, String room, String isSystem, String dbName)
   {
-    chatStorage.write(message, user, room, isSystem, null, dbName);
+    write(null, message, user, room, isSystem, null, dbName);
   }
 
-  public void write(String message, String sender, String room, String isSystem, String options, String dbName, String targetUser)
+  public void write(String tempId, String message, String sender, String room, String isSystem, String options, String dbName)
   {
     if (!isMemberOfRoom(sender, room, dbName)) {
       throw new ChatException(403, "Petit malin !");
@@ -68,8 +67,6 @@ public class ChatServiceImpl implements ChatService
     String roomType = roomBean.getType();
     if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType))
     {
-      String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
-
       List<String> usersToBeNotified = new ArrayList<String>();
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         usersToBeNotified.add(roomBean.getUser());
@@ -82,6 +79,7 @@ public class ChatServiceImpl implements ChatService
       msg.setFullName(user.getFullname());
 
       JSONObject data = msg.toJSONObject();
+      data.put("tempId", tempId);
       data.put("roomType", roomType);
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         data.put("roomDisplayName", user.getFullname());
@@ -98,6 +96,7 @@ public class ChatServiceImpl implements ChatService
           data);
       realTimeMessageService.sendMessage(messageBean, sender);
 
+      String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
       String content = ((message.length() > 30) ? message.substring(0, 29) + "..." : message);
       for (String receiver: usersToBeNotified) {
         notificationService.addNotification(receiver, sender, "chat", "room", room, content,
@@ -169,18 +168,16 @@ public class ChatServiceImpl implements ChatService
   {
     chatStorage.edit(room, sender, messageId, message, dbName);
 
-    String roomType = getTypeRoomChat(room, dbName);
+    RoomBean roomBean = userService.getRoom(sender, room, dbName);
+    String roomType = roomBean.getType();
 
-    if (!roomType.equals("e")) {
+    if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType)) {
       List<String> usersToBeNotified = new ArrayList<String>();
-      if (roomType.equals("s")) {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName);
-      } else if (roomType.equals("t")) {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName);
+      if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
+        usersToBeNotified.add(roomBean.getUser());
       } else {
-        usersToBeNotified.add(room);
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
       }
-
 
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
 

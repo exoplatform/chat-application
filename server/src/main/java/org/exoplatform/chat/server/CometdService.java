@@ -1,6 +1,5 @@
 package org.exoplatform.chat.server;
 
-import juzu.Response;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
 import org.cometd.bayeux.server.ServerMessage;
@@ -98,13 +97,15 @@ public class CometdService {
         realTimeMessageService.sendMessage(realTimeMessageBean, sender);
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_SENT)) {
         String room = (String) jsonMessage.get("room");
-        String isSystem = jsonMessage.get("isSystem").toString();
-        String options = jsonMessage.get("options").toString();
-        String msg = (String) ((JSONObject)jsonMessage.get("data")).get("msg");
-        String targetUser = (String) jsonMessage.get("targetUser");
+
+        JSONObject data = (JSONObject) jsonMessage.get("data");
+        String tempId = data.get("tempId").toString();
+        String msg = data.get("msg").toString();
+        String isSystem = data.get("isSystem").toString();
+        String options = data.get("options").toString();
 
         try {
-          chatService.write(msg, sender, room, isSystem, options, dbName, targetUser);
+          chatService.write(tempId, msg, sender, room, isSystem, options, dbName);
         } catch (ChatException e) {
           // Should response a message somehow in websocket.
         }

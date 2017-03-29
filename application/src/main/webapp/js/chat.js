@@ -276,7 +276,7 @@ var chatApplication = new ChatApplication();
 
       // UP Arrow
       if (event.which === 38 && msg.length === 0) {
-        var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+        var $uimsg = jqchat(".msMy").find(".msg-text").last();
         var $uimsgdata = $uimsg.find(".msg-data");
         if ($uimsgdata.length === 1) {
           chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());

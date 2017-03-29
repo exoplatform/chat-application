@@ -140,7 +140,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     room.setFullName((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
     room.setType((String) dbRoom.get("type"));
-    long timestamp = -1;
     if (dbRoom.containsField("timestamp")) {
       room.setTimestamp((Long) dbRoom.get("timestamp"));
     }

@@ -136,7 +136,7 @@ public class ChatServer
 
   @Resource
   @Route("/send")
-  public Response.Content send(String sender, String token, String targetUser, String message, String room,
+  public Response.Content send(String sender, String token, String message, String room,
                                String isSystem, String options, String dbName) throws IOException {
     if (!tokenService.hasUserWithToken(sender, token, dbName))
     {
@@ -153,7 +153,7 @@ public class ChatServer
       }
 
       try {
-        chatService.write(message, sender, room, isSystem, options, dbName, targetUser);
+        chatService.write(null, message, sender, room, isSystem, options, dbName);
       } catch (ChatException e) {
         return Response.content(e.getStatus(), e.getMessage());
       }
@@ -710,7 +710,7 @@ public class ChatServer
             String removeTeamUserOptions
                 = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
                 "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-            this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
+            this.send(user, token, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
           }
 
           chatService.setRoomName(room, teamName, dbName);
@@ -729,7 +729,7 @@ public class ChatServer
             String addTeamUserOptions
                 = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
                 "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-            this.send(user, token, ChatService.TEAM_PREFIX+room, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
+            this.send(user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
           }
         }
       }
