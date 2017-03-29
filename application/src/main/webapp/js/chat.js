@@ -2705,7 +2705,7 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
   }
 };
 
-ChatApplication.prototype.onShowMessagesCallback = function(out) {
+ChatApplication.prototype.onShowMessagesCallback = function() {
   // highlight searched terms
   sh_highlightDocument();
 };

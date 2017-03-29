@@ -781,16 +781,8 @@ ChatRoom.prototype.showMessages = function(msgs) {
 
   var out = "";
 
-  if (msgs.length === 0) {
-    if (this.isPublic) {
-      out = "<div class='msRow' style='padding:22px 20px;'>";
-      out += "<b><center>"+chatBundleData["exoplatform.chat.public.welcome"]+"</center></b>";
-      out += "</div>";
-    }
-    else
-      out += "<div class='noMessage'><span class='text'>" + chatBundleData["exoplatform.chat.no.messages"] + "</span></div>";
-  } else {
-    this.messagesContainer.html(''); // Clear the room
+  this.messagesContainer.html(''); // Clear the room
+  if (msgs.length > 0) {
     var thiss = this;
     var messages = TAFFY(msgs);
     messages().order("timestamp asec").each(function (message, i) {
@@ -799,7 +791,7 @@ ChatRoom.prototype.showMessages = function(msgs) {
   }
 
   if (typeof this.onShowMessagesCB === "function") {
-    this.onShowMessagesCB(out);
+    this.onShowMessagesCB();
   }
 };
 
@@ -1480,8 +1472,6 @@ function showMiniChatPopup(room, type) {
       miniChats[index].updateUnreadMessages();
 
       miniChats[index].setMiniChatDiv($miniChat);
-      miniChats[index].onRefresh(function() {});
-      miniChats[index].onShowMessages(function(out) {});
       miniChats[index].init(username, "", token, targetUser, targetFullname, false, dbName, function(){});
     }
   });
