@@ -2137,7 +2137,7 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
                 );
 
                 notification.onclick = function () {
-                  window.open("http://localhost:8080" + chatApplication.portalURI + "/chat");
+                  window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
                   notification.close();
                 }
                 notification.show();
@@ -3425,7 +3425,7 @@ ChatApplication.prototype.showDemoPanel = function() {
 };
 
 ChatApplication.prototype.displayVideoCallOnChatApp = function () {
-  if (typeof weemoExtension === 'undefined' || window.location.href.indexOf(chatApplication.portalURI + "/chat") === -1) {
+  if (typeof weemoExtension === 'undefined' || window.location.href.indexOf(chatApplication.portalURI + "chat") === -1) {
     return;
   }
 
@@ -3453,13 +3453,13 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
           jzStoreParam("targetUser", targetUser);
 
           if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
-            weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
+            weemoExtension.showVideoPopup(chatApplication.portalURI + 'videocallpopup?callee=' + targetUser.trim() + '&mode=one&hasChatMessage=true');
           } else {
             var isSpace = (targetUser.indexOf("space-") !== -1);
             var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
             jzStoreParam("isSpace", isSpace);
-            weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+            weemoExtension.showVideoPopup(chatApplication.portalURI + 'videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
           }
         }
       } else {
@@ -3481,7 +3481,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
       jzStoreParam("targetFullname", targetFullname);
       jzStoreParam("targetUser", targetUser);
       jzStoreParam("meetingPointId", weemoExtension.meetingPointId);
-      weemoExtension.showVideoPopup(chatApplication.portalURI + '/videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
+      weemoExtension.showVideoPopup(chatApplication.portalURI + 'videocallpopup?mode=attendee&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
       //weemoExtension.joinWeemoCall(chatApplication.targetUser, chatApplication.targetFullname, chatMessage);
     }
   });
