@@ -1062,7 +1062,7 @@ public class ChatServer
 
     // To get the array of addresses
     for (String to: toList) {
-      message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+      message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(to));
     }
     
     message.setSubject(subject, "UTF-8");
