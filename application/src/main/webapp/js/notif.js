@@ -74,7 +74,7 @@ ChatNotification.prototype.initUserInterface = function() {
   jqchat(".uiCompanyNavigations > li")
     .children()
     .filter(function() {
-      if (jqchat(this).attr("href") == (chatNotification.portalURI + "/chat")) {
+      if (jqchat(this).attr("href") == (chatNotification.portalURI + "chat")) {
         jqchat(this).css("width", "95%");
         var html = '<i class="uiChatIcon"></i>Chat';
         //html += '<span id="chat-notification" style="float: right; display: none;"></span>';
@@ -659,8 +659,8 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
   var $uiAction = jqchat(".uiAction", $tiptip_content);
   var $btnChat = jqchat(".chatPopupOverlay", $uiAction);
   if ($uiAction.length > 0 && $btnChat.length === 0) {
-    var toUserName = jqchat("[href^='" + chatNotification.portalURI + "/activities/']", $tiptip_content).first().attr("href").substr(28);
-    var toFullName = jqchat("[href^='" + chatNotification.portalURI + "/activities/']", $tiptip_content).last().html();
+    var toUserName = jqchat("[href^='" + chatNotification.portalURI + "activities/']", $tiptip_content).first().attr("href").substr(28);
+    var toFullName = jqchat("[href^='" + chatNotification.portalURI + "activities/']", $tiptip_content).last().html();
     var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
     var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData["exoplatform.videocall.makeCall"]+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData["exoplatform.videocall.Call"]+'</a>';
 
@@ -718,7 +718,7 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
 };
 
 ChatNotification.prototype.attachChatToProfile = function() {
-    if (window.location.href.indexOf(chatNotification.portalURI + "/profile") == -1) return;
+    if (window.location.href.indexOf(chatNotification.portalURI + "profile") == -1) return;
 
     var $UIStatusProfilePortlet = jqchat("#UIStatusProfilePortlet");
     if ($UIStatusProfilePortlet.html() === undefined) {
