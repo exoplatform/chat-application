@@ -1557,6 +1557,12 @@ function ChatApplication() {
 
   this.showRoomOfflinePeople = false;
   this.plugins = [];
+
+  if (typeof chatEvents === 'object') {
+    for (var i = 0; i < chatEvents.length; i++) {
+      this.registerEvent(chatEvents[i]);
+    }
+  }
 }
 
 ChatApplication.prototype.setUserPref = function(key, value, expire) {

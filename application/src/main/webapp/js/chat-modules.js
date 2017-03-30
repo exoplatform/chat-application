@@ -39,8 +39,14 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeeti
   this.startMeetingTimestamp = "";
   this.startCallTimestamp = "";
   this.dbName = dbName;
-  
+
   this.plugins = {};
+
+  if (typeof chatPlugins === 'object') {
+    for (var i = 0; i < chatPlugins.length; i++) {
+      this.registerPlugin(chatPlugins[i]);
+    }
+  }
 }
 
 ChatRoom.prototype.setUserPref = function(key, value, expire) {
