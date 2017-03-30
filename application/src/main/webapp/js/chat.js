@@ -1795,8 +1795,10 @@ ChatApplication.prototype.initChat = function() {
       jqchat("#userRoomStatus > i").addClass("user-"+status);
     });
 
-    var room = jqchat(".room-link:first",this).attr("room-data");
-    thiss.loadRoom(room);
+    thiss.room = jqchat(".room-link:first",this).attr("room-data");
+    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
+    thiss.targetFullname = jqchat(".room-link:first",this).text();
+    thiss.loadRoom(thiss.room);
 
     if (thiss.isMobileView()) {
       jqchat(".right-chat").css("display", "block");
