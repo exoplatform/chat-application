@@ -1061,10 +1061,22 @@ public class ChatServer
     message.setFrom(new InternetAddress(senderMail, senderFullname, "UTF-8"));
 
     // To get the array of addresses
-    for (String to: toList) {
-      message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+    // Get hide recipients value
+    String hideRecipients = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_HIDE_RECIPIENTS);
+    if (isHideRecipientsEnable(hideRecipients)) {
+      for (String to: toList) {
+          message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(to));
+      }
+      //Get default Receiver
+      String defautReceiver = PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SENDER);
+
+      message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(defautReceiver));
+    } else {
+      for (String to: toList) {
+        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+      }
+
     }
-    
     message.setSubject(subject, "UTF-8");
     // Create a message part to represent the body text
     MimeBodyPart messageBodyPart = new MimeBodyPart();
@@ -1133,5 +1145,14 @@ public class ChatServer
       return false;
     }
     return true;
+  }
+
+  /**
+   * Convert hide recipients property to boolean
+   * @param hideRecipients hidden recipients property
+   * @return true is the property is set to true in the conf file else false
+   */
+  protected boolean isHideRecipientsEnable(String hideRecipients) {
+      return Boolean.parseBoolean(hideRecipients);
   }
 }
