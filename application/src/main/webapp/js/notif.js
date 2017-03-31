@@ -659,8 +659,9 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
   var $uiAction = jqchat(".uiAction", $tiptip_content);
   var $btnChat = jqchat(".chatPopupOverlay", $uiAction);
   if ($uiAction.length > 0 && $btnChat.length === 0) {
-    var toUserName = jqchat("[href^='" + chatNotification.portalURI + "activities/']", $tiptip_content).first().attr("href").substr(28);
-    var toFullName = jqchat("[href^='" + chatNotification.portalURI + "activities/']", $tiptip_content).last().html();
+    var href = jqchat("#tipName a", $tiptip_content).first().attr("href");
+    var toUserName = href.substr(href.lastIndexOf('/') + 1);
+    var toFullName = jqchat("#tipName a", $tiptip_content).last().html();
     var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
     var strWeemoLink = '<a type="button" class="btn weemoCallOverlay weemoCall-'+toUserName.replace('.', '-')+' pull-right disabled" id="weemoCall-'+toUserName.replace('.', '-')+'" title="'+chatBundleData["exoplatform.videocall.makeCall"]+ '" data-username="'+toUserName+'" data-fullname="'+toFullName+'" style="margin-left:5px; display:none;"><i class="uiIconWeemoVideoCalls uiIconLightGray"></i> '+chatBundleData["exoplatform.videocall.Call"]+'</a>';
 
