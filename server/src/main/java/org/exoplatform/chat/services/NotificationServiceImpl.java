@@ -32,10 +32,12 @@ import org.exoplatform.chat.services.UserService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.*;
 
 @Named("notificationService")
 @ApplicationScoped
+@Singleton
 public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
 {
   @Inject

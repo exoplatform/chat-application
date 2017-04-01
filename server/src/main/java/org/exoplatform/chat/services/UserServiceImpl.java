@@ -26,12 +26,14 @@ import org.json.simple.JSONObject;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 @Named("userService")
 @ApplicationScoped
+@Singleton
 public class UserServiceImpl implements UserService {
   private static final Logger LOG = Logger.getLogger(UserServiceImpl.class.getName());
 

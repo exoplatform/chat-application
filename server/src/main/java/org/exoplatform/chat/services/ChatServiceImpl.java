@@ -27,11 +27,13 @@ import org.json.simple.JSONObject;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.logging.Logger;
 
 @Named("chatService")
 @ApplicationScoped
+@Singleton
 public class ChatServiceImpl implements ChatService
 {
   private static final Logger LOG = Logger.getLogger("ChatService");

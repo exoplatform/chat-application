@@ -29,6 +29,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import static org.exoplatform.chat.services.TokenService.ANONIM_USER;
 
 @Named("tokenStorage")
 @ApplicationScoped
+@Singleton
 public class TokenMongoService implements TokenStorage
 {
   public static final String M_USERS_COLLECTION = "users";

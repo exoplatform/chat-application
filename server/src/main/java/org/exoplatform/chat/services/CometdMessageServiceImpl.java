@@ -6,6 +6,7 @@ import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Named("realTimeMessageService")
 @ApplicationScoped
+@Singleton
 public class CometdMessageServiceImpl implements RealTimeMessageService {
 
   public static final String COMETD_CHANNEL_NAME = "/service/chat";

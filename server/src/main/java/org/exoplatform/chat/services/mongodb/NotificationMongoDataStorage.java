@@ -30,11 +30,13 @@ import org.exoplatform.chat.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
 @Named("notificationStorage")
 @ApplicationScoped
+@Singleton
 public class NotificationMongoDataStorage implements NotificationDataStorage
 {
   private DB db(String dbName)

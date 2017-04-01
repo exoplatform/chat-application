@@ -31,6 +31,7 @@ import org.json.JSONException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 
 @Named("userStorage")
 @ApplicationScoped
+@Singleton
 public class UserMongoDataStorage implements UserDataStorage {
 
   private static final Logger LOG = Logger.getLogger(UserMongoDataStorage.class.getName());

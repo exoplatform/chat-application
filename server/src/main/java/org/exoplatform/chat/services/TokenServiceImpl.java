@@ -38,6 +38,7 @@ import org.exoplatform.services.user.UserStateService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 
 @Named("tokenService")
 @ApplicationScoped
+@Singleton
 public class TokenServiceImpl implements TokenService
 {
   //TODO this service will not be available in 2 mode servers, we will need to find another solution (REST API /state ?)

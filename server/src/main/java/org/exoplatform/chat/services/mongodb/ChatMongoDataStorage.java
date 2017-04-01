@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ import static org.exoplatform.chat.services.ChatService.*;
 
 @Named("chatStorage")
 @ApplicationScoped
+@Singleton
 public class ChatMongoDataStorage implements ChatDataStorage {
 
   private static final Logger LOG = Logger.getLogger("ChatMongoDataStorage");
@@ -55,6 +57,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   private UserDataStorage userDataStorage;
 
   public ChatMongoDataStorage() {
+    System.out.println("\n\n\n======= ChatMongoDataStorage");
     long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
     readMillis = readDays * 24 * 60 * 60 * 1000;
     readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
