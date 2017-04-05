@@ -1,7 +1,7 @@
 package org.exoplatform.chat.services;
 
+import org.cometd.bayeux.server.BayeuxServer;
 import org.exoplatform.chat.model.RealTimeMessageBean;
-import org.exoplatform.container.PortalContainer;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,8 +21,12 @@ public class CometdMessageServiceImpl implements RealTimeMessageService {
 
   private EXoContinuationBayeux bayeux;
 
-  public CometdMessageServiceImpl() {
-    bayeux = PortalContainer.getInstance().getComponentInstanceOfType(EXoContinuationBayeux.class);
+  public void setBayeux(BayeuxServer bayeux) {
+    if (bayeux instanceof EXoContinuationBayeux) {
+      this.bayeux = (EXoContinuationBayeux)bayeux;
+    } else {
+      throw new IllegalArgumentException("Wrong BayeuxServer implementation");
+    }
   }
 
   @Override

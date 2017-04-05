@@ -10,7 +10,6 @@ var chatApplication = new ChatApplication();
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
-    chatApplication.cometdToken = $chatApplication.attr("data-cometd-token");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
@@ -29,7 +28,6 @@ var chatApplication = new ChatApplication();
     chatApplication.jzSaveWiki = $chatApplication.jzURL("ChatApplication.saveWiki");
 
     var chatServerURL = $chatApplication.attr("data-chat-server-url");
-    chatApplication.jzGetStatus = chatServerURL+"/getStatus";
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
     chatApplication.jzChatSend = chatServerURL+"/send";
     chatApplication.jzChatRead = chatServerURL+"/read";
@@ -46,8 +44,6 @@ var chatApplication = new ChatApplication();
     chatApplication.jzUsers = chatServerURL+"/users";
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
-    //TODO ws endpoint must be dynamic, depending on the chat mode (1 or 2 servers)
-    chatApplication.wsEndpoint = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + "/cometd/cometd";
     chatApplication.room = "";
 
     // get user profile, then init chat application
@@ -74,14 +70,7 @@ var chatApplication = new ChatApplication();
     /**
      * Handle Real Time communications events
      */
-    //TODO remove require, inject cometd dependency at script level
-    require(['SHARED/commons-cometd3'], function(cCometD) {
-      cCometD.configure({
-        url: chatApplication.wsEndpoint,
-        'exoId': chatApplication.username, // current username
-        'exoToken': chatApplication.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
-      });
-
+    requireChatCometd(function(cCometD) {
       cCometD.addListener('/meta/connect', function(message) {
         if (cCometD.isDisconnected()) {
           _connected = false;
@@ -133,7 +122,6 @@ var chatApplication = new ChatApplication();
           chatApplication.rooms.insert({
             fullName: room.fullName,
             isActive : room.isActive,
-            isAvailableUser : room.isAvailableUser,
             isFavorite : room.isFavorite,
             type: room.type,
             room : room.room,
@@ -1519,7 +1507,6 @@ function ChatApplication() {
   this.jzChatRead = "";
   this.jzChatSendMeetingNotes = "";
   this.jzChatGetMeetingNotes = "";
-  this.jzGetStatus = "";
   this.jzMaintainSession = "";
   this.jzUpload = "";
   this.jzCreateEvent = "";
@@ -1686,7 +1673,6 @@ ChatApplication.prototype.initChat = function() {
       }
   });
 
-
   if (this.username !== this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
 
   var $leftPanel = jqchat('#chat-users');
@@ -1790,14 +1776,15 @@ ChatApplication.prototype.initChat = function() {
       jqchat("#chat-search").attr("placeholder", $serachText);
     }
 
+    thiss.room = jqchat(".room-link:first",this).attr("room-data");
+    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
+    thiss.targetFullname = jqchat(".room-link:first",this).text();
+
     chatNotification.getStatus(thiss.targetUser, function(targetUser, status) {
       jqchat("#userRoomStatus > i").attr("class", "");
       jqchat("#userRoomStatus > i").addClass("user-"+status);
     });
 
-    thiss.room = jqchat(".room-link:first",this).attr("room-data");
-    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
-    thiss.targetFullname = jqchat(".room-link:first",this).text();
     thiss.loadRoom(thiss.room);
 
     if (thiss.isMobileView()) {
@@ -1905,8 +1892,7 @@ ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
 ChatApplication.prototype.deleteMessage = function(id, callback) {
   var thiss = this;
   // Send message to server
-  //TODO remove require, inject cometd dependency at script level
-  require(['SHARED/commons-cometd3'], function(cCometD) {
+  requireChatCometd(function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({"event": "message-deleted",
       "room": thiss.room,
       "sender": thiss.username,
@@ -1962,8 +1948,7 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
 ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
   var thiss = this;
   // Send message to server
-  //TODO remove require, inject cometd dependency at script level
-  require(['SHARED/commons-cometd3'], function(cCometD) {
+  requireChatCometd(function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({"event": "message-updated",
       "room": thiss.room,
       "sender": thiss.username,
@@ -2180,84 +2165,93 @@ ChatApplication.prototype.loadRooms = function(callback) {
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
     this.loadRoomsRequest = jqchat.ajax({
-      url: this.jzChatWhoIsOnline,
-      dataType: "json",
-      data: { "user": this.username,
-        "filter": this.userFilter,
-        "isAdmin": this.isAdmin,
-        "timestamp": new Date().getTime(),
-        "dbName": this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      },
       context: this,
-      success: function(response){
-        this.loadRoomsRequest = null;
-        this.isLoaded = true;
-        this.hidePanel(".chat-error-panel");
-        this.hidePanel(".chat-sync-panel");
-        chatApplication.rooms = TAFFY(response.rooms);
+      url: '/rest/chat/api/1.0/user/onlineUsers',
+      dataType: 'text',
+      success: function(users){
+        jqchat.ajax({
+          context: this,
+          url: this.jzChatWhoIsOnline,
+          dataType: "json",
+          data: {
+            "user": this.username,
+            "onlineUsers": users,
+            "filter": this.userFilter,
+            "isAdmin": this.isAdmin,
+            "timestamp": new Date().getTime(),
+            "dbName": this.dbName
+          },
+          headers: {
+            'Authorization': 'Bearer ' + this.token
+          },
+          success: function(response){
+            this.loadRoomsRequest = null;
+            this.isLoaded = true;
+            this.hidePanel(".chat-error-panel");
+            this.hidePanel(".chat-sync-panel");
+            chatApplication.rooms = TAFFY(response.rooms);
 
-        this.renderRooms();
-        if (callback !== undefined) {
-          callback();
-        }
-
-        this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
-        if (fromChromeApp) {
-          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-            chatNotification.showDetail();
-          }
-        } else if (window.fluid !== undefined) {
-          if (this.totalNotif > 0)
-            window.fluid.dockBadge = this.totalNotif;
-          else
-            window.fluid.dockBadge = "";
-          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-            window.fluid.showGrowlNotification({
-              title: chatBundleData["exoplatform.chat.title"],
-              description: chatBundleData["exoplatform.chat.new.messages"],
-              priority: 1,
-              sticky: false,
-              identifier: "messages"
-            });
-          }
-        } else if (window.webkitNotifications !== undefined) {
-          if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-            var havePermission = window.webkitNotifications.checkPermission();
-            if (havePermission == 0) {
-              // 0 is PERMISSION_ALLOWED
-              var notification = window.webkitNotifications.createNotification(
-                '/chat/img/chat.png',
-                chatBundleData["exoplatform.chat.title"],
-                chatBundleData["exoplatform.chat.new.messages"]
-              );
-
-              notification.onclick = function () {
-                window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
-                notification.close();
-              }
-              notification.show();
-            } else {
-              window.webkitNotifications.requestPermission();
+            this.renderRooms();
+            if (callback !== undefined) {
+              callback();
             }
+
+            this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
+            if (fromChromeApp) {
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                chatNotification.showDetail();
+              }
+            } else if (window.fluid !== undefined) {
+              if (this.totalNotif > 0)
+                window.fluid.dockBadge = this.totalNotif;
+              else
+                window.fluid.dockBadge = "";
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                window.fluid.showGrowlNotification({
+                  title: chatBundleData["exoplatform.chat.title"],
+                  description: chatBundleData["exoplatform.chat.new.messages"],
+                  priority: 1,
+                  sticky: false,
+                  identifier: "messages"
+                });
+              }
+            } else if (window.webkitNotifications !== undefined) {
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                var havePermission = window.webkitNotifications.checkPermission();
+                if (havePermission == 0) {
+                  // 0 is PERMISSION_ALLOWED
+                  var notification = window.webkitNotifications.createNotification(
+                    '/chat/img/chat.png',
+                    chatBundleData["exoplatform.chat.title"],
+                    chatBundleData["exoplatform.chat.new.messages"]
+                  );
+
+                  notification.onclick = function () {
+                    window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
+                    notification.close();
+                  }
+                  notification.show();
+                } else {
+                  window.webkitNotifications.requestPermission();
+                }
+              }
+            }
+            this.oldNotif = this.totalNotif;
+            if (this.totalNotif > 0) {
+              document.title = "Chat (" + this.totalNotif + ")";
+            } else {
+              document.title = "Chat";
+            }
+
+            if (this.isTeamAdmin) {
+              jqchat(".btn-top-add-actions").css("display", "inline-block");
+            }
+
+          },
+          error: function (response){
+            setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
           }
-        }
-        this.oldNotif = this.totalNotif;
-        if (this.totalNotif > 0) {
-          document.title = "Chat (" + this.totalNotif + ")";
-        } else {
-          document.title = "Chat";
-        }
-
-        if (this.isTeamAdmin) {
-          jqchat(".btn-top-add-actions").css("display", "inline-block");
-        }
-
-      },
-      error: function (response){
-        setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
+        });
       }
     });
   }
@@ -2578,7 +2572,7 @@ ChatApplication.prototype.loadRoom = function(room) {
     jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/" + this.targetUser);
     jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
     jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser + "/avatar");
-    
+
   } else if (this.targetUser.indexOf("team-") === -1) {
     ////// SPACE
     this.loadRoomUsers();
@@ -2845,7 +2839,7 @@ ChatApplication.prototype.setStatus = function(status, callback) {
   if (status !== undefined) {
     // Send update status message (forward event to others client and update mongodb chat status)
     var thiss = this;
-    require(['SHARED/commons-cometd3'], function(cCometD) {
+    requireChatCometd(function(cCometD) {
         cCometD.publish('/service/chat', JSON.stringify({
             "event": "user-status-changed",
             "sender": thiss.username,

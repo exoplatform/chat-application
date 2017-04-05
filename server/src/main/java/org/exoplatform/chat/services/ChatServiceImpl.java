@@ -278,12 +278,12 @@ public class ChatServiceImpl implements ChatService
   }
 
   public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
-    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, tokenService, dbName);
+    return getRooms(user, new ArrayList<>(), filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, tokenService, dbName);
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName)
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName)
   {
-    return chatStorage.getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, tokenService, dbName);
+    return chatStorage.getRooms(user, onlineUsers, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, tokenService, dbName);
   }
 
   public int getNumberOfRooms(String dbName)

@@ -3,26 +3,24 @@ package org.exoplatform.addons.chat.api;
 
 import org.exoplatform.addons.chat.utils.MessageDigester;
 import org.exoplatform.addons.chat.utils.PropertyManager;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.user.UserStateService;
+import org.json.simple.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/chat/api/1.0/user/")
 public class UserRestService implements ResourceContainer {
@@ -62,15 +60,43 @@ public class UserRestService implements ResourceContainer {
               .build();
     }
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("{\"username\":\"").append(userId).append("\",");
-    sb.append("\"token\":\"").append(token).append("\"}");
+    JSONObject data = new JSONObject();
+    data.put("username", userId);
+    data.put("token", token);
 
-    return Response.ok(sb.toString(), MediaType.APPLICATION_JSON)
+    return Response.ok(data.toString(), MediaType.APPLICATION_JSON)
             .cacheControl(cacheControl)
             .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
             .build();
   }
-  
- 
+
+  @GET
+  @Path("/onlineStatus/")
+  @RolesAllowed("users")
+  public Response getOnlineStatus(@QueryParam("users") String users) throws Exception {
+    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
+
+    if (users != null) {
+      String[] split = users.split(",");
+
+      JSONObject data = new JSONObject();
+      for (String u : split) {
+        data.put(u, userState.isOnline(u));
+      }
+      return Response.ok(data.toString(), MediaType.APPLICATION_JSON).build();
+    } else {
+      return Response.serverError().status(400).build();
+    }
+  }
+
+  @GET
+  @Path("/onlineUsers/")
+  @RolesAllowed("users")
+  public Response getOnlineUsers() throws Exception {
+    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
+    List<String> list = userState.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
+    String users = String.join(",", list);
+
+    return Response.ok(users, MediaType.TEXT_PLAIN).build();
+  }
 }

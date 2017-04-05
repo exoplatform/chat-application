@@ -76,8 +76,8 @@ public class NotificationApplication
   @Path("index.gtmpl")
   Template index;
 
+  boolean standaloneChatServer;
   String token_ = "---";
-  String cometdToken = null;
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
 
@@ -102,6 +102,7 @@ public class NotificationApplication
     organizationService_ = organizationService;
     spaceService_ = spaceService;
     dbName = ChatUtils.getDBName();
+    standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
   }
 
   @View
@@ -121,20 +122,31 @@ public class NotificationApplication
     String spaceId = getCurrentSpaceId();
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
-    cometdToken = continuationService.getUserToken(remoteUser_);
+
+    String cometdToken;
+    String chatCometDServerUrl;
+    if (standaloneChatServer) {
+      cometdToken = token_;
+      chatCometDServerUrl = ServerBootstrap.getServerBase() + chatServerURL;
+    } else {
+      cometdToken = continuationService.getUserToken(remoteUser_);
+      chatCometDServerUrl = ServerBootstrap.getServerBase() + "/cometd";
+    }
 
     return index.with().set("user", remoteUser_).set("token", token_)
-            .set("cometdToken", cometdToken)
-            .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
-            .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
-            .set("title", title)
-            .set("messages", messages)
-            .set("spaceId", spaceId)
-            .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
-            .set("dbName", dbName)
-            .set("portalURI", portalURI)
-            .ok()
-            .withCharset(Tools.UTF_8);
+        .set("standalone", standaloneChatServer)
+        .set("chatCometDServerUrl", chatCometDServerUrl)
+        .set("cometdToken", cometdToken)
+        .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
+        .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
+        .set("title", title)
+        .set("messages", messages)
+        .set("spaceId", spaceId)
+        .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
+        .set("dbName", dbName)
+        .set("portalURI", portalURI)
+        .ok()
+        .withCharset(Tools.UTF_8);
   }
 
   @Ajax

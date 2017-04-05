@@ -59,10 +59,6 @@ public class RoomBean implements Comparable<RoomBean>
     this.unreadTotal = unreadTotal;
   }
 
-  public boolean isAvailableUser() {
-    return isAvailableUser;
-  }
-
   public void setAvailableUser(boolean availableUser) {
     isAvailableUser = availableUser;
   }
@@ -127,7 +123,6 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("timestamp", this.getTimestamp());
     obj.put("unreadTotal", this.getUnreadTotal());
     obj.put("isActive", String.valueOf(this.isActive()));
-    obj.put("isAvailableUser", String.valueOf(this.isAvailableUser()));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
     return obj;

@@ -57,7 +57,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   private UserDataStorage userDataStorage;
 
   public ChatMongoDataStorage() {
-    System.out.println("\n\n\n======= ChatMongoDataStorage");
     long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
     readMillis = readDays * 24 * 60 * 60 * 1000;
     readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
@@ -556,43 +555,45 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return rooms;
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
-    List<RoomBean> rooms = new ArrayList<RoomBean>();
-    List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
+    List<RoomBean> rooms;
     UserBean userBean = userDataStorage.getUser(user, true, dbName);
-    int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0;
-
-    Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, limit);
-
-    rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
-    if (isAdmin)
-      rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService, dbName));
-
-    for (RoomBean roomBean : rooms) {
-      String targetUser = roomBean.getUser();
-      roomBean.setFavorite(userBean.isFavorite(targetUser));
-
-      if (availableUsers.keySet().contains(targetUser)) {
-        UserBean targetUserBean = availableUsers.get(targetUser);
-        roomBean.setFullName(targetUserBean.getFullname());
-        roomBean.setStatus(targetUserBean.getStatus());
-        roomBean.setAvailableUser(true);
-        availableUsers.remove(targetUser);
-        if (roomBean.getUnreadTotal() > 0)
-          unreadOnline += roomBean.getUnreadTotal();
-      } else {
-        UserBean targetUserBean = userDataStorage.getUser(targetUser, dbName);
-        roomBean.setFullName(targetUserBean.getFullname());
-        roomBean.setAvailableUser(false);
-        if (!withOffline)
-          roomsOffline.add(roomBean);
-        if (roomBean.getUnreadTotal() > 0)
-          unreadOffline += roomBean.getUnreadTotal();
-
-      }
-    }
+    int unreadOffline = 0, unreadOnline = 0;
 
     if (withUsers) {
+      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
+      if (isAdmin) {
+        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService, dbName));
+      }
+
+      Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, onlineUsers, dbName, withUsers, withPublic, isAdmin, limit);
+      List<RoomBean> roomsOffline = new ArrayList<>();
+
+      for (RoomBean roomBean : rooms) {
+        String targetUser = roomBean.getUser();
+        roomBean.setFavorite(userBean.isFavorite(targetUser));
+
+        if (availableUsers.keySet().contains(targetUser)) {
+          UserBean targetUserBean = availableUsers.remove(targetUser);
+          roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setStatus(targetUserBean.getStatus());
+          roomBean.setAvailableUser(true);
+          if (roomBean.getUnreadTotal() > 0)
+            unreadOnline += roomBean.getUnreadTotal();
+        } else {
+          UserBean targetUserBean = userDataStorage.getUser(targetUser, dbName);
+          roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setAvailableUser(false);
+
+          if (!withOffline) {
+            roomsOffline.add(roomBean);
+          }
+          if (roomBean.getUnreadTotal() > 0) {
+            unreadOffline += roomBean.getUnreadTotal();
+          }
+        }
+      }
+
       if (!withOffline) {
         for (RoomBean roomBean : roomsOffline) {
           rooms.remove(roomBean);
@@ -600,15 +601,15 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
 
       for (UserBean availableUser : availableUsers.values()) {
-        RoomBean roomBean = new RoomBean();
-        roomBean.setUser(availableUser.getName());
-        roomBean.setFullName(availableUser.getFullname());
-        roomBean.setStatus(availableUser.getStatus());
-        roomBean.setAvailableUser(true);
-        roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
-        roomBean.setType(ChatService.TYPE_ROOM_USER);
-        String status = roomBean.getStatus();
-        if (withOffline || (!withOffline && !UserMongoDataStorage.STATUS_INVISIBLE.equals(roomBean.getStatus()) && !UserMongoDataStorage.STATUS_OFFLINE.equals(roomBean.getStatus()))) {
+        String status = availableUser.getStatus();
+        if (withOffline || (!withOffline && !UserMongoDataStorage.STATUS_INVISIBLE.equals(status) && !UserMongoDataStorage.STATUS_OFFLINE.equals(status))) {
+          RoomBean roomBean = new RoomBean();
+          roomBean.setUser(availableUser.getName());
+          roomBean.setFullName(availableUser.getFullname());
+          roomBean.setStatus(availableUser.getStatus());
+          roomBean.setAvailableUser(true);
+          roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
+          roomBean.setType(ChatService.TYPE_ROOM_USER);
           rooms.add(roomBean);
         }
       }
@@ -616,6 +617,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       rooms = new ArrayList<RoomBean>();
     }
 
+    int unreadSpaces = 0;
     List<SpaceBean> spaces = userDataStorage.getSpaces(user, dbName);
     for (SpaceBean space : spaces) {
       RoomBean room = new RoomBean();
@@ -636,6 +638,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
     }
 
+    int unreadTeams = 0;
     List<RoomBean> teams = userDataStorage.getTeams(user, dbName);
     for (RoomBean team : teams) {
       RoomBean room = new RoomBean();

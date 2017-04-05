@@ -1,6 +1,7 @@
 package org.exoplatform.chat;
 
 import com.google.inject.AbstractModule;
+import org.cometd.bayeux.server.BayeuxServer;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -60,6 +61,11 @@ public class AbstractChatTestCase
       bind(UserService.class).to(UserServiceImpl.class);
       // mock for RealTimeMessageService
       bind(RealTimeMessageService.class).toInstance(new RealTimeMessageService() {
+        @Override
+        public void setBayeux(BayeuxServer bayeux) {
+
+        }
+
         @Override
         public void sendMessage(RealTimeMessageBean realTimeMessageBean, String receiver) {
         }

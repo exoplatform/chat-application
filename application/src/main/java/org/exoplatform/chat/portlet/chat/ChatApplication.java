@@ -75,9 +75,7 @@ public class ChatApplication
   @Path("index.gtmpl")
   Template index;
 
-
   String token_ = "---";
-  String cometdToken = null;
   String remoteUser_ = null;
   String fullname_ = null;
   boolean isAdmin_=false;
@@ -180,11 +178,9 @@ public class ChatApplication
     if(!portalURI.endsWith("/")){
       portalURI.concat("/");
     }
-    cometdToken = continuationService.getUserToken(remoteUser_);
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_)
-            .set("cometdToken", cometdToken)
             .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
             .set("chatIntervalSession", chatIntervalSession)

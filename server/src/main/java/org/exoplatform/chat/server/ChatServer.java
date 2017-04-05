@@ -114,7 +114,7 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String token, String filter, String isAdmin, String limit, String dbName)
+  public Response.Content whoIsOnline(String user, String onlineUsers, String token, String filter, String isAdmin, String limit, String dbName)
   {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
@@ -122,13 +122,15 @@ public class ChatServer
     }
     Integer ilimit = 0;
     try {
-      if (limit!=null && !"".equals(limit))
+      if (limit != null && !"".equals(limit)) {
         ilimit = Integer.parseInt(limit);
+      }
     } catch (NumberFormatException nfe) {
       LOG.info("limit is not a valid Integer number");
     }
 
-    RoomsBean roomsBean = chatService.getRooms(user, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
+    List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
+    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
             notificationService, tokenService, dbName);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
@@ -831,13 +833,8 @@ public class ChatServer
     String status = UserService.STATUS_INVISIBLE;
     try
     {
-      if (targetUser!=null)
-      {
-        boolean online = tokenService.isUserOnline(targetUser, dbName);
-        if (online)
-          status = userService.getStatus(targetUser, dbName);
-        else
-          status = UserService.STATUS_OFFLINE;
+      if (targetUser != null) {
+        status = userService.getStatus(targetUser, dbName);
       }
     }
     catch (Exception e)
@@ -901,21 +898,11 @@ public class ChatServer
     }
 
     List<UserBean> users;
-    if (room!=null && !"".equals(room))
-    {
+    if (room != null && !"".equals(room)) {
       users = userService.getUsers(room, dbName);
-    }
-    else
-    {
+    } else {
       users = userService.getUsers(filter, true, dbName);
     }
-
-    for (UserBean userBean:users)
-    {
-      boolean online = tokenService.isUserOnline(userBean.getName(), dbName);
-      if (!online) userBean.setStatus(UserService.STATUS_OFFLINE);
-    }
-
 
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);

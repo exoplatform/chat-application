@@ -118,7 +118,7 @@ public class TokenMongoService implements TokenStorage
     while (cursor.hasNext()) {
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
-      // Exclude current user and not online users
+      // Exclude current user and offline users
       if (!user.equals(target) && limitedFilter.contains(target)) {
         UserBean userBean = new UserBean();
         userBean.setName(target);

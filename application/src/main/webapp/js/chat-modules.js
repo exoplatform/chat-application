@@ -296,9 +296,8 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
   if (!window.tempId) {
     window.tempId = 0;
   }
-  // Send message to server
-  //TODO remove require, inject cometd dependency at script level
-  require(['SHARED/commons-cometd3'], function(cCometD) {
+
+  requireChatCometd(function(cCometD) {
     var msgObj = {
       "tempId": 'tempId_' + tempId++,
       "msg": msg,
@@ -1205,8 +1204,7 @@ ChatRoom.prototype.IsIE8Browser = function() {
  */
 ChatRoom.prototype.updateUnreadMessages = function() {
   var thiss = this;
-  //TODO remove require, inject cometd dependency at script level
-  require(['SHARED/commons-cometd3'], function(cCometD) {
+  requireChatCometd(function(cCometD) {
     cCometD.publish('/service/chat', JSON.stringify({
       "event": "message-read",
       "room": thiss.id,
@@ -1346,14 +1344,7 @@ String.prototype.endsWith = function(suffix) {
       /**
        * Handle Real Time communications events
        */
-      //TODO remove require, inject cometd dependency at script level
-      require(['SHARED/commons-cometd3'], function(cCometD) {
-        cCometD.configure({
-          url: chatNotification.wsEndpoint,
-          'exoId': chatNotification.username, // current username
-          'exoToken': chatNotification.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
-        });
-
+      requireChatCometd(function(cCometD) {
         cCometD.subscribe('/service/chat', null, function (event) {
           var message = event.data;
           if (typeof message != 'object') {

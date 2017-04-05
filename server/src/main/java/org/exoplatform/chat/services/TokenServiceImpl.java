@@ -19,30 +19,17 @@
 
 package org.exoplatform.chat.services;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
-import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.user.UserStateService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Named("tokenService")
 @ApplicationScoped
@@ -50,17 +37,17 @@ import java.util.stream.Collectors;
 public class TokenServiceImpl implements TokenService
 {
   //TODO this service will not be available in 2 mode servers, we will need to find another solution (REST API /state ?)
-  private UserStateService userStateService;
+//  private UserStateService userStateService;
 
   @Inject
   private TokenStorage storage;
 
   public TokenServiceImpl() {
-    userStateService = PortalContainer.getInstance().getComponentInstanceOfType(UserStateService.class);
+//    userStateService = PortalContainer.getInstance().getComponentInstanceOfType(UserStateService.class);
   }
 
   public TokenServiceImpl(UserStateService userStateService) {
-    this.userStateService = userStateService;
+//    this.userStateService = userStateService;
   }
 
   public String getToken(String user)
@@ -69,6 +56,11 @@ public class TokenServiceImpl implements TokenService
     String in = user+passphrase;
     String token = MessageDigester.getHash(in);
     return token;
+  }
+
+  public boolean hasUserWithToken(String user, String token)
+  {
+    return hasUserWithToken(user, token, null);
   }
 
   public boolean hasUserWithToken(String user, String token, String dbName)
@@ -81,21 +73,9 @@ public class TokenServiceImpl implements TokenService
     storage.addUser(user, token, dbName);
   }
 
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
-    return getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, 0);
-  }
-
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
-  {
-    List<String> onlineUsers = userStateService.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
-
-    return storage.getActiveUsersFilterBy(user, onlineUsers, dbName, withUsers, withPublic, isAdmin, limit);
-  }
-
-  public boolean isUserOnline(String user, String dbName)
-  {
-    return userStateService != null ? userStateService.isOnline(user) : false;
+    return storage.getActiveUsersFilterBy(user, limitUsers, dbName, withUsers, withPublic, isAdmin, limit);
   }
 
   public boolean isDemoUser(String user)

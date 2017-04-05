@@ -59,6 +59,7 @@ ChatNotification.prototype.initOptions = function(options) {
   this.chatPage = this.portalURI + "/chat";
   this.wsEndpoint = options.wsEndpoint;
   this.cometdToken = options.cometdToken;
+  this.standalone = options.standalone === 'true';
 };
 
 /**
@@ -423,29 +424,48 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
   }
   var thiss = this;
   this.statusRequest = jqchat.ajax({
-    url: this.jzGetStatus,
-    data: {
-      "user": this.username,
-      "targetUser": targetUser,
-      "dbName": this.dbName 
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
     context: this,
-    success: function(response){
-      thiss.statusRequest = null;
-      if (typeof callback === "function") {
-        callback(response);
+    url: '/rest/chat/api/1.0/user/onlineStatus',
+    data: {
+      users: targetUser
+    },
+    success: function (response) {
+      this.statusRequest = null;
+
+      if (response[targetUser]) {
+        // User is online
+
+        jqchat.ajax({
+          url: this.jzGetStatus,
+          data: {
+            "user": this.username,
+            "targetUser": targetUser,
+            "dbName": this.dbName
+          },
+          headers: {
+            'Authorization': 'Bearer ' + this.token
+          },
+          success: function (response) {
+            if (typeof callback === "function") {
+              callback(response);
+            }
+          }
+        });
+      } else {
+        if (typeof callback === "function") {
+          callback("offline");
+        }
       }
     },
-    error: function(response){
-      thiss.statusRequest = null;
+    error: function (response) {
+      this.statusRequest = null;
+
       if (typeof callback === "function") {
         callback("offline");
       }
     }
   });
+
 };
 
 /**
@@ -460,7 +480,7 @@ ChatNotification.prototype.setStatus = function(status, callback) {
 
     // Send update status message (forward event to others client and update mongodb chat status)
     var thiss = this;
-    require(['SHARED/commons-cometd3'], function(cCometD) {
+    requireChatCometd(function(cCometD) {
       cCometD.publish('/service/chat', JSON.stringify({
         "event": "user-status-changed",
         "sender": thiss.username,
@@ -772,6 +792,26 @@ var console = console || {
 // GLOBAL VARIABLES
 var chatNotification = new ChatNotification();
 
+function requireChatCometd(func) {
+  require(['SHARED/chatCometD'], function(cCometD) {
+    if (chatNotification.standalone) {
+      cCometD = cCometD.getInstance('chat');
+    }
+
+    if (!cCometD.isConfigured) {
+      cCometD.configure({
+        url: chatNotification.wsEndpoint,
+        'exoId': chatNotification.username, // current username
+        'exoToken': chatNotification.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
+      });
+    }
+
+    if (typeof func === 'function') {
+      func(cCometD);
+    }
+  });
+}
+
 (function($) {
 
   $(document).ready(function() {
@@ -794,18 +834,13 @@ var chatNotification = new ChatNotification();
       "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
       "portalURI": $notificationApplication.attr("data-portal-uri"),
       //TODO ws endpoint must be dynamic, depending on the chat mode (1 or 2 servers)
-      "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + "/cometd/cometd",
+      "standalone": $notificationApplication.attr("data-standalone"),
+      "wsEndpoint": $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
       "cometdToken": $notificationApplication.attr("data-cometd-token")
     });
 
     // init cometd connection and subscriptions
-    require(['SHARED/commons-cometd3'], function(cCometD) {
-      cCometD.configure({
-        url: chatNotification.wsEndpoint,
-        'exoId': chatNotification.username, // current username
-        'exoToken': chatNotification.cometdToken // unique token for the current user, got by calling ContinuationService.getUserToken(currentUsername) on server side
-      });
-
+    requireChatCometd(function(cCometD) {
       cCometD.subscribe('/service/chat', null, function (event) {
         var message = event.data;
         if (typeof message != 'object') {
