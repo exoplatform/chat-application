@@ -563,6 +563,7 @@ ChatNotification.prototype.attachChatButtonToUserPopup = function() {
         var targetFullname = jqchat(this).attr("data-fullname");
         if(jqchat("#chat-application").length) {
           // we are in the chat application, load the one-to-one room with this user
+          chatApplication.room = null;
           chatApplication.targetUser = targetUser;
           chatApplication.targetFullname = targetFullname;
           chatApplication.loadRoom();
