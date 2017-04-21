@@ -182,6 +182,8 @@ public class ChatServiceImpl implements ChatService
       }
 
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
+      UserBean user = userService.getUser(sender, dbName);
+      msg.setFullName(user.getFullname());
 
       // Deliver the saved message to sender's subscribed channel itself.
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
