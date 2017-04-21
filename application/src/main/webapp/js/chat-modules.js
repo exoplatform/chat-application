@@ -165,6 +165,8 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
 
             from = Math.round(from) - 1;
             to = Math.round(to) + 1;
+
+            $meetingNotes.find(".alert-success").hide();
             chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
               if (response === "sent") {
                 jqchat("#" + id).animate({
@@ -172,7 +174,8 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
                 }, 200, function () {
                   $meetingNotes.animate({
                     opacity: "toggle"
-                  }, 3000);
+                  }, 1000);
+                  jqchat("#" + id).show();
                 });
               }
             });
@@ -193,6 +196,8 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
 
             from = Math.round(from) - 1;
             to = Math.round(to) + 1;
+
+            $meetingNotes.find(".alert-success").hide();
             chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
               if (response !== "ko") {
                 jqchat.ajax({
@@ -223,11 +228,11 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
 
                     jqchat("#" + id).animate({
                       opacity: "toggle"
-                    }, 3000, function () {
+                    }, 200, function () {
                       $meetingNotes.animate({
                         opacity: "toggle"
-                      }, 2000);
-                      jqchat("#" + id).hide();
+                      }, 1000);
+                      jqchat("#" + id).show();
                     });
                   },
                   error: function (xhr, status, error) {
@@ -302,6 +307,7 @@ ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg
       "options": options,
       "isSystem": isSystemMessage,
       "ts": newMsgTimestamp,
+      "timestamp": newMsgTimestamp,
     };
 
     thiss.messages.push(msgObj);
@@ -630,7 +636,6 @@ ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
 
 ChatRoom.prototype.showMessage = function(message, checkToScroll) {
   var $chats = this.messagesContainer;
-
   if (checkToScroll) {
     // check if scroll was at max before the new message
     var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
