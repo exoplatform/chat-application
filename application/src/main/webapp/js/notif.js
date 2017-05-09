@@ -833,9 +833,8 @@ function requireChatCometd(func) {
       "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
       "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
       "portalURI": $notificationApplication.attr("data-portal-uri"),
-      //TODO ws endpoint must be dynamic, depending on the chat mode (1 or 2 servers)
       "standalone": $notificationApplication.attr("data-standalone"),
-      "wsEndpoint": $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
+      "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
       "cometdToken": $notificationApplication.attr("data-cometd-token")
     });
 

@@ -127,10 +127,10 @@ public class NotificationApplication
     String chatCometDServerUrl;
     if (standaloneChatServer) {
       cometdToken = token_;
-      chatCometDServerUrl = ServerBootstrap.getServerBase() + chatServerURL;
+      chatCometDServerUrl = chatServerURL;
     } else {
       cometdToken = continuationService.getUserToken(remoteUser_);
-      chatCometDServerUrl = ServerBootstrap.getServerBase() + "/cometd";
+      chatCometDServerUrl = "/cometd";
     }
 
     return index.with().set("user", remoteUser_).set("token", token_)
