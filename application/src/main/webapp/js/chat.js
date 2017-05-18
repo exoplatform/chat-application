@@ -2,9 +2,7 @@
 var chatApplication = new ChatApplication();
 
 (function($){
-
   $(document).ready(function(){
-
     /**
      * Init Chat
      */
@@ -12,29 +10,24 @@ var chatApplication = new ChatApplication();
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
-    var chatServerURL = $chatApplication.attr("data-chat-server-url");
-    chatApplication.chatIntervalChat = $chatApplication.attr("data-chat-interval-chat");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
-    chatApplication.chatIntervalStatus = $chatApplication.attr("data-chat-interval-status");
-    chatApplication.chatIntervalUsers = $chatApplication.attr("data-chat-interval-users");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
-
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
     chatApplication.dbName = $chatApplication.attr("data-db-name");
-    var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
-    var chatView = $chatApplication.attr("data-view");
     chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
     chatApplication.portalURI = $chatApplication.attr("data-portal-uri");
+
+    var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
+    var chatView = $chatApplication.attr("data-view");
     chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
     chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
     chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
     chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
     chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
-    chatApplication.jzCreateTask = $chatApplication.jzURL("ChatApplication.createTask");
     chatApplication.jzCreateEvent = $chatApplication.jzURL("ChatApplication.createEvent");
     chatApplication.jzSaveWiki = $chatApplication.jzURL("ChatApplication.saveWiki");
-    chatApplication.jzGetStatus = chatServerURL+"/getStatus";
-    chatApplication.jzSetStatus = chatServerURL+"/setStatus";
+
+    var chatServerURL = $chatApplication.attr("data-chat-server-url");
     chatApplication.jzChatWhoIsOnline = chatServerURL+"/whoIsOnline";
     chatApplication.jzChatSend = chatServerURL+"/send";
     chatApplication.jzChatRead = chatServerURL+"/read";
@@ -48,15 +41,12 @@ var chatApplication = new ChatApplication();
     chatApplication.jzChatSetNotificationTrigger = chatServerURL+"/setNotificationTrigger";
     chatApplication.jzChatSetRoomNotificationTrigger = chatServerURL + "/setRoomNotificationTrigger";
     chatApplication.jzChatGetUserDesktopNotificationSettings = chatServerURL+"/getUserDesktopNotificationSettings";
-    chatApplication.jzChatUpdateUnreadMessages = chatServerURL+"/updateUnreadMessages";
     chatApplication.jzUsers = chatServerURL+"/users";
-    chatApplication.jzDelete = chatServerURL+"/delete";
     chatApplication.jzDeleteTeamRoom = chatServerURL+"/deleteTeamRoom";
-    chatApplication.jzEdit = chatServerURL+"/edit";
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
     chatApplication.room = "";
 
-    chatApplication.initChat();
+    // get user profile, then init chat application
     chatApplication.initChatProfile();
 
     // Attach weemo call button into chatApplication
@@ -76,8 +66,126 @@ var chatApplication = new ChatApplication();
     var labelDoNotDisturb = $chatApplication.attr("data-label-donotdisturb");
     var labelInvisible = $chatApplication.attr("data-label-invisible");
 
-
+    var _connected = false;
     /**
+     * Handle Real Time communications events
+     */
+    requireChatCometd(function(cCometD) {
+      cCometD.addListener('/meta/connect', function(message) {
+        if (cCometD.isDisconnected()) {
+          _connected = false;
+          console.log("Connection is closed.");
+          return;
+        }
+
+        var wasConnected = _connected;
+        _connected = message.successful === true;
+        if (!wasConnected && _connected) {
+          console.log("Connection is established.");
+          chatApplication.initChat();
+        } else if (wasConnected && !_connected) {
+          console.log("Connection is broken.");
+        }
+      });
+
+      cCometD.subscribe('/service/chat', null, function (event) {
+        var message = event.data;
+        if (typeof message != 'object') {
+          message = JSON.parse(message);
+        }
+
+        // Do what you want with the message...
+        if (message.event == 'user-status-changed') {
+          if (message.room == chatApplication.username) {
+            // update current user status
+            chatNotification.changeStatusChat(message.data.status);
+          } else {
+            // update rooms list
+            chatApplication.rooms({type: 'u', user: message.room}).update({status: message.data.status});
+            chatApplication.renderRooms();
+
+            // update room users status if a room is selected
+            if(chatApplication.chatRoom && chatApplication.chatRoom.users) {
+              chatApplication.chatRoom.users.forEach(function (user, idx) {
+                if (user.name == message.room) {
+                  chatApplication.chatRoom.users[idx].status = message.data.status;
+                  chatApplication.renderRoomUsers();
+                  return;
+                }
+              });
+            }
+          }
+        } else if (message.event == 'room-member-joined') {
+          var room = message.data;
+
+          // Add the new room and re-render the list of rooms
+          chatApplication.rooms.insert({
+            fullName: room.fullName,
+            isActive : room.isActive,
+            isFavorite : room.isFavorite,
+            type: room.type,
+            room : room.room,
+            status : "team",
+            timestamp : room.timestamp,
+            unreadTotal : room.unreadTotal,
+            user : room.user
+          });
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-member-left') {
+          chatApplication.rooms({room: message.room}).remove();
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-updated') {
+          var room = chatApplication.rooms({room: message.room});
+          room.update({fullName: message.data.title});
+          chatApplication.renderRooms();
+
+          if(chatApplication.chatRoom && chatApplication.chatRoom.id == message.room && chatApplication.chatRoom.users) {
+            chatApplication.loadRoomUsers();
+            chatApplication.targetFullname = message.data.title;
+            jqchat("#chat-room-detail-fullname").text(message.data.title);
+          }
+        } else if (message.event == 'room-deleted') {
+          var room = chatApplication.rooms({room: message.room});
+          room.remove();
+          chatApplication.renderRooms();
+        } else if (message.event == 'room-settings-updated') {
+          var settings = message.data.settings;
+          var val = settings.notifConditionType + ':' + settings.notifCondition;
+          desktopNotification.setRoomPreferredNotificationTrigger(message.room, val);//set into the memory
+        } else if (message.event == 'message-read') {
+          var room = chatApplication.rooms({room: message.room});
+          room.update({unreadTotal: 0});
+          chatApplication.renderRooms();
+        } else if (message.event == 'message-sent') {
+          chatApplication.rooms({room: message.room}).update({timestamp: new Date().getTime()});
+
+          if (chatApplication.chatRoom.id === message.room && chatApplication.configMode == false) {
+            chatApplication.chatRoom.addMessage(message.data, true);
+            chatApplication.chatRoom.updateUnreadMessages();
+          } else {
+            var room = chatApplication.rooms({room: message.room});
+            room.update({unreadTotal: (room.first().unreadTotal + 1)});
+            chatApplication.renderRooms();
+          }
+        } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
+          if (chatApplication.chatRoom.id === message.room) {
+            chatApplication.chatRoom.updateMessage(message.data);
+          }
+        } else if (message.event == 'favorite-added') {
+          var room = chatApplication.rooms({user: message.room});
+          room.update({isFavorite: true});
+          chatApplication.renderRooms();
+        } else if (message.event == 'favorite-removed') {
+          var room = chatApplication.rooms({user: message.room});
+          room.update({isFavorite: false});
+          chatApplication.renderRooms();
+        }
+      });
+    });
+
+
+
+      /**
      ##################                           ##################
      ##################                           ##################
      ##################   JQUERY UI EVENTS        ##################
@@ -122,10 +230,9 @@ var chatApplication = new ChatApplication();
     });
 
     $('#msg').focus(function() {
-  //    console.log("focus on msg : "+chatApplication.targetUser+":"+chatApplication.room);
        var chatheight = document.getElementById("chats");
        chatheight.scrollTop = chatheight.scrollHeight;
-       chatApplication.updateUnreadMessages();
+       chatApplication.chatRoom.updateUnreadMessages();
        chatheight.scrollHeight;
     });
 
@@ -140,7 +247,6 @@ var chatApplication = new ChatApplication();
         var textarea =  $('#msg');
         $('#msg').scrollTop(textarea[0].scrollHeight - textarea.height());
       }
-  //    console.log("keydown : "+ event.which+" ; "+keydown);
       if ( event.which == 18 ) {
         chatApplication.keydown = 18;
       }
@@ -155,9 +261,10 @@ var chatApplication = new ChatApplication();
         chatApplication.sendMessage(msg);
 
       }
+
       // UP Arrow
       if (event.which === 38 && msg.length === 0) {
-        var $uimsg = chatApplication.chatRoom.getUserLastMessage();
+        var $uimsg = jqchat(".msMy").find(".msg-text").last();
         var $uimsgdata = $uimsg.find(".msg-data");
         if ($uimsgdata.length === 1) {
           chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
@@ -326,7 +433,9 @@ var chatApplication = new ChatApplication();
         $("#task-add-user").val("");
         $("#task-add-date").val("");
         jqchat(".task-user-label").parent().remove();
-        hideResults();
+        var $userResults = $(".task-users-results");
+        $userResults.css("display", "none");
+        $userResults.html("");
       } else if (toggleClass === "meeting-action-event-panel") {
         $("#event-add-summary").val("");
         $("#event-add-start-date").val("");
@@ -360,7 +469,7 @@ var chatApplication = new ChatApplication();
 
 
     var handleGlobalNotifLayout = function () {
-        jqchat("#room-detail .room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
+        jqchat("#chat-room-detail-fullname").html(chatBundleData["exoplatform.chat.settings.button.tip"]);
         desktopNotification.getPreferredNotification().forEach(function (prefNotif, index, array) {
           $("#global-config input[notif-type='"+prefNotif+"']").attr("checked","checked");
         });
@@ -376,7 +485,7 @@ var chatApplication = new ChatApplication();
           $("#global-config input[notif-trigger]").parent().removeClass("switchBtnDisabled");
         }
         jqchat('#global-config :checkbox').iphoneStyle();
-        enableMessageComposer(false);
+        chatApplication.enableMessageComposer(false);
         jqchat("#chat-team-button-dropdown").hide();
         jqchat("#userRoomStatus").removeClass("hide").show();
     };
@@ -422,46 +531,34 @@ var chatApplication = new ChatApplication();
         }
       });
 
-   $(document).on("click", "#room-config input:radio[room-notif-trigger]", function(evt) {//choose a room trigger
-     var roomTriggerType = jqchat(this).attr('room-notif-trigger');
-     var roomTriggerWhenKeyWordValue = jqchat("#room-config #" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val();
+    $(document).on("click", "#room-config input:radio[room-notif-trigger]", function (evt) {//choose a room trigger
+      var roomTriggerType = jqchat(this).attr('room-notif-trigger');
+      var roomTriggerWhenKeyWordValue = jqchat("#room-config #" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val();
 
-     if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
-       $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
-     } else {
-       $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-     }
-     var roomName = chatApplication.targetFullname;
-     var roomId = chatApplication.room;
+      if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
+        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+      } else {
+        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+      }
 
-     jqchat.ajax({
-       url: chatApplication.jzChatSetRoomNotificationTrigger,
-       data: {
-         "user": chatApplication.username,
-         "room": roomId,
-         "notifCondition" : roomTriggerWhenKeyWordValue,
-         "notifConditionType" : roomTriggerType,
-         "dbName": chatApplication.dbName,
-         "time": (new Date()).getTime()
-       },
-       headers: {
-         'Authorization': 'Bearer ' + chatApplication.token
-       },
+      jqchat.ajax({
+        url: chatApplication.jzChatSetRoomNotificationTrigger,
+        data: {
+          "user": chatApplication.username,
+          "room": chatApplication.room,
+          "notifCondition": roomTriggerWhenKeyWordValue,
+          "notifConditionType": roomTriggerType,
+          "dbName": chatApplication.dbName,
+          "time": (new Date()).getTime()
+        },
+        headers: {
+          'Authorization': 'Bearer ' + chatApplication.token
+        },
+        error: function (xhr, status, error) {
+          console.log('an error has been occured', error);
+        }
 
-       success:function(operation){
-         operation = JSON.parse(operation);
-         if(operation.done) {
-           var val = roomTriggerType+':'+roomTriggerWhenKeyWordValue;
-           desktopNotification.setRoomPreferredNotificationTrigger(roomId, val);//set into the memory
-         } else {
-           alert("Request received but operation done without success..");
-         }
-       },
-       error:function (xhr, status, error){
-         console.log('an error has been occured', error);
-       }
-
-     });
+      });
 
     });
 
@@ -470,33 +567,33 @@ var chatApplication = new ChatApplication();
     });
 
     //global desktop notification settings
-   $("#configButton, #configButtonResp").on("click", function() {
-       jqchat("#chat-video-button").css("display", "none");
-       chatApplication.configMode = true;
-       var $div = jqchat("#global-config-template");
+    $("#configButton, #configButtonResp").on("click", function () {
+      jqchat("#chat-video-button").css("display", "none");
+      chatApplication.configMode = true;
+      var $div = jqchat("#global-config-template");
 
-       $div = $div.clone();
-       $div.attr("id", "global-config");
-       $div.css("display", "inline-block");
+      $div = $div.clone();
+      $div.attr("id", "global-config");
+      $div.css("display", "inline-block");
 
-       jqchat('#chats').html("");
-       $div.appendTo('#chats');
+      jqchat('#chats').html("");
+      $div.appendTo('#chats');
 
-       handleGlobalNotifLayout();
+      handleGlobalNotifLayout();
 
-       if (window.innerWidth <= 767) {
-           jqchat(".uiExtraLeftContainer").removeClass("displayContent");
-           jqchat(".uiGlobalRoomsContainer").css("display", "block");
+      if (window.innerWidth <= 767) {
+        jqchat(".uiExtraLeftContainer").removeClass("displayContent");
+        jqchat(".uiGlobalRoomsContainer").css("display", "block");
 
-           setTimeout(function () {
-             jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
-           }, 200);
+        setTimeout(function () {
+          jqchat(".uiGlobalRoomsContainer").addClass("displayContent");
+        }, 200);
 
-           jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
-           jqchat("#userRoomStatus").addClass("hide");
-           jqchat("#chats").css("min-height", window.innerHeight + "px");
-       }
-   });
+        jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
+        jqchat("#userRoomStatus").addClass("hide");
+        jqchat("#chats").css("min-height", window.innerHeight + "px");
+      }
+    });
 
     $("#menuButton").on("click", function() {
 
@@ -533,36 +630,10 @@ var chatApplication = new ChatApplication();
             chatApplication.search(filter);
     });
 
-
-var handleRoomNotifLayout = function() {
-  chatApplication.chatRoom.loadSetting(function() {
-    jqchat("#room-detail .room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
-    var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
-    if (roomPrefTrigger) {
-      if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
-            roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
-        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-        $("#room-config input[room-notif-trigger='"+roomPrefTrigger+"']").attr("checked","checked");
-      } else {
-        $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
-        $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").attr("checked","checked");
-        var keywords = roomPrefTrigger.split(":")[1];
-        $("#room-config input[id='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE+"']").val(keywords);
-      }
-    } else {
-      $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
-    }
-    $("#room-config input#room-notif-trigger-when-key-word-value").unbind("blur");
-    $("#room-config input#room-notif-trigger-when-key-word-value").blur(function(evt) {
-      $("#room-config input[room-notif-trigger='"+desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD+"']").click();
-    });
-  },false);
-};
-
     //team/room desktop notification settings
     $("#team-notification-button").on("click", function() {
       chatApplication.configMode = true;
-      enableMessageComposer(false)
+      chatApplication.enableMessageComposer(false)
       var $div = jqchat("#room-config-template");
 
       $div = $div.clone();
@@ -572,12 +643,32 @@ var handleRoomNotifLayout = function() {
       jqchat('#chats').html("");
       $div.appendTo('#chats');
 
-      handleRoomNotifLayout();
+      chatApplication.chatRoom.loadSetting(function() {
+        jqchat("#chat-room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
+        var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
+        if (roomPrefTrigger) {
+          if (roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_NORMAL ||
+            roomPrefTrigger === desktopNotification.ROOM_NOTIF_TRIGGER_SILENCE) {
+            $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+            $("#room-config input[room-notif-trigger='" + roomPrefTrigger + "']").attr("checked", "checked");
+          } else {
+            $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
+            $("#room-config input[room-notif-trigger='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD + "']").attr("checked", "checked");
+            var keywords = roomPrefTrigger.split(":")[1];
+            $("#room-config input[id='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE + "']").val(keywords);
+          }
+        } else {
+          $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
+        }
+        $("#room-config input#room-notif-trigger-when-key-word-value").unbind("blur");
+        $("#room-config input#room-notif-trigger-when-key-word-value").blur(function (evt) {
+          $("#room-config input[room-notif-trigger='" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD + "']").click();
+        });
+      }, false);
 
       jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
       jqchat("#userRoomStatus").addClass("hide");
-      jqchat("#chats").css("min-height", window.innerHeight+"px");
-
+      jqchat("#chats").css("min-height", window.innerHeight + "px");
     });
 
     $(document).on("click touchstart", "#global-config div.notif-manner div.uiSwitchBtn", function() {
@@ -748,7 +839,6 @@ var handleRoomNotifLayout = function() {
         $("#dropzone").find('.bar').html(percentComplete+"%");
       },
       complete: function(xhr) {
-//        console.log(xhr.responseText);
         var response = $.parseJSON(xhr.responseText);
 
         var msg = response.name;
@@ -841,20 +931,14 @@ var handleRoomNotifLayout = function() {
       chatApplication.search(filter);
     });
 
-    function setMiniCalendarToDateField(dateFieldId) {
-      var dateField = document.getElementById(dateFieldId);
-      dateField.onfocus=function(){
-        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
-      };
-      dateField.onkeyup=function(){
-        uiMiniCalendar.show();
-      };
-      dateField.onkeydown=function(event){
-        uiMiniCalendar.onTabOut(event);
-      };
-      dateField.onclick=function(event){
-        event.cancelBubble = true;
-      };
+    function setActionButtonEnabled(btnClass, isEnabled) {
+      if (isEnabled) {
+        $(btnClass).css('cursor', "default");
+        $(btnClass).removeAttr('disabled');
+      } else {
+        $(btnClass).css('cursor', "progress");
+        $(btnClass).attr('disabled','disabled');
+      }
     };
 
     $(".create-event-button").on("click", function() {
@@ -937,16 +1021,6 @@ var handleRoomNotifLayout = function() {
       });
     });
 
-    function setActionButtonEnabled(btnClass, isEnabled) {
-      if (isEnabled) {
-        $(btnClass).css('cursor', "default");
-        $(btnClass).removeAttr('disabled');
-      } else {
-        $(btnClass).css('cursor', "progress");
-        $(btnClass).attr('disabled','disabled');
-      }
-    };
-
     $("#event-add-start-time").on("change", function() {
       var time = $(this).val();
       var h = Math.round(time.split(":")[0]) + 1;
@@ -955,11 +1029,24 @@ var handleRoomNotifLayout = function() {
       $("#event-add-end-time").val(hh+":"+time.split(":")[1]);
     });
 
+    function setMiniCalendarToDateField(dateFieldId) {
+      var dateField = document.getElementById(dateFieldId);
+      dateField.onfocus=function(){
+        uiMiniCalendar.init(this,false,"MM/dd/yyyy","", chatBundleData["exoplatform.chat.monthNames"]);
+      };
+      dateField.onkeyup=function(){
+        uiMiniCalendar.show();
+      };
+      dateField.onkeydown=function(event){
+        uiMiniCalendar.onTabOut(event);
+      };
+      dateField.onclick=function(event){
+        event.cancelBubble = true;
+      };
+    };
+
     setMiniCalendarToDateField('event-add-start-date');
     setMiniCalendarToDateField('event-add-end-date');
-
-    addTimeOptions("#event-add-start-time");
-    addTimeOptions("#event-add-end-time");
 
     function addTimeOptions(id) {
       var select = $(id);
@@ -979,12 +1066,8 @@ var handleRoomNotifLayout = function() {
         }
       }
     }
-
-    function hideResults() {
-      var $userResults = $(".task-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
-    }
+    addTimeOptions("#event-add-start-time");
+    addTimeOptions("#event-add-end-time");
 
     $('#team-add-user').keyup(function(event) {
       var prefix = "team";
@@ -1119,42 +1202,35 @@ var handleRoomNotifLayout = function() {
       $userResults.html("");
     }
 
-    function strip(html)
-    {
-      var tmp = document.createElement("DIV");
-      tmp.innerHTML = html;
-      return tmp.textContent||tmp.innerText;
-    }
-
     $("#team-edit-button").on("click", function() {
       // Only the room owner can manage room users and can see the System popup.
       // We do a check to be sure the current user is the room owner.
       if (chatApplication.username === chatApplication.chatRoom.owner) {
-        chatApplication.getUsers(chatApplication.targetUser, function (jsonData) {
-          var users = TAFFY(jsonData.users);
-          var users = users();
+        // Clear and reset form
+        var $userResults = $(".team-users-results");
+        $userResults.css("display", "none");
+        $userResults.html("");
+        $(".team-users-list").empty();
 
-          var $userResults = $(".team-users-results");
-          $userResults.css("display", "none");
-          $userResults.html("");
-          var $uitext = $("#team-modal-name");
-          $uitext.val(chatApplication.targetFullname);
-          $uitext.attr("data-id", chatApplication.targetUser);
-          $(".team-users-list").empty();
-          users.order("fullname").each(function (user, number) {
-            if (user.name !== chatApplication.username) {
-              addTeamUserLabel(user.name, user.fullname);
-            }
-          });
+        var title = chatApplication.rooms({room: chatApplication.room}).first().fullName;
+        var $uitext = $("#team-modal-name");
+        $uitext.val(title);
+        $uitext.attr("data-id", chatApplication.room);
 
-          uiChatPopupWindow.show("team-modal-form", true);
-          jqchat("#team-modal-form .setting").css("display", "block");
-          jqchat("#team-modal-form .add").css("display", "none");
-          $uitext.focus();
-
-          // Set form position to screen center
-          chatApplication.setModalToCenter('.team-modal');
+        var users = TAFFY(chatApplication.chatRoom.users);
+        users = users();
+        users.order("fullname").each(function (user, number) {
+          if (user.name !== chatApplication.username) {
+            addTeamUserLabel(user.name, user.fullname);
+          }
         });
+
+        uiChatPopupWindow.show("team-modal-form", true);
+        jqchat("#team-modal-form .popupTitle").text(chatBundleData['exoplatform.chat.team.settings.title'])
+        $uitext.focus();
+
+        // Set form position to screen center
+        chatApplication.setModalToCenter('.team-modal');
       }
     });
 
@@ -1195,7 +1271,7 @@ var handleRoomNotifLayout = function() {
       uiChatPopupWindow.hide("team-settings-modal-view", true);
     });
 
-    $(".msButtonRecord").on("click", function() {
+    $("#chat-record-button").on("click", function() {
       var $icon = $(this).children("i");
 
       var msgType = $icon.hasClass("uiIconChatRecordStart") ? "type-meeting-start" : "type-meeting-stop";
@@ -1233,19 +1309,10 @@ var handleRoomNotifLayout = function() {
         users += ","+name;
       });
 
-      chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
-        var teamName = data.name;
-        var roomId = "team-"+data.room;
-        chatApplication.refreshWhoIsOnline(roomId, teamName);
-        // Refresh the chatRoom after creating the team room
-        chatApplication.targetUser = roomId;
-        chatApplication.targetFullname = teamName;
-        chatApplication.loadRoom();
-      });
+      chatApplication.saveTeamRoom(teamName, teamId, users);
 
       $uitext.val("");
       $uitext.attr("data-id", "---");
-
     });
 
     $(".text-modal-close").on("click", function() {
@@ -1266,10 +1333,8 @@ var handleRoomNotifLayout = function() {
       $('.edit-modal').modal('hide');
 
       chatApplication.editMessage(id, message, function() {
-        chatApplication.chatRoom.refreshChat(true);
         jqchat("#msg").focus();
       });
-
     });
 
     $('#edit-modal-area').keydown(function(event) {
@@ -1291,39 +1356,28 @@ var handleRoomNotifLayout = function() {
     $('#edit-modal-area').keyup(function(event) {
       var id = $(this).attr("data-id");
       var msg = $(this).val();
-      if ( event.which === 13 && keydownModal !== 18 && msg.length>1) {
-        if( !msg || event.keyCode == 13 && (event.shiftKey||event.ctrlKey||event.altKey) )
-        {
+
+      if (keydownModal === 18) {
+        keydownModal = -1;
+      } else if (event.which === 13 && msg.length > 1) {
+        if (!msg || event.keyCode == 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
           return false;
         }
-        $(this).val("");
-        $('.edit-modal').modal('hide');
+        $(".edit-modal-save").click();
+      }
 
-        chatApplication.editMessage(id, msg, function() {
-          chatApplication.chatRoom.refreshChat(true);
-          jqchat("#msg").focus();
-        });
-
-      }
-      if ( keydownModal === 18 ) {
-        keydownModal = -1;
-      }
-      if ( event.which === 13 && msg.length === 1) {
-        $(this).val('');
-      }
       // press Escape
       if (event.which === 27) {
         $('.edit-modal').modal('hide');
         jqchat("#msg").focus();
       }
-
     });
 
 
     if (window.fluid!==undefined) {
-      chatApplication.activateMaintainSession();
+      this.chatSessionInt = clearInterval(this.chatSessionInt);
+      this.chatSessionInt = setInterval(jqchat.proxy(this.maintainSession, this), this.chatIntervalSession);
     }
-
 
     function initFluidApp() {
       if (window.fluid!==undefined) {
@@ -1335,12 +1389,9 @@ var handleRoomNotifLayout = function() {
     }
     initFluidApp();
 
-
     function reloadWindow() {
       var sURL = unescape(window.location.href);
-      //console.log(sURL);
       window.location.href = sURL;
-      //window.location.reload( false );
     }
 
     // We change the current history by removing get parameters so they won't be visible in the popup
@@ -1416,8 +1467,6 @@ var handleRoomNotifLayout = function() {
         }
 
   });
-
-
 })(jqchat);
 
 /**
@@ -1437,7 +1486,7 @@ function ChatApplication() {
   this.configMode = false;
   this.isLoaded = false;
   this.isPublic = false;
-  this.publicModeEnabled = false;
+  this.publicModeEnabled = false;   // TODO Should be removed from configuration
   this.portalURI = "";
   this.dbName = "";
   this.chatFullscreen = "false";
@@ -1451,51 +1500,35 @@ function ChatApplication() {
   this.targetFullname = "";
   this.token = "";
   this.jzInitChatProfile = "";
-  this.jzWhoIsOnline = "";
-  this.jzChatGetRoom = "";
   this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
   this.jzCreateDemoUser = "";
-  this.jzChatUpdateUnreadMessages = "";
   this.jzChatSend = "";
   this.jzChatRead = "";
   this.jzChatSendMeetingNotes = "";
   this.jzChatGetMeetingNotes = "";
-  this.jzGetStatus = "";
-  this.jzSetStatus = "";
   this.jzMaintainSession = "";
   this.jzUpload = "";
-  this.jzCreateTask = "";
   this.jzCreateEvent = "";
   this.jzSaveWiki = "";
   this.jzUsers = "";
-  this.jzDelete = "";
   this.jzDeleteTeamRoom = "";
-  this.jzEdit = "";
   this.jzSaveTeamRoom = "";
   this.userFilter = "";    //not set
-  this.chatIntervalChat = "";
-  this.chatIntervalUsers = "";
   this.plfUserStatusUpdateUrl = "";
   this.chatIntervalSession = "";
-  this.chatIntervalStatus = "";
 
   this.chatSessionInt = -1; //not set
   this.filterInt;
-  this.messages = [];
 
-  this.chatOnlineInt = -1;
-  this.notifStatusInt = -1;
   this.ANONIM_USER = "__anonim_";
   this.SUPPORT_USER = "__support_";
   this.isAdmin = false;
   this.isTeamAdmin = false;
 
   this.old = '';
-  this.firstLoad = true;
 
   this.profileStatus = "offline";
-  this.whoIsOnlineMD5 = 0;
   this.totalNotif = 0;
   this.oldNotif = 0;
 
@@ -1511,6 +1544,20 @@ function ChatApplication() {
 
   this.showRoomOfflinePeople = false;
   this.plugins = [];
+
+  if (typeof chatEvents === 'object') {
+    for (var i = 0; i < chatEvents.length; i++) {
+      this.registerEvent(chatEvents[i]);
+    }
+  }
+}
+
+ChatApplication.prototype.setUserPref = function(key, value, expire) {
+  jzStoreParam(key + this.username, value, expire);
+}
+
+ChatApplication.prototype.getUserPref = function(key) {
+  return jzGetParam(key + this.username);
 }
 
 ChatApplication.prototype.registerEvent = function(plugin) {
@@ -1525,6 +1572,247 @@ ChatApplication.prototype.trigger = function(event, context) {
   });
 }
 
+
+/**
+ * Init Chat Profile
+ */
+ChatApplication.prototype.initChatProfile = function(callback) {
+  if (this.username === this.ANONIM_USER) {
+    if (jzGetParam("anonimUsername")) {
+      this.createDemoUser(jzGetParam("anonimFullname"), jzGetParam("anonimEmail"));
+    } else {
+      this.showDemoPanel();
+    }
+  } else {
+    jqchat.ajax({
+      url: this.jzInitChatProfile,
+      dataType: "json",
+      context: this,
+      success: function(data){
+        this.token = data.token;
+        this.fullname = data.fullname;
+        this.isAdmin = data.isAdmin;
+        this.isTeamAdmin = data.isTeamAdmin;
+
+        var $chatApplication = jqchat("#chat-application");
+        $chatApplication.attr("data-token", this.token);
+        var $labelUser = jqchat(".uiGrayLightBox .label-user");
+        if(window.innerWidth > 767){
+          $labelUser.text(data.fullname);
+        }else{
+          $labelUser.removeAttr("href").text("Discussion");
+        }
+        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
+        chatNotification.refreshStatusChat();
+        if (typeof callback === "function") {
+          callback();
+        }
+      },
+      error: function (response){
+        //retry in 3 sec
+        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
+      }
+    });
+  }
+};
+
+/**
+ * Init Chat Interval
+ */
+ChatApplication.prototype.initChat = function() {
+  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, jqchat("#chats"), this.isPublic, this.portalURI);
+  this.chatRoom.onRefresh(this.onRefreshCallback);
+  this.chatRoom.onShowMessages(this.onShowMessagesCallback);
+
+  var homeLinkHtml = jqchat("#HomeLink").html();
+  homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
+  jqchat("#HomeLink").html(homeLinkHtml);
+
+  jqchat(".btn-home-responsive").on("click", function() {
+    var $leftNavigationTDContainer = jqchat(".LeftNavigationTDContainer");
+    if ($leftNavigationTDContainer.css("display")==="none") {
+      $leftNavigationTDContainer.animate({width: 'show', duration: 200});
+    } else {
+      $leftNavigationTDContainer.animate({width: 'hide', duration: 200});
+    }
+  });
+
+  this.resize();
+  jqchat(window).resize(function() {
+    chatApplication.resize();
+  });
+
+  this.showFavorites = this.getUserPref("chatShowFavorites") === "false" ? false : true;
+  this.showPeople = this.getUserPref("chatShowPeople") === "false" ? false : true;
+  this.showOffline = this.getUserPref("chatShowOffline") === "true" ? true : false;
+  this.showSpaces = this.getUserPref("chatShowSpaces") === "false" ? false : true;
+  this.showTeams = this.getUserPref("chatShowTeams") === "false" ? false : true;
+
+  var thiss = this;
+  this.loadRooms(function() {
+      var _room, _targetUser, _fullName;
+
+      /*
+       Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
+       */
+      if (localStorage.getItem('notification.room') != null) {
+        _room = localStorage.getItem('notification.room');
+        localStorage.removeItem('notification.room');
+      } else {
+        _room = thiss.getUserPref("lastRoom");
+      }
+
+      if (_room) {
+        thiss.room = _room;
+        var TAFFYRoom = thiss.rooms({room: _room}).first();
+        thiss.targetUser = TAFFYRoom.user;
+        thiss.targetFullname = TAFFYRoom.fullName;
+        if (thiss.username !== thiss.ANONIM_USER) {
+          thiss.loadRoom();
+        }
+      }
+  });
+
+  if (this.username !== this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
+
+  var $leftPanel = jqchat('#chat-users');
+
+  $leftPanel.on("click", ".header-room", function() {
+    if (jqchat(this).hasClass("header-favorites"))
+      chatApplication.showFavorites = !chatApplication.showFavorites;
+    else if (jqchat(this).hasClass("header-people"))
+      chatApplication.showPeople = !chatApplication.showPeople;
+    else if (jqchat(this).hasClass("header-spaces"))
+      chatApplication.showSpaces = !chatApplication.showSpaces;
+    else if (jqchat(this).hasClass("header-teams"))
+      chatApplication.showTeams = !chatApplication.showTeams;
+
+    chatApplication.setUserPref("chatShowFavorites", chatApplication.showFavorites, 600000);
+    chatApplication.setUserPref("chatShowPeople", chatApplication.showPeople, 600000);
+    chatApplication.setUserPref("chatShowSpaces", chatApplication.showSpaces, 600000);
+    chatApplication.setUserPref("chatShowTeams", chatApplication.showTeams, 600000);
+
+    chatApplication.renderRooms();
+  });
+
+
+  $leftPanel.on("click", ".btn-add-team", function(event) {
+    event.stopPropagation();
+    chatApplication.showTeams = true;
+    chatApplication.setUserPref("chatShowTeams", chatApplication.showTeams, 600000);
+    chatApplication.renderRooms();
+
+    var $uitext = jqchat("#team-modal-name");
+    $uitext.val("");
+    $uitext.attr("data-id", "---");
+    jqchat(".team-user-label").parent().remove();
+    var $userResults = jqchat(".team-users-results");
+    $userResults.css("display", "none");
+    $userResults.html("");
+    jqchat("#team-add-user").val("");
+    uiChatPopupWindow.show("team-modal-form", true);
+    jqchat("#team-modal-form .popupTitle").text(chatBundleData['exoplatform.chat.team.add.title'])
+    $uitext.focus();
+
+    chatApplication.setModalToCenter('.team-modal');
+  });
+
+  $leftPanel.on("click", ".btn-history", function(event) {
+    event.stopPropagation();
+    var type = jqchat(this).attr("data-type");
+    if (type === "people") {
+      chatApplication.showPeople = true;
+      chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
+      chatApplication.setUserPref("chatShowPeople", true, 600000);
+    } else if (type === "space") {
+      chatApplication.showSpaces = true;
+      chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
+      chatApplication.setUserPref("chatShowSpaces", true, 600000);
+    } else if (type === "team") {
+      chatApplication.showTeams = true;
+      chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
+      chatApplication.setUserPref("chatShowTeams", true, 600000);
+    }
+    chatApplication.renderRooms();
+
+  });
+
+  $leftPanel.on("click", ".btn-offline", function(event) {
+    event.stopPropagation();
+    chatApplication.showPeople = true;
+    chatApplication.setUserPref("chatShowPeople", true, 600000);
+    chatApplication.showOffline = !chatApplication.showOffline;
+    chatApplication.setUserPref("chatShowOffline", chatApplication.showOffline, 600000);
+    chatApplication.renderRooms();
+  });
+
+  var thiss = this;
+  $leftPanel.on("click.selectRoom", ".users-online > td:nth-child(2)", function() {
+
+    // Mobile view
+    if(window.innerWidth <= 767){
+
+      jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
+      jqchat('input#chat-search.input-with-value.span4').val('');
+      var filter = jqchat('input#chat-search.input-with-value.span4').val();
+      chatApplication.search(filter);
+
+
+      var $chatStatusPanel = jqchat(".chat-status-panel");
+
+      $chatStatusPanel.css("display", "none");
+      jqchat(" .chat-status-chat").parent().removeClass('active');
+
+      jqchat(".uiLeftContainerArea").removeClass("displayContent");
+      jqchat(".uiLeftContainerArea").addClass("hideContent");
+      jqchat(".uiGlobalRoomsContainer").css("display", "block");
+
+      setTimeout(function(){
+        jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
+      }, 200);
+
+      $serachText = jqchat('#chat-search').attr('placeholder');
+      $serachText = $serachText.replace("@", "");
+      jqchat("#chat-search").attr("placeholder", $serachText);
+    }
+
+    thiss.room = jqchat(".room-link:first",this).attr("room-data");
+    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
+    thiss.targetFullname = jqchat(".room-link:first",this).text();
+
+    chatNotification.getStatus(thiss.targetUser, function(targetUser, status) {
+      jqchat("#userRoomStatus > i").attr("class", "");
+      jqchat("#userRoomStatus > i").addClass("user-"+status);
+    });
+
+    thiss.loadRoom(thiss.room);
+
+    if (thiss.isMobileView()) {
+      jqchat(".right-chat").css("display", "block");
+      jqchat(".left-chat").css("display", "none");
+      jqchat(".room-name").html(thiss.targetFullname);
+    }
+  });
+
+  $leftPanel.on("click.toggleFavorite", ".uiIconChatFavorite", function() {
+    var targetFav = jqchat(this).attr("user-data");
+    thiss.toggleFavorite(targetFav);
+  });
+
+  // Responsive mode
+  jqchat('#back').on("click", function() {
+    jqchat(".uiLeftContainerArea").addClass("displayContent");
+    jqchat(".uiLeftContainerArea").removeClass("hideContent");
+
+    jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
+
+    setTimeout(function(){
+      jqchat(".uiGlobalRoomsContainer").css("display", "none");
+    }, 500);
+    jqchat("#chat-video-button").attr("style", "");
+  });
+};
+
 /**
  * Create demo user
  *
@@ -1532,7 +1820,6 @@ ChatApplication.prototype.trigger = function(event, context) {
  * @param email
  */
 ChatApplication.prototype.createDemoUser = function(fullname, email) {
-
   setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
   jqchat.ajax({
     url:this.jzCreateDemoUser,
@@ -1545,9 +1832,6 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
     dataType: "json",
     context: this,
     success: function(data) {
-      //console.log("username : "+data.username);
-      //console.log("token    : "+data.token);
-
       jzStoreParam("anonimUsername", data.username, 600000);
       jzStoreParam("anonimFullname", fullname, 600000);
       jzStoreParam("anonimEmail", email, 600000);
@@ -1562,7 +1846,7 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       jqchat(".avatar-image:first").attr("src", gravatar(email));
       this.hidePanels();
 
-      this.refreshWhoIsOnline();
+      this.loadRooms();
 
       if (this.isPublic) {
         this.targetUser = this.SUPPORT_USER;
@@ -1572,44 +1856,6 @@ ChatApplication.prototype.createDemoUser = function(fullname, email) {
       this.loadRoom();
 
     }
-  });
-
-};
-
-/**
- * Activate tooltip in this page
- */
-ChatApplication.prototype.activateTootips = function() {
-  jqchat("[data-toggle='tooltip']").tooltip();
-}
-/**
- * Update Unread Messages
- *
- * @param callback
- */
-ChatApplication.prototype.updateUnreadMessages = function(callback) {
-  jqchat.ajax({
-    url: this.jzChatUpdateUnreadMessages,
-    data: {"room": this.room,
-      "user": this.username,
-      "timestamp": new Date().getTime(),
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
-      }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
   });
 
 };
@@ -1644,30 +1890,25 @@ ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
  * @param callback
  */
 ChatApplication.prototype.deleteMessage = function(id, callback) {
-  jqchat.ajax({
-    url: this.jzDelete,
-    data: {"room": this.room,
-      "user": this.username,
-      "messageId": id,
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
+  var thiss = this;
+  // Send message to server
+  requireChatCometd(function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-deleted",
+      "room": thiss.room,
+      "sender": thiss.username,
+      "dbName": thiss.dbName,
+      "token": thiss.token,
+      "data": {
+        "msgId": id
       }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
   });
-
 };
 
 /**
@@ -1705,32 +1946,26 @@ ChatApplication.prototype.deleteTeamRoom = function(callback) {
  * @param callback
  */
 ChatApplication.prototype.editMessage = function(id, newMessage, callback) {
-  jqchat.ajax({
-    type: 'POST',
-    url: this.jzEdit,
-    data: {"room": this.room,
-      "user": this.username,
-      "messageId": id,
-      "message": encodeURIComponent(newMessage),
-      "dbName": this.dbName
-    },
-    headers: {
-      'Authorization': 'Bearer ' + this.token
-    },
-
-    success:function(response){
-      //console.log("success");
-      if (typeof callback === "function") {
-        callback();
+  var thiss = this;
+  // Send message to server
+  requireChatCometd(function(cCometD) {
+    cCometD.publish('/service/chat', JSON.stringify({"event": "message-updated",
+      "room": thiss.room,
+      "sender": thiss.username,
+      "dbName": thiss.dbName,
+      "token": thiss.token,
+      "data": {
+        "msgId": id,
+        "msg": newMessage
       }
-    },
-
-    error:function (xhr, status, error){
-
-    }
-
+    }), function(publishAck) {
+      if (publishAck.successful) {
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
   });
-
 };
 
 /**
@@ -1756,7 +1991,6 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     },
 
     success:function(response){
-      //console.log("success");
       if (typeof callback === "function") {
         callback(response);
       }
@@ -1807,119 +2041,6 @@ ChatApplication.prototype.resize = function() {
 };
 
 /**
- * Init Chat Interval
- */
-ChatApplication.prototype.initChat = function() {
-
-  this.chatRoom = new ChatRoom(this.jzChatRead, this.jzChatSend, this.jzChatGetRoom, this.jzChatUpdateUnreadMessages, this.jzChatSendMeetingNotes, this.jzChatGetMeetingNotes, this.chatIntervalChat, this.isPublic, this.portalURI);
-  this.chatRoom.onRefresh(this.onRefreshCallback);
-  this.chatRoom.onShowMessages(this.onShowMessagesCallback);
-
-  var homeLinkHtml = jqchat("#HomeLink").html();
-  homeLinkHtml = '<a href="#" class="btn-home-responsive"></a>'+homeLinkHtml;
-  jqchat("#HomeLink").html(homeLinkHtml);
-
-  jqchat(".btn-home-responsive").on("click", function() {
-    var $leftNavigationTDContainer = jqchat(".LeftNavigationTDContainer");
-    if ($leftNavigationTDContainer.css("display")==="none") {
-      $leftNavigationTDContainer.animate({width: 'show', duration: 200});
-    } else {
-      $leftNavigationTDContainer.animate({width: 'hide', duration: 200});
-    }
-  });
-
-//  var $roomDetailButton = jqchat(".room-detail-button");
-//  if ($roomDetailButton.children().length === 0) {
-//    $roomDetailButton.hide();
-//  } else {
-//    $roomDetailButton.show();
-//  }
-
-  this.resize();
-  jqchat(window).resize(function() {
-    chatApplication.resize();
-  });
-
-  this.initChatPreferences();
-
-  this.chatOnlineInt = clearInterval(this.chatOnlineInt);
-  this.chatOnlineInt = setInterval(jqchat.proxy(this.refreshWhoIsOnline, this), this.chatIntervalUsers);
-  this.refreshWhoIsOnline();
-
-  if (this.username!==this.ANONIM_USER) setTimeout(jqchat.proxy(this.showSyncPanel, this), 1000);
-};
-
-
-
-/**
- * Init Chat Preferences
- */
-ChatApplication.prototype.initChatPreferences = function() {
-  this.showFavorites = true;
-  if (jzGetParam("chatShowFavorites"+this.username) === "false") this.showFavorites = false;
-  this.showPeople = true;
-  if (jzGetParam("chatShowPeople"+this.username) === "false") this.showPeople = false;
-  this.showOffline = false;
-  if (jzGetParam("chatShowOffline"+this.username) === "true") this.showOffline = true;
-  this.showSpaces = true;
-  if (jzGetParam("chatShowSpaces"+this.username) === "false") this.showSpaces = false;
-  this.showTeams = true;
-  if (jzGetParam("chatShowTeams"+this.username) === "false") this.showTeams = false;
-};
-
-/**
- * Init Chat Profile
- */
-ChatApplication.prototype.initChatProfile = function() {
-  //var thiss = chatApplication; // TODO: IMPROVE THIS
-
-  if (this.username===this.ANONIM_USER) {
-    var anonimFullname = jzGetParam("anonimFullname");
-    var anonimUsername = jzGetParam("anonimUsername");
-    var anonimEmail = jzGetParam("anonimEmail");
-
-    if (anonimUsername===undefined || anonimUsername===null) {
-      this.showDemoPanel();
-    } else {
-      this.createDemoUser(anonimFullname, anonimEmail);
-    }
-  } else {
-    jqchat.ajax({
-      url: this.jzInitChatProfile,
-      dataType: "json",
-      context: this,
-      success: function(data){
-        //console.log("Chat Profile Update : "+data.msg);
-        //console.log("Chat Token          : "+data.token);
-        //console.log("Chat Fullname       : "+data.fullname);
-        //console.log("Chat isAdmin        : "+data.isAdmin);
-        this.token = data.token;
-        this.fullname = data.fullname;
-        this.isAdmin = (data.isAdmin=="true");
-        this.isTeamAdmin = (data.isTeamAdmin=="true");
-
-        var $chatApplication = jqchat("#chat-application");
-        $chatApplication.attr("data-token", this.token);
-        var $labelUser = jqchat(".uiGrayLightBox  .label-user");
-        if(window.innerWidth > 767){
-            $labelUser.text(data.fullname);
-        }else{
-            $labelUser.removeAttr("href").text("Discussion");
-        }
-        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
-        this.refreshWhoIsOnline();
-        chatNotification.refreshStatusChat();
-
-      },
-      error: function (response){
-        //retry in 3 sec
-        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
-      }
-    });
-  }
-};
-
-/**
  * Maintain Session : Only on Fluid app context
  */
 ChatApplication.prototype.maintainSession = function() {
@@ -1927,7 +2048,6 @@ ChatApplication.prototype.maintainSession = function() {
     url: this.jzMaintainSession,
     context: this,
     success: function(response){
-      //console.log("Chat Session Maintained : "+response);
     },
     error: function(response){
       this.chatSessionInt = clearInterval(this.chatSessionInt);
@@ -2024,32 +2144,11 @@ ChatApplication.prototype.synGetAllUsers = function(filter, callback) {
 };
 
 /**
- * Activate Maintain Session Loop
+ * Load the list of rooms (left panel)
  */
-ChatApplication.prototype.activateMaintainSession = function() {
-  this.chatSessionInt = clearInterval(this.chatSessionInt);
-  this.chatSessionInt = setInterval(jqchat.proxy(this.maintainSession, this), this.chatIntervalSession);
-};
-
-
-ChatApplication.prototype.updateTotal = function(total) {
-  this.totalNotif = total;//Math.abs(this.getOfflineNotif())+Math.abs(this.getOnlineNotif())+Math.abs(this.getSpacesNotif());
-};
-
-ChatApplication.prototype.updateTitle = function() {
-  if (this.totalNotif>0) {
-    document.title = "Chat ("+this.totalNotif+")";
-  } else {
-    document.title = "Chat";
-  }
-};
-
-/**
- * Refresh Who Is Online : server call
- */
-ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullname) {
+ChatApplication.prototype.loadRooms = function(callback) {
   // Avoid having two whoIsOnline requests in parallel
-  if(this.whoIsOnlineRequest) {
+  if(this.loadRoomsRequest) {
     return;
   }
   var withSpaces = jzGetParam("chat.button.space", "true");
@@ -2065,98 +2164,94 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
   }
 
   if (this.username !== this.ANONIM_USER && this.token !== "---") {
-    this.whoIsOnlineRequest = jqchat.ajax({
-      url: this.jzChatWhoIsOnline,
-      dataType: "json",
-      data: { "user": this.username,
-        "filter": this.userFilter,
-        "isAdmin": this.isAdmin,
-        "timestamp": new Date().getTime(),
-        "dbName": this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      },
+    this.loadRoomsRequest = jqchat.ajax({
       context: this,
-      success: function(response){
-        this.whoIsOnlineRequest = null;
-        if (targetUser !== undefined && targetFullname !== undefined) {
-          this.targetUser = targetUser;
-          this.targetFullname = targetFullname;
-          jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-          jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-          jzStoreParam("lastTS"+this.username, "0");
-          this.firstLoad = true;
-        }
-//        console.log("refreshWhoIsOnline : "+this.targetUser+" : "+this.targetFullname);
+      url: '/rest/chat/api/1.0/user/onlineUsers',
+      dataType: 'text',
+      success: function(users){
+        jqchat.ajax({
+          context: this,
+          url: this.jzChatWhoIsOnline,
+          dataType: "json",
+          data: {
+            "user": this.username,
+            "onlineUsers": users,
+            "filter": this.userFilter,
+            "isAdmin": this.isAdmin,
+            "timestamp": new Date().getTime(),
+            "dbName": this.dbName
+          },
+          headers: {
+            'Authorization': 'Bearer ' + this.token
+          },
+          success: function(response){
+            this.loadRoomsRequest = null;
+            this.isLoaded = true;
+            this.hidePanel(".chat-error-panel");
+            this.hidePanel(".chat-sync-panel");
+            chatApplication.rooms = TAFFY(response.rooms);
 
-        var tmpMD5 = response.md5;
-        if (tmpMD5 !== this.whoIsOnlineMD5) {
-          var rooms = TAFFY(response.rooms);
-          this.whoIsOnlineMD5 = tmpMD5;
-          this.isLoaded = true;
-          this.hidePanel(".chat-error-panel");
-          this.hidePanel(".chat-sync-panel");
-          this.showRooms(rooms);
-
-          // reload room users if the panel is displayed
-          var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
-          if(roomUsersContainer.is(":visible")) {
-            this.loadRoomUsers();
-          }
-
-          this.updateTotal(Math.abs(response.unreadOffline)+Math.abs(response.unreadOnline)+Math.abs(response.unreadSpaces)+Math.abs(response.unreadTeams));
-          if (fromChromeApp) {
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-              chatNotification.refreshNotifDetails();
+            this.renderRooms();
+            if (callback !== undefined) {
+              callback();
             }
-          } else if (window.fluid!==undefined) {
-            if (this.totalNotif>0)
-              window.fluid.dockBadge = this.totalNotif;
-            else
-              window.fluid.dockBadge = "";
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
-              window.fluid.showGrowlNotification({
-                title: chatBundleData["exoplatform.chat.title"],
-                description: chatBundleData["exoplatform.chat.new.messages"],
-                priority: 1,
-                sticky: false,
-                identifier: "messages"
-              });
-            }
-          } else if (window.webkitNotifications!==undefined) {
-            if (this.totalNotif>this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
 
-              var havePermission = window.webkitNotifications.checkPermission();
-              if (havePermission == 0) {
-                // 0 is PERMISSION_ALLOWED
-                var notification = window.webkitNotifications.createNotification(
-                  '/chat/img/chat.png',
-                  chatBundleData["exoplatform.chat.title"],
-                  chatBundleData["exoplatform.chat.new.messages"]
-                );
+            this.totalNotif = (Math.abs(response.unreadOffline) + Math.abs(response.unreadOnline) + Math.abs(response.unreadSpaces) + Math.abs(response.unreadTeams));
+            if (fromChromeApp) {
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                chatNotification.showDetail();
+              }
+            } else if (window.fluid !== undefined) {
+              if (this.totalNotif > 0)
+                window.fluid.dockBadge = this.totalNotif;
+              else
+                window.fluid.dockBadge = "";
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                window.fluid.showGrowlNotification({
+                  title: chatBundleData["exoplatform.chat.title"],
+                  description: chatBundleData["exoplatform.chat.new.messages"],
+                  priority: 1,
+                  sticky: false,
+                  identifier: "messages"
+                });
+              }
+            } else if (window.webkitNotifications !== undefined) {
+              if (this.totalNotif > this.oldNotif && this.profileStatus !== "donotdisturb" && this.profileStatus !== "offline") {
+                var havePermission = window.webkitNotifications.checkPermission();
+                if (havePermission == 0) {
+                  // 0 is PERMISSION_ALLOWED
+                  var notification = window.webkitNotifications.createNotification(
+                    '/chat/img/chat.png',
+                    chatBundleData["exoplatform.chat.title"],
+                    chatBundleData["exoplatform.chat.new.messages"]
+                  );
 
-                notification.onclick = function () {
-                  window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
-                  notification.close();
+                  notification.onclick = function () {
+                    window.open("http://localhost:8080" + chatApplication.portalURI + "chat");
+                    notification.close();
+                  }
+                  notification.show();
+                } else {
+                  window.webkitNotifications.requestPermission();
                 }
-                notification.show();
-              } else {
-                window.webkitNotifications.requestPermission();
               }
             }
-          }
-          this.oldNotif = this.totalNotif;
-          this.updateTitle();
-        }
-        if (this.isTeamAdmin) {
-          jqchat(".btn-top-add-actions").css("display", "inline-block");
-        }
+            this.oldNotif = this.totalNotif;
+            if (this.totalNotif > 0) {
+              document.title = "Chat (" + this.totalNotif + ")";
+            } else {
+              document.title = "Chat";
+            }
 
-      },
-      error: function (response){
-        //console.log("chat-users :: "+response);
-        setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
+            if (this.isTeamAdmin) {
+              jqchat(".btn-top-add-actions").css("display", "inline-block");
+            }
+
+          },
+          error: function (response){
+            setTimeout(jqchat.proxy(this.errorOnRefresh, this), 1000);
+          }
+        });
       }
     });
   }
@@ -2166,21 +2261,13 @@ ChatApplication.prototype.refreshWhoIsOnline = function(targetUser, targetFullna
  * Show rooms : convert json to html
  * @param rooms : a json object
  */
-ChatApplication.prototype.showRooms = function(rooms) {
-  this.rooms = rooms;
+ChatApplication.prototype.renderRooms = function() {
+  var rooms = chatApplication.rooms;
+
   var roomPrevUser = "";
   var out = '<table class="table list-rooms">';
   var classArrow;
   var totalFavorites = 0, totalPeople = 0, totalSpaces = 0, totalTeams = 0;
-
-  // If the selected room is not present in the room list we cleanup the Chat Zone
-  // and stop refreshing the Chat data
-  if (rooms({room:chatApplication.room}).count()===0) {
-    chatApplication.chatRoom.clearInterval();
-    chatApplication.room="";
-    chatApplication.targetUser="";
-    chatApplication.chatRoom.emptyChatZone();
-  }
 
   /**
    * FAVORITES
@@ -2193,15 +2280,13 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "</td></tr>"
 
   var roomsFavorites = rooms();
-  roomsFavorites = roomsFavorites.filter({isFavorite:{is:"true"}});
-  roomsFavorites.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room) {
-//    console.log("FAVORITES : "+room.escapedFullname);
+  roomsFavorites = roomsFavorites.filter({isFavorite:{is: true}});
+  roomsFavorites.order("isFavorite desc, timestamp desc, fullName logical").each(function (room) {
     var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
     if (rhtml !== "") {
       roomPrevUser = room.user;
       if (chatApplication.showFavorites) {
         out += rhtml;
-        chatApplication.reloadCurrentItem(room);
       } else {
         if (Math.round(room.unreadTotal)>0) {
           totalFavorites += Math.round(room.unreadTotal);
@@ -2237,18 +2322,15 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "</td></tr>";
 
   var roomsPeople = rooms();
-  roomsPeople = roomsPeople.filter({status:{"!is":"space"}});
-  roomsPeople = roomsPeople.filter({status:{"!is":"team"}});
-  roomsPeople = roomsPeople.filter({isFavorite:{"!is":"true"}});
-  roomsPeople.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("PEOPLE : "+room.escapedFullname);
+  roomsPeople = roomsPeople.filter({type:{"is":"u"}});
+  roomsPeople = roomsPeople.filter({isFavorite:{"!is": true}});
+  roomsPeople.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<5 || chatApplication.showPeopleHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
         roomPrevUser = room.user;
         if (chatApplication.showPeople && (chatApplication.showOffline || (!chatApplication.showOffline && room.status!=="invisible"))) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalPeople += Math.round(room.unreadTotal);
@@ -2274,17 +2356,15 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "</td></tr>";
 
   var roomsTeams = rooms();
-  roomsTeams = roomsTeams.filter({status:{"is":"team"}});
-  roomsTeams = roomsTeams.filter({isFavorite:{"!is":"true"}});
-  roomsTeams.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("TEAMS : "+room.escapedFullname);
+  roomsTeams = roomsTeams.filter({type:{"is":"t"}});
+  roomsTeams = roomsTeams.filter({isFavorite:{"!is": true}});
+  roomsTeams.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<5 || chatApplication.showTeamsHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
         roomPrevUser = room.user;
         if (chatApplication.showTeams) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalTeams += Math.round(room.unreadTotal);
@@ -2310,17 +2390,15 @@ ChatApplication.prototype.showRooms = function(rooms) {
   out += "</td></tr>";
 
   var roomsSpaces = rooms();
-  roomsSpaces = roomsSpaces.filter({status:{"is":"space"}});
-  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is":"true"}});
-  roomsSpaces.order("isFavorite desc, timestamp desc, escapedFullname logical").each(function (room, roomnumber) {
-//    console.log("SPACES : "+room.escapedFullname);
+  roomsSpaces = roomsSpaces.filter({type:{"is":"s"}});
+  roomsSpaces = roomsSpaces.filter({isFavorite:{"!is": true}});
+  roomsSpaces.order("timestamp desc, fullName logical").each(function (room, roomnumber) {
     if (roomnumber<3 || chatApplication.showSpacesHistory || Math.round(room.unreadTotal)>0) {
       var rhtml = chatApplication.getRoomHtml(room, roomPrevUser);
       if (rhtml !== "") {
         roomPrevUser = room.user;
         if (chatApplication.showSpaces) {
           out += rhtml;
-          chatApplication.reloadCurrentItem(room);
         } else {
           if (Math.round(room.unreadTotal)>0) {
             totalSpaces += Math.round(room.unreadTotal);
@@ -2338,8 +2416,7 @@ ChatApplication.prototype.showRooms = function(rooms) {
 
   jqchat("#chat-users").html(out);
 
-  this.jQueryForUsersTemplate();
-  this.activateTootips();
+  jqchat("[data-toggle='tooltip']").tooltip();
 
   if (roomsPeople.count()<=5) {
     jqchat(".btn-top-history-people").hide();
@@ -2350,7 +2427,6 @@ ChatApplication.prototype.showRooms = function(rooms) {
   if (roomsSpaces.count()<=3) {
     jqchat(".btn-top-history-spaces").hide();
   }
-
 
   if (chatApplication.isTeamAdmin) {
     jqchat(".btn-top-add-actions").css("display", "inline-block");
@@ -2375,71 +2451,43 @@ ChatApplication.prototype.showRooms = function(rooms) {
     jqchat(".total-teams").html(totalTeams);
     jqchat(".total-teams").css("display", "inline-block");
   }
-
 };
 
-ChatApplication.prototype.reloadCurrentItem = function(room) {
-  if (chatApplication.room === room.room) {
-    var spaceFullName = jqchat("<div/>").html(room.escapedFullname).text();
-    if (chatApplication.targetFullname !== spaceFullName) {
-      jqchat('.target-user-fullname').text(spaceFullName);
-      chatApplication.targetUser = room.user;
-      chatApplication.targetFullname = spaceFullName;
-      chatApplication.loadRoom();
-    }
-  }
-}
 ChatApplication.prototype.getRoomHtml = function(room, roomPrevUser) {
   var out = "";
   if (room.user!==roomPrevUser) {
-    out += '<tr id="users-online-'+room.user.replace(".", "-")+'" class="users-online accordion-body">';
-    out += '<td class="td-status">';
-    out += '<i class="';
-    if (room.status === "space" || room.status === "team") {
-      out += 'uiIconChatTeam uiIconChatLightGray';
-    }
-    out += ' user-'+room.status+ '';
-    if (room.isFavorite == "true") {
-      out += ' user-favorite';
-    } else {
-      out += ' user-status';
-    }
-    out += '"';
-    out += '></i>';
-    out += '</td>';
-    out +=  '<td>';
+    out += '<tr id="users-online-' + room.user.replace(".", "-") + '" class="users-online accordion-body">';
+    out += '  <td class="td-status">';
+    out += '    <i class="' + (room.type !== "u" ? 'uiIconChatTeam uiIconChatLightGray' : '') + (room.isFavorite == true ? ' user-favorite' : ' user-status') + ' user-' + room.status + '"></i>';
+    out += '  </td>';
+    out += '  <td>';
     if (room.isActive=="true") {
-      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link" data-fullname="'+room.escapedFullname+'">'+ decodeRoomName(room.escapedFullname) +'</span>';
+      out += '<span user-data="'+room.user+'" room-data="'+room.room+'" class="room-link">'+ jqchat('<div />').text(room.fullName).html() +'</span>';
     } else {
       out += '<span class="room-inactive muted">'+room.user+'</span>';
     }
-    out += '</td>';
-    out += '<td>';
+    out += '  </td>';
+    out += '  <td>';
     if (Math.round(room.unreadTotal)>0) {
       out += '<span class="room-total badgeDefault badgePrimary mini" style="float:right;" data="'+room.unreadTotal+'">'+room.unreadTotal+'</span>';
     }
     else {
-      out+= '<i class="uiIconChatFavorite pull-right';
-      if (room.isFavorite == "true") {
-        out += ' user-favorite';
+      out += '<i class="uiIconChatFavorite pull-right' + (room.isFavorite == true ? ' user-favorite' : ' user-status');
+      out += '" user-data="' + room.user + '" data-toggle="tooltip" data-placement="bottom"';
+      if (room.isFavorite == true) {
+        out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"];
       } else {
-        out += ' user-status';
+        out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"];
       }
-      out +='" user-data="'+room.user+'" data-toggle="tooltip" data-placement="bottom"';
-      if (room.isFavorite == "true") {
-        out += ' title="' + chatBundleData["exoplatform.chat.remove.favorites"] + '"';
-      } else {
-        out += ' title="' + chatBundleData["exoplatform.chat.add.favorites"] + '"';
-      }
-      out+= '></i>';
+      out += '"></i>';
     }
-    out += '</td>';
+    out += '  </td>';
     out += '</tr>';
   }
   return out;
 };
 
-var enableMessageComposer = function(bool){
+ChatApplication.prototype.enableMessageComposer = function(bool){
   if(bool) {//enable
     jqchat("div.chat-message").css({//enable the chat footer again
       "pointer-events": "",
@@ -2452,189 +2500,180 @@ var enableMessageComposer = function(bool){
     });
   }
 }
-/**
- * Load Room : server call
- */
-function userRoomStatus(targetUser, status) {
-        jqchat("#userRoomStatus > i").attr("class", "");
-        jqchat("#userRoomStatus > i").addClass("user-"+status);
-}
 
-ChatApplication.prototype.loadRoom = function() {
-  //console.log("TARGET::"+this.targetUser+" ; ISADMIN::"+this.isAdmin);
-  if(this.configMode==true) {
-    this.configMode=false;//we're not on the config mode anymore
-    enableMessageComposer(true);
+ChatApplication.prototype.loadRoom = function(room) {
+  if (room) {
+    this.room = room;
+    var TAFFYRoom = this.rooms({room: room}).first();
+    this.targetUser = TAFFYRoom.user;
+    this.targetFullname = TAFFYRoom.fullName;
   }
 
-  /*
-    Retrieving the info related to the destination room used when clicking on the Desktop Notification's popup to show the correct Room.
-  */
-  if(localStorage.getItem('eXoChat.targetUser')!=""&&localStorage.getItem('eXoChat.targetFullname')!=""){
-    this.targetUser = localStorage.getItem('eXoChat.targetUser');
-    this.targetFullname = localStorage.getItem('eXoChat.targetFullname');
-    localStorage.setItem('eXoChat.targetFullname',"");
-    localStorage.setItem('eXoChat.targetUser',"");
+  if(this.configMode == true) {
+    this.configMode = false;//we're not on the config mode anymore
+    chatApplication.enableMessageComposer(true);
   }
 
   var thiss = this;
   this.chatRoom.owner = "";
-  if (this.targetUser!==undefined) {
-    // hide admin actions - we need to check if the current is the admin of the room before displaying them
-    jqchat("#chat-team-button-dropdown .only-admin").hide();
-    // reset room users panel
-    this.chatRoom.users = [];
-    jqchat("#room-users-list").html("");
-    jqchat("#room-users-title-nb-users").html("()");
+  if (this.targetUser === undefined) {
+    return;
+  }
 
-    if(this.chatRoom.lastCallOwner !== this.targetUser) {
-      // Disable composer while switching from a room to another
-      enableMessageComposer(false);
-      // Empty room messages and add loading icon
-      this.chatRoom.emptyChatZone(true);
+  // hide admin actions - we need to check if the current is the admin of the room before displaying them
+  jqchat("#chat-team-button-dropdown .only-admin").hide();
+  // reset room users panel
+  this.chatRoom.users = [];
+  jqchat("#room-users-list").html("");
+  jqchat("#room-users-title-nb-users").html("()");
 
-      // Add a flag for room loading operation with the id of the room
-      this.chatRoom.loadingNewRoom = true;
-      this.chatRoom.callingOwner = this.targetUser;
+  if(this.chatRoom.lastCallOwner !== this.targetUser) {
+    // Disable composer while switching from a room to another
+    chatApplication.enableMessageComposer(false);
+    // Empty room messages and add loading icon
+    this.chatRoom.emptyChatZone(true);
+
+    // Add a flag for room loading operation with the id of the room
+    this.chatRoom.setNewRoom(true);
+    this.chatRoom.callingOwner = this.targetUser;
+  }
+
+  jqchat(".users-online").removeClass("accordion-active");
+  if (this.isDesktopView()) {
+    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
+    var $targetUser = jqchat("#users-online-"+escapedTargetUser);
+    $targetUser.addClass("accordion-active");
+    jqchat(".room-total").removeClass("badgeWhite");
+    $targetUser.find(".room-total").addClass("badgeWhite");
+  }
+
+
+  jqchat("#room-detail").css("display", "block");
+  jqchat("#chat-team-button").css("display", "none");
+  jqchat("#chat-room-detail-fullname").text(this.targetFullname);
+
+  if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
+    jqchat(".btn-weemo-conf").css("display", "none");
+    jqchat(".btn-weemo-conf").addClass("disabled");
+    if (typeof weemoExtension !== 'undefined') {
+      jqchat(".btn-weemo").css("display", "block");
+      jqchat(".btn-weemo").addClass("disabled");
+      jqchat(".room-detail-button").show();
     }
+  }
 
-    jqchat(".users-online").removeClass("accordion-active");
-    if (this.isDesktopView()) {
-      var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
-      var $targetUser = jqchat("#users-online-"+escapedTargetUser);
-      $targetUser.addClass("accordion-active");
-      jqchat(".room-total").removeClass("badgeWhite");
-      $targetUser.find(".room-total").addClass("badgeWhite");
-    }
-
-
-    jqchat("#room-detail").css("display", "block");
-    jqchat("#chat-team-button").css("display", "none");
-    this.targetFullname = jqchat("<div/>").html(this.targetFullname).text();
-    jqchat(".target-user-fullname").text(this.targetFullname);
-
-
-    if(navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
-      jqchat(".btn-weemo-conf").css("display", "none");
-      jqchat(".btn-weemo-conf").addClass("disabled");
-      if (typeof weemoExtension !== 'undefined') {
-        jqchat(".btn-weemo").css("display", "block");
-        jqchat(".btn-weemo").addClass("disabled");
-        jqchat(".room-detail-button").show();
-      }
-    }
-    if (this.targetUser.indexOf("space-")===-1 && this.targetUser.indexOf("team-")===-1)
+  if (this.targetUser.indexOf("space-") === -1 && this.targetUser.indexOf("team-") === -1) {
     ////// USER
-    {
-      jqchat(".uiRoomUsersContainerArea").hide();
-      jqchat(".meeting-action-task").css("display", "block");
-      jqchat(".room-detail-avatar").show();
-      jqchat("#chat-team-button-dropdown").hide();
-      jqchat("#userRoomStatus").removeClass("hide").show();
-      jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/"+this.targetUser);
-      jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
-      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser  + "/avatar");
-    }
-    else if (this.targetUser.indexOf("team-")===-1)
+    jqchat(".uiRoomUsersContainerArea").hide();
+    jqchat(".meeting-action-task").css("display", "block");
+    jqchat(".room-detail-avatar").show();
+    jqchat("#chat-team-button-dropdown").hide();
+    jqchat("#userRoomStatus").removeClass("hide").show();
+    jqchat(".target-avatar-link").attr("href", chatApplication.portalURI + "profile/" + this.targetUser);
+    jqchat(".target-avatar-image").attr("onerror", "this.src='/chat/img/user-default.jpg';");
+    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/users/" + this.targetUser + "/avatar");
+
+  } else if (this.targetUser.indexOf("team-") === -1) {
     ////// SPACE
-    {
-      this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
-      var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
-      jqchat(".room-detail-avatar").show();
-      jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:"+spaceName+"/"+spaceName);
-      jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
-      jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/"+spaceName+"/avatar");
-    }
-    else
+    this.loadRoomUsers();
+    jqchat(".meeting-action-task").css("display", "block");
+    var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
+    jqchat(".room-detail-avatar").show();
+    jqchat(".target-avatar-link").attr("href", "/portal/g/:spaces:" + spaceName + "/" + spaceName);
+    jqchat(".target-avatar-image").attr("onerror", "this.src='/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png';");
+    jqchat(".target-avatar-image").attr("src", "/rest/v1/social/spaces/" + this.targetFullname + "/avatar");
+
+  } else {
     ////// TEAM
-    {
-
-      jqchat.ajax({
-        url: this.jzChatGetCreator,
-        data: {"room": this.targetUser,
-          "user": this.username,
-          "dbName": this.dbName
-        },
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
-        context: this,
-        success: function(response){
-          //console.log("SUCCESS::getRoom::"+response);
-          var creator = response;
-          this.chatRoom.owner = creator;
-          jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
-          jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
+    jqchat.ajax({
+      url: this.jzChatGetCreator,
+      data: {
+        "room": this.targetUser,
+        "user": this.username,
+        "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
+      context: this,
+      success: function(response){
+        var creator = response;
+        this.chatRoom.owner = creator;
+        jqchat(".team-button > .uiDropdownWithIcon").css("display", "block");
+        jqchat("#chat-team-button-dropdown").show();//we should always show the dropdown list when we click on a room/team
+        jqchat("#userRoomStatus").hide();
+        if (creator === this.username) {
+          jqchat("#chat-team-button-dropdown .only-admin").show();
           jqchat("#userRoomStatus").hide();
-          if (creator === this.username) {
-            jqchat("#chat-team-button-dropdown .only-admin").show();
-            jqchat("#userRoomStatus").hide();
-            jqchat("#chat-team-button").show();
-            jqchat("#team-delete-button").show();
-            jqchat("#chat-team-button-dropdown").show();
-            jqchat("#userRoomStatus").hide();
-          } else {
-            jqchat("#userRoomStatus").removeClass("hide").show();
-          }
-        },
-        error: function(xhr, status, error){
-          //console.log("ERROR::"+xhr.responseText);
+          jqchat("#chat-team-button").show();
+          jqchat("#team-delete-button").show();
+          jqchat("#chat-team-button-dropdown").show();
+          jqchat("#userRoomStatus").hide();
+        } else {
+          jqchat("#userRoomStatus").removeClass("hide").show();
         }
-      });
-      this.loadRoomUsers();
-      jqchat(".meeting-action-task").css("display", "block");
-      jqchat(".room-detail-avatar").show();
-      jqchat(".target-avatar-link").attr("href", "#");
-      jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
-    }
+      },
+      error: function(xhr, status, error){
+      }
+    });
 
-    if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
-      jqchat.ajax({
-        url: this.jzChatIsFavorite,
-        data: {"user": this.username,
-          "targetUser": this.targetUser,
-          "dbName": this.dbName
-        },
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
-        context: this,
-        success: function(response){
-          var $teamRemoveFromFavoritButton = jqchat("#team-remove-from-favorites-button");
-          var $teamAddToFavoritButton = jqchat("#team-add-to-favorites-button");
+    this.loadRoomUsers();
+    jqchat(".meeting-action-task").css("display", "block");
+    jqchat(".room-detail-avatar").show();
+    jqchat(".target-avatar-link").attr("href", "#");
+    jqchat(".target-avatar-image").attr("src", "/eXoSkin/skin/images/themes/default/social/skin/ShareImages/SpaceAvtDefault.png");
+  }
 
-          $teamRemoveFromFavoritButton.unbind('click');
-          $teamAddToFavoritButton.unbind('click');
-          var toggleFav = function() {
-              thiss.toggleFavorite(thiss.targetUser);
-              $teamRemoveFromFavoritButton.toggle();
-              $teamAddToFavoritButton.toggle();
-          }
-          $teamRemoveFromFavoritButton.click(toggleFav);
-          $teamAddToFavoritButton.click(toggleFav);
-          if (response == "true") {
-            $teamRemoveFromFavoritButton.show();
-            $teamAddToFavoritButton.hide();
-          } else {
-            $teamAddToFavoritButton.show();
-            $teamRemoveFromFavoritButton.hide();
-          }
-        },
-        error: function(xhr, status, error){
-          console.log("ERROR::"+xhr.responseText);
+  if (this.targetUser.indexOf("space-") >=0 || this.targetUser.indexOf("team-") >= 0) {
+    jqchat.ajax({
+      url: this.jzChatIsFavorite,
+      data: {"user": this.username,
+        "targetUser": this.targetUser,
+        "dbName": this.dbName
+      },
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
+      context: this,
+      success: function(response){
+        var $teamRemoveFromFavoritButton = jqchat("#team-remove-from-favorites-button");
+        var $teamAddToFavoritButton = jqchat("#team-add-to-favorites-button");
+
+        $teamRemoveFromFavoritButton.unbind('click');
+        $teamAddToFavoritButton.unbind('click');
+        var toggleFav = function() {
+            thiss.toggleFavorite(thiss.targetUser);
+            $teamRemoveFromFavoritButton.toggle();
+            $teamAddToFavoritButton.toggle();
         }
-      });
-    }
-
-    var thiss = this;
-    this.chatRoom.init(this.username, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
-      thiss.room = room;
-      var $msg = jqchat('#msg');
-      thiss.activateRoomButtons();
-      if (thiss.isDesktopView()) $msg.focus();
+        $teamRemoveFromFavoritButton.click(toggleFav);
+        $teamAddToFavoritButton.click(toggleFav);
+        if (response == "true") {
+          $teamRemoveFromFavoritButton.show();
+          $teamAddToFavoritButton.hide();
+        } else {
+          $teamAddToFavoritButton.show();
+          $teamRemoveFromFavoritButton.hide();
+        }
+      },
+      error: function(xhr, status, error){
+        console.log("ERROR::"+xhr.responseText);
+      }
     });
   }
+
+  this.chatRoom.id = this.room;
+  this.chatRoom.init(this.username, this.fullname, this.token, this.targetUser, this.targetFullname, this.isAdmin, this.dbName, function(room) {
+    chatApplication.room = room;
+    var $msg = jqchat('#msg');
+    chatApplication.activateRoomButtons();
+    if (chatApplication.isDesktopView()) $msg.focus();
+
+    // Clear the unread message number label if any
+    var room = chatApplication.rooms({room: room});
+    room.update({unreadTotal: 0});
+    chatApplication.renderRooms();
+  });
 };
 
 ChatApplication.prototype.activateRoomButtons = function() {
@@ -2666,169 +2705,12 @@ ChatApplication.prototype.onRefreshCallback = function(code) {
     }
 */
   }
-}
+};
 
-ChatApplication.prototype.onShowMessagesCallback = function(out) {
-
-  var $chats = jqchat("#chats");
-  // check if scroll was at max before the new message
-  var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
-  var scrollAtMax = ($chats.scrollTop() == scrollTopMax);
-  $chats.html('<span>' + out + '</span>');
+ChatApplication.prototype.onShowMessagesCallback = function() {
+  // highlight searched terms
   sh_highlightDocument();
-  // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
-  if (scrollAtMax) {
-    var newScrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
-    $chats.scrollTop(newScrollTopMax);
-  }
-
-  jqchat(".msg-text").mouseover(function() {
-    if (jqchat(".msg-actions", this).children().length > 0) {
-      jqchat(".msg-date", this).css("display", "none");
-      jqchat(".msg-actions", this).css("visibility", "");
-    }
-  });
-
-  jqchat(".msg-text").mouseout(function() {
-    jqchat(".msg-date", this).css("display", "");
-    jqchat(".msg-actions", this).css("visibility", "hide");
-  });
-
-  jqchat(".msg-action-quote").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgHtml = $uimsg.html();
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-    msgHtml = msgHtml.replace(/<br>/g, '\n');
-    var msgFullname = $uimsg.attr("data-fn");
-    jqchat("#msg").focus().val('').val("[quote="+msgFullname+"]"+msgHtml+" [/quote] ");
-
-  });
-
-  jqchat(".msg-action-delete").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgId = $uimsg.attr("data-id");
-    chatApplication.deleteMessage(msgId, function() {
-      chatApplication.chatRoom.refreshChat(true);
-    });
-    //if (msgHtml.endsWith("<br>")) msgHtml = msgHtml.substring(0, msgHtml.length-4);
-
-  });
-
-  jqchat(".msg-action-edit").on("click", function() {
-    var $uimsgdata = jqchat(this).siblings(".msg-data");
-    chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
-  });
-
-  jqchat(".msg-action-savenotes").on("click", function() {
-    var $uimsg = jqchat(this).siblings(".msg-data");
-    var msgTimestamp = $uimsg.attr("data-timestamp");
-
-    var options = {
-      type: "type-notes",
-      fromTimestamp: msgTimestamp,
-      fromUser: chatApplication.username,
-      fromFullname: chatApplication.fullname
-    };
-
-    var msg = "";
-
-    chatApplication.chatRoom.sendMessage(msg, options, "true");
-  });
-
-  jqchat(".send-meeting-notes").on("click", function () {
-    var $this = jqchat(this);
-    var $meetingNotes =  $this.closest(".msMeetingNotes");
-    $meetingNotes.animate({
-      opacity: "toggle"
-    }, 200, function() {
-      var room = $this.attr("data-room");
-      var from = $this.attr("data-from");
-      var to = $this.attr("data-to");
-      var id = $this.attr("data-id");
-
-      from = Math.round(from)-1;
-      to = Math.round(to)+1;
-      chatApplication.chatRoom.sendMeetingNotes(room, from, to, function (response) {
-        if (response === "sent") {
-          console.log("sent");
-          jqchat("#"+id).animate({
-            opacity: "toggle"
-          }, 200 , function() {
-            $meetingNotes.animate({
-              opacity: "toggle"
-            }, 3000);
-          });
-        }
-      });
-
-    });
-
-  });
-
-  jqchat(".save-meeting-notes").on("click", function () {
-    var $this = jqchat(this);
-    var $meetingNotes =  $this.closest(".msMeetingNotes");
-    $meetingNotes.animate({
-      opacity: "toggle"
-    }, 200, function() {
-      var room = $this.attr("data-room");
-      var from = $this.attr("data-from");
-      var to = $this.attr("data-to");
-      var id = $this.attr("data-id");
-
-      from = Math.round(from)-1;
-      to = Math.round(to)+1;
-      chatApplication.chatRoom.getMeetingNotes(room, from, to, function (response) {
-        if (response !== "ko") {
-//          console.log(response);
-          jqchat.ajax({
-            type: "POST",
-            url: chatApplication.jzSaveWiki,
-            data: {"targetFullname": chatApplication.targetFullname,
-              "content": response
-            },
-            context: this,
-            dataType: "json",
-            success: function(data){
-//              console.log(data.path);
-              if (data.path !== "") {
-                var baseUrl = location.protocol + "//" + location.hostname;
-                if (location.port) {
-                  baseUrl += ":" + location.port;
-                }
-                var options = {
-                  type: "type-link",
-                  link: baseUrl+data.path,
-                  from: chatApplication.username,
-                  fullname: chatApplication.fullname
-                };
-                var msg = chatBundleData["exoplatform.chat.meeting.notes"];
-
-                chatApplication.chatRoom.sendMessage(msg, options, "true");
-
-              }
-
-              jqchat("#"+id).animate({
-                opacity: "toggle"
-              }, 3000 , function() {
-                $meetingNotes.animate({
-                  opacity: "toggle"
-                }, 2000);
-                jqchat("#"+id).hide();
-              });
-            },
-            error: function(xhr, status, error){
-            }
-          });
-
-        }
-      });
-
-    });
-
-  });
-
-}
+};
 
 /**
  * Error On Refresh
@@ -2853,91 +2735,27 @@ ChatApplication.prototype.setModalToCenter = function(modalFormClass) {
   }
 };
 
-
-/**
- * return a status if a meeting is started or not :
- * -1 : no meeting in chat history
- * 0 : meeting terminated
- * 1 : obgoing meeting
- *
- * @param callback (callStatus)
- */
-ChatApplication.prototype.checkIfMeetingStarted = function (room, callback) {
-  if (room !== "" && room !== chatApplication.chatRoom.id) {
-    chatApplication.chatRoom.getChatMessages(room, function (msgs) {
-      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
-      var recordStatus = -1;
-      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "call-off") {
-          callStatus = 0;
-        } else if (type === "call-on") {
-          callStatus = 1;
-        }
-      }
-      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "type-meeting-stop") {
-          recordStatus = 0;
-        } else if (type === "type-meeting-start") {
-          recordStatus = 1;
-        }
-      }
-      if (callback !== undefined) {
-        callback(callStatus, recordStatus);
-      }
-    });
-  } else {
-    chatApplication.chatRoom.refreshChat(true, function (msgs) {
-      var callStatus = -1; // -1:no call ; 0:terminated call ; 1:ongoing call
-      var recordStatus = -1;
-
-      for (var i = 0; i < msgs.length - 1 && callStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "call-off") {
-          callStatus = 0;
-        } else if (type === "call-on") {
-          callStatus = 1;
-        }
-      }
-      for (var i = 0; i < msgs.length - 1 && recordStatus === -1; i++) {
-        var msg = msgs[i];
-        var type = msg.options.type;
-        if (type === "type-meeting-stop") {
-          recordStatus = 0;
-        } else if (type === "type-meeting-start") {
-          recordStatus = 1;
-        }
-      }
-      if (callback !== undefined) {
-        callback(callStatus, recordStatus);
-      }
-    });
-  }
-};
-
 /**
  * Toggle Favorite : server call
  * @param targetFav : the user or space to put/remove in favorite
  */
 ChatApplication.prototype.toggleFavorite = function(targetFav) {
   console.log("FAVORITE::"+targetFav);
+  var room = chatApplication.rooms({user: targetFav});
+
   jqchat.ajax({
     url: this.jzChatToggleFavorite,
-    data: {"targetUser": targetFav,
+    data: {
       "user": this.username,
-      "timestamp": new Date().getTime(),
-      "token": this.token
+      "token": this.token,
+      "targetUser": targetFav,
+      "favorite": !room.first().isFavorite
     },
     headers: {
       'Authorization': 'Bearer ' + this.token
     },
     context: this,
     success: function(response){
-      this.refreshWhoIsOnline();
     },
     error: function(xhr, status, error){
     }
@@ -2947,12 +2765,12 @@ ChatApplication.prototype.toggleFavorite = function(targetFav) {
 /**
  * Update Meeting Button status
  *
- * @param: status: 'started' or 'stoped'
+ * @param isStarted: true or false
  */
-ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
+ChatApplication.prototype.updateMeetingButtonStatus = function(isStarted) {
   var $icon = jqchat(".msButtonRecord").children("i");
   var $span = jqchat(".msButtonRecord").children("span");
-  if ('started' === status) {
+  if (isStarted) {
     $icon.addClass("uiIconChatRecordStop");
     $icon.removeClass("uiIconChatRecordStart");
   } else {
@@ -2966,182 +2784,6 @@ ChatApplication.prototype.updateMeetingButtonStatus = function(status) {
     .tooltip('fixTitle');
 
   $span.html(tooltipText);
-};
-
-/**
- * jQuery bindings on dom elements created by Who Is Online methods
- */
-ChatApplication.prototype.jQueryForUsersTemplate = function() {
-  var $targetUser;
-  var value = jzGetParam("lastUsername"+this.username);
-  var thiss = this;
-
-  if (value && this.firstLoad) {
-    //console.log("firstLoad with user : *"+value+"*");
-    this.targetUser = value;
-    this.targetFullname = jzGetParam("lastFullName"+this.username);
-    var escapedTargetUser = this.targetUser.replace(".", "-").replace("@", "\\@") ;
-    $targetUser = jqchat("#users-online-"+escapedTargetUser);
-    if (!$targetUser.length) {
-      this.targetUser = "";
-      this.targetFullname = "";
-      jzStoreParam("lastUsername"+this.username, this.targetUser, 60000);
-      jzStoreParam("lastFullName"+this.username, this.targetFullname, 60000);
-    } else {
-      if (this.username!==this.ANONIM_USER) {
-        this.loadRoom();
-      }
-      this.firstLoad = false;
-    }
-  }
-
-  if (this.isDesktopView() && $targetUser!==undefined) {
-    $targetUser.addClass("accordion-active");
-    jqchat(".room-total").removeClass("badgeWhite");
-    $targetUser.find(".room-total").addClass("badgeWhite");
-  }
-
-  jqchat(".header-room").on("click", function() {
-    if (jqchat(this).hasClass("header-favorites"))
-      chatApplication.showFavorites = !chatApplication.showFavorites;
-    else if (jqchat(this).hasClass("header-people"))
-      chatApplication.showPeople = !chatApplication.showPeople;
-    else if (jqchat(this).hasClass("header-spaces"))
-      chatApplication.showSpaces = !chatApplication.showSpaces;
-    else if (jqchat(this).hasClass("header-teams"))
-      chatApplication.showTeams = !chatApplication.showTeams;
-
-    jzStoreParam("chatShowFavorites"+chatApplication.username, chatApplication.showFavorites, 600000);
-    jzStoreParam("chatShowPeople"+chatApplication.username, chatApplication.showPeople, 600000);
-    jzStoreParam("chatShowSpaces"+chatApplication.username, chatApplication.showSpaces, 600000);
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
-
-    chatApplication.showRooms(chatApplication.rooms);
-
-  });
-
-  jqchat(".btn-add-team").on("click", function() {
-    chatApplication.showTeams = true;
-    jzStoreParam("chatShowTeams"+chatApplication.username, chatApplication.showTeams, 600000);
-    chatApplication.showRooms(chatApplication.rooms);
-
-    var $uitext = jqchat("#team-modal-name");
-    $uitext.val("");
-    $uitext.attr("data-id", "---");
-    jqchat(".team-user-label").parent().remove();
-    var $userResults = jqchat(".team-users-results");
-    $userResults.css("display", "none");
-    $userResults.html("");
-    jqchat("#team-add-user").val("");
-    uiChatPopupWindow.show("team-modal-form", true);
-    jqchat("#team-modal-form .add").css("display", "block");
-    jqchat("#team-modal-form .setting").css("display", "none");
-    $uitext.focus();
-
-    chatApplication.setModalToCenter('.team-modal');
-  });
-
-  jqchat("#chat-users .btn-history").on("click", function() {
-    var type = jqchat(this).attr("data-type");
-    if (type === "people") {
-      chatApplication.showPeople = true;
-      chatApplication.showPeopleHistory = !chatApplication.showPeopleHistory;
-      jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
-    } else if (type === "space") {
-      chatApplication.showSpaces = true;
-      chatApplication.showSpacesHistory = !chatApplication.showSpacesHistory;
-      jzStoreParam("chatShowSpaces"+chatApplication.username, true, 600000);
-    } else if (type === "team") {
-      chatApplication.showTeams = true;
-      chatApplication.showTeamsHistory = !chatApplication.showTeamsHistory;
-      jzStoreParam("chatShowTeams"+chatApplication.username, true, 600000);
-    }
-    chatApplication.showRooms(chatApplication.rooms);
-
-  });
-
-  jqchat("#chat-users .btn-offline").on("click", function() {
-    chatApplication.showPeople = true;
-    jzStoreParam("chatShowPeople"+chatApplication.username, true, 600000);
-    chatApplication.showOffline = !chatApplication.showOffline;
-    jzStoreParam("chatShowOffline"+chatApplication.username, chatApplication.showOffline, 600000);
-    chatApplication.showRooms(chatApplication.rooms);
-  });
-
-jqchat('#back').on("click", function() {
-
-    jqchat(".uiLeftContainerArea").addClass("displayContent");
-    jqchat(".uiLeftContainerArea").removeClass("hideContent");
-
-    jqchat(".uiGlobalRoomsContainer").addClass("hideContent").removeClass("displayContent");
-
-    setTimeout(function(){
-         jqchat(".uiGlobalRoomsContainer").css("display", "none");
-    }, 500);
-    jqchat("#chat-video-button").attr("style", "");
-});
-  jqchat('#chat-users .users-online > td:nth-child(1),#chat-users .users-online > td:nth-child(2)').on("click", function() {
-    if(window.innerWidth <= 767){
-
-        jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
-        jqchat('input#chat-search.input-with-value.span4').val('');
-        var filter = jqchat('input#chat-search.input-with-value.span4').val();
-        chatApplication.search(filter);
-
-
-        var $chatStatusPanel = jqchat(".chat-status-panel");
-
-        $chatStatusPanel.css("display", "none");
-        jqchat(" .chat-status-chat").parent().removeClass('active');
-
-        jqchat(".uiLeftContainerArea").removeClass("displayContent");
-        jqchat(".uiLeftContainerArea").addClass("hideContent");
-        jqchat(".uiGlobalRoomsContainer").css("display", "block");
-
-
-        setTimeout(function(){
-            jqchat(".uiGlobalRoomsContainer").addClass("displayContent").removeClass("hideContent");
-        }, 200);
-
-        $serachText = jqchat('#chat-search').attr('placeholder');
-        $serachText = $serachText.replace("@", "");
-        jqchat("#chat-search").attr("placeholder", $serachText);
-
-    }
-
-    thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
-    thiss.targetFullname = jqchat(".room-link:first",this).attr("data-fullname");
-
-    chatNotification.getStatus(thiss.targetUser, userRoomStatus);
-
-
-    thiss.loadRoom();
-    if (thiss.isMobileView()) {
-      jqchat(".right-chat").css("display", "block");
-      jqchat(".left-chat").css("display", "none");
-      jqchat(".room-name").html(thiss.targetFullname);
-    }
-  });
-
-  jqchat('#chat-users .users-online').on("mouseenter", function() {
-    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
-    $uiIconChatFavorite.css("display", "block");
-    $uiIconChatFavorite.css("margin-right", "1px");
-  });
-
-  jqchat('#chat-users .users-online').on("mouseleave", function() {
-    var $uiIconChatFavorite = jqchat(".uiIconChatFavorite", this);
-    $uiIconChatFavorite.css("display", "none");
-  });
-
-  jqchat('.user-status').on("click", function() {
-    var targetFav = jqchat(this).attr("user-data");
-    thiss.toggleFavorite(targetFav);
-  });
-  jqchat('#chat-users .user-favorite').on("click", function() {
-    var targetFav = jqchat(this).attr("user-data");
-    thiss.toggleFavorite(targetFav);
-  });
 };
 
 /**
@@ -3166,7 +2808,7 @@ ChatApplication.prototype.search = function(filter) {
     }
     this.userFilter = userFilter;
     this.filterInt = clearTimeout(this.filterInt);
-    this.filterInt = setTimeout(jqchat.proxy(this.refreshWhoIsOnline, this), 500);
+    this.filterInt = setTimeout(jqchat.proxy(this.loadRooms, this), 500);
   }
 };
 
@@ -3195,34 +2837,26 @@ ChatApplication.prototype.isDesktopView = function() {
 ChatApplication.prototype.setStatus = function(status, callback) {
 
   if (status !== undefined) {
-    // Update mongodb chat status
-
-    jqchat.ajax({
-      url: this.jzSetStatus,
-      data: { "user": this.username,
-        "status": status,
-        "timestamp": new Date().getTime(),
-        "dbName": this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      },
-      context: this,
-
-      success: function(response){
-        //console.log("SUCCESS:setStatus::"+response);
-        chatNotification.changeStatusChat(response);
-        if (typeof callback === "function") {
-          callback(response);
-        }
-
-      },
-      error: function(response){
-        chatNotification.changeStatusChat("offline");
-        if (typeof callback === "function") {
-          callback("offline");
-        }
-      }
+    // Send update status message (forward event to others client and update mongodb chat status)
+    var thiss = this;
+    requireChatCometd(function(cCometD) {
+        cCometD.publish('/service/chat', JSON.stringify({
+            "event": "user-status-changed",
+            "sender": thiss.username,
+            "room": thiss.username,
+            "ts": new Date().getTime(),
+            "dbName": thiss.dbName,
+            "token": thiss.token,
+            "data": {
+                "status": status
+            }
+        }), function(publishAck) {
+            if (publishAck.successful) {
+                if (typeof callback === "function") {
+                    callback(status);
+                }
+            }
+        })
     });
 
     // Update platform user status
@@ -3249,7 +2883,6 @@ ChatApplication.prototype.showHelp = function() {
 ChatApplication.prototype.showAsText = function() {
 
   this.chatRoom.showAsText(function(response) {
-    //console.log("SUCCESS:setStatus::"+response);
     jqchat("#text-modal-area").html(response);
     jqchat('#text-modal-area').on("click", function() {
       this.select();
@@ -3282,15 +2915,14 @@ ChatApplication.prototype.setStatusInvisible = function() {
  */
 ChatApplication.prototype.sendMessage = function(msg, callback) {
 
-  var options = {};
-  var context = {"msg": msg, "options": options, "callback": callback, "continueSend": true};
+  var context = {"msg": msg, "options": {}, "callback": callback, "continueSend": true};
 
   this.trigger("beforeSend", context);
   if (!context.continueSend) {
     return;
   }
   msg = context.msg;
-  options = context.options;
+  var options = context.options;
   callback = context.callback;
 
   var isSystemMessage = (msg.indexOf("/")===0 && msg.length>2) ;
@@ -3313,9 +2945,8 @@ ChatApplication.prototype.sendMessage = function(msg, callback) {
         this.chatRoom.sendMessage("", optionsStop, isSystemMessage, callback);
       }
 
-      ts = Math.round(new Date().getTime() / 1000);
       msg = chatBundleData["exoplatform.chat.call.terminated"];
-      options.timestamp = ts;
+      options.timestamp = Math.round(new Date().getTime() / 1000);
       options.type = "call-off";
       sendMessageToServer = true;
     } else if (msg.indexOf("/export")===0) {
@@ -3368,9 +2999,7 @@ ChatApplication.prototype.showSyncPanel = function() {
 };
 
 ChatApplication.prototype.showErrorPanel = function() {
-  this.whoIsOnlineMD5 = "";
   this.hidePanels();
-  //console.log("show-error-panel");
   var $chatErrorPanel = jqchat(".chat-error-panel");
   $chatErrorPanel.html(chatBundleData["exoplatform.chat.panel.error1"]+"<br/><br/>"+chatBundleData["exoplatform.chat.panel.error2"]);
   $chatErrorPanel.css("display", "block");
@@ -3378,7 +3007,6 @@ ChatApplication.prototype.showErrorPanel = function() {
 
 ChatApplication.prototype.showLoginPanel = function() {
   this.hidePanels();
-  //console.log("show-login-panel");
   var $chatLoginPanel = jqchat(".chat-login-panel");
   $chatLoginPanel.html(chatBundleData["exoplatform.chat.panel.login1"]+"<br><br><a href=\"#\" onclick=\"javascript:reloadWindow();\">"+chatBundleData["exoplatform.chat.panel.login2"]+"</a>");
   $chatLoginPanel.css("display", "block");
@@ -3407,7 +3035,6 @@ ChatApplication.prototype.showAboutPanel = function() {
 
 ChatApplication.prototype.showDemoPanel = function() {
   this.hidePanels();
-  //console.log("show-demo-panel");
   var $chatDemoPanel = jqchat(".chat-demo-panel");
   var intro = chatBundleData["exoplatform.chat.panel.demo"];
   if (this.isPublic) intro = chatBundleData["exoplatform.chat.panel.public"];
@@ -3458,7 +3085,6 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
             var isSpace = (targetUser.indexOf("space-") !== -1);
             var spaceOrTeamName = targetFullname.toLowerCase().split(" ").join("_");
 
-            jzStoreParam("isSpace", isSpace);
             weemoExtension.showVideoPopup(chatApplication.portalURI + 'videocallpopup?mode=host&isSpace=' + isSpace + "&spaceOrTeamName=" + spaceOrTeamName);
           }
         }
@@ -3486,7 +3112,7 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     }
   });
 
-  function cbGetConnectionStatus(targetUser, activity) {
+  chatNotification.getStatus(chatApplication.targetUser, function(targetUser, activity) {
     if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
       if (activity !== "offline" && activity !== "invisible") {
         jqchat(".btn-weemo").removeClass("disabled");
@@ -3496,12 +3122,10 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
         jqchat(".btn-weemo-conf").addClass("disabled");
       }
     } else {
-        jqchat(".btn-weemo").removeClass("disabled");
-        //jqchat(".btn-weemo-conf").removeClass("disabled");
+      jqchat(".btn-weemo").removeClass("disabled");
+      //jqchat(".btn-weemo-conf").removeClass("disabled");
     }
-  }
-
-  chatNotification.getStatus(chatApplication.targetUser, cbGetConnectionStatus);
+  });
 
   setTimeout(function () {
     chatApplication.displayVideoCallOnChatApp();
@@ -3564,81 +3188,91 @@ ChatApplication.prototype.loadRoomUsers = function() {
   var roomUsersContainer = jqchat(".uiRoomUsersContainerArea");
   if (this.targetUser !== undefined) {
     roomUsersContainer.show();
-	if(!roomUsersContainer.is(".room-users-collapsed")) {
-		roomUsersContainer.addClass("room-users-collapsed");//need a default class for responsive
-	}
 
-    var roomUsersList = jqchat("#room-users-list");
-    if(roomUsersList !== undefined) {
-      // fetch room users
-      chatApplication.getUsers(this.targetUser, function (jsonData) {
-        var users = TAFFY(jsonData.users);
-
-        // generate room users array
-        var roomUsers = [];
-        var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
-        sortedStatuses.forEach(function(status) {
-          users({status: status}).order("fullname").each(function (user) {
-            roomUsers.push(user);
-          });
-        });
-
-        // check if there are changes
-        var roomUserHasChanged = false;
-        if(roomUsers.length === thiss.chatRoom.users.length) {
-          roomUserHasChanged = !roomUsers.every(function(roomUser, index) {
-             return (roomUser.name == thiss.chatRoom.users[index].name
-              && roomUser.fullname == thiss.chatRoom.users[index].fullname
-              && roomUser.status == thiss.chatRoom.users[index].status);
-          });
-        } else {
-          roomUserHasChanged = true;
-        }
-
-        // if the room users have changed, update the panel
-        if(roomUserHasChanged === true) {
-          thiss.chatRoom.users = roomUsers;
-
-          // generate room users list DOM
-          var html = "";
-          roomUsers.forEach(function (user) {
-            html += thiss.renderRoomUser(user, thiss.showRoomOfflinePeople);
-          });
-          roomUsersList.html(html);
-        }
-
-        // User Profile Popup initialize
-        var portal = eXo.env.portal;
-        var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
-        var usersContainers = jqchat(roomUsersList).find('.room-user');
-        jqchat.each(usersContainers, function (idx, el) {
-          var userId = jqchat(el).attr('data-name');
-
-          jqchat(el).userPopup({
-            restURL: restUrl,
-            userId: userId,
-            labels: {
-              StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
-              Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
-              Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
-              CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
-              RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
-            },
-            content: false,
-            defaultPosition: "left",
-            keepAlive: true,
-            maxWidth: "240px"
-          });
-        });
-
-        // update nb of users in the room
-        jqchat("#room-users-title-nb-users").html("(" + (users().count() - 1) + ")");
-      }, false);
+    if(!roomUsersContainer.is(".room-users-collapsed")) {
+      roomUsersContainer.addClass("room-users-collapsed");//need a default class for responsive
     }
+
+    // fetch room users
+    chatApplication.getUsers(this.targetUser, function (jsonData) {
+      var roomUsers = jsonData.users;
+
+      // check if there are changes
+      var roomUserHasChanged = false;
+      if(roomUsers.length === thiss.chatRoom.users.length) {
+        roomUserHasChanged = !roomUsers.every(function(roomUser, index) {
+           return (roomUser.name == thiss.chatRoom.users[index].name
+            && roomUser.fullname == thiss.chatRoom.users[index].fullname
+            && roomUser.status == thiss.chatRoom.users[index].status);
+        });
+      } else {
+        roomUserHasChanged = true;
+      }
+
+      // if the room users have changed, update the panel
+      if(roomUserHasChanged === true) {
+        thiss.chatRoom.users = roomUsers;
+
+        // generate room users list DOM
+        thiss.renderRoomUsers();
+      }
+
+      // User Profile Popup initialize
+      var portal = eXo.env.portal;
+      var restUrl = window.location.origin + portal.context + '/' + portal.rest + '/social/people/getPeopleInfo/{0}.json';
+      var usersContainers = jqchat('#room-users-list .room-user');
+      jqchat.each(usersContainers, function (idx, el) {
+        var userId = jqchat(el).attr('data-name');
+
+        jqchat(el).userPopup({
+          restURL: restUrl,
+          userId: userId,
+          labels: {
+            StatusTitle: chatBundleData["exoplatform.chat.user.popup.status"],
+            Connect: chatBundleData["exoplatform.chat.user.popup.connect"],
+            Confirm: chatBundleData["exoplatform.chat.user.popup.confirm"],
+            CancelRequest: chatBundleData["exoplatform.chat.user.popup.cancel"],
+            RemoveConnection: chatBundleData["exoplatform.chat.user.popup.remove.connection"]
+          },
+          content: false,
+          defaultPosition: "left",
+          keepAlive: true,
+          maxWidth: "240px"
+        });
+      });
+
+      // update nb of users in the room
+      jqchat("#room-users-title-nb-users").html("(" + (thiss.chatRoom.users.length - 1) + ")");
+    }, false);
   } else {
     // hide room users since the room id is not defined
     roomUsersContainer.hide();
   }
+};
+
+/**
+ * Generate room users DOM
+ * @param roomUsers Users to render
+ * @returns {string} The DOM representing the user
+ */
+ChatApplication.prototype.renderRoomUsers = function() {
+  // sort room users by status
+  var users = TAFFY(chatApplication.chatRoom.users);
+  var sortedRoomUsers = [];
+  var sortedStatuses = ["available", "away", "donotdisturb", ["offline", "invisible"]];
+  sortedStatuses.forEach(function(status) {
+      users({status: status}).order("fullname").each(function (user) {
+          sortedRoomUsers.push(user);
+      });
+  });
+
+  var html = "";
+  sortedRoomUsers.forEach(function (user) {
+    if (user.name !== chatApplication.username) {
+      html += chatApplication.renderRoomUser(user, chatApplication.showRoomOfflinePeople);
+    }
+  });
+  jqchat("#room-users-list").html(html);
 };
 
 /**
@@ -3648,21 +3282,19 @@ ChatApplication.prototype.loadRoomUsers = function() {
  */
 ChatApplication.prototype.renderRoomUser = function(user, showOfflineUsers) {
   var html = "";
-  if (user.name !== chatApplication.username) {
-    html += "<div class='room-user' data-name='"+user.name+"'"
-    if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
-      html += "style='display: none;'";
-    }
-    html += ">";
-    html += "  <div class='msUserAvatar pull-left'>";
-    html += "    <span class='msAvatarLink avatarCircle'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/" + eXo.env.portal.rest +"/v1/social/users/" + user.name + "/avatar' alt='" + user.fullname + "'></span>";
-    html += "  </div>";
-    html += "  <div class='room-user-status pull-right'>";
-    html += "    <i class='user-" + user.status + "'></i>";
-    html += "  </div>";
-    html += "  <div class='room-user-name'>" + user.fullname + "</div>";
-    html += "</div>"
+  html += "<div class='room-user' data-name='"+user.name+"'"
+  if(!showOfflineUsers && (user.status == 'offline' || user.status == 'invisible')) {
+    html += "style='display: none;'";
   }
+  html += ">";
+  html += "  <div class='msUserAvatar pull-left'>";
+  html += "    <span class='msAvatarLink avatarCircle'><img onerror=\"this.src='/chat/img/user-default.jpg'\" src='/" + eXo.env.portal.rest +"/v1/social/users/" + user.name + "/avatar' alt='" + user.fullname + "'></span>";
+  html += "  </div>";
+  html += "  <div class='room-user-status pull-right'>";
+  html += "    <i class='user-" + user.status + "'></i>";
+  html += "  </div>";
+  html += "  <div class='room-user-name'>" + user.fullname + "</div>";
+  html += "</div>"
   return html;
 };
 

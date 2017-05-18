@@ -19,25 +19,16 @@
 
 package org.exoplatform.chat.services;
 
+import org.exoplatform.chat.model.UserBean;
+
 import java.util.List;
 import java.util.Map;
 
-import org.exoplatform.chat.model.UserBean;
-
-public interface TokenService
+public interface TokenStorage
 {
-  public static final String ANONIM_USER = "__anonim_";
+  boolean hasUserWithToken(String user, String token, String dbName);
 
-  public String getToken(String user);
+  void addUser(String user, String token, String dbName);
 
-  public boolean hasUserWithToken(String user, String token);
-
-  public boolean hasUserWithToken(String user, String token, String dbName);
-
-  public void addUser(String user, String token, String dbName);
-
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
-
-  public boolean isDemoUser(String user);
-
+  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 }

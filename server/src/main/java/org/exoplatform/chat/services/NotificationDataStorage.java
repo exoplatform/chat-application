@@ -23,7 +23,7 @@ import org.exoplatform.chat.model.NotificationBean;
 
 import java.util.List;
 
-public interface NotificationService
+public interface NotificationDataStorage
 {
   public static final String M_NOTIFICATIONS = "notifications";
 

@@ -1,5 +1,6 @@
 package org.exoplatform.chat.services.mongodb;
 
+import org.exoplatform.chat.services.NotificationServiceImpl;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -12,7 +13,7 @@ public class NotificationCleanupJob implements Job
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
     LOG.info("Job started");
-    NotificationServiceImpl.cleanupNotifications();
+    NotificationMongoDataStorage.cleanupNotifications();
     LOG.info("Job finished");
   }
 }

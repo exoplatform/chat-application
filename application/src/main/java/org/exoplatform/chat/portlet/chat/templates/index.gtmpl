@@ -2,10 +2,7 @@
   data-username="<%=user%>"
   data-token="<%=token%>"
   data-chat-server-url="<%=chatServerURL%>"
-  data-chat-interval-chat="<%=chatIntervalChat%>"
   data-chat-interval-session="<%=chatIntervalSession%>"
-  data-chat-interval-status="<%=chatIntervalStatus%>"
-  data-chat-interval-users="<%=chatIntervalUsers%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
   data-public-mode="<%=publicMode%>"
   data-public-mode-enabled="<%=publicModeEnabled%>"
@@ -457,8 +454,7 @@
 <div id="team-modal-form" class="uiPopup hide team-modal">
   <div class="popupHeader clearfix">
     <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
-    <span class="PopupTitle popupTitle setting">&{exoplatform.chat.team.settings.title}</span>
-    <span class="PopupTitle popupTitle add">&{exoplatform.chat.team.add.title}</span>
+    <span class="PopupTitle popupTitle"></span>
   </div>
 
   <div class="PopupContent popupContent">

@@ -19,61 +19,51 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.*;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.TokenService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
-@Named("chatService")
-@ApplicationScoped
-public class ChatServiceImpl implements org.exoplatform.chat.services.ChatService
-{
+import static org.exoplatform.chat.services.ChatService.*;
 
-  private static final Logger LOG = Logger.getLogger("ChatService");
+@Named("chatStorage")
+@ApplicationScoped
+@Singleton
+public class ChatMongoDataStorage implements ChatDataStorage {
+
+  private static final Logger LOG = Logger.getLogger("ChatMongoDataStorage");
+
+  public static final String M_ROOM_PREFIX = "messages_room_";
+  public static final String M_ROOMS_COLLECTION = "rooms";
 
   private long readMillis;
   private int readTotalJson, readTotalTxt;
 
   @Inject
-  private UserService userService;
+  private UserDataStorage userDataStorage;
 
-  public ChatServiceImpl()
-  {
+  public ChatMongoDataStorage() {
     long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
-    readMillis = readDays*24*60*60*1000;
+    readMillis = readDays * 24 * 60 * 60 * 1000;
     readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
     readTotalTxt = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_TXT));
   }
 
-  private DB db(String dbName)
-  {
+  private DB db(String dbName) {
     if (StringUtils.isEmpty(dbName)) {
       return ConnectionManager.getInstance().getDB();
     } else {
@@ -81,15 +71,17 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
   }
 
-  public void write(String message, String user, String room, String isSystem, String dbName)
-  {
+  public void write(String message, String user, String room, String isSystem, String dbName) {
     write(message, user, room, isSystem, null, dbName);
   }
 
-  public void write(String message, String user, String room, String isSystem, String options, String dbName)
-  {
+  public void write(String message, String user, String room, String isSystem, String options, String dbName) {
+    save(message, user, room, isSystem, options, dbName);
+  }
+
+  public String save(String message, String user, String room, String isSystem, String options, String dbName) {
     String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+roomType);
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
@@ -106,8 +98,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     doc.put("timestamp", System.currentTimeMillis());
     doc.put("isSystem", isSystem);
     doc.put("roomId", room);
-    if (options!=null)
-    {
+    if (options != null) {
       options = options.replaceAll("<", "&lt;");
       options = options.replaceAll(">", "&gt;");
       doc.put("options", options);
@@ -115,19 +106,19 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     coll.insert(doc);
 
     this.updateRoomTimestamp(room, dbName);
+
+    return doc.get("_id").toString();
   }
 
-  public void delete(String room, String user, String messageId, String dbName)
-  {
+  public void delete(String room, String user, String messageId, String dbName) {
     String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+roomType);
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", new ObjectId(messageId));
     query.put("user", user);
     query.put("roomId", room);
     DBCursor cursor = coll.find(query);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       DBObject dbo = cursor.next();
       dbo.put("message", TYPE_DELETED);
       dbo.put("type", TYPE_DELETED);
@@ -148,10 +139,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       return null;
     RoomBean room = new RoomBean();
     room.setRoom((String) dbRoom.get("_id"));
-    room.setTeam(true);
-    room.setFullname((String) dbRoom.get("team"));
+    room.setFullName((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
-    long timestamp = -1;
+    room.setType((String) dbRoom.get("type"));
     if (dbRoom.containsField("timestamp")) {
       room.setTimestamp((Long) dbRoom.get("timestamp"));
     }
@@ -164,11 +154,11 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
       LOG.warning("No room with id [" + roomId + "] available to delete");
       return;
     }
-    if (!room.isTeam()) {
+    if (!room.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
       LOG.warning("The room with id [" + roomId + "] is not a Team Room so it won't be deleted.");
       return;
     }
-    LOG.info("Deleting Team Chat Room [" + room.getFullname() + "] (id:" + room.getRoom() + ")");
+    LOG.info("Deleting Team Chat Room [" + room.getFullName() + "] (id:" + room.getRoom() + ")");
     // Check if the requester is the owner of the Team Chat Room
     if (user == null || room.getUser().equals(user) == false) {
       LOG.warning("The user [" + user + "] is not the owner of the room with id [" + roomId + "] so this room won't be deleted.");
@@ -183,8 +173,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     LOG.info("Messages of room [" + roomId + "] deleted");
 
     // Remove the Team Chat Room from all the users
-    List<String> users = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
-    userService.removeTeamUsers(roomId, users, dbName);
+    List<String> users = userDataStorage.getUsersFilterBy(null, roomId, TYPE_ROOM_TEAM, dbName);
+    userDataStorage.removeTeamUsers(roomId, users, dbName);
     LOG.info("All users removed from the team room [" + roomId + "]");
 
     // Delete the Team Chat Room
@@ -195,10 +185,9 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     LOG.info("Team room [" + roomId + "] deleted");
   }
 
-  public void edit(String room, String user, String messageId, String message, String dbName)
-  {
+  public void edit(String room, String user, String messageId, String message, String dbName) {
     String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+roomType);
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
@@ -213,8 +202,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     query.put("user", user);
     query.put("roomId", room);
     DBCursor cursor = coll.find(query);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       DBObject dbo = cursor.next();
       dbo.put("message", message);
       dbo.put("type", TYPE_EDITED);
@@ -223,19 +211,15 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     }
   }
 
-  public String read(String room, UserService userService, String dbName)
-  {
-    return read(room, userService, false, null, null, dbName);
+  public String read(String room, String dbName) {
+    return read(room, false, null, null, dbName);
   }
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, String dbName)
-  {
-    return read(room, userService, isTextOnly, fromTimestamp, null, dbName);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName) {
+    return read(room, isTextOnly, fromTimestamp, null, dbName);
   }
 
-  public String read(String room, UserService userService, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
-    StringBuilder sb = new StringBuilder();
-
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
     SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
     SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
     Calendar calendar = Calendar.getInstance();
@@ -245,142 +229,98 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     Date today = calendar.getTime();
 
     String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+roomType);
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
 
     BasicDBObject query = new BasicDBObject();
     query.put("roomId", room);
-    long from = (fromTimestamp!=null) ? fromTimestamp : System.currentTimeMillis() - readMillis;
+    long from = (fromTimestamp != null) ? fromTimestamp : System.currentTimeMillis() - readMillis;
     BasicDBObject tsobj = new BasicDBObject("$gt", from);
-    if (toTimestamp!=null)
-    {
+    if (toTimestamp != null) {
       tsobj.append("$lt", toTimestamp);
     }
-    BasicDBObject ts = new BasicDBObject("timestamp",tsobj);
-    BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp",tsobj);
+    BasicDBObject ts = new BasicDBObject("timestamp", tsobj);
+    BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp", tsobj);
     query.put("$or", new BasicDBObject[]{ts, updts});
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
-    int limit = (isTextOnly)?readTotalTxt:readTotalJson;
+    int limit = (isTextOnly) ? readTotalTxt : readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
-    if (!cursor.hasNext())
-    {
-      if (isTextOnly)
+    StringBuilder sb = new StringBuilder();
+    if (!cursor.hasNext()) {
+      if (isTextOnly) {
         sb.append("no messages");
-      else
+      } else {
         sb.append("{\"room\": \"").append(room).append("\",\"messages\": []}");
-    }
-    else
-    {
+      }
+    } else {
+      // Just being used as a local cache
       Map<String, UserBean> users = new HashMap<String, UserBean>();
 
-      String timestamp, user, fullname, email, msgId, date;
       boolean first = true;
-
-      while (cursor.hasNext())
-      {
+      JSONObject data = new JSONObject();
+      while (cursor.hasNext()) {
         DBObject dbo = cursor.next();
-        timestamp = dbo.get("timestamp").toString();
+        String timestamp = dbo.get("timestamp").toString();
         if (first) //first element (most recent one)
         {
-          if (!isTextOnly)
-          {
-            sb.append("{\"room\": \"").append(room).append("\",");
-            sb.append("\"timestamp\": \"").append(timestamp).append("\",");
-            sb.append("\"messages\": [");
+          if (!isTextOnly) {
+            data.put("room", room);
+            data.put("timestamp", timestamp);
+            data.put("messages", new JSONArray());
           }
         }
 
-        user = dbo.get("user").toString();
-        msgId = dbo.get("_id").toString();
+        String user = dbo.get("user").toString();
         UserBean userBean = users.get(user);
-        if (userBean==null)
-        {
-          userBean = userService.getUser(user, dbName);
+        if (userBean == null) {
+          userBean = userDataStorage.getUser(user, dbName);
           users.put(user, userBean);
         }
-        fullname = userBean.getFullname();
-        email = userBean.getEmail();
+        String fullName = userBean.getFullname();
 
-        date = "";
-        try
-        {
-          Date date1 = new Date(Long.parseLong(timestamp));
-          if (date1.before(today) || isTextOnly) {
+        if (isTextOnly) {
+          String date = "";
+          try {
+            Date date1 = new Date(Long.parseLong(timestamp));
             date = formatterDate.format(date1);
-          } else {
-            date = formatter.format(date1);
+          } catch (Exception e) {
+            LOG.info("Message Date Format Error : " + e.getMessage());
           }
-        }
-        catch (Exception e)
-        {
-          LOG.info("Message Date Format Error : "+e.getMessage());
-        }
 
-        if (isTextOnly)
-        {
           StringBuilder line = new StringBuilder();
           line.append("[").append(date).append("] ");
           String message = dbo.get("message").toString();
           if (TYPE_DELETED.equals(message)) message = TYPE_DELETED;
-          if ("true".equals(dbo.get("isSystem")))
-          {
+          if ("true".equals(dbo.get("isSystem"))) {
             line.append("System Message: ");
-            if (message.endsWith("<br/>")) message = message.substring(0, message.length()-5);
+            if (message.endsWith("<br/>")) message = message.substring(0, message.length() - 5);
             line.append(message).append("\n");
-          }
-          else
-          {
-            line.append(fullname).append(": ");
+          } else {
+            line.append(fullName).append(": ");
             message = message.replaceAll("<br/>", "\n");
             line.append(message).append("\n");
           }
           sb.insert(0, line);
-        }
-        else
-        {
-          if (!first)sb.append(",");
-          sb.append("{\"id\": \"").append(msgId).append("\",");
-          sb.append("\"timestamp\": ").append(timestamp).append(",");
-          if (dbo.containsField("lastUpdatedTimestamp")) {
-            sb.append("\"lastUpdatedTimestamp\": ").append(dbo.get("lastUpdatedTimestamp").toString()).append(",");
-          }
-          sb.append("\"user\": \"").append(user).append("\",");
-          sb.append("\"fullname\": \"").append(fullname).append("\",");
-          sb.append("\"email\": \"").append(email).append("\",");
-          sb.append("\"date\": \"").append(date).append("\",");
-          sb.append("\"message\": \"").append(StringEscapeUtils.escapeJson(dbo.get("message").toString())).append("\",");
-          if (dbo.containsField("options"))
-          {
-            String options = dbo.get("options").toString();
-            if (options.startsWith("{"))
-              sb.append("\"options\": ").append(options).append(",");
-            else
-              sb.append("\"options\": \"").append(options).append("\",");
-          }
-          else
-          {
-            sb.append("\"options\": \"\",");
-          }
-          sb.append("\"type\": \"").append(dbo.get("type")).append("\",");
-          sb.append("\"isSystem\": \"").append(dbo.get("isSystem")).append("\"}");
+        } else {
+          MessageBean msg = toMessageBean(dbo);
+          msg.setFullName(fullName);
+
+          ((JSONArray)data.get("messages")).add(msg.toJSONObject());
         }
 
         first = false;
       }
 
-      if (!isTextOnly)
-      {
-        sb.append("]}");
+      if (!isTextOnly) {
+        sb.append(data.toJSONString());
       }
     }
 
     return sb.toString();
-
   }
 
   public MessageBean getMessage(String roomId, String messageId, String dbName) {
-    MessageBean message = null;
 
     String roomType = getTypeRoomChat(roomId, dbName);
 
@@ -391,26 +331,21 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     query.put("_id", new ObjectId(messageId));
 
     DBObject object = coll.findOne(query);
-    if(object != null) {
-      message = new MessageBean();
-      message.setUser(object.get("user").toString());
-      message.setMessage(object.get("message").toString());
-      message.setDate(object.get("timestamp").toString());
+    if (object != null) {
+      return toMessageBean(object);
+    } else {
+      return null;
     }
-
-    return message;
   }
 
-  private void updateRoomTimestamp(String room, String dbName)
-  {
+  private void updateRoomTimestamp(String room, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       DBObject dbo = cursor.next();
       dbo.put("timestamp", System.currentTimeMillis());
       coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
@@ -418,9 +353,8 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   }
 
-  private void ensureIndexInRoom(String type, String dbName)
-  {
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX+type);
+  private void ensureIndexInRoom(String type, String dbName) {
+    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + type);
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
     coll.insert(doc);
@@ -428,8 +362,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     coll.remove(doc);
   }
 
-  public String getSpaceRoom(String space, String dbName)
-  {
+  public String getSpaceRoom(String space, String dbName) {
     String room = ChatUtils.getRoomId(space);
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
 
@@ -437,15 +370,14 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext())
-    {
+    if (!cursor.hasNext()) {
       try {
         basicDBObject.put("space", space);
         basicDBObject.put("type", TYPE_ROOM_SPACE);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_SPACE, dbName);
       } catch (MongoException me) {
-        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
@@ -460,8 +392,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("shortName", name);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       room = doc.get("_id").toString();
     }
@@ -477,16 +408,16 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext())
-    {
+    if (!cursor.hasNext()) {
       try {
         basicDBObject.put("team", team);
         basicDBObject.put("user", user);
         basicDBObject.put("type", TYPE_ROOM_TEAM);
+        basicDBObject.put("timestamp", System.currentTimeMillis());
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_TEAM, dbName);
       } catch (MongoException me) {
-        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
@@ -501,15 +432,14 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext())
-    {
+    if (!cursor.hasNext()) {
       try {
         basicDBObject.put("identifier", identifier);
         basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_EXTERNAL, dbName);
       } catch (MongoException me) {
-        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
@@ -517,8 +447,7 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
   }
 
   public String getTeamCreator(String room, String dbName) {
-    if (room.indexOf(ChatService.TEAM_PREFIX)==0)
-    {
+    if (room.indexOf(ChatService.TEAM_PREFIX) == 0) {
       room = room.substring(ChatService.TEAM_PREFIX.length());
     }
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
@@ -528,13 +457,12 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       try {
         DBObject dbo = cursor.next();
         creator = dbo.get("user").toString();
       } catch (MongoException me) {
-        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
@@ -548,16 +476,14 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext())
-    {
+    if (cursor.hasNext()) {
       DBObject dbo = cursor.next();
       dbo.put("team", name);
       coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
     }
   }
 
-  public String getRoom(List<String> users, String dbName)
-  {
+  public String getRoom(List<String> users, String dbName) {
     Collections.sort(users);
     String room = ChatUtils.getRoomId(users);
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
@@ -566,36 +492,34 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("_id", room);
 
     DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext())
-    {
+    if (!cursor.hasNext()) {
       try {
         basicDBObject.put("users", users);
         basicDBObject.put("type", TYPE_ROOM_USER);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_USER, dbName);
       } catch (MongoException me) {
-        LOG.warning(me.getCode()+" : "+room+" : "+me.getMessage());
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
     return room;
   }
-  
-  public String getTypeRoomChat(String roomId, String dbName){
+
+  public String getTypeRoomChat(String roomId, String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
     Object roomType = null;
-    while (cursor.hasNext()){
-     DBObject doc = cursor.next();
-     roomType = doc.get("type");
+    while (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      roomType = doc.get("type");
     }
     return roomType.toString();
-    }
+  }
 
-  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName)
-  {
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     String roomId = null;
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
@@ -604,27 +528,25 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     basicDBObject.put("users", user);
 
     DBCursor cursor = coll.find(basicDBObject);
-    while (cursor.hasNext())
-    {
+    while (cursor.hasNext()) {
       DBObject dbo = cursor.next();
       roomId = dbo.get("_id").toString();
       long timestamp = -1;
       if (dbo.containsField("timestamp")) {
-        timestamp = ((Long)dbo.get("timestamp")).longValue();
+        timestamp = ((Long) dbo.get("timestamp")).longValue();
       }
-      List<String> users = ((List<String>)dbo.get("users"));
+      List<String> users = ((List<String>) dbo.get("users"));
       users.remove(user);
-      if (users.size()>0 && !user.equals(users.get(0)))
-      {
+      if (users.size() > 0 && !user.equals(users.get(0))) {
         String targetUser = users.get(0);
         boolean isDemoUser = tokenService.isDemoUser(targetUser);
-        if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser))))
-        {
+        if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser)))) {
           RoomBean roomBean = new RoomBean();
           roomBean.setRoom(roomId);
           roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId, dbName));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
+          roomBean.setType((String) dbo.get("type"));
           rooms.add(roomBean);
         }
       }
@@ -633,137 +555,119 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return rooms;
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName) {
-    return getRooms(user, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, userService, tokenService, dbName);
-  }
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
+    List<RoomBean> rooms;
+    UserBean userBean = userDataStorage.getUser(user, true, dbName);
+    int unreadOffline = 0, unreadOnline = 0;
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, UserService userService, TokenService tokenService, String dbName)
-  {
-    List<RoomBean> rooms = new ArrayList<RoomBean>();
-    List<RoomBean> roomsOffline = new ArrayList<RoomBean>();
-    UserBean userBean = userService.getUser(user, true, dbName);
-    int unreadOffline=0, unreadOnline=0, unreadSpaces=0, unreadTeams=0;
-
-    HashMap<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, limit);
-
-    rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
-    if (isAdmin)
-      rooms.addAll(this.getExistingRooms(UserServiceImpl.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService, dbName));
-
-    for (RoomBean roomBean:rooms)
-    {
-      String targetUser = roomBean.getUser();
-      roomBean.setFavorite(userBean.isFavorite(targetUser));
-
-      if (availableUsers.keySet().contains(targetUser))
-      {
-        UserBean targetUserBean = availableUsers.get(targetUser);
-        roomBean.setFullname(targetUserBean.getFullname());
-        roomBean.setStatus(targetUserBean.getStatus());
-        roomBean.setAvailableUser(true);
-        availableUsers.remove(targetUser);
-        if (roomBean.getUnreadTotal()>0)
-          unreadOnline += roomBean.getUnreadTotal();
+    if (withUsers) {
+      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
+      if (isAdmin) {
+        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService, dbName));
       }
-      else
-      {
-        UserBean targetUserBean = userService.getUser(targetUser, dbName);
-        roomBean.setFullname(targetUserBean.getFullname());
-        roomBean.setAvailableUser(false);
-        if (!withOffline)
-          roomsOffline.add(roomBean);
-        if (roomBean.getUnreadTotal()>0)
-          unreadOffline += roomBean.getUnreadTotal();
 
+      Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, onlineUsers, dbName, withUsers, withPublic, isAdmin, limit);
+      List<RoomBean> roomsOffline = new ArrayList<>();
+
+      for (RoomBean roomBean : rooms) {
+        String targetUser = roomBean.getUser();
+        roomBean.setFavorite(userBean.isFavorite(targetUser));
+
+        if (availableUsers.keySet().contains(targetUser)) {
+          UserBean targetUserBean = availableUsers.remove(targetUser);
+          roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setStatus(targetUserBean.getStatus());
+          roomBean.setAvailableUser(true);
+          if (roomBean.getUnreadTotal() > 0)
+            unreadOnline += roomBean.getUnreadTotal();
+        } else {
+          UserBean targetUserBean = userDataStorage.getUser(targetUser, dbName);
+          roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setAvailableUser(false);
+
+          if (!withOffline) {
+            roomsOffline.add(roomBean);
+          }
+          if (roomBean.getUnreadTotal() > 0) {
+            unreadOffline += roomBean.getUnreadTotal();
+          }
+        }
       }
-    }
 
-    if (withUsers)
-    {
-      if (!withOffline)
-      {
-        for (RoomBean roomBean:roomsOffline)
-        {
+      if (!withOffline) {
+        for (RoomBean roomBean : roomsOffline) {
           rooms.remove(roomBean);
         }
       }
 
-      for (UserBean availableUser: availableUsers.values())
-      {
-        RoomBean roomBean = new RoomBean();
-        roomBean.setUser(availableUser.getName());
-        roomBean.setFullname(availableUser.getFullname());
-        roomBean.setStatus(availableUser.getStatus());
-        roomBean.setAvailableUser(true);
-        roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
-        String status = roomBean.getStatus();
-        if (withOffline || (!withOffline && !UserServiceImpl.STATUS_INVISIBLE.equals(roomBean.getStatus()) && !UserServiceImpl.STATUS_OFFLINE.equals(roomBean.getStatus())))
-        {
+      for (UserBean availableUser : availableUsers.values()) {
+        String status = availableUser.getStatus();
+        if (withOffline || (!withOffline && !UserMongoDataStorage.STATUS_INVISIBLE.equals(status) && !UserMongoDataStorage.STATUS_OFFLINE.equals(status))) {
+          RoomBean roomBean = new RoomBean();
+          roomBean.setUser(availableUser.getName());
+          roomBean.setFullName(availableUser.getFullname());
+          roomBean.setStatus(availableUser.getStatus());
+          roomBean.setAvailableUser(true);
+          roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
+          roomBean.setType(ChatService.TYPE_ROOM_USER);
           rooms.add(roomBean);
         }
       }
-    }
-    else
-    {
+    } else {
       rooms = new ArrayList<RoomBean>();
     }
 
-    List<SpaceBean> spaces = userService.getSpaces(user, dbName);
-    for (SpaceBean space:spaces)
-    {
-      RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser(SPACE_PREFIX+space.getRoom());
-      roomBeanS.setRoom(space.getRoom());
-      roomBeanS.setFullname(space.getDisplayName());
-      roomBeanS.setStatus(UserService.STATUS_SPACE);
-      roomBeanS.setTimestamp(space.getTimestamp());
-      roomBeanS.setAvailableUser(true);
-      roomBeanS.setSpace(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
-      if (roomBeanS.getUnreadTotal()>0)
-        unreadSpaces += roomBeanS.getUnreadTotal();
-      roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
-      if (withSpaces)
-      {
-        rooms.add(roomBeanS);
-      }
+    int unreadSpaces = 0;
+    List<SpaceBean> spaces = userDataStorage.getSpaces(user, dbName);
+    for (SpaceBean space : spaces) {
+      RoomBean room = new RoomBean();
+      room.setUser(SPACE_PREFIX + space.getRoom());
+      room.setRoom(space.getRoom());
+      room.setFullName(space.getDisplayName());
+      room.setStatus(UserService.STATUS_SPACE);
+      room.setTimestamp(space.getTimestamp());
+      room.setAvailableUser(true);
+      room.setType(ChatService.TYPE_ROOM_SPACE);
 
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
+      if (room.getUnreadTotal() > 0)
+        unreadSpaces += room.getUnreadTotal();
+      room.setFavorite(userBean.isFavorite(room.getUser()));
+      if (withSpaces) {
+        rooms.add(room);
+      }
     }
 
-    List<RoomBean> teams = userService.getTeams(user, dbName);
-    for (RoomBean team:teams)
-    {
-      RoomBean roomBeanS = new RoomBean();
-      roomBeanS.setUser(TEAM_PREFIX + team.getRoom());
-      roomBeanS.setRoom(team.getRoom());
-      roomBeanS.setFullname(team.getFullname());
-      roomBeanS.setStatus(UserService.STATUS_TEAM);
-      roomBeanS.setTimestamp(team.getTimestamp());
-      roomBeanS.setAvailableUser(true);
-      roomBeanS.setSpace(false);
-      roomBeanS.setTeam(true);
-      roomBeanS.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
-      if (roomBeanS.getUnreadTotal()>0)
-        unreadTeams += roomBeanS.getUnreadTotal();
-      roomBeanS.setFavorite(userBean.isFavorite(roomBeanS.getUser()));
-      if (withSpaces)
-      {
-        rooms.add(roomBeanS);
+    int unreadTeams = 0;
+    List<RoomBean> teams = userDataStorage.getTeams(user, dbName);
+    for (RoomBean team : teams) {
+      RoomBean room = new RoomBean();
+      room.setUser(TEAM_PREFIX + team.getRoom());
+      room.setRoom(team.getRoom());
+      room.setFullName(team.getFullName());
+      room.setStatus(UserService.STATUS_TEAM);
+      room.setTimestamp(team.getTimestamp());
+      room.setAvailableUser(true);
+      room.setType(team.getType());
+
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
+      if (room.getUnreadTotal() > 0)
+        unreadTeams += room.getUnreadTotal();
+      room.setFavorite(userBean.isFavorite(room.getUser()));
+      if (withSpaces) {
+        rooms.add(room);
       }
 
     }
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
-    if (filter!=null)
-    {
-      for (RoomBean roomBean:rooms) {
-        String targetUser = roomBean.getFullname();
+    if (filter != null) {
+      for (RoomBean roomBean : rooms) {
+        String targetUser = roomBean.getFullName();
         if (filter(targetUser, filter))
           finalRooms.add(roomBean);
       }
-    }
-    else
-    {
+    } else {
       finalRooms = rooms;
     }
 
@@ -778,15 +682,13 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
 
   }
 
-  private boolean filter(String user, String filter)
-  {
-    if (user==null || filter==null || "".equals(filter)) return true;
+  private boolean filter(String user, String filter) {
+    if (user == null || filter == null || "".equals(filter)) return true;
 
     String[] args = filter.toLowerCase().split(" ");
     String s = user.toLowerCase();
     int ind;
-    for (String arg:args)
-    {
+    for (String arg : args) {
       ind = s.indexOf(arg);
       if (ind == -1)
         return false;
@@ -796,25 +698,43 @@ public class ChatServiceImpl implements org.exoplatform.chat.services.ChatServic
     return true;
   }
 
-  public int getNumberOfRooms(String dbName)
-  {
+  public int getNumberOfRooms(String dbName) {
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
-  public int getNumberOfMessages(String dbName)
-  {
+  public int getNumberOfMessages(String dbName) {
     int nb = 0;
     String[] roomTypes = {TYPE_ROOM_USER, TYPE_ROOM_SPACE, TYPE_ROOM_TEAM, TYPE_ROOM_EXTERNAL};
     for (String type : roomTypes) {
-      DBCollection collr = db(dbName).getCollection(M_ROOM_PREFIX+type);
+      DBCollection collr = db(dbName).getCollection(M_ROOM_PREFIX + type);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
       nb += cursorr.count();
     }
 
     return nb;
+  }
+
+  private MessageBean toMessageBean(DBObject dbo) {
+    MessageBean msg = new MessageBean();
+    msg.setId(dbo.get("_id").toString());
+    msg.setUser(dbo.get("user").toString());
+    msg.setMessage(dbo.get("message").toString());
+    msg.setTimestamp(Long.parseLong(dbo.get("timestamp").toString()));
+    if (dbo.containsField("lastUpdatedTimestamp")) {
+      msg.setLastUpdatedTimestamp(Long.parseLong(dbo.get("lastUpdatedTimestamp").toString()));
+    }
+    msg.setSystem(Boolean.parseBoolean(dbo.get("isSystem").toString()));
+    if (dbo.containsField("options")) {
+      msg.setOptions(dbo.get("options").toString());
+    }
+    if (dbo.containsField("type")) {
+      msg.setType(dbo.get("type").toString());
+    }
+
+    return msg;
   }
 }

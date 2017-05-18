@@ -10,7 +10,8 @@ import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.RoomsBean;
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
+import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +20,8 @@ public class TeamTestCase extends AbstractChatTestCase
   @Before
   public void setUp()
   {
-    ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
-    ConnectionManager.getInstance().getDB().getCollection(ChatService.M_ROOMS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION).drop();
     ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau", null);
     ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com", null);
     ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
@@ -84,7 +85,7 @@ public class TeamTestCase extends AbstractChatTestCase
     String roomTeamId = ServiceBootstrap.getChatService().getTeamRoom(roomTeamName, user, null);
     RoomBean roomTeam = ServiceBootstrap.getChatService().getTeamRoomById(roomTeamId, null);
     assertNotNull("The room should exists", roomTeam);
-    assertEquals("The room name is not good", roomTeamName, roomTeam.getFullname());
+    assertEquals("The room name is not good", roomTeamName, roomTeam.getFullName());
     assertEquals("The room owner is not good", user, roomTeam.getUser());
 
     // create a space room
@@ -184,22 +185,22 @@ public class TeamTestCase extends AbstractChatTestCase
     ServiceBootstrap.getUserService().addTeamRoom(user, room1, null);
 
     RoomsBean rooms = ServiceBootstrap.getChatService().getRooms(user, "", true, true, true, true, true,
-            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getUserService(), ServiceBootstrap.getTokenService(), null);
+            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService(), null);
 
     assertEquals(1, rooms.getRooms().size());
 
     RoomBean room = rooms.getRooms().get(0);
-    assertEquals("My VIP Team", room.getFullname());
+    assertEquals("My VIP Team", room.getFullName());
 
     ServiceBootstrap.getChatService().setRoomName(room1, "VIP Team", null);
 
     rooms = ServiceBootstrap.getChatService().getRooms(user, "", true, true, true, true, true,
-            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getUserService(), ServiceBootstrap.getTokenService(), null);
+            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService(), null);
 
     assertEquals(1, rooms.getRooms().size());
 
     room = rooms.getRooms().get(0);
-    assertEquals("VIP Team", room.getFullname());
+    assertEquals("VIP Team", room.getFullName());
 
 
   }

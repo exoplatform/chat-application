@@ -19,28 +19,29 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-
+import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
+import org.exoplatform.chat.services.TokenStorage;
 import org.exoplatform.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Named("tokenService")
+import static org.exoplatform.chat.services.TokenService.ANONIM_USER;
+
+@Named("tokenStorage")
 @ApplicationScoped
-public class TokenServiceImpl implements org.exoplatform.chat.services.TokenService
+@Singleton
+public class TokenMongoService implements TokenStorage
 {
-  private int validity_ = -1;
+  public static final String M_USERS_COLLECTION = "users";
 
   private DB db(String dbName)
   {
@@ -73,8 +74,6 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
   {
     if (!hasUserWithToken(user, token, dbName))
     {
-      //System.out.println("TOKEN SERVICE :: ADDING :: " + user + " : " + token);
-//      removeUser(user);
       DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
 
       BasicDBObject query = new BasicDBObject();
@@ -84,7 +83,6 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
       {
         DBObject doc = cursor.next();
         doc.put("token", token);
-        doc.put("validity", System.currentTimeMillis());
         doc.put("isDemoUser", user.startsWith(ANONIM_USER));
         coll.save(doc, WriteConcern.SAFE);
       }
@@ -94,118 +92,46 @@ public class TokenServiceImpl implements org.exoplatform.chat.services.TokenServ
         doc.put("_id", user);
         doc.put("user", user);
         doc.put("token", token);
-        doc.put("validity", System.currentTimeMillis());
         doc.put("isDemoUser", user.startsWith(ANONIM_USER));
         coll.insert(doc);
       }
     }
   }
 
-/*
-  private void removeUser(String user, String dbName)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      coll.remove(doc);
-    }
-  }
-*/
-
-  public void updateValidity(String user, String token, String dbName)
-  {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("token", token);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      doc.put("validity", System.currentTimeMillis());
-      coll.save(doc, WriteConcern.SAFE);
-    }
-  }
-
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin)
-  {
-    return getActiveUsersFilterBy(user, dbName, withUsers, withPublic, isAdmin, 0);
-  }
-
-  public HashMap<String, UserBean> getActiveUsersFilterBy(String user, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
-  {
-    HashMap<String, UserBean> users = new HashMap<String, UserBean>();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
-    if (isAdmin)
-    {
-      if (withPublic && !withUsers)
-      {
+    if (isAdmin) {
+      if (withPublic && !withUsers) {
         query.put("isDemoUser", true);
-      }
-      else if (!withPublic && withUsers)
-      {
+      } else if (!withPublic && withUsers) {
         query.put("isDemoUser", false);
       }
-    }
-    else
-    {
+    } else {
       query.put("isDemoUser", user.startsWith(ANONIM_USER));
     }
-    if (limit<0) limit=0;
+    if (limit < 0) limit = 0;
+
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
     DBCursor cursor = coll.find(query).limit(limit);
-    while (cursor.hasNext())
-    {
+    HashMap<String, UserBean> users = new HashMap<>();
+    while (cursor.hasNext()) {
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
-      if (!user.equals(target)) {
+      // Exclude current user and offline users
+      if (!user.equals(target) && limitedFilter.contains(target)) {
         UserBean userBean = new UserBean();
         userBean.setName(target);
-        if (doc.get("fullname")!=null)
-          userBean.setFullname( doc.get("fullname").toString() );
-        if (doc.get("status")!=null)
+        if (doc.get("fullname") != null) {
+          userBean.setFullname(doc.get("fullname").toString());
+        }
+        if (doc.get("status") != null) {
           userBean.setStatus(doc.get("status").toString());
+        }
         users.put(target, userBean);
       }
     }
 
     return users;
-  }
-
-  public boolean isUserOnline(String user, String dbName)
-  {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("validity", new BasicDBObject("$gt", System.currentTimeMillis()-getValidity())); //check token not updated since 10sec + status interval (15 sec)
-    DBCursor cursor = coll.find(query);
-    return cursor.hasNext();
-  }
-
-  public boolean isDemoUser(String user)
-  {
-    return user.startsWith(ANONIM_USER);
-  }
-
-  private int getValidity() {
-    if (validity_==-1)
-    {
-      validity_ = 60000;
-      try
-      {
-        validity_ = new Integer(PropertyManager.getProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY));
-      }
-      catch (Exception e)
-      {
-        //do nothing if exception happens, keep 15000 value (=> statusInterval should set)
-        return validity_;
-      }
-    }
-    return validity_;
   }
 }

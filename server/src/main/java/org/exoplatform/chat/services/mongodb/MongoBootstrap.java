@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import com.mongodb.*;
 
+import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -133,7 +134,7 @@ public class MongoBootstrap
         db = mongo().getDB(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
 
       initCollection("notifications");
-      initCollection(ChatServiceImpl.M_ROOMS_COLLECTION);
+      initCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION);
       initCollection("users");
       dropTokenCollectionIfExists();
 
@@ -192,9 +193,9 @@ public class MongoBootstrap
     notUnique.put("unique", false);
     notUnique.put("background", true);
 
-    DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+type);
-    collr.createIndex(new BasicDBObject("roomId", 1).append("timestamp", -1), notUnique.append("name", "roomId_1_timestamp_-1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
-    LOG.info("##### room index in "+ChatServiceImpl.M_ROOM_PREFIX+type);
+    DBCollection collr = getDB().getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+type);
+    collr.createIndex(new BasicDBObject("roomId", 1).append("timestamp", -1), notUnique.append("name", "roomId_1_timestamp_-1").append("ns", dbName+"."+ChatMongoDataStorage.M_ROOM_PREFIX+type));
+    LOG.info("##### room index in "+ChatMongoDataStorage.M_ROOM_PREFIX+type);
   }
 
   public void ensureIndexes()
@@ -221,24 +222,23 @@ public class MongoBootstrap
     notifications.createIndex(index, notUnique.append("name", "user_1_type_1_category_1_categoryId_1").append("ns", dbName + ".notifications"));
     LOG.info("### notifications indexes in "+getDB().getName());
 
-    DBCollection rooms = getDB().getCollection(ChatServiceImpl.M_ROOMS_COLLECTION);
+    DBCollection rooms = getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION);
     rooms.dropIndexes();
-    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
-    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
-    rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName + "." + ChatServiceImpl.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("space", 1), notUnique.append("name", "space_1").append("ns", dbName + "." + ChatMongoDataStorage.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("users", 1), notUnique.append("name", "users_1").append("ns", dbName + "." + ChatMongoDataStorage.M_ROOMS_COLLECTION));
+    rooms.createIndex(new BasicDBObject("shortName", 1), notUnique.append("name", "shortName_1").append("ns", dbName + "." + ChatMongoDataStorage.M_ROOMS_COLLECTION));
     LOG.info("### rooms indexes in "+getDB().getName());
 
-    String[] roomTypes = {ChatServiceImpl.TYPE_ROOM_USER, ChatServiceImpl.TYPE_ROOM_SPACE, ChatServiceImpl.TYPE_ROOM_TEAM, ChatServiceImpl.TYPE_ROOM_EXTERNAL};
+    String[] roomTypes = {ChatService.TYPE_ROOM_USER, ChatService.TYPE_ROOM_SPACE, ChatService.TYPE_ROOM_TEAM, ChatService.TYPE_ROOM_EXTERNAL};
     for (String type : roomTypes) {
-      DBCollection collr = getDB().getCollection(ChatServiceImpl.M_ROOM_PREFIX+type);
-      collr.createIndex(new BasicDBObject("roomId", 1).append("timestamp", -1), notUnique.append("name", "roomId_1_timestamp_-1").append("ns", dbName+"."+ChatServiceImpl.M_ROOM_PREFIX+type));
+      DBCollection collr = getDB().getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+type);
+      collr.createIndex(new BasicDBObject("roomId", 1).append("timestamp", -1), notUnique.append("name", "roomId_1_timestamp_-1").append("ns", dbName+"."+ChatMongoDataStorage.M_ROOM_PREFIX+type));
       LOG.info("##### room index in "+type);
     }
 
     DBCollection users = getDB().getCollection("users");
     users.dropIndexes();
     users.createIndex(new BasicDBObject("token", 1), notUnique.append("name", "token_1").append("ns", dbName + ".users"));
-    users.createIndex(new BasicDBObject("validity", -1), notUnique.append("name", "validity_m1").append("ns", dbName + ".users"));
     index = new BasicDBObject();
     index.put("user", 1);
     index.put("token", 1);
@@ -247,10 +247,6 @@ public class MongoBootstrap
     index.put("user", 1);
     index.put("validity", -1);
     users.createIndex(index, unique.append("name", "user_1_validity_m1").append("ns", dbName + ".users"));
-    index = new BasicDBObject();
-    index.put("validity", -1);
-    index.put("isDemoUser", 1);
-    users.createIndex(index, notUnique.append("name", "validity_1_isDemoUser_m1").append("ns", dbName + ".users"));
 
     users.createIndex(new BasicDBObject("user", 1), unique.append("name", "user_1").append("ns", dbName+".users"));
     users.createIndex(new BasicDBObject("spaces", 1), notUnique.append("name", "spaces_1").append("ns", dbName+".users"));

@@ -76,7 +76,7 @@ var desktopNotification = (function() {
   var setPreferredNotificationSettings = function(settings,overrideSettin) { //this is always called on the reload of the page
     if (!(settings.preferredNotification === null || typeof settings.preferredNotification === 'undefined') && overrideSettin)
       setPreferredNotification(JSON.parse(settings.preferredNotification));
-    if (!(settings.preferredNotificationTrigger === null || typeof settings.preferredNotificationTrigger === 'undefined')&& overrideSettin)
+    if (!(settings.preferredNotificationTrigger === null || typeof settings.preferredNotificationTrigger === 'undefined') && overrideSettin)
       setPreferredNotificationTrigger(JSON.parse(settings.preferredNotificationTrigger));
     if (!(settings.preferredRoomNotificationTrigger === null || typeof settings.preferredRoomNotificationTrigger === 'undefined'))
       setRoomPreferredNotificationTriggerSettings(JSON.parse(settings.preferredRoomNotificationTrigger));
@@ -101,10 +101,10 @@ var desktopNotification = (function() {
   var canBypassRoomNotif = function(msgObj) {
     var message = msgObj.content;
     var sourceRoom = msgObj.categoryId;
-    return (!preferredRoomNotificationTrigger[sourceRoom]) || // 1-1 chat, but room
-      (preferredRoomNotificationTrigger[sourceRoom] == ROOM_NOTIF_TRIGGER_NORMAL) ||
+    return (!preferredRoomNotificationTrigger[sourceRoom]) ||   // Not specified yet
+      (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_NORMAL)) ||   // Normal condition
       (preferredRoomNotificationTrigger[sourceRoom].startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
-        containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));
+        containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]));   // Containing keywords
   }
 
   var containKeyWord = function(message, keywords) {

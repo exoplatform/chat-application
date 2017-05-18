@@ -13,6 +13,9 @@
             <depends>
                 <module>uiChatPopupWindow</module>
             </depends>
+            <depends>
+                <module>chatCometD</module>
+            </depends>
         </module>
     </portlet>
     <module>
@@ -72,5 +75,17 @@
             <module>jquery</module>
         </depends>
     </module>
-
+    <module>
+        <name>chatCometD</name>
+        <as>cCometD</as>
+        <script>
+            <path>/js/commons-cometd3.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+        </depends>
+        <depends>
+            <module>jquery_cometd</module>
+        </depends>
+    </module>
 </gatein-resources>

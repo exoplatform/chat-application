@@ -54,6 +54,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -73,7 +74,6 @@ public class ChatApplication
   @Inject
   @Path("index.gtmpl")
   Template index;
-
 
   String token_ = "---";
   String remoteUser_ = null;
@@ -103,6 +103,9 @@ public class ChatApplication
   CalendarService calendarService_;
 
   @Inject
+  ContinuationService continuationService;
+
+  @Inject
   WikiService wikiService_;
   
   public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";
@@ -127,10 +130,7 @@ public class ChatApplication
     boolean isPublic = (remoteUser_==null);
     if (isPublic) remoteUser_ = UserService.ANONIM_USER;
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-    String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
-    String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
-    String chatIntervalUsers = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_USERS);
     String publicModeEnabled = PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE);
     String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
     String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
@@ -180,10 +180,10 @@ public class ChatApplication
     }
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
-            .set("token", token_).set("chatServerURL", chatServerURL)
+            .set("token", token_)
+            .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
-            .set("chatIntervalChat", chatIntervalChat).set("chatIntervalSession", chatIntervalSession)
-            .set("chatIntervalStatus", chatIntervalStatus).set("chatIntervalUsers", chatIntervalUsers)
+            .set("chatIntervalSession", chatIntervalSession)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("publicMode", isPublic)
             .set("publicModeEnabled", publicModeEnabled)
@@ -217,7 +217,8 @@ public class ChatApplication
       fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
     }
 
-    String out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"nothing to update\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
+    JSONObject out = new JSONObject();
+    out.put("msg", "nothing to update");
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
@@ -248,7 +249,7 @@ public class ChatApplication
           ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
         }
 
-        out = "{\"token\": \""+token_+"\", \"fullname\": \""+fullname_+"\", \"msg\": \"updated\", \"isAdmin\": \""+isAdmin_+"\", \"isTeamAdmin\": \""+isTeamAdmin_+"\"}";
+        out.put("msg", "updated");
         profileInitialized_ = true;
       }
       catch (Exception e)
@@ -258,13 +259,19 @@ public class ChatApplication
         return Response.notFound("Error during init, try later");
       }
     }
+
+    out.put("token", token_);
+    out.put("fullname", fullname_);
+    out.put("isAdmin", isAdmin_);
+    out.put("isTeamAdmin", isTeamAdmin_);
+
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
       // Set user's Spaces in the DB
       saveSpaces(remoteUser_, dbName);
     }
 
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
+    return Response.ok(out.toJSONString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
     		       .withCharset(Tools.UTF_8);
 
   }

@@ -52,6 +52,7 @@ import org.exoplatform.social.common.router.ExoRouter.Route;
 import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -75,6 +76,7 @@ public class NotificationApplication
   @Path("index.gtmpl")
   Template index;
 
+  boolean standaloneChatServer;
   String token_ = "---";
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
@@ -89,6 +91,9 @@ public class NotificationApplication
   BundleService bundleService_;
 
   @Inject
+  ContinuationService continuationService;
+
+  @Inject
   Provider<PortletPreferences> providerPreferences;
 
   @Inject
@@ -97,6 +102,7 @@ public class NotificationApplication
     organizationService_ = organizationService;
     spaceService_ = spaceService;
     dbName = ChatUtils.getDBName();
+    standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
   }
 
   @View
@@ -105,9 +111,6 @@ public class NotificationApplication
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     remoteUser_ = securityContext.getRemoteUser();
-    String chatIntervalChat = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_CHAT);
-    String chatIntervalStatus = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_STATUS);
-    String chatIntervalNotif = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_NOTIF);
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
 
@@ -120,20 +123,30 @@ public class NotificationApplication
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
 
+    String cometdToken;
+    String chatCometDServerUrl;
+    if (standaloneChatServer) {
+      cometdToken = token_;
+      chatCometDServerUrl = chatServerURL;
+    } else {
+      cometdToken = continuationService.getUserToken(remoteUser_);
+      chatCometDServerUrl = "/cometd";
+    }
+
     return index.with().set("user", remoteUser_).set("token", token_)
-            .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
-            .set("chatIntervalChat", chatIntervalChat)
-            .set("chatIntervalStatus", chatIntervalStatus)
-            .set("chatIntervalNotif", chatIntervalNotif)
-            .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
-            .set("title", title)
-            .set("messages", messages)
-            .set("spaceId", spaceId)
-            .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
-            .set("dbName", dbName)
-            .set("portalURI", portalURI)
-            .ok()
-            .withCharset(Tools.UTF_8);
+        .set("standalone", standaloneChatServer)
+        .set("chatCometDServerUrl", chatCometDServerUrl)
+        .set("cometdToken", cometdToken)
+        .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
+        .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
+        .set("title", title)
+        .set("messages", messages)
+        .set("spaceId", spaceId)
+        .set("sessionId", Util.getPortalRequestContext().getRequest().getSession().getId())
+        .set("dbName", dbName)
+        .set("portalURI", portalURI)
+        .ok()
+        .withCharset(Tools.UTF_8);
   }
 
   @Ajax

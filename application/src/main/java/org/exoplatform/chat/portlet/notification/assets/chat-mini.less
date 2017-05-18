@@ -248,11 +248,8 @@
 .msRow {
   @widthOfAvatar: 32px;
   padding: 10px 0;
+
   /* Layout Row Chat */
-  .msContBox {
-      float: left;
-      width: 100%;
-  }
   .msContBox + .msUserAvatar {
       float: left;
       margin-left: -100%;
@@ -270,10 +267,11 @@
     }
   }
   .msUserAvatar {
-   width: 40px!important;
-   padding-left: 12px;
-   padding-right: 15px;
-   text-align: center;
+    float: left;
+    width: 40px!important;
+    padding-left: 12px;
+    padding-right: 15px;
+    text-align: center;
   }
   .msContBox {
     > .inner {
@@ -295,7 +293,7 @@
   }
   .msAction {
     cursor: pointer;
-    visibility: hidden;
+    display: none;
     font-size: 12px;
     a {
       font-size: 12px;
@@ -303,7 +301,6 @@
   }
   .msTimePost {
     font-size: 12px;
-    position: absolute;
     right: 0;
     .msEditMes {
     }
@@ -322,7 +319,7 @@
   }
   .msContBox .msUserCont:hover {
     .msAction {
-      visibility: visible;
+      display: block;
     }
     .msTimePost {
       display: none;
@@ -455,7 +452,7 @@
 	}
 	.msContBox .msUserCont:hover {
 		.msAction {
-		  visibility: hidden;
+		  display: none;
 		}
 		.msTimePost {
 		  display: block;

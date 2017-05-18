@@ -9,6 +9,7 @@ import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class SpaceTestCase extends AbstractChatTestCase
   @Before
   public void setUp()
   {
-    ConnectionManager.getInstance().getDB().getCollection(UserService.M_USERS_COLLECTION).drop();
+    ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
     ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau", null);
     ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com", null);
     ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);

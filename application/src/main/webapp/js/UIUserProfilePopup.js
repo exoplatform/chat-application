@@ -404,7 +404,7 @@
 
                     var thisTip = $(el).parents('div#tiptip_content:first');
                     var tipName = thisTip.find('table#tipName:first');
-                    var userURL = tipName.find('a:first').attr('href').replace('activities', 'profile'); 
+                    var userURL = tipName.find('a:first').attr('href').replace('activities', 'profile');
 
                     var focusedUserLink = userList.find('a[href$="' + userURL + '"]:first');
                     var focusedUserBlock = focusedUserLink.parents('div.spaceBox:first');

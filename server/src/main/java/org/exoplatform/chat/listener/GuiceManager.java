@@ -5,7 +5,8 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.exoplatform.chat.services.mongodb.MongoModule;
+import com.google.inject.Module;
+import org.exoplatform.chat.services.GuiceModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -38,10 +39,18 @@ public class GuiceManager implements ServletContextListener
 
   public static void forceNew()
   {
+    forceNew(null);
+  }
+
+  public static void forceNew(Module module)
+  {
     if (injector_==null)
     {
-//      if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
-        injector_ = Guice.createInjector(new MongoModule());
+      if(module == null) {
+        injector_ = Guice.createInjector(new GuiceModule());
+      } else {
+        injector_ = Guice.createInjector(module);
+      }
     }
   }
 }

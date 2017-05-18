@@ -30,10 +30,6 @@ import java.util.List;
 
 public interface UserService
 {
-
-  public static final String M_USERS_COLLECTION = "users";
-  public static final String M_ROOMS_COLLECTION = "rooms";
-
   public static final String STATUS_AVAILABLE = "available";
   public static final String STATUS_DONOTDISTURB = "donotdisturb";
   public static final String STATUS_AWAY = "away";
@@ -51,9 +47,19 @@ public interface UserService
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
   public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
 
-
-
+  /**
+   * @deprecated use {@link #addFavorite(String, String, String)} and {@link #removeFavorite(String, String, String)} instead
+   *
+   * @param user
+   * @param targetUser
+   * @param dbName
+   */
+  @Deprecated
   public void toggleFavorite(String user, String targetUser, String dbName);
+
+  public void addFavorite(String user, String room, String dbname);
+
+  public void removeFavorite(String user, String room, String dbName);
 
   public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
 
@@ -84,7 +90,7 @@ public interface UserService
 
   public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
 
-  public List<UserBean> getUsers(String spaceId, String dbName);
+  public List<UserBean> getUsers(String roomId, String dbName);
 
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 

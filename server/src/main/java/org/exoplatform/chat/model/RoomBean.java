@@ -21,8 +21,7 @@ package org.exoplatform.chat.model;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.services.UserService;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class RoomBean implements Comparable<RoomBean>
 {
@@ -33,8 +32,6 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
-  boolean isSpace = false;
-  boolean isTeam = false;
   boolean isFavorite = false;
   long timestamp = -1;
 
@@ -62,10 +59,6 @@ public class RoomBean implements Comparable<RoomBean>
     this.unreadTotal = unreadTotal;
   }
 
-  public boolean isAvailableUser() {
-    return isAvailableUser;
-  }
-
   public void setAvailableUser(boolean availableUser) {
     isAvailableUser = availableUser;
   }
@@ -74,15 +67,11 @@ public class RoomBean implements Comparable<RoomBean>
     return (isAvailableUser || (!"".equals(room)));
   }
 
-  public String getFullname() {
+  public String getFullName() {
     return fullname;
   }
 
-  public String getEscapedFullname() {
-    return StringEscapeUtils.escapeHtml4(this.fullname);
-  }
-
-  public void setFullname(String fullname) {
+  public void setFullName(String fullname) {
     this.fullname = fullname;
   }
 
@@ -102,14 +91,6 @@ public class RoomBean implements Comparable<RoomBean>
     this.type = type;
   }
 
-  public boolean isSpace() {
-    return isSpace;
-  }
-
-  public void setSpace(boolean space) {
-    isSpace = space;
-  }
-
   public boolean isFavorite() {
     return isFavorite;
   }
@@ -126,38 +107,28 @@ public class RoomBean implements Comparable<RoomBean>
     this.timestamp = timestamp;
   }
 
-  public boolean isTeam() {
-    return isTeam;
-  }
-
-  public void setTeam(boolean team) {
-    isTeam = team;
-  }
-
   @Override
   public int compareTo(RoomBean roomBean) {
-    String l = ((isFavorite)?"0":"1")+fullname;
-    String r = ((roomBean.isFavorite())?"0":"1")+roomBean.getFullname();
+    String l = ((isFavorite) ? "0" : "1") + fullname;
+    String r = ((roomBean.isFavorite()) ? "0" : "1") + roomBean.getFullName();
     return l.compareTo(r);
+  }
+
+  public JSONObject toJSONObject() {
+    JSONObject obj = new JSONObject();
+    obj.put("fullName", this.getFullName());
+    obj.put("room", this.getRoom());
+    obj.put("status", this.getStatus());
+    obj.put("user", this.getUser());
+    obj.put("timestamp", this.getTimestamp());
+    obj.put("unreadTotal", this.getUnreadTotal());
+    obj.put("isActive", String.valueOf(this.isActive()));
+    obj.put("isFavorite", this.isFavorite());
+    obj.put("type", this.getType());
+    return obj;
   }
 
   public String toJSON()
   {
-    JSONObject obj = new org.json.JSONObject();
-    try {
-      obj.put("escapedFullname", this.getEscapedFullname());
-      obj.put("room", this.getRoom());
-      obj.put("status", this.getStatus());
-      obj.put("user", this.getUser());
-      obj.put("timestamp", this.getTimestamp());
-      obj.put("unreadTotal", String.valueOf(this.getUnreadTotal()));
-      obj.put("isActive", String.valueOf(this.isActive()));
-      obj.put("isAvailableUser", String.valueOf(this.isAvailableUser()));
-      obj.put("isFavorite", String.valueOf(this.isFavorite()));
-      obj.put("isSpace", String.valueOf(this.isSpace()));
-      obj.put("isTeam", String.valueOf(this.isTeam()));
-    } catch (JSONException e) {
-      return obj.toString();
-    }
-    return obj.toString();
+    return toJSONObject().toString();
   }}

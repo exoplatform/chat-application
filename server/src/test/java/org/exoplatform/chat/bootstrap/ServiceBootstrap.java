@@ -20,27 +20,37 @@
 package org.exoplatform.chat.bootstrap;
 
 import org.exoplatform.chat.listener.GuiceManager;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.NotificationService;
-import org.exoplatform.chat.services.TokenService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.model.RealTimeMessageBean;
+import org.exoplatform.chat.services.*;
+
+import java.util.List;
 
 public class ServiceBootstrap {
   private static UserService userService;
+  private static UserDataStorage userDataStorage;
   private static TokenService tokenService;
   private static ChatService chatService;
+  private static ChatDataStorage chatStorage;
   private static NotificationService notificationService;
+  private static RealTimeMessageService realTimeMessageService;
 
   public static void forceNew()
   {
+    chatStorage = GuiceManager.getInstance().getInstance(ChatDataStorage.class);
     chatService = GuiceManager.getInstance().getInstance(ChatService.class);
     userService = GuiceManager.getInstance().getInstance(UserService.class);
+    userDataStorage = GuiceManager.getInstance().getInstance(UserDataStorage.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+    realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);;
   }
 
   public static UserService getUserService() {
     return userService;
+  }
+
+  public static UserDataStorage getUserDataStorage() {
+    return userDataStorage;
   }
 
   public static TokenService getTokenService()
@@ -48,11 +58,15 @@ public class ServiceBootstrap {
     return tokenService;
   }
 
-  public static ChatService getChatService() {
-    return chatService;
-  }
+  public static ChatService getChatService() { return chatService; }
+
+  public static ChatDataStorage getChatDataStorage() { return chatStorage; }
 
   public static NotificationService getNotificationService() {
     return notificationService;
+  }
+
+  public static RealTimeMessageService getRealTimeMessageService() {
+    return realTimeMessageService;
   }
 }

@@ -2,6 +2,7 @@ package org.exoplatform.chat.services;
 
 import java.util.regex.Pattern;
 
+import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.exoplatform.chat.services.mongodb.MongoBootstrap;
@@ -37,10 +38,10 @@ public class MigrateService {
   
       if (db.collectionExists("room_rooms")) {
         DBCollection roomsCol = db.getCollection("room_rooms");
-        if (!db.collectionExists(ChatService.M_ROOMS_COLLECTION)) {
-          roomsCol.rename(ChatService.M_ROOMS_COLLECTION);
+        if (!db.collectionExists(ChatMongoDataStorage.M_ROOMS_COLLECTION)) {
+          roomsCol.rename(ChatMongoDataStorage.M_ROOMS_COLLECTION);
         } else {
-          DBCollection newRoomsCol = db.getCollection(ChatService.M_ROOMS_COLLECTION);
+          DBCollection newRoomsCol = db.getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION);
           DBCursor rooms = roomsCol.find();
           while (rooms.hasNext()) {
             DBObject room = rooms.next();
@@ -54,8 +55,8 @@ public class MigrateService {
   }
 
   private void migrateRoom(String roomType) {
-    if (!db.collectionExists(ChatService.M_ROOM_PREFIX+roomType)) {
-      db.createCollection(ChatService.M_ROOM_PREFIX+roomType, null);
+    if (!db.collectionExists(ChatMongoDataStorage.M_ROOM_PREFIX+roomType)) {
+      db.createCollection(ChatMongoDataStorage.M_ROOM_PREFIX+roomType, null);
     }
 
     DBCollection roomsCol = db.getCollection("room_rooms");
@@ -76,7 +77,7 @@ public class MigrateService {
 
         // Move all message of a room to messages_room_{roomType} collection
         DBCursor allMessages = roomCol.find();
-        DBCollection newRoomCol = db.getCollection(ChatService.M_ROOM_PREFIX+roomType);
+        DBCollection newRoomCol = db.getCollection(ChatMongoDataStorage.M_ROOM_PREFIX+roomType);
         while (allMessages.hasNext()) {
           DBObject message = allMessages.next();
           message.removeField("time");
