@@ -18,7 +18,6 @@ function ChatNotification() {
   this.username = "";
   this.sessionId = "";
   this.spaceId = ""; // Id of current space being in
-  this.jzInitUserProfile = "";
   this.jzNotification = "";
   this.jzGetStatus = "";
 
@@ -47,7 +46,6 @@ ChatNotification.prototype.initOptions = function(options) {
   this.token = options.token;
   this.username = options.username;
   this.sessionId = options.sessionId;
-  this.jzInitUserProfile = options.urlInitUserProfile;
   this.jzNotification = options.urlNotification;
   this.jzGetStatus = options.urlGetStatus;
   this.dbName = options.dbName;
@@ -83,65 +81,57 @@ ChatNotification.prototype.getNotifEventURL = function() {
 };
 
 /**
- * Init Chat User Profile
- * @param callback : allows you to call an async callback function(username, fullname) when the profile is initiated.
+ * Fetch notifications
  */
-ChatNotification.prototype.initUserProfile = function() {
+ChatNotification.prototype.fetchNotifications = function() {
 
-  jqchat.ajax({
-    url: this.jzInitUserProfile,
-    dataType: "json",
-    context: this,
-    success: function(data){
-      this.token = data.token;
-
-      if(typeof chatApplication === "undefined") {
-        jqchat.ajax({
-          url: this.getNotifEventURL() + "&withDetails=true",
-          headers: {
-            'Authorization': 'Bearer ' + this.token
-          },
-          dataType: "json",
-          context: this,
-          success: function(data){
-            if (data.notifications.length > 0) {
-              var total = Math.abs(data.notifications.length);
-
-              var $chatNotification = jqchat("#chat-notification");
-              if (total > 0) {
-                if(desktopNotification.canShowOnSiteNotif()) {
-                  $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
-                  $chatNotification.css('display', 'block');
-                }
-              } else {
-                $chatNotification.html('<span></span>');
-                $chatNotification.css('display', 'none');
-                var $chatNotificationsDetails = jqchat("#chat-notifications-details");
-                $chatNotificationsDetails.css("display", "none");
-                $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData["exoplatform.chat.loading"]+'</span>');
-                $chatNotificationsDetails.parent().removeClass("full-width");
-                $chatNotificationsDetails.next().hide();
-              }
-
-              this.oldNotifTotal = total;
-            }
-          },
-          error: function(){
-            var $chatNotification = jqchat("#chat-notification");
-            $chatNotification.html('<span></span>');
-            $chatNotification.css('display', 'none');
-            this.oldNotifTotal = -1;
-          }
-        });
+  if(typeof chatApplication === "undefined") {
+    jqchat.ajax({
+      url: this.getNotifEventURL() + "&withDetails=true",
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      },
+      dataType: "json",
+      context: this,
+      success: function(data){
+        if (data.notifications.length > 0) {
+          var total = Math.abs(notifications.length);
+          chatNotification.showTotalUnreadMessages(total);
+          this.oldNotifTotal = total;
+        }
+      },
+      error: function(){
+        var $chatNotification = jqchat("#chat-notification");
+        $chatNotification.html('<span></span>');
+        $chatNotification.css('display', 'none');
+        this.oldNotifTotal = -1;
       }
+    });
+  }
 
-      this.refreshStatusChat();
-    },
-    error: function () {
-      //retry in 3 sec
-      setTimeout(jqchat.proxy(this.initUserProfile, this), 3000);
+  this.refreshStatusChat();
+};
+
+/**
+ * Show total unread messages
+ * @param total Number of unread messages
+ */
+ChatNotification.prototype.showTotalUnreadMessages = function(total) {
+  var $chatNotification = jqchat("#chat-notification");
+  if (total > 0) {
+    if (desktopNotification.canShowOnSiteNotif()) {
+      $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">' + total + '</span>');
+      $chatNotification.css('display', 'block');
     }
-  });
+  } else {
+    $chatNotification.html('<span></span>');
+    $chatNotification.css('display', 'none');
+    var $chatNotificationsDetails = jqchat("#chat-notifications-details");
+    $chatNotificationsDetails.css("display", "none");
+    $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">' + chatBundleData["exoplatform.chat.loading"] + '</span>');
+    $chatNotificationsDetails.parent().removeClass("full-width");
+    $chatNotificationsDetails.next().hide();
+  }
 };
 
 /**
@@ -822,7 +812,6 @@ function requireChatCometd(func) {
       "token": $notificationApplication.attr("data-token"),
       "username": $notificationApplication.attr("data-username"),
       "sessionId":$notificationApplication.attr("data-session-id"),
-      "urlInitUserProfile": $notificationApplication.jzURL("NotificationApplication.initUserProfile"),
       "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
       "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
       "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
@@ -898,22 +887,8 @@ function requireChatCometd(func) {
               document.title = "Chat";
             }
           } else {
+            chatNotification.showTotalUnreadMessages(total);
             chatNotification.oldNotifTotal = total;
-            var $chatNotification = jqchat("#chat-notification");
-            if (total > 0) {
-              if(desktopNotification.canShowOnSiteNotif()) {
-                $chatNotification.html('<span class="notif-total  badgeDefault badgePrimary mini">'+total+'</span>');
-                $chatNotification.css('display', 'block');
-              }
-            } else {
-              $chatNotification.html('<span></span>');
-              $chatNotification.css('display', 'none');
-              var $chatNotificationsDetails = jqchat("#chat-notifications-details");
-              $chatNotificationsDetails.css("display", "none");
-              $chatNotificationsDetails.html('<span class="chat-notification-loading no-user-selection">'+chatBundleData["exoplatform.chat.loading"]+'</span>');
-              $chatNotificationsDetails.parent().removeClass("full-width");
-              $chatNotificationsDetails.next().hide();
-            }
           }
         }
       });
@@ -922,7 +897,7 @@ function requireChatCometd(func) {
     // CHAT NOTIFICATION USER INTERFACE PREPARATION
     chatNotification.initUserInterface();
 
-    chatNotification.initUserProfile();
+    chatNotification.fetchNotifications();
 
     window.onload = function() {
         if (typeof chatApplication !== "undefined") {

@@ -137,6 +137,8 @@ public class ChatApplication
     String demoMode = (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(dbServerMode) || PropertyManager.PROPERTY_SERVICE_IMPL_JCR.equals(servicesImplementation))?"DEV":"PROD";
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
+    initChatProfile();
+
     String fullname = (fullname_==null || fullname_.isEmpty()) ? remoteUser_ : fullname_;
 
     PortletPreferences portletPreferences = providerPreferences.get();
@@ -183,6 +185,8 @@ public class ChatApplication
             .set("token", token_)
             .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
+            .set("admin", String.valueOf(isAdmin_))
+            .set("teamAdmin", String.valueOf(isTeamAdmin_))
             .set("chatIntervalSession", chatIntervalSession)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
             .set("publicMode", isPublic)
@@ -202,23 +206,15 @@ public class ChatApplication
 
   }
 
-  @Ajax
-  @Resource
-  public Response.Content maintainSession()
-  {
-    return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
-  }
-
-  @Ajax
-  @Resource
-  public Response.Content initChatProfile() {
+  /**
+   * Init Chat user profile
+   */
+  public void initChatProfile() {
     // Update new fullName;
     if (!UserService.ANONIM_USER.equals(remoteUser_)) {
       fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
     }
 
-    JSONObject out = new JSONObject();
-    out.put("msg", "nothing to update");
     if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
     {
       try
@@ -249,31 +245,27 @@ public class ChatApplication
           ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
         }
 
-        out.put("msg", "updated");
         profileInitialized_ = true;
       }
       catch (Exception e)
       {
-        LOG.warning(e.getMessage());
+        LOG.warning("Error while initializing chat user profile : " + e.getMessage());
         profileInitialized_ = false;
-        return Response.notFound("Error during init, try later");
       }
     }
-
-    out.put("token", token_);
-    out.put("fullname", fullname_);
-    out.put("isAdmin", isAdmin_);
-    out.put("isTeamAdmin", isTeamAdmin_);
 
     if (!UserService.ANONIM_USER.equals(remoteUser_))
     {
       // Set user's Spaces in the DB
       saveSpaces(remoteUser_, dbName);
     }
+  }
 
-    return Response.ok(out.toJSONString()).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
-    		       .withCharset(Tools.UTF_8);
-
+  @Ajax
+  @Resource
+  public Response.Content maintainSession()
+  {
+    return Response.ok("OK").withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

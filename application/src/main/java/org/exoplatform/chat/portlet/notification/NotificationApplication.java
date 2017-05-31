@@ -113,6 +113,7 @@ public class NotificationApplication
     remoteUser_ = securityContext.getRemoteUser();
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
+    initUserProfile();
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
@@ -149,11 +150,8 @@ public class NotificationApplication
         .withCharset(Tools.UTF_8);
   }
 
-  @Ajax
-  @Resource
-  public Response.Content initUserProfile()
+  public void initUserProfile()
   {
-    String out = "{\"token\": \""+token_+"\", \"msg\": \"nothing to update\"}";
     if (!profileInitialized_)
     {
       try
@@ -170,14 +168,11 @@ public class NotificationApplication
         // Set user's Spaces in the DB
         saveSpaces(remoteUser_, dbName);
 
-        out = "{\"token\": \""+token_+"\", \"msg\": \"updated\"}";
-
         profileInitialized_ = true;
       }
       catch (Exception e)
       {
         profileInitialized_ = false;
-        return Response.notFound("Error during init, try later");
       }
     }
 
@@ -186,10 +181,6 @@ public class NotificationApplication
       // Set user's Spaces in the DB
       saveSpaces(remoteUser_, dbName);
     }
-
-    return Response.ok(out).withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache")
-                   .withCharset(Tools.UTF_8);
-
   }
 
   protected void addUser(String remoteUser, String token, String dbName)

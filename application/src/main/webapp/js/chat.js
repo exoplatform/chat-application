@@ -10,6 +10,9 @@ var chatApplication = new ChatApplication();
 
     chatApplication.username = $chatApplication.attr("data-username");
     chatApplication.token = $chatApplication.attr("data-token");
+    chatApplication.fullname = $chatApplication.attr("data-fullname");
+    chatApplication.isAdmin = $chatApplication.attr("data-admin");
+    chatApplication.isTeamAdmin = $chatApplication.attr("data-team-admin");
     chatApplication.chatIntervalSession = $chatApplication.attr("data-chat-interval-session");
     chatApplication.plfUserStatusUpdateUrl = $chatApplication.attr("data-plf-user-status-update-url");
     chatApplication.publicModeEnabled = $chatApplication.attr("data-public-mode-enabled");
@@ -20,7 +23,6 @@ var chatApplication = new ChatApplication();
     var chatPublicMode = ($chatApplication.attr("data-public-mode")=="true");
     var chatView = $chatApplication.attr("data-view");
     chatApplication.isPublic = (chatPublicMode == "true" && chatView == "public");
-    chatApplication.jzInitChatProfile = $chatApplication.jzURL("ChatApplication.initChatProfile");
     chatApplication.jzCreateDemoUser = $chatApplication.jzURL("ChatApplication.createDemoUser");
     chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
     chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
@@ -46,7 +48,7 @@ var chatApplication = new ChatApplication();
     chatApplication.jzSaveTeamRoom = chatServerURL+"/saveTeamRoom";
     chatApplication.room = "";
 
-    // get user profile, then init chat application
+    // init chat application
     chatApplication.initChatProfile();
 
     // Attach weemo call button into chatApplication
@@ -1499,7 +1501,6 @@ function ChatApplication() {
   this.targetUser = "";
   this.targetFullname = "";
   this.token = "";
-  this.jzInitChatProfile = "";
   this.jzChatGetCreator = "";
   this.jzChatToggleFavorite = "";
   this.jzCreateDemoUser = "";
@@ -1584,35 +1585,17 @@ ChatApplication.prototype.initChatProfile = function(callback) {
       this.showDemoPanel();
     }
   } else {
-    jqchat.ajax({
-      url: this.jzInitChatProfile,
-      dataType: "json",
-      context: this,
-      success: function(data){
-        this.token = data.token;
-        this.fullname = data.fullname;
-        this.isAdmin = data.isAdmin;
-        this.isTeamAdmin = data.isTeamAdmin;
-
-        var $chatApplication = jqchat("#chat-application");
-        $chatApplication.attr("data-token", this.token);
-        var $labelUser = jqchat(".uiGrayLightBox .label-user");
-        if(window.innerWidth > 767){
-          $labelUser.text(data.fullname);
-        }else{
-          $labelUser.removeAttr("href").text("Discussion");
-        }
-        jqchat(".uiExtraLeftContainer .label-user").text(data.fullname);
-        chatNotification.refreshStatusChat();
-        if (typeof callback === "function") {
-          callback();
-        }
-      },
-      error: function (response){
-        //retry in 3 sec
-        setTimeout(jqchat.proxy(this.initChatProfile, this), 3000);
-      }
-    });
+    var $labelUser = jqchat(".uiGrayLightBox .label-user");
+    if(window.innerWidth > 767){
+      $labelUser.text(this.fullname);
+    }else{
+      $labelUser.removeAttr("href").text("Discussion");
+    }
+    jqchat(".uiExtraLeftContainer .label-user").text(this.fullname);
+    chatNotification.refreshStatusChat();
+    if (typeof callback === "function") {
+      callback();
+    }
   }
 };
 
