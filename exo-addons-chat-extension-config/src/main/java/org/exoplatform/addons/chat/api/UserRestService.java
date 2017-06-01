@@ -7,6 +7,8 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.user.UserStateService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+
 import org.json.simple.JSONObject;
 
 import javax.annotation.security.RolesAllowed;
@@ -43,6 +45,7 @@ public class UserRestService implements ResourceContainer {
     cacheControl.setNoStore(true);
     DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
 
+
     boolean withTokenOnly = (tokenOnly != null && "true".equals(tokenOnly));
     if ("__anonim".equals(userId)) {
       userId = ANONIM_USER;
@@ -68,6 +71,27 @@ public class UserRestService implements ResourceContainer {
             .cacheControl(cacheControl)
             .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
             .build();
+  }
+
+  @GET
+  @Path("/cometdToken/")
+  @RolesAllowed("users")
+  public Response getCometdToken() throws Exception {
+    ConversationState conversationState = ConversationState.getCurrent();
+    String userId = conversationState.getIdentity().getUserId();
+
+    Boolean standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
+    String token;
+    if (standaloneChatServer) {
+      String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
+      String in = userId + passphrase;
+      token = MessageDigester.getHash(in);;
+    } else {
+      ContinuationService continuation = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ContinuationService.class);
+      token = continuation.getUserToken(userId);
+    }
+
+    return Response.ok(token, MediaType.TEXT_PLAIN).build();
   }
 
   @GET

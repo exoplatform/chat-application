@@ -56,6 +56,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   @Inject
   private UserDataStorage userDataStorage;
 
+  private SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
+
   public ChatMongoDataStorage() {
     long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
     readMillis = readDays * 24 * 60 * 60 * 1000;
@@ -220,8 +222,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
-    SimpleDateFormat formatter = new SimpleDateFormat("hh:mm aaa");
-    SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
     Calendar calendar = Calendar.getInstance();
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);

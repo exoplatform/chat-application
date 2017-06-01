@@ -55,7 +55,7 @@ public class ChatServiceImpl implements ChatService
     write(null, message, user, room, isSystem, null, dbName);
   }
 
-  public void write(String tempId, String message, String sender, String room, String isSystem, String options, String dbName)
+  public void write(String clientId, String message, String sender, String room, String isSystem, String options, String dbName)
   {
     if (!isMemberOfRoom(sender, room, dbName)) {
       throw new ChatException(403, "Petit malin !");
@@ -81,7 +81,7 @@ public class ChatServiceImpl implements ChatService
       msg.setFullName(user.getFullname());
 
       JSONObject data = msg.toJSONObject();
-      data.put("tempId", tempId);
+      data.put("clientId", clientId);
       data.put("roomType", roomType);
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         data.put("roomDisplayName", user.getFullname());

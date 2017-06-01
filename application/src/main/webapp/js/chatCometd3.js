@@ -57,7 +57,7 @@
 
     this.publish = function(channel, content, publishProps, publishCallback) {
       if (this.isDisconnected()) {
-        if (!publishProps || _isFunction(publishProps))
+        if (!publishProps || $.isFunction(publishProps))
         {
           publishProps = {};
         }
@@ -74,7 +74,7 @@
 
     this.remoteCall = function(target, content, timeout, callback) {
       if (this.isDisconnected()) {
-        if (!content || _isFunction(content))
+        if (!content || $.isFunction(content))
         {
           content = {};
         }
