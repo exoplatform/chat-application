@@ -96,7 +96,6 @@
   .msRightInfo {
     margin-left: 10px;
     text-align: right;
-    position: relative;
     min-width: 230px;
   }
   .msContBox .msUserCont:hover {
@@ -212,4 +211,19 @@
 	top: 60%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+}
+
+#chat-application .uiIconNotification {
+  color: #c72222;
+  display: none;
+}
+
+#chat-application.offline {
+  .pending {
+    color: #999999;
+  }
+
+  .uiIconNotification {
+    display: initial;
+  }
 }

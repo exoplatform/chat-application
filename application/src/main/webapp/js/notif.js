@@ -95,7 +95,7 @@ ChatNotification.prototype.fetchNotifications = function() {
       context: this,
       success: function(data){
         if (data.notifications.length > 0) {
-          var total = Math.abs(notifications.length);
+          var total = Math.abs(data.notifications.length);
           chatNotification.showTotalUnreadMessages(total);
           this.oldNotifTotal = total;
         }
@@ -810,94 +810,140 @@ function requireChatCometd(func) {
   });
 }
 
+function initChatCometd() {
+  //GETTING DOM CONTEXT
+  var $notificationApplication = jqchat("#chat-status");
+  // CHAT NOTIFICATION INIT
+  chatNotification.initOptions({
+    "token": $notificationApplication.attr("data-token"),
+    "username": $notificationApplication.attr("data-username"),
+    "sessionId":$notificationApplication.attr("data-session-id"),
+    "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
+    "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
+    "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
+    "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
+    "spaceId": $notificationApplication.attr("data-space-id"),
+    "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
+    "dbName": $notificationApplication.attr("data-db-name"),
+    "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
+    "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
+    "portalURI": $notificationApplication.attr("data-portal-uri"),
+    "standalone": $notificationApplication.attr("data-standalone"),
+    "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
+    "cometdToken": $notificationApplication.attr("data-cometd-token")
+  });
+  
+  // init cometd connection and subscriptions
+  requireChatCometd(function(cCometD) {
+    cCometD.subscribe('/service/chat', null, function (event) {
+      var message = event.data;
+      if (typeof message != 'object') {
+        message = JSON.parse(message);
+      }
+  
+      // Do what you want with the message...
+      if(message.event == 'user-status-changed') {
+        if(message.room == chatNotification.username) {
+          // update current user status
+          chatNotification.changeStatusChat(message.data.status);
+        }
+      } else if (message.event == "message-sent") {
+        if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) && chatNotification.username !== message.sender) {
+  
+          var msg = message.data;
+  
+          // A tip that helps making a tiny delay in execution of block code in the function,
+          // to avoid concurrency issue in condition checking.
+          setTimeout(function() {
+            // Check if the message has been notified by other tab
+            if (localStorage.getItem('lastNotify-' + message.room) === msg.msgId) {
+              return;
+            }
+            localStorage.setItem('lastNotify-' + message.room, msg.msgId);
+  
+            var notify = {
+              roomType: msg.roomType,
+              options: msg.options,
+              roomDisplayName: msg.roomDisplayName,
+              content: msg.msg,
+              categoryId: message.room,
+              from: message.sender
+            };
+  
+            if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+              chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
+  
+              if(desktopNotification.canPlaySound()){
+                document.getElementById("chat-audio-notif").play();
+              }
+              if(desktopNotification.canShowDesktopNotif()){
+                chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
+              }
+            }
+          });
+        }
+      } else if (message.event == "notification-count-updated") {
+        var total = message.data.totalUnreadMsg;
+  
+        // Check if the current page is the full Chat application page
+        if (typeof chatApplication !== "undefined") {
+          if (total > 0) {
+            document.title = "Chat (" + total + ")";
+          } else {
+            document.title = "Chat";
+          }
+        } else {
+          chatNotification.showTotalUnreadMessages(total);
+          chatNotification.oldNotifTotal = total;
+        }
+      }
+    });
+  });
+}
+
 (function($) {
 
   $(document).ready(function() {
-    //GETTING DOM CONTEXT
-    var $notificationApplication = $("#chat-status");
-    // CHAT NOTIFICATION INIT
-    chatNotification.initOptions({
-      "token": $notificationApplication.attr("data-token"),
-      "username": $notificationApplication.attr("data-username"),
-      "sessionId":$notificationApplication.attr("data-session-id"),
-      "urlNotification": $notificationApplication.attr("data-chat-server-url")+"/notification",
-      "urlGetStatus": $notificationApplication.attr("data-chat-server-url")+"/getStatus",
-      "urlSetStatus": $notificationApplication.attr("data-chat-server-url")+"/setStatus",
-      "statusInterval": $notificationApplication.attr("data-chat-interval-status"),
-      "spaceId": $notificationApplication.attr("data-space-id"),
-      "plfUserStatusUpdateUrl": $notificationApplication.attr("data-plf-user-status-update-url"),
-      "dbName": $notificationApplication.attr("data-db-name"),
-      "jzChatRead": $notificationApplication.attr("data-chat-server-url")+"/read",
-      "jzChatSend": $notificationApplication.attr("data-chat-server-url")+"/send",
-      "portalURI": $notificationApplication.attr("data-portal-uri"),
-      "standalone": $notificationApplication.attr("data-standalone"),
-      "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "")  + $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
-      "cometdToken": $notificationApplication.attr("data-cometd-token")
-    });
+    initChatCometd();
 
-    // init cometd connection and subscriptions
     requireChatCometd(function(cCometD) {
-      cCometD.subscribe('/service/chat', null, function (event) {
-        var message = event.data;
-        if (typeof message != 'object') {
-          message = JSON.parse(message);
+      var _connected;
+
+      cCometD.addListener('/meta/handshake', function(handshake) {
+        // Reload the page when re-handshake denied.
+        if (_connected === false && handshake.successful === false) {
+          jqchat.ajax({
+            url: "/portal/rest/chat/api/1.0/user/cometdToken",
+            success: function(data) {
+              jqchat("#chat-status").attr("data-cometd-token", data);
+
+              cCometD.isConfigured = false;
+
+              initChatCometd();
+            },
+            error: function() {
+              console.log("Can't renew Chat user token, refresh the page");
+              window.location.reload(true);
+            }
+          });
+        }
+      });
+
+      cCometD.addListener('/meta/connect', function(message) {
+        if (cCometD.isDisconnected()) {
+          // console.log("Connection is closed.");
+          _connected = false;
+          return;
         }
 
-        // Do what you want with the message...
-        if(message.event == 'user-status-changed') {
-          if(message.room == chatNotification.username) {
-            // update current user status
-            chatNotification.changeStatusChat(message.data.status);
-          }
-        } else if (message.event == "message-sent") {
-          if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) && chatNotification.username !== message.sender) {
-
-            var msg = message.data;
-
-            // A tip that helps making a tiny delay in execution of block code in the function,
-            // to avoid concurrency issue in condition checking.
-            setTimeout(function() {
-              // Check if the message has been notified by other tab
-              if (localStorage.getItem('lastNotify-' + message.room) === msg.msgId) {
-                return;
-              }
-              localStorage.setItem('lastNotify-' + message.room, msg.msgId);
-
-              var notify = {
-                roomType: msg.roomType,
-                options: msg.options,
-                roomDisplayName: msg.roomDisplayName,
-                content: msg.msg,
-                categoryId: message.room,
-                from: message.sender
-              };
-
-              if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
-                chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
-
-                if(desktopNotification.canPlaySound()){
-                  document.getElementById("chat-audio-notif").play();
-                }
-                if(desktopNotification.canShowDesktopNotif()){
-                  chatNotification.showDesktopNotif(chatNotification.chatPage, notify);
-                }
-              }
-            });
-          }
-        } else if (message.event == "notification-count-updated") {
-          var total = message.data.totalUnreadMsg;
-
-          // Check if the current page is the full Chat application page
-          if (typeof chatApplication !== "undefined") {
-            if (total > 0) {
-              document.title = "Chat (" + total + ")";
-            } else {
-              document.title = "Chat";
-            }
-          } else {
-            chatNotification.showTotalUnreadMessages(total);
-            chatNotification.oldNotifTotal = total;
-          }
+        var wasConnected = _connected;
+        _connected = message.successful === true;
+        if (!wasConnected && _connected) {
+          // console.log("Connection is established.");
+          jqchat("#chat-status").trigger("chat:connected");
+        } else if (wasConnected && !_connected) {
+          // console.log("Connection is broken.");
+          jqchat("#chat-status").trigger("chat:disconnected");
         }
       });
     });

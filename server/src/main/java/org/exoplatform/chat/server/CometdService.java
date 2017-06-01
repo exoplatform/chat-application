@@ -96,16 +96,16 @@ public class CometdService {
         RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.MESSAGE_READ, room, sender, new Date(), null);
         realTimeMessageService.sendMessage(realTimeMessageBean, sender);
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_SENT)) {
-        String room = (String) jsonMessage.get("room");
 
         JSONObject data = (JSONObject) jsonMessage.get("data");
-        String tempId = data.get("tempId").toString();
+        String room = data.get("room").toString();
+        String clientId = data.get("clientId").toString();
         String msg = data.get("msg").toString();
         String isSystem = data.get("isSystem").toString();
         String options = data.get("options").toString();
 
         try {
-          chatService.write(tempId, msg, sender, room, isSystem, options, dbName);
+          chatService.write(clientId, msg, sender, room, isSystem, options, dbName);
         } catch (ChatException e) {
           // Should response a message somehow in websocket.
         }

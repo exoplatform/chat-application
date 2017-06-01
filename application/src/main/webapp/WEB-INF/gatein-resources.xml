@@ -79,7 +79,7 @@
         <name>chatCometD</name>
         <as>cCometD</as>
         <script>
-            <path>/js/commons-cometd3.js</path>
+            <path>/js/chatCometd3.js</path>
         </script>
         <depends>
             <module>jquery</module>

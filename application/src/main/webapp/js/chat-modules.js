@@ -12,22 +12,24 @@
  * and update the room when new data arrives on the server side.
  * @constructor
  */
-function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeetingNotes, messagesContainer, isPublic, portalURI, dbName) {
-  this.id = "";
-  this.messagesContainer = messagesContainer;
+function ChatRoom(username, token, dbName, jzChatRead, jzChatSendMeetingNotes, jzChatGetMeetingNotes, messagesContainer, isPublic, portalURI) {
   this.jzChatRead = jzChatRead;
-  this.jzChatSend = jzChatSend;
   this.jzChatSendMeetingNotes = jzChatSendMeetingNotes;
   this.jzChatGetMeetingNotes = jzChatGetMeetingNotes;
-  this.username = "";
-  this.token = "";
+  this.messagesContainer = messagesContainer;
+  this.isPublic = isPublic;
+  this.portalURI = portalURI;
+  this.dbName = dbName;
+
+  this.id = "";
+  this.username = username;
+  this.token = token;
   this.owner = "";
   this.targetUser = "";
   this.targetFullname = "";
-  this.isPublic = isPublic;
   this.miniChat = undefined;
-  this.portalURI = portalURI;
   this.users = [];
+  this.messages = [];
 
   this.ANONIM_USER = "__anonim_";
 
@@ -38,10 +40,10 @@ function ChatRoom(jzChatRead, jzChatSend, jzChatSendMeetingNotes, jzChatGetMeeti
 
   this.startMeetingTimestamp = "";
   this.startCallTimestamp = "";
-  this.dbName = dbName;
 
   this.plugins = {};
 
+  // If chatPlugins object is configured before initializing Chat Application
   if (typeof chatPlugins === 'object') {
     for (var i = 0; i < chatPlugins.length; i++) {
       this.registerPlugin(chatPlugins[i]);
@@ -131,7 +133,7 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         $chats.off("click.edit");
         $chats.on("click.edit", ".msg-action-edit", function () {
           var $uimsgdata = jqchat(this).siblings(".msg-data");
-          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.text());
         });
 
         $chats.off("click.savenotes");
@@ -265,68 +267,21 @@ ChatRoom.prototype.onShowMessages = function(callback) {
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
   if(msg.trim().length != 0 || options.type) {
-    this.sendFullMessage(this.username, this.token, this.targetUser, this.id, msg, options, isSystemMessage, callback);
-  }
-};
-
-/**
- * Send message to server
- * @param message : the message to send
- * @param callback : the method to execute on success
- */
-ChatRoom.prototype.sendFullMessage = function(user, token, targetUser, room, msg, options, isSystemMessage, callback) {
-  var newMsgTimestamp = new Date().getTime();
-
-  // Update temporary message for smooth view
-  if (room !== "" && room === this.id) {
-    var tmpMessage = msg.replace(/&/g, "&#38");
-    tmpMessage = tmpMessage.replace(/</g, "&lt;");
-    tmpMessage = tmpMessage.replace(/>/g, "&gt;");
-    tmpMessage = tmpMessage.replace(/\"/g, "&quot;");
-    tmpMessage = tmpMessage.replace(/\n/g, "<br/>");
-    tmpMessage = tmpMessage.replace(/\\\\/g, "&#92");
-    tmpMessage = tmpMessage.replace(/\t/g, "  ");
-    var tmpOptions = JSON.stringify(options);
-    tmpOptions = tmpOptions.replace(/</g, "&lt;");
-    tmpOptions = tmpOptions.replace(/>/g, "&gt;");
-    tmpOptions = JSON.parse(tmpOptions);
-  }
-
-  var thiss = this;
-  if (!window.tempId) {
-    window.tempId = 0;
-  }
-
-  requireChatCometd(function(cCometD) {
-    var msgObj = {
-      "tempId": 'tempId_' + tempId++,
+    var data = {
+      "room": this.id,
+      "clientId": new Date().getTime().toString(),
       "msg": msg,
-      "user": user,
-      "fullname": thiss.fullname,
+      "user": this.username,
+      "fullname": this.fullname,
       "options": options,
-      "isSystem": isSystemMessage,
-      "ts": newMsgTimestamp,
-      "timestamp": newMsgTimestamp,
+      "isSystem": isSystemMessage
     };
 
-    thiss.messages.push(msgObj);
-    thiss.showMessage(msgObj, true);
+    this.addMessage(data, true);
+    this.pushMessage(data, callback);
 
-    cCometD.publish('/service/chat', JSON.stringify({
-      "event": "message-sent",
-      "room": room,
-      "sender": user,
-      "dbName": thiss.dbName,
-      "token": thiss.token,
-      "data": msgObj
-    }), function(publishAck) {
-      if (publishAck.successful) {
-        if (typeof callback === "function") {
-          callback();
-        }
-      }
-    });
-  });
+    this.messagesContainer.trigger("chat:sendMessage", data);
+  }
 };
 
 /**
@@ -432,6 +387,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           // If room has changed but no messages was added there yet
           thiss.showMessages([]);
         }
+
         // set last succeeded request chat owner
         // to be able to detect when user switches from a room to another
         thiss.lastCallOwner = thiss.targetUser;
@@ -453,39 +409,7 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   }
 };
 
-ChatRoom.prototype.getChatMessages = function(room, callback) {
-  // Abort periodic read messages request
-  // getChatMessages method is called on user action,
-  // so it has more priority
-  if(this.currentRequest) {
-    this.currentRequest.abort();
-    this.currentRequest = null;
-  }
-
-  if (room === "") return;
-
-  if (this.username !== this.ANONIM_USER) {
-    // set current request variable to cancel it if the user make another action
-    this.currentRequest = jqchat.ajax({
-      url: this.jzChatRead,
-      data: {
-        room: room,
-        user: this.username,
-        dbName: this.dbName
-      },
-      headers: {
-        'Authorization': 'Bearer ' + this.token
-      }, success: function(data) {
-        if (typeof callback === "function") {
-          callback(data.messages);
-        }
-      }
-    })
-  }
-};
-
 ChatRoom.prototype.showAsText = function(callback) {
-
   var thiss = this;
   jqchat.ajax({
     url: thiss.jzChatRead,
@@ -504,7 +428,6 @@ ChatRoom.prototype.showAsText = function(callback) {
       }
     }
   });
-
 };
 
 ChatRoom.prototype.sendMeetingNotes = function(room, fromTimestamp, toTimestamp, callback) {
@@ -561,6 +484,89 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
 };
 
 /**
+ * Return the storage key of pending messages for this room.
+ */
+ChatRoom.prototype.getPendingMessagesKey = function () {
+  return "exo.chat.pending.msgs." + this.username;
+}
+
+/**
+ * Return an array of pending messages from stack for this room.
+ */
+ChatRoom.prototype.getPendingMessages = function () {
+  var msgs = localStorage.getItem(this.getPendingMessagesKey());
+
+  if (msgs) {
+    msgs = JSON.parse(msgs);
+  } else {
+    msgs = [];
+  }
+
+  return msgs;
+}
+
+/**
+ * Add a message into pending stack of this room for checking to push to server later.
+ */
+ChatRoom.prototype.addPendingMessage = function(msg) {
+  var msgs = this.getPendingMessages();
+  msgs.push(msg);
+
+  localStorage.setItem(this.getPendingMessagesKey(), JSON.stringify(msgs));
+}
+
+/**
+ * Remove a pending message from stack for this room.
+ */
+ChatRoom.prototype.removePendingMessage = function(msg) {
+  var msgs = this.getPendingMessages();
+  var db = TAFFY(msgs);
+
+  db({clientId: msg.clientId}).remove();
+  localStorage.setItem(this.getPendingMessagesKey(), JSON.stringify(db().get()));
+}
+
+/**
+ * Push pending messages from stack to server for this room.
+ */
+ChatRoom.prototype.pushPendingMessages = function() {
+  var localMsg = this.getPendingMessages();
+
+  if (localMsg.length > 0) {
+    localMsg.forEach(function(msg) {
+      this.pushMessage(msg);
+    }, this);
+  } else {
+    localStorage.removeItem(this.getPendingMessagesKey());
+  }
+}
+
+/**
+ * Push message to server
+ * @param msg : the message object to send
+ * @param callback : the method to execute on success
+ */
+ChatRoom.prototype.pushMessage = function(data, callback) {
+  var content = JSON.stringify({
+    "event": "message-sent",
+    "sender": this.username,
+    "token": this.token,
+    "dbName": this.dbName,
+    "data": data
+  });
+
+  requireChatCometd(function(cCometD) {
+    cCometD.publish('/service/chat', content, function(publishAck) {
+      if (publishAck.successful) {
+        if (typeof callback === "function") {
+          callback();
+        }
+      }
+    });
+  });
+};
+
+/**
  * Convert local messages list in HTML output to display the list of messages
  */
 ChatRoom.prototype.showMessages = function(msgs) {
@@ -569,8 +575,6 @@ ChatRoom.prototype.showMessages = function(msgs) {
   } else {
     msgs = this.messages || [];
   }
-
-  var out = "";
 
   this.messagesContainer.html(''); // Clear the room
   if (msgs.length > 0) {
@@ -586,10 +590,10 @@ ChatRoom.prototype.showMessages = function(msgs) {
   }
 };
 
-ChatRoom.prototype.updateMessage = function(message, msgId) {
+ChatRoom.prototype.updateMessage = function(message, withClientMsg) {
   var $msg;
-  if (msgId) {
-    $msg = jqchat("#" + msgId);
+  if (withClientMsg) {
+    $msg = jqchat("#" + message.clientId);
   } else {
     $msg = jqchat("#" + message.msgId);
   }
@@ -601,7 +605,6 @@ ChatRoom.prototype.updateMessage = function(message, msgId) {
  * A message object:
  * {
  *    "id": "589affe904e5fe0b2efc1ac0",
- *    "timestamp": 1486553065827,
  *    "user": "trongtt",
  *    "fullname": "Trong Changed Tran",
  *    "email": "trongtt@gmail.com",
@@ -613,20 +616,22 @@ ChatRoom.prototype.updateMessage = function(message, msgId) {
  * }
  */
 ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
-  var tempId = msg.tempId;
-  if (tempId) {
-    msg.tempId = null;
+  // A server message
+  if (msg.msgId) {
     var messages = TAFFY(this.messages);
     var tempMsg = messages({
-      tempId: tempId
+      clientId: msg.clientId
     });
 
+    // Update local message with server message.
     if (tempMsg.count() > 0) {
       tempMsg.update(msg);
       this.messages = messages().get();
-      this.updateMessage(msg, tempId);
+      this.updateMessage(msg, true);
       return;
     }
+  } else {
+    this.addPendingMessage(msg);
   }
 
   this.messages.push(msg);
@@ -680,10 +685,14 @@ ChatRoom.prototype.showMessage = function(message, checkToScroll) {
       out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
       out += "            </div>";
     }
-    out += "              <div id='" + message.msgId + "' class='msUserCont noEdit msg-text'>";
+    if (message.msgId) {
+      out += "              <div id='" + message.msgId + "' class='msUserCont noEdit msg-text'>";
+    } else {
+      out += "              <div id='" + message.clientId + "' class='msUserCont noEdit msg-text pending'>";
+    }
     var msRightInfo = "     <div class='msRightInfo pull-right'>";
     msRightInfo += "          <div class='msTimePost'>";
-    msRightInfo += "            <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+    msRightInfo +=              this.getMessageInfo(message);
     msRightInfo += "          </div>";
     msRightInfo += "        </div>";
     var msUserMes = "       <div class='msUserMes'>" + this.messageBeautifier(message, options) + "</div>";
@@ -778,15 +787,19 @@ ChatRoom.prototype.showMessage = function(message, checkToScroll) {
 
 ChatRoom.prototype.generateMessageHTML = function(message) {
   var out = '';
-  var msgtemp = message.message;
+  var tempMsg;
   var noEditCssClass = "";
   if (message.type === "DELETED") {
-    msgtemp = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
+    tempMsg = "<span class='contentDeleted empty'>"+chatBundleData["exoplatform.chat.deleted"]+"</span>";
     noEditCssClass = "noEdit";
   } else {
-    msgtemp = this.messageBeautifier(message);
+    tempMsg = this.messageBeautifier(message, message.options);
   }
-  out += '          <div id="' + (message.tempId ? message.tempId : message.msgId) + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+  if (message.msgId) {
+    out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+  } else {
+    out += '          <div id="' + message.clientId + '" class="msUserCont msg-text noEdit pending">';
+  }
 
   var msRightInfo = "";
   msRightInfo += "      <div class='msRightInfo pull-right'>";
@@ -794,8 +807,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   if (message.type === "DELETED" || message.type === "EDITED") {
     msRightInfo += "        <span href='#' class='msEditMes'><i class='uiIconChatEdited uiIconChatLightGray'></i></span>";
   }
-
-  msRightInfo += "          <span class='msg-date time'>" + this.getDate(message.timestamp) + "</span>";
+  msRightInfo +=            this.getMessageInfo(message);
   msRightInfo += "        </div>";
   if (message.type !== "DELETED") {
     msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.msg+"</span>";
@@ -808,7 +820,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
     msRightInfo += "       </div>";
   }
   msRightInfo += "       </div>";
-  var msUserMes  = "         <div class='msUserMes'><span>" + msgtemp + "</span></div>";
+  var msUserMes  = "         <div class='msUserMes'>" + tempMsg + "</div>";
   if (this.miniChat === undefined) {
     out += msRightInfo;
     out += msUserMes;
@@ -891,7 +903,6 @@ ChatRoom.prototype.getDate = function(timestampServer) {
     sTime = sDate + " " + sTime;
   }
   return sTime;
-
 }
 
 
@@ -903,6 +914,10 @@ ChatRoom.prototype.getDate = function(timestampServer) {
  */
 ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
   var message = objMessage.msg;
+  if (!objMessage.msgId) {
+    // HTML encoding for local displaying message.
+    message = jqchat("<div></div>").text(message).html();
+  }
   var msg = "";
   var thiss = this;
   if (options!==undefined) {
@@ -1159,6 +1174,13 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
   return msg;
 };
 
+ChatRoom.prototype.getMessageInfo = function (msg) {
+  if (msg.msgId) {
+    return '<span class="msg-date time">' + this.getDate(msg.timestamp) + "</span>";
+  } else {
+    return '<i class="uiIconNotification" data-toggle="tooltip" data-placement="top" title="' + chatBundleData["exoplatform.chat.msg.notDelivered"] + '"></i>';
+  }
+}
 /**
  Generate html markup from quote, eg: [quote=xxx] [quote=yyy]information [/quote]comment1[/quote]comment2
  */
@@ -1293,6 +1315,13 @@ String.prototype.endsWith = function(suffix) {
 
   $(document).ready(function() {
 
+    $("#chat-status").on('chat:connected', function(event, data) {
+      setTimeout(function() {
+        // Sync local message with servers
+        new ChatRoom(chatNotification.username, chatNotification.token, chatNotification.dbName).pushPendingMessages();
+      }, 1000);
+    });
+
     // TODO Workaround to fix the problem of chat-module.js is loaded twice.
     if (!window.chatModuleLoaded) {
       window.chatModuleLoaded = true;
@@ -1303,8 +1332,8 @@ String.prototype.endsWith = function(suffix) {
     if (typeof chatApplication === "undefined") {
       var $miniChat = $(".mini-chat");
       $miniChat.each( function(index) {
-        $(this).attr("data-index", index);
         var $obj = $(this);
+        $obj.attr("data-index", index);
         jqchat.ajax({
           url: "/rest/chat/api/1.0/user/token",
           success: function(data) {
@@ -1357,6 +1386,9 @@ String.prototype.endsWith = function(suffix) {
           if (miniChats[index] !== undefined) {
             // Do what you want with the message...
             if (message.event == 'message-sent') {
+              // Clean local messages here.
+              miniChats[index].removePendingMessage(message.data);
+
               if (miniChats[index].id === message.room) {
                 miniChats[index].addMessage(message.data, true);
               }
@@ -1450,9 +1482,8 @@ function showMiniChatPopup(room, type) {
       var targetFullname = cRoom.fullName;
       $miniChat.find(".fullname").text(targetFullname);
       var jzChatRead = chatServerUrl+"/read";
-      var jzChatSend = chatServerUrl+"/send";
       if (miniChats[index] === undefined) {
-        miniChats[index] = new ChatRoom(jzChatRead, jzChatSend,  "", "", $miniChat.find(".history"), false, chatNotification.portalURI, dbName);
+        miniChats[index] = new ChatRoom(username, token, dbName, jzChatRead,  "", "", $miniChat.find(".history"), false, chatNotification.portalURI);
         $miniChat.find(".message-input").keydown(function(event) {
           //prevent the default behavior of the enter button
           if ( event.which == 13 ) {
