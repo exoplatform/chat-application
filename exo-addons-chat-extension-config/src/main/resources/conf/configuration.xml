@@ -55,7 +55,7 @@
           </field>
           <!-- The name of the target dependency -->
           <field name="target">
-            <string>welcome-screens</string>
+            <string>acme-intranet</string>
           </field>
         </object>
       </object-param>     
