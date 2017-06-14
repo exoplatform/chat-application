@@ -20,9 +20,6 @@
     <module>exo-addons-chat-extension-config</module>
     <module>exo-addons-chat-extension</module>
     <module>exo-addons-chat-extension-pkg</module>
-    <module>exo-addons-chat-extension-config-community</module>
-    <module>exo-addons-chat-extension-community</module>
-    <module>exo-addons-chat-extension-pkg-community</module>
     <module>exo-addons-chat-extension-pkg-standalone</module>
   </modules>
   <scm>
