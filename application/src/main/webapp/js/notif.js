@@ -426,6 +426,7 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
         // User is online
 
         jqchat.ajax({
+          context: this,
           url: this.jzGetStatus,
           data: {
             "user": this.username,
@@ -436,6 +437,13 @@ ChatNotification.prototype.getStatus = function(targetUser, callback) {
             'Authorization': 'Bearer ' + this.token
           },
           success: function (response) {
+            // Update platform user status
+            var url = this.plfUserStatusUpdateUrl + this.username  + "?status=" + response;
+            jqchat.ajax({
+              url: url,
+              type: 'PUT'
+            });
+
             if (typeof callback === "function") {
               callback(response);
             }
