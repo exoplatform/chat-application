@@ -1070,161 +1070,81 @@ var chatApplication = new ChatApplication();
     addTimeOptions("#event-add-start-time");
     addTimeOptions("#event-add-end-time");
 
-    $('#team-add-user').keyup(function(event) {
-      var prefix = "team";
-      var filter = $(this).val();
-
-      searchUsers(filter, prefix, event, false, function(name, fullname) {
-        addTeamUserLabel(name, fullname);
+    require(["SHARED/suggester"], function($) {
+      $('#team-add-user').suggester({
+        type : 'tag',
+        plugins: ['remove_button'],
+        create: false,
+        createOnBlur: false,
+        highlight: false,
+        openOnFocus: false,
+        sourceProviders: ['exo:chatuser'],
+        valueField: 'name',
+        labelField: 'fullname',
+        searchField: ['fullname', 'name'],
+        closeAfterSelect: true,
+        dropdownParent: "body",
+        renderMenuItem: function(item, escape) {
+          var avatar = "/rest/v1/social/users/" + item.name  + "/avatar";
+          return '<div class="avatarMini"><img src="'+ avatar +'" onerror="this.src=\'/chat/img/Avatar.gif;\'" >&nbsp;</div>' +
+            '<div class="text">' + escape(item.fullname) + ' (' + item.name +')' + '</div>' +
+            '<div class="user-status"><i class="chat-status-team chat-status-' + item.status + '"></i></div>';
+        },
+        sortField: [{field: 'order'}, {field: '$score'}],
+        providers: {
+          'exo:chatuser': function(query, callback) {
+            if (!query.length) return callback();
+            jqchat.ajax({
+              url: chatApplication.jzUsers,
+              data: {
+                "filter": query,
+                "user": chatApplication.username,
+                "dbName": chatApplication.dbName
+              },
+              headers: {
+                'Authorization': 'Bearer ' + chatApplication.token
+              },
+              dataType: "json",
+              context: chatApplication,
+              error: function() {
+                callback();
+              },
+              success: function(res) {
+                var users = TAFFY(res.users);
+                var users = users();
+                users = users.filter({name:{"!is":chatApplication.username}});
+                users = JSON.parse(users.stringify());
+                callback(users);
+              }
+            });
+          }
+        }
       });
-
-
-    });
-
-    function searchUsers(filter, prefix, event, withCurrentUser,callback) {
-
-      if ( event.which === 13 ) { // ENTER
-        $("."+prefix+"-user").each(function() {
-          if ($(this).hasClass("selected")) {
-            var name = $(this).attr("data-name");
-            var fullname = $(this).attr("data-fullname");
-            if (typeof callback === "function") {
-              callback(name, fullname);
-            }
-          }
-        });
-      } else if ( event.which === 40 || event.which === 38) { // 40:DOWN || 38:UP
-        var isUp = (event.which === 38);
-        var total = $("."+prefix+"-user").size();
-        var done = false;
-        $("."+prefix+"-user").each(function(index) {
-          if (!done && $(this).hasClass("selected")) {
-            done = true;
-            $("."+prefix+"-user").removeClass("selected");
-            if (isUp) {
-              if (index === 0)
-                $("."+prefix+"-user").last().addClass("selected");
-              else
-                $(this).prev().addClass("selected");
-            } else {
-              if (index === total-1)
-                $("."+prefix+"-user").first().addClass("selected");
-              else
-                $(this).next().addClass("selected");
-            }
-          }
-        });
-        return;
-      }
-
-      if (filter === "") {
-        var $userResults = $("."+prefix+"-users-results");
-        $userResults.css("display", "none");
-        $userResults.html("");
-      } else {
-        chatApplication.getAllUsers(filter, function (jsonData) {
-          var users = TAFFY(jsonData.users);
-          var users = users();
-          var $userResults = $("."+prefix+"-users-results");
-          $userResults.css("display", "none");
-          var html = "";
-          if (!withCurrentUser) {
-              users = users.filter({name:{"!is":chatApplication.username}});
-          }
-          $("."+prefix+"-user-label").each(function() {
-            var name = $(this).attr("data-name");
-            users = users.filter({name:{"!is":name}});
-          });
-          var filterRegExp = new RegExp( "(" + filter + ")" , 'gi' );
-          users.order("fullname").limit(5).each(function (user, number) {
-            $userResults.css("display", "block");
-            if (user.status == "offline") user.status = "invisible";
-            var classSel = "";
-            if (number === 0) classSel = "selected"
-            html += "<div class='"+prefix+"-user item "+classSel+"' data-name='"+user.name+"' data-fullname='"+user.fullname+"'>";
-            html += " <span class='chat-user-name'><span class='inner'>";
-            html += "  <span class='"+prefix+"-user-fullname'>"+ user.fullname.replace(filterRegExp,"<b>$1</b>") +"</span>";
-            html += "  <span class='"+prefix+"-user-name'>("+user.name+")</span>";
-            html += " </span></span>";
-            html += "  <span class='"+prefix+"-user-logo'><img onerror=\"this.src='/chat/img/Avatar.gif;'\" src='/rest/v1/social/users/"+user.name+"/avatar' width='30px' style='width:30px;'></span>";
-            html += " <span class='chat-status-"+prefix+" chat-status-"+user.status+"'></span>";
-            html += "</div>";
-          });
-          $userResults.html(html);
-
-          $('.'+prefix+'-user').on("mouseover", function() {
-            $("."+prefix+"-user").removeClass("selected");
-            $(this).addClass("selected");
-          });
-
-          $('.'+prefix+'-user').on("click", function() {
-            var name = $(this).attr("data-name");
-            var fullname = $(this).attr("data-fullname");
-            if (typeof callback === "function") {
-              callback(name, fullname);
-            }
-          });
-
-        });
-      }
-    }
-
-    /**
-     * Add a user mention html component in the uiContainer element.
-     * @param uiContainer the html element to insert the mention in
-     * @param username the username (invisible)
-     * @param fullName the full name (visible)
-     * @param removable is the mention html component removable (it add a clickable X in the component) (default is true)
-       */
-    function addTeamUserMention(uiContainer, username, fullName, removable) {
-      if (typeof removable === 'undefined') removable = true;
-      var html = "<span class='uiMention'><a href='javascript:void(0)' class='team-user-label' data-name='"+username+"'>"+fullName;
-      if (removable) {
-        html += "&nbsp;&nbsp;<i class='uiIconClose uiIconLightGray team-user-remove'></i>";
-      }
-      html +="<a/></span>";
-      var $__return = uiContainer.append(html);
-
-      if (removable) {
-        $__return.find(".team-user-remove").on("click", function() {
-          $(this).parents('.uiMention').remove();
-        });
-      }
-    }
-
-    function addTeamUserLabel(name, fullname) {
-      var $usersList = $('.team-users-list');
-      addTeamUserMention($usersList, name, fullname, true);
-      var $teamAddUser = $('#team-add-user');
-      $teamAddUser.val("");
-      $teamAddUser.focus();
-      var $userResults = $(".team-users-results");
-      $userResults.css("display", "none");
-      $userResults.html("");
-    }
+    }); // End suggester component
 
     $("#team-edit-button").on("click", function() {
       // Only the room owner can manage room users and can see the System popup.
       // We do a check to be sure the current user is the room owner.
       if (chatApplication.username === chatApplication.chatRoom.owner) {
         // Clear and reset form
-        var $userResults = $(".team-users-results");
-        $userResults.css("display", "none");
-        $userResults.html("");
-        $(".team-users-list").empty();
+        require(["SHARED/suggester"], function($) {
+          var selectize = $('#team-add-user')[0].selectize;
+          selectize.clear();
+
+          var users = TAFFY(chatApplication.chatRoom.users);
+          users = users();
+          users.order("fullname").each(function (user, number) {
+            if (user.name !== chatApplication.username) {
+              selectize.addOption(user);
+              selectize.addItem(user.name);
+            }
+          });
+        });
 
         var title = chatApplication.rooms({room: chatApplication.room}).first().fullName;
         var $uitext = $("#team-modal-name");
         $uitext.val(title);
         $uitext.attr("data-id", chatApplication.room);
-
-        var users = TAFFY(chatApplication.chatRoom.users);
-        users = users();
-        users.order("fullname").each(function (user, number) {
-          if (user.name !== chatApplication.username) {
-            addTeamUserLabel(user.name, user.fullname);
-          }
-        });
 
         uiChatPopupWindow.show("team-modal-form", true);
         jqchat("#team-modal-form .popupTitle").text(chatBundleData['exoplatform.chat.team.settings.title'])
@@ -1304,11 +1224,7 @@ var chatApplication = new ChatApplication();
       var teamId = $uitext.attr("data-id");
       uiChatPopupWindow.hide("team-modal-form", true);
 
-      var users = chatApplication.username;
-      $(".team-user-label").each(function(index) {
-        var name = $(this).attr("data-name");
-        users += ","+name;
-      });
+      var users = chatApplication.username + ',' + $('#team-add-user').val();
 
       chatApplication.saveTeamRoom(teamName, teamId, users);
 
@@ -1687,11 +1603,11 @@ ChatApplication.prototype.initChat = function() {
     var $uitext = jqchat("#team-modal-name");
     $uitext.val("");
     $uitext.attr("data-id", "---");
-    jqchat(".team-user-label").parent().remove();
-    var $userResults = jqchat(".team-users-results");
-    $userResults.css("display", "none");
-    $userResults.html("");
-    jqchat("#team-add-user").val("");
+
+    require(["SHARED/suggester"], function($) {
+      $('#team-add-user')[0].selectize.clear();
+    });
+
     uiChatPopupWindow.show("team-modal-form", true);
     jqchat("#team-modal-form .popupTitle").text(chatBundleData['exoplatform.chat.team.add.title'])
     $uitext.focus();
