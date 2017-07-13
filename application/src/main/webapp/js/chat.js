@@ -203,8 +203,6 @@ var chatApplication = new ChatApplication();
 
     $("#PlatformAdminToolbarContainer").addClass("no-user-selection");
 
-
-
     $.fn.setCursorPosition = function(position){
       if(this.length === 0) return this;
       return $(this).setSelection(position, position);
@@ -886,7 +884,7 @@ var chatApplication = new ChatApplication();
       $("#meeting-action-upload-link").trigger("click");
     });
 
-    $(" .chat-status-chat").parent().on("click", function() {
+    $(".chat-status-chat").parent().on("click", function() {
       var $chatStatusPanel = $(".chat-status-panel");
       if ($chatStatusPanel.css("display")==="none") {
         $chatStatusPanel.css("display", "inline-block");
@@ -2426,6 +2424,8 @@ ChatApplication.prototype.loadRoom = function(room) {
   jqchat("#room-users-title-nb-users").html("()");
 
   if(this.chatRoom.lastCallOwner !== this.targetUser) {
+    jqchat('#chats').off("scroll");
+
     // Disable composer while switching from a room to another
     chatApplication.enableMessageComposer(false);
     // Empty room messages and add loading icon

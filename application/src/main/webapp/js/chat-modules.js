@@ -66,16 +66,12 @@ ChatRoom.prototype.registerPlugin = function(plugin) {
 }
 
 ChatRoom.prototype.init = function(username, fullname, token, targetUser, targetFullname, isAdmin, dbName, callback) {
-  this.username = username;
   this.fullname = fullname;
-  this.token = token;
   this.targetUser = targetUser;
   this.targetFullname = targetFullname;
-  this.dbName = dbName;
   this.owner = "";
 
   var thiss = this;
-
   var chatStatus = jqchat("#chat-status");
   var chatServerUrl = chatStatus.attr("data-chat-server-url");
   var urlRoom = chatServerUrl+"/getRoom";
@@ -106,13 +102,47 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
       thiss.setUserPref("lastRoom", thiss.id, 60000);
       thiss.setUserPref("lastUsername", thiss.targetUser, 60000);
       thiss.setUserPref("lastFullName", thiss.targetFullname, 60000);
-      thiss.setUserPref("lastTS", "0");
-      thiss.setUserPref("lastUpdatedTS", "0");
 
-      thiss.refreshChat(true, function () {
+      thiss.refreshChat(function () {
         // always scroll to the last message when loading a chat room
         var $chats = thiss.messagesContainer;
         $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+
+        $chats.scroll(function() {
+          if (jqchat(this).scrollTop() === 0) {
+            thiss.messagesContainer.prepend('<div class="loadMore text-center"><img src="/chat/img/sync.gif" width="64px"></div>');
+            var messages = TAFFY(thiss.messages);
+            var toTimestamp = messages().order("timestamp asec").first().timestamp;
+            jqchat.ajax({
+              url: thiss.jzChatRead,
+              data: {
+                room: thiss.id,
+                user: thiss.username,
+                toTimestamp: toTimestamp,
+                dbName: thiss.dbName
+              },
+              headers: {
+                'Authorization': 'Bearer ' + thiss.token
+              },
+              context: this,
+              success: function (data) {
+                var loadMore = thiss.messagesContainer.find('.loadMore');
+                if (data.messages && data.messages.length > 0) {
+                  var last = thiss.messagesContainer.prop('scrollHeight');
+
+                  var $div = jqchat('<div></div>');
+                  thiss.showMessages(data.messages, $div);
+
+                  loadMore.after($div.html());
+                  thiss.messagesContainer.scrollTop(thiss.messagesContainer.prop('scrollHeight') - last);
+                } else {
+                  jqchat(this).off("scroll");
+                }
+                loadMore.remove();
+              }
+            });
+          }
+        });
 
         $chats.off("click.quote");
         $chats.on("click.quote", ".msg-action-quote", function () {
@@ -319,18 +349,12 @@ ChatRoom.prototype.emptyChatZone = function(showLoading) {
 /**
  * Refresh Chat : refresh messages and panels
  */
-ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
-  // if there is a currently executing request
-  // we don't have to interrupt it only when forceRefresh is invoqued
-  // which can happen only on user action, to switch from a room to another for example
+ChatRoom.prototype.refreshChat = function(callback) {
   if(this.currentRequest) {
-    if(forceRefresh) {
-      this.currentRequest.abort();
-      this.currentRequest = null;
-    } else {
-      return;
-    }
+    this.currentRequest.abort();
+    this.currentRequest = null;
   }
+
   if (this.id === "") return;
 
   if (typeof chatApplication != "undefined" && chatApplication.configMode) {
@@ -338,19 +362,12 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
   }
 
   if (this.username !== this.ANONIM_USER) {
-    var lastTS = this.getUserPref("lastTS") || 0;
-    var lastUpdatedTS = this.getUserPref("lastUpdatedTS" + this.username) || 0;
-
-    // retrieve last messages only
-    var fromTimestamp = Math.max(lastTS, lastUpdatedTS);
-
     var thiss = this;
     this.currentRequest = jqchat.ajax({
       url: this.jzChatRead,
       data: {
         room: this.id,
         user: this.username,
-        fromTimestamp: fromTimestamp,
         dbName: this.dbName
       },
       headers: {
@@ -374,16 +391,10 @@ ChatRoom.prototype.refreshChat = function(forceRefresh, callback) {
           return;
         }
 
-        if (data.messages.length > 0) {
-          var ts = data.timestamp;
-          var updatedTS = Math.max.apply(Math,TAFFY(data.messages)().select("lastUpdatedTimestamp").filter(Boolean));
-          if (updatedTS < 0) updatedTS = 0;
-          thiss.setUserPref("lastTS", ts, 600);
-          thiss.setUserPref("lastUpdatedTS", updatedTS, 600);
-
-          // thiss.addMessagesToLocalList(data);
+        thiss.messagesContainer.html(''); // Clear the room
+        if (data.messages && data.messages.length > 0) {
           thiss.showMessages(data.messages);
-        } else if(thiss.lastCallOwner !== thiss.targetUser || thiss.loadingNewRoom) {
+        } else if(thiss.loadingNewRoom) {
           // If room has changed but no messages was added there yet
           thiss.showMessages([]);
         }
@@ -480,7 +491,6 @@ ChatRoom.prototype.getMeetingNotes = function(room, fromTimestamp, toTimestamp, 
       }
     }
   });
-
 };
 
 /**
@@ -569,19 +579,19 @@ ChatRoom.prototype.pushMessage = function(data, callback) {
 /**
  * Convert local messages list in HTML output to display the list of messages
  */
-ChatRoom.prototype.showMessages = function(msgs) {
+ChatRoom.prototype.showMessages = function(msgs, $container) {
   if (msgs) {
     this.messages = msgs;
   } else {
     msgs = this.messages || [];
   }
 
-  this.messagesContainer.html(''); // Clear the room
   if (msgs.length > 0) {
     var thiss = this;
     var messages = TAFFY(msgs);
+
     messages().order("timestamp asec").each(function (message, i) {
-      thiss.showMessage(message);
+      thiss.showMessage(message, false, $container);
     });
   }
 
@@ -638,8 +648,13 @@ ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
   this.showMessage(msg, checkToScroll);
 }
 
-ChatRoom.prototype.showMessage = function(message, checkToScroll) {
-  var $chats = this.messagesContainer;
+ChatRoom.prototype.showMessage = function(message, checkToScroll, $container) {
+  if ($container) {
+    var $chats = $container;
+  } else {
+    var $chats = this.messagesContainer;
+  }
+
   if (checkToScroll) {
     // check if scroll was at max before the new message
     var scrollTopMax = $chats.prop('scrollHeight') - $chats.innerHeight();
@@ -736,13 +751,12 @@ ChatRoom.prototype.showMessage = function(message, checkToScroll) {
     }
   } else {  // An user message
     if (message.user != prevUser) {
-      $msgDiv = jqchat('<div class="msRow">');
+      $msgDiv = jqchat('<div class="msRow" data-user="' + message.user + '">');
       $chats.append($msgDiv);
 
       if (message.user == this.username) {
         $msgDiv.addClass("rowOdd odd msMy");
       }
-      $msgDiv.data("user", message.user);
 
       out += "<div class='msMessagesGroup clearfix'>" +
                 "<div class='msUserAvatar'>";
@@ -777,11 +791,9 @@ ChatRoom.prototype.showMessage = function(message, checkToScroll) {
     $msgDiv.append(out);
   }
 
-  if (checkToScroll) {
-    // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
-    if (scrollAtMax) {
-      $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
-    }
+  // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
+  if (checkToScroll && scrollAtMax) {
+    $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
   }
 }
 

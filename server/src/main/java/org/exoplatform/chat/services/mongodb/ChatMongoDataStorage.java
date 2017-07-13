@@ -226,7 +226,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
-    Date today = calendar.getTime();
 
     String roomType = getTypeRoomChat(room, dbName);
     DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);

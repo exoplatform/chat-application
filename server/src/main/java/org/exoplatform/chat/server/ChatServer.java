@@ -166,7 +166,7 @@ public class ChatServer
 
   @Resource
   @Route("/read")
-  public Response.Content read(String user, String token, String room, String fromTimestamp,
+  public Response.Content read(String user, String token, String room, String fromTimestamp, String toTimestamp,
                                String isTextOnly, String dbName) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
@@ -174,9 +174,13 @@ public class ChatServer
     }
 
     Long from = null;
+    Long to = null;
     try {
       if (fromTimestamp != null && !fromTimestamp.isEmpty()) {
         from = Long.parseLong(fromTimestamp);
+      }
+      if (toTimestamp != null && !toTimestamp.isEmpty()) {
+        to = Long.parseLong(toTimestamp);
       }
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
@@ -184,7 +188,7 @@ public class ChatServer
 
     String data = null;
     try {
-      data = chatService.read(user, room, "true".equals(isTextOnly), from, dbName);
+      data = chatService.read(user, room, "true".equals(isTextOnly), from, to, dbName);
     } catch (ChatException e) {
       return Response.content(e.getStatus(), e.getMessage());
     }
