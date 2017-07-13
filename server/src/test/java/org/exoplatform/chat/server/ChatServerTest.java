@@ -41,7 +41,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", null);
 
     // Then
     assertNotNull(read);
@@ -63,7 +63,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("james", token, null);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
 
     // Then
     assertNotNull(read);
@@ -88,7 +88,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null, "false", null);
 
     // Then
     assertNotNull(read);
@@ -111,7 +111,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     String token = tokenService.getToken("james");
     tokenService.addUser("james", token, null);
 
-    Response.Content read = chatServer.read("james", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
 
     assertNotNull(read);
     assertEquals(403, read.getCode());
@@ -139,7 +139,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", null);
 
     // Then
     assertNotNull(read);
@@ -168,7 +168,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("james", token, null);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", "false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
 
     // Then
     assertNotNull(read);
