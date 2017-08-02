@@ -108,10 +108,6 @@ public class MessageBean {
         e.printStackTrace();
       }
     }
-    else
-    {
-      msg.put("options", "");
-    }
     msg.put("type", type);
     msg.put("isSystem", isSystem);
 
