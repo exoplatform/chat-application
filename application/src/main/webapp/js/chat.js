@@ -1692,7 +1692,7 @@ ChatApplication.prototype.initChat = function() {
     thiss.targetUser = jqchat(".room-link:first",this).attr("user-data");
     thiss.targetFullname = jqchat(".room-link:first",this).text();
 
-    chatNotification.getStatus(thiss.targetUser, function(targetUser, status) {
+    chatNotification.getStatus(thiss.targetUser, function(status) {
       jqchat("#userRoomStatus > i").attr("class", "");
       jqchat("#userRoomStatus > i").addClass("user-"+status);
     });
@@ -3007,8 +3007,8 @@ ChatApplication.prototype.displayVideoCallOnChatApp = function () {
     }
   });
 
-  chatNotification.getStatus(chatApplication.targetUser, function(targetUser, activity) {
-    if (targetUser.indexOf("space-") === -1 && targetUser.indexOf("team-") === -1) {
+  chatNotification.getStatus(chatApplication.targetUser, function(activity) {
+    if (chatApplication.targetUser.indexOf("space-") === -1 && chatApplication.targetUser.indexOf("team-") === -1) {
       if (activity !== "offline" && activity !== "invisible") {
         jqchat(".btn-weemo").removeClass("disabled");
         jqchat(".btn-weemo-conf").removeClass("disabled");
