@@ -297,6 +297,10 @@ ChatRoom.prototype.onShowMessages = function(callback) {
 
 ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callback) {
   if(msg.trim().length != 0 || options.type) {
+    if (jqchat.isEmptyObject(options)) {
+      options = null;
+    }
+
     var data = {
       "room": this.id,
       "clientId": new Date().getTime().toString(),
@@ -932,7 +936,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
   }
   var msg = "";
   var thiss = this;
-  if (options!==undefined) {
+  if (options!==undefined && !jqchat.isEmptyObject(options)) {
     var out = "";
 
     if (options.type ==="type-me") {

@@ -102,7 +102,7 @@ public class CometdService {
         String clientId = data.get("clientId").toString();
         String msg = data.get("msg").toString();
         String isSystem = data.get("isSystem").toString();
-        String options = data.get("options").toString();
+        String options = data.get("options") != null ? data.get("options").toString() : null;
 
         try {
           chatService.write(clientId, msg, sender, room, isSystem, options, dbName);
