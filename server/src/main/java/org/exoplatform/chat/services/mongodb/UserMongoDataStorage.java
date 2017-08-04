@@ -539,14 +539,16 @@ public class UserMongoDataStorage implements UserDataStorage {
 
   @Override
   public RoomBean getRoom(String user, String roomId, String dbName) {
-    RoomBean roomBean = new RoomBean();
-    roomBean.setRoom(roomId);
+    RoomBean roomBean = null;
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext())
     {
+      roomBean = new RoomBean();
+      roomBean.setRoom(roomId);
+
       DBObject doc = cursor.next();
       if (doc.containsField("timestamp"))
       {
