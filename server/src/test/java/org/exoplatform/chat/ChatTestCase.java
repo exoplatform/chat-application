@@ -135,6 +135,21 @@ public class ChatTestCase extends AbstractChatTestCase
   }
 
   @Test
+  public void testWriteTextInNonExistingRoom() throws Exception
+  {
+    ChatService chatService = ServiceBootstrap.getChatService();
+    String roomId = "nonexistingroomid";
+
+    try {
+      chatService.write("foo", "john", roomId, "false", null);
+      fail("Sending a message in a non existing room should fail");
+    } catch (ChatException e) {
+      // expected exception
+      assertEquals(403, e.getStatus());
+    }
+  }
+
+  @Test
   public void testWriteJson() throws Exception
   {
     ChatService chatService = ServiceBootstrap.getChatService();
