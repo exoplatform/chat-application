@@ -63,6 +63,10 @@
       <param-value>120000</param-value>
     </init-param>
     <init-param>
+      <param-name>maxMessageSize</param-name>
+      <param-value>1048576</param-value>
+    </init-param>
+    <init-param>
       <param-name>maxSessionsPerBrowser</param-name>
       <param-value>-1</param-value>
     </init-param>
