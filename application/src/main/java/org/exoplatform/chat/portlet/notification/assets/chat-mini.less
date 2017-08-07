@@ -1,4 +1,10 @@
 /* Chat mini area [inherit from chat area] */
+.mini-chat.offline {
+  .uiIconNotification {
+    display: initial;
+  }
+}
+
 .mini-chat {
   display: none;
   position: fixed;
@@ -13,6 +19,7 @@
 
   .uiIconNotification {
     color: #c72222;
+    display: none;
   }
 
   &.uiBox {

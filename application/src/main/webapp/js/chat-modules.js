@@ -1347,6 +1347,15 @@ String.prototype.endsWith = function(suffix) {
     // Initialize mini-chat window only if it is NOT in Chat application
     if (typeof chatApplication === "undefined") {
       var $miniChat = $(".mini-chat");
+
+      $("#chat-status").on('chat:connected', function(event, data) {
+        $miniChat.removeClass('offline');
+      });
+
+      $("#chat-status").on('chat:disconnected', function(event, data) {
+        $miniChat.addClass('offline');
+      });
+
       $miniChat.each( function(index) {
         var $obj = $(this);
         $obj.attr("data-index", index);
