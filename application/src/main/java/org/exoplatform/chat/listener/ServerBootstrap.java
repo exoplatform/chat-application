@@ -169,7 +169,7 @@ public class ServerBootstrap {
       String serverName = request.getServerName();
       int serverPort= request.getServerPort();
       serverBase = scheme+"://"+serverName;
-      if (serverPort!=80) serverBase += ":"+serverPort;
+      if (serverPort != 80) serverBase += ":" + serverPort;
     }
 
     return serverBase;
