@@ -55,9 +55,6 @@ import juzu.request.UserContext;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.commons.utils.HTMLSanitizer;
-import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.notification.LinkProviderUtils;
-import org.exoplatform.social.notification.Utils;
 
 import juzu.MimeType;
 import juzu.Path;
@@ -276,7 +273,7 @@ public class ChatServer
           senderMail = userBean.getEmail();
         }
       }
-      String html = reportBean.getAsHtml(title, serverBase,locale);
+      String html = reportBean.getAsHtml(title, serverBase, locale);
 
       // inline images
       String prevUser = "";
@@ -285,7 +282,7 @@ public class ChatServer
       for(MessageBean messageBean : reportBean.getMessages()) {
         if(!messageBean.getUser().equals(prevUser)) {
           String keyAvatar = messageBean.getUser() + index;
-          String valueAvatar = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE)+ChatService.USER_AVATAR_URL.replace("{}",messageBean.getUser());
+          String valueAvatar = serverBase + ChatService.USER_AVATAR_URL.replace("{}", messageBean.getUser());
           inlineImages.put(keyAvatar,valueAvatar);
           index ++;
         }
@@ -982,11 +979,11 @@ public class ChatServer
     }
     
     message.setSubject(subject, "UTF-8");
+    // use a MimeMultipart as we need to handle the file attachments
+    Multipart multipart = new MimeMultipart();
     // Create a message part to represent the body text
     MimeBodyPart messageBodyPart = new MimeBodyPart();
     messageBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
-    // use a MimeMultipart as we need to handle the file attachments
-    Multipart multipart = new MimeMultipart();
     // add the message body to the mime message
     multipart.addBodyPart(messageBodyPart);
     
@@ -1006,7 +1003,7 @@ public class ChatServer
         messageBodyPart.setContentID("<" + contentId + ">");
         messageBodyPart.setDisposition(MimeBodyPart.INLINE);
         multipart.addBodyPart(messageBodyPart);
-        }
+      }
     }
     // Put all message parts in the message
     message.setContent(multipart);
