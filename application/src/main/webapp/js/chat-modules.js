@@ -825,7 +825,7 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
   }
   msRightInfo +=            this.getMessageInfo(message);
   msRightInfo += "        </div>";
-  if (message.type !== "DELETED") {
+  if (message.type !== "DELETED" && message.isSystem !== true) {
     msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+message.msg+"</span>";
     msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
     if (message.user === this.username) {
