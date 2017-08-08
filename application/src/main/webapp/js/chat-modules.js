@@ -1331,16 +1331,17 @@ String.prototype.endsWith = function(suffix) {
 
   $(document).ready(function() {
 
-    $("#chat-status").on('chat:connected', function(event, data) {
-      setTimeout(function() {
-        // Sync local message with servers
-        new ChatRoom(chatNotification.username, chatNotification.token, chatNotification.dbName).pushPendingMessages();
-      }, 1000);
-    });
-
     // TODO Workaround to fix the problem of chat-module.js is loaded twice.
     if (!window.chatModuleLoaded) {
       window.chatModuleLoaded = true;
+
+      $("#chat-status").on('chat:connected', function(event, data) {
+        setTimeout(function() {
+          // Sync local message with servers
+          new ChatRoom(chatNotification.username, chatNotification.token, chatNotification.dbName).pushPendingMessages();
+        }, 1000);
+      });
+
       loadSetting(null, true);
     }
 
