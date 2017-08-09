@@ -123,23 +123,25 @@ var desktopNotification = (function() {
   }
 
   var highlightMessage = function(msgObject) {
-    var highlightedMsg = "";
-    switch (msgObject.options.type) {
-      case ROOM_TYPE_HAND:
-        highlightedMsg = "raises hand: " + msgObject.content;
-        break;
-      case ROOM_TYPE_LINK:
-        highlightedMsg = msgObject.options.link;
-        break;
-      case ROOM_TYPE_MEETING_START:
-        highlightedMsg = "Start Meeting";
-        break;
-      case ROOM_TYPE_MEETING_STOP:
-        highlightedMsg = "End Meeting";
-        break;
-      default:
-        highlightedMsg = msgObject.content;
+    var highlightedMsg = msgObject.content;
+
+    if (msgObject.options) {
+      switch (msgObject.options.type) {
+        case ROOM_TYPE_HAND:
+          highlightedMsg = "raises hand: " + msgObject.content;
+          break;
+        case ROOM_TYPE_LINK:
+          highlightedMsg = msgObject.options.link;
+          break;
+        case ROOM_TYPE_MEETING_START:
+          highlightedMsg = "Start Meeting";
+          break;
+        case ROOM_TYPE_MEETING_STOP:
+          highlightedMsg = "End Meeting";
+          break;
+      }
     }
+
     return highlightedMsg;
   }
 
