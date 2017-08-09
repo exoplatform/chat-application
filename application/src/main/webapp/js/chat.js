@@ -284,7 +284,7 @@ var chatApplication = new ChatApplication();
         var $uimsg = jqchat(".msMy").find(".msg-text").last();
         var $uimsgdata = $uimsg.find(".msg-data");
         if ($uimsgdata.length === 1) {
-          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.text());
+          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
         }
       }
 
@@ -1784,7 +1784,10 @@ ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
     return;
   }
 
-  msgHtml = msgData.replace(eval("/<br>/g"), "\n");
+  msgHtml = msgData.replace(/&amp;/g, "&");
+  msgHtml = msgHtml.replace(/&lt;/g, "<");
+  msgHtml = msgHtml.replace(/&gt;/g, ">");
+  msgHtml = msgHtml.replace(/<br>/g, "\n");
 
   var $uitextarea = jqchat("#edit-modal-area");
   $uitextarea.val(msgHtml);
