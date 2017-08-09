@@ -163,7 +163,7 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
         $chats.off("click.edit");
         $chats.on("click.edit", ".msg-action-edit", function () {
           var $uimsgdata = jqchat(this).siblings(".msg-data");
-          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.text());
+          chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
         });
 
         $chats.off("click.savenotes");
