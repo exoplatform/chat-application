@@ -94,6 +94,8 @@ public interface UserService
 
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 
+  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName);
+
   public String setStatus(String user, String status, String dbName);
 
   public void setAsAdmin(String user, boolean isAdmin, String dbName);
