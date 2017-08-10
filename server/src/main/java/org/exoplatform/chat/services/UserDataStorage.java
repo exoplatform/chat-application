@@ -84,11 +84,9 @@ public interface UserDataStorage {
 
   List<SpaceBean> getSpaces(String user, String dbName);
 
-  List<UserBean> getUsers(String roomId, String dbName);
+  List<UserBean> getUsers(String roomId, String filter, int limit, String dbName);
 
   List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
-
-  List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
 
   String setStatus(String user, String status, String dbName);
 

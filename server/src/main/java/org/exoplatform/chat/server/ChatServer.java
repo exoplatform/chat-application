@@ -891,19 +891,23 @@ public class ChatServer
 
   @Resource
   @Route("/users")
-  public Response.Content getUsers(String user, String token, String room, String filter, String dbName)
+  public Response.Content getUsers(String user, String token, String room, String filter, String limit, String dbName)
   {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
     }
 
-    List<UserBean> users;
-    if (room != null && !"".equals(room)) {
-      users = userService.getUsers(room, dbName);
-    } else {
-      users = userService.getUsers(filter, true, dbName);
+    int limit_ = 0;
+    try {
+      if (limit != null) {
+        limit_ = Integer.valueOf(limit);
+      }
+    } catch (NumberFormatException e) {
+      return Response.status(400).content("The 'limit' parameter value is invalid");
     }
+
+    List<UserBean> users = userService.getUsers(room, filter, limit_, dbName);
 
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);

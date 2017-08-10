@@ -200,16 +200,20 @@ public class UserServiceImpl implements UserService {
     return userStorage.getSpaces(user, dbName);
   }
 
-  public List<UserBean> getUsers(String roomId, String dbName) {
-    return userStorage.getUsers(roomId, dbName);
-  }
-  
   public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName) {
     return userStorage.getUsersInRoomChatOneToOne(roomId, dbName);
   }
-  
+
+  public List<UserBean> getUsers(String roomId, String dbName) {
+    return userStorage.getUsers(roomId, null, 0, dbName);
+  }
+
   public List<UserBean> getUsers(String filter, boolean fullBean, String dbName) {
-    return userStorage.getUsers(filter, fullBean, dbName);
+    return userStorage.getUsers(null, filter, 0, dbName);
+  }
+
+  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName) {
+    return userStorage.getUsers(roomId, filter, limit, dbName);
   }
 
   public String setStatus(String user, String status, String dbName) {

@@ -635,46 +635,6 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public List<UserBean> getUsers(String roomId, String dbName)
-  {
-    //removing "space-" prefix
-    if (roomId.indexOf(ChatService.SPACE_PREFIX)==0)
-    {
-      roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
-    }
-    //removing "team-" prefix
-    if (roomId.indexOf(ChatService.TEAM_PREFIX)==0)
-    {
-      roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
-    }
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-
-    BasicDBObject spaces = new BasicDBObject("spaces", roomId);
-    BasicDBObject teams = new BasicDBObject("teams", roomId);
-    ArrayList<BasicDBObject> orList = new ArrayList<BasicDBObject>();
-    orList.add(spaces);
-    orList.add(teams);
-    BasicDBObject query = new BasicDBObject("$or", orList);
-
-    DBCursor cursor = coll.find(query);
-    List<UserBean> users = new ArrayList<UserBean>();
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      UserBean userBean = new UserBean();
-      userBean.setName(doc.get("user").toString());
-      Object prop = doc.get("fullname");
-      userBean.setFullname((prop!=null)?prop.toString():"");
-      prop = doc.get("email");
-      userBean.setEmail((prop!=null)?prop.toString():"");
-      prop = doc.get("status");
-      userBean.setStatus((prop!=null)?prop.toString():"");
-      users.add(userBean);
-    }
-    return users;
-  }
-  
-  @Override
   public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName) {
     List<UserBean> users = new ArrayList<UserBean>();
     DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
@@ -691,33 +651,52 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
     return users;
   }
-  
-  @Override
-  public List<UserBean> getUsers(String filter, boolean fullBean, String dbName) {
-    filter = filter.replaceAll(" ", ".*");
-    List<UserBean> users = new ArrayList<UserBean>();
+
+  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName) {
+    if (roomId == null && filter == null) {
+      throw new IllegalArgumentException();
+    }
+
+    List<BasicDBObject> andList = new ArrayList<>();
+    if (roomId != null && !"".equals(roomId)) {
+      // removing "space-" and "team-" prefix
+      if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+      } else if (roomId.indexOf(ChatService.TEAM_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
+      }
+
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("spaces", roomId));
+      orList.add(new BasicDBObject("teams", roomId));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    if (filter != null) {
+      filter = filter.replaceAll(" ", ".*");
+      Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("user", regex));
+      orList.add(new BasicDBObject("fullname", regex));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    DBObject query = new BasicDBObject("$and", andList);
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
-    Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
-    BasicDBObject un = new BasicDBObject("user", regex);
-    BasicDBObject fn = new BasicDBObject("fullname", regex);
-    ArrayList<BasicDBObject> orList = new ArrayList<BasicDBObject>();
-    orList.add(un);
-    orList.add(fn);
-    BasicDBObject query = new BasicDBObject("$or", orList);
-
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
+    DBCursor cursor = coll.find(query).limit(limit);
+    List<UserBean> users = new ArrayList<>();
+    while (cursor.hasNext()) {
       DBObject doc = cursor.next();
       UserBean userBean = new UserBean();
       userBean.setName(doc.get("user").toString());
       Object prop = doc.get("fullname");
-      userBean.setFullname((prop!=null)?prop.toString():"");
+      userBean.setFullname((prop != null) ? prop.toString() : "");
       prop = doc.get("email");
-      userBean.setEmail((prop!=null)?prop.toString():"");
+      userBean.setEmail((prop != null) ? prop.toString() : "");
       prop = doc.get("status");
-      userBean.setStatus((prop!=null)?prop.toString():"");
+      userBean.setStatus((prop != null) ? prop.toString() : "");
       users.add(userBean);
     }
     return users;

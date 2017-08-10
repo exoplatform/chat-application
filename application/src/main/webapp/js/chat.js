@@ -1114,6 +1114,7 @@ var chatApplication = new ChatApplication();
               data: {
                 "filter": query,
                 "user": chatApplication.username,
+                "limit": 10,
                 "dbName": chatApplication.dbName
               },
               headers: {
