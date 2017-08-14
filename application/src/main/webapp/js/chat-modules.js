@@ -810,6 +810,9 @@ ChatRoom.prototype.generateMessageHTML = function(message) {
     noEditCssClass = "noEdit";
   } else {
     tempMsg = this.messageBeautifier(message, message.options);
+    if (message.isSystem === true) {
+      noEditCssClass = "noEdit";
+    }
   }
   if (message.msgId) {
     out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '">';
