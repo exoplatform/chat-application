@@ -936,6 +936,7 @@ ChatRoom.prototype.messageBeautifier = function(objMessage, options) {
   if (!objMessage.msgId) {
     // HTML encoding for local displaying message.
     message = jqchat("<div></div>").text(message).html();
+    message = message.replace(/\n/g, '<br>');
   }
   var msg = "";
   var thiss = this;
