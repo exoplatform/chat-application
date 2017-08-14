@@ -35,23 +35,6 @@
                 @Binding(value = org.exoplatform.commons.api.ui.PlugableUIService.class)
         }
 )
-@Scripts(location = AssetLocation.SERVER,
-        value =  {
-            @Script(value = "js/jquery-1.8.3.min.js", id = "jquery", location = AssetLocation.SERVER),
-            @Script(value = "js/jquery-juzu-utils-0.2.0.js", depends = "jquery", id = "juzu-utils", location = AssetLocation.SERVER),
-            @Script(value = "js/taffy-min.js", id="taffy"),
-            @Script(value = "js/UIUserProfilePopup.js", id="chatUserPopupPlugin", depends = {"jquery"} ),
-            @Script(value = "js/chat.js", id="chatJs", depends = {"chat-modules", "chat_notif", "chatUserPopupPlugin", "jquery", "taffy"} ),
-            @Script(value = "js/chat-modules.js", id="chat-modules", depends = {"jquery", "desktopNotification", "taffy"} ),
-            @Script(value = "js/switch_button.js", id="chat_notif", depends = {"jquery"} ), 
-            @Script(value = "js/desktopNotification.js", id="desktopNotification", depends = {"jquery"} ),
-            @Script(value = "js/sh_main.min.js", id="shMain"),
-            @Script(value = "js/sh_html.min.js", id="shHtml"),
-            @Script(value = "js/sh_java.min.js", id="shJava"),
-            @Script(value = "js/sh_javascript.min.js", id="shJs"),
-            @Script(value = "js/sh_css.min.js", id="shCss")
-        }
-)
 @Stylesheets({
         @Stylesheet(value = "/org/exoplatform/chat/portlet/chat/assets/chat.css", location = AssetLocation.APPLICATION, id = "chat"),
         @Stylesheet(value = "css/sh_style.css", location = AssetLocation.SERVER, id="shStyle"),
@@ -61,7 +44,7 @@
 })
 
 @Less(value = {"chat.less", "chat-normal.less", "chat-responsive.less", "chat-public.less"}, minify = true)
-@Assets({"chatJs", "shMain", "shHtml", "shJava", "shJs", "shCss", "chat", "shStyle"})
+@Assets({"chat", "shStyle"})
 package org.exoplatform.chat.portlet.chat;
 
 import juzu.Application;

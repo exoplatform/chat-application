@@ -20,24 +20,9 @@
 @Application(defaultController = StatisticsApplication.class)
 @Portlet(name="StatisticsPortlet")
 
-@Scripts({
-        @Script(value = "js/jquery-1.8.3.min.js", id = "jquery", location = AssetLocation.SERVER),
-        @Script(value = "js/stats.js", depends = "jquery", location = AssetLocation.SERVER)
-})
 @Stylesheets({
         @Stylesheet(value = "/org/exoplatform/chat/portlet/statistics/assets/statistics.css", location = AssetLocation.APPLICATION)
 })
-/*@Assets(
-        location = AssetLocation.SERVER,
-        scripts = {
-                @Script(src = "js/jquery-1.8.3.min.js", id = "jquery"),
-                @Script(src = "js/stats.js", depends = "jquery")
-        },
-        stylesheets = {
-                @Stylesheet(src = "/org/exoplatform/chat/portlet/statistics/assets/statistics.css", location = AssetLocation.APPLICATION)
-        }
-)*/
-
 @Less(value = "statistics.less", minify = true)
 @Assets("*")
 package org.exoplatform.chat.portlet.statistics;

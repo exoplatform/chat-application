@@ -3,9 +3,9 @@ package org.exoplatform.chat.portlet.notification;
 import juzu.Resource;
 import juzu.Response;
 import juzu.impl.common.Tools;
-import juzu.plugin.ajax.Ajax;
 import juzu.request.ApplicationContext;
 import juzu.request.UserContext;
+import org.exoplatform.commons.juzu.ajax.Ajax;
 
 import javax.enterprise.context.ApplicationScoped;
 

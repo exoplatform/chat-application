@@ -111,7 +111,7 @@ public class ChatServer
 
   @Resource
   @Route("/whoIsOnline")
-  public Response.Content whoIsOnline(String user, String onlineUsers, String token, String filter, String isAdmin, String limit, String dbName)
+  public Response.Content whoIsOnline(String user, String onlineUsers, String token, String filter, String limit, String dbName)
   {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
@@ -127,7 +127,7 @@ public class ChatServer
     }
 
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
-    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, "true".equals(isAdmin), ilimit,
+    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, false, ilimit,
             notificationService, tokenService, dbName);
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
@@ -606,11 +606,8 @@ public class ChatServer
       } else if (targetUser.startsWith(ChatService.EXTERNAL_PREFIX)) {
         room = chatService.getExternalRoom(targetUser, dbName);
       } else {
-        String finalUser = ("true".equals(isAdmin) && !user.startsWith(UserService.ANONIM_USER) && targetUser
-                .startsWith(UserService.ANONIM_USER)) ? UserService.SUPPORT_USER : user;
-
         ArrayList<String> users = new ArrayList<String>(2);
-        users.add(finalUser);
+        users.add(user);
         users.add(targetUser);
         room = chatService.getRoom(users, dbName);
       }

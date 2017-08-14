@@ -17,6 +17,7 @@
  * site: http://www.fsf.org.
  */
 (function ($, base, common, msg) {
+    // Declare as a global variable to be used inline HTML of the mini calendar.
     uiMiniCalendar = {
         calendarId: "UICalendarControl",
         dateField: null,
@@ -35,7 +36,23 @@
 
         hideCalendarHandler: null,
 
-        init: function (field, isDisplayTime, datePattern, value, monthNames) {
+        init: function(id) {
+          var dateField = document.getElementById(id);
+          dateField.onfocus = function () {
+            uiMiniCalendar.create(this, false, "MM/dd/yyyy", "", chatBundleData["exoplatform.chat.monthNames"]);
+          };
+          dateField.onkeyup = function () {
+            uiMiniCalendar.show();
+          };
+          dateField.onkeydown = function (event) {
+            uiMiniCalendar.onTabOut(event);
+          };
+          dateField.onclick = function (event) {
+            event.cancelBubble = true;
+          };
+        },
+
+        create: function (field, isDisplayTime, datePattern, value, monthNames) {
             this.isDisplayTime = isDisplayTime;
 
             if (this.dateField) {
@@ -54,22 +71,20 @@
                 this.weekdays = weekdays;
             }
 
-            if (!document.getElementById(this.calendarId))
-                this.create();
-            this.show();
-        },
-
-        create: function () {
-            var clndr = document.createElement("div");
-            clndr.id = this.calendarId;
-            clndr.style.position = "absolute";
-            clndr.style.zIndex = "99";
-            if (base.Browser.isIE6()) {
+            if (!document.getElementById(this.calendarId)) {
+              var clndr = document.createElement("div");
+              clndr.id = this.calendarId;
+              clndr.style.position = "absolute";
+              clndr.style.zIndex = "99";
+              if (base.Browser.isIE6()) {
                 clndr.innerHTML = "<div class='calendarComponent uiCalendarComponent' ><iframe id='" + this.calendarId + "IFrame' frameBorder='0' style='position:absolute;height:100%;' scrolling='no'></iframe><div style='position:absolute;'></div></div>";
-            } else {
+              } else {
                 clndr.innerHTML = "<div class='calendarComponent uiCalendarComponent' ><div style='position: absolute; width: 100%;'></div></div>";
+              }
+              document.body.appendChild(clndr);
             }
-            document.body.appendChild(clndr);
+
+            this.show();
         },
 
         show: function () {

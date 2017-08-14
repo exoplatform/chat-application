@@ -35,7 +35,6 @@ public interface UserService
   public static final String STATUS_AWAY = "away";
   public static final String STATUS_INVISIBLE = "invisible";
   public static final String STATUS_OFFLINE = "offline";
-  public static final String STATUS_NONE = "none";
   public static final String STATUS_SPACE = "space";
   public static final String STATUS_TEAM = "team";
 
@@ -45,7 +44,6 @@ public interface UserService
   public static final String PREFERRED_ROOM_NOTIFICATION_TRIGGER = "preferredRoomNotificationTrigger";
   public static final String PREFERRED_NOTIFICATION = "preferredNotification";
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
-  public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
 
   /**
    * @deprecated use {@link #addFavorite(String, String, String)} and {@link #removeFavorite(String, String, String)} instead

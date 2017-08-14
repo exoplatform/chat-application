@@ -21,7 +21,7 @@
  * A class that manages a popup window
  */
 (function($, base, common, uiMaskLayer, uiPopup) {
-  uiChatPopupWindow = {
+  var uiChatPopupWindow = {
     superClass : uiPopup,
 
     // TODO: manage zIndex properties

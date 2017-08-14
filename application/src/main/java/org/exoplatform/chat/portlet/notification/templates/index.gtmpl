@@ -58,13 +58,6 @@
 </div>
 <div class="mini-chat uiBox" style="position:fixed;bottom:0;right:10px;" data-position="right"></div>
 <script type="text/javascript">
-  (function() {
-    var chatMods = document.createElement('script'); chatMods.type = 'text/javascript'; chatMods.async = true;
-    chatMods.src = '/chat/js/chat-modules.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(chatMods);
-  })();
-
-
   var fromChromeApp = false;
   var appWindow, appOrigin;
   function listenerMessage(event){

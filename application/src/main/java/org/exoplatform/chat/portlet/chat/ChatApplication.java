@@ -47,6 +47,7 @@ import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.PlugableUIService;
 import org.exoplatform.commons.api.ui.RenderContext;
+import org.exoplatform.commons.juzu.ajax.Ajax;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
@@ -64,7 +65,6 @@ import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
 import juzu.impl.common.Tools;
-import juzu.plugin.ajax.Ajax;
 import juzu.template.Template;
 
 @SessionScoped
@@ -88,7 +88,7 @@ public class ChatApplication
   OrganizationService organizationService_;
 
   SpaceService spaceService_;
-  
+
   PlugableUIService uiService;
 
   String dbName;
@@ -107,9 +107,9 @@ public class ChatApplication
 
   @Inject
   WikiService wikiService_;
-  
+
   public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";
-  
+
   public static final String CHAT_EXTENSION_MENU = "chat_extension_menu";
 
   private static final String EX_ACTION_NAME = "extension_action";
@@ -127,14 +127,8 @@ public class ChatApplication
   public Response.Content index(ApplicationContext appContext, UserContext userContext, SecurityContext securityContext)
   {
     remoteUser_ = securityContext.getRemoteUser();
-    boolean isPublic = (remoteUser_==null);
-    if (isPublic) remoteUser_ = UserService.ANONIM_USER;
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
-    String publicModeEnabled = PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE);
-    String servicesImplementation = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION);
-    String dbServerMode = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE);
-    String demoMode = (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(dbServerMode) || PropertyManager.PROPERTY_SERVICE_IMPL_JCR.equals(servicesImplementation))?"DEV":"PROD";
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
     initChatProfile();
@@ -156,22 +150,22 @@ public class ChatApplication
     ResourceBundle bundle = appContext.resolveBundle(locale);
     RenderContext exMenuCtx = new RenderContext(CHAT_EXTENSION_MENU);
     exMenuCtx.setRsBundle(bundle);
-    List<org.exoplatform.commons.api.ui.Response> menuResponse = this.uiService.render(exMenuCtx);    
-        
+    List<org.exoplatform.commons.api.ui.Response> menuResponse = this.uiService.render(exMenuCtx);
+
     RenderContext exPopupCtx = new RenderContext(CHAT_EXTENSION_POPUP);
     exPopupCtx.setActionUrl(ChatApplication_.processAction().toString());
     exPopupCtx.setRsBundle(bundle);
-    List<org.exoplatform.commons.api.ui.Response> popupResponse = this.uiService.render(exPopupCtx); 
-    
+    List<org.exoplatform.commons.api.ui.Response> popupResponse = this.uiService.render(exPopupCtx);
+
     StringBuilder extMenu = new StringBuilder();
-    StringBuilder extPopup = new StringBuilder();    
+    StringBuilder extPopup = new StringBuilder();
     try {
-      for (org.exoplatform.commons.api.ui.Response menu : menuResponse) {        
+      for (org.exoplatform.commons.api.ui.Response menu : menuResponse) {
         extMenu.append(new String(menu.getData(), "UTF-8"));
       }
       for (org.exoplatform.commons.api.ui.Response popup : popupResponse) {
         extPopup.append(new String(popup.getData(), "UTF-8"));
-      }      
+      }
     } catch (Exception ex) {
       LOG.log(Level.SEVERE, ex.getMessage(), ex);
     }
@@ -185,15 +179,10 @@ public class ChatApplication
             .set("token", token_)
             .set("chatServerURL", chatServerURL)
             .set("fullname", fullname)
-            .set("admin", String.valueOf(isAdmin_))
             .set("teamAdmin", String.valueOf(isTeamAdmin_))
             .set("chatIntervalSession", chatIntervalSession)
             .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
-            .set("publicMode", isPublic)
-            .set("publicModeEnabled", publicModeEnabled)
-            .set("view", view)
             .set("fullscreen", fullscreen)
-            .set("demoMode", demoMode)
             .set("today", todayDate)
             .set("dbName", dbName)
             .set("extPopup", extPopup)
@@ -210,12 +199,9 @@ public class ChatApplication
    * Init Chat user profile
    */
   public void initChatProfile() {
-    // Update new fullName;
-    if (!UserService.ANONIM_USER.equals(remoteUser_)) {
-      fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
-    }
+    fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
 
-    if (!profileInitialized_ && !UserService.ANONIM_USER.equals(remoteUser_))
+    if (!profileInitialized_)
     {
       try
       {
@@ -223,16 +209,10 @@ public class ChatApplication
         token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
-        addUser(remoteUser_, token_, dbName);
+        ServerBootstrap.addUser(remoteUser_, token_, dbName);
 
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_, dbName);
-
-        if ("true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_MODE)))
-        {
-          Collection ms = organizationService_.getMembershipHandler().findMembershipsByUserAndGroup(remoteUser_, PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_ADMIN_GROUP));
-          isAdmin_= (ms!=null && ms.size()>0);
-        }
 
         if (isTeamAdmin_==null)
         {
@@ -240,10 +220,7 @@ public class ChatApplication
           isTeamAdmin_ = (ms!=null && ms.size()>0);
         }
 
-        if (!UserService.ANONIM_USER.equals(remoteUser_))
-        {
-          ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
-        }
+        ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
 
         profileInitialized_ = true;
       }
@@ -254,11 +231,8 @@ public class ChatApplication
       }
     }
 
-    if (!UserService.ANONIM_USER.equals(remoteUser_))
-    {
-      // Set user's Spaces in the DB
-      saveSpaces(remoteUser_, dbName);
-    }
+    // Set user's Spaces in the DB
+    saveSpaces(remoteUser_, dbName);
   }
 
   @Ajax
@@ -327,10 +301,10 @@ public class ChatApplication
     ActionContext actContext = new ActionContext(CHAT_EXTENSION_POPUP, actionName);
     actContext.setParams(p);
     org.exoplatform.commons.api.ui.Response response = uiService.processAction(actContext);
-    
+
     if (response != null) {
       return Response.ok(new String(response.getData(), Charset.forName("UTF-8")))
-          .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");      
+          .withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
     } else {
       return Response.status(HTTPStatus.NOT_FOUND)
           .withHeader("Cache-Control", "no-cache");
@@ -398,32 +372,6 @@ public class ChatApplication
 
   }
 
-  public Response.Content createDemoUser(String fullname, String email, String isPublic, String dbName)
-  {
-    String out = "created";
-    boolean isPublicUser = "true".equals(isPublic);
-
-    String username = UserService.ANONIM_USER + fullname.trim().toLowerCase().replace(" ", "-").replace(".", "-");
-    remoteUser_ = username;
-    token_ = ServerBootstrap.getToken(remoteUser_);
-    addUser(remoteUser_, token_, dbName);
-    ServerBootstrap.addUserFullNameAndEmail(username, fullname, email, dbName);
-    ServerBootstrap.setAsAdmin(username, false ,dbName);
-    if (!isPublicUser) saveDemoSpace(username, dbName);
-
-    StringBuffer json = new StringBuffer();
-    json.append("{ \"username\": \"").append(remoteUser_).append("\"");
-    json.append(", \"token\": \"").append(token_).append("\" }");
-
-    return Response.ok(json).withMimeType("text/html; charset=UTF-8").withHeader("Cache-Control", "no-cache")
-                   .withCharset(Tools.UTF_8);
-  }
-
-  protected void addUser(String remoteUser, String token, String dbName)
-  {
-    ServerBootstrap.addUser(remoteUser, token, dbName);
-  }
-
   protected String saveFullNameAndEmail(String username, String dbName)
   {
     String fullname = username;
@@ -448,20 +396,6 @@ public class ChatApplication
     return fullname;
   }
 
-  protected void setAsAdmin(String username, boolean isAdmin, String dbName)
-  {
-    try
-    {
-
-      ServerBootstrap.setAsAdmin(username, isAdmin, dbName);
-
-    }
-    catch (Exception e)
-    {
-      LOG.warning(e.getMessage());
-    }
-  }
-
   protected void saveSpaces(String username, String dbName)
   {
     try
@@ -478,26 +412,6 @@ public class ChatApplication
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
-    }
-    catch (Exception e)
-    {
-      LOG.warning(e.getMessage());
-    }
-  }
-
-  protected void saveDemoSpace(String username, String dbName)
-  {
-    try
-    {
-      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
-      SpaceBean spaceBean = new SpaceBean();
-      spaceBean.setDisplayName("Welcome Space");
-      spaceBean.setGroupId("/public");
-      spaceBean.setId("welcome_space");
-      spaceBean.setShortName("welcome_space");
-      beans.add(spaceBean);
-
       ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
     }
     catch (Exception e)

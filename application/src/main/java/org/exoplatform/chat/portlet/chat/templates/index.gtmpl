@@ -2,14 +2,10 @@
   data-username="<%=user%>"
   data-token="<%=token%>"
   data-fullname="<%=fullname%>"
-  data-admin="<%=admin%>"
   data-team-admin="<%=teamAdmin%>"
   data-chat-server-url="<%=chatServerURL%>"
   data-chat-interval-session="<%=chatIntervalSession%>"
   data-plf-user-status-update-url="<%=plfUserStatusUpdateUrl%>"
-  data-public-mode="<%=publicMode%>"
-  data-public-mode-enabled="<%=publicModeEnabled%>"
-  data-view="<%=view%>"
   data-fullscreen="<%=fullscreen%>"
   data-db-name="<%=dbName%>"
   data-portal-uri="<%=portalURI%>"
@@ -17,10 +13,8 @@
 
   <div class="chat-sync-panel" style="display:none;"></div>
   <div class="chat-error-panel" style="display:none;"></div>
-  <div class="chat-demo-panel" style="display:none;"></div>
   <div class="chat-login-panel" style="display:none;"></div>
   <div class="chat-about-panel" style="display:none;"></div>
-<% if (!"public".equals(view)) { %>
 
   <div class="uiGrayLightBox clearfix input-prepend no-user-selection">
 
@@ -46,10 +40,6 @@
 
       <label class="pull-left" style="margin-top: 12px;">
         <a href='<%=portalURI%>/profile/<%=user%>' class='label-user' target='_blank'>&{exoplatform.chat.discussion}</a>
-
-        <% if ("DEV".equals(demoMode)) { %>
-        <span class="label-demo">(Demo Mode)</span>
-        <% } %>
       </label>
 
     </span>
@@ -94,10 +84,6 @@
 
               <label class="pull-left full_name">
                   <a href='<%=portalURI%>/profile/<%=user%>' class='label-user' target='_blank'><%=(fullname.length()>29)?fullname.substring(0,29)+"...":fullname%></a>
-
-                  <% if ("DEV".equals(demoMode)) { %>
-                  <span class="label-demo">(Demo Mode)</span>
-                  <% } %>
               </label>
               <hr class="clearfix"/>
           </div>
@@ -117,7 +103,7 @@
       <span>&nbsp;</span>
     </div>
   </div>
-  <% } %>
+
 <div class="uiGlobalRoomsContainer">
   <div class="uiRoomUsersContainerArea">
     <div id="room-users-collapse-bar">

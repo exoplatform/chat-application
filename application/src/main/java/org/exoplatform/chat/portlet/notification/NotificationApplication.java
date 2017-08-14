@@ -20,12 +20,10 @@
 package org.exoplatform.chat.portlet.notification;
 
 import juzu.Path;
-import juzu.Resource;
 import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
 import juzu.impl.common.Tools;
-import juzu.plugin.ajax.Ajax;
 import juzu.request.ApplicationContext;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
@@ -160,13 +158,10 @@ public class NotificationApplication
         token_ = ServerBootstrap.getToken(remoteUser_);
 
         // Add User in the DB
-        addUser(remoteUser_, token_, dbName);
+        ServerBootstrap.addUser(remoteUser_, token_, dbName);
 
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_, dbName);
-
-        // Set user's Spaces in the DB
-        saveSpaces(remoteUser_, dbName);
 
         profileInitialized_ = true;
       }
@@ -176,16 +171,8 @@ public class NotificationApplication
       }
     }
 
-    if (!UserService.ANONIM_USER.equals(remoteUser_))
-    {
-      // Set user's Spaces in the DB
-      saveSpaces(remoteUser_, dbName);
-    }
-  }
-
-  protected void addUser(String remoteUser, String token, String dbName)
-  {
-    ServerBootstrap.addUser(remoteUser, token, dbName);
+    // Set user's Spaces in the DB
+    saveSpaces(remoteUser_, dbName);
   }
 
   protected String saveFullNameAndEmail(String username, String dbName)

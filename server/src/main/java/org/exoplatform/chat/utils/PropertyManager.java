@@ -73,7 +73,6 @@ public class PropertyManager {
   public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
   public static final String PROPERTY_CRON_NOTIF_CLEANUP = "chatCronNotifCleanup";
-  public static final String PROPERTY_PUBLIC_MODE = "publicMode";
   public static final String PROPERTY_PUBLIC_ADMIN_GROUP = "publicAdminGroup";
   public static final String PROPERTY_TEAM_ADMIN_GROUP = "teamAdminGroup";
   public static final String PROPERTY_TOKEN_VALIDITY = "chatTokenValidity";
@@ -140,7 +139,6 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
       overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
-      overridePropertyIfNotSet(PROPERTY_PUBLIC_MODE, "false");
       overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       overridePropertyIfNotSet(PROPERTY_TEAM_ADMIN_GROUP, "/platform/users");
       overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "60000");

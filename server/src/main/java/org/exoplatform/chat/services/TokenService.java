@@ -26,18 +26,18 @@ import org.exoplatform.chat.model.UserBean;
 
 public interface TokenService
 {
-  public static final String ANONIM_USER = "__anonim_";
+  String ANONIM_USER = "__anonim_";
 
-  public String getToken(String user);
+  String getToken(String user);
 
-  public boolean hasUserWithToken(String user, String token);
+  boolean hasUserWithToken(String user, String token);
 
-  public boolean hasUserWithToken(String user, String token, String dbName);
+  boolean hasUserWithToken(String user, String token, String dbName);
 
-  public void addUser(String user, String token, String dbName);
+  void addUser(String user, String token, String dbName);
 
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
+  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
-  public boolean isDemoUser(String user);
+  boolean isDemoUser(String user);
 
 }
