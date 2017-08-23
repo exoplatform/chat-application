@@ -646,13 +646,6 @@ public class ChatServer
 
     try
     {
-      try {
-        teamName = URLDecoder.decode(teamName,"UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        LOG.info("Cannot decode message: " + teamName);
-      }
-      teamName = HTMLSanitizer.sanitize(teamName);
-
       if("".equals(teamName)) return Response.content(400, "Data is invalid!");
 
       // Room creation
