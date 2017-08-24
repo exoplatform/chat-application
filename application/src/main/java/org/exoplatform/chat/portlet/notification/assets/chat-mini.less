@@ -221,7 +221,7 @@
   }
 }
 
- .mini-chat {
+.mini-chat {
   .msgln{
     height: 100%;
     padding: 0px !important;
@@ -419,6 +419,10 @@
 
 /*chat mini only*/
 .mini-chat {
+  .btn-maxi {
+    display: none;
+  }
+
 	.uiActionWithLabel {
         border: medium none;
         float: none;
@@ -484,4 +488,14 @@
 		top: 10px;
 		.translate(-50%, 0);
 	}
+}
+
+.mini-chat.minimized {
+  .history, .btn-mini, .message {
+    display: none;
+  }
+
+  .btn-maxi {
+    display: initial;
+  }
 }

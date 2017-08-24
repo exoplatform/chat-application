@@ -1375,12 +1375,12 @@ String.prototype.endsWith = function(suffix) {
             innerMiniChatHtml += "<div class='title clearfix'>";
             innerMiniChatHtml +=    "<div class='title-right'>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-mini' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.minimize"] + "' ><i class='uiIconMinimize uiIconWhite'></i></a>";
-            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' style='display:none;' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.maximize"] + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
+            innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-maxi' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.maximize"] + "' ><i class='uiIconMaximize uiIconWhite'></i></a>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-open-chat' href='" + chatNotification.chatPage + "' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.open.chat"] + "' target='_chat'><i class='uiIconChatPopOut uiIconChatWhite'></i></a>";
             innerMiniChatHtml +=      " <a class='uiActionWithLabel btn-close' href='javaScript:void(0);' data-placement='top' data-toggle='tooltip' title='" + chatBundleData["exoplatform.chat.close"] + "' ><i class='uiIconClose uiIconWhite'></i></a>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml +=    "<div class='title-left'>";
-            innerMiniChatHtml +=      "<span class='notify-info badgeDefault badgePrimary mini'></span>";
+            innerMiniChatHtml +=      "<span class='notify-info badgeDefault badgePrimary mini'>0</span>";
             innerMiniChatHtml +=      " <span class='fullname'></span>";
             innerMiniChatHtml +=    "</div>";
             innerMiniChatHtml += "</div>";
@@ -1393,7 +1393,6 @@ String.prototype.endsWith = function(suffix) {
             var miniChatRoom = jzGetParam(chatNotification.sessionId + "miniChatRoom");
             if (miniChatRoom && miniChatRoom !== "") {
               var miniChatType = jzGetParam(chatNotification.sessionId + "miniChatType");
-              var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode");
               showMiniChatPopup(miniChatRoom, miniChatType);
             }
           }
@@ -1421,6 +1420,14 @@ String.prototype.endsWith = function(suffix) {
 
               if (miniChats[index].id === message.room) {
                 miniChats[index].addMessage(message.data, true);
+
+                // If the mini chat is open
+                if ($miniChat.hasClass("minimized")) {
+                  var $badge = $miniChat.find(".notify-info");
+                  var unreadNum = parseInt($badge.html()) + 1;
+                  $badge.html(unreadNum);
+                  $badge.show();
+                }
               }
             } else if (message.event == 'message-updated' || message.event == 'message-deleted'){
               if (miniChats[index].id === message.room) {
@@ -1438,18 +1445,13 @@ String.prototype.endsWith = function(suffix) {
 var miniChats = {};
 
 function maximizeMiniChat() {
-  // Keep infor for "refresh page" case
-  jzStoreParam(chatNotification.sessionId + "miniChatMode", "maxi");
-
   var $miniChat = jqchat(".mini-chat").first();
-  var $history = $miniChat.find(".history");
-
-  $miniChat.find(".btn-mini").show();
-  $miniChat.find(".btn-maxi").hide();
+  $miniChat.removeClass("minimized");
+  $miniChat.find(".notify-info").html(0);
   $miniChat.find(".notify-info").hide();
-  $history.show("fast");
-  $miniChat.find(".message").show("fast");
+
   // scroll to the last message
+  var $history = $miniChat.find(".history");
   $history.scrollTop($history.prop('scrollHeight') - $history.innerHeight());
 
   $miniChat.show("fast", function() {
@@ -1458,17 +1460,9 @@ function maximizeMiniChat() {
 };
 
 function minimizeMiniChat() {
-  // Keep infor for "refresh page" case
-  jzStoreParam(chatNotification.sessionId + "miniChatMode", "mini");
 
   var $miniChat = jqchat(".mini-chat").first();
-
-  $miniChat.find(".btn-mini").hide();
-  $miniChat.find(".btn-maxi").show();
-  $miniChat.find(".history").hide();
-  $miniChat.find(".message").hide();
-  $miniChat.css("height","auto");
-  $miniChat.css("display", "block");
+  $miniChat.addClass("minimized");
 };
 
 function showMiniChatPopup(room, type) {
@@ -1488,7 +1482,6 @@ function showMiniChatPopup(room, type) {
     miniChats[index].id = "";
 
   // Display chat
-  var miniChatMode = jzGetParam(chatNotification.sessionId + "miniChatMode","");
   maximizeMiniChat();
   jqchat("[data-toggle='tooltip']").tooltip();
 
@@ -1561,8 +1554,6 @@ function showMiniChatPopup(room, type) {
     // Keep infor for "refresh page" case
     jzStoreParam(chatNotification.sessionId + "miniChatRoom", "");
     jzStoreParam(chatNotification.sessionId + "miniChatType", "");
-    jzStoreParam(chatNotification.sessionId + "miniChatMode", "");
-
 
     $miniChat.find(".message-input").val("");
     $miniChat.hide();
