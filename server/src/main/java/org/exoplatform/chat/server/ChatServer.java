@@ -642,8 +642,14 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
-    JSONObject jsonObject = new JSONObject();
 
+    try {
+      teamName = URLDecoder.decode(teamName,"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      LOG.info("Cannot decode message: " + teamName);
+    }
+
+    JSONObject jsonObject = new JSONObject();
     try
     {
       if("".equals(teamName)) return Response.content(400, "Data is invalid!");
