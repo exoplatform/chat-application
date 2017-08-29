@@ -1895,7 +1895,7 @@ ChatApplication.prototype.saveTeamRoom = function(teamName, room, users, callbac
     type: 'POST',
     url: this.jzSaveTeamRoom,
     dataType: "json",
-    data: {"teamName": teamName,
+    data: {"teamName": encodeURIComponent(teamName),
       "room": room,
       "users": users,
       "user": this.username,
