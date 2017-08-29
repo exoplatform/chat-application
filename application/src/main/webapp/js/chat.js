@@ -660,7 +660,7 @@ var chatApplication = new ChatApplication();
       jqchat('#chats').html("");
       $div.appendTo('#chats');
 
-      chatApplication.chatRoom.loadSetting(function() {
+      chatNotification.loadSetting(function() {
         jqchat("#chat-room-detail-fullname").html(chatApplication.targetFullname + " " + chatBundleData["exoplatform.stats.notifications"]);
         var roomPrefTrigger = desktopNotification.getRoomPreferredNotificationTrigger()[chatApplication.room];
         if (roomPrefTrigger) {
