@@ -2432,6 +2432,8 @@ ChatApplication.prototype.loadRoom = function(room) {
 
     // Disable composer while switching from a room to another
     chatApplication.enableMessageComposer(false);
+    chatApplication.updateMeetingButtonStatus(false);
+
     // Empty room messages and add loading icon
     this.chatRoom.emptyChatZone(true);
 
