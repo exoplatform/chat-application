@@ -1242,7 +1242,13 @@ var chatApplication = new ChatApplication();
 
       var users = chatApplication.username + ',' + $('#team-add-user').val();
 
-      chatApplication.saveTeamRoom(teamName, teamId, users);
+      chatApplication.saveTeamRoom(teamName, teamId, users, function(data) {
+        // if it is a new room...
+        if(teamId === "---") {
+          // select it
+          $(".users-online span[room-data='" + data.room + "']").click();
+        }
+      });
 
       $uitext.val("");
       $uitext.attr("data-id", "---");
