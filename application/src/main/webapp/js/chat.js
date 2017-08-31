@@ -2486,6 +2486,7 @@ ChatApplication.prototype.loadRoom = function(room) {
   } else if (this.targetUser.indexOf("team-") === -1) {
     ////// SPACE
     this.loadRoomUsers();
+    jqchat("#userRoomStatus").hide();
     jqchat(".meeting-action-task").css("display", "block");
     var spaceName = this.targetFullname.toLowerCase().split(" ").join("_");
     jqchat(".room-detail-avatar").show();
