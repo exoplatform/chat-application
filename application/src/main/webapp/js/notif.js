@@ -906,7 +906,7 @@ function initChatCometd() {
           chatNotification.changeStatusChat(message.data.status);
         }
       } else if (message.event == "message-sent") {
-        if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room) && chatNotification.username !== message.sender) {
+        if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room || chatApplication.chatRoom.isFocus !== true) && chatNotification.username !== message.sender) {
   
           var msg = message.data;
   

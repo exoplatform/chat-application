@@ -89,6 +89,19 @@ var chatApplication = new ChatApplication();
       }
     });
 
+    $(window).focus(function() {
+      if (chatApplication.chatRoom) {
+        chatApplication.chatRoom.isFocus = true;
+        chatApplication.chatRoom.updateUnreadMessages();
+      }
+    });
+
+    $(window).blur(function() {
+      if (chatApplication.chatRoom) {
+        chatApplication.chatRoom.isFocus = false;
+      }
+    });
+
     /**
      * Handle Real Time communications events
      */
@@ -169,6 +182,9 @@ var chatApplication = new ChatApplication();
 
           if (chatApplication.chatRoom.id === message.room && chatApplication.configMode == false) {
             chatApplication.chatRoom.addMessage(message.data, true);
+          }
+
+          if (chatApplication.chatRoom.isFocus === true) {
             chatApplication.chatRoom.updateUnreadMessages();
           } else {
             var room = chatApplication.rooms({room: message.room});
