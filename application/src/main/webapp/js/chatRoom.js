@@ -1097,19 +1097,19 @@
 
 
     if (message.indexOf("java:")===0) {
-      msg = "<div class='sh_container '><pre class='sh_java'>"+message.substr(5, message.length-6)+"</pre></div>";
+      msg = "<div class='sh_container '><pre class='sh_java'>"+message.substr(5)+"</pre></div>";
       this.highlightCodeStyle();
       return msg;
     } else if (message.indexOf("html:")===0) {
-      msg = "<div class='sh_container '><pre class='sh_html'>"+message.substr(5, message.length-6)+"</pre></div>";
+      msg = "<div class='sh_container '><pre class='sh_html'>"+message.substr(5)+"</pre></div>";
       this.highlightCodeStyle();
       return msg;
     } else if (message.indexOf("js:")===0) {
-      msg = "<div class='sh_container '><pre class='sh_javascript'>"+message.substr(3, message.length-4)+"</pre></div>";
+      msg = "<div class='sh_container '><pre class='sh_javascript'>"+message.substr(3)+"</pre></div>";
       this.highlightCodeStyle();
       return msg;
     } else if (message.indexOf("css:")===0) {
-      msg = "<div class='sh_container '><pre class='sh_css'>"+message.substr(4, message.length-5)+"</pre></div>";
+      msg = "<div class='sh_container '><pre class='sh_css'>"+message.substr(4)+"</pre></div>";
       this.highlightCodeStyle();
       return msg;
     }
