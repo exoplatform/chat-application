@@ -27,6 +27,7 @@
     this.messagesContainer = messagesContainer;
     this.portalURI = portalURI;
     this.dbName = dbName;
+    this.isFocus = true;
 
     this.id = "";
     this.username = username;

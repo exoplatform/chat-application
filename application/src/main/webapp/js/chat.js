@@ -1891,7 +1891,6 @@
       var labelInvisible = $chatApplication.attr("data-label-invisible");
 
       $("#chat-status").on('chat:connected', function (event, data) {
-        chatApplication.initChat();
         jqchat('#chat-application').removeClass('offline');
       });
 
@@ -1911,6 +1910,8 @@
           chatApplication.renderRooms();
         }
       });
+
+      chatApplication.initChat();
 
       $(window).focus(function() {
         if (chatApplication.chatRoom) {
