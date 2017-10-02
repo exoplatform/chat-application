@@ -106,7 +106,10 @@ public class PropertyManager {
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
-    return value;
+    if(value!=null){
+      return value.trim();
+    }
+    return null;
   }
 
   private synchronized static Properties properties()
