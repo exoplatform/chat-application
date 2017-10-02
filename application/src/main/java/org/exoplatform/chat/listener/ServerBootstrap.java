@@ -26,6 +26,8 @@ import org.exoplatform.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +51,7 @@ public class ServerBootstrap {
     oService.getUserHandler().addUserEventListener(listener);
   }
 
-  private static final Logger LOG = Logger.getLogger(ServerBootstrap.class.getName());
+  private static final Log LOG = ExoLogger.getLogger(ServerBootstrap.class.getName());
 
   public static String getUserFullName(String username, String dbName)
   {
@@ -71,7 +73,7 @@ public class ServerBootstrap {
     try {
       postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email + "&dbName=" + dbName);
     } catch (IOException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Error while updating user information for user {} [ {} ]", username, email,e);
     }
   }
 
@@ -91,7 +93,7 @@ public class ServerBootstrap {
       serSpaces = ChatUtils.toString(beans);
       serSpaces = URLEncoder.encode(serSpaces);
     } catch (IOException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Error encoding spaces",e);
     }
     params += "&spaces="+serSpaces;
     params += "&dbName="+dbName;
@@ -115,9 +117,9 @@ public class ServerBootstrap {
       body = IOUtils.toString(in, encoding);
       if ("null".equals(body)) body = null;
     } catch (MalformedURLException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Malformed URL {}",serviceUrl,e);
     } catch (IOException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Could not establish connection to URL {}",serviceUri,e);
     }
     return body;
   }
@@ -147,14 +149,14 @@ public class ServerBootstrap {
       if ("null".equals(body)) body = null;
 
     } catch (MalformedURLException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Malformed URL {}",serviceUri,e);
     } catch (IOException e) {
-      LOG.warning(e.getMessage());
+      LOG.error("Error converting input stream",e);
     } finally {
       try {
         writer.close();
       } catch (Exception e) {
-        LOG.warning(e.getMessage());
+        LOG.error("Error when closing writer",e);
       }
     }
     return body;
