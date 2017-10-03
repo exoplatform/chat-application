@@ -987,14 +987,12 @@
     jqchat("#chat-team-button").css("display", "none");
     jqchat("#chat-room-detail-fullname").text(this.targetFullname);
 
-    if (navigator.platform.indexOf("Linux") === -1 || jqchat.browser.chrome) {
-      jqchat(".btn-weemo-conf").css("display", "none");
-      jqchat(".btn-weemo-conf").addClass("disabled");
-      if (typeof weemoExtension !== 'undefined') {
-        jqchat(".btn-weemo").css("display", "block");
-        jqchat(".btn-weemo").addClass("disabled");
-        jqchat(".room-detail-button").show();
-      }
+    jqchat(".btn-weemo-conf").css("display", "none");
+    jqchat(".btn-weemo-conf").addClass("disabled");
+    if (typeof weemoExtension !== 'undefined') {
+      jqchat(".btn-weemo").css("display", "block");
+      jqchat(".btn-weemo").addClass("disabled");
+      jqchat(".room-detail-button").show();
     }
 
     if (this.targetUser.indexOf("space-") === -1 && this.targetUser.indexOf("team-") === -1) {
