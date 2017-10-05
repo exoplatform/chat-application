@@ -30,10 +30,10 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>5.0.x-SNAPSHOT</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.ecms.version>5.0.x-SNAPSHOT</org.exoplatform.ecms.version>
-    <org.exoplatform.platform.version>5.0.x-SNAPSHOT</org.exoplatform.platform.version>
-    <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
+    <org.exoplatform.gatein.portal.version>5.0.0-M25</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.ecms.version>5.0.0-M25</org.exoplatform.ecms.version>
+    <org.exoplatform.platform.version>5.0.0-M25</org.exoplatform.platform.version>
+    <org.juzu.version>1.2.0-M02</org.juzu.version>
     <commons-lang3.version>3.2</commons-lang3.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <mongodb-java-driver.version>3.5.0</mongodb-java-driver.version>
