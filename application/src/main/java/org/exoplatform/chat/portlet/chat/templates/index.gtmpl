@@ -150,7 +150,7 @@
         </span>
 
         <div id="chat-team-button-dropdown" class="btn-group pull-right chat-team-button-dropdown">
-          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#"><i class="caret" style="margin-right:4px;"></i></a>
+          <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="caret" style="margin-right:4px;"></i></a>
           <ul class="dropdown-menu">
 
             <li>
