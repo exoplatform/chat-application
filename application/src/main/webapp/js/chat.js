@@ -2004,10 +2004,10 @@
 
             if (chatApplication.chatRoom.id === message.room && chatApplication.configMode == false) {
               chatApplication.chatRoom.addMessage(message.data, true);
-            }
 
-            if (chatApplication.chatRoom.isFocus === true) {
-              chatApplication.chatRoom.updateUnreadMessages();
+              if (chatApplication.chatRoom.isFocus === true) {
+                chatApplication.chatRoom.updateUnreadMessages();
+              }
             } else {
               var room = chatApplication.rooms({room: message.room});
               room.update({unreadTotal: (room.first().unreadTotal + 1)});
