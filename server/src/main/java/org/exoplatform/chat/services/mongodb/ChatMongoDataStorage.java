@@ -50,7 +50,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public static final String M_ROOM_PREFIX = "messages_room_";
   public static final String M_ROOMS_COLLECTION = "rooms";
 
-  private long readMillis;
   private int readTotalJson, readTotalTxt;
 
   @Inject
@@ -59,8 +58,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   private SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
 
   public ChatMongoDataStorage() {
-    long readDays = Long.parseLong(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_DAYS));
-    readMillis = readDays * 24 * 60 * 60 * 1000;
     readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
     readTotalTxt = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_TXT));
   }
@@ -232,14 +229,25 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     BasicDBObject query = new BasicDBObject();
     query.put("roomId", room);
-    long from = (fromTimestamp != null) ? fromTimestamp : System.currentTimeMillis() - readMillis;
-    BasicDBObject tsobj = new BasicDBObject("$gt", from);
-    if (toTimestamp != null) {
-      tsobj.append("$lt", toTimestamp);
+
+    BasicDBObject duration = null;
+    if (fromTimestamp != null) {
+      duration = new BasicDBObject("$gt", fromTimestamp);
     }
-    BasicDBObject ts = new BasicDBObject("timestamp", tsobj);
-    BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp", tsobj);
-    query.put("$or", new BasicDBObject[]{ts, updts});
+
+    if (toTimestamp != null) {
+      if (duration == null) {
+        duration = new BasicDBObject("$lt", toTimestamp);
+      } else {
+        duration.append("$lt", toTimestamp);
+      }
+    }
+
+    if (duration != null) {
+      BasicDBObject ts = new BasicDBObject("timestamp", duration);
+      BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp", duration);
+      query.put("$or", new BasicDBObject[]{ts, updts});
+    }
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
