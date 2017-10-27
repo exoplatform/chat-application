@@ -600,6 +600,26 @@
     $uiNotifChatIcon.removeClass("toggle-status-donotdisturb");
     $uiNotifChatIcon.removeClass("toggle-status-invisible");
     $uiNotifChatIcon.addClass("toggle-status-" + status);
+
+    //Update chat status on menu app
+    var $menuChatBtn = jqchat('.uiProfileMenu .profileMenuNavHeader h3 > i');
+    $menuChatBtn.removeClass("uiIconUserAvailable");
+    $menuChatBtn.removeClass("uiIconUserOnline");
+    $menuChatBtn.removeClass("uiIconUserInvisible");
+    $menuChatBtn.removeClass("uiIconUserOffline");
+    $menuChatBtn.removeClass("uiIconUserAway");
+    $menuChatBtn.removeClass("uiIconUserDonotdisturb");
+    if (status == 'available') {
+      $menuChatBtn.addClass('uiIconUserAvailable');
+    } else if (status == 'away') {
+      $menuChatBtn.addClass('uiIconUserAway');
+    } else if (status == 'donotdisturb') {
+      $menuChatBtn.addClass('uiIconUserDonotdisturb');
+    } else if (status == 'invisible') {
+      $menuChatBtn.addClass('uiIconUserInvisible');
+    }
+    var title = jqchat('#middle-topNavigation-container .chat-status[data-status="' + status + '"] .chat-label-status').html();
+    $menuChatBtn.attr('data-original-title', title);
   };
 
   ChatNotification.prototype.openChatPopup = function () {
@@ -655,24 +675,40 @@
     $tiptip_content.bind('DOMNodeInserted', this.tiptipContentDOMNodeInsertedHandler);
   };
 
-  ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = function () {
-    var $uiBreadcumbsNavigationPortlet = jqchat("#UIBreadCrumbsNavigationPortlet");
-    if ($uiBreadcumbsNavigationPortlet.length == 0) {
-      setTimeout(chatNotification.attachChatButtonBelowLeftNavigationSpaceName, 250);
+  ChatNotification.prototype.attachChatButtonBelowNavigationSpaceName = function () {
+    var $menuApps = jqchat(".menuApps");
+    if ($menuApps.length == 0) {
+      setTimeout(chatNotification.attachChatButtonBelowNavigationSpaceName, 250);
       return;
     }
 
-    var $breadcumbEntry = jqchat(".breadcumbEntry", $uiBreadcumbsNavigationPortlet);
-    var $btnChat = jqchat(".chat-button", $breadcumbEntry);
-    var spaceId = this.spaceId;
-    if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceId !== "") {
-      var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceId + "\", \"space-id\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
-      $breadcumbEntry.append(strChatLink);
+    var target = '';
+    var type = '';
+    if ($menuApps.hasClass('profileMenuApps') && $menuApps.find('.uiIconEdit').length == 0) {
+      target = jqchat(".user-status", jqchat("#UIStatusProfilePortlet")).attr('data-userid');
+      type = 'username';
+    } else if ($menuApps.hasClass('spaceMenuApps')) {
+      target = this.spaceId;
+      type = 'space-id';
+    } else {
+      setTimeout(chatNotification.attachChatButtonBelowNavigationSpaceName, 250);
+      return;
     }
 
-    $uiBreadcumbsNavigationPortlet.one('DOMNodeInserted', function () {
-      chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
-    });
+
+    var $btnChat = jqchat(".chat-button", $menuApps);
+    if ($btnChat.length === 0) {
+      var strChatLink = "<li><a";
+      if (target !== "") {
+        strChatLink += " onclick='javascript:window.eXo.chat.showMiniChatPopup(\"" + target + "\", \"" + type + "\");'";
+      }
+      strChatLink += " class='chat-button btn' href='javascript:void(0);'><i class='uiIconBannerChat'></i><span class='chat-label-status'>&nbsp;Chat</span></a></li>";
+      $menuApps.prepend(strChatLink);
+    }
+
+    setTimeout(function () {
+      chatNotification.attachChatButtonBelowNavigationSpaceName();
+    }, 250);
   };
 
   ChatNotification.prototype.attachChatToProfile = function () {
@@ -1006,7 +1042,7 @@
       chatNotification.attachChatButtonToUserPopup();
 
       // Attach chat below left navigation space name
-      chatNotification.attachChatButtonBelowLeftNavigationSpaceName();
+      chatNotification.attachChatButtonBelowNavigationSpaceName();
 
       // Attach chat to profile
       chatNotification.attachChatToProfile();
@@ -1247,4 +1283,7 @@
       }
     });
   };
+  window.eXo = window.eXo || {};
+  window.eXo.chat = window.eXo.chat || {};
+  window.eXo.chat.showMiniChatPopup = showMiniChatPopup;
 })($, desktopNotification, chatRoom, taffy);
