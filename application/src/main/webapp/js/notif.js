@@ -1163,7 +1163,7 @@
 
   var miniChats = {};
 
-  function showMiniChatPopup(room, type) {
+  window.showMiniChatPopup = function(room, type) {
     // Keep infor for "refresh page" case
     jzStoreParam(chatNotification.sessionId + "miniChatRoom", room);
     jzStoreParam(chatNotification.sessionId + "miniChatType", type);
