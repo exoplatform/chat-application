@@ -20,6 +20,7 @@
     <module>exo-addons-chat-extension-config</module>
     <module>exo-addons-chat-extension</module>
     <module>exo-addons-chat-extension-pkg</module>
+    <module>exo-addons-chat-extension-pkg-client</module>
     <module>exo-addons-chat-extension-pkg-standalone</module>
   </modules>
   <scm>
@@ -114,6 +115,12 @@
       <artifactId>exo.portal.webui.portal</artifactId>
       <version>${org.exoplatform.gatein.portal.version}</version>
     </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>exo-addons-chat-extension-pkg-client</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
       <!-- Import versions from ecms project -->
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>

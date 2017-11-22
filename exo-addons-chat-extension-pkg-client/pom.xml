@@ -6,19 +6,24 @@
     <groupId>org.exoplatform.addons.chat</groupId>
     <version>1.6.x-SNAPSHOT</version>
   </parent>
-  <artifactId>exo-addons-chat-extension-pkg</artifactId>
+  <artifactId>exo-addons-chat-extension-pkg-client</artifactId>
   <packaging>pom</packaging>
-  <name>eXo Add-on:: Chat Extension Package</name>
+  <name>eXo Add-on:: Chat Extension Package Client </name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
-      <artifactId>exo-addons-chat-extension-pkg-client</artifactId>
-      <type>zip</type>
+      <artifactId>application</artifactId>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
-      <artifactId>server</artifactId>
+      <artifactId>exo-addons-chat-extension</artifactId>
       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>exo-addons-chat-extension-config</artifactId>
+      <type>jar</type>
     </dependency>
   </dependencies>
   <build>
@@ -36,7 +41,7 @@
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
-                <descriptor>src/main/assemblies/exo-addons-chat-extension.xml</descriptor>
+                <descriptor>src/main/assemblies/exo-addons-chat-extension-client.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
