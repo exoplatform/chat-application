@@ -1,0 +1,113 @@
+version: '2'
+services:
+  web:
+    image: nginx:1.12-alpine
+    expose:
+      - "80"
+    volumes:
+      - ./data/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    links:
+      - exo
+      - chatserver
+    depends_on:
+      - exo
+      - mail
+      - chatserver
+    networks:
+      - front
+      - mail
+  exo:
+    image: exoplatform/exo-community:latest
+    expose:
+      - "8080"
+    environment:
+      EXO_PROXY_VHOST: "localhost"
+      EXO_PROXY_PORT: "80"
+      EXO_PROXY_SSL: "false"
+      EXO_JVM_SIZE_MIN: "2g"
+      EXO_JVM_SIZE_MAX: "3g"
+      EXO_MAIL_SMTP_HOST: "mail"
+      EXO_MAIL_SMTP_PORT: "1025"
+      EXO_ES_EMBEDDED: "true"
+      EXO_MONGO_DB_NAME: "exo-chat"
+      EXO_ADDONS_CATALOG_URL: "file:///etc/exo/catalog.json"
+      EXO_ADDONS_LIST: "exo-chat-client:1.6.x-SNAPSHOT"
+      EXO_ADDONS_REMOVE_LIST:
+    ports:
+      # (Linux) open JMX ports for local connection only
+      #- "127.0.0.1:10001:10001"
+      #- "127.0.0.1:10002:10002"
+      # (macOS / Windows) open JMX ports on the host
+      - "10001:10001"
+      - "10002:10002"
+      - "9200:9200"
+    volumes:
+      - exo_data:/srv/exo
+      - search_data:/srv/es
+      - exo_logs:/var/log/exo
+      ### catalog
+      - ./catalog.json:/etc/exo/catalog.json
+      - ./packaging/standalone-client-packaging/target/exo-chat-standalone-client-1.6.x-SNAPSHOT.zip:/srv/exo-chat-standalone-client.zip:ro
+      ### chat client configuration
+      - ./data/docker/plf/chat.properties:/opt/exo/gatein/conf/chat.properties:ro
+    links:
+      - chatserver
+    depends_on:
+      - mail
+      - chatserver
+    networks:
+      - front
+      - back
+      - mail
+  chatserver:
+    image: exoplatform/base-jdk:jdk8
+    volumes:
+      - ./packaging/standalone-server-tomcat-distrib/target/chat-standalone-server-tomcat-distrib-1.6.x-SNAPSHOT/chat-server-standalone-1.6.x-SNAPSHOT:/opt/chat-server
+      - ./data/docker/chatserver/chat.properties:/opt/chat-server/conf/chat.properties
+    command: ["/opt/chat-server/start_chatServer.sh"]
+    environment:
+      EXO_DEBUG: "true"
+    links:
+      - mongo
+    ports:
+      - "8090:8090"
+      - "8000:8000"
+    depends_on:
+      - mongo
+    networks:
+      - front
+      - back
+      - mail
+  mongo:
+    image: mongo:3.2
+    volumes:
+      - mongo_data:/data/db:rw
+    networks:
+      - back
+    ports:
+      - "27017:27017"
+  mail:
+    image: mailhog/mailhog
+    environment:
+      MH_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MH_STORAGE: mongodb
+      MH_MONGO_URI: mongo:27017
+      MH_MONGO_DB: mailhog
+      MH_MONGO_COLLECTION: messages
+      MH_UI_WEB_PATH: mail
+    networks:
+      - back
+      - mail
+    depends_on:
+      - mongo
+volumes:
+  exo_data:
+  exo_logs:
+  mongo_data:
+  search_data:
+networks:
+  front:
+  back:
+  mail:

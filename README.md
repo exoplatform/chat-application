@@ -77,7 +77,7 @@ From the home of the source project :
     mvn clean package
 
     # To only build the add-on package and his required modules
-    mvn -am -pl :exo-addons-chat-extension-pkg clean package
+    mvn -am -pl :embedded-packaging clean package
 
 (!) you need to execute this step each time you changed the add-on source code and want to redeploy it.
 
@@ -107,7 +107,7 @@ You have made some changes on the add-on code and you want to test it without re
 What you have to do is :
 
     # rebuild your add-on package
-    mvn -am -pl :exo-addons-chat-extension-pkg clean package
+    mvn -am -pl :embedded-packaging clean package
 
     # use the add-on manager to redeploy the newly build version
     docker exec exo_chat /opt/exo/current/addon install --catalog=file:///etc/exo/catalog.json  exo-chat:1.3.x-SNAPSHOT --force --batch-mode

@@ -26,9 +26,6 @@ pom.xml.versionsBackup
 *.ipr
 .idea/
 
-#bin folder
-bin/
-
 #log file
 *.log
 
@@ -37,8 +34,6 @@ bin/
 .classpath
 .project
 
-# Bin
-bin/
 # Log
 *.log
 
@@ -51,14 +46,7 @@ transaction.log
 
 chat-mongohq.properties
 application/src/main/resources/rebel.xml
-config/target/*
-extension/target/*
-exo-addons-chat-extension/target/*
-exo-addons-chat-extension-config/target/*
-exo-addons-chat-extension-pkg/target/*
-exo-addons-chat-extension-community/target/*
-exo-addons-chat-extension-config-community/target/*
-exo-addons-chat-extension-pkg-community/target/*
+target
 
 release.properties
 *.releaseBackup

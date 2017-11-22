@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
     <version>8-M01</version>
-    <relativePath />
+    <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
@@ -14,13 +15,12 @@
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
   <modules>
-    <module>server</module>
+    <module>server-embedded</module>
     <module>server-standalone</module>
     <module>application</module>
-    <module>exo-addons-chat-extension-config</module>
-    <module>exo-addons-chat-extension</module>
-    <module>exo-addons-chat-extension-pkg</module>
-    <module>exo-addons-chat-extension-pkg-standalone</module>
+    <module>services</module>
+    <module>extension</module>
+    <module>packaging</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/chat-application.git</connection>
@@ -34,9 +34,27 @@
     <org.exoplatform.ecms.version>5.0.x-SNAPSHOT</org.exoplatform.ecms.version>
     <org.exoplatform.platform.version>5.0.x-SNAPSHOT</org.exoplatform.platform.version>
     <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
+
+    <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
+    <commons-codec.version>1.4</commons-codec.version>
+    <de.flapdoodle.embed.mongo.version>1.45</de.flapdoodle.embed.mongo.version>
+    <commons-compress.version>1.3</commons-compress.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <mongodb-java-driver.version>3.5.0</mongodb-java-driver.version>
+    <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
+    <aopalliance.version>1.0</aopalliance.version>
+    <com.google.json-simple.version>1.1.1</com.google.json-simple.version>
+
+    <!-- The apache tomcat version to bundle -->
+    <org.apache.tomcat.version>8.5.24</org.apache.tomcat.version>
+    <quartz.version>2.2.2</quartz.version>
+    <org.slf4j.version>1.7.7</org.slf4j.version>
+    <ch.qas.logback.version>1.1.2</ch.qas.logback.version>
+    <!-- Additional LOGBACK dependencies -->
+    <org.codehaus.janino.version>2.6.1</org.codehaus.janino.version>
+    <org.fusesource.jansi.version>1.11</org.fusesource.jansi.version>
+
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
     <jenkins.job.name>chat-application-develop-ci</jenkins.job.name>
@@ -44,6 +62,31 @@
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>aopalliance</groupId>
+        <artifactId>aopalliance</artifactId>
+        <version>${aopalliance.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>${com.google.inject.guice.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>${com.google.json-simple.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <version>${de.flapdoodle.embed.mongo.version}</version>
+      </dependency>
       <dependency>
         <groupId>javax.enterprise</groupId>
         <artifactId>cdi-api</artifactId>
@@ -55,6 +98,17 @@
         <version>${commons-lang3.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat</artifactId>
+        <version>${org.apache.tomcat.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
         <artifactId>application</artifactId>
         <version>${project.version}</version>
@@ -69,51 +123,51 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>exo-addons-chat-extension</artifactId>
+        <artifactId>chat-extension</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>exo-addons-chat-extension-config</artifactId>
+        <artifactId>chat-services</artifactId>
         <version>${project.version}</version>
         <type>jar</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>exo-addons-chat-extension-pkg</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>server</artifactId>
+        <artifactId>chat-server-embedded</artifactId>
         <version>${project.version}</version>
         <type>jar</type>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>server</artifactId>
+        <artifactId>chat-server-embedded</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>server-standalone</artifactId>
+        <artifactId>chat-server-standalone</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
-    <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.portal</artifactId>
-      <version>${org.exoplatform.gatein.portal.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.webui.portal</artifactId>
-      <version>${org.exoplatform.gatein.portal.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>chat-standalone-client-packaging</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.gatein.portal</groupId>
+        <artifactId>exo.portal.component.portal</artifactId>
+        <version>${org.exoplatform.gatein.portal.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.gatein.portal</groupId>
+        <artifactId>exo.portal.webui.portal</artifactId>
+        <version>${org.exoplatform.gatein.portal.version}</version>
+      </dependency>
       <!-- Import versions from ecms project -->
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>
@@ -160,6 +214,59 @@
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>${mongodb-java-driver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>${quartz.version}</version>
+      </dependency>
+
+      <!-- Logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+      <!-- Redirect everything from JUL to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+      <!-- Use SLF4J and not log4j -->
+      <!-- log4j must be removed from dependencies -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+      <!-- SLF4J API -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${ch.qas.logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${ch.qas.logback.version}</version>
+      </dependency>
+      <!-- Required by conditional processing in logback -->
+      <dependency>
+        <groupId>org.codehaus.janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>${org.codehaus.janino.version}</version>
+      </dependency>
+      <!-- Required by logback for colorized console on windows -->
+      <dependency>
+        <groupId>org.fusesource.jansi</groupId>
+        <artifactId>jansi</artifactId>
+        <version>${org.fusesource.jansi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

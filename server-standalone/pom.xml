@@ -6,7 +6,7 @@
     <groupId>org.exoplatform.addons.chat</groupId>
     <version>1.6.x-SNAPSHOT</version>
   </parent>
-  <artifactId>server-standalone</artifactId>
+  <artifactId>chat-server-standalone</artifactId>
   <packaging>war</packaging>
   <name>eXo Add-on:: Chat Server Standalone</name>
   <dependencies>
@@ -21,7 +21,7 @@
     <!-- Application dependencies-->
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
-      <artifactId>server</artifactId>
+      <artifactId>chat-server-embedded</artifactId>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
@@ -35,7 +35,6 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
@@ -48,20 +47,34 @@
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-juzu</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.commons</groupId>
-      <artifactId>commons-component-common</artifactId>
       <exclusions>
         <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>xpp3</groupId>
+          <artifactId>xpp3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xpp3</groupId>
+          <artifactId>xpp3_min</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.gagravarr</groupId>
+          <artifactId>vorbis-java-tika</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.gagravarr</groupId>
+          <artifactId>vorbis-java-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -82,16 +95,27 @@
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>xpp3</groupId>
+          <artifactId>xpp3</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-      <classifier>sources</classifier>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
@@ -108,12 +132,14 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>3.0</version>
     </dependency>
     <dependency>
       <groupId>aopalliance</groupId>
       <artifactId>aopalliance</artifactId>
-      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -121,7 +147,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <configuration />
       </plugin>
     </plugins>
   </build>

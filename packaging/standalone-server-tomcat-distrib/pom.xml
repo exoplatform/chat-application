@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.addons.chat</groupId>
+    <artifactId>packaging</artifactId>
+    <version>1.6.x-SNAPSHOT</version>
+  </parent>
+  <artifactId>chat-standalone-server-tomcat-distrib</artifactId>
+  <packaging>pom</packaging>
+  <name>eXo Add-on:: Chat Packaging Standalone Tomcat Distribution</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>chat-server-standalone</artifactId>
+      <type>war</type>
+    </dependency>
+
+    <!-- Redirect everything from JUL to SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <!-- Use SLF4J and not log4j -->
+    <!-- SLF4J API -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+    </dependency>
+    <!-- Required by logback for colorized console on windows -->
+    <dependency>
+      <groupId>org.fusesource.jansi</groupId>
+      <artifactId>jansi</artifactId>
+    </dependency>
+
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/main/assemblies/tomcat-dependencies.xml</descriptor>
+                <descriptor>src/main/assemblies/chat-server-exploded.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>exo-chat-tomcat-distribution-${project.version}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/chat-server-packaging.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
