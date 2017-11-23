@@ -20,27 +20,22 @@
 -->
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-  <id>exo-addons-chat-extension</id>
+  <id>chatserver-packaging</id>
   <formats>
     <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <dependencySets>
-    <dependencySet>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>${project.build.finalName}</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/${project.build.finalName}/${project.build.finalName}/</directory>
       <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>org.exoplatform.addons.chat:exo-addons-chat-extension-pkg-client:zip</include>
-      </includes>
-      <useProjectArtifact>false</useProjectArtifact>
-      <unpack>true</unpack>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>org.exoplatform.addons.chat:server:war</include>
-      </includes>
-      <outputFileNameMapping>chatServer.war</outputFileNameMapping>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-  </dependencySets>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${project.build.directory}/${project.build.finalName}/${project.build.finalName}/webapps/chatServer.war</source>
+      <outputDirectory>/webapps</outputDirectory>
+    </file>
+  </files>
 </assembly>

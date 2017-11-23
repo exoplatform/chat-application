@@ -115,13 +115,28 @@
       <artifactId>aopalliance</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <finalName>chatServer</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <configuration />
+        <configuration>
+          <packagingExcludes>WEB-INF/lib/*log4j*,WEB-INF/lib/*slf4j*</packagingExcludes>
+          <!--,WEB-INF/lib/common-logging*-->
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -20,26 +20,20 @@
 -->
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-  <id>exo-addons-chat-extension</id>
+  <id>tomcat-dependencies</id>
   <formats>
-    <format>zip</format>
+    <format>dir</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <baseDirectory>dependencies</baseDirectory>
   <dependencySets>
+    <!-- Apache Tomcat Bundle -->
     <dependencySet>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>apache-tomcat</outputDirectory>
       <includes>
-        <include>org.exoplatform.addons.chat:exo-addons-chat-extension-pkg-client:zip</include>
+        <include>org.apache.tomcat:tomcat:zip</include>
       </includes>
-      <useProjectArtifact>false</useProjectArtifact>
       <unpack>true</unpack>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>org.exoplatform.addons.chat:server:war</include>
-      </includes>
-      <outputFileNameMapping>chatServer.war</outputFileNameMapping>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>

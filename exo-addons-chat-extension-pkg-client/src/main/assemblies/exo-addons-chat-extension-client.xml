@@ -25,22 +25,41 @@
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
+
   <dependencySets>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>org.exoplatform.addons.chat:exo-addons-chat-extension-pkg-client:zip</include>
+        <include>org.exoplatform.addons.chat:application:war</include>
       </includes>
+      <outputFileNameMapping>chat.war</outputFileNameMapping>
       <useProjectArtifact>false</useProjectArtifact>
-      <unpack>true</unpack>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>org.exoplatform.addons.chat:server:war</include>
+        <include>org.exoplatform.addons.chat:exo-addons-chat-extension:war</include>
       </includes>
-      <outputFileNameMapping>chatServer.war</outputFileNameMapping>
+      <outputFileNameMapping>chat-extension.war</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <!-- Libraries -->
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>org.exoplatform.addons.chat:exo-addons-chat-extension-config:jar</include>
+      </includes>
+      <outputFileNameMapping>chat-extension-config.jar</outputFileNameMapping>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>../data/</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>chat-sample.properties</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>

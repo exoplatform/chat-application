@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.addons.chat</groupId>
+    <artifactId>chat-application</artifactId>
+    <version>1.6.x-SNAPSHOT</version>
+  </parent>
+  <artifactId>server-standalone-distribution</artifactId>
+  <packaging>pom</packaging>
+  <name>eXo Add-on:: Chat Server Standalone Distribution</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>server-standalone</artifactId>
+      <type>war</type>
+    </dependency>
+
+    <!--<dependency>-->
+      <!--<groupId>aopalliance</groupId>-->
+      <!--<artifactId>aopalliance</artifactId>-->
+    <!--</dependency>-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>javax.enterprise</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>cdi-api</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>javax.servlet</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>javax.servlet-api</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+    <!--&lt;!&ndash; Application dependencies&ndash;&gt;-->
+    <!--<dependency>-->
+      <!--<groupId>org.mongodb</groupId>-->
+      <!--<artifactId>mongo-java-driver</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.apache.commons</groupId>-->
+      <!--<artifactId>commons-lang3</artifactId>-->
+    <!--</dependency>-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>commons-codec</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>commons-codec</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>javax.inject</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>javax.inject</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+
+    <!--<dependency>-->
+      <!--<groupId>javax.portlet</groupId>-->
+      <!--<artifactId>portlet-api</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.commons</groupId>-->
+      <!--<artifactId>commons-juzu</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.commons</groupId>-->
+      <!--<artifactId>commons-component-common</artifactId>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<artifactId>*</artifactId>-->
+          <!--<groupId>*</groupId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
+
+
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.gatein.portal</groupId>-->
+      <!--<artifactId>exo.portal.component.portal</artifactId>-->
+      <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.gatein.portal</groupId>-->
+      <!--<artifactId>exo.portal.webui.portal</artifactId>-->
+      <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.ecms</groupId>-->
+      <!--<artifactId>ecms-core-services</artifactId>-->
+      <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.juzu</groupId>-->
+      <!--<artifactId>juzu-core</artifactId>-->
+      <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+    <!--</dependency>-->
+
+
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.commons</groupId>-->
+      <!--<artifactId>commons-comet-service</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>-->
+      <!--<artifactId>owasp-java-html-sanitizer</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.core</groupId>-->
+      <!--<artifactId>exo.core.component.organization.api</artifactId>-->
+    <!--</dependency>-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>org.exoplatform.kernel</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>exo.kernel.commons</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+    <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+      <!--&lt;!&ndash;<groupId>org.exoplatform.kernel</groupId>&ndash;&gt;-->
+      <!--&lt;!&ndash;<artifactId>exo.kernel.container</artifactId>&ndash;&gt;-->
+    <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+    <!--<dependency>-->
+      <!--<groupId>org.exoplatform.social</groupId>-->
+      <!--<artifactId>social-component-core</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.juzu</groupId>-->
+      <!--<artifactId>juzu-core</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.juzu</groupId>-->
+      <!--<artifactId>juzu-plugins-less</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.juzu</groupId>-->
+      <!--<artifactId>juzu-plugins-portlet</artifactId>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.juzu</groupId>-->
+      <!--<artifactId>juzu-plugins-upload</artifactId>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+      <!--<groupId>com.google.inject</groupId>-->
+      <!--<artifactId>guice</artifactId>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+      <!--<groupId>org.slf4j</groupId>-->
+      <!--<artifactId>jcl-over-slf4j</artifactId>-->
+    <!--</dependency>-->
+    <!-- Redirect everything from JUL to SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <!-- Use SLF4J and not log4j -->
+    <!-- log4j must be removed from dependencies -->
+    <!--<dependency>-->
+      <!--<groupId>org.slf4j</groupId>-->
+      <!--<artifactId>log4j-over-slf4j</artifactId>-->
+    <!--</dependency>-->
+    <!-- SLF4J API -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+    </dependency>
+    <!-- Required by logback for colorized console on windows -->
+    <dependency>
+      <groupId>org.fusesource.jansi</groupId>
+      <artifactId>jansi</artifactId>
+    </dependency>
+
+
+  </dependencies>
+
+  <!--<dependencies>-->
+  <!--<dependency>-->
+  <!--<groupId>org.exoplatform.addons.chat</groupId>-->
+  <!--<artifactId>application</artifactId>-->
+  <!--<type>war</type>-->
+  <!--</dependency>-->
+  <!--<dependency>-->
+  <!--<groupId>org.exoplatform.addons.chat</groupId>-->
+  <!--<artifactId>exo-addons-chat-extension</artifactId>-->
+  <!--<type>war</type>-->
+  <!--</dependency>-->
+  <!--<dependency>-->
+  <!--<groupId>org.exoplatform.addons.chat</groupId>-->
+  <!--<artifactId>exo-addons-chat-extension-config</artifactId>-->
+  <!--<type>jar</type>-->
+  <!--</dependency>-->
+  <!--</dependencies>-->
+
+  <!--<build>-->
+  <!--<plugins>-->
+  <!--<plugin>-->
+  <!--<groupId>org.apache.maven.plugins</groupId>-->
+  <!--<artifactId>maven-assembly-plugin</artifactId>-->
+  <!--<executions>-->
+  <!--<execution>-->
+  <!--<id>package-extension</id>-->
+  <!--<phase>prepare-package</phase>-->
+  <!--<goals>-->
+  <!--<goal>single</goal>-->
+  <!--</goals>-->
+  <!--<configuration>-->
+  <!--<appendAssemblyId>false</appendAssemblyId>-->
+  <!--<descriptors>-->
+  <!--<descriptor>src/main/assemblies/exo-addons-chat-extension.xml</descriptor>-->
+  <!--</descriptors>-->
+  <!--</configuration>-->
+  <!--</execution>-->
+  <!--</executions>-->
+  <!--</plugin>-->
+  <!--</plugins>-->
+  <!--</build>-->
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/tomcat-dependencies.xml</descriptor>
+                <descriptor>src/main/assemblies/chat-server-exploded.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assemblies/chat-server-packaging.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
