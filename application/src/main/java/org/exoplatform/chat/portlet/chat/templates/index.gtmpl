@@ -244,12 +244,6 @@
                 <div class="meeting-action-panel meeting-action-file-panel" data-height="195" data-title="&{exoplatform.chat.file}">
                   <strong class="actionTitle">&{exoplatform.chat.upload.file}</strong>
                   <span id="dropzone-container">
-                    <div class="progressBar" id="dropzone">
-                      <div class="progress">
-                        <div class="bar" style="width: 0.0%;"></div>
-                        <div class="label"><div class="label-inner">&{exoplatform.chat.file.drop}</div></div>
-                      </div>
-                    </div>
                   </span>
                   <form action="" id="chat-file-form" method="post" enctype="multipart/form-data" accept-charset="utf-8">
                     <input type="hidden" name="room" value="---" id="chat-file-room" />
