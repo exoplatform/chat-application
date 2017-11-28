@@ -163,7 +163,7 @@
             <li><a href="#" id="team-add-to-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-status"></i>&nbsp;&{exoplatform.chat.add.favorites}</a></li>
             <li><a href="#" id="team-remove-from-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
             <li><a href="#" id="team-notification-button" class="auto-wrap"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
-            <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.edit}</span></a></li>
+            <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.edit}</span></a></li>
             <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
             <li class="participantsList">
               <a href="#" class="auto-wrap" data-placement="left" disabled>
