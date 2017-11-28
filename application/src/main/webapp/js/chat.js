@@ -309,6 +309,7 @@
     msgHtml = msgHtml.replace(/&lt;/g, "<");
     msgHtml = msgHtml.replace(/&gt;/g, ">");
     msgHtml = msgHtml.replace(/<br>/g, "\n");
+    msgHtml = msgHtml.replace(/<br\/>/g, "\n");
 
     var $uitextarea = jqchat("#edit-modal-area");
     $uitextarea.val(msgHtml);
