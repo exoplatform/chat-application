@@ -109,45 +109,54 @@
         thiss.setUserPref("lastFullName", thiss.targetFullname, 60000);
 
         thiss.refreshChat(function () {
-          // always scroll to the last message when loading a chat room
           var $chats = thiss.messagesContainer;
-          $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
-          $chats.scroll(function() {
-            if (jqchat(this).scrollTop() === 0) {
-              thiss.messagesContainer.prepend('<div class="loadMore text-center"><img src="/chat/img/sync.gif" width="64px"></div>');
-              var messages = TAFFY(thiss.messages);
-              var toTimestamp = messages().order("timestamp asec").first().timestamp;
-              jqchat.ajax({
-                url: thiss.jzChatRead,
-                data: {
-                  room: thiss.id,
-                  user: thiss.username,
-                  toTimestamp: toTimestamp,
-                  dbName: thiss.dbName
-                },
-                headers: {
-                  'Authorization': 'Bearer ' + thiss.token
-                },
-                context: this,
-                success: function (data) {
-                  var loadMore = thiss.messagesContainer.find('.loadMore');
-                  if (data.messages && data.messages.length > 0) {
-                    var last = thiss.messagesContainer.prop('scrollHeight');
+          // always scroll to the last message when loading a chat room
+          if (thiss.messages.length > 0) {
+            $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
-                    var $div = jqchat('<div></div>');
-                    thiss.showMessages(data.messages, $div);
+            $chats.scroll(function() {
+              if (jqchat(this).scrollTop() === 0) {
+                // In the case of deleting a team room.
+                if (!thiss.id || thiss.id == "") return;
 
-                    loadMore.after($div.html());
-                    thiss.messagesContainer.scrollTop(thiss.messagesContainer.prop('scrollHeight') - last);
-                  } else {
-                    jqchat(this).off("scroll");
+                thiss.messagesContainer.prepend('<div class="loadMore text-center"><img src="/chat/img/sync.gif" width="64px"></div>');
+                var messages = TAFFY(thiss.messages);
+                var toTimestamp = messages().order("timestamp asec").first().timestamp;
+                jqchat.ajax({
+                  url: thiss.jzChatRead,
+                  data: {
+                    room: thiss.id,
+                    user: thiss.username,
+                    toTimestamp: toTimestamp,
+                    dbName: thiss.dbName
+                  },
+                  headers: {
+                    'Authorization': 'Bearer ' + thiss.token
+                  },
+                  context: this,
+                  success: function (data) {
+                    var loadMore = thiss.messagesContainer.find('.loadMore');
+                    if (data.messages && data.messages.length > 0) {
+                      var last = thiss.messagesContainer.prop('scrollHeight');
+
+                      var $div = jqchat('<div></div>');
+                      thiss.showMessages(data.messages, $div);
+
+                      loadMore.after($div.html());
+                      thiss.messagesContainer.scrollTop(thiss.messagesContainer.prop('scrollHeight') - last);
+                    } else {
+                      jqchat(this).off("scroll");
+                    }
+                    loadMore.remove();
                   }
-                  loadMore.remove();
-                }
-              });
-            }
-          });
+                });
+              }
+            });
+          } else {
+            thiss.messagesContainer.prepend('<div class="noMessage"><span class="text">' + chatBundleData["exoplatform.chat.no.messages"] + '</span></div>');
+            thiss.isEmpty = true;
+          }
 
           $chats.off("click.quote");
           $chats.on("click.quote", ".msg-action-quote", function () {
@@ -664,6 +673,12 @@
       var $chats = $container;
     } else {
       var $chats = this.messagesContainer;
+    }
+
+    // Remove the empty icon
+    if (this.isEmpty) {
+      $chats.find('.noMessage').remove();
+      this.isEmpty = false;
     }
 
     if (checkToScroll) {
