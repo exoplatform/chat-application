@@ -108,25 +108,4 @@ public class ChatUtils {
     }
     return Text.escapeIllegalJcrChars(str);
   }
-
-  public static String escapeSpecialCharacters(String message) {
-    message = StringUtils.chomp(message);
-    message = message.replaceAll("&", "&#38");
-    message = message.replaceAll("<", "&lt;");
-    message = message.replaceAll(">", "&gt;");
-    message = message.replaceAll("\"", "&quot;");
-    message = message.replaceAll("\n", "<br/>");
-    message = message.replaceAll("\\\\", "&#92");
-    return message;
-  }
-  public static String unEscapeSpecialCharacters(String message) {
-    message = StringUtils.chomp(message);
-    message = message.replaceAll("&#38", "&");
-    message = message.replaceAll("&lt;", "<");
-    message = message.replaceAll("&gt;", ">");
-    message = message.replaceAll("&quot;", "\"");
-    message = message.replaceAll("<br/>", "\n");
-    message = message.replaceAll("&#92", "\\\\");
-    return message;
-  }
 }
