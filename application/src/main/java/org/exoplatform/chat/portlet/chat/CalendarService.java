@@ -47,8 +47,6 @@ public class CalendarService {
   protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
                          Date from, Date to, String location) throws Exception
   {
-    summary = ChatUtils.escapeSpecialCharacters(summary);
-    location = ChatUtils.escapeSpecialCharacters(location);
     if (calId!=null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
@@ -74,38 +72,6 @@ public class CalendarService {
         }
         calendarService_.saveUserEvent(user, calId, event, true);
 //        calendarService_.confirmInvitation("john", "benjamin", "john", Utils.PRIVATE_TYPE, calId, eventId, Utils.ACCEPT);
-      }
-    }
-  }
-
-  protected void saveTask(String currentUser, String username, String summary, String roomName, String isSpace,
-                          Date from, Date to) throws Exception {
-    summary = ChatUtils.escapeSpecialCharacters(summary);
-    CalendarEvent task = new CalendarEvent();
-    task.setSummary(summary);
-    task.setEventType(CalendarEvent.TYPE_TASK);
-    task.setRepeatType(CalendarEvent.RP_NOREPEAT);
-    task.setPrivate(true);
-    task.setFromDateTime(from);
-    task.setToDateTime(to);
-    task.setPriority(CalendarEvent.PRIORITY_NORMAL);
-    task.setTaskDelegator(username);
-    task.setDescription("Created by " + currentUser + " for " + username);
-    String calId = null;
-    if ("true".equals(isSpace)) {
-      calId = getCalendarId(currentUser, roomName);
-    }
-    if (calId != null) {
-      task.setCalendarId(calId);
-      calendarService_.savePublicEvent(calId, task, true);
-    } else {
-      if (!StringUtils.isEmpty(username)) {
-        String[] assignees = username.split(",");
-        for (String assignee : assignees) {
-          String assigneeCalId = getFirstCalendarsId(assignee);
-          task.setCalendarId(assigneeCalId);
-          calendarService_.saveUserEvent(assignee, assigneeCalId, task, true);
-        }
       }
     }
   }
