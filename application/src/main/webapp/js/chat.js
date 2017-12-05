@@ -2399,7 +2399,7 @@
         var roomTriggerType = jqchat(this).attr('room-notif-trigger');
         var roomTriggerWhenKeyWordValue = jqchat("#room-config #" + desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE).val();
 
-        if (ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
+        if (desktopNotification.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === roomTriggerType) {
           $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', false);
         } else {
           $("#room-config input#room-notif-trigger-when-key-word-value").prop('disabled', true);
