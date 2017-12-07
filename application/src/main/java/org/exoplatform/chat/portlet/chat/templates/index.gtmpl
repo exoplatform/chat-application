@@ -9,6 +9,7 @@
   data-fullscreen="<%=fullscreen%>"
   data-db-name="<%=dbName%>"
   data-portal-uri="<%=portalURI%>"
+  data-upload-file-size="<%=uploadFileSize%>"
 >
 
   <div class="chat-sync-panel" style="display:none;"></div>

@@ -100,6 +100,7 @@ public class PropertyManager {
   public static final String PROPERTY_MAIL_SENDER                 = "email.smtp.from";
 
   public static final String PROPERTY_PLF_USER_STATUS_UPDATE_URL = "plfUsrStatUpdUrl";
+  public static final String PROPERTY_UPLOAD_FILE_SIZE = "chatUploadFileSize";
 
   public static String getProperty(String key)
   {
@@ -162,6 +163,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_MAIL_SENDER, "chat@localhost.com");
       
       overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
+      overridePropertyIfNotSet(PROPERTY_UPLOAD_FILE_SIZE, "100");
 
     }
     return properties;

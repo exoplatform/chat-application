@@ -1839,6 +1839,7 @@
       chatApplication.dbName = $chatApplication.attr("data-db-name");
       chatApplication.chatFullscreen = $chatApplication.attr("data-fullscreen");
       chatApplication.portalURI = $chatApplication.attr("data-portal-uri");
+      chatApplication.uploadFileSize = $chatApplication.attr("data-upload-file-size");
 
       chatApplication.jzMaintainSession = $chatApplication.jzURL("ChatApplication.maintainSession");
       chatApplication.jzUpload = $chatApplication.jzURL("ChatApplication.upload");
@@ -2231,7 +2232,7 @@
                           // user uploaded more than 'maxfiles'
                           break;
                         case 'FileTooLarge':
-                          alert(chatBundleData["exoplatform.chat.dnd.filesize"]);
+                          alert(chatBundleData["exoplatform.chat.upload.filesize"].replace("{0}", chatApplication.uploadFileSize));
                           // program encountered a file whose size is greater than 'maxfilesize'
                           // FileTooLarge also has access to the file which was too large
                           // use file.name to reference the filename of the culprit file
@@ -2244,7 +2245,7 @@
                     },
                     allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
                     maxfiles: 1,
-                    maxfilesize: 100,    // max file size in MBs
+                    maxfilesize: chatApplication.uploadFileSize,    // max file size in MBs
                     uploadStarted: function (i, file, len) {
                       console.log("upload started : " + i + " : " + file.name + " : " + len);
                       // a file began uploading

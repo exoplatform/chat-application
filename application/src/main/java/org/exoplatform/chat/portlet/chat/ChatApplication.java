@@ -130,6 +130,7 @@ public class ChatApplication
     String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
+    String uploadFileSize = PropertyManager.getProperty(PropertyManager.PROPERTY_UPLOAD_FILE_SIZE);
 
     initChatProfile();
 
@@ -188,6 +189,7 @@ public class ChatApplication
             .set("extPopup", extPopup)
             .set("extMenu", extMenu)
             .set("portalURI", portalURI)
+            .set("uploadFileSize", uploadFileSize)
             .ok()
             .withMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .withAssets("chat-" + view)
