@@ -979,13 +979,19 @@
           out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
         }
       } else if (options.type==="type-event") {
-        out += "<b>" + options.summary + "</b>";
+        var summary = options.summary;
+        var location = options.location;
+        if (!objMessage.msgId) {
+          summary = jqchat("<div></div>").text(summary).html();
+          location = jqchat("<div></div>").text(location).html();
+        }
+        out += "<b>" + summary + "</b>";
         out += "<div class='msTimeEvent'>";
         out += "  <div>";
         out += "    <i class='uiIconChatClock uiIconChatLightGray mgR20'></i><span class='muted'>" + chatBundleData["exoplatform.chat.from"] + ": </span><b class='mgR5'>" + options.startDate + " " + options.startTime + "</b><span class='muted'>" + chatBundleData["exoplatform.chat.to"] + ": </span><b>" + options.endDate + " " + options.endTime + "</b>";
         out += "  </div>";
         out += "  <div>";
-        out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + options.location;
+        out += "    <i class='uiIconChatCheckin uiIconChatLightGray mgR20'></i>" + location;
         out += "  </div>";
         out += "</div>";
       } else if (options.type==="type-add-team-user") {
