@@ -160,33 +160,39 @@
 
           $chats.off("click.quote");
           $chats.on("click.quote", ".msg-action-quote", function () {
-            var $uimsg = jqchat(this).siblings(".msg-data");
-            var msgHtml = $uimsg.html();
-            msgHtml = msgHtml.replace(/&amp;/g, "&");
-            msgHtml = msgHtml.replace(/&lt;/g, "<");
-            msgHtml = msgHtml.replace(/&gt;/g, ">");
-            msgHtml = msgHtml.replace(/<br>/g, "\n");
+            var $uimsg = jqchat(this).closest(".msg-text");
+            var msgId = $uimsg.attr('id');
+            var messages = TAFFY(thiss.messages);
+            var tempMsg = messages({
+              msgId: msgId
+            });
+            if (tempMsg.count() > 0) {
+              var msg = tempMsg.first().msg;
 
-            var msgFullname = $uimsg.attr("data-fn");
-            jqchat("#msg").focus().val('').val("[quote=" + msgFullname + "]" + msgHtml + " [/quote] ");
+              var msgHtml = msg.replace(/<br\/>/g, "\n");
+              msgHtml = $('<div />').html(msgHtml).text();
+
+              var msgFullname = $uimsg.attr("data-fn");
+              jqchat("#msg").focus().val('').val("[quote=" + msgFullname + "]" + msgHtml + " [/quote] ");
+            }
           });
 
           $chats.off("click.delete");
           $chats.on("click.delete", ".msg-action-delete", function () {
-            var $uimsg = jqchat(this).siblings(".msg-data");
-            var msgId = $uimsg.attr("data-id");
+            var $uimsg = jqchat(this).closest(".msg-text");
+            var msgId = $uimsg.attr("id");
             chatApplication.deleteMessage(msgId);
           });
 
           $chats.off("click.edit");
           $chats.on("click.edit", ".msg-action-edit", function () {
-            var $uimsgdata = jqchat(this).siblings(".msg-data");
-            chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+            var $uimsg = jqchat(this).closest(".msg-text");
+            chatApplication.openEditMessagePopup($uimsg.attr("id"));
           });
 
           $chats.off("click.savenotes");
           $chats.on("click.savenotes", ".msg-action-savenotes", function () {
-            var $uimsg = jqchat(this).siblings(".msg-data");
+            var $uimsg = jqchat(this).closest(".msg-text");
             var msgTimestamp = $uimsg.attr("data-timestamp");
 
             var options = {
@@ -828,9 +834,9 @@
       }
     }
     if (message.msgId) {
-      out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '">';
+      out += '          <div id="' + message.msgId + '" class="msUserCont msg-text ' + noEditCssClass + '" data-fn="' + message.fullname + '" data-timestamp="' + message.timestamp + '">';
     } else {
-      out += '          <div id="' + message.clientId + '" class="msUserCont msg-text noEdit pending">';
+      out += '          <div id="' + message.clientId + '" class="msUserCont msg-text noEdit pending" data-fn="' + message.fullname + '" data-timestamp="' + message.timestamp + '">';
     }
 
     var msRightInfo = "";
@@ -842,7 +848,7 @@
     msRightInfo +=            this.getMessageInfo(message);
     msRightInfo += "        </div>";
     if (message.type !== "DELETED" && message.isSystem !== true) {
-      msRightInfo += "      <div class='msAction msg-actions'><span style='display: none;' class='msg-data' data-id='"+message.msgId+"' data-fn='"+message.fullname+"' data-timestamp='" + message.timestamp + "'>"+jqchat("<div></div>").text(message.msg).html()+"</span>";
+      msRightInfo += "      <div class='msAction msg-actions'>";
       msRightInfo += "        <a href='#' class='msg-action-savenotes'>" + chatBundleData["exoplatform.chat.notes"] + "</a> |";
       if (message.user === this.username) {
         msRightInfo += "      <a href='#' class='msg-action-edit'>" + chatBundleData["exoplatform.chat.edit"] + "</a> |";
