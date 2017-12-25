@@ -297,28 +297,30 @@
    * @param msgDataId the data-id value of the message
    * @param msgData the raw text of the message to edit
    */
-  ChatApplication.prototype.openEditMessagePopup = function (msgDataId, msgData) {
+  ChatApplication.prototype.openEditMessagePopup = function (msgDataId) {
     if (msgDataId === null || msgDataId === undefined || msgDataId === "") {
       return;
     }
-    if (msgData === null || msgData === undefined || msgData === "") {
-      return;
-    }
 
-    msgHtml = msgData.replace(/&amp;/g, "&");
-    msgHtml = msgHtml.replace(/&lt;/g, "<");
-    msgHtml = msgHtml.replace(/&gt;/g, ">");
-    msgHtml = msgHtml.replace(/<br>/g, "\n");
-    msgHtml = msgHtml.replace(/<br\/>/g, "\n");
-
-    var $uitextarea = jqchat("#edit-modal-area");
-    $uitextarea.val(msgHtml);
-    $uitextarea.attr("data-id", msgDataId);
-    window.require(['SHARED/bts_modal'], function() {
-      jqchat('.edit-modal').modal({"backdrop": false});
+    var messages = TAFFY(this.chatRoom.messages);
+    var tempMsg = messages({
+      msgId: msgDataId
     });
-    chatApplication.setModalToCenter('.edit-modal');
-    $uitextarea.focus();
+    if (tempMsg.count() > 0) {
+      var msg = tempMsg.first().msg;
+
+      var msgHtml = msg.replace(/<br\/>/g, "\n");
+      msgHtml = $('<div />').html(msgHtml).text();
+
+      var $uitextarea = jqchat("#edit-modal-area");
+      $uitextarea.val(msgHtml);
+      $uitextarea.attr("data-id", msgDataId);
+      window.require(['SHARED/bts_modal'], function() {
+        jqchat('.edit-modal').modal({"backdrop": false});
+      });
+      chatApplication.setModalToCenter('.edit-modal');
+      $uitextarea.focus();
+    }
   }
 
   /**
@@ -2121,9 +2123,9 @@
         // UP Arrow
         if (event.which === 38 && msg.length === 0) {
           var $uimsg = jqchat(".msMy").find(".msg-text").last();
-          var $uimsgdata = $uimsg.find(".msg-data");
-          if ($uimsgdata.length === 1) {
-            chatApplication.openEditMessagePopup($uimsgdata.attr("data-id"), $uimsgdata.html());
+          // Check for the case of a deleted message.
+          if (!$uimsg.hasClass('noEdit')) {
+            chatApplication.openEditMessagePopup($uimsg.attr("id"));
           }
         }
 
