@@ -372,10 +372,7 @@
    */
   ChatNotification.prototype.showDesktopNotif = function (path, msg) {
     var displayMsg = desktopNotification.highlightMessage(msg);
-    displayMsg = displayMsg.replace(/&amp;/g, "&");
-    displayMsg = displayMsg.replace(/&lt;/g, "<");
-    displayMsg = displayMsg.replace(/&gt;/g, ">");
-    displayMsg = displayMsg.replace(/<br>/g, "\n");
+    displayMsg = jqchat('<div />').html(displayMsg).text()
 
     if (Notification.permission !== "granted")
       Notification.requestPermission();
