@@ -108,15 +108,17 @@
         thiss.setUserPref("lastUsername", thiss.targetUser, 60000);
         thiss.setUserPref("lastFullName", thiss.targetFullname, 60000);
 
+        thiss.scrollAtMax = true;
         thiss.refreshChat(function () {
           var $chats = thiss.messagesContainer;
 
-          // always scroll to the last message when loading a chat room
           if (thiss.messages.length > 0) {
+            // always scroll to the last message when loading a chat room
             $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
             $chats.scroll(function() {
-              if (jqchat(this).scrollTop() === 0) {
+              thiss.scrollAtMax = $chats.prop('scrollHeight') == ($chats.innerHeight() + $chats.scrollTop());
+              if ($chats.scrollTop() === 0) {
                 // In the case of deleting a team room.
                 if (!thiss.id || thiss.id == "") return;
 
@@ -697,6 +699,7 @@
     var prevUser = $lastMessage.data("user");
 
     var out = '';
+    var $msgDiv;
     // Check if it is a system message
     if (message.isSystem === "true" || message.isSystem === true) {
       var hideWemmoMessage = "";
@@ -704,7 +707,7 @@
         hideWemmoMessage = "style='display:none;'";
       }
 
-      var $msgDiv = jqchat('<div class="msRow" ' + hideWemmoMessage + ' data-user="__system">');
+      $msgDiv = jqchat('<div class="msRow" ' + hideWemmoMessage + ' data-user="__system">');
       $chats.append($msgDiv);
 
       var options = {};
@@ -799,24 +802,26 @@
           "<div class='msTiltleLn'>";
         out +=        "<a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
         out +=        "</div>";
-      } else {
-        $msgDiv = $lastMessage.find(".inner");
-      }
-
-      out += this.generateMessageHTML(message);
-
-      if (message.user != prevUser) {
+        out += this.generateMessageHTML(message);
         out +=      '</div>' +
           '</div>' +
           '</div>';
+        $msgDiv.append(out);
+      } else {
+        $msgDiv = jqchat(this.generateMessageHTML(message));
+        $lastMessage.find(".inner").append($msgDiv);
       }
-
-      $msgDiv.append(out);
     }
 
     // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
     if (checkToScroll && scrollAtMax) {
       $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+    }
+
+    if (this.scrollAtMax) {
+      $msgDiv.find(".msg-embedded-img").on("load", function() {
+        $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+      });
     }
   }
 
@@ -973,7 +978,7 @@
         var link = options.restPath;
         if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
           link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
-          out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData["exoplatform.chat.view"] + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData["exoplatform.chat.download"] + "</a></div></div></div></div>";
+          out += "<div class='msAttachmentBox'><div class='msAttachFile'><img src=\""+options.restPath+"\" class=\"msg-embedded-img\"/></div><div class='msActionAttach'><div class='inner'><div><a href='" + options.restPath + "' target='_blank'><i class='uiIconSearch uiIconWhite'></i> " + chatBundleData["exoplatform.chat.view"] + "</a></div><div><a href='"+options.downloadLink+"' target='_blank'><i class='uiIconDownload uiIconWhite'></i> " + chatBundleData["exoplatform.chat.download"] + "</a></div></div></div></div>";
         }
 
       } else if (options.type==="type-link") {
@@ -982,7 +987,7 @@
         out += url;
         if (link.endsWith(".png") || link.endsWith(".jpg") || link.endsWith(".gif") ||
           link.endsWith(".PNG") || link.endsWith(".JPG") || link.endsWith(".GIF")) {
-          out += "<div><img src=\""+options.link+"\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
+          out += "<div><img src=\""+options.link+"\" class=\"msg-embedded-img\" style=\"max-width: 200px;max-height: 140px;border: 1px solid #CCC;padding: 5px;margin: 5px 0;\"/></div>";
         }
       } else if (options.type==="type-event") {
         var summary = options.summary;
@@ -1164,7 +1169,7 @@
           } else if (w.indexOf("/")>-1 && w.indexOf("&lt;/")===-1 && w.indexOf("/&gt;")===-1) {
             var link = w;
             if (w.endsWith(".jpg") || w.endsWith(".png") || w.endsWith(".gif") || w.endsWith(".JPG") || w.endsWith(".PNG") || w.endsWith(".GIF")) {
-              w = "<a href='"+w+"' target='_blank'><img src='"+w+"' width='100%' /></a>";
+              w = "<a href='"+w+"' target='_blank'><img src='"+w+"' width='100%' class='msg-embedded-img'/></a>";
               w += "<span class='invisible-text'>"+link+"</span>";
             } else if (w.indexOf("http://www.youtube.com/watch?v=")===0 && !this.IsIE8Browser() ) {
               var id = w.substr(31);
