@@ -30,6 +30,12 @@
     </dependency>
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>chat-common</artifactId>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
       <artifactId>chat-server-standalone</artifactId>
       <type>war</type>
       <scope>provided</scope>

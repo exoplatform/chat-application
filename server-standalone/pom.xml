@@ -25,6 +25,10 @@
       <classifier>classes</classifier>
     </dependency>
     <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>chat-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongo-java-driver</artifactId>
     </dependency>

@@ -19,14 +19,14 @@
 
 package org.exoplatform.chat.services;
 
+import java.util.List;
+
+import org.json.JSONException;
+
 import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.UserBean;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public interface UserService
 {

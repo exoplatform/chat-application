@@ -15,6 +15,7 @@
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
   <modules>
+    <module>common</module>
     <module>server-embedded</module>
     <module>server-standalone</module>
     <module>application</module>
@@ -110,6 +111,12 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>chat-common</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
         <artifactId>application</artifactId>
         <version>${project.version}</version>
         <type>jar</type>
@@ -145,6 +152,13 @@
         <artifactId>chat-server-embedded</artifactId>
         <version>${project.version}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.addons.chat</groupId>
+        <artifactId>chat-server-embedded</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+        <classifier>embedded</classifier>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.addons.chat</groupId>

@@ -11,10 +11,6 @@
   <name>eXo Add-on:: Chat Server Embedded</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongo-java-driver</artifactId>
     </dependency>
@@ -30,6 +26,7 @@
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -125,6 +122,11 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>chat-common</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>

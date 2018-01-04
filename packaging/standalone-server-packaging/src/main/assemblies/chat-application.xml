@@ -30,9 +30,10 @@
       <outputDirectory>${file.separator}</outputDirectory>
       <includes>
         <include>org.exoplatform.addons.chat:chat-services:jar</include>
+        <include>org.exoplatform.addons.chat:chat-common:jar</include>
       </includes>
       <scope>provided</scope>
-      <outputFileNameMapping>chat-services.jar</outputFileNameMapping>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>

@@ -19,6 +19,27 @@
 
 package org.exoplatform.chat.portlet.notification;
 
+import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.portlet.PortletPreferences;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.exoplatform.addons.chat.listener.ServerBootstrap;
+import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.social.core.space.SpaceUtils;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+
 import juzu.Path;
 import juzu.Response;
 import juzu.SessionScoped;
@@ -28,41 +49,6 @@ import juzu.request.ApplicationContext;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.template.Template;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.exoplatform.chat.common.utils.ChatUtils;
-import org.exoplatform.chat.listener.ServerBootstrap;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.SpaceBeans;
-import org.exoplatform.chat.services.UserService;
-import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.portal.application.PortalRequestContext;
-import org.exoplatform.portal.application.RequestNavigationData;
-import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.webui.util.Util;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
-import org.exoplatform.social.common.router.ExoRouter;
-import org.exoplatform.social.common.router.ExoRouter.Route;
-import org.exoplatform.social.core.space.SpaceUtils;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.portlet.PortletPreferences;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 @SessionScoped
 public class NotificationApplication
@@ -78,6 +64,10 @@ public class NotificationApplication
   String token_ = "---";
   String remoteUser_ = null;
   boolean profileInitialized_ = false;
+  String chatCometDServerUrl;
+  String chatServerURI;
+  String chatPage;
+  String plfUserStatusUpdateUrl;
 
   OrganizationService organizationService_;
 
@@ -99,44 +89,47 @@ public class NotificationApplication
   {
     organizationService_ = organizationService;
     spaceService_ = spaceService;
-    dbName = ChatUtils.getDBName();
+    dbName = ServerBootstrap.getDBName();
     standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
+    chatServerURI = ServerBootstrap.getServerURI();
+    chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
+    plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
+    if (standaloneChatServer) {
+      chatCometDServerUrl = chatServerURI;
+    } else {
+      chatCometDServerUrl = "/cometd";
+    }
   }
 
   @View
   public Response.Content index(ApplicationContext applicationContext, SecurityContext securityContext, UserContext userContext) throws IOException
   {
-    String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-    String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     remoteUser_ = securityContext.getRemoteUser();
-    String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
 
     initUserProfile();
 
     PortletPreferences portletPreferences = providerPreferences.get();
     String title = portletPreferences.getValue("title", "---");
     Locale locale = userContext.getLocale();
-    ResourceBundle bundle= applicationContext.resolveBundle(locale) ;
+    ResourceBundle bundle= applicationContext.resolveBundle(locale);
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
-    String spaceId = getCurrentSpaceId();
+    Space space = SpaceUtils.getSpaceByContext();
+    String spaceId = space == null ? StringUtils.EMPTY : space.getPrettyName();
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
 
     String cometdToken;
-    String chatCometDServerUrl;
     if (standaloneChatServer) {
       cometdToken = token_;
-      chatCometDServerUrl = chatServerURL;
     } else {
       cometdToken = continuationService.getUserToken(remoteUser_);
-      chatCometDServerUrl = "/cometd";
     }
 
     return index.with().set("user", remoteUser_).set("token", token_)
         .set("standalone", standaloneChatServer)
         .set("chatCometDServerUrl", chatCometDServerUrl)
         .set("cometdToken", cometdToken)
-        .set("chatServerURL", chatServerURL).set("chatPage", chatPage)
+        .set("chatServerURL", chatServerURI).set("chatPage", chatPage)
         .set("plfUserStatusUpdateUrl", plfUserStatusUpdateUrl)
         .set("title", title)
         .set("messages", messages)
@@ -163,6 +156,9 @@ public class NotificationApplication
         // Set user's Full Name in the DB
         saveFullNameAndEmail(remoteUser_, dbName);
 
+        // Set user's Spaces in the DB
+        ServerBootstrap.saveSpaces(remoteUser_, dbName);
+
         profileInitialized_ = true;
       }
       catch (Exception e)
@@ -170,9 +166,6 @@ public class NotificationApplication
         profileInitialized_ = false;
       }
     }
-
-    // Set user's Spaces in the DB
-    saveSpaces(remoteUser_, dbName);
   }
 
   protected String saveFullNameAndEmail(String username, String dbName)
@@ -193,57 +186,5 @@ public class NotificationApplication
       LOG.warning(e.getMessage());
     }
     return fullname;
-  }
-
-  protected void saveSpaces(String username, String dbName)
-  {
-    try
-    {
-      ListAccess<Space> spacesListAccess = spaceService_.getAccessibleSpacesWithListAccess(username);
-      List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
-      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
-      for (Space space:spaces)
-      {
-        SpaceBean spaceBean = new SpaceBean();
-        spaceBean.setDisplayName(space.getDisplayName());
-        spaceBean.setGroupId(space.getGroupId());
-        spaceBean.setId(space.getId());
-        spaceBean.setShortName(space.getShortName());
-        beans.add(spaceBean);
-      }
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
-    }
-    catch (Exception e)
-    {
-      LOG.warning(e.getMessage());
-    }
-  }
-
-  protected String getCurrentSpaceId() {
-    Space currSpace = getSpaceByContext();
-    if (currSpace != null) {
-      return currSpace.getId();
-    } else {
-      return StringUtils.EMPTY;
-    }
-  }
-
-  private static Space getSpaceByContext() {
-    //
-    PortalRequestContext pcontext = Util.getPortalRequestContext();
-    String requestPath = pcontext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
-
-    if (!pcontext.getSiteType().equals(SiteType.GROUP) ||
-        !pcontext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
-      return null;
-    }
-
-    Route route = ExoRouter.route(requestPath);
-    if (route == null) return null;
-
-    //
-    String spacePrettyName = route.localArgs.get("spacePrettyName");
-    SpaceService spaceService = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
-    return spaceService.getSpaceByPrettyName(spacePrettyName);
   }
 }

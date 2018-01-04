@@ -25,6 +25,11 @@
       <artifactId>chat-services</artifactId>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.exoplatform.addons.chat</groupId>
+      <artifactId>chat-common</artifactId>
+      <type>jar</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
