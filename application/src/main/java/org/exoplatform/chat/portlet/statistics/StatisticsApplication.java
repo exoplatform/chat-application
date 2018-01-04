@@ -24,6 +24,8 @@ import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
 import juzu.template.Template;
+
+import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import javax.inject.Inject;
@@ -40,9 +42,7 @@ public class StatisticsApplication
   @View
   public Response.Content index() throws IOException
   {
-    String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-
-    return index.with().set("chatServerURL", chatServerURL).ok();
+    return index.with().set("chatServerURL", ServerBootstrap.getServerURI()).ok();
   }
 
 }

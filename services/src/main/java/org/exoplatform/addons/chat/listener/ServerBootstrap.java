@@ -17,20 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.chat.listener;
+package org.exoplatform.addons.chat.listener;
 
-import org.apache.commons.io.IOUtils;
-import org.exoplatform.chat.model.SpaceBeans;
-import org.exoplatform.chat.utils.ChatUtils;
-import org.exoplatform.chat.utils.MessageDigester;
-import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.portal.webui.util.Util;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -38,20 +26,57 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import org.exoplatform.chat.model.SpaceBean;
+import org.exoplatform.chat.model.SpaceBeans;
+import org.exoplatform.chat.utils.ChatUtils;
+import org.exoplatform.chat.utils.MessageDigester;
+import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 
 public class ServerBootstrap {
 
-  static {
-    // Register UpdateUserEventListener
-    UpdateUserEventListener listener = new UpdateUserEventListener();
-    PortalContainer pcontainer = PortalContainer.getInstance();
-    OrganizationService oService =
-            (OrganizationService) pcontainer.getComponentInstanceOfType(OrganizationService.class);
-    oService.getUserHandler().addUserEventListener(listener);
-  }
-
   private static final Log LOG = ExoLogger.getLogger(ServerBootstrap.class.getName());
+
+  private static String serverURL;
+  private static String serverURI;
+
+  /**
+   * Get mongo database name for current tenant if on cloud environment
+   */
+  public static String getDBName() {
+    String dbName = "";
+    String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
+    ConversationState currentState = ConversationState.getCurrent();
+    if (currentState != null) {
+      dbName = (String) currentState.getAttribute("currentTenant");
+    }
+    if (StringUtils.isEmpty(dbName)) {
+      dbName = prefixDB;
+    } else {
+      StringBuilder sb = new StringBuilder()
+                                    .append(prefixDB)
+                                    .append("_")
+                                    .append(dbName);
+      dbName = sb.toString();
+    }
+    return dbName;
+  }
 
   public static String getUserFullName(String username, String dbName)
   {
@@ -85,13 +110,34 @@ public class ServerBootstrap {
     return token;
   }
 
+  public static void saveSpaces(String username, String dbName)
+  {
+    try {
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      ListAccess<Space> spacesListAccess = spaceService.getAccessibleSpacesWithListAccess(username);
+      List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
+      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
+      for (Space space : spaces) {
+        SpaceBean spaceBean = new SpaceBean();
+        spaceBean.setDisplayName(space.getDisplayName());
+        spaceBean.setGroupId(space.getGroupId());
+        spaceBean.setId(space.getId());
+        spaceBean.setShortName(space.getShortName());
+        beans.add(spaceBean);
+      }
+      setSpaces(username, new SpaceBeans(beans), dbName);
+    } catch (Exception e) {
+      LOG.warn("Error while initializing spaces of User '" + username + "'", e);
+    }
+  }
+
   public static void setSpaces(String username, SpaceBeans beans, String dbName)
   {
     String params = "username="+username;
     String serSpaces = "";
     try {
       serSpaces = ChatUtils.toString(beans);
-      serSpaces = URLEncoder.encode(serSpaces);
+      serSpaces = URLEncoder.encode(serSpaces, "UTF-8");
     } catch (IOException e) {
       LOG.error("Error encoding spaces",e);
     }
@@ -102,12 +148,10 @@ public class ServerBootstrap {
 
   private static String callServer(String serviceUri, String params)
   {
-
-    String serviceUrl = getServerBase()
-            + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+    String serviceUrl = getServerURL()
             +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
             +"&"+params;
-    String body = "";
+    String body = null;
     try {
       URL url = new URL(serviceUrl);
       URLConnection con = url.openConnection();
@@ -120,17 +164,18 @@ public class ServerBootstrap {
       LOG.error("Malformed URL {}",serviceUrl,e);
     } catch (IOException e) {
       LOG.error("Could not establish connection to URL {}",serviceUri,e);
+    } catch (Exception e) {
+      LOG.error("Error occurred while sending request to " + serviceUrl, e);
     }
     return body;
   }
 
   private static String postServer(String serviceUri, String params)
   {
-    String serviceUrl = getServerBase()
-            + PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL)
+    String serviceUrl = getServerURL()
             +"/"+serviceUri;
     String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
-    String body = "";
+    String body = null;
     OutputStreamWriter writer = null;
     try {
       URL url = new URL(serviceUrl);
@@ -149,14 +194,18 @@ public class ServerBootstrap {
       if ("null".equals(body)) body = null;
 
     } catch (MalformedURLException e) {
-      LOG.error("Malformed URL {}",serviceUri,e);
+      LOG.error("Malformed URL " + serviceUri, e);
     } catch (IOException e) {
-      LOG.error("Error converting input stream",e);
+      LOG.error("Error converting input stream", e);
+    } catch (Exception e) {
+      LOG.error("Error occurred while sending request to " + serviceUrl, e);
     } finally {
-      try {
-        writer.close();
-      } catch (Exception e) {
-        LOG.error("Error when closing writer",e);
+      if (writer != null) {
+        try {
+          writer.close();
+        } catch (Exception e) {
+          LOG.error("Error when closing writer", e);
+        }
       }
     }
     return body;
@@ -178,5 +227,23 @@ public class ServerBootstrap {
 
   }
 
+  public static String getServerURL() {
+    if (serverURL == null) {
+      String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+      if (chatServerURL.startsWith("http")) {
+        serverURL = chatServerURL;
+      } else {
+        serverURL = getServerBase() + getServerURI();
+      }
+    }
+    return serverURL;
+  }
+
+  public static String getServerURI() {
+    if (serverURI == null) {
+      serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    }
+    return serverURI;
+  }
 
 }

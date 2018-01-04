@@ -18,6 +18,7 @@
 
 # Maven
 target/
+bin/
 pom.xml.versionsBackup
 
 # IntelliJ project files
@@ -33,6 +34,7 @@ pom.xml.versionsBackup
 .settings/
 .classpath
 .project
+.factorypath
 
 # Log
 *.log

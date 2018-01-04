@@ -1,15 +1,11 @@
 package org.exoplatform.addons.chat.api;
 
 
-import org.exoplatform.addons.chat.utils.MessageDigester;
-import org.exoplatform.addons.chat.utils.PropertyManager;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.services.rest.resource.ResourceContainer;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.user.UserStateService;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-
-import org.json.simple.JSONObject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
@@ -18,11 +14,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.json.simple.JSONObject;
+
+import org.exoplatform.addons.chat.utils.MessageDigester;
+import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.user.UserStateService;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 @Path("/chat/api/1.0/user/")
 public class UserRestService implements ResourceContainer {

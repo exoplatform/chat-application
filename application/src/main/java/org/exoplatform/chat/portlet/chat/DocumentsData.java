@@ -5,6 +5,9 @@ import juzu.SessionScoped;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
+
+import com.ibm.icu.text.Transliterator;
+
 import org.exoplatform.chat.bean.File;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.services.cms.impl.Utils;
@@ -212,8 +215,8 @@ public class DocumentsData {
     }
 
     String title = Text.escapeIllegalJcrChars(filename);
-    String cleanedFilenameBase = ChatUtils.cleanString(filenameBase);
-    String cleanedFilenameExt = ChatUtils.cleanString(filenameExt);
+    String cleanedFilenameBase = cleanString(filenameBase);
+    String cleanedFilenameExt = cleanString(filenameExt);
     String cleanedFilename = cleanedFilenameBase.concat(cleanedFilenameExt);
 
 
@@ -346,6 +349,17 @@ public class DocumentsData {
     }
     String finalResult = roundTwoDecimals(fileSizeKB);
     return finalResult + " " + howBig;
+  }
+
+  private static String cleanString(String str) {
+    Transliterator accentsconverter = Transliterator.getInstance("Latin; NFD; [:Nonspacing Mark:] Remove; NFC;");
+    if (str.indexOf('.') > 0) {
+      String ext = str.substring(str.lastIndexOf('.'));
+      str = accentsconverter.transliterate(str.substring(0, str.lastIndexOf('.'))).concat(ext);
+    } else {
+      str = accentsconverter.transliterate(str);
+    }
+    return Text.escapeIllegalJcrChars(str);
   }
 
   private static String roundTwoDecimals(double d) {

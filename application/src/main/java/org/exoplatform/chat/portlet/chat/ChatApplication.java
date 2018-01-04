@@ -19,45 +19,48 @@
 
 package org.exoplatform.chat.portlet.chat;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.portlet.PortletPreferences;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import juzu.request.*;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.portlet.PortletPreferences;
+
 import org.apache.commons.fileupload.FileItem;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.bean.File;
-import org.exoplatform.chat.common.utils.ChatUtils;
-import org.exoplatform.chat.listener.ServerBootstrap;
-import org.exoplatform.chat.model.SpaceBean;
-import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.api.ui.ActionContext;
 import org.exoplatform.commons.api.ui.PlugableUIService;
 import org.exoplatform.commons.api.ui.RenderContext;
 import org.exoplatform.commons.juzu.ajax.Ajax;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import juzu.Path;
 import juzu.Resource;
@@ -65,6 +68,11 @@ import juzu.Response;
 import juzu.SessionScoped;
 import juzu.View;
 import juzu.impl.common.Tools;
+import juzu.request.ApplicationContext;
+import juzu.request.RequestContext;
+import juzu.request.RequestParameter;
+import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.template.Template;
 
 @SessionScoped
@@ -120,14 +128,14 @@ public class ChatApplication
     this.uiService = uiService;
     organizationService_ = organizationService;
     spaceService_ = spaceService;
-    dbName = ChatUtils.getDBName();
+    dbName = ServerBootstrap.getDBName();
   }
 
   @View
   public Response.Content index(ApplicationContext appContext, UserContext userContext, SecurityContext securityContext)
   {
     remoteUser_ = securityContext.getRemoteUser();
-    String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    String chatServerURI = ServerBootstrap.getServerURI();
     String chatIntervalSession = PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION);
     String plfUserStatusUpdateUrl = PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL);
     String uploadFileSize = PropertyManager.getProperty(PropertyManager.PROPERTY_UPLOAD_FILE_SIZE);
@@ -178,7 +186,7 @@ public class ChatApplication
 
     return index.with().set("user", remoteUser_).set("room", "noroom")
             .set("token", token_)
-            .set("chatServerURL", chatServerURL)
+            .set("chatServerURL", chatServerURI)
             .set("fullname", fullname)
             .set("teamAdmin", String.valueOf(isTeamAdmin_))
             .set("chatIntervalSession", chatIntervalSession)
@@ -201,10 +209,10 @@ public class ChatApplication
    * Init Chat user profile
    */
   public void initChatProfile() {
-    fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
 
     if (!profileInitialized_)
     {
+      fullname_ = ServerBootstrap.getUserFullName(remoteUser_, dbName);
       try
       {
         // Generate and store token if doesn't exist yet.
@@ -224,6 +232,9 @@ public class ChatApplication
 
         ServerBootstrap.setAsAdmin(remoteUser_, isAdmin_, dbName);
 
+        // Set user's Spaces in the DB
+        ServerBootstrap.saveSpaces(remoteUser_, dbName);
+
         profileInitialized_ = true;
       }
       catch (Exception e)
@@ -232,9 +243,6 @@ public class ChatApplication
         profileInitialized_ = false;
       }
     }
-
-    // Set user's Spaces in the DB
-    saveSpaces(remoteUser_, dbName);
   }
 
   @Ajax
@@ -398,27 +406,4 @@ public class ChatApplication
     return fullname;
   }
 
-  protected void saveSpaces(String username, String dbName)
-  {
-    try
-    {
-      ListAccess<Space> spacesListAccess = spaceService_.getAccessibleSpacesWithListAccess(username);
-      List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
-      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
-      for (Space space:spaces)
-      {
-        SpaceBean spaceBean = new SpaceBean();
-        spaceBean.setDisplayName(space.getDisplayName());
-        spaceBean.setGroupId(space.getGroupId());
-        spaceBean.setId(space.getId());
-        spaceBean.setShortName(space.getShortName());
-        beans.add(spaceBean);
-      }
-      ServerBootstrap.setSpaces(username, new SpaceBeans(beans), dbName);
-    }
-    catch (Exception e)
-    {
-      LOG.warning(e.getMessage());
-    }
-  }
 }

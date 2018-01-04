@@ -9,13 +9,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import com.ibm.icu.text.Transliterator;
-
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.ecm.utils.text.Text;
 
 public class ChatUtils {
 
@@ -91,21 +87,4 @@ public class ChatUtils {
     return new String( Base64.encodeBase64( baos.toByteArray() ) );
   }
 
-  /**
-   * Clean string.
-   *
-   * @param str the str
-   *
-   * @return the string
-   */
-  public static String cleanString(String str) {
-    Transliterator accentsconverter = Transliterator.getInstance("Latin; NFD; [:Nonspacing Mark:] Remove; NFC;");
-    if (str.indexOf('.') > 0) {
-      String ext = str.substring(str.lastIndexOf('.'));
-      str = accentsconverter.transliterate(str.substring(0, str.lastIndexOf('.'))).concat(ext);
-    } else {
-      str = accentsconverter.transliterate(str);
-    }
-    return Text.escapeIllegalJcrChars(str);
-  }
 }
