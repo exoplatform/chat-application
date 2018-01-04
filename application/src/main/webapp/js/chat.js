@@ -1157,7 +1157,7 @@
     this.isLoaded = true;
     this.hidePanel(".chat-sync-panel");
     this.hidePanel(".chat-login-panel");
-    chatNotification.changeStatusChat("offline");
+    chatNotification.changeStatusChat(this.username, "offline");
     this.showErrorPanel();
   };
 
@@ -1942,7 +1942,7 @@
           if (message.event == 'user-status-changed') {
             if (message.room == chatApplication.username) {
               // update current user status
-              chatNotification.changeStatusChat(message.data.status);
+              chatNotification.changeStatusChat(message.room, message.data.status);
             } else {
               // update rooms list
               chatApplication.rooms({type: 'u', user: message.room}).update({status: message.data.status});

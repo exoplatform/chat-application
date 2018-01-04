@@ -499,13 +499,13 @@
               });
 
               if (typeof callback === "function") {
-                callback(response);
+                callback(targetUser, response);
               }
             }
           });
         } else {
           if (typeof callback === "function") {
-            callback("offline");
+            callback(targetUser, "offline");
           }
         }
       },
@@ -513,7 +513,7 @@
         this.statusRequest = null;
 
         if (typeof callback === "function") {
-          callback("offline");
+          callback(targetUser, "offline");
         }
       }
     });
@@ -528,7 +528,7 @@
   ChatNotification.prototype.setStatus = function (status, callback) {
 
     if (status !== undefined) {
-      chatNotification.changeStatusChat(status);
+      chatNotification.changeStatusChat(this.username, status);
 
       // Send update status message (forward event to others client and update mongodb chat status)
       var thiss = this;
@@ -563,61 +563,78 @@
 
   /**
    * Change the current status
+   * @param username : username of the user who changed his/her status
    * @param status : the new status : available, donotdisturb, invisible, away or offline
    */
-  ChatNotification.prototype.changeStatusChat = function (status) {
+  ChatNotification.prototype.changeStatusChat = function (username, status) {
     chatNotification.profileStatus = status;
     if (typeof chatApplication === "object") {
       chatApplication.profileStatus = status;
     }
 
-    // Update chat status on chatApplication
-    var $chatStatusChat = jqchat(".chat-status-chat");
-    $chatStatusChat.removeClass("chat-status-available");
-    $chatStatusChat.removeClass("chat-status-donotdisturb");
-    $chatStatusChat.removeClass("chat-status-invisible");
-    $chatStatusChat.removeClass("chat-status-away");
-    $chatStatusChat.removeClass("chat-status-offline");
-    $chatStatusChat.addClass("chat-status-" + status);
+    if (chatNotification.username == username) {
+      // Update chat status on chatApplication
+      var $chatStatusChat = jqchat(".chat-status-chat");
+      $chatStatusChat.removeClass("chat-status-available chat-status-donotdisturb chat-status-invisible chat-status-away chat-status-offline");
+      $chatStatusChat.addClass("chat-status-" + status);
 
-    jqchat(".chat-status-selected").each(function () {
-      var labelStatus = jqchat(this).parent(".chat-status").attr("data-status");
-      if (labelStatus === status) {
-        jqchat(this).html("&#10003;");
-      }
-      else {
-        jqchat(this).html("");
-      }
-    });
+      jqchat(".chat-status-selected").each(function () {
+        var labelStatus = jqchat(this).parent(".chat-status").attr("data-status");
+        if (labelStatus === status) {
+          jqchat(this).html("&#10003;");
+        }
+        else {
+          jqchat(this).html("");
+        }
+      });
 
-    // Update chat status on top navigation
-    var $uiNotifChatIcon = jqchat(".uiNotifChatIcon");
-    $uiNotifChatIcon.removeClass("toggle-status-available");
-    $uiNotifChatIcon.removeClass("toggle-status-away");
-    $uiNotifChatIcon.removeClass("toggle-status-donotdisturb");
-    $uiNotifChatIcon.removeClass("toggle-status-invisible");
-    $uiNotifChatIcon.addClass("toggle-status-" + status);
-
-    //Update chat status on menu app
-    var $menuChatBtn = jqchat('.uiProfileMenu .profileMenuNavHeader h3 > i');
-    $menuChatBtn.removeClass("uiIconUserAvailable");
-    $menuChatBtn.removeClass("uiIconUserOnline");
-    $menuChatBtn.removeClass("uiIconUserInvisible");
-    $menuChatBtn.removeClass("uiIconUserOffline");
-    $menuChatBtn.removeClass("uiIconUserAway");
-    $menuChatBtn.removeClass("uiIconUserDonotdisturb");
-    if (status == 'available') {
-      $menuChatBtn.addClass('uiIconUserAvailable');
-    } else if (status == 'away') {
-      $menuChatBtn.addClass('uiIconUserAway');
-    } else if (status == 'donotdisturb') {
-      $menuChatBtn.addClass('uiIconUserDonotdisturb');
-    } else if (status == 'invisible') {
-      $menuChatBtn.addClass('uiIconUserInvisible');
+      // Update chat status on top navigation
+      var $uiNotifChatIcon = jqchat(".uiNotifChatIcon");
+      $uiNotifChatIcon.removeClass("toggle-status-available toggle-status-away toggle-status-donotdisturb toggle-status-invisible");
+      $uiNotifChatIcon.addClass("toggle-status-" + status);
     }
-    var title = jqchat('#middle-topNavigation-container .chat-status[data-status="' + status + '"] .chat-label-status').html();
-    $menuChatBtn.attr('data-original-title', title);
+
+    // Get status text for tooltip updates
+    var statusTitle = jqchat('#middle-topNavigation-container .chat-status[data-status="' + status + '"] .chat-label-status').html();
+
+    // Update chat status on menu app
+    var $profileMenuUser = jqchat('.uiProfileMenu .profileMenuNavHeader h3');
+    if($profileMenuUser) {
+      var $profileMenuStatusBtn = $profileMenuUser.find('> i');
+      if ($profileMenuStatusBtn && $profileMenuUser.attr("data-userid") == username) {
+        chatNotification.updateStatusElement($profileMenuStatusBtn, status, statusTitle);
+      }
+    }
+
+    // Update chat status in profile portlet
+    var $profileAppStatus = jqchat('#UIStatusProfilePortlet h3');
+    if($profileAppStatus) {
+      var $profileAppStatusBtn = $profileAppStatus.find('> i');
+      if ($profileAppStatusBtn && $profileAppStatus.attr("data-userid") == username) {
+        chatNotification.updateStatusElement($profileAppStatusBtn, status, statusTitle);
+      }
+    }
   };
+
+  /**
+   * Update the DOM element of the user status
+   * @param element DOM element
+   * @param status New user status
+   * @param statusTitle New user status title
+   */
+  ChatNotification.prototype.updateStatusElement = function (element, status,  statusTitle) {
+    element.removeClass("uiIconUserAvailable uiIconUserOnline uiIconUserInvisible uiIconUserOffline uiIconUserAway uiIconUserDonotdisturb");
+    if (status == 'available') {
+      element.addClass('uiIconUserAvailable');
+    } else if (status == 'away') {
+      element.addClass('uiIconUserAway');
+    } else if (status == 'donotdisturb') {
+      element.addClass('uiIconUserDonotdisturb');
+    } else if (status == 'invisible') {
+      element.addClass('uiIconUserInvisible');
+    }
+    element.attr('data-original-title', statusTitle);
+  }
 
   ChatNotification.prototype.openChatPopup = function () {
     window.open(this.chatPage + "?noadminbar=true", "chat-popup", "menubar=no, status=no, scrollbars=no, titlebar=no, resizable=no, location=no, width=700, height=600");
@@ -906,10 +923,7 @@
 
         // Do what you want with the message...
         if (message.event == 'user-status-changed') {
-          if (message.room == chatNotification.username) {
-            // update current user status
-            chatNotification.changeStatusChat(message.data.status);
-          }
+          chatNotification.changeStatusChat(message.sender, message.data.status);
         } else if (message.event == "message-sent") {
           if ((typeof chatApplication === "undefined" || chatApplication.chatRoom.id !== message.room || chatApplication.chatRoom.isFocus !== true) && chatNotification.username !== message.sender) {
 
@@ -934,7 +948,7 @@
               };
 
               if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
-                chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
+                  chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
 
                 if (desktopNotification.canPlaySound()) {
                   document.getElementById("chat-audio-notif").play();
@@ -1031,7 +1045,7 @@
           chatNotification.showDetail(function () {
             $(".uiNotifChatIcon").removeClass("disabled");
           });
-          chatNotification.changeStatusChat(chatNotification.profileStatus);
+          chatNotification.changeStatusChat(chatNotification.username, chatNotification.profileStatus);
         }
       });
 
