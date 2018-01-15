@@ -301,7 +301,7 @@
              if (currentViewerId != ownerUserId && !isDeleted) {
 
                action = $('<div/>', {
-                 "class": "connect btn btn-primary",
+                 "class": "connect btn-link",
                  "text": "" + labels.Connect,
                  "data-action": "Invite:" + ownerUserId,
                  "onclick": "takeAction(this)"
@@ -310,28 +310,28 @@
                //
                if (relationStatus == "pending") { // Viewing is not owner
                  action = $('<div/>', {
-                   "class": "connect btn btn-primary",
+                   "class": "connect btn-link",
                    "text": "" + labels.Confirm,
                    "data-action": "Accept:" + ownerUserId,
                    "onclick": "takeAction(this)"
                  });
                } else if (relationStatus == "waiting") { // Viewing is owner
                  action = $('<div/>', {
-                   "class": "connect btn",
+                   "class": "connect btn-link",
                    "text": "" + labels.CancelRequest,
                    "data-action": "Revoke:" + ownerUserId,
                    "onclick": "takeAction(this)"
                  });
                } else if (relationStatus == "confirmed") { // Had Connection
                  action = $('<div/>', {
-                   "class": "connect btn",
+                   "class": "connect btn-link",
                    "text": "" + labels.RemoveConnection,
                    "data-action": "Disconnect:" + ownerUserId,
                    "onclick": "takeAction(this)"
                  });
                } else if (relationStatus == "ignored") { // Connection is removed
                  action = $('<div/>', {
-                   "class": "connect btn",
+                   "class": "connect btn-link",
                    "text": "" + labels.Connect,
                    "data-action": "Invite:" + ownerUserId,
                    "onclick": "takeAction(this)"
