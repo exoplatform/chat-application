@@ -114,7 +114,7 @@ public class NotificationApplication
     ResourceBundle bundle= applicationContext.resolveBundle(locale);
     String messages = bundleService_.getBundle("chatBundleData", bundle, locale);
     Space space = SpaceUtils.getSpaceByContext();
-    String spaceId = space == null ? StringUtils.EMPTY : space.getPrettyName();
+    String spaceId = space == null ? StringUtils.EMPTY : space.getId();
 
     String portalURI = Util.getPortalRequestContext().getPortalURI();
 
