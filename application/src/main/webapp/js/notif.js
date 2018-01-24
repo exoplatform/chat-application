@@ -605,15 +605,6 @@
         chatNotification.updateStatusElement($profileMenuStatusBtn, status, statusTitle);
       }
     }
-
-    // Update chat status in profile portlet
-    var $profileAppStatus = jqchat('#UIStatusProfilePortlet h3');
-    if($profileAppStatus) {
-      var $profileAppStatusBtn = $profileAppStatus.find('> i');
-      if ($profileAppStatusBtn && $profileAppStatus.attr("data-userid") == username) {
-        chatNotification.updateStatusElement($profileAppStatusBtn, status, statusTitle);
-      }
-    }
   };
 
   /**
@@ -695,11 +686,12 @@
       setTimeout(chatNotification.attachChatButtonBelowNavigationSpaceName, 250);
       return;
     }
-
+    
+    var currentUserId = jqchat(".profileMenuNavHeader h3").data('userid');
     var target = '';
     var type = '';
-    if ($menuApps.hasClass('profileMenuApps') && $menuApps.find('.uiIconEdit').length == 0) {
-      target = jqchat(".user-status", jqchat("#UIStatusProfilePortlet")).attr('data-userid');
+    if ($menuApps.hasClass('profileMenuApps') && currentUserId && currentUserId != chatNotification.username) {
+      target = currentUserId;
       type = 'username';
     } else if ($menuApps.hasClass('spaceMenuApps')) {
       target = this.spaceId;
@@ -725,52 +717,6 @@
     }, 250);
   };
 
-  ChatNotification.prototype.attachChatToProfile = function () {
-    if (window.location.href.indexOf(chatNotification.portalURI + "profile") == -1) return;
-
-    var $UIStatusProfilePortlet = jqchat("#UIStatusProfilePortlet");
-    if ($UIStatusProfilePortlet.html() === undefined) {
-      setTimeout(jqchat.proxy(this.attachChatToProfile, this), 250);
-      return;
-    }
-
-    var userName = jqchat(".user-status", $UIStatusProfilePortlet).attr('data-userid');
-    var fullName = jqchat(".user-status span", $UIStatusProfilePortlet).text();
-    var $userActions = jqchat("#UIActionProfilePortlet .user-actions");
-
-    if (userName != chatNotification.username && userName !== "" && $userActions.has(".chatPopupOverlay").length === 0 && $userActions.has("button").length) {
-      var strChatLink = "<a style='margin-top:0px !important;margin-right:-3px' data-username='" + userName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + userName.replace('.', '-') + "' type='button'><i class='uiIconChat uiIconForum uiIconLightGray'></i> Chat</a>";
-
-      if ($userActions.has(".weemoCallOverlay").length === 0) {
-        $userActions.prepend(strChatLink);
-      } else {
-        jqchat("a:first-child", $userActions).after(strChatLink);
-      }
-
-      jqchat(".chatPopupOverlay").on("click", function () {
-        if (!jqchat(this).hasClass("disabled")) {
-          var targetUser = jqchat(this).attr("data-username");
-          showMiniChatPopup(targetUser, 'username');
-        }
-      });
-
-      // Fix PLF-6493: Only let hover happens on connection buttons instead of all in .user-actions
-      var $btnConnections = jqchat(".show-default, .hide-default", $userActions);
-      var $btnShowConnection = jqchat(".show-default", $userActions);
-      var $btnHideConnection = jqchat(".hide-default", $userActions);
-      $btnShowConnection.show();
-      $btnConnections.css('font-style', 'italic');
-      $btnHideConnection.hide();
-      $btnConnections.removeClass('show-default hide-default');
-      $btnConnections.hover(function (e) {
-        $btnConnections.toggle();
-      });
-    }
-
-    setTimeout(function () {
-      chatNotification.attachChatToProfile()
-    }, 250);
-  };
   ChatNotification.prototype.sendFullMessage = function (user, token, targetUser, room, msg, options, isSystemMessage, callback) {
 
 // Send message to server
@@ -1052,11 +998,8 @@
       // Attach chat to user popup
       chatNotification.attachChatButtonToUserPopup();
 
-      // Attach chat below left navigation space name
+      // Attach chat below space and profile banner
       chatNotification.attachChatButtonBelowNavigationSpaceName();
-
-      // Attach chat to profile
-      chatNotification.attachChatToProfile();
 
     });
   })(jqchat);
