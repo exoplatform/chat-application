@@ -85,6 +85,9 @@
           settings = operation.userDesktopNotificationSettings;
           if (!settings.preferredNotification) {//set to the default values for the Notifications channels
             settings.preferredNotification = [desktopNotification.ROOM_ON_SITE, desktopNotification.ROOM_DESKTOP, desktopNotification.ROOM_BIP];
+            digest = true;
+          }
+          if (!settings.preferredNotificationTrigger) {//set to the default values for the Notifications channels
             settings.preferredNotificationTrigger = [];
             digest = true;
           }
@@ -371,6 +374,9 @@
    * Show desktop Notif
    */
   ChatNotification.prototype.showDesktopNotif = function (path, msg) {
+    if(!desktopNotification.canBypassDonotDistrub()) {
+      return;
+    }
     var displayMsg = desktopNotification.highlightMessage(msg);
     displayMsg = jqchat('<div />').html(displayMsg).text()
 
@@ -378,7 +384,7 @@
       Notification.requestPermission();
 
     if (!Notification) {
-      alert('Desktop notifications not available in your browser. Please update your browser.');
+      console.log('Desktop notifications not available in your browser. Please update your browser.');
       return;
     }
 
@@ -893,7 +899,7 @@
                 from: message.sender
               };
 
-              if (( chatNotification.profileStatus !== "donotdisturb" || desktopNotification.canBypassDonotDistrub()) &&
+              if (chatNotification.profileStatus !== "donotdisturb" && desktopNotification.canBypassDonotDistrub() &&
                   chatNotification.profileStatus !== "offline" && desktopNotification.canBypassRoomNotif(notify)) {
 
                 if (desktopNotification.canPlaySound()) {

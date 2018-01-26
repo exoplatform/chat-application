@@ -83,16 +83,16 @@
     },
 
     setPreferredNotificationSettings: function(settings, overrideSettin) { //this is always called on the reload of the page
-      if (!(settings.preferredNotification === null || typeof settings.preferredNotification === 'undefined') && overrideSettin)
+      if (settings.preferredNotification && overrideSettin)
         this.setPreferredNotification(JSON.parse(settings.preferredNotification));
-      if (!(settings.preferredNotificationTrigger === null || typeof settings.preferredNotificationTrigger === 'undefined') && overrideSettin)
+      if (settings.preferredNotificationTrigger && overrideSettin)
         this.setPreferredNotificationTrigger(JSON.parse(settings.preferredNotificationTrigger));
-      if (!(settings.preferredRoomNotificationTrigger === null || typeof settings.preferredRoomNotificationTrigger === 'undefined'))
+      if (settings.preferredRoomNotificationTrigger)
         this.setRoomPreferredNotificationTriggerSettings(JSON.parse(settings.preferredRoomNotificationTrigger));
     },
 
     canBypassDonotDistrub: function() {
-      return (preferredNotificationTrigger.indexOf("notify-even-not-distrub") !== -1);
+      return (preferredNotificationTrigger.indexOf("notify-even-not-distrub") == -1);
     },
 
     canPlaySound: function() {

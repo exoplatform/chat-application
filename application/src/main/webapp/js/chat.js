@@ -936,6 +936,8 @@
   }
 
   ChatApplication.prototype.loadRoom = function (room) {
+    jqchat("#chats").removeClass("hide-messages");
+    jqchat('#chats').html("");
     if (room) {
       this.room = room;
       var TAFFYRoom = this.rooms({room: room}).first();
@@ -2358,6 +2360,7 @@
       };
 
       $(document).on("click", "#global-config #close-global-notif-config, #back", function () {//close the setting page and go for the previous screen
+        jqchat("#global-config").remove();
         if (window.innerWidth <= 767) {
 
           jqchat("#chat-room-detail-avatar").css("display", "block");
@@ -2435,6 +2438,9 @@
 
       //global desktop notification settings
       $("#configButton, #configButtonResp").on("click", function () {
+        if (jqchat("#global-config").length > 0) {
+          return;
+        }
         jqchat("#chat-video-button").css("display", "none");
         chatApplication.configMode = true;
         var $div = jqchat("#global-config-template");
@@ -2443,7 +2449,9 @@
         $div.attr("id", "global-config");
         $div.css("display", "inline-block");
 
-        jqchat('#chats').html("");
+        var $chat = jqchat('#chats');
+        $chat.html("");
+        $chat.addClass("hide-messages");
         $div.appendTo('#chats');
 
         handleGlobalNotifLayout();
@@ -2499,6 +2507,9 @@
 
       //team/room desktop notification settings
       $("#team-notification-button").on("click", function () {
+        if (jqchat("#room-config").length > 0) {
+          return;
+        }
         chatApplication.configMode = true;
         chatApplication.enableMessageComposer(false)
         var $div = jqchat("#room-config-template");
@@ -2507,7 +2518,9 @@
         $div.attr("id", "room-config");
         $div.css("display", "inline-block");
 
-        jqchat('#chats').html("");
+        var $chat = jqchat('#chats');
+        $chat.html("");
+        $chat.addClass("hide-messages");
         $div.appendTo('#chats');
 
         chatNotification.loadSetting(function () {
@@ -2533,9 +2546,7 @@
           });
         }, false);
 
-        jqchat("#chat-room-detail-avatar, .chat-message.footer, #searchButtonResp").css("display", "none");
-        jqchat("#userRoomStatus").addClass("hide");
-        jqchat("#chats").css("min-height", window.innerHeight + "px");
+        jqchat("#chat-room-detail-avatar, #searchButtonResp").css("display", "none");
       });
 
       $(document).on("click touchstart", "#global-config div.notif-manner div.uiSwitchBtn", function () {
