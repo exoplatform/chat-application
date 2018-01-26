@@ -33,9 +33,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -111,14 +109,16 @@ public class UserMongoDataStorage implements UserDataStorage {
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       if(ChatService.BIP.equals(notifManner) || ChatService.DESKTOP_NOTIFICATION.equals(notifManner) || ChatService.ON_SITE.equals(notifManner)) {
-        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;
         Object existingRoomNotif =null;
-        if(settings!=null) {
-          prefNotif =  settings.get("preferredNotification");
-          prefTriger = settings.get("preferredNotificationTrigger");
+        if (settings != null) {
+          prefNotif = settings.get(PREFERRED_NOTIFICATION);
+          prefTriger = settings.get(PREFERRED_NOTIFICATION_TRIGGER);
           existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        } else {
+          settings = new BasicDBObject();
         }
         List<String> existingPrefNotif = null;
         if(prefNotif==null) {
@@ -135,21 +135,20 @@ public class UserMongoDataStorage implements UserDataStorage {
         } else {
           existingPrefNotif.add(notifManner);
         }
-        Map childs = new HashMap();
 
         if(existingPrefNotif!=null) {
-          childs.put("preferredNotification",existingPrefNotif);
+          settings.put(PREFERRED_NOTIFICATION,existingPrefNotif);
         }
         if(prefTriger!=null) {
-          childs.put("preferredNotificationTrigger", prefTriger);
+          settings.put(PREFERRED_NOTIFICATION_TRIGGER, prefTriger);
         }
         if(existingRoomNotif!=null){
-          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+          settings.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
         }
 
-        doc.put("notificationsSettings",childs);
+        doc.put(NOTIFICATIONS_SETTINGS, settings);
 
-        coll.save(doc, WriteConcern.SAFE);
+        coll.save(doc, WriteConcern.ACKNOWLEDGED);
       } else {
         throw new Exception("Wrong Params, operation not done");
       }
@@ -167,14 +166,16 @@ public class UserMongoDataStorage implements UserDataStorage {
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
-        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;
         Object existingRoomNotif =null;
-        if(settings!=null) {
-          prefNotif =  settings.get("preferredNotificationTrigger");
-          prefTriger = settings.get("preferredNotification");
+        if (settings != null) {
+          prefNotif = settings.get(PREFERRED_NOTIFICATION_TRIGGER);
+          prefTriger = settings.get(PREFERRED_NOTIFICATION);
           existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        } else {
+          settings = new BasicDBObject();
         }
         List<String> existingPrefNotif = null;
         if(prefNotif==null) {
@@ -189,20 +190,19 @@ public class UserMongoDataStorage implements UserDataStorage {
           existingPrefNotif.add(notifCond);
         }
 
-        Map childs = new HashMap();
-        if(existingPrefNotif!=null) {
-          childs.put("preferredNotificationTrigger", existingPrefNotif);
+        if (existingPrefNotif != null) {
+          settings.put(PREFERRED_NOTIFICATION_TRIGGER, existingPrefNotif);
         }
-        if(prefTriger!=null) {
-          childs.put("preferredNotification",prefTriger);
+        if (prefTriger != null) {
+          settings.put(PREFERRED_NOTIFICATION, prefTriger);
         }
-        if(existingRoomNotif!=null){
-          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+        if (existingRoomNotif != null) {
+          settings.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
         }
 
-        doc.put("notificationsSettings",childs);
+        doc.put(NOTIFICATIONS_SETTINGS, settings);
 
-        coll.save(doc, WriteConcern.SAFE);
+        coll.save(doc, WriteConcern.ACKNOWLEDGED);
       } else {
         throw new Exception("Wrong Params, operation not done");
       }
@@ -221,14 +221,16 @@ public class UserMongoDataStorage implements UserDataStorage {
       DBObject doc = cursor.next();
 
       if(ChatService.NOTIFY_ME_ON_ROOM_NORMAL.equals(notifConditionType) || ChatService.DO_NOT_NOTIFY_ME_ON_ROOM.equals(notifConditionType) || notifConditionType.startsWith(ChatService.NOTIFY_ME_ON_ROOM_KEY_WORD)) {
-        BasicDBObject settings = (BasicDBObject) doc.get("notificationsSettings");
+        BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;
         DBObject existingRoomNotif =null;
         if(settings!=null) {
-          prefTriger =  settings.get("preferredNotificationTrigger");
-          prefNotif = settings.get("preferredNotification");
+          prefTriger =  settings.get(PREFERRED_NOTIFICATION_TRIGGER);
+          prefNotif = settings.get(PREFERRED_NOTIFICATION);
           existingRoomNotif = (DBObject)settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        } else {
+          settings = new BasicDBObject();
         }
 
         if(existingRoomNotif == null) {
@@ -248,22 +250,21 @@ public class UserMongoDataStorage implements UserDataStorage {
           }
         }
 
-        Map childs = new HashMap();
         if(prefTriger!=null) {
-          childs.put("preferredNotificationTrigger", prefTriger);
+          settings.put(PREFERRED_NOTIFICATION_TRIGGER, prefTriger);
         }
 
         if(prefNotif!=null) {
-          childs.put("preferredNotification",prefNotif);
+          settings.put(PREFERRED_NOTIFICATION,prefNotif);
         }
 
         if(existingRoomNotif!=null){
           existingRoomNotif.put(room, notifData);
-          childs.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
+          settings.put(PREFERRED_ROOM_NOTIFICATION_TRIGGER, existingRoomNotif);
         }
 
-        doc.put("notificationsSettings",childs);
-        coll.save(doc, WriteConcern.SAFE);
+        doc.put(NOTIFICATIONS_SETTINGS, settings);
+        coll.save(doc, WriteConcern.ACKNOWLEDGED);
       } else {
         throw new Exception("Wrong Params, operation not done");
       }
@@ -283,7 +284,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
-      BasicDBObject wrapperDoc = ((BasicDBObject) doc.get("notificationsSettings"));
+      BasicDBObject wrapperDoc = ((BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS));
       if(wrapperDoc==null){//when there is no settings - first start of the server
         wrapperDoc = new BasicDBObject();
       }
@@ -339,7 +340,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     {
       DBObject doc = cursor.next();
       doc.put("fullname", fullname);
-      coll.save(doc);
+      coll.save(doc, WriteConcern.ACKNOWLEDGED);
 
     }
   }

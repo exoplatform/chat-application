@@ -117,6 +117,9 @@
             $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
 
             $chats.scroll(function() {
+              if($chats.hasClass("hide-messages")) {
+                return;
+              }
               thiss.scrollAtMax = $chats.prop('scrollHeight') == ($chats.innerHeight() + $chats.scrollTop());
               if ($chats.scrollTop() === 0) {
                 // In the case of deleting a team room.

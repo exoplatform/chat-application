@@ -24,6 +24,7 @@ public interface UserDataStorage {
   public static final String PREFERRED_NOTIFICATION = "preferredNotification";
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
   public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
+  public static final String NOTIFICATIONS_SETTINGS = "notificationsSettings";
 
   void addFavorite(String user, String targetUser, String dbName);
 
