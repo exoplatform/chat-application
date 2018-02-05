@@ -111,9 +111,6 @@ public class ChatApplication
   CalendarService calendarService_;
 
   @Inject
-  ContinuationService continuationService;
-
-  @Inject
   WikiService wikiService_;
 
   public static final String CHAT_EXTENSION_POPUP = "chat_extension_popup";

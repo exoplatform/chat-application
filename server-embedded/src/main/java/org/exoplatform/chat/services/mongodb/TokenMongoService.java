@@ -98,6 +98,15 @@ public class TokenMongoService implements TokenStorage
     }
   }
 
+  public void removeUser(String user, String token, String dbName)
+  {
+    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    query.put("token", token);
+    coll.remove(query);
+  }
+
   public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
     BasicDBObject query = new BasicDBObject();

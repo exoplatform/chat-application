@@ -501,6 +501,22 @@
 </div>
 
 <!-- ################################## -->
+<!-- ######### SESSION TIMEOUT MODAL ###### -->
+<!-- ################################## -->
+<div id="session-timeout-window" class="uiPopup hide">
+    <div class="popupHeader clearfix">
+        <span class="PopupTitle popupTitle">&{exoplatform.chat.timeout.title}</span>
+    </div>
+
+    <div class="PopupContent popupContent">
+        <div class="modal-body">
+            <p><span class="confirmationIcon">&{exoplatform.chat.timeout.description}</span></p>
+            <p class="text-center"><a href="" class="btn btn-primary">&{exoplatform.chat.timeout.login}</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- ################################## -->
 <!-- ######### MIGRATION MODAL ############ -->
 <!-- ################################## -->
 <div class="modal hide help-modal" style="display:none;">

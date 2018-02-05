@@ -31,6 +31,11 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
                 userStateModel.setLastActivity(Calendar.getInstance().getTimeInMillis() - userStateService.getDelay());
                 userStateModel.setStatus(STATUS_OFFLINE);
                 userStateService.save(userStateModel);
+
+                // Remove user token from Chat Server
+                String token = ServerBootstrap.getToken(userId);
+                String dbName = ServerBootstrap.getDBName();
+                ServerBootstrap.removeUser(userId, token, dbName);
             }
         }
 

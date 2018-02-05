@@ -88,6 +88,11 @@ public class ServerBootstrap {
     postServer("addUser", "username="+username+"&token="+token+"&dbName="+dbName);
   }
 
+  public static void removeUser(String username, String token, String dbName)
+  {
+    postServer("removeUser", "username="+username+"&token="+token+"&dbName="+dbName);
+  }
+
   public static void setAsAdmin(String username, boolean isAdmin, String dbName)
   {
     postServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin+"&dbName="+dbName);

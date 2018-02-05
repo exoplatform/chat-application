@@ -36,6 +36,8 @@ public interface TokenService
 
   void addUser(String user, String token, String dbName);
 
+  void removeUser(String user, String token, String dbName);
+
   Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
   boolean isDemoUser(String user);

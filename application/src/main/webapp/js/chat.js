@@ -1353,7 +1353,6 @@
    * @param callback : the method to execute on success
    */
   ChatApplication.prototype.sendMessage = function (msg, callback) {
-
     var context = {"msg": msg, "options": {}, "callback": callback, "continueSend": true};
 
     this.trigger("beforeSend", context);
@@ -1750,6 +1749,12 @@
     }
   };
 
+  ChatApplication.prototype.sessionTimeout = function() {
+    var $msg = jqchat('#msg');
+    $msg.attr("disabled", "disabled");
+    showPopupWindow("session-timeout-window", true, true);
+  };
+
   window.chatApplication = new ChatApplication();
 
   function alertError(msg, callback) {
@@ -1941,7 +1946,9 @@
           }
 
           // Do what you want with the message...
-          if (message.event == 'user-status-changed') {
+          if (message.event == 'token-invalidated') {
+            chatApplication.sessionTimeout();
+          } else if (message.event == 'user-status-changed') {
             if (message.room == chatApplication.username) {
               // update current user status
               chatNotification.changeStatusChat(message.room, message.data.status);
