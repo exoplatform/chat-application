@@ -409,7 +409,7 @@
 <!-- ################################## -->
 <!-- ######### EDIT MODAL ############ -->
 <!-- ################################## -->
-<div class="uiPopup hide edit-modal" style="top:100px;">
+<div class="uiPopup modal hide edit-modal" style="top:100px;">
   <div class="popupHeader clearfix">
 	<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
 	<span class="PopupTitle popupTitle">&{exoplatform.chat.msg.edit}</span>
@@ -427,7 +427,7 @@
 <!-- ################################## -->
 <!-- ######### TEAM MODAL ############ -->
 <!-- ################################## -->
-<div id="team-modal-form" class="uiPopup hide team-modal">
+<div id="team-modal-form" class="uiPopup modal hide team-modal">
   <div class="popupHeader clearfix">
     <a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
     <span class="PopupTitle popupTitle"></span>
