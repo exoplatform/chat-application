@@ -64,6 +64,11 @@ public class TokenServiceImpl implements TokenService
     storage.addUser(user, token, dbName);
   }
 
+  public void removeUser(String user, String token, String dbName)
+  {
+    storage.removeUser(user, token, dbName);
+  }
+
   public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
     return storage.getActiveUsersFilterBy(user, limitUsers, dbName, withUsers, withPublic, isAdmin, limit);

@@ -30,5 +30,7 @@ public interface TokenStorage
 
   void addUser(String user, String token, String dbName);
 
+  void removeUser(String user, String token, String dbName);
+
   Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 }

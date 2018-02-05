@@ -1282,15 +1282,16 @@
    * @param callback
    */
   ChatRoom.prototype.updateUnreadMessages = function() {
-    var thiss = this;
+    var data = JSON.stringify({
+      "event": "message-read",
+      "room": this.id,
+      "sender": this.username,
+      "dbName": this.dbName,
+      "token": this.token
+    });
+
     requireChatCometd(function(cCometD) {
-      cCometD.publish('/service/chat', JSON.stringify({
-        "event": "message-read",
-        "room": thiss.id,
-        "sender": thiss.username,
-        "dbName": thiss.dbName,
-        "token": thiss.token
-      }), function(publishAck) {
+      cCometD.publish('/service/chat', data, function(publishAck) {
         if (publishAck.successful) {
           if (typeof callback === "function") {
             callback();

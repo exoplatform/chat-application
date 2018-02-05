@@ -20,9 +20,7 @@
 package org.exoplatform.chat.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -34,10 +32,11 @@ import juzu.impl.common.Tools;
 
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
-import org.exoplatform.chat.model.SpaceBean;
+import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
+import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
@@ -54,11 +53,14 @@ public class ChatTools
 
   NotificationService notificationService;
 
+  RealTimeMessageService realTimeMessageService;
+
   public ChatTools()
   {
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
+    realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
   }
 
   @Resource
@@ -71,6 +73,22 @@ public class ChatTools
     }
 
     tokenService.addUser(username, token, dbName);
+
+    return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/removeUser")
+  public Response.Content removeUser(String username, String token, String passphrase, String dbName)
+  {
+    if (!checkPassphrase(passphrase))
+    {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    tokenService.removeUser(username, token, dbName);
+    RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.TOKEN_INVALIDATED, null, username, new Date(), null);
+    realTimeMessageService.sendMessage(realTimeMessageBean, username);
 
     return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
