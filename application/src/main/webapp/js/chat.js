@@ -2206,6 +2206,7 @@
           $("#chat-file-target-user").val(chatApplication.targetUser);
           $("#chat-file-target-fullname").val(chatApplication.targetFullname);
           $("#chat-file-file").val("");
+          $("#chat-file-file").off();
 
           chatApplication.getUsers(chatApplication.targetUser, function (users) {
             $(function () {
@@ -2214,81 +2215,83 @@
                 targetUser = users;
                 $("#chat-file-target-user").val(targetUser);
               }
-              var initialized = $('#dropzone').length == 0;
-              if (initialized) {
-                $('#dropzone-container').html(
-                    '<div class="progressBar" id="dropzone">'
-                  + '<div class="progress">'
-                  + '<div class="bar" style="width: 0.0%;"></div>'
-                  + '<div class="label"><div class="label-inner">' + chatBundleData["exoplatform.chat.file.drop"] + '</div></div>'
-                  + '</div>'
-                  + '</div>'
-                );
-                window.require(['SHARED/filedrop'], function() {
-                  $('#dropzone').filedrop({
-                    fallback_id: 'chat-file-file',   // an identifier of a standard file input element
-                    url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
-                    paramname: 'userfile',          // POST parameter name used on serverside to reference file
-                    data: {
-                      room: chatApplication.room,
-                      targetUser: targetUser,
-                      targetFullname: encodeURIComponent(chatApplication.targetFullname)
-                    },
-                    error: function (err, file) {
-                      switch (err) {
-                        case 'BrowserNotSupported':
-                          alert(chatBundleData["exoplatform.chat.dnd.support"]);
-                          break;
-                        case 'TooManyFiles':
-                          // user uploaded more than 'maxfiles'
-                          break;
-                        case 'FileTooLarge':
-                          alert(chatBundleData["exoplatform.chat.upload.filesize"].replace("{0}", chatApplication.uploadFileSize));
-                          // program encountered a file whose size is greater than 'maxfilesize'
-                          // FileTooLarge also has access to the file which was too large
-                          // use file.name to reference the filename of the culprit file
-                          break;
-                        case 'FileTypeNotAllowed':
-                        // The file type is not in the specified list 'allowedfiletypes'
-                        default:
-                          break;
-                      }
-                    },
-                    allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
-                    maxfiles: 1,
-                    maxfilesize: chatApplication.uploadFileSize,    // max file size in MBs
-                    uploadStarted: function (i, file, len) {
-                      console.log("upload started : " + i + " : " + file.name + " : " + len);
-                      // a file began uploading
-                      // i = index => 0, 1, 2, 3, 4 etc
-                      // file is the actual file of the index
-                      // len = total files user dropped
-                    },
-                    progressUpdated: function (i, file, progress) {
-                      console.log("progress updated : " + i + " : " + file.name + " : " + progress);
-                      $("#dropzone").find('.bar').width(progress + "%");
-                      $("#dropzone").find('.bar').html(progress + "%");
-                      // this function is used for large files and updates intermittently
-                      // progress is the integer value of file being uploaded percentage to completion
-                    },
-                    uploadFinished: function (i, file, response, time) {
-                      console.log("upload finished : " + i + " : " + file.name + " : " + time + " : " + response.status + " : " + response.name);
-                      // response is the data you got back from server in JSON format.
-                      var msg = response.name;
-                      var options = response;
-                      options.type = "type-file";
-                      options.username = chatApplication.username;
-                      options.fullname = chatApplication.fullname;
-                      chatApplication.chatRoom.sendMessage(msg, options, "true", function () {
-                        $("#dropzone").find('.bar').width("0%");
-                        $("#dropzone").find('.bar').html("");
-                        hideMeetingPanel();
-                      });
-
+              $('.chatDropzone').remove();
+              // Random ID for dropzone to avoid drop file on room twice
+              // and to be able to reinitialize filedrop data parameters
+              // dynmically
+              var dropzoneId = 'dropzone' + chatApplication.room + Math.random().toString(36).substring(2, 15);
+              $('#dropzone-container').html(
+                  '<div class="progressBar" class="chatDropzone" id="' + dropzoneId + '">'
+                + '<div class="progress">'
+                + '<div class="bar" style="width: 0.0%;"></div>'
+                + '<div class="label"><div class="label-inner">' + chatBundleData["exoplatform.chat.file.drop"] + '</div></div>'
+                + '</div>'
+                + '</div>'
+              );
+              window.require(['SHARED/filedrop'], function() {
+                $('#' + dropzoneId).filedrop({
+                  fallback_id: 'chat-file-file',   // an identifier of a standard file input element
+                  url: chatApplication.jzUpload,              // upload handler, handles each file separately, can also be a function taking the file and returning a url
+                  paramname: 'userfile',          // POST parameter name used on serverside to reference file
+                  data: {
+                    room: chatApplication.room,
+                    targetUser: targetUser,
+                    targetFullname: encodeURIComponent(chatApplication.targetFullname)
+                  },
+                  error: function (err, file) {
+                    switch (err) {
+                      case 'BrowserNotSupported':
+                        alert(chatBundleData["exoplatform.chat.dnd.support"]);
+                        break;
+                      case 'TooManyFiles':
+                        // user uploaded more than 'maxfiles'
+                        break;
+                      case 'FileTooLarge':
+                        alert(chatBundleData["exoplatform.chat.upload.filesize"].replace("{0}", chatApplication.uploadFileSize));
+                        // program encountered a file whose size is greater than 'maxfilesize'
+                        // FileTooLarge also has access to the file which was too large
+                        // use file.name to reference the filename of the culprit file
+                        break;
+                      case 'FileTypeNotAllowed':
+                      // The file type is not in the specified list 'allowedfiletypes'
+                      default:
+                        break;
                     }
-                  });
+                  },
+                  allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+                  maxfiles: 1,
+                  maxfilesize: chatApplication.uploadFileSize,    // max file size in MBs
+                  uploadStarted: function (i, file, len) {
+                    console.log("upload started : " + i + " : " + file.name + " : " + len);
+                    // a file began uploading
+                    // i = index => 0, 1, 2, 3, 4 etc
+                    // file is the actual file of the index
+                    // len = total files user dropped
+                  },
+                  progressUpdated: function (i, file, progress) {
+                    console.log("progress updated : " + i + " : " + file.name + " : " + progress);
+                    $("#" + dropzoneId).find('.bar').width(progress + "%");
+                    $("#" + dropzoneId).find('.bar').html(progress + "%");
+                    // this function is used for large files and updates intermittently
+                    // progress is the integer value of file being uploaded percentage to completion
+                  },
+                  uploadFinished: function (i, file, response, time) {
+                    console.log("upload finished : " + i + " : " + file.name + " : " + time + " : " + response.status + " : " + response.name);
+                    // response is the data you got back from server in JSON format.
+                    var msg = response.name;
+                    var options = response;
+                    options.type = "type-file";
+                    options.username = chatApplication.username;
+                    options.fullname = chatApplication.fullname;
+                    chatApplication.chatRoom.sendMessage(msg, options, "true", function () {
+                      $("#" + dropzoneId).find('.bar').width("0%");
+                      $("#" + dropzoneId).find('.bar').html("");
+                      hideMeetingPanel();
+                    });
+
+                  }
                 });
-              }
+              });
             });
 
 
