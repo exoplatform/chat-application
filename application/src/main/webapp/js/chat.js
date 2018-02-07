@@ -3031,10 +3031,6 @@
 
         chatApplication.editMessage(id, message, function (id, newMessage) {
           jqchat("#msg").focus();
-
-          // Update message in memory
-          chatApplication.chatRoom.messages.filter(function(message) { return message.msgId == id })
-              .forEach(function(message) { message.msg = newMessage });
         });
       });
 
