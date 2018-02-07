@@ -631,15 +631,25 @@
     }
   };
 
-  ChatRoom.prototype.updateMessage = function(message, withClientMsg) {
+  ChatRoom.prototype.updateMessage = function(updatedMessage, withClientMsg) {
     var $msg;
+    var messageId;
     if (withClientMsg) {
-      $msg = jqchat("#" + message.clientId);
+      messageId = updatedMessage.clientId;
     } else {
-      $msg = jqchat("#" + message.msgId);
+      messageId = updatedMessage.msgId;
     }
-    var out = this.generateMessageHTML(message);
+    $msg = jqchat("#" + messageId);
+    var out = this.generateMessageHTML(updatedMessage);
     $msg.replaceWith(out);
+
+    // Update message in memory
+    for(var i=0; i<this.messages.length; i++) {
+      if(this.messages[i].msgId == messageId) {
+        this.messages[i] = updatedMessage;
+        break;
+      }
+    }
   }
 
   /*
