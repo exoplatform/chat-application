@@ -303,7 +303,19 @@ public class ReportBean {
         xwiki.append("{{/div}}");
       }
       prevUser = messageBean.getUser();
-      xwiki.append("{{div style='padding: 0 4px; margin:0 0 0 40px;vertical-align: top;'}}").append(messageBean.getMessage()).append("{{/div}}");
+      String message = messageBean.getMessage();
+      message = message.replaceAll("~", "~~");
+      message = message.replaceAll("&#38", "&");
+      message = message.replaceAll("&lt;", "~<");
+      message = message.replaceAll("&gt;", "~>");
+      message = message.replaceAll("&quot;","\"");
+      message = message.replaceAll("<br/>","\n");
+      message = message.replaceAll("&#92","\\\\");
+      message = message.replaceAll("=","~=");
+      message = message.replaceAll("\\}","~}");
+      message = message.replaceAll("\\{","~{");
+      message = message.replaceAll("  ","\t");
+      xwiki.append("{{div style='padding: 0 4px; margin:0 0 0 40px;vertical-align: top;'}}").append(message).append("{{/div}}");
       xwiki.append("{{/span}}");
     }
 
