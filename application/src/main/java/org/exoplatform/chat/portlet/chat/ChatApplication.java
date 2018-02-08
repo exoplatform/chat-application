@@ -349,14 +349,6 @@ public class ChatApplication
     JSONObject jsonObject = (JSONObject)JSONValue.parse(content);
     String typeRoom = (String)jsonObject.get("typeRoom");
     String xwiki = (String)jsonObject.get("xwiki");
-    xwiki = xwiki.replaceAll("~", "~~");
-    xwiki = xwiki.replaceAll("&#38", "&");
-    xwiki = xwiki.replaceAll("&lt;", "<");
-    xwiki = xwiki.replaceAll("&gt;", ">");
-    xwiki = xwiki.replaceAll("&quot;","\"");
-    xwiki = xwiki.replaceAll("<br/>","\n");
-    xwiki = xwiki.replaceAll("&#92","\\\\");
-    xwiki = xwiki.replaceAll("  ","\t");
     ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
     if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
       Space spaceBean = spaceService_.getSpaceByDisplayName(targetFullname);
