@@ -54,7 +54,7 @@
     this.jzChatRead = options.jzChatRead;
     this.jzChatSend = options.jzChatSend;
     this.portalURI = options.portalURI;
-    this.chatPage = this.portalURI + "/chat";
+    this.chatPage = options.chatPage;
     this.wsEndpoint = options.wsEndpoint;
     this.cometdToken = options.cometdToken;
     this.standalone = options.standalone === 'true';
@@ -697,7 +697,7 @@
       setTimeout(chatNotification.attachChatButtonBelowNavigationSpaceName, 250);
       return;
     }
-    
+
     var currentUserId = jqchat(".profileMenuNavHeader h3").data('userid');
     var target = '';
     var type = '';
@@ -868,6 +868,7 @@
       "jzChatRead": $notificationApplication.attr("data-chat-server-url") + "/read",
       "jzChatSend": $notificationApplication.attr("data-chat-server-url") + "/send",
       "portalURI": $notificationApplication.attr("data-portal-uri"),
+      "chatPage": $notificationApplication.attr("data-chat-page"),
       "standalone": $notificationApplication.attr("data-standalone"),
       "wsEndpoint": window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + $notificationApplication.attr("data-chat-cometd-server-url") + "/cometd",
       "cometdToken": $notificationApplication.attr("data-cometd-token")
