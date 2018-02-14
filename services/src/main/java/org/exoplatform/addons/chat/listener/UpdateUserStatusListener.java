@@ -35,7 +35,7 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
                 // Remove user token from Chat Server
                 String token = ServerBootstrap.getToken(userId);
                 String dbName = ServerBootstrap.getDBName();
-                ServerBootstrap.removeUser(userId, token, dbName);
+                ServerBootstrap.removeUserToken(userId, token, dbName);
             }
         }
 

@@ -78,15 +78,15 @@ public class ChatTools
   }
 
   @Resource
-  @Route("/removeUser")
-  public Response.Content removeUser(String username, String token, String passphrase, String dbName)
+  @Route("/removeUserToken")
+  public Response.Content removeUserToken(String username, String token, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    tokenService.removeUser(username, token, dbName);
+    tokenService.removeUserToken(username, token, dbName);
     RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.TOKEN_INVALIDATED, null, username, new Date(), null);
     realTimeMessageService.sendMessage(realTimeMessageBean, username);
 
