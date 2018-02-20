@@ -647,9 +647,10 @@
     for(var i=0; i<this.messages.length; i++) {
       if(this.messages[i].msgId == messageId) {
         this.messages[i] = updatedMessage;
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   /*
@@ -668,6 +669,7 @@
    */
   ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
     // A server message
+    var updated = false;
     if (msg.msgId) {
       var messages = TAFFY(this.messages);
       var tempMsg = messages({
@@ -678,8 +680,10 @@
       if (tempMsg.count() > 0) {
         tempMsg.update(msg);
         this.messages = messages().get();
-        this.updateMessage(msg, true);
-        return;
+        updated = this.updateMessage(msg, true);
+        if (updated) {
+          return;
+        }
       }
     } else {
       this.addPendingMessage(msg);
