@@ -654,81 +654,80 @@ public class ChatServer
       if (room==null || "".equals(room) || "---".equals(room))
       {
         room = chatService.getTeamRoom(teamName, user, dbName);
-        userService.addTeamUsers(room, Arrays.asList(users.split(",")), dbName);
       }
-      else
-      {
-        // Only creator can edit members or set team name
-        String creator = chatService.getTeamCreator(room, dbName);
-        if (!user.equals(creator)) {
-          return Response.notFound("Petit malin !");
+      // Only creator can edit members or set team name
+      String creator = chatService.getTeamCreator(room, dbName);
+      if (!user.equals(creator)) {
+        return Response.notFound("Petit malin !");
+      }
+
+      if (users != null && !users.isEmpty()) {
+        List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+
+        List<String> usersNew = Arrays.asList(users.split(","));
+        List<String> usersToAdd = new JSONArray();
+        usersToAdd.addAll(usersNew);
+        List<String> usersToRemove = new JSONArray();
+
+        JSONObject data = new JSONObject();
+        data.put("title", teamName);
+        data.put("members", usersToAdd);
+        RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.ROOM_UPDATED,
+            room,
+            user,
+            null,
+            data);
+
+        for (String u: existingUsers) {
+          if (usersNew.contains(u)) {
+            usersToAdd.remove(u);
+            realTimeMessageService.sendMessage(updatedRoomMessage, u);
+          } else {
+            usersToRemove.add(u);
+          }
         }
 
-        if (users != null && !users.isEmpty()) {
-          List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+        if (usersToRemove.size() > 0) {
+          userService.removeTeamUsers(room, usersToRemove, dbName);
 
-          List<String> usersNew = Arrays.asList(users.split(","));
-          List<String> usersToAdd = new JSONArray();
-          usersToAdd.addAll(usersNew);
-          List<String> usersToRemove = new JSONArray();
-
-          JSONObject data = new JSONObject();
-          data.put("title", teamName);
-          data.put("members", usersToAdd);
-          RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
-              RealTimeMessageBean.EventType.ROOM_UPDATED,
-              room,
-              user,
-              null,
-              data);
-
-          for (String u: existingUsers) {
-            if (usersNew.contains(u)) {
-              usersToAdd.remove(u);
-              realTimeMessageService.sendMessage(updatedRoomMessage, u);
-            } else {
-              usersToRemove.add(u);
-            }
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String u: usersToRemove)
+          {
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(u, dbName));
+            first = false;
+            notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
           }
 
-          if (usersToRemove.size() > 0) {
-            userService.removeTeamUsers(room, usersToRemove, dbName);
+          // Send members removal message in the room
+          String removeTeamUserOptions
+              = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
+        }
 
-            StringBuilder sbUsers = new StringBuilder();
-            boolean first = true;
-            for (String u: usersToRemove)
-            {
-              if (!first) sbUsers.append("; ");
-              sbUsers.append(userService.getUserFullName(u, dbName));
-              first = false;
-              notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
+        chatService.setRoomName(room, teamName, dbName);
+
+        if (usersToAdd.size() > 0) {
+          userService.addTeamUsers(room, usersToAdd, dbName);
+
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String usert: usersToAdd)
+          {
+            if(usert.equals(creator)) {
+              continue;
             }
-
-            // Send members removal message in the room
-            String removeTeamUserOptions
-                = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
-                "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-            this.send(user, token, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(usert, dbName));
+            first = false;
           }
-
-          chatService.setRoomName(room, teamName, dbName);
-
-          if (usersToAdd.size() > 0) {
-            userService.addTeamUsers(room, usersToAdd, dbName);
-
-            StringBuilder sbUsers = new StringBuilder();
-            boolean first = true;
-            for (String usert: usersToAdd)
-            {
-              if (!first) sbUsers.append("; ");
-              sbUsers.append(userService.getUserFullName(usert, dbName));
-              first = false;
-            }
-            String addTeamUserOptions
-                = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
-                "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
-            this.send(user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
-          }
+          String addTeamUserOptions
+              = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
         }
       }
 
