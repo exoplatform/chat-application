@@ -640,15 +640,19 @@
       messageId = updatedMessage.msgId;
     }
     $msg = jqchat("#" + messageId);
-    var out = this.generateMessageHTML(updatedMessage);
-    $msg.replaceWith(out);
+    if($msg) {
+      var out = this.generateMessageHTML(updatedMessage);
+      $msg.replaceWith(out);
 
-    // Update message in memory
-    for(var i=0; i<this.messages.length; i++) {
-      if(this.messages[i].msgId == messageId) {
-        this.messages[i] = updatedMessage;
-        return true;
+      // Update message in memory
+      if(updatedMessage.msgId) {
+        for (var i = 0; i < this.messages.length; i++) {
+          if (this.messages[i].msgId == updatedMessage.msgId) {
+            this.messages[i] = updatedMessage;
+          }
+        }
       }
+      return true;
     }
     return false;
   }
@@ -668,21 +672,23 @@
    * }
    */
   ChatRoom.prototype.addMessage = function(msg, checkToScroll) {
-    // A server message
     var updated = false;
+    // If it is a server message...
     if (msg.msgId) {
-      var messages = TAFFY(this.messages);
-      var tempMsg = messages({
-        clientId: msg.clientId
-      });
+      // Update local message with server message
+      if(msg.clientId) {
+        var messages = TAFFY(this.messages);
+        var tempMsg = messages({
+            clientId: msg.clientId
+        });
 
-      // Update local message with server message.
-      if (tempMsg.count() > 0) {
-        tempMsg.update(msg);
-        this.messages = messages().get();
-        updated = this.updateMessage(msg, true);
-        if (updated) {
-          return;
+        if (tempMsg.count() > 0) {
+          tempMsg.update(msg);
+          this.messages = messages().get();
+          updated = this.updateMessage(msg, true);
+          if (updated) {
+            return;
+          }
         }
       }
     } else {
