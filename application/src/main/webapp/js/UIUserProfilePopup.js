@@ -381,19 +381,30 @@
 
              tbody.append(tr);
 
-             popupContent.append(tbody);
-
              if (json.activityTitle) {
                var blockquote = $("<blockquote/>", {
                  "text": json.activityTitle.replace(/<[^>]+>/g, '')
                });
+               var activityDiv=$("<div/>",{
+                 "id": "recentActivity"
+               });
+               activityDiv.append(blockquote);
              }
-
+             
+             if (activityDiv) {
+               var trDesc = $("<tr/>");
+               var td = $("<td/>", {
+                   "width":"50px"
+               });
+               trDesc.append(td);
+               var tdDesc = $("<td/>");
+               tdDesc.append(activityDiv)
+               trDesc.append(tdDesc);
+               tbody.append(trDesc);
+             }
+             
+             popupContent.append(tbody);
              popupContentContainer.append(popupContent);
-
-             if (blockquote) {
-               popupContentContainer.append(blockquote);
-             }
 
              if (currentViewerId != ownerUserId && !isDeleted) {
                var divUIAction = $("<div/>", {
