@@ -1750,6 +1750,10 @@
   };
 
   ChatApplication.prototype.sessionTimeout = function() {
+    requireChatCometd(function (cCometD) {
+      cCometD.disconnect();
+    });
+
     var $msg = jqchat('#msg');
     $msg.attr("disabled", "disabled");
     showPopupWindow("session-timeout-window", true, true);
@@ -1945,9 +1949,19 @@
             message = JSON.parse(message);
           }
 
-          // Do what you want with the message...
-          if (message.event == 'token-invalidated') {
-            chatApplication.sessionTimeout();
+          if (message.event == 'logout-sent') {
+            // if a logout has been issued for this user in one of his sessions,
+            // we check if the current session is stil alive
+            setTimeout(function(){
+              jqchat.ajax({
+                  url: eXo.env.portal.context + '/' + eXo.env.portal.rest + '/state/ping',
+                  error: function (xhr, status, error) {
+                      if (xhr.status == 403) {
+                          chatApplication.sessionTimeout();
+                      }
+                  }
+              });
+            }, 1000);
           } else if (message.event == 'user-status-changed') {
             if (message.room == chatApplication.username) {
               // update current user status

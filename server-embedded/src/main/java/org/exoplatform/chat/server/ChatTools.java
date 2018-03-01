@@ -78,16 +78,16 @@ public class ChatTools
   }
 
   @Resource
-  @Route("/removeUserToken")
-  public Response.Content removeUserToken(String username, String token, String passphrase, String dbName)
+  @Route("/logout")
+  public Response.Content logout(String username, String token, String passphrase, String dbName)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    tokenService.removeUserToken(username, token, dbName);
-    RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.TOKEN_INVALIDATED, null, username, new Date(), null);
+    // send logout message to all sessions of the given user to check if their session is closed
+    RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.LOGOUT_SENT, null, username, new Date(), null);
     realTimeMessageService.sendMessage(realTimeMessageBean, username);
 
     return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
