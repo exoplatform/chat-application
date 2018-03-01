@@ -8,6 +8,7 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.user.UserStateModel;
 import org.exoplatform.services.user.UserStateService;
+import org.exoplatform.web.login.LogoutControl;
 
 import java.util.Calendar;
 
@@ -32,10 +33,12 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
                 userStateModel.setStatus(STATUS_OFFLINE);
                 userStateService.save(userStateModel);
 
-                // Remove user token from Chat Server
-                String token = ServerBootstrap.getToken(userId);
-                String dbName = ServerBootstrap.getDBName();
-                ServerBootstrap.removeUserToken(userId, token, dbName);
+                if(LogoutControl.isLogoutRequired()) {
+                    // Send logout message to all sessions of the given user in case of a logout
+                    String token = ServerBootstrap.getToken(userId);
+                    String dbName = ServerBootstrap.getDBName();
+                    ServerBootstrap.logout(userId, token, dbName);
+                }
             }
         }
 
