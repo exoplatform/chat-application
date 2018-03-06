@@ -22,11 +22,13 @@ package org.exoplatform.chat.services.mongodb;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mongodb.*;
 
 import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.chat.services.mongodb.utils.ConnectionHelper;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -65,28 +67,22 @@ public class MongoBootstrap
                 .connectTimeout(60000)
                 .threadsAllowedToBlockForConnectionMultiplier(10)
                 .build();
-        String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
-        int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
         boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION));
         if (authenticate) {
           MongoCredential credential = MongoCredential.createCredential(
               PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER),
               PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME),
               PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD).toCharArray());
-          m = new MongoClient(new ServerAddress(host, port), Arrays.asList(credential), options);
+          m = new MongoClient(ConnectionHelper.getMongoServerAdresses(), Arrays.asList(credential), options);
 
         } else {
-          m = new MongoClient(new ServerAddress(host, port), options);
+          m = new MongoClient(ConnectionHelper.getMongoServerAdresses(), options);
         }
         m.setWriteConcern(WriteConcern.SAFE);
       }
-      catch (UnknownHostException e)
+      catch (Exception e)
       {
-        LOG.warning(e.getMessage());
-      }
-      catch (IOException e)
-      {
-        LOG.warning(e.getMessage());
+        LOG.log(Level.SEVERE, "Error occur when get Mongo server adresses .", e);
       }
     }
     return m;
