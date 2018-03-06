@@ -62,6 +62,7 @@ public class PropertyManager {
   public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
   public static final String PROPERTY_SERVER_TYPE = "dbServerType";
   public static final String PROPERTY_SERVER_HOST = "dbServerHost";
+  public static final String PROPERTY_SERVERS_HOSTS = "dbServerHosts";
   public static final String PROPERTY_SERVER_PORT = "dbServerPort";
   public static final String PROPERTY_DB_NAME = "dbName";
   public static final String PROPERTY_DB_AUTHENTICATION = "dbAuthentication";
@@ -132,6 +133,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_SERVICES_IMPLEMENTATION, PROPERTY_SERVICE_IMPL_MONGO);
       overridePropertyIfNotSet(PROPERTY_SERVER_TYPE, "mongo");
       overridePropertyIfNotSet(PROPERTY_SERVER_HOST, "localhost");
+      overridePropertyIfNotSet(PROPERTY_SERVERS_HOSTS, "");
       overridePropertyIfNotSet(PROPERTY_SERVER_PORT, "27017");
       overridePropertyIfNotSet(PROPERTY_DB_NAME, "chat");
       overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
