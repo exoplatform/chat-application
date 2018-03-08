@@ -573,12 +573,12 @@
    * @param status : the new status : available, donotdisturb, invisible, away or offline
    */
   ChatNotification.prototype.changeStatusChat = function (username, status) {
-    chatNotification.profileStatus = status;
-    if (typeof chatApplication === "object") {
-      chatApplication.profileStatus = status;
-    }
-
     if (chatNotification.username == username) {
+      chatNotification.profileStatus = status;
+      if (typeof chatApplication === "object") {
+        chatApplication.profileStatus = status;
+      }
+
       // Update chat status on chatApplication
       var $chatStatusChat = jqchat(".chat-status-chat");
       $chatStatusChat.removeClass("chat-status-available chat-status-donotdisturb chat-status-invisible chat-status-away chat-status-offline");
