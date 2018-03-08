@@ -184,6 +184,9 @@ public class ServerBootstrap {
     try {
       URL url = new URL(serviceUrl);
       URLConnection con = url.openConnection();
+      int timeout = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_REQUEST_TIMEOUT));
+      con.setConnectTimeout(timeout);
+      con.setReadTimeout(timeout);
       con.setDoOutput(true);
 
       //envoi de la requête

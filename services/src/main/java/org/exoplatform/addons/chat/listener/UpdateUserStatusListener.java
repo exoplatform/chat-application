@@ -1,6 +1,7 @@
 package org.exoplatform.addons.chat.listener;
 
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.security.ConversationRegistry;
@@ -33,8 +34,8 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
                 userStateModel.setStatus(STATUS_OFFLINE);
                 userStateService.save(userStateModel);
 
-                if(LogoutControl.isLogoutRequired()) {
-                    // Send logout message to all sessions of the given user in case of a logout
+                if(LogoutControl.isLogoutRequired() && PortalContainer.getInstance().isStarted()) {
+                    // Send logout message to all sessions of the given user in case of a logout, not in platform stop.
                     String token = ServerBootstrap.getToken(userId);
                     String dbName = ServerBootstrap.getDBName();
                     ServerBootstrap.logout(userId, token, dbName);
