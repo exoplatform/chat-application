@@ -102,6 +102,8 @@ public class PropertyManager {
   public static final String PROPERTY_PLF_USER_STATUS_UPDATE_URL = "plfUsrStatUpdUrl";
   public static final String PROPERTY_UPLOAD_FILE_SIZE = "chatUploadFileSize";
 
+  public static final String PROPERTY_REQUEST_TIMEOUT = "request.timeout";
+
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
@@ -165,6 +167,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
       overridePropertyIfNotSet(PROPERTY_UPLOAD_FILE_SIZE, "100");
 
+      overridePropertyIfNotSet(PROPERTY_REQUEST_TIMEOUT, "15000");
     }
     return properties;
   }
