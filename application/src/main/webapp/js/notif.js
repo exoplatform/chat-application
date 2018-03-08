@@ -658,7 +658,7 @@
       var href = jqchat("#tipName a", $tiptip_content).first().attr("href");
       var toUserName = href.substr(href.lastIndexOf('/') + 1);
       var toFullName = jqchat("#tipName a", $tiptip_content).last().html();
-      var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconForum uiIconLightGray'></i> Chat</a>";
+      var strChatLink = "<a style='margin-left:5px;' data-username='" + toUserName + "' data-fullname='" + toFullName + "' title='Chat' class='btn chatPopupOverlay chatPopup-" + toUserName.replace('.', '-') + "' type='button'><i class='uiIconBannerChat uiIconLightGray'></i> Chat</a>";
       $uiAction.append(strChatLink);
 
       jqchat(".chatPopupOverlay").on("click", function () {
