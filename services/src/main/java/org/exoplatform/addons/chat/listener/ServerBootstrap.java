@@ -153,8 +153,8 @@ public class ServerBootstrap {
 
   private static String callServer(String serviceUri, String params)
   {
-    String serviceUrl = getServerURL()
-            +"/"+serviceUri+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
+    String serverURLBase = getServerURL() + "/" + serviceUri;
+    String serviceUrl = serverURLBase+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
             +"&"+params;
     String body = null;
     try {
@@ -166,19 +166,18 @@ public class ServerBootstrap {
       body = IOUtils.toString(in, encoding);
       if ("null".equals(body)) body = null;
     } catch (MalformedURLException e) {
-      LOG.error("Malformed URL {}",serviceUrl,e);
+      LOG.error("Malformed URI " + serverURLBase, e);
     } catch (IOException e) {
-      LOG.error("Could not establish connection to URL {}",serviceUri,e);
+      LOG.error("Could not establish connection to URL " + serverURLBase, e);
     } catch (Exception e) {
-      LOG.error("Error occurred while sending request to " + serviceUrl, e);
+      LOG.error("Error occurred while sending request to " + serverURLBase, e);
     }
     return body;
   }
 
   private static String postServer(String serviceUri, String params)
   {
-    String serviceUrl = getServerURL()
-            +"/"+serviceUri;
+    String serviceUrl = getServerURL() + "/" + serviceUri;
     String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
     String body = null;
     OutputStreamWriter writer = null;
@@ -199,7 +198,7 @@ public class ServerBootstrap {
       if ("null".equals(body)) body = null;
 
     } catch (MalformedURLException e) {
-      LOG.error("Malformed URL " + serviceUri, e);
+      LOG.error("Malformed URL " + serviceUrl, e);
     } catch (IOException e) {
       LOG.error("Error converting input stream", e);
     } catch (Exception e) {
