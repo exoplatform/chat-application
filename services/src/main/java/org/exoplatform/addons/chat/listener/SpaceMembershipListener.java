@@ -10,34 +10,22 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
 
   @Override
   public void grantedLead(SpaceLifeCycleEvent event) {
-    String username = event.getTarget();
-    if (StringUtils.isNotBlank(username)) {
-      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-    }
+    saveSpaces(event.getTarget());
   }
 
   @Override
   public void joined(SpaceLifeCycleEvent event) {
-    String username = event.getTarget();
-    if (StringUtils.isNotBlank(username)) {
-      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-    }
+    saveSpaces(event.getTarget());
   }
 
   @Override
   public void left(SpaceLifeCycleEvent event) {
-    String username = event.getTarget();
-    if (StringUtils.isNotBlank(username)) {
-      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-    }
+    saveSpaces(event.getTarget());
   }
 
   @Override
   public void revokedLead(SpaceLifeCycleEvent event) {
-    String username = event.getTarget();
-    if (StringUtils.isNotBlank(username)) {
-      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-    }
+    saveSpaces(event.getTarget());
   }
 
   @Override
@@ -54,9 +42,7 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
     String[] members = space.getMembers();
     if (members != null) {
       for (String username : members) {
-        if (StringUtils.isNotBlank(username)) {
-          ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-        }
+        saveSpaces(username);
       }
     }
   }
@@ -67,9 +53,7 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
     String[] members = space.getMembers();
     if (members != null) {
       for (String username : members) {
-        if (StringUtils.isNotBlank(username)) {
-          ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
-        }
+        saveSpaces(username);
       }
     }
   }
@@ -92,6 +76,7 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
 
   @Override
   public void spaceRenamed(SpaceLifeCycleEvent event) {
+    saveSpaces(event.getTarget());
   }
 
   @Override
@@ -110,4 +95,9 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
   public void addPendingUser(SpaceLifeCycleEvent event) {
   }
 
+  private void saveSpaces(String username) {
+    if (StringUtils.isNotBlank(username)) {
+      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
+    }
+  }
 }
