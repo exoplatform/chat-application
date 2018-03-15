@@ -116,17 +116,18 @@ public class ReportBean {
       if (isSystem && message.containsField("options")) {
         options = (BasicDBObject)message.get("options");
         if (options.containsField("type")) {
-          if ("type-link".equals(options.get("type").toString()))
+          String type = options.get("type").toString();
+          if ("type-link".equals(type))
           {
             addLink(options.get("link").toString());
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.link")+": "+ options.get("link").toString()+" ]";
           }
-          else if ("type-question".equals(options.get("type").toString()))
+          else if ("type-question".equals(type))
           {
             addQuestion(msg);
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.question")+": "+ msg +" ]";
           }
-          else if ("type-file".equals(options.get("type").toString()))
+          else if ("type-file".equals(type))
           {
             FileBean file = new FileBean();
             file.setName(options.get("name").toString());
@@ -135,25 +136,32 @@ public class ReportBean {
             addFile(file);
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.file")+": "+ options.get("name").toString()+" ]";
           }
-          else if ("type-hand".equals(options.get("type").toString()))
+          else if ("type-hand".equals(type))
           {
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.raiseHand")+": " + msg + "]";
           }
-          else if ("type-task".equals(options.get("type").toString()))
+          else if ("type-task".equals(type))
           {
             TaskBean task = new TaskBean();
-            task.setAssignee(options.get("fullname").toString());
-            task.setTask(options.get("task").toString());
-            task.setDueDate(options.get("dueDate").toString());
-            task.setUsername(options.get("username").toString());
+            Object taskTitle = options.get("task");
+            Object username = options.get("username");
+            Object dueDate = options.get("dueDate");
+            task.setTask(taskTitle.toString());
+            if(username != null) {
+              task.setUsername(username.toString());
+              task.setAssignee(username.toString());
+            }
+            if(dueDate != null) {
+              task.setDueDate(dueDate.toString());
+            }
             addTask(task);
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.task").
-              replace("{0}", options.get("task").toString()).
-              replace("{1}", options.get("fullname").toString()).
-              replace("{2}", options.get("dueDate").toString())+
+              replace("{0}", taskTitle.toString()).
+              replace("{1}", username != null ? username.toString() : "").
+              replace("{2}", dueDate != null ? dueDate.toString() : "")+
               " ]";
           }
-          else if ("type-event".equals(options.get("type").toString()))
+          else if ("type-event".equals(type))
           {
             EventBean event = new EventBean();
             event.setSummary(options.get("summary").toString());
@@ -170,15 +178,15 @@ public class ReportBean {
               replace("{4}", options.get("endTime").toString())+
               " ]";
           }
-          else if ("call-join".equals(options.get("type").toString()))
+          else if ("call-join".equals(type))
           {
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.joined")+" ]";
           }
-          else if ("type-meeting-start".equals(options.get("type").toString()))
+          else if ("type-meeting-start".equals(type))
           {
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.started")+" ]";
           }
-          else if ("type-meeting-stop".equals(options.get("type").toString()))
+          else if ("type-meeting-stop".equals(type))
           {
             msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.finished")+" ]";
           }
