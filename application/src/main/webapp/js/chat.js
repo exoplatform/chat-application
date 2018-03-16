@@ -1751,6 +1751,7 @@
 
   ChatApplication.prototype.sessionTimeout = function() {
     requireChatCometd(function (cCometD) {
+      cCometD.explicitlyDisconnected = true;
       cCometD.disconnect();
     });
 
