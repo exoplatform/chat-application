@@ -828,9 +828,6 @@
   window.chatNotification = new ChatNotification();
 
   window.requireChatCometd = function(callback) {
-    if (chatNotification.tokenInvalidated) {
-      return;
-    }
     window.require(['SHARED/chatCometD'], function (cCometD) {
       if (chatNotification.standalone) {
         cCometD = cCometD.getInstance('chat');
@@ -883,8 +880,7 @@
         }
 
         // Do what you want with the message...
-        if (message.event == 'token-invalidated') {
-          chatNotification.tokenInvalidated = true;
+        if (message.event == 'logout-sent') {
           cCometD.disconnect();
         } else if (message.event == 'user-status-changed') {
           chatNotification.changeStatusChat(message.sender, message.data.status);

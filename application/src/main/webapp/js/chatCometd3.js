@@ -7,7 +7,8 @@
       eXoResubs: [],
       eXoPublish: [],
       eXoRemoteCalls: [],
-      autoResubscribe: true
+      autoResubscribe: true,
+      explicitlyDisconnected: false
     }, origin);
 
     this.configure = function(config) {
@@ -49,7 +50,9 @@
       }
 
       if (this.isDisconnected()) {
-        this.handshake(subscribeProps);
+        if(!this.explicitlyDisconnected) {
+          this.handshake(subscribeProps);
+        }
       } else if(this.getStatus() !== 'handshaking') {
         return this.parent.subscribe.call(this, channel, scope, callback, subscribeProps, subscribeCallback);
       }
@@ -57,14 +60,15 @@
 
     this.publish = function(channel, content, publishProps, publishCallback) {
       if (this.isDisconnected()) {
-        if (!publishProps || $.isFunction(publishProps))
-        {
-          publishProps = {};
-        }
+        if(!this.explicitlyDisconnected) {
+          if (!publishProps || $.isFunction(publishProps)) {
+            publishProps = {};
+          }
 
-        //Add eXo token
-        publishProps = $.extend({}, this.eXoSecret, publishProps);
-        this.handshake(publishProps);
+          //Add eXo token
+          publishProps = $.extend({}, this.eXoSecret, publishProps);
+          this.handshake(publishProps);
+        }
       } else if(this.getStatus() === 'handshaking') {
         this.eXoPublish.push(arguments);
       } else {
@@ -74,14 +78,15 @@
 
     this.remoteCall = function(target, content, timeout, callback) {
       if (this.isDisconnected()) {
-        if (!content || $.isFunction(content))
-        {
-          content = {};
-        }
+        if(!this.explicitlyDisconnected) {
+          if (!content || $.isFunction(content)) {
+            content = {};
+          }
 
-        //Add eXo token
-        content = $.extend({}, this.eXoSecret, content);
-        this.handshake(content);
+          //Add eXo token
+          content = $.extend({}, this.eXoSecret, content);
+          this.handshake(content);
+        }
       } else if(this.getStatus() === 'handshaking') {
         this.eXoRemoteCalls.push(arguments);
       } else {
@@ -91,6 +96,12 @@
 
     this.clearResubscriptions = function() {
       this.eXoResubs = [];
+    };
+
+    this.disconnect = function(config) {
+      this.eXoSecret = {exoId: null, exoToken: null};
+      this.explicitlyDisconnected = true;
+      this.parent.disconnect.apply(this, arguments);
     };
 
     var thiz = this;
