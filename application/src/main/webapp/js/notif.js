@@ -669,7 +669,7 @@ ChatNotification.prototype.attachChatButtonBelowLeftNavigationSpaceName = functi
   var $btnChat = jqchat(".chat-button", $breadcumbEntry);
   var spaceId = this.spaceId;
   if ($breadcumbEntry.length > 0 && $btnChat.length === 0 && spaceId !== "") {
-    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceId + "\", \"space-id\");' class='chat-button actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
+    var strChatLink = "<a onclick='javascript:showMiniChatPopup(\"" + spaceId + "\", \"space-id\");' class='chat-button-space actionIcon' href='javascript:void();'><span class='uiIconChatChat uiIconChatLightGray'></span><span class='chat-label-status'>&nbsp;Chat</span></a>";
     $breadcumbEntry.append(strChatLink);
   }
 
