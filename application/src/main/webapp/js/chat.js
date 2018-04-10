@@ -118,11 +118,6 @@
       }
     });
 
-    this.resize();
-    jqchat(window).resize(function () {
-      chatApplication.resize();
-    });
-
     this.showFavorites = this.getUserPref("chatShowFavorites") === "false" ? false : true;
     this.showPeople = this.getUserPref("chatShowPeople") === "false" ? false : true;
     this.showOffline = this.getUserPref("chatShowOffline") === "true" ? true : false;
@@ -236,7 +231,7 @@
         jqchat("#chat-application .uiGrayLightBox .uiSearchInput").removeClass("displayContent");
         jqchat('input#chat-search.input-with-value.span4').val('');
         var filter = jqchat('input#chat-search.input-with-value.span4').val();
-        chatApplication.search(filter);
+        //chatApplication.search(filter);
 
         var $chatStatusPanel = jqchat(".chat-status-panel");
 
@@ -447,6 +442,7 @@
     });
   };
 
+<<<<<<< HEAD
   /**
      * Remove user from team room
      *
@@ -508,6 +504,8 @@
     }
   };
 
+=======
+>>>>>>> Removing js for layout
   /**
    * Maintain Session : Only on Fluid app context
    */
