@@ -1,10 +1,58 @@
-// Base CSS
+/* Layout */
+#chat-application {
+  height: 100vh;
+  display: flex;
+}
+.uiLeftContainerArea {
+  background: @leftAreaBg;
+  padding: 0 20px 20px;
+  &.hideContent{opacity: 0; display: none;}
+  &.displayContent{opacity: 1; display: flex;}
+}
+.uiLeftContainerArea, .uiRightContainerArea, #room-users {
+  display: flex;
+  flex-direction: column;
+}
+.uiGlobalRoomsContainer, .uiRightContainerArea {
+  flex: 1;
+}
+.uiLeftContainerArea, .uiRoomUsersContainerArea {
+  width: @sideBarWidth;
+  min-width: @sideBarMinWidth;
+  box-sizing: border-box;
+}
+.room-content {
+  display: flex;
+  height: calc(~"100%" - @headerHeight);
+}
+.room-detail, .uiUserDetails {
+  height: @headerHeight;
+  box-sizing: border-box;
+}
+.room-detail {
+  border-bottom: @PrimaryBorder;
+}
+#room-users {
+  height: 100%;
+}
+
+.uiRoomUsersContainerArea {
+  display: none;
+  border-left: @PrimaryBorder;
+  position: relative;
+}
+.chat-message {
+  height: @heightMessage;
+  padding: 20px 30px 0;
+  border-top: @PrimaryBorder;
+}
+
 #configButton, #configButtonResp {
   position: relative;
   top: 10px;
   padding: 5px 8px 1px 8px;
 }
-@headerWidth: 60px;
+
 .wrapper {
   text-align: center;
 }
@@ -69,7 +117,7 @@
   }
 }
 
-.uiBox {
+
   .title {
     padding: 0;
 
@@ -78,7 +126,7 @@
       font-size: 1.11em;
     }
   }
-}
+
 
 // avatar
 .msUserAvatar {
@@ -107,26 +155,15 @@
   }
 }
 
-.uiRightContainerArea {
-  float: none;
-  overflow: auto;
-  padding: 15px 0 0;
-}
-
 .uiGlobalRoomsContainer.hideContent {
     left: 100%;
     right: auto;
 }
 .uiRoomUsersContainerArea {
-  display: none;
-  float: right;
-  padding: 15px 0 0 15px;
-  width: 300px;
-
+  
   #room-users-collapse-bar {
-    float: left;
     position: absolute;
-    margin-left: -10px;
+    top: 50%;
     cursor: pointer;
 
     .uiIconArrowDefault:before {
@@ -136,8 +173,8 @@
 
   &.room-users-collapsed {
     width: 70px;
-
-    .uiBox {
+    min-width: 0;
+    
       #room-users-header {
         #room-users-title {
           display: none;
@@ -162,20 +199,16 @@
           display: none;
         }
       }
-    }
+    
   }
 
-  .uiBox {
-    #room-users-header {
-      height: @headerWidth;
-      line-height: @headerWidth;
-      padding: 0;
-      .box-shadow(none);
 
+    #room-users-header {
+      height: @participantHeaderHeight;
+      border-bottom: @PrimaryBorder;
+      padding: 0 20px;
       #room-users-title {
-        padding-left: 20px;
         font-weight: bold;
-        font-size: 1.11em;
 
         #room-users-title-nb-users {
           font-weight: normal;
@@ -186,7 +219,7 @@
         padding-right: 10px;
 
         li {
-          line-height: @headerWidth;
+          line-height: @headerHeight;
           padding-right: 5px;
           float: right;
         }
@@ -222,7 +255,7 @@
         }
       }
     }
-  }
+  
 }
 
 .chat-sync {
@@ -230,17 +263,6 @@
   padding: 40px;
   margin-top: 100px;
   .border-radius(10px);
-}
-.uiLeftContainerArea {
-    float: left;
-    overflow: auto;
-    width: 257px;
-    -ms-transition-duration: .5s;
-    -moz-transition-duration: .5s;
-    -webkit-transition-duration: .5s;
-    transition-duration: .5s;
-    &.hideContent{opacity: 0; display: none}
-    &.displayContent{opacity: 1; display: block}
 }
 .menu-standard {
   display: inline;
@@ -297,7 +319,7 @@
 }
 #chat-users
 {
-  height: (@height - 44);
+  //height: @height - 44;
   overflow: auto;
   cursor: default;
   margin-bottom: 0!important;
@@ -523,9 +545,7 @@ table.list-rooms {
 
 .chat-message
 {
-  position: relative;
   height: @heightMessage;
-  padding: 0!important;
   > .pull-left{
     padding-left: 11px!important;
   }
@@ -737,12 +757,7 @@ table.list-rooms {
 
 }
 
-.room-detail{
-  position: block;
-  height: @heightRoomDetail;
-  .box-shadow(none)!important;
-  padding:0!important;
-}
+
 
 .room-detail-button, .msbuttonGroupRecord {
   float: right;
@@ -788,10 +803,7 @@ table.list-rooms {
 }
 
 .room-detail-fullname {
-  overflow: hidden;
-  display: block;
   padding-left: 10px;
-  line-height: @headerWidth;
   .text-overflow;
 }
 

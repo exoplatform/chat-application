@@ -20,21 +20,20 @@
   .btn-home-responsive {
     display: inline-block;
   }
-
-  .uiLeftContainerArea {
-    width: 100%;
-    float: none;
-    padding: 5px 5px 0 0!important;
-    -ms-transition-duration: .5s;
-    -moz-transition-duration: .5s;
-    -webkit-transition-duration: .5s;
-    transition-duration: .5s;
-    #chat-users {
-      height: initial !important;
-      margin: 0!important;
-    }
+  .uiLeftContainerArea, #chats {
+    background: none;
   }
-
+  .uiLeftContainerArea {
+    width: 100vw;
+    min-width: 320px;
+    padding: 0;
+  }
+  .uiLeftContainerHeader {
+    border-bottom: @PrimaryBorder;
+  }
+  .uiUserSearch {
+    display: none;
+  }
   .uiRoomUsersContainerArea {
         padding: 5px 0 0 0;
   }
@@ -238,28 +237,7 @@
                  }
              }
         }
-        .uiLeftContainerArea {
-          width: 100%;
-          float: none;
-          position: absolute;
-          top: 52px;
-          left: 0;
-          right: 0;
-
-          -ms-transition-duration: .5s;
-          -moz-transition-duration: .5s;
-          -webkit-transition-duration: .5s;
-          transition-duration: .5s;
-          &.displayContent{
-            display: block;
-            opacity: 1;
-          }
-
-          #chat-users {
-            height: initial !important;
-            margin: 0!important;
-          }
-        }
+        
         .uiGlobalRoomsContainer{
             position: fixed;
             top: -5px;

@@ -7,20 +7,28 @@
 // --------------------------------------------------
 
 
-@height:                      645px;
+@height:                      100vh;
 @width:                       600px;
-@heightMessage:               60px;
+@heightMessage:               100px;
 @heightRoomDetail:            60px;
 @heightBar:                   0px;
 @widthUsers:                  180px;
 @widthMessages:               (@width - @widthUsers - 4);
+@headerHeight: 70px;
+@sideBarWidth: ~"20vw";
+@sideBarMinWidth: 250px;
+@participantHeaderHeight: 50px;
 
-
+@primaryColor: #578dc9;
+@secondaryColor: #476a9c; 
 @backgroundColor:             white;
+
+@chatAreaBackground: #FAFDFF;
 
 @colorBgLight:                #F1F1F1;
 @colorBgGradient2:            @colorBgLight;
 @colorBgGradient1:            #E0E0E0;
+@PrimaryBorder: 2px solid #e1e8ee;
 @colorBorder:                 #D0D0D0;
 @colorBorderGrey:             #CCC;
 @colorLink:                   #000;
@@ -55,6 +63,9 @@
   background: url('@{imgPath}general.png') no-repeat @left @top;
   background-size: 96px 162px;
 }
+
+// Left Area
+@leftAreaBg: @secondaryColor;
 
 
 // Grays
