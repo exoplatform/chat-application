@@ -4,9 +4,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.utils.PropertyManager;
-
 import com.mongodb.ServerAddress;
 
 /**
@@ -14,6 +14,9 @@ import com.mongodb.ServerAddress;
  */
 
 public class ConnectionHelper {
+
+  private static final Logger LOG = Logger.getLogger(ConnectionHelper.class.getName());
+
 
   public static List<ServerAddress> getMongoServerAdresses() throws Exception {
     String replicaSetHosts = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVERS_HOSTS);
@@ -35,6 +38,7 @@ public class ConnectionHelper {
     } else {
       String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
       String port = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT);
+      LOG.warning("The parameters 'dbServerHost' and 'dbServerPort' are deprecated. Please use the parameter 'dbServerHosts' instead.");
       try {
         ServerAddress address = new ServerAddress(host, Integer.parseInt(port));
         serverList.add(address);
