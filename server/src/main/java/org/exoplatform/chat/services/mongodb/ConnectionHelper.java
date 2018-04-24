@@ -1,13 +1,13 @@
-package org.exoplatform.chat.services.mongodb.utils;
+package org.exoplatform.chat.services.mongodb;
+
+import com.mongodb.ServerAddress;
+import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.chat.utils.PropertyManager;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.utils.PropertyManager;
-import com.mongodb.ServerAddress;
 
 /**
  * This class provide a simple helper method to parse mongodb server addresses
