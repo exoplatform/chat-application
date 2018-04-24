@@ -1,15 +1,13 @@
-package org.exoplatform.chat.services.mongodb.utils;
+package org.exoplatform.chat;
 
-import static org.junit.Assert.assertEquals;
-
+import com.mongodb.ServerAddress;
+import org.exoplatform.chat.utils.PropertyManager;
+import org.junit.Test;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.exoplatform.chat.utils.PropertyManager;
-import org.junit.Test;
-
-import com.mongodb.ServerAddress;
+import org.exoplatform.chat.services.mongodb.ConnectionHelper;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eXo Platform SAS.

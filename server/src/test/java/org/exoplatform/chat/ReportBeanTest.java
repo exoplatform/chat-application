@@ -1,7 +1,11 @@
-package org.exoplatform.chat.model;
+package org.exoplatform.chat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import org.exoplatform.chat.model.MessageBean;
+import org.exoplatform.chat.model.ReportBean;
+import org.exoplatform.chat.model.UserBean;
+import org.junit.Test;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -10,10 +14,8 @@ import java.util.List;
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
-import org.junit.Test;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ReportBeanTest {
 

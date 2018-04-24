@@ -20,7 +20,6 @@
 package org.exoplatform.chat.services.mongodb;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +27,6 @@ import java.util.logging.Logger;
 import com.mongodb.*;
 
 import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.mongodb.utils.ConnectionHelper;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
