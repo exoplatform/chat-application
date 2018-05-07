@@ -21,6 +21,9 @@ target/
 bin/
 pom.xml.versionsBackup
 
+# Npm
+node_modules/
+
 # IntelliJ project files
 *.iml
 *.iws

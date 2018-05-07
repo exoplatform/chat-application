@@ -1,0 +1,8 @@
+{
+    "chat" : {
+        "rooms": {
+            "title": "Discussions",
+            "participants": "Participants"
+        }
+    }
+}

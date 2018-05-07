@@ -2,193 +2,30 @@
                   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
                   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
+    <!-- TODO move to a common project -->
+    <module>
+        <name>vue</name>
+        <script>
+            <path>/js/lib/vue.js</path>
+        </script>
+    </module>
+
     <portlet>
-        <name>ChatApplication</name>
+        <name>ChatApplicationVue</name>
         <module>
             <script>
-                <path>/js/chat.js</path>
+                <path>/js/chat.bundle.js</path>
             </script>
             <depends>
-                <module>jquery</module>
-            </depends>
-            <depends>
-                <module>desktopNotification</module>
-            </depends>
-            <depends>
-                <module>chatRoom</module>
-            </depends>
-            <depends>
-                <module>taffy</module>
-            </depends>
-            <depends>
-                <module>juzu-ajax</module>
+                <module>vue</module>
             </depends>
         </module>
     </portlet>
 
-    <portlet>
-        <name>ChatNotificationApplication</name>
-        <module>
-            <script>
-                <path>/js/notif.js</path>
-            </script>
-            <depends>
-                <module>jquery</module>
-            </depends>
-            <depends>
-                <module>desktopNotification</module>
-            </depends>
-            <depends>
-                <module>chatRoom</module>
-            </depends>
-            <depends>
-                <module>taffy</module>
-            </depends>
-        </module>
-    </portlet>
+    <portlet-skin>
+        <application-name>chatApplicationVue</application-name>
+        <portlet-name>ChatApplicationVue</portlet-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
 
-    <portlet>
-        <name>ChatStatisticsApplication</name>
-        <module>
-            <script>
-                <path>/js/stats.js</path>
-            </script>
-            <depends>
-                <module>jquery</module>
-            </depends>
-        </module>
-    </portlet>
-
-    <module>
-        <name>shjs</name>
-        <script>
-            <adapter>
-                (function() {
-                <include>/js/sh_css.min.js</include>
-                <include>/js/sh_html.min.js</include>
-                <include>/js/sh_java.min.js</include>
-                <include>/js/sh_javascript.min.js</include>
-                <include>/js/sh_main.min.js</include>
-                return sh_highlightDocument;
-                })();
-            </adapter>
-        </script>
-    </module>
-
-    <module>
-        <name>desktopNotification</name>
-        <script>
-            <path>/js/desktopNotification.js</path>
-        </script>
-    </module>
-
-    <module>
-        <name>taffy</name>
-        <script>
-            <adapter>
-                (function() {
-                <include>/js/taffy-min.js</include>
-                return TAFFY;
-                })();
-            </adapter>
-        </script>
-    </module>
-
-    <module>
-        <name>userPopup</name>
-        <script>
-            <path>js/UIUserProfilePopup.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>filedrop</name>
-        <script>
-            <path>/js/jquery.filedrop.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>chatRoom</name>
-        <script>
-            <path>/js/chatRoom.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-        <depends>
-            <module>taffy</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>uiMiniCalendar</name>
-        <script>
-            <path>/js/UIMiniCalendar.js</path>
-        </script>
-        <depends>
-            <module>common</module>
-        </depends>
-        <depends>
-            <module>base</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-        </depends>
-        <depends>
-            <module>I18NMessage</module>
-        </depends>
-    </module>
-    <module>
-        <name>uiChatPopupWindow</name>
-        <script>
-            <path>/js/UIPopupWindow.js</path>
-        </script>
-        <depends>
-            <module>common</module>
-        </depends>
-        <depends>
-            <module>uiPopup</module>
-        </depends>
-        <depends>
-            <module>uiMaskLayer</module>
-        </depends>
-        <depends>
-            <module>base</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-    <module>
-        <name>bootbox</name>
-        <script>
-            <path>/js/bootbox.js</path>
-        </script>
-        <depends>
-            <module>bts_modal</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-    <module>
-        <name>chatCometD</name>
-        <as>cCometD</as>
-        <script>
-            <path>/js/chatCometd3.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-        <depends>
-            <module>jquery_cometd</module>
-        </depends>
-    </module>
 </gatein-resources>
