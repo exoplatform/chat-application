@@ -16,7 +16,7 @@ async function loadLanguageAsync (lang) {
   }
   if (!loadedLanguages.includes(lang)) {
     // TODO replace by a call to a new REST service which loads eXo resource bundles (ResourceBundleService)
-    return await axios.get('/chatApplicationVue/lang/' + lang + '.json').then(msgs => {
+    return await axios.get('/chat/lang/' + lang + '.json').then(msgs => {
       i18n.setLocaleMessage(lang, msgs.data);
       loadedLanguages.push(lang);
       i18n.locale = lang;

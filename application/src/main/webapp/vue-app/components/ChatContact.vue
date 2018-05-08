@@ -27,7 +27,7 @@ export default {
       return (this.status == "online") ? "user-available" : "user-invisible";
     },
     contactAvatar() {
-      return (this.type == "t") ? "/chatApplicationVue/img/user-default.jpg" : this.avatar
+      return (this.type == "t") ? "/chat/img/user-default.jpg" : this.avatar
     }
   },
   methods: {

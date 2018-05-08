@@ -11,7 +11,7 @@
     </module>
 
     <portlet>
-        <name>ChatApplicationVue</name>
+        <name>ChatApplication</name>
         <module>
             <script>
                 <path>/js/chat.bundle.js</path>
@@ -23,8 +23,8 @@
     </portlet>
 
     <portlet-skin>
-        <application-name>chatApplicationVue</application-name>
-        <portlet-name>ChatApplicationVue</portlet-name>
+        <application-name>chat</application-name>
+        <portlet-name>ChatApplication</portlet-name>
         <css-path>/css/chat.css</css-path>
     </portlet-skin>
 

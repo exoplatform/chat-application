@@ -7,7 +7,7 @@ var lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
 
 exoi18n.loadLanguageAsync(lang).then(i18n => {
   new Vue({
-    el: '#chatApplicationVue',
+    el: '#chatApplication',
     render: h => h(ChatApp),
     i18n
   });}

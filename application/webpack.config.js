@@ -10,7 +10,7 @@ let config = {
     chat: "./src/main/webapp/vue-app/main.js"
   },
   output: {
-    path: dev ? path.resolve(__dirname, exoServerPath + "webapps/chatApplicationVue/") : path.resolve(__dirname, './target/chatApplicationVue/'),
+    path: dev ? path.resolve(__dirname, exoServerPath + "webapps/chat/") : path.resolve(__dirname, './target/chat/'),
     filename: "js/[name].bundle.js"
   },
   devServer: {
@@ -27,7 +27,7 @@ let config = {
         },
         '/chatApplicationVue/': {
           target:'http://localhost:4000',
-          pathRewrite: {"^/chatApplicationVue" : ""}
+          pathRewrite: {"^/chat" : ""}
         }
     }
   },
