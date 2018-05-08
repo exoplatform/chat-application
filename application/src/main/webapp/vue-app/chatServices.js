@@ -11,7 +11,7 @@ function getUserStatus(userName) {
 }
 
 function getChatRooms() {
-  return fetch('http://localhost:3000/chatServer/whoIsOnline').then(resp =>
+  return fetch('/chatServer/whoIsOnline').then(resp =>
     resp.json()
   );
 }

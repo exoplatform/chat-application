@@ -1,6 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
+const apiMocker = require('connect-api-mocker');
 const dev = process.env.NODE_ENV == "dev";
 const exoServerPath = "../../../exo-servers/platform-5.1-chat-ux/";
 
@@ -15,17 +16,16 @@ let config = {
   },
   devServer: {
     contentBase: path.resolve("./src/main/webapp"),
+    setup: function(app) {
+      app.use('/chatServer', apiMocker('src/main/webapp/js/mock'));
+    },
     port: 4000,
     proxy: {
         '/rest/': {
           target:'http://localhost:8080',
           changeOrigin: true
         },
-        '/chatServer': {
-          target:'http://localhost:3000',
-          changeOrigin: true
-        },
-        '/chatApplicationVue/': {
+        '/chat/': {
           target:'http://localhost:4000',
           pathRewrite: {"^/chat" : ""}
         }
