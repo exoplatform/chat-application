@@ -1,0 +1,72 @@
+/* contact list component */
+.listHeader {
+  display: flex;
+  height: 50px;
+  padding: 0 20px;
+  border-bottom: 2px solid #7f97ba;
+}
+.contactList {
+  padding: 10px 0;
+}
+.contactList .chat-contact {
+  margin-right: auto;
+  cursor: pointer;
+}
+.chat-contact-avatar {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.isList .chat-contact-avatar {
+  width: 26px;
+  height: 26px;
+}
+.chat-contact-avatar .uiIconStatus {
+  position: absolute;
+  bottom: 2px;
+  right: -3px;
+  top: auto;
+}
+.contact-list-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 20px;
+  color: #ffffff;
+}
+.contact-list-item.selected {
+  background: #578DC9;
+}
+.favorite {
+  position: static;
+}
+.favorite:before {
+  content: "\e97f";
+  color: #FAD86E;
+  cursor: pointer;
+  visibility: hidden;
+}
+.favorite.is-fav:before {
+  content: "\e97d";
+  visibility: visible;
+}
+.contact-list-item:hover .favorite:before {
+  visibility: visible;
+}
+.unreadMessages, .favorite {
+  width: 20px;
+  height: 20px;
+}
+.unreadMessages {
+  background: #578DC9;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+}
+.unreadMessages, .favorite {
+  margin-left: 10px;
+}
+/* contact list component */
