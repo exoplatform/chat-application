@@ -39,7 +39,7 @@ let config = {
         use: ["vue-style-loader", "css-loader"]
       },
       {
-        test: /\.scss$/,
+        test: /\.less$/,
         use: ExtractTextWebpackPlugin.extract({
           fallback: 'vue-style-loader',
           use: [
@@ -50,7 +50,7 @@ let config = {
               }
             },
             {
-              loader: 'sass-loader',
+              loader: 'less-loader',
               options: {
                 sourceMap: true
               }
