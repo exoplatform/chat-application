@@ -6,11 +6,13 @@ import {getUser, getUserStatus, getChatRooms} from '../chatServices'
 import ChatContact from './ChatContact.vue'
 import ChatContactList from './ChatContactList.vue'
 import ChatRoomParticipants from './ChatRoomParticipants.vue'
+import ChatRoomDetail from './ChatRoomDetail.vue'
 export default {
   components: {
     "chat-contact": ChatContact,
     "chat-contact-list": ChatContactList,
-    "chat-room-participants": ChatRoomParticipants
+    "chat-room-participants": ChatRoomParticipants,
+    "chat-room-detail": ChatRoomDetail
   },
   data() {
     return {

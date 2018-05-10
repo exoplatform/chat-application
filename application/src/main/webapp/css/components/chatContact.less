@@ -2,21 +2,59 @@
 .chat-contact {
   display: inline-flex;
   align-items: center;
+  .contactDetail {
+    margin-left: 10px;
+  }
+  .uiIconStatus {
+    position: static;
+    font-size: 10px;
+  }
+  .user-status {
+    text-transform: uppercase;
+  }
+  .user-status, .room-number-members {
+    font-size: 11px;
+    margin-top: -5px;
+  }
+  .room-number-members {
+    color: @titleColor;
+  }
 }
-.chat-contact .contactDetail {
-  margin-left: 10px;
-}
+// TODO use PLF classes
 .user-available .user-status, .user-available .uiIconStatus{
   color: #46a546;
 }
 .user-invisible .user-status, .user-invisible .uiIconStatus{
   color: #999999;
 }
-.chat-contact .uiIconStatus {
-  font-size: 10px;
+
+.chat-contact-avatar {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  .uiIconStatus {
+    position: absolute;
+    bottom: 2px;
+    right: -3px;
+    top: auto;
+  }
 }
-.chat-contact .user-status {
-  font-variant: small-caps;
-  margin-top: -5px;
+.isList {
+  .chat-contact-avatar {
+    width: 26px;
+    height: 26px;
+  }
 }
+
+.userDetails, .room-detail {
+  .contactLabel {
+    font-size: 15px;
+    font-weight: bold;
+  }
+}
+
 /* chat-contact component */

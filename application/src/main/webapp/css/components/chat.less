@@ -10,3 +10,29 @@
   padding: 0 20px;
   color: #fff;
 }
+
+.favorite {
+  cursor: pointer;
+  &:before {
+    content: "\e97f";
+    color: #FAD86E;
+    visibility: hidden;
+  }
+  &.is-fav:before {
+    content: "\e97d";
+    visibility: visible;
+  }
+  &:hover:before {
+    visibility: visible;
+  }
+}
+
+.uiIconVerticalDots:before { // TODO move to PLF
+  content: "\e79c";
+}
+.uiIconSearchLight:before {
+  content: "\eaf0";
+}
+.uiIconCloseLight:before {
+  content: "\e937";
+}

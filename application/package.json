@@ -7,7 +7,7 @@
     "url": "https://github.com/exo-addons/chat-application"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev webpack-dev-server --mode development",
+    "dev": "cross-env NODE_ENV=dev webpack-dev-server --mode development --hot",
     "prod": "webpack --mode production",
     "build": "webpack -p",
     "watch": "cross-env NODE_ENV=dev webpack --progress --colors --watch -d"

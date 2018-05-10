@@ -1,0 +1,58 @@
+.room-detail {
+  .favorite {
+    margin-left: 5px;
+  }
+  .contactLabel {
+    color: @titleColor;
+  }
+  .uiIconSearchLight {
+    font-size: 22px;
+  }
+}
+
+.room-actions-container {
+  position: relative;
+  margin-left: auto;
+}
+.room-actions-container, .room-search, .room-action-menu {
+  height: 40px;
+}
+.room-search, .room-action-menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: translateY(-100%);
+  transition: transform .5s linear, opacity 1s ease-out;
+}
+.room-action-menu {
+  .room-search-btn, .room-settings-btn {
+    margin-left: 15px;
+    cursor: pointer;
+  }
+}
+.room-search {
+  visibility: hidden;
+  input {
+    margin: 0;
+    width: 400px;
+  }
+  input, input:focus {
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.search-active {
+  overflow: hidden;
+  .room-search {
+    transform: translateY(0);
+    visibility: visible;
+  }
+  .room-action-menu {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  /*.room-search, .room-action-menu {
+    transition: transform .5s linear, opacity 1s ease-out;
+  }*/
+}
