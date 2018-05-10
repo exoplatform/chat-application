@@ -2,14 +2,14 @@
 #chatApplicationContainer {
   height: 100vh;
   display: flex;
+  overflow: hidden;
 }
 .uiLeftContainerArea {
   background: #476a9c;
   color: #ffffff;
 }
 .uiLeftContainerArea, .uiRightContainerArea, .room-participants, .room-participants-list {
-  display: flex;
-  flex-direction: column;
+  .flex-column;
 }
 .uiGlobalRoomsContainer, .uiRightContainerArea {
   flex: 1;
@@ -71,10 +71,5 @@
 }
 .chat-message {
   height: 100px;
-  padding: 20px 30px 0;
-  border-top: @defaultBorder;
-}
-.chat-message textarea {
-  width: 100%;
-  resize: none;
+  position: relative;
 }

@@ -1,0 +1,110 @@
+.chat-message {
+  .composer-container, .composer-box, textarea {
+    height: 100%;
+    box-sizing: border-box;
+  }
+  .composer-container {
+    padding: 20px 30px 0;
+    border-top: @defaultBorder;
+    background: #fff;
+    opacity: .99;
+  }
+  .composer-box {
+    display: flex;
+    height: 100%;
+    padding: 10px;
+    border: @bigBorder;
+    border-bottom: none;
+  }
+  .composer-action {
+    display: flex;
+    flex: 0 0 70px;
+    align-items: flex-start;
+    .flex-space-evenly;
+    > * {
+      cursor: pointer;
+    }
+  }
+  textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+  }
+  .action-apps {
+    .square-rounded(23px);
+    line-height: 24px;
+    color: #fff;
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 6px;
+    transition: transform .2s linear;
+    &.close-apps {
+      transform: rotate(45deg);
+    }
+  }
+  .action-send {
+    .square-rounded(42px);
+    line-height: 55px;
+    margin-top: 8px;
+    [class*="uiIcon"] {
+      color: #fff;
+      font-size: 32px;
+    }
+  }
+  .action-apps, .action-send {
+    background: @primaryColor;
+    text-align: center;
+  }
+  .apps-container {
+    background: #fff;
+    display: flex;
+    .flex-space-evenly;
+    position: absolute;
+    top: -120px;
+    left: 30px;
+    width: calc(~"100%" - 60px);
+    height: 120px;
+    padding: 16px 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 7px 8px 0px rgba(0, 0, 0, 0.06);
+    transition: top .3s ease-out;
+  }
+  .apps-item {
+    .flex-column;
+    align-items: center;
+    cursor: pointer;
+  }
+  .apps-item-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    .square-rounded(60px);
+    box-sizing: border-box;
+    border: @bigBorder;
+    border-radius: 50%;
+    [class*="uiIcon"] {
+      position: static;
+      font-size: 36px;
+    }
+  }
+  .apps-item-label {
+    color: @titleColor;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  &.is-apps-closed {
+    .apps-container {
+      top: 0;
+    }
+  }
+}
+.uiIconChatSmile {
+  font-size: 29px;
+  &:before {
+    content: "\f38e";
+    font-family: IONIC-FONT; // TODO verify on PLF icons
+  }
+}

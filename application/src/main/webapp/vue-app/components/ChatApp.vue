@@ -7,12 +7,14 @@ import ChatContact from './ChatContact.vue'
 import ChatContactList from './ChatContactList.vue'
 import ChatRoomParticipants from './ChatRoomParticipants.vue'
 import ChatRoomDetail from './ChatRoomDetail.vue'
+import ChatMessage from './ChatMessage.vue'
 export default {
   components: {
     "chat-contact": ChatContact,
     "chat-contact-list": ChatContactList,
     "chat-room-participants": ChatRoomParticipants,
-    "chat-room-detail": ChatRoomDetail
+    "chat-room-detail": ChatRoomDetail,
+    "chat-message": ChatMessage
   },
   data() {
     return {

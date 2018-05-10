@@ -1,0 +1,18 @@
+.square(@size) {
+  width: @size;
+  height: @size;
+}
+.square-rounded(@size) {
+  width: @size;
+  height: @size;
+  border-radius: 50%;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.flex-space-evenly {
+  justify-content: space-around; // for browsers dont support 'space-evenly'
+  justify-content: space-evenly;
+}

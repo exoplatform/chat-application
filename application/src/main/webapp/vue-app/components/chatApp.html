@@ -13,9 +13,7 @@
     <div class="room-content">
       <div class="uiRightContainerArea">
         <div id="chats"></div>
-        <div class="chat-message">
-          <textarea type="text" name="text" id="msg" autocomplete="off"></textarea>
-        </div>
+        <chat-message></chat-message>
       </div>
       <div class="uiRoomUsersContainerArea" v-if="selectedContact.type && selectedContact.type != 'u'">
         <chat-room-participants :participants="selectedContact.participants"></chat-room-participants> 
