@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 import org.json.simple.JSONObject;
 
+import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.container.ExoContainerContext;
@@ -123,5 +123,22 @@ public class UserRestService implements ResourceContainer {
     String users = String.join(",", list);
 
     return Response.ok(users, MediaType.TEXT_PLAIN).build();
+  }
+
+  @GET
+  @Path("/settings")
+  @RolesAllowed("users")
+  public Response getUserSettings(@Context HttpServletRequest request, @Context SecurityContext sc) throws Exception {
+    String currentUsername = sc.getUserPrincipal().getName();
+
+    JSONObject userSettings = new JSONObject();
+    userSettings.put("username", currentUsername);
+    userSettings.put("token", ServerBootstrap.getToken(currentUsername));
+    String dbName = ServerBootstrap.getDBName();
+    userSettings.put("dbName", dbName);
+    userSettings.put("serverURL", ServerBootstrap.getServerURL(request));
+    userSettings.put("fullName", ServerBootstrap.getUserFullName(currentUsername, dbName));
+
+    return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
 }

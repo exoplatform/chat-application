@@ -218,29 +218,20 @@ public class ServerBootstrap {
     return body;
   }
 
-  public static String getServerBase()
-  {
-    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
-    if ("".equals(serverBase)) {
-      HttpServletRequest request = Util.getPortalRequestContext().getRequest();
-      String scheme = request.getScheme();
-      String serverName = request.getServerName();
-      int serverPort= request.getServerPort();
-      serverBase = scheme+"://"+serverName;
-      if (serverPort != 80) serverBase += ":" + serverPort;
-    }
-
-    return serverBase;
-
+  public static String getServerURL() {
+    return getServerURL(null);
   }
 
-  public static String getServerURL() {
+  public static String getServerURL(HttpServletRequest request) {
     if (serverURL == null) {
       String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
       if (chatServerURL.startsWith("http")) {
         serverURL = chatServerURL;
       } else {
-        serverURL = getServerBase() + getServerURI();
+        if (request == null && Util.getPortalRequestContext() != null) {
+          request = Util.getPortalRequestContext().getRequest();
+        }
+        serverURL = getServerBase(request) + getServerURI();
       }
     }
     return serverURL;
@@ -251,6 +242,20 @@ public class ServerBootstrap {
       serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     }
     return serverURI;
+  }
+
+  private static String getServerBase(HttpServletRequest request)
+  {
+    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+    if (request != null && StringUtils.isBlank(serverBase)) {
+      String scheme = request.getScheme();
+      String serverName = request.getServerName();
+      int serverPort = request.getServerPort();
+      serverBase = scheme + "://" + serverName;
+      if (serverPort != 80)
+        serverBase += ":" + serverPort;
+    }
+    return serverBase == null ? "" : serverBase;
   }
 
 }
