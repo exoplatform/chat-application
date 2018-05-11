@@ -16,3 +16,23 @@
   justify-content: space-around; // for browsers dont support 'space-evenly'
   justify-content: space-evenly;
 }
+.flex-center {
+  display: flex;
+  align-items: center;
+}
+
+// cross platform placeholder style
+.placeholder(@rules) {
+  &::-webkit-input-placeholder {
+      @rules();
+  }
+  &:-moz-placeholder {
+      @rules();
+  }
+  &::-moz-placeholder {
+      @rules();
+  }
+  &:-ms-input-placeholder {
+      @rules();
+  }
+}

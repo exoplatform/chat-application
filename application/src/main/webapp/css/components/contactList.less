@@ -1,7 +1,29 @@
 /* contact list component */
 .contactListContainer {
+  .contactFilter, .listHeader {
+    .flex-center;
+  }
+  .contactFilter {
+    height: 36px;
+    background: #355788;
+    padding: 0 20px;
+    input {
+      font-size: 13px;
+      background: none;
+      border: none;
+      box-shadow: none;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      .placeholder({
+        color: #7a90b1;
+      });
+    }
+    input, i {
+      color: #fff;
+    }
+  }
   .listHeader {
-    display: flex;
     height: 50px;
     padding: 0 20px;
     border-bottom: 2px solid #7f97ba;

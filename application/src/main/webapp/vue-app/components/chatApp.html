@@ -3,9 +3,6 @@
     <div class="userDetails">
       <chat-contact type="u" :avatar="currentUser.avatar" :name="currentUser.fullName" :status="currentUser.status"></chat-contact>
     </div>
-    <div class="contactFilter">
-      
-    </div>
     <chat-contact-list :contacts="contactList" v-on:exo-chat-contact-selected="setSelectedContact($event)" :selected="selectedContact"></chat-contact-list>
   </div>
   <div class="uiGlobalRoomsContainer" v-if="selectedContact">

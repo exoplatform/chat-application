@@ -1,5 +1,9 @@
 <template>
   <div class="contactListContainer">
+    <div class="contactFilter">
+      <i class="uiIconSearchLight"></i>
+      <input type="text" placeholder="Filter people, spaces...">
+    </div>
     <div class="listHeader">
       
     </div>
