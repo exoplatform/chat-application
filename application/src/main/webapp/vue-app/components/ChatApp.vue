@@ -2,7 +2,7 @@
 
 <script>
 import {chatData} from '../chatData'
-import {getUser, getUserStatus, getChatRooms} from '../chatServices'
+import {getUser, getUserStatus, getChatRooms, getUserSettings} from '../chatServices'
 import ChatContact from './ChatContact.vue'
 import ChatContactList from './ChatContactList.vue'
 import ChatRoomParticipants from './ChatRoomParticipants.vue'
@@ -19,6 +19,7 @@ export default {
   data() {
     return {
       contactList: [],
+      userSettings: {},
       chatData: {
         db: "chat",
         token: "979412bd16bee4627624db838ee489f289d27000"
@@ -50,10 +51,17 @@ export default {
     getUserStatus(this.currentUser.name).then(usersStatus => {
       this.currentUser.status = usersStatus[this.currentUser.name] ? "online" : "offline";
     });
-    getChatRooms().then(rooms => {
-      console.log('Contact List: ', rooms)
-      this.contactList = rooms;
-    })
+    getUserSettings(this.currentUser.name).then(userSettings => {
+      // Fetch online users
+      this.onlineUsers = ["root"];
+      this.userSettings = userSettings;
+
+      getChatRooms(userSettings, this.onlineUsers).then(rooms => {
+        console.log('Contact List: ', rooms)
+        this.contactList = rooms;
+      })
+    });
+
     /*fetch(`/chatServer/getStatus`, {
       credentials: 'include', 
       headers: {

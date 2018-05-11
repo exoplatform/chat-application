@@ -3,8 +3,7 @@ package org.exoplatform.addons.chat.api;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -14,12 +13,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.user.UserStateService;
@@ -27,6 +30,8 @@ import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 @Path("/chat/api/1.0/user/")
 public class UserRestService implements ResourceContainer {
+  private static final String CHAT_USER_INITIALIZATION_ATTR = "exo.chat.user.initialized";
+
   public static final String ANONIM_USER = "__anonim_";
 
   /* The Constant LAST_MODIFIED_PROPERTY */
@@ -131,13 +136,33 @@ public class UserRestService implements ResourceContainer {
   public Response getUserSettings(@Context HttpServletRequest request, @Context SecurityContext sc) throws Exception {
     String currentUsername = sc.getUserPrincipal().getName();
 
+    String token = ServerBootstrap.getToken(currentUsername);
+    String dbName = ServerBootstrap.getDBName();
+
+    Boolean isUserInitialized = (Boolean) request.getSession().getAttribute(CHAT_USER_INITIALIZATION_ATTR);
+    if (isUserInitialized == null || !isUserInitialized) {
+      // Add User in the DB
+      ServerBootstrap.addUser(currentUsername, token, dbName);
+
+      String userFullName = ServerBootstrap.getUserFullName(currentUsername, dbName);
+      if (StringUtils.isBlank(userFullName)) {
+        // Set user's Full Name in the DB
+        User user = CommonsUtils.getService(OrganizationService.class).getUserHandler().findUserByName(currentUsername);
+        if (user != null) {
+          userFullName = user.getDisplayName();
+          ServerBootstrap.addUserFullNameAndEmail(currentUsername, userFullName, user.getEmail(), dbName);
+        }
+      }
+      // Set user's Spaces in the DB
+      ServerBootstrap.saveSpaces(currentUsername, dbName);
+      request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
+    }
+
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);
-    userSettings.put("token", ServerBootstrap.getToken(currentUsername));
-    String dbName = ServerBootstrap.getDBName();
+    userSettings.put("token", token);
     userSettings.put("dbName", dbName);
     userSettings.put("serverURL", ServerBootstrap.getServerURL(request));
-    userSettings.put("fullName", ServerBootstrap.getUserFullName(currentUsername, dbName));
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
