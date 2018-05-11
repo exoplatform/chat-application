@@ -2,11 +2,18 @@
                   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
                   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatApplication</portlet-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
     <!-- TODO move to a common project -->
     <module>
         <name>vue</name>
         <script>
             <path>/js/lib/vue.js</path>
+            <minify>false</minify>
         </script>
     </module>
 
@@ -15,17 +22,12 @@
         <module>
             <script>
                 <path>/js/chat.bundle.js</path>
+                <minify>false</minify>
             </script>
             <depends>
                 <module>vue</module>
             </depends>
         </module>
     </portlet>
-
-    <portlet-skin>
-        <application-name>chat</application-name>
-        <portlet-name>ChatApplication</portlet-name>
-        <css-path>/css/chat.css</css-path>
-    </portlet-skin>
 
 </gatein-resources>
