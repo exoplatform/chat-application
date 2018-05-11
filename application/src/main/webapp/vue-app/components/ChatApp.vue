@@ -42,24 +42,28 @@ export default {
     }
   }
   ,
-  created () {      
+  created () {
+    var thizz = this;
+    document.addEventListener('exo-chat-settings-loaded', function(e) {
+      getChatRooms(e.detail, thizz.onlineUsers).then(rooms => {
+        console.log('Contact List: ', rooms)
+        thizz.contactList = rooms;
+      })
+    });
+
     getUser(this.currentUser.name).then(user => {
       this.currentUser.fullName = user.fullname;
       this.currentUser.avatar = user.avatar;
       this.currentUser.profileLink = user.profile;
     });
     getUserStatus(this.currentUser.name).then(usersStatus => {
-      this.currentUser.status = usersStatus[this.currentUser.name] ? "online" : "offline";
+      this.currentUser.status = usersStatus[this.currentUser.name] ? 'online' : 'offline';
     });
     getUserSettings(this.currentUser.name).then(userSettings => {
       // Fetch online users
-      this.onlineUsers = ["root"];
+      this.onlineUsers = ['root'];
       this.userSettings = userSettings;
-
-      getChatRooms(userSettings, this.onlineUsers).then(rooms => {
-        console.log('Contact List: ', rooms)
-        this.contactList = rooms;
-      })
+      document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {"detail" : userSettings}));
     });
 
     /*fetch(`/chatServer/getStatus`, {
