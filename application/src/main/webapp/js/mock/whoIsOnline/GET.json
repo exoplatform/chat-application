@@ -1,82 +1,52 @@
-[
-  {
-    "fullName": "Alaa eddine Meddeb",
-    "unreadTotal": 0,
-    "isActive": "true",
-    "type": "u",
-    "user": "aemeddeb",
-    "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c2",
-    "status": "available",
-    "timestamp": 1522684457180,
-    "isFavorite": true
-  },
-  {
-    "fullName": "User A",
-    "unreadTotal": 0,
-    "isActive": "true",
-    "type": "u",
-    "user": "usera",
-    "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c3",
-    "status": "invisible",
-    "timestamp": 1522684457180,
-    "isFavorite": false
-  },
-  {
-    "fullName": "test room",
-    "unreadTotal": 5,
-    "isActive": "true",
-    "type": "t",
-    "user": "team-a11192fa4a461dc023ac8b6d1cd85951a385d418",
-    "room": "a11192fa4a461dc023ac8b6d1cd85951a385d418",
-    "status": "team",
-    "timestamp": 1522854724589,
-    "isFavorite": false,
-    "participants": []
-  },
-  {
-    "fullName": "second room",
-    "unreadTotal": 0,
-    "isActive": "true",
-    "type": "t",
-    "user": "team-7e58d88249d308161102a2fc04ab6aeb6b3698a5",
-    "room": "7e58d88249d308161102a2fc04ab6aeb6b3698a5",
-    "status": "team",
-    "timestamp": 1525101514435,
-    "isFavorite": false,
-    "participants": [
-      {
-        "fullName": "Alaa eddine Meddeb",
-        "unreadTotal": 0,
-        "isActive": "true",
-        "type": "u",
-        "user": "aemeddeb",
-        "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c2",
-        "status": "available",
-        "timestamp": 1522684457180,
-        "isFavorite": true
-      },
-      {
-        "fullName": "User A",
-        "unreadTotal": 0,
-        "isActive": "true",
-        "type": "u",
-        "user": "usera",
-        "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c3",
-        "status": "invisible",
-        "timestamp": 1522684457180,
-        "isFavorite": false
-      },
-      {
-        "fullName": "User B",
-        "unreadTotal": 0,
-        "isActive": "true",
-        "type": "u",
-        "user": "userb",
-        "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c4",
-        "status": "offline",
-        "timestamp": 1522684457180,
-        "isFavorite": false
-      }
-    ]
-  }
-]
+{
+  "unreadOffline":"0",
+  "unreadOnline":"0",
+  "unreadSpaces":"0",
+  "unreadTeams":"0",
+  "rooms": [
+    {
+      "fullName": "Alaa eddine Meddeb",
+      "unreadTotal": 0,
+      "isActive": "true",
+      "type": "u",
+      "user": "aemeddeb",
+      "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c2",
+      "status": "available",
+      "timestamp": 1522684457180,
+      "isFavorite": true
+    },
+    {
+      "fullName": "User A",
+      "unreadTotal": 0,
+      "isActive": "true",
+      "type": "u",
+      "user": "usera",
+      "room": "16de5f268f4e882d3ad0f7539823e786ef49f9c3",
+      "status": "invisible",
+      "timestamp": 1522684457180,
+      "isFavorite": false
+    },
+    {
+      "fullName": "test room",
+      "unreadTotal": 5,
+      "isActive": "true",
+      "type": "t",
+      "user": "team-a11192fa4a461dc023ac8b6d1cd85951a385d418",
+      "room": "a11192fa4a461dc023ac8b6d1cd85951a385d418",
+      "status": "team",
+      "timestamp": 1522854724589,
+      "isFavorite": false
+    },
+    {
+      "fullName": "second room",
+      "unreadTotal": 0,
+      "isActive": "true",
+      "type": "t",
+      "user": "team-7e58d88249d308161102a2fc04ab6aeb6b3698a5",
+      "room": "7e58d88249d308161102a2fc04ab6aeb6b3698a5",
+      "status": "team",
+      "timestamp": 1525101514435,
+      "isFavorite": false
+    }
+  ]
+}
