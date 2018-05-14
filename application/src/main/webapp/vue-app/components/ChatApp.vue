@@ -1,4 +1,25 @@
-<template src="./chatApp.html"></template>
+<template>
+  <div id="chatApplicationContainer">
+    <div class="uiLeftContainerArea">
+      <div class="userDetails">
+        <chat-contact type="u" :avatar="currentUser.avatar" :name="currentUser.fullName" :status="currentUser.status"></chat-contact>
+      </div>
+      <chat-contact-list :contacts="contactList" v-on:exo-chat-contact-selected="setSelectedContact($event)" :selected="selectedContact"></chat-contact-list>
+    </div>
+    <div class="uiGlobalRoomsContainer" v-if="selectedContact">
+      <chat-room-detail :room="selectedContact"></chat-room-detail> 
+      <div class="room-content">
+        <div class="uiRightContainerArea">
+          <div id="chats"></div>
+          <chat-message></chat-message>
+        </div>
+        <div class="uiRoomUsersContainerArea" v-if="selectedContact.type && selectedContact.type != 'u'">
+          <chat-room-participants :participants="roomParticipants"></chat-room-participants> 
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script>
 import {chatData} from '../chatData'
