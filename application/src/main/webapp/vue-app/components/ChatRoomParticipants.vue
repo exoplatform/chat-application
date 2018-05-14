@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="room-participants-list isList">
-      <chat-contact v-for="contact in participants" :key="contact.name" :list="true" :avatar="getContactAvatar(contact.name)" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
+      <chat-contact v-for="contact in participants" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
     </div>
   </div>
 </template>

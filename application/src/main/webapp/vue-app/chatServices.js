@@ -38,3 +38,24 @@ export function getRoomParticipants(userSettings, room) {
       'Authorization': 'Bearer ' + userSettings.token
     }}).then(resp =>  resp.json());
 }
+
+export function getRoomCreator(userSettings, room) {
+  return fetch(`${chatData.chatServerAPI}getCreator?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
+    headers: {
+      'Authorization': 'Bearer ' + userSettings.token
+    }}).then(resp =>  resp.json());
+}
+
+export function getRoomMessages(userSettings, room) {
+  return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
+    headers: {
+      'Authorization': 'Bearer ' + userSettings.token
+    }}).then(resp =>  resp.json());
+}
+
+export function getUserAvatar(user) {
+  return `${chatData.socialUserAPI}${user}/avatar`;
+}
+export function getSpaceAvatar(space) {
+  return `${chatData.socialSpaceAPI}${space}/avatar`;
+}

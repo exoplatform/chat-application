@@ -2,7 +2,7 @@
   <div id="chatApplicationContainer">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
-        <chat-contact :avatar="currentUser.avatar" :name="currentUser.fullName" :status="currentUser.status" type="u"></chat-contact>
+        <chat-contact :user-name="currentUser.name" :name="currentUser.fullName" :status="currentUser.status" type="u"></chat-contact>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
@@ -82,13 +82,14 @@ export default {
         return;
       }
       this.selectedContact = contact;
-      this.selectedContact.avatar = chatData.socialUserAPI + contact.user + '/avatar'; // TODO fix space avatar and move to contact component
       if (contact.type != 'u') {
         this.initRoom(contact);
       }
+      //console.log(this.selectedContact)
     },
     initRoom(room) {
       chatServices.getRoomParticipants(this.userSettings, room).then( data => {
+        //console.log('Room participants:', data);
         this.roomParticipants = data.users;
       });
     }

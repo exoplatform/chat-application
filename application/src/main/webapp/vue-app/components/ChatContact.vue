@@ -20,14 +20,14 @@
 </template>
 
 <script>
-
+import { getUserAvatar, getSpaceAvatar } from '../chatServices';
 export default {
   props: {
     name: {
       type: String,
       default: ''
     },
-    avatar: {
+    userName: {
       type: String,
       default: ''
     },
@@ -56,7 +56,14 @@ export default {
       return (this.status == 'online') ? 'user-available' : 'user-invisible';
     },
     contactAvatar() {
-      return (this.type == 't') ? '/chat/img/user-default.jpg' : this.avatar;
+      if (this.type == 'u') {
+        return getUserAvatar(this.userName);
+      } else if (this.type == 's') {
+        let space_id = this.name.replace(' ', '_').toLowerCase(); // TODO verify the possibility of add space id to whoIsOnline 
+        return getSpaceAvatar(space_id);
+      } else {
+        return '/chat/img/user-default.jpg'; // TODO add room default avatar
+      }
     }
   },
   methods: { 

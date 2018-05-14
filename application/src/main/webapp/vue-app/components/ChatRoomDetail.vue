@@ -1,6 +1,6 @@
 <template>
   <div class="room-detail">
-    <chat-contact :type="room.type" :avatar="room.avatar" :name="room.fullName" :status="room.status" :nb-members="getMembersNumber">
+    <chat-contact :type="room.type" :user-name="room.user" :name="room.fullName" :status="room.status" :nb-members="getMembersNumber">
       <div :class="{'is-fav': room.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(room)"></div>
     </chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
