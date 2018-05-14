@@ -29,7 +29,7 @@
             </depends>
             <depends>
                 <module>jquery</module>
-                <as>$<as>
+                <as>$</as>
             </depends>
             <depends>
                 <module>jquery_cometd</module>
