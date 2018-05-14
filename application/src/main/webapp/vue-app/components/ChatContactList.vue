@@ -17,46 +17,51 @@
       </div>
     </div>
     <div class="contactList">
-      <div class="contact-list-item isList" v-for="contact in contacts" :key="contact.user" @click="selectContact(contact)" :class="{selected: selected.user == contact.user}">
+      <div v-for="contact in contacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :avatar="getContactAvatar(contact.user)" :name="contact.fullName" :status="contact.status"></chat-contact>
-        <div v-show="contact.unreadTotal > 0" class="unreadMessages">{{contact.unreadTotal}}</div>
-        <div class="uiIcon favorite" :class="{'is-fav': contact.isFavorite}" @click.stop="toggleFavorite(contact)"></div>
+        <div v-show="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
+        <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {chatData} from '../chatData'
-import ChatContact from './ChatContact.vue'
+import {chatData} from '../chatData';
+import ChatContact from './ChatContact.vue';
 export default {
   components: {ChatContact},
-  props: ['contacts','selected'],
-  data : function() {
-    return {
+  props: {
+    contacts: {
+      type: Array,
+      default: function() { return [];}
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
+  },
+  data : function() {
+    return {};
   },
   computed: {
     statusStyle: function() {
-      return (this.contactStatus == "inline") ? "user-available" : "user-invisible";
+      return (this.contactStatus == 'inline') ? 'user-available' : 'user-invisible';
     }
   },
   methods: {
     selectContact(contact) {
       this.$emit('exo-chat-contact-selected', contact);
-      let room = this.contacts.findIndex(c => c.user == contact.user);
+      //let room = this.contacts.findIndex(c => c.user == contact.user);
       //this.contacts[room].unreadTotal = 0;
       contact.unreadTotal = 0;
     },
     getContactAvatar(user) {
-      return chatData.socialUserAPI + user + '/avatar'
+      return chatData.socialUserAPI + user + '/avatar';
     },
     toggleFavorite(contact) {
       contact.isFavorite = !contact.isFavorite;
     }
-  },
-  created () {
-    
   }
-}
+};
 </script>

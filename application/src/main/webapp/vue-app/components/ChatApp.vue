@@ -2,18 +2,18 @@
   <div id="chatApplicationContainer">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
-        <chat-contact type="u" :avatar="currentUser.avatar" :name="currentUser.fullName" :status="currentUser.status"></chat-contact>
+        <chat-contact :avatar="currentUser.avatar" :name="currentUser.fullName" :status="currentUser.status" type="u"></chat-contact>
       </div>
-      <chat-contact-list :contacts="contactList" v-on:exo-chat-contact-selected="setSelectedContact($event)" :selected="selectedContact"></chat-contact-list>
+      <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
-    <div class="uiGlobalRoomsContainer" v-if="selectedContact">
+    <div v-if="selectedContact" class="uiGlobalRoomsContainer">
       <chat-room-detail :room="selectedContact"></chat-room-detail> 
       <div class="room-content">
         <div class="uiRightContainerArea">
           <div id="chats"></div>
           <chat-message></chat-message>
         </div>
-        <div class="uiRoomUsersContainerArea" v-if="selectedContact.type && selectedContact.type != 'u'">
+        <div v-if="selectedContact.type && selectedContact.type != 'u'" class="uiRoomUsersContainerArea">
           <chat-room-participants :participants="roomParticipants"></chat-room-participants> 
         </div>
       </div>
@@ -22,20 +22,20 @@
 </template>
 
 <script>
-import {chatData} from '../chatData'
-import * as chatServices from '../chatServices'
-import ChatContact from './ChatContact.vue'
-import ChatContactList from './ChatContactList.vue'
-import ChatRoomParticipants from './ChatRoomParticipants.vue'
-import ChatRoomDetail from './ChatRoomDetail.vue'
-import ChatMessage from './ChatMessage.vue'
+import {chatData} from '../chatData';
+import * as chatServices from '../chatServices';
+import ChatContact from './ChatContact.vue';
+import ChatContactList from './ChatContactList.vue';
+import ChatRoomParticipants from './ChatRoomParticipants.vue';
+import ChatRoomDetail from './ChatRoomDetail.vue';
+import ChatMessage from './ChatMessage.vue';
 export default {
   components: {
-    "chat-contact": ChatContact,
-    "chat-contact-list": ChatContactList,
-    "chat-room-participants": ChatRoomParticipants,
-    "chat-room-detail": ChatRoomDetail,
-    "chat-message": ChatMessage
+    'chat-contact': ChatContact,
+    'chat-contact-list': ChatContactList,
+    'chat-room-participants': ChatRoomParticipants,
+    'chat-room-detail': ChatRoomDetail,
+    'chat-message': ChatMessage
   },
   data() {
     return {
@@ -43,45 +43,23 @@ export default {
       roomParticipants: [],
       userSettings: {},
       currentUser: {
-        name: typeof eXo !== 'undefined' ? eXo.env.portal.userName : "root",
-        fullName:"",
-        avatar: "",
-        profileLink: "",
-        status: ""
+        name: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root',
+        fullName:'',
+        avatar: '',
+        profileLink: '',
+        status: ''
       },
       selectedContact: false
     };
   },
-  methods: {
-    setSelectedContact(contact) {
-      if (this.selectedContact.room === contact.room) {
-        return
-      }
-      this.selectedContact = contact;
-      this.selectedContact.avatar = chatData.socialUserAPI + contact.user + '/avatar'; // TODO fix space avatar and move to contact component
-      if (contact.type != "u") {
-        this.initRoom(contact);
-      }
-      console.log(this.selectedContact)
-    },
-    initRoom(room) {
-      chatServices.getRoomParticipants(this.userSettings, room).then( data => {
-        console.log('Room participants:', data);
-        this.roomParticipants = data.users;
-      });
-    }
-  }
-  ,
   created() {
     //chatServices.initServerChannel();
 
     document.addEventListener('exo-chat-settings-loaded', (e) => {
       chatServices.getOnlineUsers().then(users => { // Fetch online users
-      console.log(users);
         chatServices.getChatRooms(e.detail, users).then(data => {
-          console.log('Contact List: ', data)
           this.contactList = data.rooms;
-        })
+        });
       });
     });
 
@@ -95,8 +73,25 @@ export default {
     });
     chatServices.getUserSettings(this.currentUser.name).then(userSettings => {
       this.userSettings = userSettings;
-      document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {"detail" : userSettings}));
+      document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
     });
+  },
+  methods: {
+    setSelectedContact(contact) {
+      if (this.selectedContact.room === contact.room) {
+        return;
+      }
+      this.selectedContact = contact;
+      this.selectedContact.avatar = chatData.socialUserAPI + contact.user + '/avatar'; // TODO fix space avatar and move to contact component
+      if (contact.type != 'u') {
+        this.initRoom(contact);
+      }
+    },
+    initRoom(room) {
+      chatServices.getRoomParticipants(this.userSettings, room).then( data => {
+        this.roomParticipants = data.users;
+      });
+    }
   }
 };
 </script>

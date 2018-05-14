@@ -1,11 +1,11 @@
 <template>
   <div class="room-detail">
-    <chat-contact :type="room.type" :avatar="room.avatar" :name="room.fullName" :status="room.status" :nbMembers="getMembersNumber">
-      <div class="uiIcon favorite" :class="{'is-fav': room.isFavorite}" @click.stop="toggleFavorite(room)"></div>
+    <chat-contact :type="room.type" :avatar="room.avatar" :name="room.fullName" :status="room.status" :nb-members="getMembersNumber">
+      <div :class="{'is-fav': room.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(room)"></div>
     </chat-contact>
-    <div class="room-actions-container" :class="{'search-active': showSearchRoom}">
+    <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
-        <input type="text" placeholder="search here" ref="searchRoom" v-model="searchText" @blur="closeSearchRoom" @keyup.esc="closeSearchRoom">
+        <input ref="searchRoom" v-model="searchText" type="text" placeholder="search here" @blur="closeSearchRoom" @keyup.esc="closeSearchRoom">
         <i class="uiIconCloseLight" @click="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
@@ -28,41 +28,45 @@
 </template>
 
 <script>
-import ChatContact from './ChatContact.vue'
+import ChatContact from './ChatContact.vue';
 export default {
   components: {
-    "chat-contact": ChatContact
+    'chat-contact': ChatContact
   },
-  props: ['room'],
+  props: {
+    room: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       showSearchRoom: false,
       searchText: ''
-    }
+    };
   },
   computed: {
     getMembersNumber() {
-      return /*(this.room.type != "u") ? this.room.participants.length :*/ false
+      return /*(this.room.type != 'u') ? this.room.participants.length :*/ false;
     }
+  },
+  updated() {
   },
   methods: {
     toggleFavorite(room) {
       room.isFavorite = !room.isFavorite;
     },
-    openSearchRoom(e) {
+    openSearchRoom() {
       this.showSearchRoom = true;
-      this.$nextTick(() => this.$refs.searchRoom.focus())
+      this.$nextTick(() => this.$refs.searchRoom.focus());
     },
     closeSearchRoom(e) {
       if (e.type == 'blur' && this.searchText != '') {
-        return
+        return;
       }
       this.showSearchRoom = false;
       this.searchText = '';
     }
-  },
-  updated() {
-    console.log('created');
   }
-}
+};
 </script>

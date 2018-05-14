@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-message" :class="{'is-apps-closed': appsClosed}">
+  <div :class="{'is-apps-closed': appsClosed}" class="chat-message">
     <div class="apps-container">
       <div class="apps-item">
         <div class="apps-item-icon"><i class="uiIconChatCreateEvent"></i></div>
@@ -34,7 +34,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea type="text" name="text" id="msg" autocomplete="off" v-model="newMessage"></textarea>
+        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off"></textarea>
         <div class="composer-action">
           <div class="action-send">
             <i class="uiIconSend"></i>
@@ -50,15 +50,20 @@ export default {
   components: {
     
   },
-  props: [],
   data() {
     return {
       newMessage: '',
       appsClosed: true
-    }
+    };
   },
   computed: {
     
+  },
+  created() {
+    document.addEventListener('keyup', this.closeApps);
+  },
+  destroyed() {
+    document.removeEventListener('keyup', this.closeApps);
   },
   methods: {
     closeApps(e) {
@@ -66,12 +71,6 @@ export default {
         this.appsClosed = true;
       }
     }
-  },
-  created() {
-    document.addEventListener('keyup', this.closeApps);
-  },
-  destroyed() {
-    document.removeEventListener('keyup', this.closeApps);
   }
-}
+};
 </script>

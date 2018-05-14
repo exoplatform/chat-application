@@ -1,20 +1,20 @@
 <template>
-  <div class="room-participants" :class="{collapsed: isCollapsed}">
+  <div :class="{collapsed: isCollapsed}" class="room-participants">
     <div class="room-users-collapse-btn" @click="toggleCollapsed">
       <i class="uiIcon"></i>
     </div>
     <div class="room-participants-header no-user-selection">
-      <div class="room-participants-title" v-show="!isCollapsed">
+      <div v-show="!isCollapsed" class="room-participants-title">
         {{ $t("chat.rooms.participants") }}
-        <span class="nb-participants" v-show="participants.length > 0">({{participants.length}})</span>
+        <span v-show="participants.length > 0" class="nb-participants">({{ participants.length }})</span>
       </div>
       <div class="room-participants-filter">
-        <div class="actionIcon" v-show="isCollapsed">
+        <div v-show="isCollapsed" class="actionIcon">
           <i class="uiIconChatMember uiIconChatLightGray"></i>
         </div>
-        <div class="dropdown dropdown-filter" v-show="!isCollapsed">
+        <div v-show="!isCollapsed" class="dropdown dropdown-filter">
           <span class="dropdown-toggle" data-toggle="dropdown">
-            {{filter}}
+            {{ filter }}
             <i class="uiIconArrowDownMini"></i>
           </span>
           <ul class="dropdown-menu pull-right">
@@ -25,30 +25,37 @@
       </div>
     </div>
     <div class="room-participants-list isList">
-      <chat-contact v-for="contact in participants" :key="contact.name" :list="true" type="u" :avatar="getContactAvatar(contact.name)" :name="contact.fullname" :status="contact.status"></chat-contact>
+      <chat-contact v-for="contact in participants" :key="contact.name" :list="true" :avatar="getContactAvatar(contact.name)" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
     </div>
   </div>
 </template>
 
 <script>
-import {chatData} from '../chatData'
-import ChatContact from './ChatContact.vue'
+import {chatData} from '../chatData';
+import ChatContact from './ChatContact.vue';
 export default {
   components: {ChatContact},
-  props: ['participants'],
+  props: {
+    participants: {
+      type: Array,
+      default: function() { return [];}
+    }
+  },
   data : function() {
     return {
       isCollapsed: true,
-      filter: "All"
-    }
+      filter: 'All'
+    };
+  },
+  mounted() {
   },
   methods: {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
     },
     getContactAvatar(user) {
-      return chatData.socialUserAPI + user + '/avatar'
+      return chatData.socialUserAPI + user + '/avatar';
     }
   }
-}
+};
 </script>

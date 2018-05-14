@@ -3,7 +3,10 @@
         "browser": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/recommended"
+    ],
     "globals": {
         "eXo": true,
         "$": true
@@ -24,6 +27,8 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "vue/html-self-closing": "off",
+        "vue/max-attributes-per-line": "off"
     }
 }

@@ -43,7 +43,10 @@ let config = {
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        use: [
+          'vue-loader',
+          'eslint-loader',
+        ]
       }
     ]
   },
