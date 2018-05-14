@@ -12,7 +12,7 @@
         <i class="uiIconStatus"></i>
         {{ status }}
       </div>
-      <div v-if="type !='u' && !list && nbMembers" class="room-number-members">
+      <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} members
       </div>
     </div>
@@ -36,16 +36,17 @@ export default {
       default: ''
     },
     list: {
-      type: String,
-      default: ''
+      type: Boolean,
+      default: false
     },
     type: {
       type: String,
+      default: '',
       required: true
     },
     nbMembers: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     }
   },
   data : function() {

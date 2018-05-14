@@ -37,8 +37,10 @@ export default {
       default: function() { return [];}
     },
     selected: {
-      type: Boolean,
-      default: false
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data : function() {

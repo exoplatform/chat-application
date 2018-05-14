@@ -34,7 +34,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off"></textarea>
+        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off" @keyup.enter="sendMessage"></textarea>
         <div class="composer-action">
           <div class="action-send">
             <i class="uiIconSend"></i>
@@ -49,6 +49,12 @@
 export default {
   components: {
     
+  },
+  props: {
+    room: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
@@ -70,6 +76,9 @@ export default {
       if (e.keyCode === 27) {
         this.appsClosed = true;
       }
+    },
+    sendMessage() {
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.room.room}}));
     }
   }
 };

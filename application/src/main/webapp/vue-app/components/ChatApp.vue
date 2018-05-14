@@ -11,7 +11,7 @@
       <div class="room-content">
         <div class="uiRightContainerArea">
           <div id="chats"></div>
-          <chat-message></chat-message>
+          <chat-message :room="selectedContact"></chat-message>
         </div>
         <div v-if="selectedContact.type && selectedContact.type != 'u'" class="uiRoomUsersContainerArea">
           <chat-room-participants :participants="roomParticipants"></chat-room-participants> 
@@ -23,6 +23,7 @@
 
 <script>
 import {chatData} from '../chatData';
+import * as chatNotification from '../ChatNotification';
 import * as chatServices from '../chatServices';
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
@@ -49,11 +50,11 @@ export default {
         profileLink: '',
         status: ''
       },
-      selectedContact: false
+      selectedContact: {}
     };
   },
   created() {
-    //chatServices.initServerChannel();
+    chatNotification.initCometD();
 
     document.addEventListener('exo-chat-settings-loaded', (e) => {
       chatServices.getOnlineUsers().then(users => { // Fetch online users
@@ -79,7 +80,7 @@ export default {
   },
   methods: {
     setSelectedContact(contact) {
-      if (this.selectedContact.room === contact.room) {
+      if (this.selectedContact && this.selectedContact.room === contact.room) {
         return;
       }
       this.selectedContact = contact;

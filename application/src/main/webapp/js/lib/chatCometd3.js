@@ -130,9 +130,9 @@ function ExtCometD(origin) {
 
 }
 
-var cometD = new ExtCometD($.cometd);
+var cCometD = new ExtCometD($.cometd);
 
-cometD.getInstance = function(name) {
+cCometD.getInstance = function(name) {
   if (name) {
     if (!this.instances) {
       this.instances = {};
@@ -148,4 +148,4 @@ cometD.getInstance = function(name) {
   }
 };
 
-export { cometD as cometD };
+export { cCometD as cCometD };

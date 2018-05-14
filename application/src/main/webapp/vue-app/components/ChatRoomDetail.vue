@@ -1,7 +1,7 @@
 <template>
   <div class="room-detail">
-    <chat-contact :type="room.type" :user-name="room.user" :name="room.fullName" :status="room.status" :nb-members="getMembersNumber">
-      <div :class="{'is-fav': room.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(room)"></div>
+    <chat-contact :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :nb-members="getMembersNumber">
+      <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
     </chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
@@ -34,9 +34,11 @@ export default {
     'chat-contact': ChatContact
   },
   props: {
-    room: {
-      type: String,
-      default: ''
+    contact: {
+      type: Object,
+      default: function () {
+        return {};
+      }
     }
   },
   data() {
@@ -47,14 +49,14 @@ export default {
   },
   computed: {
     getMembersNumber() {
-      return /*(this.room.type != 'u') ? this.room.participants.length :*/ false;
+      return /*(this.contact.type != 'u') ? this.contact.participants.length :*/ 0;
     }
   },
   updated() {
   },
   methods: {
-    toggleFavorite(room) {
-      room.isFavorite = !room.isFavorite;
+    toggleFavorite(contact) {
+      contact.isFavorite = !contact.isFavorite;
     },
     openSearchRoom() {
       this.showSearchRoom = true;

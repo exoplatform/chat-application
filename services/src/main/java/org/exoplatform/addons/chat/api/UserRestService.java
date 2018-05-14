@@ -171,11 +171,30 @@ public class UserRestService implements ResourceContainer {
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
     }
 
+    ContinuationService continuation = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ContinuationService.class);
+    String cometdToken = continuation.getUserToken(currentUsername);
+
+    String isStandaloneString = PropertyManager.getProperty("standaloneChatServer");
+    boolean isStandalone = isStandaloneString != null && Boolean.valueOf(isStandaloneString);
+    String chatServerURI = ServerBootstrap.getServerURI();
+    String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
+    String chatCometDServerUrl = null;
+    if (isStandalone) {
+      chatCometDServerUrl = chatServerURI;
+    } else {
+      chatCometDServerUrl = "/cometd";
+    }
+
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);
     userSettings.put("token", token);
+    userSettings.put("cometdToken", cometdToken);
     userSettings.put("dbName", dbName);
+    userSettings.put("sessionId", request.getSession().getId());
     userSettings.put("serverURL", ServerBootstrap.getServerURL());
+    userSettings.put("standalone", isStandalone);
+    userSettings.put("chatPage", chatPage);
+    userSettings.put("wsEndpoint", chatCometDServerUrl);
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
