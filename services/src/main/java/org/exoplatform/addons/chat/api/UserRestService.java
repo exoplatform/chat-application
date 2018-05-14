@@ -40,9 +40,12 @@ public class UserRestService implements ResourceContainer {
   /* The Constant IF_MODIFIED_SINCE_DATE_FORMAT */
   protected static final String IF_MODIFIED_SINCE_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
+  @SuppressWarnings("unchecked")
   @GET
   @Path("/token/")
-  public Response getToken(@QueryParam("tokenOnly") String tokenOnly) throws Exception {
+  public Response getToken(@Context HttpServletRequest request, @QueryParam("tokenOnly") String tokenOnly) throws Exception {
+    init(request);
+
     ConversationState conversationState = ConversationState.getCurrent();
     String userId = conversationState.getIdentity().getUserId();
     String token;
@@ -82,7 +85,9 @@ public class UserRestService implements ResourceContainer {
   @GET
   @Path("/cometdToken/")
   @RolesAllowed("users")
-  public Response getCometdToken() throws Exception {
+  public Response getCometdToken(@Context HttpServletRequest request) throws Exception {
+    init(request);
+
     ConversationState conversationState = ConversationState.getCurrent();
     String userId = conversationState.getIdentity().getUserId();
 
@@ -103,7 +108,10 @@ public class UserRestService implements ResourceContainer {
   @GET
   @Path("/onlineStatus/")
   @RolesAllowed("users")
-  public Response getOnlineStatus(@QueryParam("users") String users) throws Exception {
+  @SuppressWarnings("unchecked")
+  public Response getOnlineStatus(@Context HttpServletRequest request, @QueryParam("users") String users) throws Exception {
+    init(request);
+
     UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
 
     if (users != null) {
@@ -122,7 +130,9 @@ public class UserRestService implements ResourceContainer {
   @GET
   @Path("/onlineUsers/")
   @RolesAllowed("users")
-  public Response getOnlineUsers() throws Exception {
+  public Response getOnlineUsers(@Context HttpServletRequest request) throws Exception {
+    init(request);
+
     UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
     List<String> list = userState.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
     String users = String.join(",", list);
@@ -130,10 +140,13 @@ public class UserRestService implements ResourceContainer {
     return Response.ok(users, MediaType.TEXT_PLAIN).build();
   }
 
+  @SuppressWarnings("unchecked")
   @GET
   @Path("/settings")
   @RolesAllowed("users")
   public Response getUserSettings(@Context HttpServletRequest request, @Context SecurityContext sc) throws Exception {
+    init(request);
+
     String currentUsername = sc.getUserPrincipal().getName();
 
     String token = ServerBootstrap.getToken(currentUsername);
@@ -162,8 +175,12 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("username", currentUsername);
     userSettings.put("token", token);
     userSettings.put("dbName", dbName);
-    userSettings.put("serverURL", ServerBootstrap.getServerURL(request));
+    userSettings.put("serverURL", ServerBootstrap.getServerURL());
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
+  }
+
+  private void init(HttpServletRequest request) {
+    ServerBootstrap.init(request);
   }
 }
