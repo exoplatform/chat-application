@@ -5,7 +5,16 @@
       <input type="text" placeholder="Filter people, spaces...">
     </div>
     <div class="listHeader">
-      
+      <div class="dropdown">
+        <span class="dropdown-toggle" data-toggle="dropdown">
+          
+          <i class="uiIconArrowDownMini"></i>
+        </span>
+        <ul class="dropdown-menu pull-right">
+          <li><a href="#">All</a></li>
+          <li><a href="#">Online</a></li>
+        </ul>
+      </div>
     </div>
     <div class="contactList">
       <div class="contact-list-item isList" v-for="contact in contacts" :key="contact.user" @click="selectContact(contact)" :class="{selected: selected.user == contact.user}">
@@ -36,7 +45,8 @@ export default {
     selectContact(contact) {
       this.$emit('exo-chat-contact-selected', contact);
       let room = this.contacts.findIndex(c => c.user == contact.user);
-      this.contacts[room].unreadTotal = 0;
+      //this.contacts[room].unreadTotal = 0;
+      contact.unreadTotal = 0;
     },
     getContactAvatar(user) {
       return chatData.socialUserAPI + user + '/avatar'
@@ -46,23 +56,7 @@ export default {
     }
   },
   created () {
-    /*fetch(`/chatServer/whoIsOnline`, {
-      credentials: 'include', 
-      headers: {
-        'Authorization': 'Bearer ' + this.$parent.chatData.token
-      },
-      data: {
-        "user": "root",
-        "onlineUsers": "root",
-        "filter" : "",
-        "timestamp": new Date().getTime(),
-        "dbName": this.$parent.chatData.dbName
-      }})
-      .then(resp => resp.json())
-      .then(usersStatus => {
-        
-        console.log(usersStatus);
-      })*/
+    
   }
 }
 </script>

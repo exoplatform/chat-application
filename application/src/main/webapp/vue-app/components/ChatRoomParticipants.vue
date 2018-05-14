@@ -49,6 +49,9 @@ export default {
     getContactAvatar(user) {
       return chatData.socialUserAPI + user + '/avatar'
     }
+  },
+  mounted() {
+    console.log('mounted', this.participants);
   }
 }
 </script>

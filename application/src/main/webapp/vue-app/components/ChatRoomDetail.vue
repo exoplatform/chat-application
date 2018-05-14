@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     getMembersNumber() {
-      return (this.room.type != "u") ? this.room.participants.length : false
+      return /*(this.room.type != "u") ? this.room.participants.length :*/ false
     }
   },
   methods: {
@@ -60,6 +60,9 @@ export default {
       this.showSearchRoom = false;
       this.searchText = '';
     }
+  },
+  updated() {
+    console.log('created');
   }
 }
 </script>
