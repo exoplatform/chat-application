@@ -2,7 +2,7 @@
 
 <script>
 import {chatData} from '../chatData'
-import {getUser, getUserStatus, getChatRooms, getUserSettings} from '../chatServices'
+import {getUser, getUserStatus, getChatRooms, getUserSettings, initServerChannel} from '../chatServices'
 import ChatContact from './ChatContact.vue'
 import ChatContactList from './ChatContactList.vue'
 import ChatRoomParticipants from './ChatRoomParticipants.vue'
@@ -45,11 +45,13 @@ export default {
   created () {
     var thizz = this;
     document.addEventListener('exo-chat-settings-loaded', function(e) {
-      getChatRooms(e.detail, thizz.onlineUsers).then(rooms => {
-        console.log('Contact List: ', rooms)
-        thizz.contactList = rooms;
+      getChatRooms(e.detail, thizz.onlineUsers).then(onlineStatus => {
+        console.log('Contact List: ', onlineStatus)
+        thizz.contactList = onlineStatus.rooms;
       })
     });
+
+    initServerChannel();
 
     getUser(this.currentUser.name).then(user => {
       this.currentUser.fullName = user.fullname;

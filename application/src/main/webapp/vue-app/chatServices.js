@@ -1,4 +1,5 @@
 //import {chatData} from './chatData.js';
+import { cometD } from '../js/lib/chatCometd3.js';
 
 function getUser(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {credentials: 'include'})
@@ -22,4 +23,8 @@ function getChatRooms(userSettings, onlineUsers) {
     }}).then(resp =>  resp.json());
 }
 
-export { getUser, getUserStatus, getChatRooms, getUserSettings };
+function initServerChannel() {
+  alert(cometD);
+}
+
+export { getUser, getUserStatus, getChatRooms, getUserSettings, initServerChannel };

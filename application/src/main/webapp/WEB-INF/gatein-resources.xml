@@ -27,6 +27,13 @@
             <depends>
                 <module>vue</module>
             </depends>
+            <depends>
+                <module>jquery</module>
+                <as>$<as>
+            </depends>
+            <depends>
+                <module>jquery_cometd</module>
+            </depends>
         </module>
     </portlet>
 
