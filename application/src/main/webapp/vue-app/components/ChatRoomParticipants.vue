@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="room-participants-list isList">
-      <chat-contact v-for="contact in participants" :key="contact.user" :list="true" :type="contact.type" :avatar="getContactAvatar(contact.user)" :name="contact.fullName" :status="contact.status"></chat-contact>
+      <chat-contact v-for="contact in participants" :key="contact.name" :list="true" type="u" :avatar="getContactAvatar(contact.name)" :name="contact.fullname" :status="contact.status"></chat-contact>
     </div>
   </div>
 </template>
@@ -49,9 +49,6 @@ export default {
     getContactAvatar(user) {
       return chatData.socialUserAPI + user + '/avatar'
     }
-  },
-  mounted() {
-    console.log('mounted', this.participants);
   }
 }
 </script>

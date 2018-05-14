@@ -47,13 +47,12 @@ export default {
       chatServices.getRoomParticipants(this.userSettings, room).then( data => {
         console.log('Room participants:', data);
         this.roomParticipants = data.users;
-        console.log('Current room:', this.selectedContact);
       });
     }
   }
   ,
   created() {
-    chatServices.initServerChannel();
+    //chatServices.initServerChannel();
 
     document.addEventListener('exo-chat-settings-loaded', (e) => {
       this.userSettings = e.detail;
