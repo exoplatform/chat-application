@@ -6,9 +6,11 @@ export function getUser(userName) {
     .then(resp => resp.json());
 }
 
-export function getUserStatus(userName) {
-  return fetch(`/portal/rest/chat/api/1.0/user/onlineStatus?users=${userName}`, {credentials: 'include'})
-    .then(resp => resp.json());
+export function getUserStatus(userSettings, user) {
+  return fetch(`${chatData.chatServerAPI}getStatus?user=${userSettings.username}&targetUser=${user}&dbName=${userSettings.dbName}`, {
+    headers: {
+      'Authorization': 'Bearer ' + userSettings.token
+    }}).then(resp =>  resp.text());
 }
 
 export function getUserSettings() {

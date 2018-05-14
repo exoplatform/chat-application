@@ -61,6 +61,9 @@ export default {
           this.contactList = data.rooms;
         });
       });
+      chatServices.getUserStatus(e.detail, this.currentUser.name).then(usersStatus => {
+        this.currentUser.status = usersStatus;
+      });
     });
 
     chatServices.getUser(this.currentUser.name).then(user => {
@@ -68,9 +71,7 @@ export default {
       this.currentUser.avatar = (user.avatar == null) ? chatData.socialUserAPI + user.username + '/avatar' : user.avatar;
       this.currentUser.profileLink = user.href;
     });
-    chatServices.getUserStatus(this.currentUser.name).then(usersStatus => {
-      this.currentUser.status = usersStatus[this.currentUser.name] ? 'online' : 'offline';
-    });
+    
     chatServices.getUserSettings(this.currentUser.name).then(userSettings => {
       this.userSettings = userSettings;
       document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
