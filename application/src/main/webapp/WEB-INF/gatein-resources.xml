@@ -12,8 +12,8 @@
     <module>
         <name>vue</name>
         <script>
-            <path>/js/lib/vue.js</path>
             <minify>false</minify>
+            <path>/js/lib/vue.js</path>
         </script>
     </module>
 
@@ -21,8 +21,8 @@
         <name>ChatApplication</name>
         <module>
             <script>
-                <path>/js/chat.bundle.js</path>
                 <minify>false</minify>
+                <path>/js/chat.bundle.js</path>
             </script>
             <depends>
                 <module>vue</module>
