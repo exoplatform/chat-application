@@ -76,7 +76,6 @@ export default {
     //chatServices.initServerChannel();
 
     document.addEventListener('exo-chat-settings-loaded', (e) => {
-      this.userSettings = e.detail;
       chatServices.getOnlineUsers().then(users => { // Fetch online users
       console.log(users);
         chatServices.getChatRooms(e.detail, users).then(data => {
@@ -88,8 +87,8 @@ export default {
 
     chatServices.getUser(this.currentUser.name).then(user => {
       this.currentUser.fullName = user.fullname;
-      this.currentUser.avatar = user.avatar;
-      this.currentUser.profileLink = user.profile;
+      this.currentUser.avatar = (user.avatar == null) ? chatData.socialUserAPI + user.username + '/avatar' : user.avatar;
+      this.currentUser.profileLink = user.href;
     });
     chatServices.getUserStatus(this.currentUser.name).then(usersStatus => {
       this.currentUser.status = usersStatus[this.currentUser.name] ? 'online' : 'offline';
