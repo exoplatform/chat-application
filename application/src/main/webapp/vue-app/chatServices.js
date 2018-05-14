@@ -1,4 +1,4 @@
-//import {chatData} from './chatData.js';
+import {chatData} from './chatData.js';
 import { cometD } from '../js/lib/chatCometd3.js';
 
 function getUser(userName) {
@@ -16,8 +16,13 @@ function getUserSettings() {
     .then(resp => resp.json());
 }
 
+function getOnlineUsers() {
+  return fetch(`${chatData.chatAPI}onlineUsers`, {credentials: 'include'})
+    .then(resp => resp.text());
+}
+
 function getChatRooms(userSettings, onlineUsers) {
-  return fetch('/chatServer/whoIsOnline?user=' + userSettings.username + '&onlineUsers=' + onlineUsers.join(',') + '&dbName=' + userSettings.dbName + '&timestamp=' + new Date().getTime(), {
+  return fetch(`${chatData.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': 'Bearer ' + userSettings.token
     }}).then(resp =>  resp.json());
@@ -27,4 +32,4 @@ function initServerChannel() {
   alert(cometD);
 }
 
-export { getUser, getUserStatus, getChatRooms, getUserSettings, initServerChannel };
+export { getUser, getUserStatus, getChatRooms, getUserSettings, getOnlineUsers, initServerChannel };

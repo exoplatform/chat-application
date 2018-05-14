@@ -2,7 +2,7 @@
 
 <script>
 import {chatData} from '../chatData'
-import {getUser, getUserStatus, getChatRooms, getUserSettings, initServerChannel} from '../chatServices'
+import {getUser, getUserStatus, getChatRooms, getUserSettings, getOnlineUsers, initServerChannel} from '../chatServices'
 import ChatContact from './ChatContact.vue'
 import ChatContactList from './ChatContactList.vue'
 import ChatRoomParticipants from './ChatRoomParticipants.vue'
@@ -20,10 +20,6 @@ export default {
     return {
       contactList: [],
       userSettings: {},
-      chatData: {
-        db: "chat",
-        token: "979412bd16bee4627624db838ee489f289d27000"
-      },
       currentUser: {
         name: typeof eXo !== 'undefined' ? eXo.env.portal.userName : "root",
         fullName:"",
@@ -62,26 +58,9 @@ export default {
       this.currentUser.status = usersStatus[this.currentUser.name] ? 'online' : 'offline';
     });
     getUserSettings(this.currentUser.name).then(userSettings => {
-      // Fetch online users
-      this.onlineUsers = ['root'];
       this.userSettings = userSettings;
       document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {"detail" : userSettings}));
     });
-
-    /*fetch(`/chatServer/getStatus`, {
-      credentials: 'include', 
-      headers: {
-        'Authorization': 'Bearer ' + this.chatData.token
-      },data: {
-        "user": "root",
-        "targetUser": "root",
-        "dbName": this.chatData.dbName
-      }})
-      .then(resp => resp.json())
-      .then(usersStatus => {
-        
-        console.log(usersStatus);
-      });*/
   }
 };
 </script>

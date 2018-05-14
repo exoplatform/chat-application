@@ -21,14 +21,18 @@ let config = {
     },
     port: 4000,
     proxy: {
-        '/rest/': {
-          target:'http://localhost:8080',
-          changeOrigin: true
-        },
-        '/chat/': {
-          target:'http://localhost:4000',
-          pathRewrite: {"^/chat" : ""}
-        }
+      '/rest/': {
+        target:'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/portal/rest/': {
+        target:'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/chat/': {
+        target:'http://localhost:4000',
+        pathRewrite: {"^/chat" : ""}
+      }
     }
   },
   devtool: dev ? "inline-source-map" : false,
