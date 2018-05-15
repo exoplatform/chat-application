@@ -12,16 +12,11 @@
         <div v-show="isCollapsed" class="actionIcon">
           <i class="uiIconChatMember uiIconChatLightGray"></i>
         </div>
-        <div v-show="!isCollapsed" class="dropdown dropdown-filter">
-          <span class="dropdown-toggle" data-toggle="dropdown">
-            {{ filter }}
-            <i class="uiIconArrowDownMini"></i>
-          </span>
-          <ul class="dropdown-menu pull-right">
-            <li><a href="#">All</a></li>
-            <li><a href="#">Online</a></li>
-          </ul>
-        </div>
+        <dropdown-select v-show="!isCollapsed" position="right">
+          <span slot="toggle">{{ participantFilter }}</span>
+          <i slot="toggle" class="uiIconArrowDownMini"></i>
+          <li v-for="filter in filterByStatus" slot="menu" :key="filter" @click="selectparticipantFilter(filter)"><a href="#">{{ filter }}</a></li>
+        </dropdown-select>
       </div>
     </div>
     <div class="room-participants-list isList">
@@ -32,8 +27,9 @@
 
 <script>
 import ChatContact from './ChatContact.vue';
+import DropdownSelect from './DropdownSelect.vue';
 export default {
-  components: {ChatContact},
+  components: {ChatContact, DropdownSelect},
   props: {
     participants: {
       type: Array,
@@ -43,12 +39,16 @@ export default {
   data : function() {
     return {
       isCollapsed: true,
-      filter: 'All'
+      filterByStatus: ['All', 'Online'],
+      participantFilter: 'All'
     };
   },
   methods: {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
+    },
+    selectparticipantFilter(filter) {
+      this.participantFilter = filter;
     }
   }
 };

@@ -5,16 +5,16 @@
       <input type="text" placeholder="Filter people, spaces...">
     </div>
     <div class="listHeader">
-      <div class="dropdown">
-        <span class="dropdown-toggle" data-toggle="dropdown">
-          
-          <i class="uiIconArrowDownMini"></i>
-        </span>
-        <ul class="dropdown-menu pull-right">
-          <li><a href="#">All</a></li>
-          <li><a href="#">Online</a></li>
-        </ul>
-      </div>
+      <dropdown-select>
+        <span slot="toggle">{{ sortFilter }}</span>
+        <i slot="toggle" class="uiIconArrowDownMini"></i>
+        <li v-for="filter in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#">{{ filter }}</a></li>
+      </dropdown-select>
+      <dropdown-select>
+        <span slot="toggle">{{ typeFilter }}</span>
+        <i slot="toggle" class="uiIconArrowDownMini"></i>
+        <li v-for="filter in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ filter }}</a></li>
+      </dropdown-select>
     </div>
     <div class="contactList">
       <div v-for="contact in contacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
@@ -28,8 +28,9 @@
 
 <script>
 import ChatContact from './ChatContact.vue';
+import DropdownSelect from './DropdownSelect.vue';
 export default {
-  components: {ChatContact},
+  components: {ChatContact, DropdownSelect},
   props: {
     contacts: {
       type: Array,
@@ -43,7 +44,12 @@ export default {
     }
   },
   data : function() {
-    return {};
+    return {
+      sortByDate: ['Recent','Unread'], // TODO add to locale
+      sortFilter: 'Recent',
+      filterByType: ['All','People','Rooms','Spaces','Favorites'],
+      typeFilter: 'All'
+    };
   },
   computed: {
     statusStyle: function() {
@@ -59,6 +65,12 @@ export default {
     },
     toggleFavorite(contact) {
       contact.isFavorite = !contact.isFavorite;
+    },
+    selectSortFilter(filter) {
+      this.sortFilter = filter;
+    },
+    selectTypeFilter(filter) {
+      this.typeFilter = filter;
     }
   }
 };
