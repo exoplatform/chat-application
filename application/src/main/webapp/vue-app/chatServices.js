@@ -53,6 +53,7 @@ export function getRoomMessages(userSettings, contact) {
 export function getUserAvatar(user) {
   return `${chatData.socialUserAPI}${user}/avatar`;
 }
+
 export function getSpaceAvatar(space) {
   return `${chatData.socialSpaceAPI}${space}/avatar`;
 }

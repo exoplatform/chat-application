@@ -15,7 +15,7 @@
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <li v-for="filter in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ filter }}</a></li>
       </dropdown-select>
-      <div class="add-room-action" @click="createRoomModal = true">
+      <div class="add-room-action" @click="openCreateRoomModal">
         <i class="uiIconSimplePlus"></i>
       </div>
     </div>
@@ -26,12 +26,12 @@
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
-    <modal v-if="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="createRoomModal = false">
+    <modal v-show="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="createRoomModal = false">
       <div class="add-room-form">
         <label>Quel est le nom de votre salon?</label>
         <input type="text">
         <label>Ajouter des personnes à votre salon:</label>
-        <input type="text">
+        <input id="add-room-suggestor" type="text">
         
         <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
       </div>
@@ -47,6 +47,7 @@
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './Modal.vue';
+import initSuggester from '../chatSuggester';
 export default {
   components: {ChatContact, DropdownSelect, Modal},
   props: {
@@ -90,6 +91,10 @@ export default {
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
+    },
+    openCreateRoomModal() {
+      this.createRoomModal = true;
+      initSuggester('#add-room-suggestor');
     }
   }
 };

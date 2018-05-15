@@ -1,8 +1,10 @@
 <template>
-  <div class="chat-message-detail"> {{ message.user }} - {{ message.fullname }} - {{ message.msg }}</div>
+  <div class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - {{ message.msg }}</div>
 </template>
 
 <script>
+import * as chatTime from '../chatTime';
+
 export default {
   props: {
     message: {
@@ -19,6 +21,11 @@ export default {
           user: null
         };
       }
+    }
+  },
+  computed: {
+    dateString() {
+      return chatTime.getTimeString(this.message.timestamp);
     }
   }
 };

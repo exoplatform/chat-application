@@ -34,6 +34,9 @@
             <depends>
                 <module>jquery_cometd</module>
             </depends>
+            <depends>
+                <module>suggester</module>
+            </depends>
         </module>
     </portlet>
 

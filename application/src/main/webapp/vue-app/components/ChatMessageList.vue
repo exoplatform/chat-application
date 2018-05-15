@@ -1,12 +1,16 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
-    <chat-message-detail v-for="messageObj in messages" :key="messageObj.msgId" :message="messageObj"></chat-message-detail>
+    <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate">
+      <div class="chat-message-day-separator center">{{ dayDate }}</div>
+      <chat-message-detail v-for="messageObj in subMessages" :key="messageObj.msgId" :message="messageObj"></chat-message-detail>
+    </div>
   </div>
 </template>
 
 <script>
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import * as chatServices from '../chatServices';
+import * as chatTime from '../chatTime';
 
 export default {
   components: {'chat-message-detail': ChatMessageDetail},
@@ -24,6 +28,18 @@ export default {
       scrollToBottom: true,
       contact: {}
     };
+  },
+  computed: {
+    messagesMap() {
+      const days = this.messages.map((message) => chatTime.getDayDate(message.timestamp).toString() ).reduce(function(result, current){
+        return result.indexOf(current) === -1 ? result.concat(current) : result;
+      }, []);
+      const messagesMap = {};
+      days.forEach(element => {
+        messagesMap[element] = this.messages.filter((message) => chatTime.getDayDate(message.timestamp) === element);
+      });
+      return messagesMap;
+    }
   },
   updated() {
     this.scrollToEnd();
@@ -55,6 +71,7 @@ export default {
           this.scrollToBottom = true;
 
           this.messages = data.messages;
+          this.messages.sort(function(a, b){return a.timestamp - b.timestamp});
         }
       });
     },
