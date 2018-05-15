@@ -24,6 +24,8 @@
     }
   }
   .listHeader {
+    .flex-center;
+    justify-content: space-between;
     height: 50px;
     padding: 0 20px;
     border-bottom: 2px solid #7f97ba;
@@ -33,7 +35,25 @@
   }
   .chat-contact {
     margin-right: auto;
+  }
+  .add-room-action {
+    .square(20px);
+    text-align: center;
+    .uiIconSimplePlus {
+      color: #fff;
+      font-size: 12px;
+    }
+  }
+  .chat-contact, .listHeader > * {
     cursor: pointer;
+  }
+
+  .add-room-form {
+    color: @bodyTextColor;
+    .flex-column;
+    input {
+      width: auto;
+    }
   }
 }
 

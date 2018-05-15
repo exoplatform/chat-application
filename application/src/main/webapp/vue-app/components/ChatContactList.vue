@@ -15,6 +15,9 @@
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <li v-for="filter in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ filter }}</a></li>
       </dropdown-select>
+      <div class="add-room-action" @click="createRoomModal = true">
+        <i class="uiIconSimplePlus"></i>
+      </div>
     </div>
     <div class="contactList">
       <div v-for="contact in contacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
@@ -23,14 +26,29 @@
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
+    <modal v-if="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="createRoomModal = false">
+      <div class="add-room-form">
+        <label>Quel est le nom de votre salon?</label>
+        <input type="text">
+        <label>Ajouter des personnes à votre salon:</label>
+        <input type="text">
+        
+        <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
+      </div>
+      <div class="uiAction uiActionBorder">
+        <a href="#" class="btn btn-primary">Enregistrer</a>
+        <a href="#" class="btn" @click="createRoomModal = false">Annuler</a>
+      </div>
+    </modal>
   </div>
 </template>
 
 <script>
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
+import Modal from './Modal.vue';
 export default {
-  components: {ChatContact, DropdownSelect},
+  components: {ChatContact, DropdownSelect, Modal},
   props: {
     contacts: {
       type: Array,
@@ -48,7 +66,8 @@ export default {
       sortByDate: ['Recent','Unread'], // TODO add to locale
       sortFilter: 'Recent',
       filterByType: ['All','People','Rooms','Spaces','Favorites'],
-      typeFilter: 'All'
+      typeFilter: 'All',
+      createRoomModal: false
     };
   },
   computed: {
