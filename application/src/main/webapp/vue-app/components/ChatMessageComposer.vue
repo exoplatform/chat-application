@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'is-apps-closed': appsClosed}" class="chat-message">
+  <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message">
     <div class="apps-container">
       <div class="apps-item">
         <div class="apps-item-icon"><i class="uiIconChatCreateEvent"></i></div>
@@ -64,9 +64,6 @@ export default {
       appsClosed: true
     };
   },
-  computed: {
-    
-  },
   created() {
     document.addEventListener('keyup', this.closeApps);
   },
@@ -82,6 +79,8 @@ export default {
     },
     sendMessage() {
       document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.contact.room}}));
+      document.dispatchEvent(new CustomEvent('exo-chat-messages-scrollToEnd'));
+      this.newMessage = '';
     }
   }
 };

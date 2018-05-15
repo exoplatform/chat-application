@@ -8,6 +8,8 @@
      <portlet-name>ChatApplication</portlet-name>
      <display-name xml:lang="EN">Chat Application</display-name>
      <portlet-class>org.exoplatform.chat.portlet.ChatApplication</portlet-class>
+     <expiration-cache>-1</expiration-cache>
+     <cache-scope>public</cache-scope>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>

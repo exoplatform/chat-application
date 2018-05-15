@@ -1,5 +1,5 @@
 <template>
-  <div v-if="contact && contact.type && contact.type != 'u'" class="uiRoomUsersContainerArea">
+  <div v-if="contact && Object.keys(contact).length !== 0 && contact.type != 'u'" class="uiRoomUsersContainerArea">
     <div :class="{collapsed: isCollapsed}" class="room-participants">
       <div class="room-users-collapse-btn" @click="toggleCollapsed">
         <i class="uiIcon"></i>

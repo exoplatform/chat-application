@@ -6,8 +6,8 @@
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
-    <div v-if="Object.keys(selectedContact).length !== 0" class="uiGlobalRoomsContainer">
-      <chat-room-detail :contact="selectedContact"></chat-room-detail> 
+    <div class="uiGlobalRoomsContainer">
+      <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
       <div class="room-content">
         <div class="uiRightContainerArea">
           <chat-message-list :contact="selectedContact" :user-settings="userSettings"></chat-message-list>

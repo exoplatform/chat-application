@@ -1,7 +1,6 @@
 <template>
-  <div id="chats" class="chat-message-list">
-    <chat-message-detail v-for="messageObj in messages" :key="messageObj.msgId" :message="messageObj">
-    </chat-message-detail>
+  <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
+    <chat-message-detail v-for="messageObj in messages" :key="messageObj.msgId" :message="messageObj"></chat-message-detail>
   </div>
 </template>
 
@@ -22,16 +21,24 @@ export default {
   data () {
     return {
       messages: [],
+      scrollToBottom: true,
       contact: {}
     };
+  },
+  updated() {
+    this.scrollToEnd();
   },
   created() {
     document.addEventListener('exo-chat-message-received', this.messageReceived);
     document.addEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
+    document.addEventListener('exo-chat-message-tosend', this.setScrollToBottom);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-received', this.messageReceived);
-    document.addEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
+    document.removeEventListener('exo-chat-message-tosend', this.setScrollToBottom);
   },
   methods: {
     messageReceived(e) {
@@ -42,12 +49,27 @@ export default {
     },
     contactChanged(e) {
       this.contact = e.detail;
-      const thiss = this;
       chatServices.getRoomMessages(this.userSettings, this.contact).then(data => {
-        if (thiss.contact.room === data.room) {
-          thiss.messages = data.messages;
+        if (this.contact.room === data.room) {
+          // Scroll to bottom once messages list updated
+          this.scrollToBottom = true;
+
+          this.messages = data.messages;
         }
       });
+    },
+    setScrollToBottom: function() {
+      this.scrollToBottom = true;
+    },
+    scrollToEnd: function(e) {
+      // If triggered using an event or explicitly asked to scroll to bottom
+      if (e || this.scrollToBottom) {
+        const container = $('.chat-message-list');
+        container.scrollTop(container.prop('scrollHeight'));
+        if (!e) {
+          this.scrollToBottom = false;
+        }
+      }
     }
   }
 };
