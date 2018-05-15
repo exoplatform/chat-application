@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="contactList">
-      <div v-for="contact in contacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
+      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-show="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
@@ -74,6 +74,18 @@ export default {
   computed: {
     statusStyle: function() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
+    },
+    filteredContacts: function() {
+      if(this.typeFilter === 'All') {
+        return this.contacts;
+      } else {
+        return this.contacts.filter(contact =>
+          this.typeFilter === 'People' && contact.type === 'u'
+          || this.typeFilter === 'Rooms' && contact.type === 't'
+          || this.typeFilter === 'Spaces' && contact.type === 's'
+          || this.typeFilter === 'Favorites' && contact.isFavorite
+        );
+      }
     }
   },
   created() {
