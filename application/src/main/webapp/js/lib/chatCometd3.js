@@ -21,10 +21,10 @@ function ExtCometD(origin) {
         exoToken: config.exoToken
       };
     }
-    if (typeof config.autoResubscribe != 'undefined') {
+    if (typeof config.autoResubscribe !== 'undefined') {
       this.autoResubscribe = config.autoResubscribe;
     }
-    this.parent.configure.apply(this, arguments);
+    this.parent.configure.apply(this, config);
   };
 
   this.subscribe = function(channel, scope, callback, subscribeProps, subscribeCallback) {
@@ -33,11 +33,11 @@ function ExtCometD(origin) {
       subscribeCallback = subscribeProps;
       subscribeProps = callback;
       callback = scope;
-      scope = undefined;
+      scope = null;
     }
     if ($.isFunction(subscribeProps)) {
       subscribeCallback = subscribeProps;
-      subscribeProps = undefined;
+      subscribeProps = null;
     }
 
     //Add eXo token
@@ -71,7 +71,7 @@ function ExtCometD(origin) {
         this.handshake(publishProps);
       }
     } else if(this.getStatus() === 'handshaking') {
-      this.eXoPublish.push(arguments);
+      this.eXoPublish.push(channel, content, publishProps, publishCallback);
     } else {
       return this.parent.publish.call(this, channel, content, publishProps, publishCallback);
     }
@@ -89,7 +89,7 @@ function ExtCometD(origin) {
         this.handshake(content);
       }
     } else if(this.getStatus() === 'handshaking') {
-      this.eXoRemoteCalls.push(arguments);
+      this.eXoRemoteCalls.push(target, content, timeout, callback);
     } else {
       return this.parent.remoteCall.call(this, target, content, timeout, callback);
     }
@@ -99,13 +99,13 @@ function ExtCometD(origin) {
     this.eXoResubs = [];
   };
 
-  this.disconnect = function() {
+  this.disconnect = function(...args) {
     this.eXoSecret = {exoId: null, exoToken: null};
     this.explicitlyDisconnected = true;
-    this.parent.disconnect.apply(this, arguments);
+    this.parent.disconnect.apply(this, args);
   };
 
-  var thiz = this;
+  const thiz = this;
   this.addListener('/meta/handshake', function(message) {
     if (message.successful) {
       //start a batch
@@ -130,7 +130,7 @@ function ExtCometD(origin) {
 
 }
 
-var cCometD = new ExtCometD($.cometd);
+const cCometD = new ExtCometD($.cometd);
 
 cCometD.getInstance = function(name) {
   if (name) {

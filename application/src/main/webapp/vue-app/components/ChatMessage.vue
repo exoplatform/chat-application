@@ -52,8 +52,10 @@ export default {
   },
   props: {
     room: {
-      type: String,
-      default: ''
+      type: Object,
+      default: function () {
+        return {};
+      }
     }
   },
   data() {

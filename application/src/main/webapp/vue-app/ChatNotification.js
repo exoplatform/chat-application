@@ -39,7 +39,7 @@ export function initCometD() {
           return;
         }
   
-        var wasConnected = window.chatNotification.connected;
+        const wasConnected = window.chatNotification.connected;
         window.chatNotification.connected = message.successful === true;
         if (!wasConnected && window.chatNotification.connected) {
           document.dispatchEvent(new CustomEvent('exo-chat-connected', {'detail' : window.chatNotification}));
@@ -68,26 +68,26 @@ export function initCometD() {
     },
     initChatCometd  : function () {
       this.cCometD.subscribe('/service/chat', null, function (event) {
-        var message = event.data;
-        if (typeof message != 'object') {
+        let message = event.data;
+        if (typeof message !== 'object') {
           message = JSON.parse(message);
         }
     
         // Do what you want with the message...
-        if (message.event == 'logout-sent') {
+        if (message.event === 'logout-sent') {
           window.chatNotification.cCometD.disconnect();
           document.dispatchEvent(new CustomEvent('exo-chat-logout-sent', {'detail' : message}));
-        } else if (message.event == 'user-status-changed') {
+        } else if (message.event === 'user-status-changed') {
           document.dispatchEvent(new CustomEvent('exo-chat-status-changed', {'detail' : message}));
-        } else if (message.event == 'message-sent') {
+        } else if (message.event === 'message-sent') {
           document.dispatchEvent(new CustomEvent('exo-chat-message-sent', {'detail' : message}));
-        } else if (message.event == 'notification-count-updated') {
+        } else if (message.event === 'notification-count-updated') {
           document.dispatchEvent(new CustomEvent('exo-chat-notification-count-updated', {'detail' : message}));
         }
       });
     },
     sendFullMessage : function (room, msg, options, isSystemMessage, callback) {
-      var thiss = this;
+      const thiss = this;
       $.ajax({
         url: thiss.sendMessageURI,
         data: {
@@ -100,7 +100,7 @@ export function initCometD() {
           'isSystem': isSystemMessage
         },
         headers: {
-          'Authorization': 'Bearer ' + thiss.token
+          'Authorization': `Bearer ${thiss.token}`
         }
       }, function (err) {
         if (!err) {
