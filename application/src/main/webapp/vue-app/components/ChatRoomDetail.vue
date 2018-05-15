@@ -52,8 +52,6 @@ export default {
       return /*(this.contact.type != 'u') ? this.contact.participants.length :*/ 0;
     }
   },
-  updated() {
-  },
   methods: {
     toggleFavorite(contact) {
       contact.isFavorite = !contact.isFavorite;
@@ -63,7 +61,7 @@ export default {
       this.$nextTick(() => this.$refs.searchRoom.focus());
     },
     closeSearchRoom(e) {
-      if (e.type == 'blur' && this.searchText != '') {
+      if (e.type === 'blur' && this.searchText !== '') {
         return;
       }
       this.showSearchRoom = false;

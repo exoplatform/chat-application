@@ -3,7 +3,7 @@ import exoi18n from '../js/lib/exo-i18n';
 import ChatApp from './components/ChatApp.vue';
 import './../css/main.less';
 
-var lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
+const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
 
 exoi18n.loadLanguageAsync(lang).then(i18n => {
   new Vue({

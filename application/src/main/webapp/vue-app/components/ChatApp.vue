@@ -69,7 +69,7 @@ export default {
 
     chatServices.getUser(this.currentUser.name).then(user => {
       this.currentUser.fullName = user.fullname;
-      this.currentUser.avatar = (user.avatar == null) ? chatData.socialUserAPI + user.username + '/avatar' : user.avatar;
+      this.currentUser.avatar = user.avatar == null ? `${chatData.socialUserAPI}${user.username}/avatar` : user.avatar;
       this.currentUser.profileLink = user.href;
     });
     
@@ -84,7 +84,7 @@ export default {
         return;
       }
       this.selectedContact = contact;
-      if (contact.type != 'u') {
+      if (contact.type !== 'u') {
         this.initRoom(contact);
       }
       //console.log(this.selectedContact)

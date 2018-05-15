@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     statusStyle: function() {
-      return (this.contactStatus == 'inline') ? 'user-available' : 'user-invisible';
+      return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     }
   },
   methods: {
@@ -59,7 +59,7 @@ export default {
       contact.unreadTotal = 0;
     },
     getContactAvatar(user) {
-      return chatData.socialUserAPI + user + '/avatar';
+      return `${chatData.socialUserAPI}${user}/avatar`;
     },
     toggleFavorite(contact) {
       contact.isFavorite = !contact.isFavorite;

@@ -8,7 +8,7 @@ export function getUser(userName) {
 export function getUserStatus(userSettings, user) {
   return fetch(`${chatData.chatServerAPI}getStatus?user=${userSettings.username}&targetUser=${user}&dbName=${userSettings.dbName}`, {
     headers: {
-      'Authorization': 'Bearer ' + userSettings.token
+      'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
 }
 
@@ -25,28 +25,28 @@ export function getOnlineUsers() {
 export function getChatRooms(userSettings, onlineUsers) {
   return fetch(`${chatData.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&timestamp=${new Date().getTime()}`, {
     headers: {
-      'Authorization': 'Bearer ' + userSettings.token
+      'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getRoomParticipants(userSettings, room) {
   return fetch(`${chatData.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
     headers: {
-      'Authorization': 'Bearer ' + userSettings.token
+      'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getRoomCreator(userSettings, room) {
   return fetch(`${chatData.chatServerAPI}getCreator?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
     headers: {
-      'Authorization': 'Bearer ' + userSettings.token
+      'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getRoomMessages(userSettings, room) {
   return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
     headers: {
-      'Authorization': 'Bearer ' + userSettings.token
+      'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 

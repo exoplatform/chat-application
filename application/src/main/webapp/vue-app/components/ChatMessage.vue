@@ -73,7 +73,8 @@ export default {
   },
   methods: {
     closeApps(e) {
-      if (e.keyCode === 27) {
+      const ESC_KEY = 27;
+      if (e.keyCode === ESC_KEY) {
         this.appsClosed = true;
       }
     },

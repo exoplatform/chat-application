@@ -54,13 +54,13 @@ export default {
   },
   computed: {
     statusStyle: function() {
-      return (this.status == 'online') ? 'user-available' : 'user-invisible';
+      return this.status === 'online' ? 'user-available' : 'user-invisible';
     },
     contactAvatar() {
-      if (this.type == 'u') {
+      if (this.type === 'u') {
         return getUserAvatar(this.userName);
-      } else if (this.type == 's') {
-        let space_id = this.name.replace(' ', '_').toLowerCase(); // TODO verify the possibility of add space id to whoIsOnline 
+      } else if (this.type === 's') {
+        const space_id = this.name.replace(' ', '_').toLowerCase(); // TODO verify the possibility of add space id to whoIsOnline 
         return getSpaceAvatar(space_id);
       } else {
         return '/chat/img/user-default.jpg'; // TODO add room default avatar

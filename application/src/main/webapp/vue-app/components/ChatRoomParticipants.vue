@@ -47,14 +47,12 @@ export default {
       filter: 'All'
     };
   },
-  mounted() {
-  },
   methods: {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
     },
     getContactAvatar(user) {
-      return chatData.socialUserAPI + user + '/avatar';
+      return `${chatData.socialUserAPI}${user}/avatar`;
     }
   }
 };
