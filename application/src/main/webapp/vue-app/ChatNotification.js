@@ -80,31 +80,34 @@ export function initCometD() {
         } else if (message.event === 'user-status-changed') {
           document.dispatchEvent(new CustomEvent('exo-chat-status-changed', {'detail' : message}));
         } else if (message.event === 'message-sent') {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-sent', {'detail' : message}));
+          document.dispatchEvent(new CustomEvent('exo-chat-message-received', {'detail' : message}));
         } else if (message.event === 'notification-count-updated') {
           document.dispatchEvent(new CustomEvent('exo-chat-notification-count-updated', {'detail' : message}));
         }
       });
     },
-    sendFullMessage : function (room, msg, options, isSystemMessage, callback) {
-      const thiss = this;
-      $.ajax({
-        url: thiss.sendMessageURI,
-        data: {
-          'sender': thiss.username,
-          'room': room,
-          'dbName': thiss.dbName,
-          'message': encodeURIComponent(msg),
-          'options': encodeURIComponent(JSON.stringify(options)),
-          'timestamp': new Date().getTime(),
-          'isSystem': isSystemMessage
-        },
-        headers: {
-          'Authorization': `Bearer ${thiss.token}`
-        }
-      }, function (err) {
-        if (!err) {
-          if (callback && typeof callback === 'function') {
+    sendMessage : function (messageObj, callback) {
+      const data = {
+        'clientId': new Date().getTime().toString(),
+        'room': messageObj.room,
+        'msg': messageObj.message,
+        'options': messageObj.options ? messageObj.options : {},
+        'isSystem': messageObj.isSystemMessage != null && messageObj.isSystemMessage,
+        'user': this.username,
+        'fullname': this.fullname
+      };
+
+      const content = JSON.stringify({
+        'event': 'message-sent',
+        'sender': this.username,
+        'token': this.token,
+        'dbName': this.dbName,
+        'data': data
+      });
+
+      this.cCometD.publish('/service/chat', content, function(publishAck) {
+        if (publishAck.successful) {
+          if (typeof callback === 'function') {
             callback();
           }
         }
@@ -113,7 +116,7 @@ export function initCometD() {
   };
 
   document.addEventListener('exo-chat-message-tosend', (e) => {
-    window.chatNotification.sendFullMessage(e.detail.room, e.detail.message, {}, false);
+    window.chatNotification.sendMessage(e.detail);
   });
 
   document.addEventListener('exo-chat-settings-loaded', (e) => {

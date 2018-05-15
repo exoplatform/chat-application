@@ -51,9 +51,9 @@ export default {
     
   },
   props: {
-    room: {
+    contact: {
       type: Object,
-      default: function () {
+      default: function() {
         return {};
       }
     }
@@ -81,7 +81,7 @@ export default {
       }
     },
     sendMessage() {
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.room.room}}));
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.contact.room}}));
     }
   }
 };

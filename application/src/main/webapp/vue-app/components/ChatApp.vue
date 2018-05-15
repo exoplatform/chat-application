@@ -10,12 +10,10 @@
       <chat-room-detail :contact="selectedContact"></chat-room-detail> 
       <div class="room-content">
         <div class="uiRightContainerArea">
-          <div id="chats"></div>
-          <chat-message :room="selectedContact"></chat-message>
+          <chat-message-list :contact="selectedContact" :user-settings="userSettings"></chat-message-list>
+          <chat-message-composer :contact="selectedContact"></chat-message-composer>
         </div>
-        <div v-if="selectedContact.type && selectedContact.type != 'u'" class="uiRoomUsersContainerArea">
-          <chat-room-participants :participants="roomParticipants"></chat-room-participants> 
-        </div>
+        <chat-room-participants :contact="selectedContact" :user-settings="userSettings"></chat-room-participants> 
       </div>
     </div>
   </div>
@@ -29,19 +27,20 @@ import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
 import ChatRoomDetail from './ChatRoomDetail.vue';
-import ChatMessage from './ChatMessage.vue';
+import ChatMessageComposer from './ChatMessageComposer.vue';
+import ChatMessageList from './ChatMessageList.vue';
 export default {
   components: {
     'chat-contact': ChatContact,
     'chat-contact-list': ChatContactList,
     'chat-room-participants': ChatRoomParticipants,
     'chat-room-detail': ChatRoomDetail,
-    'chat-message': ChatMessage
+    'chat-message-composer': ChatMessageComposer,
+    'chat-message-list': ChatMessageList
   },
   data() {
     return {
       contactList: [],
-      roomParticipants: [],
       userSettings: {},
       currentUser: {
         name: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root',
@@ -80,20 +79,8 @@ export default {
   },
   methods: {
     setSelectedContact(contact) {
-      if (this.selectedContact && this.selectedContact.room === contact.room) {
-        return;
-      }
       this.selectedContact = contact;
-      if (contact.type !== 'u') {
-        this.initRoom(contact);
-      }
-      console.log(this.selectedContact);
-    },
-    initRoom(room) {
-      chatServices.getRoomParticipants(this.userSettings, room).then( data => {
-        //console.log('Room participants:', data);
-        this.roomParticipants = data.users;
-      });
+      document.dispatchEvent(new CustomEvent('exo-chat-contact-changed', {'detail' : contact}));
     }
   }
 };

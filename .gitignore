@@ -50,7 +50,7 @@ node_modules/
 transaction.log
 
 chat-mongohq.properties
-application/src/main/resources/rebel.xml
+rebel.xml
 target
 
 release.properties

@@ -43,8 +43,8 @@ export function getRoomCreator(userSettings, room) {
     }}).then(resp =>  resp.json());
 }
 
-export function getRoomMessages(userSettings, room) {
-  return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
+export function getRoomMessages(userSettings, contact) {
+  return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${contact.room}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
