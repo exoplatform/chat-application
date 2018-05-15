@@ -4,7 +4,7 @@ export function getDayDate(timestampServer) {
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  return date.toDateString();
+  return date.toLocaleDateString();
 }
 
 export function getTimeString(timestampServer) {
@@ -13,9 +13,6 @@ export function getTimeString(timestampServer) {
     date = new Date(timestampServer);
   }
 
-  const sNowDate = new Date().toLocaleDateString();
-  const sDate = date.toLocaleDateString();
-  
   let sTime = '';
   let sHours = date.getHours();
   const sMinutes = date.getMinutes();
@@ -47,9 +44,13 @@ export function getTimeString(timestampServer) {
   if (ampm !== '') {
     sTime += ` ${ampm}`;
   }
-  
+
+  /*
+  const sNowDate = new Date().toLocaleDateString();
+  const sDate = date.toLocaleDateString();
   if (sNowDate !== sDate) {
     sTime = `${sDate} ${sTime}`;
   }
+   */
   return sTime;
 }

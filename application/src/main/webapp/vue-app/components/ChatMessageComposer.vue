@@ -34,7 +34,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off" @keyup.enter="sendMessage"></textarea>
+        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessage"></textarea>
         <div class="composer-action">
           <div class="action-send">
             <i class="uiIconSend"></i>
@@ -47,9 +47,6 @@
 
 <script>
 export default {
-  components: {
-    
-  },
   props: {
     contact: {
       type: Object,
@@ -77,10 +74,20 @@ export default {
         this.appsClosed = true;
       }
     },
-    sendMessage() {
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.contact.room}}));
-      document.dispatchEvent(new CustomEvent('exo-chat-messages-scrollToEnd'));
-      this.newMessage = '';
+    preventDefault(event) {
+      const enterKeyCode = 13;
+      if (event.keyCode === enterKeyCode && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
+    sendMessage(event) {
+      const enterKeyCode = 13;
+      if (event.keyCode === enterKeyCode && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.contact.room}}));
+        document.dispatchEvent(new CustomEvent('exo-chat-messages-scrollToEnd'));
+        this.newMessage = '';
+      }
     }
   }
 };

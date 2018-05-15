@@ -59,11 +59,17 @@ export default {
       chatServices.getOnlineUsers().then(users => { // Fetch online users
         chatServices.getChatRooms(e.detail, users).then(data => {
           this.contactList = data.rooms;
+          const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
+          this.updateTotalUnread(totalUnreadMsg);
         });
       });
       chatServices.getUserStatus(e.detail, this.currentUser.name).then(usersStatus => {
         this.currentUser.status = usersStatus;
       });
+    });
+    document.addEventListener('exo-chat-notification-count-updated', (e) => {
+      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
+      this.updateTotalUnread(totalUnreadMsg);
     });
 
     chatServices.getUser(this.currentUser.name).then(user => {
@@ -81,6 +87,13 @@ export default {
     setSelectedContact(contact) {
       this.selectedContact = contact;
       document.dispatchEvent(new CustomEvent('exo-chat-contact-changed', {'detail' : contact}));
+    },
+    updateTotalUnread(totalUnreadMsg) {
+      if (totalUnreadMsg && totalUnreadMsg > 0) {
+        document.title = `Chat (${totalUnreadMsg})`;
+      } else {
+        document.title = 'Chat';
+      }
     }
   }
 };

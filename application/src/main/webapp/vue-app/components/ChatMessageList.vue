@@ -71,7 +71,9 @@ export default {
           this.scrollToBottom = true;
 
           this.messages = data.messages;
-          this.messages.sort(function(a, b){return a.timestamp - b.timestamp});
+          this.messages.sort((a, b) => {
+            return a.timestamp - b.timestamp;
+          });
         }
       });
     },

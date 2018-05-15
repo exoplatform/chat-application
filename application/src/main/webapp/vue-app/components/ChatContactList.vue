@@ -76,6 +76,12 @@ export default {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     }
   },
+  created() {
+    document.addEventListener('exo-chat-message-received', this.notificationCountUpdated);
+  },
+  destroyed() {
+    document.removeEventListener('exo-chat-message-received', this.notificationCountUpdated);
+  },
   methods: {
     selectContact(contact) {
       this.$emit('exo-chat-contact-selected', contact);
@@ -95,6 +101,14 @@ export default {
     openCreateRoomModal() {
       this.createRoomModal = true;
       initSuggester('#add-room-suggestor');
+    },
+    notificationCountUpdated(event) {
+      const room = event.detail.room;
+      this.contacts.forEach(contact => {
+        if (this.selected.room !== room && contact.room === room) {
+          contact.unreadTotal ++;
+        }
+      });
     }
   }
 };

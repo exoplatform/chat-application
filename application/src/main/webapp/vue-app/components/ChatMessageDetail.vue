@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - {{ message.msg }}</div>
+  <div class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - <span v-html="message.msg"></span></div>
 </template>
 
 <script>

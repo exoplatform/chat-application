@@ -12,10 +12,6 @@ export function initCometD() {
       this.standalone = settings.standalone === 'true';
       this.wsEndpoint = settings.wsEndpoint;
 
-      this.portalURI = '/portal';
-      this.chatPage = '/portal/intranet/chat';
-      this.sendMessageURI = '/chatServer/send';
-
       if (this.cCometD == null) {
         this.cCometD = this.standalone ? cCometD.getInstance('chat') : cCometD;
     
