@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import {chatData} from '../chatData';
 import ChatContact from './ChatContact.vue';
 export default {
   components: {ChatContact},
@@ -50,9 +49,6 @@ export default {
   methods: {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
-    },
-    getContactAvatar(user) {
-      return `${chatData.socialUserAPI}${user}/avatar`;
     }
   }
 };

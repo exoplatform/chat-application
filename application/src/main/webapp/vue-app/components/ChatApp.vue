@@ -6,8 +6,8 @@
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
-    <div v-if="selectedContact" class="uiGlobalRoomsContainer">
-      <chat-room-detail :room="selectedContact"></chat-room-detail> 
+    <div v-if="Object.keys(selectedContact).length !== 0" class="uiGlobalRoomsContainer">
+      <chat-room-detail :contact="selectedContact"></chat-room-detail> 
       <div class="room-content">
         <div class="uiRightContainerArea">
           <div id="chats"></div>
@@ -87,7 +87,7 @@ export default {
       if (contact.type !== 'u') {
         this.initRoom(contact);
       }
-      //console.log(this.selectedContact)
+      console.log(this.selectedContact);
     },
     initRoom(room) {
       chatServices.getRoomParticipants(this.userSettings, room).then( data => {

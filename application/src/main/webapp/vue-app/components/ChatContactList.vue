@@ -18,7 +18,7 @@
     </div>
     <div class="contactList">
       <div v-for="contact in contacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
-        <chat-contact :list="true" :type="contact.type" :avatar="getContactAvatar(contact.user)" :name="contact.fullName" :status="contact.status"></chat-contact>
+        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-show="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import {chatData} from '../chatData';
 import ChatContact from './ChatContact.vue';
 export default {
   components: {ChatContact},
@@ -57,9 +56,6 @@ export default {
       //let room = this.contacts.findIndex(c => c.user == contact.user);
       //this.contacts[room].unreadTotal = 0;
       contact.unreadTotal = 0;
-    },
-    getContactAvatar(user) {
-      return `${chatData.socialUserAPI}${user}/avatar`;
     },
     toggleFavorite(contact) {
       contact.isFavorite = !contact.isFavorite;
