@@ -1,16 +1,14 @@
 package org.exoplatform.addons.chat.api;
 
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,12 +28,12 @@ import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 @Path("/chat/api/1.0/user/")
 public class UserRestService implements ResourceContainer {
-  private static final String CHAT_USER_INITIALIZATION_ATTR = "exo.chat.user.initialized";
+  private static final String   CHAT_USER_INITIALIZATION_ATTR = "exo.chat.user.initialized";
 
-  public static final String ANONIM_USER = "__anonim_";
+  public static final String    ANONIM_USER                   = "__anonim_";
 
   /* The Constant LAST_MODIFIED_PROPERTY */
-  protected static final String LAST_MODIFIED_PROPERTY = "Last-Modified";
+  protected static final String LAST_MODIFIED_PROPERTY        = "Last-Modified";
 
   /* The Constant IF_MODIFIED_SINCE_DATE_FORMAT */
   protected static final String IF_MODIFIED_SINCE_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
@@ -54,7 +52,6 @@ public class UserRestService implements ResourceContainer {
     cacheControl.setNoStore(true);
     DateFormat dateFormat = new SimpleDateFormat(IF_MODIFIED_SINCE_DATE_FORMAT);
 
-
     boolean withTokenOnly = (tokenOnly != null && "true".equals(tokenOnly));
     if ("__anonim".equals(userId)) {
       userId = ANONIM_USER;
@@ -67,9 +64,9 @@ public class UserRestService implements ResourceContainer {
 
     if (withTokenOnly) {
       return Response.ok(token, MediaType.TEXT_PLAIN)
-              .cacheControl(cacheControl)
-              .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
-              .build();
+                     .cacheControl(cacheControl)
+                     .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
+                     .build();
     }
 
     JSONObject data = new JSONObject();
@@ -77,9 +74,9 @@ public class UserRestService implements ResourceContainer {
     data.put("token", token);
 
     return Response.ok(data.toString(), MediaType.APPLICATION_JSON)
-            .cacheControl(cacheControl)
-            .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
-            .build();
+                   .cacheControl(cacheControl)
+                   .header(LAST_MODIFIED_PROPERTY, dateFormat.format(new Date()))
+                   .build();
   }
 
   @GET
@@ -96,9 +93,11 @@ public class UserRestService implements ResourceContainer {
     if (standaloneChatServer) {
       String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
       String in = userId + passphrase;
-      token = MessageDigester.getHash(in);;
+      token = MessageDigester.getHash(in);
+      ;
     } else {
-      ContinuationService continuation = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ContinuationService.class);
+      ContinuationService continuation = ExoContainerContext.getCurrentContainer()
+                                                            .getComponentInstanceOfType(ContinuationService.class);
       token = continuation.getUserToken(userId);
     }
 
@@ -151,13 +150,14 @@ public class UserRestService implements ResourceContainer {
 
     String token = ServerBootstrap.getToken(currentUsername);
     String dbName = ServerBootstrap.getDBName();
+    String userFullName = ServerBootstrap.getUserFullName(currentUsername, dbName);
+    String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername, dbName);
 
     Boolean isUserInitialized = (Boolean) request.getSession().getAttribute(CHAT_USER_INITIALIZATION_ATTR);
     if (isUserInitialized == null || !isUserInitialized) {
       // Add User in the DB
       ServerBootstrap.addUser(currentUsername, token, dbName);
 
-      String userFullName = ServerBootstrap.getUserFullName(currentUsername, dbName);
       if (StringUtils.isBlank(userFullName)) {
         // Set user's Full Name in the DB
         User user = CommonsUtils.getService(OrganizationService.class).getUserHandler().findUserByName(currentUsername);
@@ -170,8 +170,11 @@ public class UserRestService implements ResourceContainer {
       ServerBootstrap.saveSpaces(currentUsername, dbName);
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
     }
+    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
+    boolean online = userState.isOnline(currentUsername);
 
-    ContinuationService continuation = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ContinuationService.class);
+    ContinuationService continuation = ExoContainerContext.getCurrentContainer()
+                                                          .getComponentInstanceOfType(ContinuationService.class);
     String cometdToken = continuation.getUserToken(currentUsername);
 
     String isStandaloneString = PropertyManager.getProperty("standaloneChatServer");
@@ -188,6 +191,9 @@ public class UserRestService implements ResourceContainer {
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);
     userSettings.put("token", token);
+    userSettings.put("fullName", userFullName);
+    userSettings.put("status", userStatus);
+    userSettings.put("isOnline", online);
     userSettings.put("cometdToken", cometdToken);
     userSettings.put("dbName", dbName);
     userSettings.put("sessionId", request.getSession().getId());

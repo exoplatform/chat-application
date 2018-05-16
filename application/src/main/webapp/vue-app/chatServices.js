@@ -13,12 +13,30 @@ export function getUserStatus(userSettings, user) {
     }}).then(resp =>  resp.text());
 }
 
-export function initChatSettings() {
+export function initChatSettings(username, chatRoomsLoadedCallback, userSettingsLoadedCallback) {
   chatNotification.initCometD();
+
+  document.addEventListener('exo-chat-settings-loaded', (e) => {
+    const userSettings = e.detail;
+
+    getOnlineUsers().then(users => { // Fetch online users
+      getChatRooms(userSettings, users).then(data => {
+        chatRoomsLoadedCallback(data);
+
+        const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
+        updateTotalUnread(totalUnreadMsg);
+      });
+    });
+  });
 
   document.addEventListener('exo-chat-notification-count-updated', (e) => {
     const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
     updateTotalUnread(totalUnreadMsg);
+  });
+
+  getUserSettings(username).then(userSettings => {
+    userSettingsLoadedCallback(userSettings);
+    document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
   });
 }
 
@@ -62,7 +80,7 @@ export function getRoomCreator(userSettings, room) {
 }
 
 export function getRoomId(userSettings, contact) {
-  return fetch(`${chatData.chatServerAPI}read?getRoom=targetUser=${contact.user}&user${userSettings.username}&dbName=${userSettings.dbName}`, {
+  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${contact.user}&user=${userSettings.username}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());

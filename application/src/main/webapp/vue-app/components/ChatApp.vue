@@ -2,7 +2,7 @@
   <div id="chatApplicationContainer">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
-        <chat-contact :user-name="currentUser.name" :name="currentUser.fullName" :status="currentUser.status" type="u"></chat-contact>
+        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u"></chat-contact>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import {chatData} from '../chatData';
 import * as chatServices from '../chatServices';
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
@@ -40,43 +39,25 @@ export default {
   data() {
     return {
       contactList: [],
-      userSettings: {},
-      currentUser: {
-        name: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root',
-        fullName:'',
-        avatar: '',
-        profileLink: '',
-        status: ''
+      userSettings: {
+        username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root',
+        token: null,
+        fullName: null,
+        status: null,
+        isOnline: false,
+        cometdToken: null,
+        dbName: null,
+        sessionId: null,
+        serverURL: null,
+        standalone: false,
+        chatPage: null,
+        wsEndpoint: null,
       },
       selectedContact: {}
     };
   },
   created() {
-    chatServices.initChatSettings();
-
-    document.addEventListener('exo-chat-settings-loaded', (e) => {
-      chatServices.getOnlineUsers().then(users => { // Fetch online users
-        chatServices.getChatRooms(e.detail, users).then(data => {
-          this.contactList = data.rooms;
-          const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
-          chatServices.updateTotalUnread(totalUnreadMsg);
-        });
-      });
-      chatServices.getUserStatus(e.detail, this.currentUser.name).then(usersStatus => {
-        this.currentUser.status = usersStatus;
-      });
-    });
-
-    chatServices.getUser(this.currentUser.name).then(user => {
-      this.currentUser.fullName = user.fullname;
-      this.currentUser.avatar = user.avatar == null ? `${chatData.socialUserAPI}${user.username}/avatar` : user.avatar;
-      this.currentUser.profileLink = user.href;
-    });
-
-    chatServices.getUserSettings(this.currentUser.name).then(userSettings => {
-      this.userSettings = userSettings;
-      document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
-    });
+    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.contactList = chatRoomsData.rooms, userSettings => this.userSettings = userSettings);
   },
   methods: {
     setSelectedContact(contact) {
