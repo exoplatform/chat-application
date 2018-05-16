@@ -22,21 +22,26 @@
     <div class="contactList">
       <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
-        <div v-show="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
+        <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
     <modal v-show="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="createRoomModal = false">
       <div class="add-room-form">
         <label>Quel est le nom de votre salon?</label>
-        <input type="text">
+        <input v-model="newRoom.name" type="text">
         <label>Ajouter des personnes à votre salon:</label>
         <input id="add-room-suggestor" type="text">
-        
+        <div v-show="newRoom.participants.length > 0" class="room-suggest-list">
+          <div v-for="(participant, index) in newRoom.participants" :key="participant.name" class="uiMention">
+            {{ participant.fullname }}
+            <span @click="removeSuggest(index)"><i class="uiIconClose"></i></span>
+          </div>
+        </div>
         <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
       </div>
       <div class="uiAction uiActionBorder">
-        <a href="#" class="btn btn-primary">Enregistrer</a>
+        <a href="#" class="btn btn-primary" @click="saveNewRoom">Enregistrer</a>
         <a href="#" class="btn" @click="createRoomModal = false">Annuler</a>
       </div>
     </modal>
@@ -44,6 +49,7 @@
 </template>
 
 <script>
+import * as chatServices from '../chatServices';
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './Modal.vue';
@@ -60,6 +66,12 @@ export default {
       default: function() {
         return {};
       }
+    },
+    userSettings: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data : function() {
@@ -68,14 +80,18 @@ export default {
       sortFilter: 'Recent',
       filterByType: ['All','People','Rooms','Spaces','Favorites'],
       typeFilter: 'All',
-      createRoomModal: false
+      createRoomModal: false,
+      newRoom: {
+        name: '',
+        participants: []
+      }
     };
   },
   computed: {
-    statusStyle: function() {
+    statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
-    filteredContacts: function() {
+    filteredContacts() {
       if(this.typeFilter === 'All') {
         return this.contacts;
       } else {
@@ -112,7 +128,7 @@ export default {
     },
     openCreateRoomModal() {
       this.createRoomModal = true;
-      initSuggester('#add-room-suggestor');
+      initSuggester('#add-room-suggestor', this.userSettings, this);
     },
     notificationCountUpdated(event) {
       const room = event.detail.room;
@@ -121,6 +137,22 @@ export default {
           contact.unreadTotal ++;
         }
       });
+    },
+    removeSuggest(i) {
+      this.newRoom.participants.splice(i,1);
+    },
+    saveNewRoom() {
+      if (this.newRoom.name) {
+        let users = this.newRoom.participants.map(user => user.name);
+        users.unshift(this.userSettings.username);
+        users = users.join(',');
+        chatServices.saveRoom(this.userSettings,  this.newRoom.name, users).then(() => {
+          // reset newRoom
+          this.newRoom.name = '';
+          this.newRoom.participants = [];
+          this.createRoomModal = false;
+        });
+      }
     }
   }
 };

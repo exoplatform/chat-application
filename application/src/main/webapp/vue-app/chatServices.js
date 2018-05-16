@@ -91,6 +91,31 @@ export function getRoomMessages(userSettings, contact) {
     }}).then(resp =>  resp.json());
 }
 
+export function getChatUsers(userSettings, filter, limit) {
+  return fetch(`${chatData.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
+
+export function saveRoom(userSettings, roomName, users) {
+  const data = {
+    teamName: roomName,
+    users: users,
+    user: userSettings.username,
+    dbName: userSettings.dbName
+  };
+
+  return fetch(`${chatData.chatServerAPI}saveTeamRoom`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`,
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    method: 'post',
+    body: $.param(data)
+  }).then(resp =>  resp.json());
+}
+
 export function getUserAvatar(user) {
   return `${chatData.socialUserAPI}${user}/avatar`;
 }

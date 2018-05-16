@@ -4,7 +4,7 @@
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u"></chat-contact>
       </div>
-      <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
+      <chat-contact-list :contacts="contactList" :selected="selectedContact" :user-settings="userSettings" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
     <div class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>

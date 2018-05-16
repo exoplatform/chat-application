@@ -51,8 +51,18 @@
   .add-room-form {
     color: @bodyTextColor;
     .flex-column;
-    input {
+    > input {
       width: auto;
+    }
+    .room-suggest-list {
+      height: 100px;
+      border: @bigBorder;
+      border-top: none;
+      padding: 12px 10px;
+      margin-top: -8px;
+      .uiMention {
+        margin: 0 15px 15px 0;
+      }
     }
   }
 }
