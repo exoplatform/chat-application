@@ -21,7 +21,6 @@
 
 <script>
 import {chatData} from '../chatData';
-import * as chatNotification from '../ChatNotification';
 import * as chatServices from '../chatServices';
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
@@ -53,23 +52,19 @@ export default {
     };
   },
   created() {
-    chatNotification.initCometD();
+    chatServices.initChatSettings();
 
     document.addEventListener('exo-chat-settings-loaded', (e) => {
       chatServices.getOnlineUsers().then(users => { // Fetch online users
         chatServices.getChatRooms(e.detail, users).then(data => {
           this.contactList = data.rooms;
           const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
-          this.updateTotalUnread(totalUnreadMsg);
+          chatServices.updateTotalUnread(totalUnreadMsg);
         });
       });
       chatServices.getUserStatus(e.detail, this.currentUser.name).then(usersStatus => {
         this.currentUser.status = usersStatus;
       });
-    });
-    document.addEventListener('exo-chat-notification-count-updated', (e) => {
-      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      this.updateTotalUnread(totalUnreadMsg);
     });
 
     chatServices.getUser(this.currentUser.name).then(user => {
@@ -77,7 +72,7 @@ export default {
       this.currentUser.avatar = user.avatar == null ? `${chatData.socialUserAPI}${user.username}/avatar` : user.avatar;
       this.currentUser.profileLink = user.href;
     });
-    
+
     chatServices.getUserSettings(this.currentUser.name).then(userSettings => {
       this.userSettings = userSettings;
       document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
@@ -87,13 +82,6 @@ export default {
     setSelectedContact(contact) {
       this.selectedContact = contact;
       document.dispatchEvent(new CustomEvent('exo-chat-contact-changed', {'detail' : contact}));
-    },
-    updateTotalUnread(totalUnreadMsg) {
-      if (totalUnreadMsg && totalUnreadMsg > 0) {
-        document.title = `Chat (${totalUnreadMsg})`;
-      } else {
-        document.title = 'Chat';
-      }
     }
   }
 };

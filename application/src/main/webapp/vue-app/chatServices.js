@@ -1,4 +1,5 @@
 import {chatData} from './chatData.js';
+import * as chatNotification from './ChatNotification';
 
 export function getUser(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {credentials: 'include'})
@@ -10,6 +11,23 @@ export function getUserStatus(userSettings, user) {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
+}
+
+export function initChatSettings() {
+  chatNotification.initCometD();
+
+  document.addEventListener('exo-chat-notification-count-updated', (e) => {
+    const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
+    updateTotalUnread(totalUnreadMsg);
+  });
+}
+
+export function updateTotalUnread(totalUnreadMsg) {
+  if (totalUnreadMsg && totalUnreadMsg > 0) {
+    document.title = `Chat (${totalUnreadMsg})`;
+  } else {
+    document.title = 'Chat';
+  }
 }
 
 export function getUserSettings() {
@@ -41,6 +59,13 @@ export function getRoomCreator(userSettings, room) {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
+}
+
+export function getRoomId(userSettings, contact) {
+  return fetch(`${chatData.chatServerAPI}read?getRoom=targetUser=${contact.user}&user${userSettings.username}&dbName=${userSettings.dbName}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.text());
 }
 
 export function getRoomMessages(userSettings, contact) {

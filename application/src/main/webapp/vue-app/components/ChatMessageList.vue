@@ -65,17 +65,14 @@ export default {
     },
     contactChanged(e) {
       this.contact = e.detail;
-      chatServices.getRoomMessages(this.userSettings, this.contact).then(data => {
-        if (this.contact.room === data.room) {
-          // Scroll to bottom once messages list updated
-          this.scrollToBottom = true;
-
-          this.messages = data.messages;
-          this.messages.sort((a, b) => {
-            return a.timestamp - b.timestamp;
-          });
-        }
-      });
+      if(this.contact.room) {
+        this.retrieveRoomMessages(); 
+      } else {
+        chatServices.getRoomId(this.userSettings, this.contact).then((room) => {
+          this.contact.room = room;
+          this.retrieveRoomMessages(); 
+        });
+      }
     },
     setScrollToBottom: function() {
       this.scrollToBottom = true;
@@ -89,6 +86,19 @@ export default {
           this.scrollToBottom = false;
         }
       }
+    },
+    retrieveRoomMessages() {
+      chatServices.getRoomMessages(this.userSettings, this.contact).then(data => {
+        if (this.contact.room === data.room) {
+          // Scroll to bottom once messages list updated
+          this.scrollToBottom = true;
+
+          this.messages = data.messages;
+          this.messages.sort((a, b) => {
+            return a.timestamp - b.timestamp;
+          });
+        }
+      });
     }
   }
 };
