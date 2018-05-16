@@ -17,10 +17,8 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
   chatNotification.initCometD();
 
   document.addEventListener('exo-chat-settings-loaded', (e) => {
-    const userSettings = e.detail;
-
     getOnlineUsers().then(users => { // Fetch online users
-      getChatRooms(userSettings, users).then(data => {
+      getChatRooms(e.detail, users).then(data => {
         chatRoomsLoadedCallback(data);
 
         const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
