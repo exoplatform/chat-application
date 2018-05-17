@@ -47,10 +47,12 @@ export default {
     };
   },
   created() {
-    document.addEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-status-changed', this.contactStatusChanged);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-status-changed', this.contactStatusChanged);
   },
   methods: {
     toggleCollapsed() {
@@ -69,6 +71,14 @@ export default {
           this.participants = data.users;
         });
       }
+    },
+    contactStatusChanged(e) {
+      const contact = e.detail;
+      this.participants.forEach((participant) => {
+        if(participant.name === contact.name) {
+          participant.status = contact.status;
+        }
+      });
     }
   }
 };

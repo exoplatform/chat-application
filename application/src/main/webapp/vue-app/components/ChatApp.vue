@@ -58,11 +58,43 @@ export default {
   },
   created() {
     chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.contactList = chatRoomsData.rooms, userSettings => this.userSettings = userSettings);
+    document.addEventListener('exo-chat-room-updated', this.roomUpdated);
+    document.addEventListener('exo-chat-logout-sent', () => {
+      // TODO Display popin for disconnection
+      // + Change user status
+      // + Change messages sent color (use of local storage)
+      // + Display Session expired
+    });
+    document.addEventListener('exo-chat-disconnected', () => {
+      // TODO Display popin for disconnection
+      // + Change user status
+      // + Change messages sent color (use of local storage)
+    });
+    document.addEventListener('exo-chat-status-changed', (e) => {
+      const contactChanged = e.detail;
+      if (this.userSettings.username === contactChanged.name) {
+        this.userSettings.status = contactChanged.status;
+      }
+    });
+  },
+  destroyed() {
+    document.addEventListener('exo-chat-room-updated', this.roomUpdated);
+    // TODO remove added listeners
   },
   methods: {
     setSelectedContact(contact) {
       this.selectedContact = contact;
-      document.dispatchEvent(new CustomEvent('exo-chat-contact-changed', {'detail' : contact}));
+      document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : contact}));
+    },
+    roomUpdated(message) {
+      const contactToUpdate = this.contactList.find(contact => contact.room === message.room);
+      if (contactToUpdate) {
+        contactToUpdate.fullName = message.data.title;
+        if (this.selectedContact.room === message.room) {
+          // Refresh room
+          this.setSelectedContact(contactToUpdate);
+        }
+      }
     }
   }
 };

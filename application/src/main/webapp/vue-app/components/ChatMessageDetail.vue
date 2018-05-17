@@ -1,5 +1,6 @@
 <template>
   <div class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - <span v-html="message.msg"></span></div>
+  <!-- TODO: use notSent attribute from message object -->
 </template>
 
 <script>

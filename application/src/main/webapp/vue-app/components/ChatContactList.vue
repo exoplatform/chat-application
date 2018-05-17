@@ -91,24 +91,39 @@ export default {
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
-    filteredContacts() {
-      if(this.typeFilter === 'All') {
-        return this.contacts;
-      } else {
-        return this.contacts.filter(contact =>
+    filteredContacts: function() {
+      let sortedContacts = this.contacts;
+      if(this.typeFilter !== 'All') {
+        sortedContacts = this.contacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'
           || this.typeFilter === 'Rooms' && contact.type === 't'
           || this.typeFilter === 'Spaces' && contact.type === 's'
           || this.typeFilter === 'Favorites' && contact.isFavorite
         );
       }
+      sortedContacts.sort(function(a, b){return b.timestamp - a.timestamp;});
+      return sortedContacts;
     }
   },
   created() {
+    document.addEventListener('exo-chat-room-member-left', this.leftRoom);
+    document.addEventListener('exo-chat-room-deleted', this.leftRoom);
+    document.addEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
+    document.addEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
+    document.addEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
     document.addEventListener('exo-chat-message-received', this.notificationCountUpdated);
+    document.addEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
   },
   destroyed() {
+    document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
+    document.removeEventListener('exo-chat-room-deleted', this.leftRoom);
+    document.removeEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
+    document.removeEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
+    document.removeEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
     document.removeEventListener('exo-chat-message-received', this.notificationCountUpdated);
+    document.removeEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
   },
   methods: {
     selectContact(contact) {
@@ -133,8 +148,11 @@ export default {
     notificationCountUpdated(event) {
       const room = event.detail.room;
       this.contacts.forEach(contact => {
-        if (this.selected.room !== room && contact.room === room) {
-          contact.unreadTotal ++;
+        if (contact.room === room) {
+          contact.timestamp = event.detail.ts;
+          if (this.selected.room !== room) {
+            contact.unreadTotal ++;
+          }
         }
       });
     },
@@ -153,6 +171,47 @@ export default {
           this.createRoomModal = false;
         });
       }
+    },
+    markRoomMessagesRead(message) {
+      const contactToUpdate = this.findContact(message.room);
+      if(contactToUpdate) {
+        contactToUpdate.unreadTotal = 0;
+      }
+    },
+    contactStatusChanged(event) {
+      const contactChanged = event.detail;
+      this.contacts.forEach(contact => {
+        if (contact.type === 'u' && contact.name === contactChanged.name) {
+          contact.status = contactChanged.status;
+        }
+      });
+    },
+    leftRoom(message) {
+      const roomLeft = message.data ? message.data.room : message.room;
+      const roomIndex = this.contacts.findIndex(contact => contact.room === roomLeft);
+      if (roomIndex >= 0) {
+        this.contacts.splice(roomIndex, 1);
+      }
+    },
+    joinedToNewRoom(message) {
+      if (!this.findContact(message.room)) {
+        this.contacts.push(message.data);
+      }
+    },
+    favoriteAdded(message) {
+      const contactToUpdate = this.findContact(message.room);
+      if(contactToUpdate) {
+        contactToUpdate.isFavorite = true;
+      }
+    },
+    favoriteRemoved(message) {
+      const contactToUpdate = this.findContact(message.room);
+      if(contactToUpdate) {
+        contactToUpdate.isFavorite = false;
+      }
+    },
+    findContact(roomId) {
+      return this.contacts.find(contact => contact.room === roomId);
     }
   }
 };

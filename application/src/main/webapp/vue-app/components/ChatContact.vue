@@ -1,6 +1,6 @@
 <template>
   <div :class="statusStyle" class="chat-contact">
-    <div :style="{backgroundImage: 'url(' + contactAvatar + ')'}" class="chat-contact-avatar">
+    <div :style="`backgroundImage: url(${contactAvatar}`" :class="`user-${status}`" class="chat-contact-avatar">
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
@@ -8,7 +8,7 @@
         {{ name }}
         <slot></slot>
       </div>
-      <div v-if="type =='u' && !list" class="user-status">
+      <div v-if="type =='u' && !list" :class="`user-${status}`" class="user-status">
         <i class="uiIconStatus"></i>
         {{ status }}
       </div>

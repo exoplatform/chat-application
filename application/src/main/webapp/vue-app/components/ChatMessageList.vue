@@ -46,17 +46,32 @@ export default {
   },
   created() {
     document.addEventListener('exo-chat-message-received', this.messageReceived);
-    document.addEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
+    document.addEventListener('exo-chat-message-tosend', this.messageReceived);
     document.addEventListener('exo-chat-message-tosend', this.setScrollToBottom);
+    document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-received', this.messageReceived);
-    document.removeEventListener('exo-chat-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.removeEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
+    document.removeEventListener('exo-chat-message-tosend', this.messageSent);
     document.removeEventListener('exo-chat-message-tosend', this.setScrollToBottom);
+    document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
   },
   methods: {
+    messageSent(e) {
+      const messageObj = e.detail;
+      if (messageObj && (!this.contact || this.contact.room === messageObj.room) && messageObj && messageObj.data && messageObj.data.msgId) {
+        const foundMessage = this.findMessage(messageObj.data.msgId);
+        if (foundMessage) {
+          foundMessage.notSent = false;
+        } else {
+          this.messages.push(messageObj.data);
+        }
+      }
+    },
     messageReceived(e) {
       const messageObj = e.detail;
       if (messageObj && (!this.contact || this.contact.room === messageObj.room) && messageObj && messageObj.data && messageObj.data.msgId) {
@@ -99,6 +114,18 @@ export default {
           });
         }
       });
+    },
+    messageNotSent(e) {
+      let notSentMessage = e.detail;
+      if (notSentMessage && notSentMessage.data.msgId) {
+        notSentMessage = this.findMessage(notSentMessage.data.msgId);
+        if (notSentMessage) {
+          notSentMessage.notSent = true;
+        }
+      }
+    },
+    findMessage(msgId) {
+      return this.messages.find(message => {return message.msgId === msgId;});
     }
   }
 };

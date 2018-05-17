@@ -6,9 +6,17 @@ import './../css/main.less';
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
 
 exoi18n.loadLanguageAsync(lang).then(i18n => {
-  new Vue({
-    el: '#chatApplication',
-    render: h => h(ChatApp),
-    i18n
-  });}
-);
+  if ($('#chatApplication').length) {
+    new Vue({
+      el: '#chatApplication',
+      render: h => h(ChatApp),
+      i18n
+    });
+  } else if ($('#chatApplicationNotification').length) {
+    new Vue({
+      el: '#chatApplicationNotification',
+      render: h => h(ChatApp),
+      i18n
+    });
+  }
+});
