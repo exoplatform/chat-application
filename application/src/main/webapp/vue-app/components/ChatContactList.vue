@@ -112,7 +112,7 @@ export default {
     document.addEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
     document.addEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
     document.addEventListener('exo-chat-message-received', this.notificationCountUpdated);
-    document.addEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
   },
   destroyed() {
@@ -122,7 +122,7 @@ export default {
     document.removeEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
     document.removeEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
     document.removeEventListener('exo-chat-message-received', this.notificationCountUpdated);
-    document.removeEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
   },
   methods: {
@@ -179,9 +179,15 @@ export default {
       }
     },
     contactStatusChanged(event) {
+      console.log("user-status-changed - chat contact list");
+
       const contactChanged = event.detail;
       this.contacts.forEach(contact => {
         if (contact.type === 'u' && contact.name === contactChanged.name) {
+          console.log('found user');
+          console.log(contactChanged);
+          console.log('new status');
+          console.log(contactChanged.status);
           contact.status = contactChanged.status;
         }
       });

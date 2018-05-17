@@ -2,7 +2,7 @@
   <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
     <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate">
       <div class="chat-message-day-separator center">{{ dayDate }}</div>
-      <chat-message-detail v-for="messageObj in subMessages" :key="messageObj.msgId" :message="messageObj"></chat-message-detail>
+      <chat-message-detail v-for="messageObj in subMessages" :key="messageObj.clientId" :message="messageObj"></chat-message-detail>
     </div>
   </div>
 </template>
@@ -64,7 +64,7 @@ export default {
     messageSent(e) {
       const messageObj = e.detail;
       if (messageObj && (!this.contact || this.contact.room === messageObj.room) && messageObj && messageObj.data && messageObj.data.msgId) {
-        const foundMessage = this.findMessage(messageObj.data.msgId);
+        const foundMessage = this.findMessage('clientId', messageObj.data.clientId);
         if (foundMessage) {
           foundMessage.notSent = false;
         } else {
@@ -116,16 +116,21 @@ export default {
       });
     },
     messageNotSent(e) {
-      let notSentMessage = e.detail;
-      if (notSentMessage && notSentMessage.data.msgId) {
-        notSentMessage = this.findMessage(notSentMessage.data.msgId);
-        if (notSentMessage) {
+      const notSentMessage = e.detail;
+      if (notSentMessage && notSentMessage.clientId) {
+        const foundMessage = this.findMessage('clientId', notSentMessage.clientId);
+        if (foundMessage) {
+          console.log("foundMessage");
+          console.log(foundMessage);
+          foundMessage.notSent = true;
+        } else {
           notSentMessage.notSent = true;
+          this.messages.push(notSentMessage);
         }
       }
     },
-    findMessage(msgId) {
-      return this.messages.find(message => {return message.msgId === msgId;});
+    findMessage(field, msgId) {
+      return this.messages.find(message => {return message[field] === msgId;});
     }
   }
 };

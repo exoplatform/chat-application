@@ -70,7 +70,7 @@ export default {
       // + Change user status
       // + Change messages sent color (use of local storage)
     });
-    document.addEventListener('exo-chat-status-changed', (e) => {
+    document.addEventListener('exo-chat-user-status-changed', (e) => {
       const contactChanged = e.detail;
       if (this.userSettings.username === contactChanged.name) {
         this.userSettings.status = contactChanged.status;

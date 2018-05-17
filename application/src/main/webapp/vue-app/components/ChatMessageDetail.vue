@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - <span v-html="message.msg"></span></div>
+  <div :class="sentClass" class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - <span v-html="message.msg"></span></div>
   <!-- TODO: use notSent attribute from message object -->
 </template>
 
@@ -27,6 +27,9 @@ export default {
   computed: {
     dateString() {
       return chatTime.getTimeString(this.message.timestamp);
+    },
+    sentClass() {
+      return this.message.notSent ? 'chat-message-not-sent' : '';
     }
   }
 };

@@ -13,7 +13,7 @@ export function initCometD() {
       this.standalone = settings.standalone === 'true';
       this.wsEndpoint = settings.wsEndpoint;
 
-      if (this.cCometD === null) {
+      if (!this.cCometD) {
         this.cCometD = this.standalone ? cCometD.getInstance('chat') : cCometD;
     
         if (!this.cCometD.isConfigured) {
@@ -66,6 +66,9 @@ export function initCometD() {
     initChatCometd  : function () {
       this.cCometD.subscribe('/service/chat', null, function (event) {
         let message = event.data;
+        console.log("message detected");
+        console.log(message);
+
         if (typeof message !== 'object') {
           message = JSON.parse(message);
         }
@@ -75,7 +78,9 @@ export function initCometD() {
           window.chatNotification.cCometD.disconnect();
           document.dispatchEvent(new CustomEvent('exo-chat-logout-sent', {'detail' : message}));
         } else if (message.event === 'user-status-changed') {
-          document.dispatchEvent(new CustomEvent('exo-chat-status-changed', {'detail' : message}));
+          console.log("user-status-changed");
+          console.log(message);
+          document.dispatchEvent(new CustomEvent('exo-chat-user-status-changed', {'detail' : message}));
         } else if (message.event === 'notification-count-updated') {
           document.dispatchEvent(new CustomEvent('exo-chat-notification-count-updated', {'detail' : message}));
         } else if (message.event === 'room-member-joined') {
@@ -110,6 +115,7 @@ export function initCometD() {
     sendMessage : function (messageObj) {
       const data = {
         'clientId': new Date().getTime().toString(),
+        'timestamp': Date.now(),
         'room': messageObj.room,
         'msg': messageObj.message,
         'options': messageObj.options ? messageObj.options : {},
@@ -129,18 +135,14 @@ export function initCometD() {
       try {
         this.cCometD.publish('/service/chat', content, function(publishAck) {
           if (!publishAck || !publishAck.successful) {
-            document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : messageObj}));
+            document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
           }
         });
       } catch (e) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : messageObj}));
+        document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
       }
     }
   };
-
-  document.addEventListener('exo-chat-message-not-sent', () => {
-    // TODO store on localstorage to reattempt sending it once connected again
-  });
 
   document.addEventListener('exo-chat-message-tosend', (e) => {
     window.chatNotification.sendMessage(e.detail);
@@ -148,5 +150,9 @@ export function initCometD() {
 
   document.addEventListener('exo-chat-settings-loaded', (e) => {
     window.chatNotification.initSettings(e.detail);
+  });
+
+  document.addEventListener('exo-chat-message-not-sent', () => {
+    // TODO store on localstorage to reattempt sending it once connected again
   });
 }
