@@ -4,14 +4,13 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
-import org.exoplatform.services.security.ConversationRegistry;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.*;
 import org.exoplatform.services.user.UserStateModel;
 import org.exoplatform.services.user.UserStateService;
 import org.exoplatform.web.login.LogoutControl;
 
 import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -24,6 +23,7 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
     public void onEvent(Event<ConversationRegistry, ConversationState> event) throws Exception {
         UserStateService userStateService = CommonsUtils.getService(UserStateService.class);
         ConversationState data = event.getData();
+        ConversationRegistry conversationRegistry = event.getSource();
         if (data != null) {
             Identity identity = data.getIdentity();
             if (identity != null) {
@@ -38,10 +38,13 @@ public class UpdateUserStatusListener extends Listener<ConversationRegistry, Con
                     // Send logout message to all sessions of the given user in case of a logout, not in platform stop.
                     String token = ServerBootstrap.getToken(userId);
                     String dbName = ServerBootstrap.getDBName();
-                    ServerBootstrap.logout(userId, token, dbName);
+
+                    List<StateKey> stateKeys = conversationRegistry.getStateKeys(userId);
+                    stateKeys.remove(data);
+
+                    ServerBootstrap.logout(userId, token, dbName, (stateKeys == null || stateKeys.isEmpty()));
                 }
             }
         }
-
     }
 }

@@ -2,7 +2,7 @@
   <div id="chatApplicationContainer">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
-        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u"></chat-contact>
+        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u" @exo-chat-status-changed="setStatus($event)"></chat-contact>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :user-settings="userSettings" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>
@@ -57,34 +57,58 @@ export default {
     };
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.contactList = chatRoomsData.rooms, userSettings => this.userSettings = userSettings);
+    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.contactList = chatRoomsData.rooms, userSettings => this.initSettings(userSettings));
     document.addEventListener('exo-chat-room-updated', this.roomUpdated);
     document.addEventListener('exo-chat-logout-sent', () => {
+      if (!window.chatNotification.isConnected()) {
+        this.changeUserStatusToAway();
+      }
       // TODO Display popin for disconnection
       // + Change user status
       // + Change messages sent color (use of local storage)
       // + Display Session expired
     });
     document.addEventListener('exo-chat-disconnected', () => {
+      this.changeUserStatusToAway();
       // TODO Display popin for disconnection
       // + Change user status
       // + Change messages sent color (use of local storage)
     });
+    document.addEventListener('exo-chat-connected', this.connectionEstablished);
+    document.addEventListener('exo-chat-reconnected', this.connectionEstablished);
     document.addEventListener('exo-chat-user-status-changed', (e) => {
       const contactChanged = e.detail;
       if (this.userSettings.username === contactChanged.name) {
         this.userSettings.status = contactChanged.status;
+        this.userSettings.originalStatus = contactChanged.status;
       }
     });
   },
   destroyed() {
-    document.addEventListener('exo-chat-room-updated', this.roomUpdated);
+    document.removeEventListener('exo-chat-connected', this.connectionEstablished);
+    document.removeEventListener('exo-chat-reconnected', this.connectionEstablished);
+    document.removeEventListener('exo-chat-room-updated', this.roomUpdated);
     // TODO remove added listeners
   },
   methods: {
+    initSettings(userSettings) {
+      this.userSettings = userSettings;
+      // Trigger that the new status has been loaded
+      this.setStatus(this.userSettings.status);
+      if(this.userSettings.offilineDelay) {
+        setInterval(
+          this.refreshContacts,
+          this.userSettings.offilineDelay);
+      }
+    },
     setSelectedContact(contact) {
       this.selectedContact = contact;
       document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : contact}));
+    },
+    setStatus(status) {
+      if (window.chatNotification && window.chatNotification.isConnected()) {
+        window.chatNotification.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
+      }
     },
     roomUpdated(message) {
       const contactToUpdate = this.contactList.find(contact => contact.room === message.room);
@@ -95,6 +119,30 @@ export default {
           this.setSelectedContact(contactToUpdate);
         }
       }
+    },
+    connectionEstablished() {
+      if (this.userSettings.originalStatus !== this.userSettings.status) {
+        this.setStatus(this.userSettings.originalStatus);
+      } else if (this.userSettings && this.userSettings.originalStatus) {
+        this.userSettings.status = this.userSettings.originalStatus;
+      }
+    },
+    refreshContacts() {
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
+          this.contactList = chatRoomsData.rooms;
+          if (this.selectedContact) {
+            const contactToChange = this.contactList.find(contact => contact.name === this.selectedContact.name);
+            this.setSelectedContact(contactToChange);
+          }
+        });
+      });
+    },
+    changeUserStatusToAway() {
+      if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {
+        this.userSettings.originalStatus = this.userSettings.status;
+      }
+      this.userSettings.status = 'away';
     }
   }
 };

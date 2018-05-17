@@ -26,6 +26,7 @@ export function initCometD() {
           this.initChatCometdHandshake();
           this.initChatConnectionListener();
         }
+        this.setStatus(settings.status);
       }
     },
     initChatConnectionListener : function () {
@@ -35,13 +36,17 @@ export function initCometD() {
           window.chatNotification.connected = false;
           return;
         }
-  
+
         const wasConnected = window.chatNotification.connected;
         window.chatNotification.connected = message.successful === true;
-        if (!wasConnected && window.chatNotification.connected) {
-          document.dispatchEvent(new CustomEvent('exo-chat-connected', {'detail' : window.chatNotification}));
-        } else if (wasConnected && !window.chatNotification.connected) {
-          document.dispatchEvent(new CustomEvent('exo-chat-disconnected', {'detail' : window.chatNotification}));
+        if(window.chatNotification.connected) {
+          if (wasConnected) {
+            document.dispatchEvent(new CustomEvent('exo-chat-reconnected'));
+          } else {
+            document.dispatchEvent(new CustomEvent('exo-chat-connected'));
+          }
+        } else  if(wasConnected) {
+          document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
         }
       });
     },
@@ -66,9 +71,6 @@ export function initCometD() {
     initChatCometd  : function () {
       this.cCometD.subscribe('/service/chat', null, function (event) {
         let message = event.data;
-        console.log("message detected");
-        console.log(message);
-
         if (typeof message !== 'object') {
           message = JSON.parse(message);
         }
@@ -78,8 +80,6 @@ export function initCometD() {
           window.chatNotification.cCometD.disconnect();
           document.dispatchEvent(new CustomEvent('exo-chat-logout-sent', {'detail' : message}));
         } else if (message.event === 'user-status-changed') {
-          console.log("user-status-changed");
-          console.log(message);
           document.dispatchEvent(new CustomEvent('exo-chat-user-status-changed', {'detail' : message}));
         } else if (message.event === 'notification-count-updated') {
           document.dispatchEvent(new CustomEvent('exo-chat-notification-count-updated', {'detail' : message}));
@@ -112,12 +112,35 @@ export function initCometD() {
         }
       });
     },
-    sendMessage : function (messageObj) {
+    setStatus : function (status, callback) {
+      if (status) {
+        this.cCometD.publish('/service/chat', JSON.stringify({
+          'event': 'user-status-changed',
+          'sender': this.username,
+          'room': this.username,
+          'dbName': this.dbName,
+          'token': this.token,
+          'data': {
+            'status': status
+          }
+        }), function (publishAck) {
+          if (publishAck.successful) {
+            if (typeof callback === 'function') {
+              callback(status);
+            }
+          }
+        });
+      }
+    },
+    isConnected: function() {
+      return this.cCometD && !this.cCometD.isDisconnected();
+    },
+    sendMessage : function (messageObj, callback) {
       const data = {
         'clientId': new Date().getTime().toString(),
         'timestamp': Date.now(),
-        'room': messageObj.room,
         'msg': messageObj.message,
+        'room': messageObj.room,
         'options': messageObj.options ? messageObj.options : {},
         'isSystem': messageObj.isSystemMessage != null && messageObj.isSystemMessage,
         'user': this.username,
@@ -136,6 +159,8 @@ export function initCometD() {
         this.cCometD.publish('/service/chat', content, function(publishAck) {
           if (!publishAck || !publishAck.successful) {
             document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
+          } else {
+            callback(data);
           }
         });
       } catch (e) {

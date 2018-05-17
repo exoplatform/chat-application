@@ -120,8 +120,6 @@ export default {
       if (notSentMessage && notSentMessage.clientId) {
         const foundMessage = this.findMessage('clientId', notSentMessage.clientId);
         if (foundMessage) {
-          console.log("foundMessage");
-          console.log(foundMessage);
           foundMessage.notSent = true;
         } else {
           notSentMessage.notSent = true;

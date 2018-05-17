@@ -20,7 +20,7 @@
 package org.exoplatform.chat.server;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.*;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,6 +29,8 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.impl.common.Tools;
+
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
@@ -79,17 +81,32 @@ public class ChatTools
 
   @Resource
   @Route("/logout")
-  public Response.Content logout(String username, String token, String passphrase, String dbName)
+  public Response.Content logout(String username, String token, String passphrase, String dbName, String uniqueSession)
   {
-    if (!checkPassphrase(passphrase))
-    {
+    if (!checkPassphrase(passphrase)) {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    // send logout message to all sessions of the given user to check if their session is closed
-    RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.LOGOUT_SENT, null, username, new Date(), null);
+    // send logout message to all sessions of the given user to check if their
+    // session is closed
+    RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.LOGOUT_SENT,
+                                                                      null,
+                                                                      username,
+                                                                      new Date(),
+                                                                      null);
     realTimeMessageService.sendMessage(realTimeMessageBean, username);
 
+    if (StringUtils.equals(uniqueSession, "true")) {
+      // Notify other users about the session logout of user
+      Map<String, Object> data = new HashMap<String, Object>();
+      data.put("status", UserService.STATUS_AWAY);
+      realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.USER_STATUS_CHANGED,
+                                                    username,
+                                                    username,
+                                                    new Date(),
+                                                    data);
+      realTimeMessageService.sendMessageToAll(realTimeMessageBean);
+    }
     return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 

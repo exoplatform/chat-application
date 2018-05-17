@@ -48,11 +48,11 @@ export default {
   },
   created() {
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.addEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.removeEventListener('exo-chat-status-changed', this.contactStatusChanged);
+    document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
   },
   methods: {
     toggleCollapsed() {
@@ -67,18 +67,24 @@ export default {
       if (contact.type === 'u') {
         this.participants = [];
       } else {
-        chatServices.getRoomParticipants(this.userSettings, contact).then( data => {
-          this.participants = data.users;
+        chatServices.getOnlineUsers().then(users => {
+          chatServices.getRoomParticipants(this.userSettings, contact).then( data => {
+            this.participants = data.users;
+            this.participants.forEach(participant => {
+              if(users.indexOf(participant.name)< 0) {
+                participant.status = 'away';
+              }
+            });
+          });
         });
       }
     },
     contactStatusChanged(e) {
       const contact = e.detail;
-      this.participants.forEach((participant) => {
-        if(participant.name === contact.name) {
-          participant.status = contact.status;
-        }
-      });
+      const participantToChange = this.participants.find(participant => participant.name === contact.sender);
+      if (participantToChange) {
+        participantToChange.status = contact.data.status;
+      }
     }
   }
 };

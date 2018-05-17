@@ -1,5 +1,5 @@
 <template>
-  <div :class="statusStyle" class="chat-contact">
+  <div :class="statusStyle" class="chat-contact" @click="setStatus(status)">
     <div :style="`backgroundImage: url(${contactAvatar}`" :class="`user-${status}`" class="chat-contact-avatar">
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
@@ -60,14 +60,19 @@ export default {
       if (this.type === 'u') {
         return getUserAvatar(this.userName);
       } else if (this.type === 's') {
-        const space_id = this.name.replace(' ', '_').toLowerCase(); // TODO verify the possibility of add space id to whoIsOnline 
-        return getSpaceAvatar(space_id);
+        return getSpaceAvatar(encodeURI(this.name));
       } else {
         return '/chat/img/user-default.jpg'; // TODO add room default avatar
       }
     }
   },
-  methods: { 
+  methods: {
+    setStatus(status) {
+      // TODO, TO REMOVE !!!!
+      status = status === 'available' ? 'away' : 'available';
+
+      this.$emit('exo-chat-status-changed', status);
+    }
   }
 };
 </script>

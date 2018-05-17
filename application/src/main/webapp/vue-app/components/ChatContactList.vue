@@ -179,18 +179,11 @@ export default {
       }
     },
     contactStatusChanged(event) {
-      console.log("user-status-changed - chat contact list");
-
       const contactChanged = event.detail;
-      this.contacts.forEach(contact => {
-        if (contact.type === 'u' && contact.name === contactChanged.name) {
-          console.log('found user');
-          console.log(contactChanged);
-          console.log('new status');
-          console.log(contactChanged.status);
-          contact.status = contactChanged.status;
-        }
-      });
+      const foundContact = this.findContact(contactChanged.sender, 'user');
+      if (foundContact) {
+        foundContact.status = contactChanged.data.status;
+      }
     },
     leftRoom(message) {
       const roomLeft = message.data ? message.data.room : message.room;
@@ -216,8 +209,11 @@ export default {
         contactToUpdate.isFavorite = false;
       }
     },
-    findContact(roomId) {
-      return this.contacts.find(contact => contact.room === roomId);
+    findContact(value, field) {
+      if (!field)  {
+        field = 'room';
+      }
+      return this.contacts.find(contact => contact[field] === value);
     }
   }
 };

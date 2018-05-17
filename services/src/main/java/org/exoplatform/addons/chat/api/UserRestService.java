@@ -170,8 +170,8 @@ public class UserRestService implements ResourceContainer {
       ServerBootstrap.saveSpaces(currentUsername, dbName);
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
     }
-    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
-    boolean online = userState.isOnline(currentUsername);
+    UserStateService userStateService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
+    boolean online = userStateService.isOnline(currentUsername);
 
     ContinuationService continuation = ExoContainerContext.getCurrentContainer()
                                                           .getComponentInstanceOfType(ContinuationService.class);
@@ -200,6 +200,7 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("serverURL", ServerBootstrap.getServerURL());
     userSettings.put("standalone", isStandalone);
     userSettings.put("chatPage", chatPage);
+    userSettings.put("offilineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
