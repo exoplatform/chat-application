@@ -2,7 +2,10 @@ import * as ChatServices from './chatServices';
 const USER_LIMIT = 10;
 
 export default (element, userSettings, vm) => {
-  $('#add-room-suggestor').suggester({
+  element = $(element);
+  
+  //init suggester
+  element.suggester({
     type: 'tag',
     create: false,
     createOnBlur: false,
@@ -27,7 +30,7 @@ export default (element, userSettings, vm) => {
     },
     renderItem(item) {
       vm.newRoom.participants.push(item);
-      return '';
+      return false;
     },
     sortField: [{field: 'order'}, {field: '$score'}],
     providers: {
@@ -42,4 +45,8 @@ export default (element, userSettings, vm) => {
       }
     }
   });
+
+  //clear suggester
+  element.suggester('setValue', '');
+  element[0].selectize.renderCache['item'] = {};
 };

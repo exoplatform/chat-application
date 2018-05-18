@@ -149,6 +149,17 @@ export default {
       });
     },
     removeSuggest(i) {
+      const suggest = this.newRoom.participants[i].name;
+      const suggesterInput = $("#add-room-suggestor");
+      // cast suugester value to array
+      let suggesterValue = suggesterInput.suggester("getValue").split(',');
+      // remove suggest from array
+      suggesterValue = suggesterValue.filter(value => value !== suggest);
+      // set new value as string
+      suggesterInput.suggester('setValue', suggesterValue.join(','));
+      // clear render cache
+      suggesterInput[0].selectize.renderCache['item'] = {};
+      // remove suggest for participants list
       this.newRoom.participants.splice(i,1);
     },
     saveNewRoom() {
