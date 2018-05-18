@@ -20,7 +20,7 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
     getOnlineUsers().then(users => { // Fetch online users
       getChatRooms(e.detail, users).then(data => {
         chatRoomsLoadedCallback(data);
-
+        
         const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
         updateTotalUnread(totalUnreadMsg);
       });
@@ -33,7 +33,12 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
   });
 
   getUserSettings(username).then(userSettings => {
+    if (!eXo) { eXo = {}; }
+    if (!eXo.chat) { eXo.chat = {}; }
+    eXo.chat.userSettings = userSettings;
+    
     userSettingsLoadedCallback(userSettings);
+    
     document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
   });
 }

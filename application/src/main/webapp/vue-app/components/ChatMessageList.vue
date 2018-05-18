@@ -1,8 +1,8 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
-    <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate">
-      <div class="chat-message-day-separator center">{{ dayDate }}</div>
-      <chat-message-detail v-for="messageObj in subMessages" :key="messageObj.clientId" :message="messageObj"></chat-message-detail>
+    <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
+      <div class="day-separator">{{ dayDate }}</div>
+      <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)"></chat-message-detail>
     </div>
   </div>
 </template>
@@ -38,6 +38,7 @@ export default {
       days.forEach(element => {
         messagesMap[element] = this.messages.filter((message) => chatTime.getDayDate(message.timestamp) === element);
       });
+      console.log(messagesMap);
       return messagesMap;
     }
   },
@@ -129,6 +130,25 @@ export default {
     },
     findMessage(field, msgId) {
       return this.messages.find(message => {return message[field] === msgId;});
+    },
+    getPrevMessage(i, messages) {
+      return i <= 0 && messages.length >= i ? null : messages[i-1];
+    },
+    isHideTime(i, messages) {
+      const prevMsg = this.getPrevMessage(i, messages);
+      if (prevMsg === null) {
+        return false;
+      } else {
+        return chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp) ? true : false;
+      }
+    },
+    isHideAvatar(i, messages) {
+      const prevMsg = this.getPrevMessage(i, messages);
+      if (prevMsg === null) {
+        return false;
+      } else {
+        return prevMsg.user === messages[i].user ? true : false;
+      }
     }
   }
 };
