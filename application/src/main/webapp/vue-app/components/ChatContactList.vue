@@ -26,7 +26,7 @@
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
-    <modal v-show="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="createRoomModal = false">
+    <modal v-show="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="closeNewRoomModal">
       <div class="add-room-form">
         <label>Quel est le nom de votre salon?</label>
         <input v-model="newRoom.name" type="text">
@@ -42,7 +42,7 @@
       </div>
       <div class="uiAction uiActionBorder">
         <a href="#" class="btn btn-primary" @click="saveNewRoom">Enregistrer</a>
-        <a href="#" class="btn" @click="createRoomModal = false">Annuler</a>
+        <a href="#" class="btn" @click="closeNewRoomModal">Annuler</a>
       </div>
     </modal>
   </div>
@@ -168,12 +168,15 @@ export default {
         users.unshift(eXo.chat.userSettings.username);
         users = users.join(',');
         chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users).then(() => {
-          // reset newRoom
-          this.newRoom.name = '';
-          this.newRoom.participants = [];
-          this.createRoomModal = false;
+          this.closeNewRoomModal();
         });
       }
+    },
+    closeNewRoomModal() {
+      // reset newRoom
+      this.newRoom.name = '';
+      this.newRoom.participants = [];
+      this.createRoomModal = false;
     },
     markRoomMessagesRead(message) {
       const contactToUpdate = this.findContact(message.room);
