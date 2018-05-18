@@ -16,7 +16,7 @@
         </dropdown-select>
       </div>
       <div class="room-participants-list isList">
-        <chat-contact v-for="contact in participants" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
+        <chat-contact v-for="contact in filteredParticipant" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
       </div>
     </div>
   </div>
@@ -26,6 +26,10 @@
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import * as chatServices from '../chatServices';
+import * as chatWebStorage from '../chatWebStorage';
+
+const STATUS_FILTER_PARAM = 'exo.chat.room.participant.filter';
+const STATUS_FILTER_DEFAULT = 'All';
 
 export default {
   components: {ChatContact, DropdownSelect},
@@ -33,14 +37,22 @@ export default {
     return {
       isCollapsed: true,
       filterByStatus: ['All', 'Online'],
-      participantFilter: 'All',
+      participantFilter: STATUS_FILTER_DEFAULT,
       contact: null,
       participants: []
     };
   },
+  computed: {
+    filteredParticipant() {
+      return this.participants.filter(participant => {
+        return this.participantFilter === 'All' ||  ['available','busy','absent'].indexOf(participant.status) > -1;
+      });
+    }
+  },
   created() {
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
+    this.participantFilter = chatWebStorage.getStoredParam(STATUS_FILTER_PARAM, STATUS_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
@@ -51,6 +63,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     },
     selectParticipantFilter(filter) {
+      chatWebStorage.setStoredParam(STATUS_FILTER_PARAM, filter);
       this.participantFilter = filter;
     },
     contactChanged(e) {
