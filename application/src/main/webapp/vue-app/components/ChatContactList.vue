@@ -50,10 +50,17 @@
 
 <script>
 import * as chatServices from '../chatServices';
+import * as chatWebStorage from '../chatWebStorage';
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './Modal.vue';
 import initSuggester from '../chatSuggester';
+
+const TYPE_FILTER_PARAM = 'exo.chat.type.filter';
+const TYPE_FILTER_DEFAULT = 'All';
+const SORT_FILTER_PARAM = 'exo.chat.sort.filter';
+const SORT_FILTER_DEFAULT = 'Recent';
+
 export default {
   components: {ChatContact, DropdownSelect, Modal},
   props: {
@@ -71,9 +78,9 @@ export default {
   data : function() {
     return {
       sortByDate: ['Recent','Unread'], // TODO add to locale
-      sortFilter: 'Recent',
+      sortFilter: SORT_FILTER_DEFAULT,
       filterByType: ['All','People','Rooms','Spaces','Favorites'],
-      typeFilter: 'All',
+      typeFilter: TYPE_FILTER_DEFAULT,
       createRoomModal: false,
       newRoom: {
         name: '',
@@ -95,7 +102,11 @@ export default {
           || this.typeFilter === 'Favorites' && contact.isFavorite
         );
       }
-      sortedContacts.sort(function(a, b){return b.timestamp - a.timestamp;});
+      if (this.sortFilter === 'Unread') {
+        sortedContacts.sort(function(a, b){return b.unreadTotal - a.unreadTotal;});
+      } else {
+        sortedContacts.sort(function(a, b){return b.timestamp - a.timestamp;});
+      }
       return sortedContacts;
     }
   },
@@ -108,6 +119,8 @@ export default {
     document.addEventListener('exo-chat-message-received', this.notificationCountUpdated);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
+    this.typeFilter = chatWebStorage.getStoredParam(TYPE_FILTER_PARAM, TYPE_FILTER_DEFAULT);
+    this.sortFilter = chatWebStorage.getStoredParam(SORT_FILTER_PARAM, SORT_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
@@ -129,9 +142,11 @@ export default {
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
+      chatWebStorage.setStoredParam(SORT_FILTER_PARAM, this.sortFilter);
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
+      chatWebStorage.setStoredParam(TYPE_FILTER_PARAM, this.typeFilter);
     },
     openCreateRoomModal() {
       this.createRoomModal = true;
@@ -150,9 +165,9 @@ export default {
     },
     removeSuggest(i) {
       const suggest = this.newRoom.participants[i].name;
-      const suggesterInput = $("#add-room-suggestor");
+      const suggesterInput = $('#add-room-suggestor');
       // cast suugester value to array
-      let suggesterValue = suggesterInput.suggester("getValue").split(',');
+      let suggesterValue = suggesterInput.suggester('getValue').split(',');
       // remove suggest from array
       suggesterValue = suggesterValue.filter(value => value !== suggest);
       // set new value as string
