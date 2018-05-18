@@ -38,7 +38,6 @@ export default {
       days.forEach(element => {
         messagesMap[element] = this.messages.filter((message) => chatTime.getDayDate(message.timestamp) === element);
       });
-      console.log(messagesMap);
       return messagesMap;
     }
   },

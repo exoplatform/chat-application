@@ -1,7 +1,5 @@
 <template>
-  <!-- <div :class="sentClass" class="chat-message-detail"> {{ dateString }} - {{ message.fullname }} - <span v-html="message.msg"></span></div>-->
-
-  <div :class="{'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
+  <div :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
@@ -13,7 +11,6 @@
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
   </div>
-  <!-- TODO: use notSent attribute from message object -->
 </template>
 
 <script>
@@ -48,20 +45,17 @@ export default {
   },
   data : function() {
     return {
-      isCurrentUser: eXo.chat.userSettings.username == this.message.user ? true : false
-    }
+      isCurrentUser: eXo.chat.userSettings.username === this.message.user
+    };
   },
   computed: {
     dateString() {
       return chatTime.getTimeString(this.message.timestamp);
-    },
-    sentClass() {
-      return this.message.notSent ? 'chat-message-not-sent' : '';
     },
     contactAvatar() {
       return getUserAvatar(this.message.user);
     },
 
   }
-}
+};
 </script>

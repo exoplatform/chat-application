@@ -126,15 +126,8 @@ export default {
         window.chatNotification.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
       }
     },
-    roomUpdated(message) {
-      const contactToUpdate = this.contactList.find(contact => contact.room === message.room);
-      if (contactToUpdate) {
-        contactToUpdate.fullName = message.data.title;
-        if (this.selectedContact.room === message.room) {
-          // Refresh room
-          this.setSelectedContact(contactToUpdate);
-        }
-      }
+    roomUpdated() {
+      this.refreshContacts();
     },
     connectionEstablished() {
       if (this.userSettings.originalStatus !== this.userSettings.status) {

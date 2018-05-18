@@ -669,7 +669,7 @@ public class ChatServer
     }
     catch (Exception e)
     {
-      LOG.warning(e.getMessage());
+      LOG.log(Level.WARNING, "Error while saving room " + teamName, e);
       return Response.notFound("No Room yet");
     }
     return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")

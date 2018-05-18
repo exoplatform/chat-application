@@ -155,12 +155,18 @@ export function initCometD() {
         'data': data
       });
 
+      if (!this.isConnected()) {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
+        return;
+      }
       try {
         this.cCometD.publish('/service/chat', content, function(publishAck) {
           if (!publishAck || !publishAck.successful) {
             document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
           } else {
-            callback(data);
+            if (callback) {
+              callback(data);
+            }
           }
         });
       } catch (e) {

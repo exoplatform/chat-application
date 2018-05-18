@@ -12,7 +12,7 @@
         <dropdown-select v-show="!isCollapsed" position="right">
           <span slot="toggle">{{ participantFilter }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
-          <li v-for="filter in filterByStatus" slot="menu" :key="filter" @click="selectparticipantFilter(filter)"><a href="#">{{ filter }}</a></li>
+          <li v-for="filter in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#">{{ filter }}</a></li>
         </dropdown-select>
       </div>
       <div class="room-participants-list isList">
@@ -58,7 +58,7 @@ export default {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
     },
-    selectparticipantFilter(filter) {
+    selectParticipantFilter(filter) {
       this.participantFilter = filter;
     },
     contactChanged(e) {
@@ -69,12 +69,13 @@ export default {
       } else {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(this.userSettings, contact).then( data => {
-            this.participants = data.users;
-            this.participants.forEach(participant => {
-              if(users.indexOf(participant.name)< 0) {
-                participant.status = 'away';
+            this.participants = data.users.reduce((prev, curr) => {
+              // if user is not online, set its status as away
+              if(users.indexOf(curr.name) < 0) {
+                curr.status = 'away';
               }
-            });
+              return curr.name === eXo.chat.userSettings.username ? prev: [...prev, curr];
+            }, []);
           });
         });
       }

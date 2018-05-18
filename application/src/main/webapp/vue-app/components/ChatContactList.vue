@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="contactList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
+      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
@@ -128,8 +128,6 @@ export default {
   methods: {
     selectContact(contact) {
       this.$emit('exo-chat-contact-selected', contact);
-      //let room = this.contacts.findIndex(c => c.user == contact.user);
-      //this.contacts[room].unreadTotal = 0;
       contact.unreadTotal = 0;
     },
     toggleFavorite(contact) {
@@ -192,9 +190,9 @@ export default {
         this.contacts.splice(roomIndex, 1);
       }
     },
-    joinedToNewRoom(message) {
-      if (!this.findContact(message.room)) {
-        this.contacts.push(message.data);
+    joinedToNewRoom(e) {
+      if (!this.findContact(e.detail.room)) {
+        this.contacts.push(e.detail.data);
       }
     },
     favoriteAdded(message) {
