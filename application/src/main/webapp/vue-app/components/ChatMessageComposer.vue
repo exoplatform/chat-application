@@ -91,7 +91,6 @@ export default {
           timestamp: Date.now(),
           user: eXo.chat.userSettings.username
         };
-        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
         this.$emit('exo-chat-message-written', message);
         this.newMessage = '';
       }

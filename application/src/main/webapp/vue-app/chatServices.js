@@ -1,5 +1,9 @@
 import {chatData} from './chatData.js';
 import * as chatNotification from './ChatNotification';
+import * as chatWebStorage from './chatWebStorage';
+
+const RESEND_MESSAGE_PERIOD = 3000;
+let resendIntervalID;
 
 export function getUser(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {credentials: 'include'})
@@ -23,6 +27,11 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
         
         const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
         updateTotalUnread(totalUnreadMsg);
+
+        if (!resendIntervalID) {
+          window.clearInterval(resendIntervalID);
+        }
+        resendIntervalID = window.setInterval(chatWebStorage.sendFailedMessages, RESEND_MESSAGE_PERIOD);
       });
     });
   });

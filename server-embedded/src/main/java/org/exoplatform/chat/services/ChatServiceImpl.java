@@ -83,6 +83,7 @@ public class ChatServiceImpl implements ChatService
       JSONObject data = msg.toJSONObject();
       data.put("clientId", clientId);
       data.put("roomType", roomType);
+      data.put("room", room);
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         data.put("roomDisplayName", user.getFullname());
       } else {

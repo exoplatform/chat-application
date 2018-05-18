@@ -12,6 +12,7 @@
 
 <script>
 import ChatMessageDetail from './ChatMessageDetail.vue';
+import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
 import ChatMessageComposer from './ChatMessageComposer.vue';
@@ -55,14 +56,15 @@ export default {
   },
   methods: {
     messageWritten(message) {
-      message.notSent = true;
-      this.addOrUpdateMessage(message);
+      chatWebStorage.storeNotSentMessage(message);
+      this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
     },
     messageReceived(e) {
       const messageObj = e.detail;
-      messageObj.notSent = false;
-      this.addOrUpdateMessage(messageObj.data);
+      chatWebStorage.storeMessageAsSent(messageObj.data);
+      this.addOrUpdateMessageToList(messageObj.data);
     },
     contactChanged(e) {
       this.contact = e.detail;
@@ -94,7 +96,8 @@ export default {
           // Scroll to bottom once messages list updated
           this.scrollToBottom = true;
 
-          this.messages = data.messages;
+          const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(eXo.chat.userSettings.username, this.contact.room);
+          this.messages = data.messages.concat(roomNotSentMessages);
           this.messages.sort((a, b) => {
             return a.timestamp - b.timestamp;
           });
@@ -123,16 +126,12 @@ export default {
         return prevMsg.user === messages[i].user ? true : false;
       }
     },
-    addOrUpdateMessage(message) {
+    addOrUpdateMessageToList(message) {
       if(!message || !message.room || !message.clientId || message.room !== this.contact.room) {
         return;
       }
-      const foundMessageIndex = this.messages.findIndex(messageObj => messageObj.clientId === message.clientId);
-      if (foundMessageIndex >= 0) {
-        this.messages.splice(foundMessageIndex, 1, message);
-      } else {
-        this.messages.push(message);
-      }
+      this.messages = this.messages.filter(messageObj => messageObj.clientId !== message.clientId);
+      this.messages.push(message);
     }
   }
 };

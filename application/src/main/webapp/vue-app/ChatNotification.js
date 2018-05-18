@@ -73,7 +73,6 @@ export function initCometD() {
         let message = event.data;
         if (typeof message !== 'object') {
           message = JSON.parse(message);
-          console.log(event);
         }
 
         // TODO combine all those to one single statement
