@@ -21,6 +21,7 @@
 
 <script>
 import * as chatServices from '../chatServices';
+import * as chatWebStorage from '../chatWebStorage';
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
@@ -57,7 +58,7 @@ export default {
     };
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.contactList = chatRoomsData.rooms, userSettings => this.initSettings(userSettings));
+    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.initChatRooms(chatRoomsData), userSettings => this.initSettings(userSettings));
     document.addEventListener('exo-chat-room-updated', this.roomUpdated);
     document.addEventListener('exo-chat-logout-sent', () => {
       if (!window.chatNotification.isConnected()) {
@@ -101,9 +102,24 @@ export default {
           this.userSettings.offilineDelay);
       }
     },
-    setSelectedContact(contact) {
-      this.selectedContact = contact;
-      document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : contact}));
+    initChatRooms(chatRoomsData) {
+      this.contactList = chatRoomsData.rooms.reduce(function(prev, curr) {
+        return curr.fullName ? [...prev, curr] : prev;
+      }, []);
+
+      const selectedRoom = chatWebStorage.getStoredParam(chatWebStorage.LAST_SELECTED_ROOM_PARAM);
+      if(selectedRoom) {
+        this.setSelectedContact(selectedRoom);
+      }
+    },
+    setSelectedContact(selectedContact) {
+      if (typeof selectedContact === 'string') {
+        selectedContact = this.contactList.find(contact => contact.room === selectedContact);
+      }
+      if (selectedContact) {
+        this.selectedContact = selectedContact;
+        document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : selectedContact}));
+      }
     },
     setStatus(status) {
       if (window.chatNotification && window.chatNotification.isConnected()) {
@@ -130,7 +146,9 @@ export default {
     refreshContacts() {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
-          this.contactList = chatRoomsData.rooms;
+          this.contactList = chatRoomsData.rooms.reduce(function(prev, curr) {
+            return curr.fullName ? [...prev, curr] : prev;
+          }, []);
           if (this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.name === this.selectedContact.name);
             this.setSelectedContact(contactToChange);

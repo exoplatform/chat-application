@@ -1,3 +1,5 @@
+export const LAST_SELECTED_ROOM_PARAM = 'lastSelectedRoom';
+
 const NB_MILLISECONDS_PERD_SECOND = 1000;
 const DEFAULT_EXPIRATION_PERIOD = 300;
 
@@ -10,7 +12,7 @@ export function getStoredParam(key, defaultValue) {
 
   const now = Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND);
 
-  if (val !== null && val !== null && (now<ts || ts===-1 )) {
+  if (val && (now<ts || ts===-1 )) {
     return val;
   }
 
@@ -18,7 +20,16 @@ export function getStoredParam(key, defaultValue) {
 }
 
 export function setStoredParam(key, value, expire) {
-  expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
-  localStorage.setItem(`${key}TS`, Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND) + expire);
+  if (expire > -1) {
+    expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
+    localStorage.setItem(`${key}TS`, Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND) + expire);
+  }
   localStorage.setItem(key, value);
 }
+
+document.addEventListener('exo-chat-selected-contact-changed', (e) => {
+  const selectedContact = e.detail;
+  if (selectedContact && selectedContact.room) {
+    setStoredParam('lastSelectedRoom', selectedContact.room);
+  }
+});
