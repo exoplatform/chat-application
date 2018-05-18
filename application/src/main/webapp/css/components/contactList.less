@@ -1,7 +1,9 @@
 /* contact list component */
 .contactListContainer {
+  .flex-column;
   .contactFilter, .listHeader {
     .flex-center;
+    flex-shrink: 0;
   }
   .contactFilter {
     height: 36px;
@@ -24,7 +26,6 @@
     }
   }
   .listHeader {
-    .flex-center;
     justify-content: space-between;
     height: 50px;
     padding: 0 20px;
@@ -32,6 +33,7 @@
   }
   .contactList {
     padding: 10px 0;
+    overflow-y: auto;
   }
   .chat-contact {
     margin-right: auto;
