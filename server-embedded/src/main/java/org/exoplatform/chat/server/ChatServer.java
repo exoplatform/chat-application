@@ -128,6 +128,9 @@ public class ChatServer
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
     RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, false, ilimit,
             notificationService, tokenService, dbName);
+    roomsBean.getRooms().forEach((roomBean) -> {
+      roomBean.setFavorite(userService.isFavorite(user, roomBean.getRoom(), dbName));
+    });
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }

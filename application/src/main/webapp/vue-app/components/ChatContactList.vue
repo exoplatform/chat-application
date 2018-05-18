@@ -138,7 +138,7 @@ export default {
       contact.unreadTotal = 0;
     },
     toggleFavorite(contact) {
-      contact.isFavorite = !contact.isFavorite;
+      chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;

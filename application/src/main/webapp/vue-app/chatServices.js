@@ -70,6 +70,13 @@ export function getOnlineUsers() {
     .then(resp => resp.text());
 }
 
+export function toggleFavorite(room, favorite) {
+  return fetch(`${chatData.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
+    headers: {
+      'Authorization': `Bearer ${eXo.chat.userSettings.token}`
+    }}).then(resp =>  resp.text());
+}
+
 export function getChatRooms(userSettings, onlineUsers) {
   return fetch(`${chatData.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&timestamp=${new Date().getTime()}`, {
     headers: {
