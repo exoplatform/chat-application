@@ -84,8 +84,15 @@ export default {
     sendMessage(event) {
       const enterKeyCode = 13;
       if (event.keyCode === enterKeyCode && !event.shiftKey && !event.ctrlKey && !event.altKey) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {'message' : this.newMessage, 'room' : this.contact.room}}));
-        document.dispatchEvent(new CustomEvent('exo-chat-messages-scrollToEnd'));
+        const message = {
+          message : this.newMessage,
+          room : this.contact.room,
+          clientId: new Date().getTime().toString(),
+          timestamp: Date.now(),
+          user: eXo.chat.userSettings.username
+        };
+        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+        this.$emit('exo-chat-message-written', message);
         this.newMessage = '';
       }
     }

@@ -5,7 +5,7 @@
     </div>
     <div class="chat-message-bubble">
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
-      <div class="message-content" v-html="message.msg"></div>
+      <div class="message-content" v-html="message.msg ? message.msg : message.message"></div>
     </div>
     <div class="chat-message-action">
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>

@@ -73,6 +73,7 @@ export function initCometD() {
         let message = event.data;
         if (typeof message !== 'object') {
           message = JSON.parse(message);
+          console.log(event);
         }
 
         // TODO combine all those to one single statement
@@ -137,7 +138,7 @@ export function initCometD() {
     },
     sendMessage : function (messageObj, callback) {
       const data = {
-        'clientId': new Date().getTime().toString(),
+        'clientId': messageObj.clientId,
         'timestamp': Date.now(),
         'msg': messageObj.message,
         'room': messageObj.room,
@@ -159,6 +160,7 @@ export function initCometD() {
         document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
         return;
       }
+
       try {
         this.cCometD.publish('/service/chat', content, function(publishAck) {
           if (!publishAck || !publishAck.successful) {

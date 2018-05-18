@@ -1,9 +1,12 @@
 <template>
-  <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
-    <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
-      <div class="day-separator">{{ dayDate }}</div>
-      <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)"></chat-message-detail>
+  <div class="uiRightContainerArea">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
+      <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
+        <div class="day-separator">{{ dayDate }}</div>
+        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)"></chat-message-detail>
+      </div>
     </div>
+    <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>
   </div>
 </template>
 
@@ -11,16 +14,12 @@
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
+import ChatMessageComposer from './ChatMessageComposer.vue';
 
 export default {
-  components: {'chat-message-detail': ChatMessageDetail},
-  props: {
-    userSettings: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
+  components: {
+    'chat-message-detail': ChatMessageDetail,
+    'chat-message-composer': ChatMessageComposer
   },
   data () {
     return {
@@ -46,44 +45,31 @@ export default {
   },
   created() {
     document.addEventListener('exo-chat-message-received', this.messageReceived);
-    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.addEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
-    document.addEventListener('exo-chat-message-tosend', this.messageReceived);
-    document.addEventListener('exo-chat-message-tosend', this.setScrollToBottom);
     document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
+    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-received', this.messageReceived);
-    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.removeEventListener('exo-chat-messages-scrollToEnd', this.scrollToEnd);
-    document.removeEventListener('exo-chat-message-tosend', this.messageSent);
-    document.removeEventListener('exo-chat-message-tosend', this.setScrollToBottom);
     document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
+    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
   },
   methods: {
-    messageSent(e) {
-      const messageObj = e.detail;
-      if (messageObj && (!this.contact || this.contact.room === messageObj.room) && messageObj && messageObj.data && messageObj.data.msgId) {
-        const foundMessage = this.findMessage('clientId', messageObj.data.clientId);
-        if (foundMessage) {
-          foundMessage.notSent = false;
-        } else {
-          this.messages.push(messageObj.data);
-        }
-      }
+    messageWritten(message) {
+      message.notSent = true;
+      this.addOrUpdateMessage(message);
+      this.setScrollToBottom();
     },
     messageReceived(e) {
       const messageObj = e.detail;
-      if (messageObj && (!this.contact || this.contact.room === messageObj.room) && messageObj && messageObj.data && messageObj.data.msgId) {
-        this.messages.push(messageObj.data);
-      }
+      messageObj.notSent = false;
+      this.addOrUpdateMessage(messageObj.data);
     },
     contactChanged(e) {
       this.contact = e.detail;
       if(this.contact.room) {
         this.retrieveRoomMessages(); 
       } else {
-        chatServices.getRoomId(this.userSettings, this.contact).then((room) => {
+        chatServices.getRoomId(eXo.chat.userSettings, this.contact).then((room) => {
           this.contact.room = room;
           this.retrieveRoomMessages(); 
         });
@@ -103,7 +89,7 @@ export default {
       }
     },
     retrieveRoomMessages() {
-      chatServices.getRoomMessages(this.userSettings, this.contact).then(data => {
+      chatServices.getRoomMessages(eXo.chat.userSettings, this.contact).then(data => {
         if (this.contact.room === data.room) {
           // Scroll to bottom once messages list updated
           this.scrollToBottom = true;
@@ -114,18 +100,6 @@ export default {
           });
         }
       });
-    },
-    messageNotSent(e) {
-      const notSentMessage = e.detail;
-      if (notSentMessage && notSentMessage.clientId) {
-        const foundMessage = this.findMessage('clientId', notSentMessage.clientId);
-        if (foundMessage) {
-          foundMessage.notSent = true;
-        } else {
-          notSentMessage.notSent = true;
-          this.messages.push(notSentMessage);
-        }
-      }
     },
     findMessage(field, msgId) {
       return this.messages.find(message => {return message[field] === msgId;});
@@ -147,6 +121,17 @@ export default {
         return false;
       } else {
         return prevMsg.user === messages[i].user ? true : false;
+      }
+    },
+    addOrUpdateMessage(message) {
+      if(!message || !message.room || !message.clientId || message.room !== this.contact.room) {
+        return;
+      }
+      const foundMessageIndex = this.messages.findIndex(messageObj => messageObj.clientId === message.clientId);
+      if (foundMessageIndex >= 0) {
+        this.messages.splice(foundMessageIndex, 1, message);
+      } else {
+        this.messages.push(message);
       }
     }
   }

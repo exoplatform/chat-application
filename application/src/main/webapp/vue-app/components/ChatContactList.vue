@@ -66,12 +66,6 @@ export default {
       default: function() {
         return {};
       }
-    },
-    userSettings: {
-      type: Object,
-      default: function() {
-        return {};
-      }
     }
   },
   data : function() {
@@ -141,7 +135,7 @@ export default {
     },
     openCreateRoomModal() {
       this.createRoomModal = true;
-      initSuggester('#add-room-suggestor', this.userSettings, this);
+      initSuggester('#add-room-suggestor', eXo.chat.userSettings, this);
     },
     notificationCountUpdated(event) {
       const room = event.detail.room;
@@ -160,9 +154,9 @@ export default {
     saveNewRoom() {
       if (this.newRoom.name) {
         let users = this.newRoom.participants.map(user => user.name);
-        users.unshift(this.userSettings.username);
+        users.unshift(eXo.chat.userSettings.username);
         users = users.join(',');
-        chatServices.saveRoom(this.userSettings,  this.newRoom.name, users).then(() => {
+        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users).then(() => {
           // reset newRoom
           this.newRoom.name = '';
           this.newRoom.participants = [];

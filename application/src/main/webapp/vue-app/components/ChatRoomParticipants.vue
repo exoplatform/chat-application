@@ -29,14 +29,6 @@ import * as chatServices from '../chatServices';
 
 export default {
   components: {ChatContact, DropdownSelect},
-  props: {
-    userSettings: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
-  },
   data : function() {
     return {
       isCollapsed: true,
@@ -68,7 +60,7 @@ export default {
         this.participants = [];
       } else {
         chatServices.getOnlineUsers().then(users => {
-          chatServices.getRoomParticipants(this.userSettings, contact).then( data => {
+          chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
             this.participants = data.users.reduce((prev, curr) => {
               // if user is not online, set its status as away
               if(users.indexOf(curr.name) < 0) {
