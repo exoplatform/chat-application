@@ -2,7 +2,7 @@
   <div id="chatApplicationContainer">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
-        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u" @exo-chat-status-changed="setStatus($event)"></chat-contact>
+        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)"></chat-contact>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
     </div>

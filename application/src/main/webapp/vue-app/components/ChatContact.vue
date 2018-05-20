@@ -1,6 +1,6 @@
 <template>
-  <div :class="statusStyle" class="chat-contact" @click="setStatus(status)">
-    <div :style="`backgroundImage: url(${contactAvatar}`" :class="`user-${status}`" class="chat-contact-avatar">
+  <div :class="statusStyle" class="chat-contact">
+    <div :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar">
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
@@ -8,10 +8,14 @@
         {{ name }}
         <slot></slot>
       </div>
-      <div v-if="type =='u' && !list" :class="`user-${status}`" class="user-status">
-        <i class="uiIconStatus"></i>
-        {{ status }}
+      <div v-if="type =='u' && !list && !isCurrentUser" class="user-status">
+        <i class="uiIconStatus"></i><span>{{ getStatus }}</span>
       </div>
+      <dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
+        <i slot="toggle" class="uiIconStatus"></i>
+        <span slot="toggle">{{ getStatus }}</span>
+        <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
+      </dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} members
       </div>
@@ -21,7 +25,9 @@
 
 <script>
 import { getUserAvatar, getSpaceAvatar } from '../chatServices';
+import DropdownSelect from './DropdownSelect.vue';
 export default {
+  components: {DropdownSelect},
   props: {
     name: {
       type: String,
@@ -47,14 +53,37 @@ export default {
     nbMembers: {
       type: Number,
       default: 0
+    },
+    isCurrentUser: {
+      type: Boolean,
+      default: false
     }
   },
   data : function() {
-    return {};
+    return {
+      statusMap : {
+        available: 'Available',
+        away: 'Away',
+        donotdistrub: 'Do not disturb',
+        invisible: 'Invisible',
+        offline: 'Offline'
+      }
+    };
   },
   computed: {
     statusStyle: function() {
-      return this.status === 'online' ? 'user-available' : 'user-invisible';
+      if (this.status == 'invisible' && !this.isCurrentUser) {
+        return 'user-offline';
+      } else {
+        return `user-${this.status}`;
+      }
+    },
+    getStatus() {
+      if (this.status == 'invisible' && !this.isCurrentUser) {
+        return this.statusMap.offline;
+      } else {
+        return this.statusMap[this.status];
+      }
     },
     contactAvatar() {
       if (this.type === 'u') {
@@ -68,9 +97,6 @@ export default {
   },
   methods: {
     setStatus(status) {
-      // TODO, TO REMOVE !!!!
-      status = status === 'available' ? 'away' : 'available';
-
       this.$emit('exo-chat-status-changed', status);
     }
   }

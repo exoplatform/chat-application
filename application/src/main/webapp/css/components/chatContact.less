@@ -11,21 +11,48 @@
   }
   .user-status {
     text-transform: uppercase;
+    > span {
+      margin-left: 4px;
+    }
+  }
+  .user-status, .room-number-members, .status-dropdown {
+    margin-top: -5px;
   }
   .user-status, .room-number-members {
     font-size: 11px;
-    margin-top: -5px;
   }
   .room-number-members {
     color: @titleColor;
   }
+  .status-dropdown {
+    .dropdown-menu .uiIconStatus {
+      margin: 0 10px 0 -7px;
+    }
+    .user-status {
+      cursor: pointer;
+    }
+  }
 }
-// TODO use PLF classes
-.user-invisible .user-status, .user-invisible .uiIconStatus{
-  color: #999999;
+
+.user-invisible, .user-offline {
+  .user-status, .uiIconStatus, > a .uiIconStatus {
+    color: #e3e3e3;
+  }
 }
-.user-available .user-status, .user-available .uiIconStatus{
-  color: #46a546;
+.user-available {
+  .user-status, .uiIconStatus, > a .uiIconStatus {
+    color: #46a546;
+  }
+}
+.user-away {
+  .user-status, .uiIconStatus, > a .uiIconStatus {
+    color: #fd8c40;
+  }
+}
+.user-donotdistrub {
+  .user-status, .uiIconStatus, > a .uiIconStatus {
+    color: #c72222;
+  }
 }
 
 .chat-contact-avatar {

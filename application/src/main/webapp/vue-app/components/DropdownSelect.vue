@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown">
-    <span class="dropdown-toggle" data-toggle="dropdown">
+    <span :class="togglerClass" class="dropdown-toggle" data-toggle="dropdown">
       <slot name="toggle"></slot>
     </span>
     <ul :class="positionClass" class="dropdown-menu">
@@ -15,6 +15,10 @@ export default {
     position: {
       type: String,
       default: 'left'
+    },
+    togglerClass: {
+      type: String,
+      default: ''
     }
   },
   computed: {
