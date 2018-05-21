@@ -3,6 +3,12 @@
         "rooms": {
             "title": "Rooms",
             "participants": "Participants"
+        },
+        "team": {
+            "msg": {
+                "adduser": "{0} added {1} to this conversation.",
+                "removeuser": "{0} removed {1} from this room."
+            }
         }
     }
 }

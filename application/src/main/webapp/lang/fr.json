@@ -3,6 +3,12 @@
         "rooms": {
             "title": "Discussions",
             "participants": "Participants"
+        },
+        "team": {
+            "msg": {
+                "adduser": "{0} a ajout\u00E9 {1} \u00E0 ce salon.",
+                "removeuser": "{0} a retir\u00E9 {1} de ce salon"
+            }
         }
     }
 }
