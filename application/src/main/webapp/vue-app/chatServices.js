@@ -34,6 +34,10 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
         resendIntervalID = window.setInterval(chatWebStorage.sendFailedMessages, RESEND_MESSAGE_PERIOD);
       });
     });
+
+    getRoomNotificationSettings(e.detail).then(settings => {
+      loadNotificationSettings(settings);
+    });
   });
 
   document.addEventListener('exo-chat-notification-count-updated', (e) => {
@@ -112,6 +116,35 @@ export function getRoomMessages(userSettings, contact) {
     }}).then(resp =>  resp.json());
 }
 
+export function setRoomNotificationTrigger(userSettings, room, notifConditionType, notifCondition, time) {
+  return fetch(`${chatData.chatServerAPI}setRoomNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room}&notifConditionType=${notifConditionType}&notifCondition=${notifCondition}&time=${time}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.text());
+}
+
+export function getRoomNotificationSettings(userSettings) {
+  return fetch(`${chatData.chatServerAPI}getUserDesktopNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
+
+export function loadNotificationSettings(settings) {
+  if(settings && settings.userDesktopNotificationSettings) {
+    eXo.chat.desktopNotificationSettings = settings.userDesktopNotificationSettings;
+    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredNotification) {
+      eXo.chat.desktopNotificationSettings.preferredNotification = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotification);
+    }
+    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
+      eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger);
+    }
+    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
+      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger);
+    }
+  }
+}
+
 export function getChatUsers(userSettings, filter, limit) {
   return fetch(`${chatData.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}`, {
     headers: {
@@ -119,12 +152,13 @@ export function getChatUsers(userSettings, filter, limit) {
     }}).then(resp =>  resp.json());
 }
 
-export function saveRoom(userSettings, roomName, users) {
+export function saveRoom(userSettings, roomName, users, room) {
   const data = {
     teamName: roomName,
     users: users,
     user: userSettings.username,
-    dbName: userSettings.dbName
+    dbName: userSettings.dbName,
+    room: room
   };
 
   return fetch(`${chatData.chatServerAPI}saveTeamRoom`, {

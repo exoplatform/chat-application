@@ -135,6 +135,20 @@ export function initCometD() {
     isConnected: function() {
       return this.cCometD && !this.cCometD.isDisconnected();
     },
+    leaveRoom : function (room, callback) {
+      const content = JSON.stringify({
+        'event': 'room-member-leave',
+        'sender': this.username,
+        'token': this.token,
+        'dbName': this.dbName,
+        'room': room
+      });
+      this.cCometD.publish('/service/chat', content, function(publishAck) {
+        if (publishAck && publishAck.successful && callback) {
+          callback();
+        }
+      });
+    },
     sendMessage : function (messageObj, callback) {
       const data = {
         'clientId': messageObj.clientId,
@@ -142,7 +156,7 @@ export function initCometD() {
         'msg': messageObj.message,
         'room': messageObj.room,
         'options': messageObj.options ? messageObj.options : {},
-        'isSystem': messageObj.isSystemMessage != null && messageObj.isSystemMessage,
+        'isSystem': messageObj.isSystemMessage || messageObj.isSystem,
         'user': this.username,
         'fullname': this.fullname
       };

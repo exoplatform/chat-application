@@ -58,7 +58,7 @@ export default {
     document.addEventListener('exo-chat-room-updated', this.roomUpdated);
     document.addEventListener('exo-chat-logout-sent', () => {
       if (!window.chatNotification.isConnected()) {
-        this.changeUserStatusToAway();
+        this.changeUserStatusToOffline();
       }
       // TODO Display popin for disconnection
       // + Change user status
@@ -66,7 +66,7 @@ export default {
       // + Display Session expired
     });
     document.addEventListener('exo-chat-disconnected', () => {
-      this.changeUserStatusToAway();
+      this.changeUserStatusToOffline();
       // TODO Display popin for disconnection
       // + Change user status
       // + Change messages sent color (use of local storage)
@@ -145,11 +145,11 @@ export default {
         });
       });
     },
-    changeUserStatusToAway() {
+    changeUserStatusToOffline() {
       if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {
         this.userSettings.originalStatus = this.userSettings.status;
       }
-      this.userSettings.status = 'away';
+      this.userSettings.status = 'offline';
     }
   }
 };

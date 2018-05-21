@@ -19,8 +19,10 @@
 
 package org.exoplatform.chat.model;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.exoplatform.chat.services.UserService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 
 public class RoomBean implements Comparable<RoomBean>
@@ -33,6 +35,7 @@ public class RoomBean implements Comparable<RoomBean>
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
   boolean isFavorite = false;
+  String[] admins = null;
   long timestamp = -1;
 
   public String getUser() {
@@ -107,6 +110,14 @@ public class RoomBean implements Comparable<RoomBean>
     this.timestamp = timestamp;
   }
 
+  public String[] getAdmins() {
+    return admins;
+  }
+
+  public void setAdmins(String[] admins) {
+    this.admins = admins;
+  }
+
   @Override
   public int compareTo(RoomBean roomBean) {
     String l = ((isFavorite) ? "0" : "1") + fullname;
@@ -114,6 +125,7 @@ public class RoomBean implements Comparable<RoomBean>
     return l.compareTo(r);
   }
 
+  @SuppressWarnings("unchecked")
   public JSONObject toJSONObject() {
     JSONObject obj = new JSONObject();
     obj.put("fullName", this.getFullName());
@@ -125,6 +137,13 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("isActive", String.valueOf(this.isActive()));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
+    if (this.getAdmins() != null) {
+      try {
+        obj.put("admins", new JSONArray(this.getAdmins()));
+      } catch (JSONException e) {
+        throw new RuntimeException(e);
+      }
+    }
     return obj;
   }
 

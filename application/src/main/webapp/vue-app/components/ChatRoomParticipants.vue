@@ -75,9 +75,9 @@ export default {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
             this.participants = data.users.reduce((prev, curr) => {
-              // if user is not online, set its status as away
+              // if user is not online, set its status as offline
               if(users.indexOf(curr.name) < 0) {
-                curr.status = 'away';
+                curr.status = 'offline';
               }
               return curr.name === eXo.chat.userSettings.username ? prev: [...prev, curr];
             }, []);

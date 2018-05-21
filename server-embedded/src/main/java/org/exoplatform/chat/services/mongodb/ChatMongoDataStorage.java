@@ -141,6 +141,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     room.setFullName((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
     room.setType((String) dbRoom.get("type"));
+    if (StringUtils.isNotBlank(room.getUser())) {
+      room.setAdmins(new String[]{room.getUser()});
+    }
     if (dbRoom.containsField("timestamp")) {
       room.setTimestamp((Long) dbRoom.get("timestamp"));
     }
@@ -554,6 +557,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           roomBean.setType((String) dbo.get("type"));
+          String creator = (String) dbo.get("user");
+          if (StringUtils.isNotBlank(creator)) {
+            roomBean.setAdmins(new String[]{creator});
+          }
           rooms.add(roomBean);
         }
       }
@@ -656,6 +663,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setTimestamp(team.getTimestamp());
       room.setAvailableUser(true);
       room.setType(team.getType());
+      room.setAdmins(team.getAdmins());
 
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
       if (room.getUnreadTotal() > 0)

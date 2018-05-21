@@ -72,14 +72,14 @@ export default {
   },
   computed: {
     statusStyle: function() {
-      if (this.status == 'invisible' && !this.isCurrentUser) {
+      if (this.status === 'invisible' && !this.isCurrentUser) {
         return 'user-offline';
       } else {
         return `user-${this.status}`;
       }
     },
     getStatus() {
-      if (this.status == 'invisible' && !this.isCurrentUser) {
+      if (this.status === 'invisible' && !this.isCurrentUser) {
         return this.statusMap.offline;
       } else {
         return this.statusMap[this.status];

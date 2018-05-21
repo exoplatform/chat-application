@@ -10,12 +10,20 @@
   }
 }
 
+.room-actions-container, .room-search, .room-action-menu {
+  height: 40px;
+}
 .room-actions-container {
   position: relative;
   margin-left: auto;
-}
-.room-actions-container, .room-search, .room-action-menu {
-  height: 40px;
+  z-index: 10;
+
+  .uiIconChatRecordStart:before {
+    content: "\e775";
+  }
+  .uiIconChatRecordStop:before {
+    content: "\e76c";
+  }
 }
 .room-search, .room-action-menu {
   display: flex;

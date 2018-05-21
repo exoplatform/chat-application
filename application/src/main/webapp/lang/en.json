@@ -2,7 +2,20 @@
     "chat" : {
         "rooms": {
             "title": "Rooms",
-            "participants": "Participants"
+            "participants": "Participants",
+            "new": "Add new room",
+            "edit": "Edit room",
+            "notificationSettingTitle": "{name} room notifications",
+            "notificationSetting": {
+                "normal": "Normal"
+            },
+            "action": {
+                "startMeeting": "Start meeting",
+                "stopMeeting": "Stop meeting",
+                "notificationSettings": "Notification settings",
+                "editRoom": "Edit room",
+                "leaveRoom": "Leave room"
+            }
         },
         "team": {
             "msg": {

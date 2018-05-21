@@ -26,7 +26,7 @@
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
-    <modal v-show="createRoomModal" title="Add new room" modal-class="create-room-modal" @modal-closed="closeNewRoomModal">
+    <modal v-show="createRoomModal" :title="title" modal-class="create-room-modal" @modal-closed="closeNewRoomModal">
       <div class="add-room-form">
         <label>Quel est le nom de votre salon?</label>
         <input v-model="newRoom.name" type="text">
@@ -41,7 +41,7 @@
         <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
       </div>
       <div class="uiAction uiActionBorder">
-        <a href="#" class="btn btn-primary" @click="saveNewRoom">Enregistrer</a>
+        <a href="#" class="btn btn-primary" @click="saveRoom">Enregistrer</a>
         <a href="#" class="btn" @click="closeNewRoomModal">Annuler</a>
       </div>
     </modal>
@@ -51,6 +51,7 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
+
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './Modal.vue';
@@ -92,6 +93,10 @@ export default {
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
+    title() {
+      const key = !this.newRoom.name || !this.newRoom.name.length ? 'chat.rooms.new' : 'chat.rooms.edit';
+      return this.$t(key);
+    },
     filteredContacts: function() {
       let sortedContacts = this.contacts;
       if(this.typeFilter !== 'All') {
@@ -119,6 +124,8 @@ export default {
     document.addEventListener('exo-chat-message-received', this.notificationCountUpdated);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
+    document.addEventListener('exo-chat-setting-editRoom', this.editRoom);
+    document.addEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
     this.typeFilter = chatWebStorage.getStoredParam(TYPE_FILTER_PARAM, TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(SORT_FILTER_PARAM, SORT_FILTER_DEFAULT);
   },
@@ -131,6 +138,8 @@ export default {
     document.removeEventListener('exo-chat-message-received', this.notificationCountUpdated);
     document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
+    document.removeEventListener('exo-chat-setting-editRoom', this.editRoom);
+    document.removeEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
   },
   methods: {
     selectContact(contact) {
@@ -177,21 +186,35 @@ export default {
       // remove suggest for participants list
       this.newRoom.participants.splice(i,1);
     },
-    saveNewRoom() {
+    saveRoom() {
       if (this.newRoom.name) {
         let users = this.newRoom.participants.map(user => user.name);
         users.unshift(eXo.chat.userSettings.username);
         users = users.join(',');
-        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users).then(() => {
+        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users, this.newRoom.room).then(() => {
           this.closeNewRoomModal();
         });
       }
     },
+    editRoom() {
+      chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected).then(data => {
+        this.selected.participants = data.users;
+        this.newRoom.name = this.selected.fullName;
+        this.newRoom.room = this.selected.room;
+        this.openCreateRoomModal();
+      });
+    },
+    leaveRoom() {
+      if(this.selected && this.selected.type === 't') {
+        window.chatNotification.leaveRoom(this.selected.room);
+      }
+    },
     closeNewRoomModal() {
       // reset newRoom
-      this.newRoom.name = '';
-      this.newRoom.participants = [];
       this.createRoomModal = false;
+      this.newRoom.name = '';
+      this.newRoom.room = '';
+      this.newRoom.participants = [];
     },
     markRoomMessagesRead(message) {
       const contactToUpdate = this.findContact(message.room);
@@ -207,10 +230,18 @@ export default {
       }
     },
     leftRoom(message) {
+      message = message.detail ? message.detail: message;
       const roomLeft = message.data ? message.data.room : message.room;
       const roomIndex = this.contacts.findIndex(contact => contact.room === roomLeft);
       if (roomIndex >= 0) {
         this.contacts.splice(roomIndex, 1);
+        if(this.selected && this.selected.room === roomLeft) {
+          if(!this.contacts || this.contacts.length === 0) {
+            this.selected = null;
+          } else {
+            this.selectContact(this.filteredContacts()[0]);
+          }
+        }
       }
     },
     joinedToNewRoom(e) {

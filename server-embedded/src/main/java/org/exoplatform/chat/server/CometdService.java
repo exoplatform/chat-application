@@ -13,8 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.exoplatform.chat.services.UserService;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,7 +100,7 @@ public class CometdService {
         JSONObject data = (JSONObject) jsonMessage.get("data");
         String room = data.get("room").toString();
         String clientId = data.get("clientId").toString();
-        String msg = data.get("msg").toString();
+        String msg = data.get("msg") != null ? data.get("msg").toString() : "";
         String isSystem = data.get("isSystem").toString();
         String options = data.get("options") != null ? data.get("options").toString() : null;
 
@@ -136,6 +135,11 @@ public class CometdService {
         String room = jsonMessage.get("room").toString();
 
         chatService.deleteTeamRoom(room, sender, dbName);
+      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_MEMBER_LEAVE)) {
+        String room = jsonMessage.get("room").toString();
+
+        userService.removeTeamUsers(room, Collections.singletonList(sender), dbName);
+        notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
       }
     } catch (ParseException e) {
       LOG.log(Level.SEVERE, "Error while processing Cometd message : " + e.getMessage(), e);

@@ -509,6 +509,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
       }
+      if (StringUtils.isNotBlank(roomBean.getUser())) {
+        roomBean.setAdmins(new String[]{roomBean.getUser()});
+      }
     }
 
     return roomBean;
