@@ -8,7 +8,6 @@ export default (element, userSettings, vm) => {
   element.suggester({
     type: 'tag',
     create: false,
-    preload: true,
     createOnBlur: false,
     highlight: false,
     openOnFocus: false,

@@ -101,7 +101,7 @@ public class CometdService {
         String room = data.get("room").toString();
         String clientId = data.get("clientId").toString();
         String msg = data.get("msg") != null ? data.get("msg").toString() : "";
-        String isSystem = data.get("isSystem").toString();
+        String isSystem = data.get("isSystem") == null ? "false" : data.get("isSystem").toString();
         String options = data.get("options") != null ? data.get("options").toString() : null;
 
         try {
