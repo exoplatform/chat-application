@@ -153,7 +153,8 @@ export function initCometD() {
       const data = {
         'clientId': messageObj.clientId,
         'timestamp': Date.now(),
-        'msg': messageObj.message,
+        'msg': messageObj.message ? messageObj.message : messageObj.msg,
+        'msgId': messageObj.msgId,
         'room': messageObj.room,
         'options': messageObj.options ? messageObj.options : {},
         'isSystem': messageObj.isSystemMessage || messageObj.isSystem,
@@ -161,21 +162,23 @@ export function initCometD() {
         'fullname': this.fullname
       };
 
-      const content = JSON.stringify({
-        'event': 'message-sent',
-        'sender': this.username,
-        'token': this.token,
-        'dbName': this.dbName,
-        'data': data
-      });
-
       if (!this.isConnected()) {
         document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
         return;
       }
 
+      const content = {
+        'event': messageObj.msgId ? 'message-updated' : 'message-sent',
+        "room": messageObj.room,
+        'sender': this.username,
+        'token': this.token,
+        'dbName': this.dbName,
+        'data': data
+      };
+
+
       try {
-        this.cCometD.publish('/service/chat', content, function(publishAck) {
+        this.cCometD.publish('/service/chat', JSON.stringify(content), function(publishAck) {
           if (!publishAck || !publishAck.successful) {
             document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
           } else {
@@ -187,18 +190,37 @@ export function initCometD() {
       } catch (e) {
         document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
       }
+    },
+    deleteMessage: function (messageObj, callback) {
+      const content = {
+        'event': 'message-deleted',
+        'sender': this.username,
+        'token': this.token,
+        'dbName': this.dbName,
+        'room': messageObj.room,
+        'data': {
+          'msgId': messageObj.msgId
+        }
+      };
+      cCometD.publish('/service/chat', JSON.stringify(content), function (publishAck) {
+        if (publishAck.successful) {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      });
     }
   };
 
   document.addEventListener('exo-chat-message-tosend', (e) => {
     window.chatNotification.sendMessage(e.detail);
   });
+  
+  document.addEventListener('exo-chat-message-todelete', (e) => {
+    window.chatNotification.deleteMessage(e.detail);
+  });
 
   document.addEventListener('exo-chat-settings-loaded', (e) => {
     window.chatNotification.initSettings(e.detail);
-  });
-
-  document.addEventListener('exo-chat-message-not-sent', () => {
-    // TODO store on localstorage to reattempt sending it once connected again
   });
 }

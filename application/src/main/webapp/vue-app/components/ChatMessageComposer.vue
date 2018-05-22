@@ -34,7 +34,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="msg" v-model="newMessage" type="text" name="text" autocomplete="off" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessage"></textarea>
+        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessage"></textarea>
         <div class="composer-action">
           <div class="action-send">
             <i class="uiIconSend"></i>
@@ -63,9 +63,11 @@ export default {
   },
   created() {
     document.addEventListener('keyup', this.closeApps);
+    document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
+    document.removeEventListener('exo-chat-message-acton-quote', this.quoteMessage);
   },
   methods: {
     closeApps(e) {
@@ -94,6 +96,23 @@ export default {
         this.$emit('exo-chat-message-written', message);
         this.newMessage = '';
       }
+    },
+    quoteMessage(e) {
+      const quotedMessage = e.detail;
+      if(!quotedMessage) {
+        return;
+      }
+      let messageToSend = quotedMessage.msg ? quotedMessage.msg : quotedMessage.message;
+      if(!messageToSend) {
+        return;
+      }
+      messageToSend = messageToSend.replace(/<br\/>/g, '\n');
+      messageToSend = $('<div />').html(messageToSend).text();
+      messageToSend = `[quote=${quotedMessage.fullname}] ${messageToSend} [/quote]`;
+      $('#messageComposerArea').insertAtCaret(messageToSend);
+
+      // The text insertion doesn't trigger Vue for modified field
+      this.newMessage = $('#messageComposerArea').val();
     }
   }
 };

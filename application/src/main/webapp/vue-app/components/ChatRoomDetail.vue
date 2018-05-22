@@ -173,7 +173,8 @@ export default {
         }
       };
       document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
-    }, displayItem(settingAction) {
+    },
+    displayItem(settingAction) {
       return (!settingAction.isForAdmin || this.isAdmin) && (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
     }
   }

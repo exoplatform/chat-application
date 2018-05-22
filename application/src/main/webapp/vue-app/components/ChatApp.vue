@@ -19,7 +19,7 @@
       <section>
         <h4>Notifications</h4>
         <div class="notification-item">
-          <input v-model="chatPreferences.notifyDonotdistrub" ref="notifyDonotdistrub" type="checkbox">
+          <input ref="notifyDonotdistrub" v-model="chatPreferences.notifyDonotdistrub" type="checkbox">
           <div class="notification-description">
             <b>Notifications "Ne pas Déranger"</b>
             <em>M'avertir même lorsque je suis en "Ne pas Déranger"</em>
@@ -29,21 +29,21 @@
       <section>
         <h4>Notify me with</h4>
         <div class="notification-item">
-          <input v-model="chatPreferences.notifyDesktop" ref="notifyDesktop" type="checkbox">
+          <input ref="notifyDesktop" v-model="chatPreferences.notifyDesktop" type="checkbox">
           <div class="notification-description">
             <b>Notifications sur le bureau</b>
             <em>Afficher une notification toast sur votre ordinateur</em>
           </div>
         </div>
         <div class="notification-item">
-          <input v-model="chatPreferences.notifyOnSite" ref="notifyOnSite" type="checkbox">
+          <input ref="notifyOnSite" v-model="chatPreferences.notifyOnSite" type="checkbox">
           <div class="notification-description">
             <b>Notifications sur site</b>
             <em>Afficher un compteur sur l'icône dans la barre du haut</em>
           </div>
         </div>
         <div class="notification-item">
-          <input v-model="chatPreferences.notifyBip" ref="notifyBip" type="checkbox">
+          <input ref="notifyBip" v-model="chatPreferences.notifyBip" type="checkbox">
           <div class="notification-description">
             <b>Bips sonores</b>
             <em>Émettre un signal sonore chaque fois qu’un nouveau message arrive</em>
@@ -209,7 +209,6 @@ export default {
     },
     openSettingModal() {
       this.settingModal = true;
-      console.log(eXo.chat.desktopNotificationSettings);
       if (eXo && eXo.chat && eXo.chat.desktopNotificationSettings) {
         const notifSettings = eXo.chat.desktopNotificationSettings;
         this.chatPreferences.notifyDonotdistrub = notifSettings.preferredNotificationTrigger.indexOf(NOT_DISTRUB_NOTIF) < 0 ? false : true;

@@ -538,8 +538,31 @@ public class ChatServer
     } catch(Exception e) {
     }
 
-    return Response.ok("done").withMimeType("application/json").withHeader("Cache-Control", "no-cache")
-            .withCharset(Tools.UTF_8);
+    return getUserDesktopNotificationSettings(user, token, dbName);
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/setNotificationSettings")
+  public Response.Content setNotificationSettings(String user, String token, String room, String[] notifConditions, String[] notifManners, String notifConditionType, String dbName, Long time) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+    
+    for (String notifCondition : notifConditions) {
+      try {
+        userService.setNotificationTrigger(user, notifCondition,dbName);
+      } catch (Exception e) {
+      }
+    }
+    for (String notifManner : notifManners) {
+      try {
+        userService.setPreferredNotification(user, notifManner, dbName);
+      } catch (Exception e) {
+      }
+    }
+
+    return getUserDesktopNotificationSettings(user, token, dbName);
   }
 
   @Resource
@@ -550,16 +573,12 @@ public class ChatServer
       return Response.notFound("Something is wrong.");
     }
 
-    JSONObject response = new JSONObject();
     try {
       userService.setNotificationTrigger(user, notifCondition,dbName);
-      response.put("done", true);
     } catch (Exception e) {
-      response.put("done",false);
     }
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
-            .withCharset(Tools.UTF_8);
+    return getUserDesktopNotificationSettings(user, token, dbName);
   }
 
   @Resource

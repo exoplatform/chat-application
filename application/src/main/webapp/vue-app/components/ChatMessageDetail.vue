@@ -11,13 +11,12 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <dropdown-select class="message-actions" position="right">
+      <dropdown-select v-if="!message.isSystem && !message.isDeleted" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots"></i>
         <li slot="menu">
-          <a href="#">Edit</a>
-          <a href="#">Delete</a>
-          <a href="#">Quote</a>
-          <a href="#">Save notes</a>
+          <a v-for="messageAction in messageActions" v-if="displayItem(messageAction)" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" href="#" @click="executeAction(messageAction.key)">
+            {{ $t(`chat.message.action.${messageAction.key}`) }}
+          </a>
         </li>
       </dropdown-select>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
@@ -44,6 +43,29 @@ const START_MEETING_MESSAGE = 'type-meeting-start';
 const STOP_MEETING_MESSAGE = 'type-meeting-stop';
 const NOTES_MESSAGE = 'type-notes';
 
+const DEFAULT_MESSAGE_ACTIONS = [{
+  key: 'edit',
+  enabled: (comp) => {
+    return !comp.message.isSystem && !comp.message.isDeleted && comp.isCurrentUser;
+  }
+}, {
+  key: 'delete',
+  enabled: (comp) => {
+    return !comp.message.isSystem && !comp.message.isDeleted && comp.isCurrentUser;
+  }
+} , {
+  key: 'quote',
+  class: 'uiIconPLFNotifications',
+  enabled: (comp) => {
+    return !comp.message.isSystem && !comp.message.isDeleted;
+  }
+} , {
+  key: 'saveNotes',
+  enabled: (comp) => {
+    return !comp.message.isSystem && !comp.message.isDeleted;
+  }
+}];
+
 export default {
   components: {DropdownSelect},
   props: {
@@ -62,6 +84,10 @@ export default {
         };
       }
     },
+    room : {
+      type: String,
+      default: ''
+    },
     hideAvatar : {
       type: Boolean,
       default: false
@@ -77,6 +103,13 @@ export default {
     };
   },
   computed: {
+    messageActions() {
+      if(eXo && eXo.chat && eXo.chat.message && eXo.chat.message.extraActions) {
+        return DEFAULT_MESSAGE_ACTIONS.concat(eXo.chat.message.extraActions);
+      } else {
+        return DEFAULT_MESSAGE_ACTIONS;
+      }
+    },
     dateString() {
       return chatTime.getTimeString(this.message.timestamp);
     },
@@ -155,7 +188,58 @@ export default {
       }
     }
   },
+  created() {
+    document.addEventListener('exo-chat-message-acton-edit', this.editMessage);
+    document.addEventListener('exo-chat-message-acton-delete', this.deleteMessage);
+    document.addEventListener('exo-chat-message-acton-saveNotes', this.saveNotes);
+    if(this.message) {
+      this.message.isDeleted = this.message.type === DELETED_MESSAGE;
+    }
+  },
+  destroyed() {
+    document.removeEventListener('exo-chat-message-acton-edit', this.editMessage);
+    document.removeEventListener('exo-chat-message-acton-delete', this.deleteMessage);
+    document.removeEventListener('exo-chat-message-acton-saveNotes', this.saveNotes);
+  },
   methods: {
+    executeAction(actionName) {
+      document.dispatchEvent(new CustomEvent(`exo-chat-message-acton-${actionName}`, {'detail': this.message}));
+    },
+    displayItem(settingAction) {
+      return (!settingAction.isForAdmin || this.isAdmin) && (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
+    },
+    editMessage(e) {
+      if(!e || !e.detail || !e.detail.msgId || e.detail.msgId !== this.message.msgId) {
+        return;
+      }
+      this.$emit('edit-message', this.message);
+    },
+    deleteMessage(e) {
+      if(!e || !e.detail || !e.detail.msgId || e.detail.msgId !== this.message.msgId) {
+        return;
+      }
+      document.dispatchEvent(new CustomEvent('exo-chat-message-todelete', {'detail' : {'room' : this.room, 'msgId' : this.message.msgId}}));
+    },
+    saveNotes(e) {
+      if(!e || !e.detail || !e.detail.msgId || e.detail.msgId !== this.message.msgId) {
+        return;
+      }
+      const messageToSend = {
+        message : this.newMessage,
+        room : this.room,
+        clientId: new Date().getTime().toString(),
+        timestamp: Date.now(),
+        user: eXo.chat.userSettings.username,
+        isSystem: true,
+        options: {
+          type: 'type-notes',
+          fromTimestamp: this.message.options.timestamp,
+          fromUser: eXo.chat.userSettings.username,
+          fromFullname: eXo.chat.userSettings.fullName
+        }
+      };
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToSend}));
+    },
     testClick(message) {
       console.log(message)
     }

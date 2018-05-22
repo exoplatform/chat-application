@@ -1,5 +1,14 @@
 {
     "chat" : {
+        "message": {
+            "editMessage": "Edit message",
+            "action": {
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "quote": "Citer",
+                "saveNotes": "Enregistrer"
+            }
+        },
         "rooms": {
             "title": "Discussions",
             "participants": "Participants",

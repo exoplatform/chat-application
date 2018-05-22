@@ -123,15 +123,22 @@ public class ChatServiceImpl implements ChatService
     String roomType = getTypeRoomChat(room, dbName);
 
     if (!roomType.equals("e")) {
-      List<String> usersToBeNotified = new ArrayList<String>();
+      Set<String> usersToBeNotified = new HashSet<>();
       if (roomType.equals("s")) {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName);
+        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName));
       } else if (roomType.equals("t")) {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName);
+        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName));
       } else {
-        usersToBeNotified.add(room);
+        UserBean userBean = userService.getUser(room, dbName);
+        String username = userBean.getName();
+        if (username == null) {
+          List<UserBean> users = userService.getUsersInRoomChatOneToOne(room, dbName);
+          for (UserBean targetUserBean : users) {
+            usersToBeNotified.add(targetUserBean.getName());
+          }
+        }
       }
-
+      usersToBeNotified.add(sender);
 
       MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
 
@@ -142,8 +149,7 @@ public class ChatServiceImpl implements ChatService
           sender,
           new Date(),
           msg.toJSONObject());
-      realTimeMessageService.sendMessage(messageBean, sender);
-      realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
+      realTimeMessageService.sendMessage(messageBean, new ArrayList<>(usersToBeNotified));
     }
   }
 
