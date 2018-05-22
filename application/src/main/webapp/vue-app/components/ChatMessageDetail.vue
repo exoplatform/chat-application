@@ -8,6 +8,15 @@
       <div class="message-content" v-html="getMessage"></div>
     </div>
     <div class="chat-message-action">
+      <dropdown-select class="message-actions" position="right">
+        <i slot="toggle" class="uiIconDots"></i>
+        <li slot="menu">
+          <a href="#">Edit</a>
+          <a href="#">Delete</a>
+          <a href="#">Quote</a>
+          <a href="#">Save notes</a>
+        </li>
+      </dropdown-select>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
   </div>
@@ -16,6 +25,7 @@
 <script>
 import * as chatTime from '../chatTime';
 import { getUserAvatar } from '../chatServices';
+import DropdownSelect from './DropdownSelect.vue';
 
 const ADD_TEAM_MESSAGE = 'type-add-team-user';
 const REMOVE_TEAM_MESSAGE = 'type-remove-team-user';
@@ -30,6 +40,7 @@ const START_MEETING_MESSAGE = 'type-meeting-start';
 const STOP_MEETING_MESSAGE = 'type-meeting-stop';
 
 export default {
+  components: {DropdownSelect},
   props: {
     message: {
       type: Object,

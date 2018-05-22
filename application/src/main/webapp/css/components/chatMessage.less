@@ -26,6 +26,21 @@
     .flex-center;
     justify-content: center;
     text-align: right;
+    position: relative;
+    .message-actions {
+      position: absolute;
+      top: -6px;
+      right: 0;
+      text-align: left;
+      &:not(.open) {
+        display: none;
+      }
+    }
+  }
+  &:hover {
+    .message-actions:not(.open) {
+      display: block;
+    }
   }
   .chat-message-bubble {
     flex: 1;
