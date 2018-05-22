@@ -14,6 +14,10 @@ export function getStoredParam(key, defaultValue) {
   const now = Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND);
   if (val && (now < ts || ts === -1 )) {
     return val;
+  } else {
+    localStorage.removeItem(key);
+    localStorage.removeItem(`${key}TS`);
+    localStorage.removeItem(key);
   }
   return defaultValue;
 }
@@ -35,7 +39,9 @@ export function getRoomNotSentMessages(username, room) {
   }
 }
 
+  
 export function getNotSentMessages(username) {
+
   const notSentMessages = getStoredParam(`${STORED_NOT_SENT_MESSAGES}-${username}`);
   if(notSentMessages) {
     return JSON.parse(notSentMessages);
@@ -74,11 +80,19 @@ export function storeMessageAsSent(messageToStore) {
 }
 
 export function sendFailedMessages() {
-  const notSentMessages = getNotSentMessages(eXo.chat.userSettings.username);
-  if(notSentMessages && notSentMessages.length) {
-    notSentMessages.forEach(messageToResend => {
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToResend}));
-    });
+  if(!window.messagesSending) {
+    window.messagesSending = true;
+    try {
+      const notSentMessages = getNotSentMessages(eXo.chat.userSettings.username);
+      if(notSentMessages && notSentMessages.length) {
+        notSentMessages.forEach(messageToResend => {
+          document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToResend}));
+        });
+      }
+      window.messagesSending = false;
+    } catch(e) {
+      window.messagesSending = false;
+    }
   }
 }
 

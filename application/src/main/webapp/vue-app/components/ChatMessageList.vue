@@ -17,6 +17,8 @@ import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
 import ChatMessageComposer from './ChatMessageComposer.vue';
 
+const MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL = 25;
+
 export default {
   components: {
     'chat-message-detail': ChatMessageDetail,
@@ -90,6 +92,14 @@ export default {
         }
       }
     },
+    isScrollPositionAtEnd() {
+      const $chatMessageList = $('.chat-message-list');
+      if($chatMessageList && $chatMessageList.length) {
+        return $chatMessageList[0].scrollHeight - $chatMessageList.scrollTop() - $chatMessageList.height() < MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+      } else {
+        return false;
+      }
+    },
     retrieveRoomMessages() {
       chatServices.getRoomMessages(eXo.chat.userSettings, this.contact).then(data => {
         if (this.contact.room === data.room) {
@@ -129,6 +139,9 @@ export default {
     addOrUpdateMessageToList(message) {
       if(!message || !message.room || !message.clientId || message.room !== this.contact.room) {
         return;
+      }
+      if(this.isScrollPositionAtEnd()) {
+        this.setScrollToBottom();
       }
       this.messages = this.messages.filter(messageObj => messageObj.clientId !== message.clientId);
       this.messages.push(message);
