@@ -93,12 +93,15 @@ export default {
     },
     contactChanged(e) {
       this.contact = e.detail;
+      this.messages = [];
       if(this.contact.room) {
         this.retrieveRoomMessages(); 
       } else {
         chatServices.getRoomId(eXo.chat.userSettings, this.contact).then((room) => {
-          this.contact.room = room;
-          this.retrieveRoomMessages(); 
+          if(room) {
+            this.contact.room = room;
+            this.retrieveRoomMessages(); 
+          }
         });
       }
     },

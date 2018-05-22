@@ -115,6 +115,9 @@ export default {
       }
     },
     setSelectedContact(selectedContact) {
+      if(!selectedContact) {
+        selectedContact = {};
+      }
       if (typeof selectedContact === 'string') {
         selectedContact = this.contactList.find(contact => contact.room === selectedContact);
       }
@@ -145,8 +148,10 @@ export default {
             return curr.fullName ? [...prev, curr] : prev;
           }, []);
           if (this.selectedContact) {
-            const contactToChange = this.contactList.find(contact => contact.name === this.selectedContact.name);
-            this.setSelectedContact(contactToChange);
+            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room);
+            if(contactToChange) {
+              this.setSelectedContact(contactToChange);
+            }
           }
         });
       });

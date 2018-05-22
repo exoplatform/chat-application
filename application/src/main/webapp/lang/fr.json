@@ -23,6 +23,7 @@
                 "stopMeeting": "Arrêter la réunion",
                 "notificationSettings": "Paramètres de notification",
                 "editRoom": "Modifier",
+                "deleteRoom": "Supprimer",
                 "leaveRoom": "Quitter"
             }
         },

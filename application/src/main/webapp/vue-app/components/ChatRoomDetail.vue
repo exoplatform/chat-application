@@ -36,31 +36,36 @@ import * as chatWebStorage from '../chatWebStorage';
 
 const DEFAULT_ROOM_ACTIONS = [{
   key: 'startMeeting',
-  isForAdmin: false,
   class: 'uiIconChatRecordStart',
   enabled: (comp) => {
     return !comp.meetingStarted;
   }
 }, {
   key: 'stopMeeting',
-  isForAdmin: false,
   class: 'uiIconChatRecordStop',
   enabled: (comp) => {
     return comp.meetingStarted;
   }
 } , {
   key: 'notificationSettings',
-  isForAdmin: false,
   class: 'uiIconPLFNotifications'
 } , {
   key: 'editRoom',
   type: 't',
-  isForAdmin: true,
-  class: 'uiIconEditInfo'
+  class: 'uiIconEditInfo',
+  enabled: (comp) => {
+    return comp.isAdmin;
+  }
+} , {
+  key: 'deleteRoom',
+  type: 't',
+  class: 'uiIconDelete',
+  enabled: (comp) => {
+    return comp.isAdmin;
+  }
 } , {
   key: 'leaveRoom',
   type: 't',
-  isForAdmin: false,
   class: 'uiIconDelete',
   enabled: (comp) => {
     return !comp.isAdmin;
@@ -175,7 +180,7 @@ export default {
       document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
     },
     displayItem(settingAction) {
-      return (!settingAction.isForAdmin || this.isAdmin) && (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
+      return (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
     }
   }
 };

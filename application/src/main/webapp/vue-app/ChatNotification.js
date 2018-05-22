@@ -149,6 +149,20 @@ export function initCometD() {
         }
       });
     },
+    deleteRoom : function (room, callback) {
+      const content = JSON.stringify({
+        'event': 'room-deleted',
+        'sender': this.username,
+        'token': this.token,
+        'dbName': this.dbName,
+        'room': room
+      });
+      this.cCometD.publish('/service/chat', content, function(publishAck) {
+        if (publishAck && publishAck.successful && callback) {
+          callback();
+        }
+      });
+    },
     sendMessage : function (messageObj, callback) {
       const data = {
         'clientId': messageObj.clientId,

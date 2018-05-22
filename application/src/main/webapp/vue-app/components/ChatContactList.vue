@@ -126,6 +126,7 @@ export default {
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
     document.addEventListener('exo-chat-setting-editRoom', this.editRoom);
     document.addEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
+    document.addEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
     this.typeFilter = chatWebStorage.getStoredParam(TYPE_FILTER_PARAM, TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(SORT_FILTER_PARAM, SORT_FILTER_DEFAULT);
   },
@@ -140,11 +141,17 @@ export default {
     document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
     document.removeEventListener('exo-chat-setting-editRoom', this.editRoom);
     document.removeEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
+    document.removeEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
   },
   methods: {
     selectContact(contact) {
+      if(!contact) {
+        contact = {};
+      }
       this.$emit('exo-chat-contact-selected', contact);
-      contact.unreadTotal = 0;
+      if(typeof contact === Object) {
+        contact.unreadTotal = 0;
+      }
     },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
@@ -191,9 +198,10 @@ export default {
         let users = this.newRoom.participants.map(user => user.name);
         users.unshift(eXo.chat.userSettings.username);
         users = users.join(',');
-        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users, this.newRoom.room).then(() => {
-          this.closeNewRoomModal();
+        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users, this.newRoom.room).then((roomDetails) => {
+          this.selectContact(roomDetails.room);
         });
+        this.closeNewRoomModal();
       }
     },
     editRoom() {
@@ -207,6 +215,11 @@ export default {
     leaveRoom() {
       if(this.selected && this.selected.type === 't') {
         window.chatNotification.leaveRoom(this.selected.room);
+      }
+    },
+    deleteRoom() {
+      if(this.selected && this.selected.type === 't') {
+        window.chatNotification.deleteRoom(this.selected.room);
       }
     },
     closeNewRoomModal() {
@@ -239,7 +252,11 @@ export default {
           if(!this.contacts || this.contacts.length === 0) {
             this.selected = null;
           } else {
-            this.selectContact(this.filteredContacts()[0]);
+            if(this.filteredContacts && this.filteredContacts.length) {
+              this.selectContact(this.filteredContacts[0]);
+            } else {
+              this.selectContact();
+            }
           }
         }
       }

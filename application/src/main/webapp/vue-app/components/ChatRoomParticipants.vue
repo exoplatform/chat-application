@@ -69,9 +69,8 @@ export default {
     contactChanged(e) {
       const contact = e.detail;
       this.contact = contact;
-      if (contact.type === 'u') {
-        this.participants = [];
-      } else {
+      this.participants = [];
+      if (contact.type && contact.type !== 'u') {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
             this.participants = data.users.reduce((prev, curr) => {

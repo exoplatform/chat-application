@@ -677,18 +677,99 @@ public class ChatServer
         return Response.notFound("Petit malin !");
       }
 
+<<<<<<< HEAD
       chatService.setRoomName(room, teamName, dbName);
+=======
+      List<String> usersToNotifyForAdd = new JSONArray();
+      List<String> usersToAdd = new JSONArray();
+      JSONObject data = new JSONObject();
+      data.put("title", teamName);
+      data.put("members", usersToAdd);
+
+      
+      RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+          RealTimeMessageBean.EventType.ROOM_UPDATED,
+          room,
+          user,
+          null,
+          data);
+
+      if (users != null && !users.isEmpty()) {
+        List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+>>>>>>> Implement remove room
 
       if (users != null && !users.isEmpty()) {
         List<String> usersNew = Arrays.asList(users.split(","));
+<<<<<<< HEAD
         try {
           List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
           updateRoomUsers(usersNew, existingUsers, user, token, creator, room, teamName, dbName, RealTimeMessageBean.EventType.ROOM_UPDATED);
         } catch (Exception ex) {
           LOG.log(Level.SEVERE, ex.getMessage());
           return Response.content(400, ex.getMessage());
+=======
+
+        usersToAdd.addAll(usersNew);
+        List<String> usersToRemove = new JSONArray();
+
+        for (String u: existingUsers) {
+          if (usersNew.contains(u)) {
+            usersToNotifyForAdd.add(u);
+            usersToAdd.remove(u);
+          } else {
+            usersToRemove.add(u);
+          }
         }
+
+        if (usersToRemove.size() > 0) {
+          userService.removeTeamUsers(room, usersToRemove, dbName);
+
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String u: usersToRemove)
+          {
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(u, dbName));
+            first = false;
+            notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
+          }
+
+          // Send members removal message in the room
+          String removeTeamUserOptions
+              = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
+        }
+
+        chatService.setRoomName(room, teamName, dbName);
+
+        if (usersToAdd.size() > 0) {
+          userService.addTeamUsers(room, usersToAdd, dbName);
+
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String usert: usersToAdd)
+          {
+            if(usert.equals(creator)) {
+              continue;
+            }
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(usert, dbName));
+            first = false;
+          }
+          String addTeamUserOptions
+              = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
+>>>>>>> Implement remove room
+        }
+
       }
+
+      if (!usersToNotifyForAdd.contains(creator)) {
+        usersToNotifyForAdd.add(creator);
+      }
+      realTimeMessageService.sendMessage(updatedRoomMessage, usersToNotifyForAdd);
 
       jsonObject.put("name", teamName);
       jsonObject.put("room", room);

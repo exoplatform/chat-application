@@ -23,6 +23,7 @@
                 "stopMeeting": "Stop meeting",
                 "notificationSettings": "Notification settings",
                 "editRoom": "Edit room",
+                "deleteRoom": "Delete room",
                 "leaveRoom": "Leave room"
             }
         },
