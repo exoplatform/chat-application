@@ -169,7 +169,7 @@ export function initCometD() {
 
       const content = {
         'event': messageObj.msgId ? 'message-updated' : 'message-sent',
-        "room": messageObj.room,
+        'room': messageObj.room,
         'sender': this.username,
         'token': this.token,
         'dbName': this.dbName,

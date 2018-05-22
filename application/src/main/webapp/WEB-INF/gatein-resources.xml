@@ -37,6 +37,9 @@
             <depends>
                 <module>suggester</module>
             </depends>
+            <depends>
+                <module>iphoneStyleCheckbox</module>
+            </depends>
         </module>
     </portlet>
 

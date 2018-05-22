@@ -544,21 +544,25 @@ public class ChatServer
   @Resource
   @MimeType("text/plain")
   @Route("/setNotificationSettings")
-  public Response.Content setNotificationSettings(String user, String token, String room, String[] notifConditions, String[] notifManners, String notifConditionType, String dbName, Long time) throws JSONException {
+  public Response.Content setNotificationSettings(String user, String token, String room, String[] notifConditions, String[] notifManners, String dbName, Long time) throws JSONException {
     if (!tokenService.hasUserWithToken(user, token, dbName)) {
       return Response.notFound("Something is wrong.");
     }
     
-    for (String notifCondition : notifConditions) {
-      try {
-        userService.setNotificationTrigger(user, notifCondition,dbName);
-      } catch (Exception e) {
+    if(notifConditions != null) {
+      for (String notifCondition : notifConditions) {
+        try {
+          userService.setPreferredNotification(user, notifCondition,dbName);
+        } catch (Exception e) {
+        }
       }
     }
-    for (String notifManner : notifManners) {
-      try {
-        userService.setPreferredNotification(user, notifManner, dbName);
-      } catch (Exception e) {
+    if(notifManners != null) {
+      for (String notifManner : notifManners) {
+        try {
+          userService.setNotificationTrigger(user, notifManner, dbName);
+        } catch (Exception e) {
+        }
       }
     }
 

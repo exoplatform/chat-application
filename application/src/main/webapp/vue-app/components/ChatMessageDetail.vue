@@ -3,7 +3,7 @@
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
-    <div class="chat-message-bubble" @click="testClick(message)">
+    <div class="chat-message-bubble">
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
       <div class="message-content" v-html="getMessage"></div>
       <div class="message-description">
@@ -239,9 +239,6 @@ export default {
         }
       };
       document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToSend}));
-    },
-    testClick(message) {
-      console.log(message)
     }
   }
 };

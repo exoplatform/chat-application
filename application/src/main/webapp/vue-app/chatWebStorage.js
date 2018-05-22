@@ -95,10 +95,3 @@ export function sendFailedMessages() {
     }
   }
 }
-
-document.addEventListener('exo-chat-selected-contact-changed', (e) => {
-  const selectedContact = e.detail;
-  if (selectedContact && selectedContact.room) {
-    setStoredParam('lastSelectedRoom', selectedContact.room);
-  }
-});

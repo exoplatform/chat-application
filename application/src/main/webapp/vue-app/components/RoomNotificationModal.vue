@@ -14,12 +14,13 @@
           <input v-model="selectedOption" :checked="selectedOption === 'keywords'" type="radio" name="optionsRoomNotificationKeywords" value="keywords">
           <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> Alert on :</span><br>
 
-          <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" placeholder="Lunch, break, coffee, party..." name="keyWord" @blur="persistOption"><br>
+          <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" placeholder="Lunch, break, coffee, party..." name="keyWord"><br>
           <span class="label-text local">Notify me when someone uses one of these keywords</span><br><br>
         </div>
       </div>
       <div class="row center">
-        <button id="close-room-notif-config" class="btn btn-default local" @click="closeModal">Close</button>
+        <div class="btn btn-primary" @click="saveSettings">Enregistrer</div>
+        <div class="btn" @click="closeModal">Annuler</div>
       </div>
     </div>
   </modal>
@@ -67,11 +68,6 @@ export default {
       return this.$t('chat.rooms.notificationSettingTitle', {name: this.roomName});
     }
   },
-  watch: {
-    selectedOption: function() {
-      this.persistOption();
-    }
-  },
   created() {
     if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
       this.selectedOption = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].notifCond;
@@ -83,12 +79,11 @@ export default {
       // Emit the click event of close icon
       this.$emit('modal-closed');
     },
-    persistOption() {
-      chatServices.setRoomNotificationTrigger(eXo.chat.userSettings, this.room, this.selectedOption, this.selectedOption === 'keywords' ? this.keywords : '', new Date().getTime().toString()).then(() =>
-        chatServices.getUserNotificationSettings(eXo.chat.userSettings).then(settings => {
-          chatServices.loadNotificationSettings(settings);
-        })
-      );
+    saveSettings() {
+      chatServices.setRoomNotificationTrigger(eXo.chat.userSettings, this.room, this.selectedOption, this.selectedOption === 'keywords' ? this.keywords : '', new Date().getTime().toString()).then(settings => {
+        chatServices.loadNotificationSettings(settings);
+      });
+      this.closeModal();
     }
   }
 };

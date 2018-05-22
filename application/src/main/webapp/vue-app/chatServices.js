@@ -2,7 +2,7 @@ import {chatData} from './chatData.js';
 import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
 
-const RESEND_MESSAGE_PERIOD = 3000;
+const RESEND_MESSAGE_PERIOD = 5000;
 let resendIntervalID;
 
 export function getUser(userName) {
@@ -35,9 +35,17 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
       });
     });
 
+    document.addEventListener('exo-chat-selected-contact-changed', (e) => {
+      const selectedContact = e.detail;
+      if (selectedContact && selectedContact.room) {
+        chatWebStorage.setStoredParam('lastSelectedRoom', selectedContact.room);
+      }
+    });
+
     getUserNotificationSettings(e.detail).then(settings => {
       loadNotificationSettings(settings);
     });
+
   });
 
   document.addEventListener('exo-chat-notification-count-updated', (e) => {
@@ -120,41 +128,55 @@ export function setRoomNotificationTrigger(userSettings, room, notifConditionTyp
   return fetch(`${chatData.chatServerAPI}setRoomNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room}&notifConditionType=${notifConditionType}&notifCondition=${notifCondition}&time=${time}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then(resp =>  resp.json());
 }
 
-export function setUserNotificationTrigger(userSettings, notifCondition) {
-  return fetch(`${chatData.chatServerAPI}setNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&notifCondition=${notifCondition}`, {
+export function setUserNotificationPreferences(userSettings, preferredNotifications, preferredNotificationTriggers) {
+  let preferredNotificationParam = '';
+  preferredNotifications.forEach(preferredNotification => {
+    preferredNotificationParam += `&notifConditions=${preferredNotification}`;
+  });
+  let preferredNotificationTriggerParam = '';
+  preferredNotificationTriggers.forEach(preferredNotificationTrigger => {
+    preferredNotificationTriggerParam += `&notifManners=${preferredNotificationTrigger}`;
+  });
+  return fetch(`${chatData.chatServerAPI}setNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}${preferredNotificationParam}${preferredNotificationTriggerParam}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then(resp =>  resp.json());
 }
 
 export function setUserPreferredNotification(userSettings, notifManner) {
   return fetch(`${chatData.chatServerAPI}setPreferredNotification?user=${userSettings.username}&dbName=${userSettings.dbName}&notifManner=${notifManner}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }});
+    }}).then(resp =>  resp.json());
 }
 
 export function getUserNotificationSettings(userSettings) {
   return fetch(`${chatData.chatServerAPI}getUserDesktopNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }});
+    }}).then(resp =>  resp.json());
 }
 
 export function loadNotificationSettings(settings) {
   if(settings && settings.userDesktopNotificationSettings) {
     eXo.chat.desktopNotificationSettings = settings.userDesktopNotificationSettings;
-    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredNotification) {
+    if(eXo.chat.desktopNotificationSettings.preferredNotification) {
       eXo.chat.desktopNotificationSettings.preferredNotification = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotification);
+    } else {
+      eXo.chat.desktopNotificationSettings.preferredNotification = [];
     }
-    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
+    if(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
       eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger);
+    } else {
+      eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = [];
     }
-    if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
+    if(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
       eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger);
+    } else {
+      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = [];
     }
   }
 }

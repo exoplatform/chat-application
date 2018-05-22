@@ -15,46 +15,7 @@
         <chat-room-participants :contact="selectedContact"></chat-room-participants> 
       </div>
     </div>
-    <modal v-show="settingModal" id="chatPreferences" title="Chat Preferences" modal-class="chatPreferences" @modal-closed="settingModal = false">
-      <section>
-        <h4>Notifications</h4>
-        <div class="notification-item">
-          <input ref="notifyDonotdistrub" v-model="chatPreferences.notifyDonotdistrub" type="checkbox">
-          <div class="notification-description">
-            <b>Notifications "Ne pas Déranger"</b>
-            <em>M'avertir même lorsque je suis en "Ne pas Déranger"</em>
-          </div>
-        </div>
-      </section>
-      <section>
-        <h4>Notify me with</h4>
-        <div class="notification-item">
-          <input ref="notifyDesktop" v-model="chatPreferences.notifyDesktop" type="checkbox">
-          <div class="notification-description">
-            <b>Notifications sur le bureau</b>
-            <em>Afficher une notification toast sur votre ordinateur</em>
-          </div>
-        </div>
-        <div class="notification-item">
-          <input ref="notifyOnSite" v-model="chatPreferences.notifyOnSite" type="checkbox">
-          <div class="notification-description">
-            <b>Notifications sur site</b>
-            <em>Afficher un compteur sur l'icône dans la barre du haut</em>
-          </div>
-        </div>
-        <div class="notification-item">
-          <input ref="notifyBip" v-model="chatPreferences.notifyBip" type="checkbox">
-          <div class="notification-description">
-            <b>Bips sonores</b>
-            <em>Émettre un signal sonore chaque fois qu’un nouveau message arrive</em>
-          </div>
-        </div>
-      </section>
-      <div class="uiAction uiActionBorder">
-        <div class="btn btn-primary" @click="saveNotificationSettings">Enregistrer</div>
-        <div class="btn" @click="settingModal = false">Annuler</div>
-      </div>
-    </modal>
+    <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
   </div>
 </template>
 
@@ -66,12 +27,7 @@ import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
 import ChatRoomDetail from './ChatRoomDetail.vue';
 import ChatMessageList from './ChatMessageList.vue';
-import Modal from './Modal.vue';
-
-const ON_SITE_NOTIF = 'on-site';
-const DESKTOP_NOTIF = 'desktop';
-const BIP_NOTIF = 'bip';
-const NOT_DISTRUB_NOTIF = 'notify-even-not-distrub';
+import GlobalNotificationModal from './GlobalNotificationModal.vue';
 
 export default {
   components: {
@@ -80,7 +36,7 @@ export default {
     'chat-room-participants': ChatRoomParticipants,
     'chat-room-detail': ChatRoomDetail,
     'chat-message-list': ChatMessageList,
-    Modal
+    'global-notification-modal': GlobalNotificationModal
   },
   data() {
     return {
@@ -100,13 +56,7 @@ export default {
         wsEndpoint: null,
       },
       selectedContact: {},
-      settingModal: false,
-      chatPreferences: {
-        notifyDonotdistrub: false,
-        notifyDesktop: false,
-        notifyOnSite: false,
-        notifyBip: false
-      }
+      settingModal: false
     };
   },
   created() {
@@ -209,39 +159,6 @@ export default {
     },
     openSettingModal() {
       this.settingModal = true;
-      if (eXo && eXo.chat && eXo.chat.desktopNotificationSettings) {
-        const notifSettings = eXo.chat.desktopNotificationSettings;
-        this.chatPreferences.notifyDonotdistrub = notifSettings.preferredNotificationTrigger.indexOf(NOT_DISTRUB_NOTIF) < 0 ? false : true;
-        this.chatPreferences.notifyOnSite = notifSettings.preferredNotification.indexOf(ON_SITE_NOTIF) < 0 ? false : true;
-        this.chatPreferences.notifyDesktop = notifSettings.preferredNotification.indexOf(DESKTOP_NOTIF) < 0 ? false : true;
-        this.chatPreferences.notifyBip = notifSettings.preferredNotification.indexOf(BIP_NOTIF) < 0 ? false : true;
-      }
-      window.require(['SHARED/iphoneStyleCheckbox'], function() {
-        $('#chatPreferences :checkbox').iphoneStyle({
-          disabledClass: 'switchBtnDisabled',
-          containerClass: 'uiSwitchBtn',
-          labelOnClass: 'switchBtnLabelOn',
-          labelOffClass: 'switchBtnLabelOff',
-          handleClass: 'switchBtnHandle'
-        });
-      });
-    },
-    saveNotificationSettings() {
-      const notifSettings = eXo.chat.desktopNotificationSettings;
-      const userSettings = eXo.chat.userSettings;
-      
-      if (this.$refs.notifyDonotdistrub.checked !== notifSettings.preferredNotificationTrigger.indexOf(NOT_DISTRUB_NOTIF) < 0 ? false : true) {
-        chatServices.setUserNotificationTrigger(userSettings, NOT_DISTRUB_NOTIF);
-      }
-      if (this.$refs.notifyDesktop.checked !== notifSettings.preferredNotification.indexOf(DESKTOP_NOTIF) < 0 ? false : true) {
-        chatServices.setUserPreferredNotification(userSettings, DESKTOP_NOTIF);
-      }
-      if (this.$refs.notifyBip.checked !== notifSettings.preferredNotification.indexOf(BIP_NOTIF) < 0 ? false : true) {
-        chatServices.setUserPreferredNotification(userSettings, BIP_NOTIF);
-      }
-      if (this.$refs.notifyOnSite.checked !== notifSettings.preferredNotification.indexOf(ON_SITE_NOTIF) < 0 ? false : true) {
-        chatServices.setUserPreferredNotification(userSettings, ON_SITE_NOTIF);
-      }
     }
   }
 };
