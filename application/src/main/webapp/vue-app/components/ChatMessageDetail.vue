@@ -38,6 +38,7 @@ const QUESTION_MESSAGE = 'type-question';
 const DELETED_MESSAGE = 'DELETED';
 const START_MEETING_MESSAGE = 'type-meeting-start';
 const STOP_MEETING_MESSAGE = 'type-meeting-stop';
+const NOTES_MESSAGE = 'type-notes';
 
 export default {
   components: {DropdownSelect},
@@ -128,6 +129,12 @@ export default {
         case STOP_MEETING_MESSAGE:
           return `
             <b>Réunion terminée</b>
+            <div class="custom-message-item"><i class="uiIconChatSendEmail"></i><div class="btn-link send-meeting-notes">Envoyer les notes</div></div>
+            <div class="custom-message-item"><i class="uiIconChatWiki"></i><div class="btn-link send-meeting-notes">Enregistrer dans le Wiki</div></div>
+          `;
+        case NOTES_MESSAGE:
+          return `
+            <b>Les notes ont bien été enregistrées</b>
             <div class="custom-message-item"><i class="uiIconChatSendEmail"></i><div class="btn-link send-meeting-notes">Envoyer les notes</div></div>
             <div class="custom-message-item"><i class="uiIconChatWiki"></i><div class="btn-link send-meeting-notes">Enregistrer dans le Wiki</div></div>
           `;
