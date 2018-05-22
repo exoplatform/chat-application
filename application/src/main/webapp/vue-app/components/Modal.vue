@@ -1,6 +1,6 @@
 <template>
   <div class="modal-mask uiPopupWrapper">
-    <div :modalClass="modalClass" class="uiPopup chat-modal">
+    <div :class="modalClass" class="uiPopup chat-modal">
       <div class="popupHeader">
         <span class="PopupTitle popupTitle">{{ title }}</span>
         <a class="uiIconClose pull-right" @click="closeModal"></a> 

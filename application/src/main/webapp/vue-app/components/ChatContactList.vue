@@ -41,8 +41,8 @@
         <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
       </div>
       <div class="uiAction uiActionBorder">
-        <a href="#" class="btn btn-primary" @click="saveRoom">Enregistrer</a>
-        <a href="#" class="btn" @click="closeNewRoomModal">Annuler</a>
+        <div class="btn btn-primary" @click="saveRoom">Enregistrer</div>
+        <div class="btn" @click="closeNewRoomModal">Annuler</div>
       </div>
     </modal>
   </div>

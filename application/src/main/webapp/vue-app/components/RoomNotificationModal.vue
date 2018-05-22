@@ -85,7 +85,7 @@ export default {
     },
     persistOption() {
       chatServices.setRoomNotificationTrigger(eXo.chat.userSettings, this.room, this.selectedOption, this.selectedOption === 'keywords' ? this.keywords : '', new Date().getTime().toString()).then(() =>
-        chatServices.getRoomNotificationSettings(eXo.chat.userSettings).then(settings => {
+        chatServices.getUserNotificationSettings(eXo.chat.userSettings).then(settings => {
           chatServices.loadNotificationSettings(settings);
         })
       );

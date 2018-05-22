@@ -35,7 +35,7 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
       });
     });
 
-    getRoomNotificationSettings(e.detail).then(settings => {
+    getUserNotificationSettings(e.detail).then(settings => {
       loadNotificationSettings(settings);
     });
   });
@@ -123,11 +123,25 @@ export function setRoomNotificationTrigger(userSettings, room, notifConditionTyp
     }}).then(resp =>  resp.text());
 }
 
-export function getRoomNotificationSettings(userSettings) {
+export function setUserNotificationTrigger(userSettings, notifCondition) {
+  return fetch(`${chatData.chatServerAPI}setNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&notifCondition=${notifCondition}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.text());
+}
+
+export function setUserPreferredNotification(userSettings, notifManner) {
+  return fetch(`${chatData.chatServerAPI}setPreferredNotification?user=${userSettings.username}&dbName=${userSettings.dbName}&notifManner=${notifManner}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }});
+}
+
+export function getUserNotificationSettings(userSettings) {
   return fetch(`${chatData.chatServerAPI}getUserDesktopNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }});
 }
 
 export function loadNotificationSettings(settings) {

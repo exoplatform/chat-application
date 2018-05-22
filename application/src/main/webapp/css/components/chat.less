@@ -32,6 +32,37 @@
   }
 }
 
+#chatPreferences .chatPreferences {
+  .chatPreferences {
+    width: 700px;
+  }
+  section {
+    margin-left: 10px;
+  }
+  section + section {
+    margin-top: 35px;
+  }
+}
+.chat-user-settings {
+  display: inline;
+  margin-left: 10px;
+  .uiIconGear {
+    color: #fff;
+  }
+}
+
+.notification-item {
+  display: flex;
+  padding-left: 60px;
+  .uiSwitchBtn {
+    flex-shrink: 0;
+    margin: 3px 15px 0 0;
+  }
+  .notification-description > * {
+    display: block;
+  }
+}
+
 /* suggester */
 .selectize-dropdown {
   .option {
@@ -77,6 +108,10 @@
 .uiIconChatQuestion:before {
   content: "\e76b";
 }
+.uiIconGear:before {
+  content: "\e9fa";
+}
+
 .chat-message-not-sent {
 	color:#999999;
 }
