@@ -3,9 +3,12 @@
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
-    <div class="chat-message-bubble">
+    <div class="chat-message-bubble" @click="testClick(message)">
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
       <div class="message-content" v-html="getMessage"></div>
+      <div class="message-description">
+        <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
+      </div>
     </div>
     <div class="chat-message-action">
       <dropdown-select class="message-actions" position="right">
@@ -36,6 +39,7 @@ const LINK_MESSAGE = 'type-link';
 const RAISE_HAND = 'type-hand';
 const QUESTION_MESSAGE = 'type-question';
 const DELETED_MESSAGE = 'DELETED';
+const EDITED_MESSAGE = 'EDITED';
 const START_MEETING_MESSAGE = 'type-meeting-start';
 const STOP_MEETING_MESSAGE = 'type-meeting-stop';
 const NOTES_MESSAGE = 'type-notes';
@@ -78,6 +82,9 @@ export default {
     },
     contactAvatar() {
       return getUserAvatar(this.message.user);
+    },
+    isEditedMessage() {
+      return this.message.type && this.message.type === EDITED_MESSAGE ? true : false;
     },
     getMessage() {
       const message = this.message.msg ? this.message.msg : this.message.message;
@@ -146,6 +153,11 @@ export default {
       } else {
         return message;
       }
+    }
+  },
+  methods: {
+    testClick(message) {
+      console.log(message)
     }
   }
 };
