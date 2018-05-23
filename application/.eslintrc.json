@@ -1,16 +1,19 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "extends": [
         "eslint:recommended",
-        "plugin:vue/recommended"
+        "plugin:vue/recommended",
+        "plugin:jest/recommended"
     ],
     "globals": {
         "eXo": true,
         "$": true,
-        "CalDateTimePicker": true
+        "CalDateTimePicker": true,
+        "global": true
     },
     "parserOptions": {
         "sourceType": "module",

@@ -104,30 +104,6 @@ function ExtCometD(origin) {
     this.explicitlyDisconnected = true;
     this.parent.disconnect.apply(this, args);
   };
-
-  const thiz = this;
-  this.addListener('/meta/handshake', function(message) {
-    if (message.successful) {
-      //start a batch
-      thiz.batch(thiz, function() {
-        //resubcribe after successfull handshake
-        $.each(thiz.eXoResubs, function(idx, elem) {
-          thiz.parent.subscribe.apply(thiz, elem);
-        });
-        //publish
-        $.each(thiz.eXoPublish, function(idx, elem) {
-          thiz.parent.publish.apply(thiz, elem);
-        });
-        thiz.eXoPublish = [];
-        //remoteCall
-        $.each(thiz.eXoRemoteCalls, function(idx, elem) {
-          this.parent.remoteCall.apply(thiz, elem);
-        });
-        thiz.eXoRemoteCalls = [];
-      });
-    }
-  });
-
 }
 
 const cCometD = new ExtCometD($.cometd);
