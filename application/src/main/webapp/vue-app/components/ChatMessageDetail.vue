@@ -106,10 +106,10 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <dropdown-select v-if="!message.isDeleted && messageActions && messageActions.length > 0" class="message-actions" position="right">
+      <dropdown-select v-if="!message.isDeleted && messageActions && messageActions.length" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots"></i>
         <li slot="menu">
-          <a v-for="messageAction in messageActions" v-if="displayItem(messageAction)" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" href="#" @click="executeAction(messageAction.key)">
+          <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction.key)">
             {{ $t(`chat.message.action.${messageAction.key}`) }}
           </a>
         </li>
@@ -184,7 +184,6 @@ export default {
           }
         } , {
           key: 'quote',
-          class: 'uiIconPLFNotifications',
           enabled: (comp) => {
             return !comp.message.isSystem && !comp.message.isDeleted;
           }
@@ -200,9 +199,9 @@ export default {
   computed: {
     messageActions() {
       if(eXo && eXo.chat && eXo.chat.message && eXo.chat.message.extraActions) {
-        return this.DEFAULT_MESSAGE_ACTIONS.concat(eXo.chat.message.extraActions);
+        return this.constants.DEFAULT_MESSAGE_ACTIONS.concat(eXo.chat.message.extraActions).filter(menu => !menu.enabled || menu.enabled(this));
       } else {
-        return this.DEFAULT_MESSAGE_ACTIONS;
+        return this.constants.DEFAULT_MESSAGE_ACTIONS.filter(menu => !menu.enabled || menu.enabled(this));
       }
     },
     dateString() {
@@ -250,14 +249,14 @@ export default {
       }*/
     });
 
-    $chatMessageDetailContainer.find('.notes-save').off('click').on('click', function () {/*
-      var options = {
+    $chatMessageDetailContainer.find('.notes-save').off('click').on('click', function () {
+      const options = {
         type: 'type-notes',
         fromTimestamp: this.message.timestamp,
         fromUser: eXo.chat.userSettings.username,
         fromFullname: eXo.chat.userSettings.fullName
       };
-      document.dispatchEvent(new CustomEvent('exo-chat-message-todelete', {'detail' : {msg: '', options: options}}));*/
+      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : {msg: '', options: options}}));
     });
 
     $chatMessageDetailContainer.find('.meeting-send').off('click').on('click', function () {/*
@@ -356,9 +355,6 @@ export default {
   methods: {
     executeAction(actionName) {
       document.dispatchEvent(new CustomEvent(`exo-chat-message-acton-${actionName}`, {'detail': this.message}));
-    },
-    displayItem(settingAction) {
-      return (!settingAction.isForAdmin || this.isAdmin) && (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
     },
     editMessage(e) {
       if(!e || !e.detail || !e.detail.msgId || e.detail.msgId !== this.message.msgId) {
