@@ -70,7 +70,6 @@ export default {
       this.$emit('modal-closed');
     },
     saveAppModal() {
-      console.log(this.room)
       const message = {
         msg : '',
         room : this.room,
@@ -91,7 +90,9 @@ export default {
         this.raiseHandComment = '';
         break;
       case 'question':
-        if (this.questionText === '') {return}
+        if (this.questionText === '') {
+          return;
+        }
         message.msg = this.questionText;
         message.options.type = QUESTION_MESSAGE;
         break;

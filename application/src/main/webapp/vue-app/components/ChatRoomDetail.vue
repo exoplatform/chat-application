@@ -152,17 +152,20 @@ export default {
     },
     startMeeting() {
       const room = this.contact.room;
-      chatWebStorage.setStoredParam(`meetingStarted-${room}`, true);
+      chatWebStorage.setStoredParam(`meetingStarted-${room}`, new Date().getTime().toString());
       this.meetingStarted = true;
       this.sendMeetingMessage(true);
     },
     stopMeeting() {
       const room = this.contact.room;
-      chatWebStorage.setStoredParam(`meetingStarted-${room}`, '');
-      this.meetingStarted = false;
-      this.sendMeetingMessage(false);
+      const fromTimestamp = chatWebStorage.getStoredParam(`meetingStarted-${room}`);
+      if (fromTimestamp) {
+        chatWebStorage.setStoredParam(`meetingStarted-${room}`, '');
+        this.meetingStarted = false;
+        this.sendMeetingMessage(false, fromTimestamp);
+      }
     },
-    sendMeetingMessage(startMeeting) {
+    sendMeetingMessage(startMeeting, fromTimestamp) {
       const msgType = startMeeting ? 'type-meeting-start' : 'type-meeting-stop';
       const message = {
         message : this.newMessage,
@@ -174,7 +177,8 @@ export default {
         options: {
           type: msgType,
           fromUser: eXo.chat.userSettings.username,
-          fromFullname: eXo.chat.userSettings.fullName
+          fromFullname: eXo.chat.userSettings.fullName,
+          fromTimestamp: fromTimestamp
         }
       };
       document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));

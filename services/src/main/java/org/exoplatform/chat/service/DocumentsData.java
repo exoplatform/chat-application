@@ -1,7 +1,5 @@
-package org.exoplatform.chat.portlet.chat;
+package org.exoplatform.chat.service;
 
-
-import juzu.SessionScoped;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +34,6 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
-@Named("documentsData")
-@SessionScoped
 public class DocumentsData {
 
   private static final Logger LOG = Logger.getLogger(DocumentsData.class.getName());

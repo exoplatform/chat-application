@@ -33,5 +33,12 @@
                 "removeuser": "{0} a retir\u00E9 {1} de ce salon"
             }
         }
+    },
+    "exoplatform" : {
+        "chat" : {
+            "meeting": {
+                "notes": "Meeting notes"
+            }
+        }
     }
 }

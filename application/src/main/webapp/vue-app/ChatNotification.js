@@ -130,7 +130,7 @@ export function initCometD() {
     sendMessage : function (messageObj, callback) {
       const data = {
         'clientId': messageObj.clientId,
-        'timestamp': Date.now(),
+        'timestamp': messageObj.timestamp ? messageObj.timestamp : Date.now(),
         'msg': messageObj.message ? messageObj.message : messageObj.msg,
         'msgId': messageObj.msgId,
         'room': messageObj.room,

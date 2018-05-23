@@ -164,55 +164,17 @@
             thiss.isEmpty = true;
           }
 
-          $chats.off("click.quote");
-          $chats.on("click.quote", ".msg-action-quote", function () {
-            var $uimsg = jqchat(this).closest(".msg-text");
-            var msgId = $uimsg.attr('id');
-            var messages = TAFFY(thiss.messages);
-            var tempMsg = messages({
-              msgId: msgId
-            });
-            if (tempMsg.count() > 0) {
-              var msg = tempMsg.first().msg;
 
-              var msgHtml = msg.replace(/<br\/>/g, "\n");
-              msgHtml = $('<div />').html(msgHtml).text();
 
-              var msgFullname = $uimsg.attr("data-fn");
-              jqchat("#msg").focus().val('').val("[quote=" + msgFullname + "]" + msgHtml + " [/quote] ");
-            }
-          });
 
-          $chats.off("click.delete");
-          $chats.on("click.delete", ".msg-action-delete", function () {
-            var $uimsg = jqchat(this).closest(".msg-text");
-            var msgId = $uimsg.attr("id");
-            chatApplication.deleteMessage(msgId);
-          });
 
-          $chats.off("click.edit");
-          $chats.on("click.edit", ".msg-action-edit", function () {
-            var $uimsg = jqchat(this).closest(".msg-text");
-            chatApplication.openEditMessagePopup($uimsg.attr("id"));
-          });
 
-          $chats.off("click.savenotes");
-          $chats.on("click.savenotes", ".msg-action-savenotes", function () {
-            var $uimsg = jqchat(this).closest(".msg-text");
-            var msgTimestamp = $uimsg.attr("data-timestamp");
 
-            var options = {
-              type: "type-notes",
-              fromTimestamp: msgTimestamp,
-              fromUser: chatApplication.username,
-              fromFullname: chatApplication.fullname
-            };
 
-            var msg = "";
 
-            chatApplication.chatRoom.sendMessage("", options, "true");
-          });
 
+
+          
           $chats.off("click.send-meeting-notes");
           $chats.on("click.send-meeting-notes", ".send-meeting-notes", function () {
             var $this = jqchat(this);

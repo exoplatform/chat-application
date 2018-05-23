@@ -3,7 +3,7 @@
     <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
         <div class="day-separator">{{ dayDate }}</div>
-        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :room="contact.room" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
+        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
       </div>
     </div>
     <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>

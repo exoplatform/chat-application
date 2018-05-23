@@ -208,6 +208,7 @@ public class ReportBean {
 
   public String getAsXWiki(String serverBase, String portalURI)
   {
+    serverBase = serverBase == null ? "" : serverBase;
     StringBuilder xwiki = new StringBuilder();
 
     xwiki.append("\n{{section}}\n{{column}}\n");

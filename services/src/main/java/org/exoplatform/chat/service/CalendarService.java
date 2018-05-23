@@ -1,40 +1,39 @@
-package org.exoplatform.chat.portlet.chat;
+package org.exoplatform.chat.service;
 
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.chat.utils.ChatUtils;
-import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.OrganizationService;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Named("calendarService")
-@ApplicationScoped
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.OrganizationService;
+
+@SuppressWarnings("deprecation")
 public class CalendarService {
 
   org.exoplatform.calendar.service.CalendarService calendarService_;
-  OrganizationService organizationService_;
-  private static final Logger LOG = Logger.getLogger("CalendarService");
 
-  @Inject
-  public CalendarService(org.exoplatform.calendar.service.CalendarService calendarService, OrganizationService organizationService)
-  {
+  OrganizationService                              organizationService_;
+
+  private static final Logger                      LOG = Logger.getLogger("CalendarService");
+
+  public CalendarService(org.exoplatform.calendar.service.CalendarService calendarService,
+                         OrganizationService organizationService) {
     calendarService_ = calendarService;
     organizationService_ = organizationService;
   }
 
-  protected void saveEvent(String user, String calName, String users, String summary,
-                         Date from, Date to, String location) throws Exception
-  {
+  protected void saveEvent(String user,
+                           String calName,
+                           String users,
+                           String summary,
+                           Date from,
+                           Date to,
+                           String location) throws Exception {
     if (!"".equals(users)) {
       String[] participants = users.split(",");
-      for (String participant:participants) {
+      for (String participant : participants) {
         String calId = getFirstCalendarsId(participant);
         saveEvent(participant, false, participants, calId, calName, summary, from, to, location);
       }
@@ -44,10 +43,16 @@ public class CalendarService {
     }
   }
 
-  protected void saveEvent(String user, boolean isPublic, String[] participants, String calId, String calName, String summary,
-                         Date from, Date to, String location) throws Exception
-  {
-    if (calId!=null) {
+  protected void saveEvent(String user,
+                           boolean isPublic,
+                           String[] participants,
+                           String calId,
+                           String calName,
+                           String summary,
+                           Date from,
+                           Date to,
+                           String location) throws Exception {
+    if (calId != null) {
       CalendarEvent event = new CalendarEvent();
       event.setCalendarId(calId);
       event.setSummary(summary);
@@ -61,29 +66,27 @@ public class CalendarService {
       if (isPublic)
         calendarService_.savePublicEvent(calId, event, true);
       else {
-        if (participants!=null) {
+        if (participants != null) {
           event.setParticipant(participants);
           String[] participantsStatus = new String[participants.length];
-          for(int i=0 ; i<participants.length ; i++) {
-            participantsStatus[i] = participants[i]+":confirmed";
+          for (int i = 0; i < participants.length; i++) {
+            participantsStatus[i] = participants[i] + ":confirmed";
           }
-        event.setParticipantStatus(participantsStatus);
+          event.setParticipantStatus(participantsStatus);
 
         }
         calendarService_.saveUserEvent(user, calId, event, true);
-//        calendarService_.confirmInvitation("john", "benjamin", "john", Utils.PRIVATE_TYPE, calId, eventId, Utils.ACCEPT);
+        // calendarService_.confirmInvitation("john", "benjamin", "john",
+        // Utils.PRIVATE_TYPE, calId, eventId, Utils.ACCEPT);
       }
     }
   }
 
   private String getFirstCalendarsId(String username) {
-
-
-    StringBuilder sb = new StringBuilder();
     List<org.exoplatform.calendar.service.Calendar> listUserCalendar = null;
     try {
       listUserCalendar = calendarService_.getUserCalendars(username, true);
-      if (listUserCalendar.size()>0) {
+      if (listUserCalendar.size() > 0) {
         return listUserCalendar.get(0).getId();
       }
     } catch (Exception e) {
@@ -95,7 +98,6 @@ public class CalendarService {
   private String getCalendarId(String username, String space) {
 
     String id = null;
-    StringBuilder sb = new StringBuilder();
     List<GroupCalendarData> listgroupCalendar = null;
     try {
       listgroupCalendar = calendarService_.getGroupCalendars(getUserGroups(username), true, username);

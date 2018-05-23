@@ -33,5 +33,12 @@
                 "removeuser": "{0} removed {1} from this room."
             }
         }
+    },
+    "exoplatform" : {
+        "chat" : {
+            "meeting": {
+                "notes": "Meeting notes"
+            }
+        }
     }
 }
