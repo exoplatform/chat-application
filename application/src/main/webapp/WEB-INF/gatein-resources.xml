@@ -40,6 +40,9 @@
             <depends>
                 <module>iphoneStyleCheckbox</module>
             </depends>
+            <depends>
+                <module>CalDateTimePicker</module>
+            </depends>
         </module>
     </portlet>
 

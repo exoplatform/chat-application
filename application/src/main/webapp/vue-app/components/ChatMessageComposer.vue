@@ -1,29 +1,9 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message">
     <div class="apps-container">
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatCreateEvent"></i></div>
-        <div class="apps-item-label">Add Event</div>
-      </div>
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatCreateTask"></i></div>
-        <div class="apps-item-label">Assign Task</div>
-      </div>
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatLink"></i></div>
-        <div class="apps-item-label">Share Link</div>
-      </div>
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatUpload"></i></div>
-        <div class="apps-item-label">Upload File</div>
-      </div>
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatQuestion"></i></div>
-        <div class="apps-item-label">Ask Question</div>
-      </div>
-      <div class="apps-item">
-        <div class="apps-item-icon"><i class="uiIconChatRaiseHand"></i></div>
-        <div class="apps-item-label">Raise Hand</div>
+      <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
+        <div class="apps-item-icon"><i :class="app.class"></i></div>
+        <div class="apps-item-label">{{ app.label }}</div>
       </div>
     </div>
     <div class="composer-container">
@@ -42,11 +22,50 @@
         </div>
       </div>
     </div>
+    <apps-modal v-if="appsModal.isOpned" :app-key="appsModal.appKey" :title="appsModal.title" :room="contact.room" @modal-closed="appsModal.isOpned = false"></apps-modal>
   </div>
 </template>
 
 <script>
+import ComposerAppsModal from './ComposerAppsModal.vue';
+
+const DEFAULT_COMPOSER_APPS = [
+  {
+    key: 'event',
+    label: 'Add Event',
+    class: 'uiIconChatCreateEvent'
+  }, 
+  {
+    key: 'task',
+    label: 'Assign task',
+    class: 'uiIconChatCreateTask'
+  }, 
+  {
+    key: 'link',
+    label: 'Share link',
+    class: 'uiIconChatLink'
+  },
+  {
+    key: 'file',
+    label: 'Upload file',
+    class: 'uiIconChatUpload'
+  },
+  {
+    key: 'question',
+    label: 'Ask question',
+    class: 'uiIconChatQuestion'
+  },
+  {
+    key: 'raise-hand',
+    label: 'Raise hand',
+    class: 'uiIconChatRaiseHand'
+  }
+];
+
 export default {
+  components: {
+    'apps-modal': ComposerAppsModal
+  },
   props: {
     contact: {
       type: Object,
@@ -58,8 +77,22 @@ export default {
   data() {
     return {
       newMessage: '',
+      appsModal: {
+        appKey: '',
+        title: '',
+        isOpned: false
+      },
       appsClosed: true
     };
+  },
+  computed: {
+    getApplications() {
+      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
+        return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
+      } else {
+        return DEFAULT_COMPOSER_APPS;
+      }
+    }
   },
   created() {
     document.addEventListener('keyup', this.closeApps);
@@ -116,6 +149,12 @@ export default {
 
       // The text insertion doesn't trigger Vue for modified field
       this.newMessage = $('#messageComposerArea').val();
+    },
+    openAppModal(app) {
+      this.appsClosed = true;
+      this.appsModal.appKey = app.key;
+      this.appsModal.title = app.label;
+      this.appsModal.isOpned = true;
     }
   }
 };

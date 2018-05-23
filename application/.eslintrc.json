@@ -9,7 +9,8 @@
     ],
     "globals": {
         "eXo": true,
-        "$": true
+        "$": true,
+        "CalDateTimePicker": true
     },
     "parserOptions": {
         "sourceType": "module",

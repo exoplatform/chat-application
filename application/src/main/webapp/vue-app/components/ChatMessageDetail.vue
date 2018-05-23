@@ -69,7 +69,7 @@
       <div v-if="message.isSystem && message.options.type === constants.LINK_MESSAGE" class="message-content">
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.RAISE_HAND" class="message-content">
+      <div v-if="message.isSystem && (message.options.type === constants.RAISE_HAND || message.options.type === constants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
       <div v-if="message.isSystem && message.options.type === constants.START_MEETING_MESSAGE" class="message-content">
