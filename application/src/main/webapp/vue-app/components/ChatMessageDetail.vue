@@ -7,10 +7,10 @@
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
       <div v-if="message.isSystem && message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
-        {{ $t('chat.team.msg.adduser', {0: `<b>${message.options.fullname}</b>`, 1: `<b>${message.options.users}</b>`}) }}
+        <span v-html="$t('chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
       <div v-if="message.isSystem && message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
-        {{ $t('chat.team.msg.removeuser', {0: `<b>${message.options.fullname}</b>`, 1: `<b>${message.options.users}</b>`}) }}
+        <span v-html="$t('chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
       <div v-if="message.isSystem && message.options.type === constants.TASK_MESSAGE" class="message-content">
         <b>
@@ -70,7 +70,7 @@
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
       <div v-if="message.isSystem && message.options.type === constants.RAISE_HAND" class="message-content">
-        <b>{{ message.message }}</b>
+        <b>{{ messageContent }}</b>
       </div>
       <div v-if="message.isSystem && message.options.type === constants.START_MEETING_MESSAGE" class="message-content">
         <b>Réunion démarée</b>
@@ -98,7 +98,7 @@
         <em class="muted">Ce message a été supprimé.</em>
       </div>
       <div v-if="!message.isSystem && message.type !== constants.DELETED_MESSAGE" class="message-content">
-        {{ message.message }}
+        {{ messageContent }}
       </div>
 
       <div class="message-description">
@@ -213,6 +213,12 @@ export default {
     },
     isEditedMessage() {
       return this.message.type && this.message.type === this.constants.EDITED_MESSAGE ? true : false;
+    },
+    roomAddOrDeleteI18NParams() {
+      return {0: `<b>${this.message.options.fullname}</b>`, 1: `<b>${this.message.options.users}</b>` };
+    },
+    messageContent() {
+      return this.message.message ? this.message.message : this.message.msg;
     }
   },
   created() {
@@ -221,7 +227,6 @@ export default {
     document.addEventListener('exo-chat-message-acton-saveNotes', this.saveNotes);
     if(this.message) {
       this.message.isDeleted = this.message.type === this.constants.DELETED_MESSAGE;
-      this.message.message = this.message.msg ? this.message.msg : this.message.message;
     }
   },
   updated() {
