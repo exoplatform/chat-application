@@ -1,22 +1,15 @@
-const preferredNotification = [];
-const preferredNotificationTrigger = [];
-const preferredRoomNotificationTrigger = {};
+const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
+const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = 'keywords';
+const ROOM_ON_SITE = 'on-site';
+const ROOM_DESKTOP = 'desktop';
+const ROOM_BIP = 'bip';
 
-export const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
-export const ROOM_NOTIF_TRIGGER_SILENCE = 'silence';
-export const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = 'keywords';
-export const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD_VALUE = 'room-notif-trigger-when-key-word-value';
-export const ROOM_ON_SITE = 'on-site';
-export const ROOM_DESKTOP = 'desktop';
-export const ROOM_BIP = 'bip';
-
-export function containKeyWord(message, keywords) {
+function containKeyWord(message, keywords) {
   message = message.toLowerCase();
-  const keyW = keywords.split(':')[1];
-  if (keyW === '') {
+  if (!keywords || !keywords.trim()) {
     return false;
   }
-  const keys = keyW.split(',');
+  const keys = keywords.split(/[\s,]+/);
   for (let i = 0; i < keys.length; i++) {
     if (message.includes(keys[i].trim().toLowerCase())) {
       return true;
@@ -25,99 +18,41 @@ export function containKeyWord(message, keywords) {
   return false;
 }
 
-export function getPreferredNotification() {
-  return preferredNotification;
+function canNotifySwitchStatus() {
+  return canBypassDonotDistrub() || canBypassStatusCondition();
 }
 
-export function setPreferredNotification(prefNotifs) {
-  if (!(prefNotifs instanceof Array)) { // always force data to be wrapped into an array
-    prefNotifs = [prefNotifs];
-  }
-  prefNotifs.forEach(function (prefNotif) {
-    const index = preferredNotification.indexOf(prefNotif);
-    if (index === -1) {
-      preferredNotification.push(prefNotif);
-    } else { //if a preferred notification is already set then remove it
-      preferredNotification.splice(index, 1);
-    }
-  });
+function canBypassStatusCondition() {
+  return eXo.chat.userSettings.status !== 'donotdisturb' && eXo.chat.userSettings.status !== 'offline';
 }
 
-export function getPreferredNotificationTrigger() {
-  return preferredNotificationTrigger;
+function canBypassDonotDistrub() {
+  return eXo.chat.userSettings.status !== 'donotdisturb' || eXo.chat.desktopNotificationSettings.preferredNotificationTrigger.indexOf('notify-even-not-distrub') !== -1;
 }
 
-export function setPreferredNotificationTrigger(prefNotifTrigger) {
-  if (!(prefNotifTrigger instanceof Array)) { // always force data to be wrapped into an array
-    prefNotifTrigger = [prefNotifTrigger];
-  }
-  prefNotifTrigger.forEach(function (prefNotif) {
-    const index = preferredNotificationTrigger.indexOf(prefNotif);
-    if (index === -1) {
-      preferredNotificationTrigger.push(prefNotif);
-    } else { //if a preferred notification is already set then remove it
-      preferredNotificationTrigger.splice(index, 1);
-    }
-  });
+function canPlaySound() {
+  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_BIP) !== -1;
 }
 
-export function getRoomPreferredNotificationTrigger() {
-  return preferredRoomNotificationTrigger;
-}
-
-export function setRoomPreferredNotificationTrigger(roomId, value) {
-  preferredRoomNotificationTrigger[roomId] = value;
-}
-
-export function setRoomPreferredNotificationTriggerSettings(settings) {
-  for (const roomId in settings) {
-    const notifData = settings[roomId];
-    let notifCond = notifData['notifCond'];
-    if (this.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD === notifCond) {
-      notifCond += `:${  notifData[notifCond]}`;
-    }
-    this.setRoomPreferredNotificationTrigger(roomId, notifCond);
-  }
-}
-
-export function setPreferredNotificationSettings(settings, overrideSettin) { //this is always called on the reload of the page
-  if (settings.preferredNotification && overrideSettin) {
-    this.setPreferredNotification(JSON.parse(settings.preferredNotification));
-  }
-  if (settings.preferredNotificationTrigger && overrideSettin) {
-    this.setPreferredNotificationTrigger(JSON.parse(settings.preferredNotificationTrigger));
-  }
-  if (settings.preferredRoomNotificationTrigger) {
-    this.setRoomPreferredNotificationTriggerSettings(JSON.parse(settings.preferredRoomNotificationTrigger));
-  }
-}
-
-export function canBypassDonotDistrub() {
-  return preferredNotificationTrigger.indexOf('notify-even-not-distrub') === -1;
-}
-
-export function canPlaySound() {
-  return preferredNotification.indexOf(this.ROOM_BIP) !== -1;
-}
-
-export function canShowDesktopNotif() {
-  return preferredNotification.indexOf(this.ROOM_DESKTOP) !== -1;
+function canShowDesktopNotif() {
+  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_DESKTOP) !== -1;
 }
 
 export function canShowOnSiteNotif() {
-  return preferredNotification.indexOf(this.ROOM_ON_SITE) !== -1;
+  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_ON_SITE) !== -1;
 }
 
-export function canBypassRoomNotif(msgObj) {
+function canBypassRoomNotif(msgObj) {
   const message = msgObj.content;
-  const sourceRoom = msgObj.categoryId;
-  return !preferredRoomNotificationTrigger[sourceRoom] || // Not specified yet
-      preferredRoomNotificationTrigger[sourceRoom].startsWith(this.ROOM_NOTIF_TRIGGER_NORMAL) || // Normal condition
-      preferredRoomNotificationTrigger[sourceRoom].startsWith(this.ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
-      this.containKeyWord(message, preferredRoomNotificationTrigger[sourceRoom]); // Containing keywords
+  const sourceRoom = msgObj.room;
+  return !eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[sourceRoom] || // Not specified yet
+      !eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[sourceRoom].notifCond ||
+      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[sourceRoom].notifCond.startsWith(ROOM_NOTIF_TRIGGER_NORMAL) || // Normal condition
+      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[sourceRoom].notifCond.startsWith(ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD) &&
+      containKeyWord(message, eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[sourceRoom].keywords); // Containing keywords
 }
 
-export function highlightMessage(msgObject) {
+function highlightMessage(msgObject) {
   let highlightedMsg = msgObject.content;
 
   if (msgObject.options) {
@@ -138,4 +73,106 @@ export function highlightMessage(msgObject) {
   }
 
   return highlightedMsg;
+}
+
+function unifyMessageFormat(messageObj, message) {
+  if(!message.room && messageObj.room) {
+    message.room = messageObj.room;
+  }
+  if(!message.user && (messageObj.user || messageObj.sender)) {
+    message.user = messageObj.user ? messageObj.user : messageObj.sender;
+  }
+}
+
+function notfy(e) {
+  const messageObj = e.detail;
+  const message = messageObj.data;
+  unifyMessageFormat(messageObj, message);
+  if (message.user === eXo.chat.userSettings.username) {
+    return;
+  }
+
+  // A tip that helps making a tiny delay in execution of block code in the function,
+  // to avoid concurrency issue in condition checking.
+  setTimeout(function () {
+    // Check if the message has been notified by other tab
+    if (localStorage.getItem(`lastNotify-${message.room}`) === message.msgId) {
+      return;
+    }
+    localStorage.setItem(`lastNotify-${message.room}`, message.msgId);
+
+    const notify = {
+      roomType: message.roomType,
+      options: message.options,
+      roomDisplayName: message.roomDisplayName,
+      content: message.msg,
+      room: message.room,
+      from: message.user
+    };
+
+    if (canNotifySwitchStatus() && canBypassRoomNotif(notify)) {
+      if (canPlaySound()) {
+        $('#chat-audio-notif')[0].play();
+      }
+      if (canShowDesktopNotif()) {
+        showDesktopNotif(eXo.chat.userSettings.chatPage, notify);
+      }
+    }
+  });
+}
+
+function showDesktopNotif(path, msg) {
+  let displayMsg = highlightMessage(msg);
+  displayMsg = $('<div />').html(displayMsg).text();
+
+  if (Notification.permission !== 'granted') {
+    Notification.requestPermission();
+  }
+
+  if (!Notification) {
+    return;
+  }
+
+  if (Notification.permission !== 'granted') {
+    Notification.requestPermission();
+  } else {
+    const isFirefox = typeof InstallTrigger !== 'undefined';
+    const isLinux = navigator.platform.indexOf('Linux') >= 0;
+
+    const clickHandler = function (notif) {
+      notif.onclick = function () {
+        document.dispatchEvent(new CustomEvent('exo-chat-select-room', {'detail' : msg.room}));
+        window.focus();
+        notif.close();
+      };
+    };
+
+    let notification = null;
+    // check if we're running Firefox on Linux then disable the Icons
+    // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
+    if (isLinux && isFirefox) {
+      notification = new Notification(msg.roomDisplayName, {
+        body: displayMsg
+      });
+      clickHandler(notification);
+
+    } else {
+      let avatarUrl = null;
+      if (msg.roomType === 'u') {
+        avatarUrl = `/rest/v1/social/users/${msg.from}/avatar`;
+      } else {
+        avatarUrl = `/rest/v1/social/spaces/${msg.roomDisplayName}/avatar`;
+      }
+      notification = new Notification(msg.roomDisplayName, {
+        icon: avatarUrl,
+        body: displayMsg
+      });
+      clickHandler(notification);
+    }
+  }
+}
+
+export function initDesktopNotifications() {
+  document.addEventListener('exo-chat-message-sent', notfy);
+  document.addEventListener('exo-chat-message-updated', notfy);
 }

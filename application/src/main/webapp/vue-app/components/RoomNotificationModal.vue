@@ -15,7 +15,7 @@
           <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> Alert on :</span><br>
 
           <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" placeholder="Lunch, break, coffee, party..." name="keyWord"><br>
-          <span class="label-text local">Notify me when someone uses one of these keywords</span><br><br>
+          <span class="label-text local">Notify me when someone uses one of these keywords (the separator is commar or space characters)</span><br><br>
         </div>
       </div>
       <div class="row center">

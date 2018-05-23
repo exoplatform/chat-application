@@ -1,5 +1,4 @@
 import { cCometD } from '../js/lib/chatCometd3.js';
-import * as desktopNotification from './desktopNotification.js';
 
 export function initCometD() {
   window.chatNotification = {
@@ -74,42 +73,7 @@ export function initCometD() {
         if (typeof message !== 'object') {
           message = JSON.parse(message);
         }
-
-        // TODO combine all those to one single statement
-        if (message.event === 'logout-sent') {
-          window.chatNotification.cCometD.disconnect();
-          document.dispatchEvent(new CustomEvent('exo-chat-logout-sent', {'detail' : message}));
-        } else if (message.event === 'user-status-changed') {
-          document.dispatchEvent(new CustomEvent('exo-chat-user-status-changed', {'detail' : message}));
-        } else if (message.event === 'notification-count-updated') {
-          document.dispatchEvent(new CustomEvent('exo-chat-notification-count-updated', {'detail' : message}));
-        } else if (message.event === 'room-member-joined') {
-          document.dispatchEvent(new CustomEvent('exo-chat-room-member-joined', {'detail' : message}));
-        } else if (message.event === 'room-member-left') {
-          document.dispatchEvent(new CustomEvent('exo-chat-room-member-left', {'detail' : message}));
-        } else if (message.event === 'room-updated') {
-          document.dispatchEvent(new CustomEvent('exo-chat-room-updated', {'detail' : message}));
-        } else if (message.event === 'room-deleted') {
-          document.dispatchEvent(new CustomEvent('exo-chat-room-deleted', {'detail' : message}));
-        } else if (message.event === 'room-settings-updated') {
-          const settings = message.data.settings;
-          const val = `${settings.notifConditionType}:${settings.notifCondition}`;
-          desktopNotification.setRoomPreferredNotificationTrigger(message.room, val);
-
-          document.dispatchEvent(new CustomEvent('exo-chat-room-settings-updated', {'detail' : message}));
-        } else if (message.event === 'message-sent') {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-received', {'detail' : message}));
-        } else if (message.event === 'message-read') {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-read', {'detail' : message}));
-        } else if (message.event === 'message-updated') {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-updated', {'detail' : message}));
-        } else if (message.event === 'message-deleted') {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-deleted', {'detail' : message}));
-        } else if (message.event === 'favorite-added') {
-          document.dispatchEvent(new CustomEvent('exo-chat-favorite-added', {'detail' : message}));
-        } else if (message.event === 'favorite-removed') {
-          document.dispatchEvent(new CustomEvent('exo-chat-favorite-removed', {'detail' : message}));
-        }
+        document.dispatchEvent(new CustomEvent(`exo-chat-${message.event}`, {'detail' : message}));
       });
     },
     setStatus : function (status, callback) {
@@ -190,7 +154,6 @@ export function initCometD() {
         'data': data
       };
 
-
       try {
         this.cCometD.publish('/service/chat', JSON.stringify(content), function(publishAck) {
           if (!publishAck || !publishAck.successful) {
@@ -223,9 +186,30 @@ export function initCometD() {
           }
         }
       });
+    },
+    setRoomMessagesAsRead: function(room, callback) {
+      const data = JSON.stringify({
+        'event': 'message-read',
+        'room': room,
+        'sender': this.username,
+        'dbName': this.dbName,
+        'token': this.token
+      });
+
+      cCometD.publish('/service/chat', data, function(publishAck) {
+        if (publishAck.successful) {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      });
     }
   };
 
+  document.addEventListener('exo-chat-logout-sent', () => {
+    window.chatNotification.cCometD.disconnect();
+  });
+  
   document.addEventListener('exo-chat-message-tosend', (e) => {
     window.chatNotification.sendMessage(e.detail);
   });

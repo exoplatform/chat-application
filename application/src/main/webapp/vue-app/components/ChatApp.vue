@@ -15,6 +15,13 @@
         <chat-room-participants :contact="selectedContact"></chat-room-participants> 
       </div>
     </div>
+    <div style="display: none;">
+      <audio id="chat-audio-notif" controls>
+        <source src="/chat/audio/notif.wav">
+        <source src="/chat/audio/notif.mp3">
+        <source src="/chat/audio/notif.ogg">
+      </audio>
+    </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
   </div>
 </template>

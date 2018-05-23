@@ -86,8 +86,11 @@ export default {
     sendMessage(event) {
       const enterKeyCode = 13;
       if (event.keyCode === enterKeyCode && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+        if(!this.newMessage || !this.newMessage.trim()) {
+          return;
+        }
         const message = {
-          message : this.newMessage,
+          message : this.newMessage.trim(),
           room : this.contact.room,
           clientId: new Date().getTime().toString(),
           timestamp: Date.now(),

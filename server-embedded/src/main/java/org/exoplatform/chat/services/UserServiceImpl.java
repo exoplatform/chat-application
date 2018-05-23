@@ -110,22 +110,6 @@ public class UserServiceImpl implements UserService {
    */
   public void setRoomNotificationTrigger(String user, String room, String notifCondition, String notifConditionType, String dbName, long time) throws Exception {
     userStorage.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
-
-    JSONObject settings = new JSONObject();
-    settings.put("notifCondition", notifCondition);
-    settings.put("notifConditionType", notifConditionType);
-
-    JSONObject data = new JSONObject();
-    data.put("settings", settings);
-
-    // Deliver the saved message to sender's subscribed channel itself.
-    RealTimeMessageBean messageBean = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.ROOM_SETTINGS_UPDATED,
-        room,
-        user,
-        null,
-        data);
-    realTimeMessageService.sendMessage(messageBean, user);
   }
 
   /*

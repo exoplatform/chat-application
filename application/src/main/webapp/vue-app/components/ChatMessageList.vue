@@ -60,14 +60,14 @@ export default {
   created() {
     document.addEventListener('exo-chat-message-updated', this.messageReceived);
     document.addEventListener('exo-chat-message-deleted', this.messageDeleted);
-    document.addEventListener('exo-chat-message-received', this.messageReceived);
+    document.addEventListener('exo-chat-message-sent', this.messageReceived);
     document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-updated', this.messageReceived);
     document.removeEventListener('exo-chat-message-deleted', this.messageDeleted);
-    document.removeEventListener('exo-chat-message-received', this.messageReceived);
+    document.removeEventListener('exo-chat-message-sent', this.messageReceived);
     document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
   },
@@ -166,6 +166,7 @@ export default {
       if(!message || !message.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
+      window.chatNotification.setRoomMessagesAsRead(this.contact.room);
       if(this.isScrollPositionAtEnd()) {
         this.setScrollToBottom();
       }

@@ -1,8 +1,10 @@
 import {chatData} from './chatData.js';
 import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
+import * as desktopNotification from './desktopNotification';
 
 const RESEND_MESSAGE_PERIOD = 5000;
+const DEFAULT_HTTP_PORT = 80;
 let resendIntervalID;
 
 export function getUser(userName) {
@@ -44,6 +46,7 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
 
     getUserNotificationSettings(e.detail).then(settings => {
       loadNotificationSettings(settings);
+      desktopNotification.initDesktopNotifications();
     });
 
   });
@@ -57,7 +60,8 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
     if (!eXo) { eXo = {}; }
     if (!eXo.chat) { eXo.chat = {}; }
     eXo.chat.userSettings = userSettings;
-    
+    const port = !window.location.port || window.location.port === DEFAULT_HTTP_PORT ? '':`:${  window.location.port}`;
+    eXo.chat.userSettings.chatPage = `${window.location.protocol  }//${  window.location.hostname  }${port}${eXo.chat.userSettings.chatPage}`;
     userSettingsLoadedCallback(userSettings);
     
     document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
