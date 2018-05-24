@@ -101,6 +101,31 @@
     }
   }
 }
+
+.chat-app-event {
+  .chat-event-date {
+    display: table;
+    .event-item {
+      display: table-row;
+      > * {
+        display: table-cell;
+        padding-right: 10px;
+      }
+      > span {
+        text-align: right;
+      }
+    }
+    input {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+    .selectbox {
+      width: 130px;
+      margin-left: 15px;
+    }
+  }
+}
+
 .uiIconChatSmile {
   font-size: 29px;
   &:before {

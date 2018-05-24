@@ -22,7 +22,7 @@
         </div>
       </div>
     </div>
-    <apps-modal v-if="appsModal.isOpned" :app-key="appsModal.appKey" :title="appsModal.title" :room="contact.room" @modal-closed="appsModal.isOpned = false"></apps-modal>
+    <apps-modal v-if="appsModal.isOpned" :app-key="appsModal.appKey" :title="appsModal.title" :contact="contact" :room-id="contact.room" @modal-closed="appsModal.isOpned = false"></apps-modal>
   </div>
 </template>
 

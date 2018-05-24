@@ -1,16 +1,29 @@
 package org.exoplatform.chat.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.rest.resource.ResourceContainer;
 
 @SuppressWarnings("deprecation")
-public class CalendarService {
+@Path("/chat/api/1.0/calendar/")
+public class CalendarService implements ResourceContainer {
+
+  private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
 
   org.exoplatform.calendar.service.CalendarService calendarService_;
 
@@ -24,13 +37,41 @@ public class CalendarService {
     organizationService_ = organizationService;
   }
 
-  protected void saveEvent(String user,
-                           String calName,
-                           String users,
-                           String summary,
-                           Date from,
-                           Date to,
-                           String location) throws Exception {
+  @POST
+  @Path("saveEvent")
+  @RolesAllowed("users")
+  public Response saveEvent(@Context SecurityContext sc,
+                            @FormParam("space") String space,
+                            @FormParam("users") String users,
+                            @FormParam("summary") String summary,
+                            @FormParam("startDate") String startDate,
+                            @FormParam("startTime") String startTime,
+                            @FormParam("endDate") String endDate,
+                            @FormParam("endTime") String endTime,
+                            @FormParam("location") String location) {
+    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+    try {
+      saveEvent(sc.getUserPrincipal().getName(),
+                space,
+                users,
+                summary,
+                sdf.parse(startDate + " " + startTime),
+                sdf.parse(endDate + " " + endTime),
+                location);
+    } catch (Exception e) {
+      LOG.warning("exception during event creation");
+      return Response.serverError().build();
+    }
+    return Response.ok().build();
+  }
+
+  public void saveEvent(String user,
+                        String calName,
+                        String users,
+                        String summary,
+                        Date from,
+                        Date to,
+                        String location) throws Exception {
     if (!"".equals(users)) {
       String[] participants = users.split(",");
       for (String participant : participants) {

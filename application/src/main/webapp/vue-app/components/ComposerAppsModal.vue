@@ -1,6 +1,6 @@
 <template>
   <modal :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
-    <div v-if="appKey == 'raise-hand'" class="raise-hand-app">
+    <div v-if="appKey == 'raise-hand'">
       <input v-model="raiseHandComment" type="text" placeholder="Optionel Comment">
     </div>
     <div v-if="appKey == 'question'">
@@ -9,14 +9,26 @@
     <div v-if="appKey == 'link'">
       <input v-model="linkText" type="text" placeholder="E.g: http://www.exoplatform.com">
     </div>
-    <div v-if="appKey == 'event'">
-      <input type="text" placeholder="Event title">
-      <span class="action-label">from</span>
-      <input id="event-add-start-date" type="text" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" style="width:88px;">
-      <select class="selectbox">
-        <option value="all-day">All</option>
-      </select>
-      <input id="event-add-end-date" type="text" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" lang="fr" name="from" style="width:88px;" @focus="initDatePicker($event)">
+    <div v-if="appKey == 'event'" class="chat-app-event">
+      <input v-model="eventName" type="text" placeholder="Event title">
+      <div class="chat-event-date form-horizontal">
+        <div class="event-item">
+          <span class="action-label">from</span>
+          <input ref="eventDateFrom" type="text" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" @focus="initDatePicker($event)">
+          <select v-model="eventTimeFrom" class="selectbox" @change="setTimeTo($event)">
+            <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
+          </select>
+        </div>
+        <div class="event-item">
+          <span class="action-label">to</span>
+          <input ref="eventDateTo" type="text" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" @focus="initDatePicker($event)">
+          <select v-model="eventTimeTo" class="selectbox">
+            <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
+          </select>
+        </div>
+      </div>
+      <input v-model="eventLocation" type="text" placeholder="Location">
+      
     </div>
 
     <div class="uiAction uiActionBorder">
@@ -28,7 +40,7 @@
 
 <script>
 import Modal from './modal/Modal.vue';
-//import * as chatServices from '../chatServices';
+import * as chatServices from '../chatServices';
 
 const RAISE_HAND = 'type-hand';
 const QUESTION_MESSAGE = 'type-question';
@@ -47,22 +59,45 @@ export default {
       type: String,
       default: ''
     },
-    room: {
+    roomId: {
       type: String,
       default: ''
+    },
+    contact: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data() {
     return {
       raiseHandComment: '',
       questionText: '',
-      linkText: ''
+      linkText: '',
+      dayHourOptions: [
+        { 
+          text: 'All Day', 
+          value: 'all-day'
+        }
+      ],
+      eventDateFrom: '',
+      eventDateTo: '',
+      eventTimeFrom: '',
+      eventTimeTo: '',
+      eventName: '',
+      eventLocation: ''
     };
   },
   computed: {
     disableAdvancedFilter() {
       return this.selectedOption !== 'keywords';
     }
+  },
+  mounted() {
+    this.populateSelectHour();
+    this.eventTimeFrom = this.dayHourOptions[0].value;
+    this.eventTimeTo = this.dayHourOptions[0].value;
   },
   methods: {
     closeModal() {
@@ -72,7 +107,7 @@ export default {
     saveAppModal() {
       const message = {
         msg : '',
-        room : this.room,
+        room : this.roomId,
         clientId: new Date().getTime().toString(),
         user: eXo.chat.userSettings.username,
         isSystem: true,
@@ -105,11 +140,18 @@ export default {
         message.options.link = validUrl;
         message.options.type = LINK_MESSAGE;
         break;
+      case 'event':
+        if (this.getEventFormValue()) {
+          chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then(()=> console.log('okkkk'));
+        }
+        
+        break;        
       }
 
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
-
-      this.closeModal();
+      if (this.appKey !== 'event') {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+        this.closeModal();
+      }
     },
     checkURL(text) {
       // if user has not entered http:// https:// or ftp:// assume they mean http://
@@ -121,6 +163,56 @@ export default {
     },
     initDatePicker(e) {
       CalDateTimePicker.init(e.target, false);
+    },
+    populateSelectHour() {
+      const HOURS = 24;
+      const MINUTES = 60;
+      const HALF_DAY = 12;
+      const HALF_HOUR = 30;
+      const TEN = 10;
+      for (let h = 0; h < HOURS; h++) {
+        for (let m = 0; m < MINUTES; m += HALF_HOUR) {
+          let hh = h;
+          let mm = m;
+          const h12 = h % HALF_DAY || HALF_DAY;
+          let hh12 = h12;
+          const ampm = h < HALF_DAY ? 'AM' : 'PM';
+          if (h < TEN) {hh = `0${hh}`;}
+          if (m < TEN) {mm = `0${mm}`;}
+          if (h12 < TEN) {hh12 = `0${hh12}`;}
+          const time12 = `${hh12}:${mm} ${ampm}`;
+          const optionValue = {
+            text: time12, 
+            value: time12
+          };
+          this.dayHourOptions.push(optionValue);
+        }
+      }
+    },
+    setTimeTo() {
+      const TEN = 10;
+      const time = this.eventTimeFrom;
+      const h = Math.round(time.split(':')[0]) + 1;
+      let hh = h;
+      if (h < TEN) {hh = `0${h}`;}
+      this.eventTimeTo = `${hh}:${time.split(':')[1]}`;
+    },
+    getEventFormValue() {
+      if (this.eventName === '' || this.eventLocation === '' || this.$refs.eventDateFrom.value === '' || this.$refs.eventDateTo.value === '') {
+        return null;
+      }
+      const eventForm = {
+        summary: this.eventName,
+        startDate: this.$refs.eventDateFrom.value,
+        startTime: this.eventTimeFrom,
+        endDate: this.$refs.eventDateTo.value,
+        endTime: this.eventTimeTo,
+        location: this.eventLocation
+      };
+      if (this.eventTimeFrom === 'all-day') {eventForm.startTime = '12:00 AM';}
+      if (this.eventTimeTo === 'all-day') {eventForm.endTime = '11:59 PM';}
+
+      return eventForm;
     }
   }
 };

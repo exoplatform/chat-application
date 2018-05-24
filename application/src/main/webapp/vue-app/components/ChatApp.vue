@@ -12,7 +12,7 @@
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
       <div class="room-content">
         <chat-message-list :contact="selectedContact"></chat-message-list>
-        <chat-room-participants :contact="selectedContact"></chat-room-participants> 
+        <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)"></chat-room-participants> 
       </div>
     </div>
     <div style="display: none;">
@@ -171,6 +171,9 @@ export default {
     },
     openSettingModal() {
       this.settingModal = true;
+    },
+    setContactParticipants(participants) {
+      this.selectedContact.participants = participants;
     }
   }
 };
