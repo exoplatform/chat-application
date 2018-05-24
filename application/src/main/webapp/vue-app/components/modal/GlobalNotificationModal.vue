@@ -43,7 +43,7 @@
 
 <script>
 import Modal from './Modal.vue';
-import * as chatServices from '../chatServices';
+import * as chatServices from '../../chatServices';
 
 const ON_SITE_NOTIF = 'on-site';
 const DESKTOP_NOTIF = 'desktop';

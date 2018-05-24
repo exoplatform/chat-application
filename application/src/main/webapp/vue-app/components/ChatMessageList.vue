@@ -8,7 +8,7 @@
     </div>
     <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>
     <modal v-show="showEditMessageModal" :title="$t('chat.message.editMessage')" modal-class="edit-message-modal" @modal-closed="closeModal">
-      <textarea id="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea"></textarea>
+      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus></textarea>
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveMessage">Enregistrer</div>
         <div class="btn" @click="closeModal">Annuler</div>
@@ -20,7 +20,7 @@
 <script>
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import ChatMessageComposer from './ChatMessageComposer.vue';
-import Modal from './Modal.vue';
+import Modal from './modal/Modal.vue';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
@@ -63,6 +63,7 @@ export default {
     document.addEventListener('exo-chat-message-sent', this.messageReceived);
     document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-message-edit-last', this.editLastMessage);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-updated', this.messageReceived);
@@ -70,6 +71,7 @@ export default {
     document.removeEventListener('exo-chat-message-sent', this.messageReceived);
     document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-message-edit-last', this.editLastMessage);
   },
   methods: {
     messageWritten(message) {
@@ -203,9 +205,27 @@ export default {
         message.user = messageObj.user ? messageObj.user : messageObj.sender;
       }
     },
+    editLastMessage() {
+      if(!this.messages || !this.messages.length) {
+        return;
+      }
+      let lastMessage = null;
+      let index = this.messages.length -1;
+      while(!lastMessage && index >= 0) {
+        const message = this.messages[index];
+        if(!message.isDeleted && !message.isSystem && message.user === eXo.chat.userSettings.username) {
+          lastMessage = message;
+        }
+        index--;
+      }
+      if (lastMessage) {
+        this.editMessage(lastMessage);
+      }
+    },
     editMessage(message) {
       this.messageToEdit = JSON.parse(JSON.stringify(message));
       this.showEditMessageModal = true;
+      this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
     },
     saveMessage() {
       this.messageModified(this.messageToEdit);

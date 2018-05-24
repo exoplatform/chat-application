@@ -28,12 +28,10 @@
 
 <script>
 import Modal from './Modal.vue';
-import * as chatServices from '../chatServices';
+import * as chatServices from '../../chatServices';
 
 export default {
-  components: {
-    modal: Modal
-  },
+  components: {Modal},
   props: {
     show: {
       type: Boolean,

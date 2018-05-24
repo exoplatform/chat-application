@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import Modal from './Modal.vue';
+import Modal from './modal/Modal.vue';
 //import * as chatServices from '../chatServices';
 
 const RAISE_HAND = 'type-hand';

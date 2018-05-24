@@ -26,25 +26,7 @@
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
     </div>
-    <modal v-show="createRoomModal" :title="title" modal-class="create-room-modal" @modal-closed="closeNewRoomModal">
-      <div class="add-room-form">
-        <label>Quel est le nom de votre salon?</label>
-        <input v-model="newRoom.name" type="text">
-        <label>Ajouter des personnes à votre salon:</label>
-        <input id="add-room-suggestor" type="text">
-        <div v-show="newRoom.participants.length > 0" class="room-suggest-list">
-          <div v-for="(participant, index) in newRoom.participants" :key="participant.name" class="uiMention">
-            {{ participant.fullname }}
-            <span @click="removeSuggest(index)"><i class="uiIconClose"></i></span>
-          </div>
-        </div>
-        <span class="team-add-user-label">Ex: "ro" or "Ro Be" pour trouver Robert Beranot</span>
-      </div>
-      <div class="uiAction uiActionBorder">
-        <div class="btn btn-primary" @click="saveRoom">Enregistrer</div>
-        <div class="btn" @click="closeNewRoomModal">Annuler</div>
-      </div>
-    </modal>
+    <room-form-modal :show="createRoomModal" :selected="newRoom" @room-saved="roomSaved" @modal-closed="closeModal"></room-form-modal>
   </div>
 </template>
 
@@ -54,8 +36,7 @@ import * as chatWebStorage from '../chatWebStorage';
 
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
-import Modal from './Modal.vue';
-import initSuggester from '../chatSuggester';
+import RoomFormModal from './modal/RoomFormModal.vue';
 
 const TYPE_FILTER_PARAM = 'exo.chat.type.filter';
 const TYPE_FILTER_DEFAULT = 'All';
@@ -63,7 +44,7 @@ const SORT_FILTER_PARAM = 'exo.chat.sort.filter';
 const SORT_FILTER_DEFAULT = 'Recent';
 
 export default {
-  components: {ChatContact, DropdownSelect, Modal},
+  components: {ChatContact, DropdownSelect, RoomFormModal},
   props: {
     contacts: {
       type: Array,
@@ -92,10 +73,6 @@ export default {
   computed: {
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
-    },
-    title() {
-      const key = !this.newRoom.name || !this.newRoom.name.length ? 'chat.rooms.new' : 'chat.rooms.edit';
-      return this.$t(key);
     },
     filteredContacts: function() {
       let sortedContacts = this.contacts;
@@ -174,8 +151,8 @@ export default {
       chatWebStorage.setStoredParam(TYPE_FILTER_PARAM, this.typeFilter);
     },
     openCreateRoomModal() {
+      this.newRoom = {};
       this.createRoomModal = true;
-      initSuggester('#add-room-suggestor', eXo.chat.userSettings, this);
     },
     notificationCountUpdated(event) {
       const room = event.detail.room;
@@ -188,37 +165,15 @@ export default {
         }
       });
     },
-    removeSuggest(i) {
-      const suggest = this.newRoom.participants[i].name;
-      const suggesterInput = $('#add-room-suggestor');
-      // cast suugester value to array
-      let suggesterValue = suggesterInput.suggester('getValue').split(',');
-      // remove suggest from array
-      suggesterValue = suggesterValue.filter(value => value !== suggest);
-      // set new value as string
-      suggesterInput.suggester('setValue', suggesterValue.join(','));
-      // clear render cache
-      suggesterInput[0].selectize.renderCache['item'] = {};
-      // remove suggest for participants list
-      this.newRoom.participants.splice(i,1);
-    },
-    saveRoom() {
-      if (this.newRoom.name) {
-        let users = this.newRoom.participants.map(user => user.name);
-        users.unshift(eXo.chat.userSettings.username);
-        users = users.join(',');
-        chatServices.saveRoom(eXo.chat.userSettings,  this.newRoom.name, users, this.newRoom.room).then((roomDetails) => {
-          this.selectContact(roomDetails.room);
-        });
-        this.closeNewRoomModal();
-      }
+    roomSaved(room) {
+      this.createRoomModal = false;
+      this.selectContact(room);
     },
     editRoom() {
       chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected).then(data => {
         this.selected.participants = data.users;
-        this.newRoom.name = this.selected.fullName;
-        this.newRoom.room = this.selected.room;
-        this.openCreateRoomModal();
+        this.newRoom = JSON.parse(JSON.stringify(this.selected));
+        this.createRoomModal = true;
       });
     },
     leaveRoom() {
@@ -231,12 +186,9 @@ export default {
         window.chatNotification.deleteRoom(this.selected.room);
       }
     },
-    closeNewRoomModal() {
-      // reset newRoom
+    closeModal() {
       this.createRoomModal = false;
-      this.newRoom.name = '';
-      this.newRoom.room = '';
-      this.newRoom.participants = [];
+      this.newRoom = {};
     },
     markRoomMessagesRead(message) {
       const contactToUpdate = this.findContact(message.room);

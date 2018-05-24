@@ -30,7 +30,7 @@
 <script>
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
-import RoomNotificationModal from './RoomNotificationModal.vue';
+import RoomNotificationModal from './modal/RoomNotificationModal.vue';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 

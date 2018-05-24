@@ -14,7 +14,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessage"></textarea>
+        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessage" @keyup.up="editLastMessage"></textarea>
         <div class="composer-action">
           <div class="action-send">
             <i class="uiIconSend"></i>
@@ -155,6 +155,11 @@ export default {
       this.appsModal.appKey = app.key;
       this.appsModal.title = app.label;
       this.appsModal.isOpned = true;
+    },
+    editLastMessage() {
+      if (!this.newMessage || !this.newMessage.trim().length) {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-edit-last'));
+      }
     }
   }
 };

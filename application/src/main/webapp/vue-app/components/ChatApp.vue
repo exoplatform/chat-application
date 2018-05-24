@@ -34,7 +34,7 @@ import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
 import ChatRoomDetail from './ChatRoomDetail.vue';
 import ChatMessageList from './ChatMessageList.vue';
-import GlobalNotificationModal from './GlobalNotificationModal.vue';
+import GlobalNotificationModal from './modal/GlobalNotificationModal.vue';
 
 export default {
   components: {
