@@ -3,8 +3,11 @@ import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
 import * as desktopNotification from './desktopNotification';
 
+export const DEFAULT_LIMIT_USERS_TO_LOAD = 40;
+
 const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
+
 let resendIntervalID;
 
 export function getUser(userName) {
@@ -92,8 +95,14 @@ export function toggleFavorite(room, favorite) {
     }}).then(resp =>  resp.text());
 }
 
-export function getChatRooms(userSettings, onlineUsers) {
-  return fetch(`${chatData.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&timestamp=${new Date().getTime()}`, {
+export function getChatRooms(userSettings, onlineUsers, filter, limit) {
+  if(!limit) {
+    limit = DEFAULT_LIMIT_USERS_TO_LOAD;
+  }
+  if(!filter) {
+    filter = '';
+  }
+  return fetch(`${chatData.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -106,18 +115,18 @@ export function getRoomParticipants(userSettings, room) {
     }}).then(resp =>  resp.json());
 }
 
-export function getRoomCreator(userSettings, room) {
-  return fetch(`${chatData.chatServerAPI}getCreator?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
-    headers: {
-      'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
-}
-
-export function getRoomId(userSettings, contact) {
-  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${contact.user}&user=${userSettings.username}&dbName=${userSettings.dbName}`, {
+export function getRoomId(userSettings, targetUser) {
+  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${targetUser}&user=${userSettings.username}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
+}
+
+export function getRoomDetail(userSettings, contact) {
+  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${contact.user}&user=${userSettings.username}&dbName=${userSettings.dbName}&withDetail=true`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
 }
 
 export function getRoomMessages(userSettings, contact) {

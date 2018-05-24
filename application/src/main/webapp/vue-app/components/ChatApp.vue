@@ -6,7 +6,7 @@
           <div class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
         </chat-contact>
       </div>
-      <chat-contact-list :contacts="contactList" :selected="selectedContact" @exo-chat-contact-selected="setSelectedContact($event)"></chat-contact-list>
+      <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @exo-chat-contact-selected="setSelectedContact"></chat-contact-list>
     </div>
     <div class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
@@ -63,6 +63,7 @@ export default {
         wsEndpoint: null,
       },
       selectedContact: {},
+      isSearchingContact: false,
       settingModal: false
     };
   },
@@ -112,10 +113,7 @@ export default {
       }
     },
     initChatRooms(chatRoomsData) {
-      this.contactList = chatRoomsData.rooms.reduce(function(prev, curr) {
-        return curr.fullName ? [...prev, curr] : prev;
-      }, []);
-
+      this.addRooms(chatRoomsData.rooms);
       const selectedRoom = chatWebStorage.getStoredParam(chatWebStorage.LAST_SELECTED_ROOM_PARAM);
       if(selectedRoom) {
         this.setSelectedContact(selectedRoom);
@@ -148,12 +146,37 @@ export default {
         this.userSettings.status = this.userSettings.originalStatus;
       }
     },
+    addRooms(rooms) {
+      const contacts = this.contactList.slice(0);
+      rooms = rooms.filter(contact => contact.fullName && !contacts.find(otherContact => otherContact.room === contact.room));
+      if(rooms && rooms.length > 0) {
+        rooms.forEach(room => {
+          this.contactList.push(room);
+        });
+      }
+    },
+    loadMoreContacts(nbPages) {
+      this.isSearchingContact = true;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms);
+          this.isSearchingContact = false;
+        });
+      });
+    },
+    searchContacts(term) {
+      this.isSearchingContact = true;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms);
+          this.isSearchingContact = false;
+        });
+      });
+    },
     refreshContacts() {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
-          this.contactList = chatRoomsData.rooms.reduce(function(prev, curr) {
-            return curr.fullName ? [...prev, curr] : prev;
-          }, []);
+          this.addRooms(chatRoomsData.rooms);
           if (this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room);
             if(contactToChange) {

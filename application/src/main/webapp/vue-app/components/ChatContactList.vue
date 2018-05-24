@@ -2,7 +2,7 @@
   <div class="contactListContainer">
     <div class="contactFilter">
       <i class="uiIconSearchLight"></i>
-      <input type="text" placeholder="Filter people, spaces...">
+      <input v-model="searchTerm" type="text" placeholder="Filter people, spaces...">
     </div>
     <div class="listHeader">
       <dropdown-select>
@@ -20,10 +20,21 @@
       </div>
     </div>
     <div class="contactList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user}" class="contact-list-item isList" @click="selectContact(contact)">
+      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+      </div>
+      <div v-show="isSearchingContact" class="contact-list-item isList">
+        <div class="seeMoreContacts">
+          Loading ...
+        </div>
+      </div>
+      <div v-show="hasMoreContacts" class="contact-list-item isList" @click="loadMore()">
+        <div class="seeMoreContacts">
+          <a href="#"><u>See more</u></a>
+          <i class="uiIconArrowDownMini"></i>
+        </div>
       </div>
     </div>
     <room-form-modal :show="createRoomModal" :selected="newRoom" @room-saved="roomSaved" @modal-closed="closeModal"></room-form-modal>
@@ -42,6 +53,7 @@ const TYPE_FILTER_PARAM = 'exo.chat.type.filter';
 const TYPE_FILTER_DEFAULT = 'All';
 const SORT_FILTER_PARAM = 'exo.chat.sort.filter';
 const SORT_FILTER_DEFAULT = 'Recent';
+const CONTACTS_PER_PAGE = 10;
 
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
@@ -49,6 +61,10 @@ export default {
     contacts: {
       type: Array,
       default: function() { return [];}
+    },
+    isSearchingContact: {
+      type: Boolean,
+      default: function() { return false;}
     },
     selected: {
       type: Object,
@@ -64,6 +80,8 @@ export default {
       filterByType: ['All','People','Rooms','Spaces','Favorites'],
       typeFilter: TYPE_FILTER_DEFAULT,
       createRoomModal: false,
+      searchTerm: '',
+      totalEntriesToLoad: CONTACTS_PER_PAGE,
       newRoom: {
         name: '',
         participants: []
@@ -74,22 +92,65 @@ export default {
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
+    usersCount() {
+      return this.contacts.filter(contact => contact.type === 'u').length;
+    },
+    roomsCount() {
+      return this.contacts.filter(contact => contact.type === 't').length;
+    },
+    spacesCount() {
+      return this.contacts.filter(contact => contact.type === 's').length;
+    },
+    favoritesCount() {
+      return this.contacts.filter(contact => contact.isFavorite).length;
+    },
     filteredContacts: function() {
-      let sortedContacts = this.contacts;
+      let sortedContacts = this.contacts.slice(0);
       if(this.typeFilter !== 'All') {
-        sortedContacts = this.contacts.filter(contact =>
+        sortedContacts = sortedContacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'
           || this.typeFilter === 'Rooms' && contact.type === 't'
           || this.typeFilter === 'Spaces' && contact.type === 's'
           || this.typeFilter === 'Favorites' && contact.isFavorite
         );
       }
-      if (this.sortFilter === 'Unread') {
-        sortedContacts.sort(function(a, b){return b.unreadTotal - a.unreadTotal;});
-      } else {
-        sortedContacts.sort(function(a, b){return b.timestamp - a.timestamp;});
+      if (this.searchTerm && this.searchTerm.trim().length) {
+        sortedContacts = sortedContacts.filter(contact => contact.fullName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) >= 0);
       }
-      return sortedContacts;
+      if (this.sortFilter === 'Unread') {
+        sortedContacts.sort(function(a, b){
+          const unreadTotal = b.unreadTotal - a.unreadTotal;
+          if (unreadTotal === 0) {
+            return b.timestamp - a.timestamp;
+          }
+          return unreadTotal;
+        });
+      } else {
+        sortedContacts.sort(function(a, b){
+          return b.timestamp - a.timestamp;
+        });
+      }
+      return sortedContacts.slice(0, this.totalEntriesToLoad);
+    },
+    hasMoreContacts() {
+      if(this.searchTerm.trim().length) {
+        return false;
+      }
+      switch (this.typeFilter) {
+      case 'People':
+        return this.usersCount >= this.totalEntriesToLoad;
+      case 'Rooms':
+        return this.roomsCount > this.totalEntriesToLoad;
+      case 'Spaces':
+        return this.spacesCount > this.totalEntriesToLoad;
+      default:
+        return this.contacts.length > this.totalEntriesToLoad || this.usersCount >= this.totalEntriesToLoad;
+      }
+    }
+  },
+  watch: {
+    searchTerm(value) {
+      this.$emit('search-contact', value);
     }
   },
   created() {
@@ -98,6 +159,7 @@ export default {
     document.addEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
     document.addEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
     document.addEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
+    document.addEventListener('exo-chat-message-sent', this.messageReceived);
     document.addEventListener('exo-chat-message-sent', this.notificationCountUpdated);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
@@ -115,7 +177,7 @@ export default {
     document.removeEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
     document.removeEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
     document.removeEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
-    document.removeEventListener('exo-chat-message-sent', this.notificationCountUpdated);
+    document.removeEventListener('exo-chat-message-sent', this.messageReceived);
     document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
     document.removeEventListener('exo-chat-setting-editRoom', this.editRoom);
@@ -154,16 +216,24 @@ export default {
       this.newRoom = {};
       this.createRoomModal = true;
     },
-    notificationCountUpdated(event) {
+    messageReceived(event) {
       const room = event.detail.room;
+      let foundContact;
       this.contacts.forEach(contact => {
         if (contact.room === room) {
+          foundContact = contact;
           contact.timestamp = event.detail.ts;
           if (this.selected.room !== room) {
             contact.unreadTotal ++;
           }
         }
       });
+
+      if(!foundContact) {
+        chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
+          this.contacts.unshift(contact);
+        });
+      }
     },
     roomSaved(room) {
       this.createRoomModal = false;
@@ -244,6 +314,10 @@ export default {
         field = 'room';
       }
       return this.contacts.find(contact => contact[field] === value);
+    },
+    loadMore() {
+      this.totalEntriesToLoad += CONTACTS_PER_PAGE;
+      this.$emit('load-more-contacts', this.totalEntriesToLoad);
     }
   }
 };

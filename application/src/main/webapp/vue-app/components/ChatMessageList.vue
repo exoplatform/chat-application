@@ -99,7 +99,7 @@ export default {
       if(this.contact.room) {
         this.retrieveRoomMessages(); 
       } else {
-        chatServices.getRoomId(eXo.chat.userSettings, this.contact).then((room) => {
+        chatServices.getRoomId(eXo.chat.userSettings, this.contact.user).then((room) => {
           if(room) {
             this.contact.room = room;
             this.retrieveRoomMessages(); 

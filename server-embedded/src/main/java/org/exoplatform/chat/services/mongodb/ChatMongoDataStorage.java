@@ -572,7 +572,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
     List<RoomBean> rooms;
     UserBean userBean = userDataStorage.getUser(user, true, dbName);
-    int unreadOffline = 0, unreadOnline = 0;
+    int unreadOffline = 0, unreadOnline = 0, totalRooms = 0;
 
     if (withUsers) {
       rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
@@ -587,7 +587,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         String targetUser = roomBean.getUser();
         roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-        if (availableUsers.keySet().contains(targetUser)) {
+        if (availableUsers.containsKey(targetUser)) {
           UserBean targetUserBean = availableUsers.remove(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setStatus(targetUserBean.getStatus());
