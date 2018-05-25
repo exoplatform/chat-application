@@ -214,14 +214,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public String read(String room, String dbName) {
-    return read(room, false, null, null, dbName);
+    return read(room, false, null, null, dbName, 0);
   }
 
   public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName) {
-    return read(room, isTextOnly, fromTimestamp, null, dbName);
+    return read(room, isTextOnly, fromTimestamp, null, dbName, 0);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName, int limitToLoad) {
     Calendar calendar = Calendar.getInstance();
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);
@@ -254,7 +254,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
-    int limit = (isTextOnly) ? readTotalTxt : readTotalJson;
+    int limit = limitToLoad > 0 ? limitToLoad : (isTextOnly) ? readTotalTxt : readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     StringBuilder sb = new StringBuilder();
     if (!cursor.hasNext()) {

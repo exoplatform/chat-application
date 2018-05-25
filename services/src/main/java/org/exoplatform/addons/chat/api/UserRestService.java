@@ -151,7 +151,6 @@ public class UserRestService implements ResourceContainer {
     String token = ServerBootstrap.getToken(currentUsername);
     String dbName = ServerBootstrap.getDBName();
     String userFullName = ServerBootstrap.getUserFullName(currentUsername, dbName);
-    String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername, dbName);
 
     Boolean isUserInitialized = (Boolean) request.getSession().getAttribute(CHAT_USER_INITIALIZATION_ATTR);
     if (isUserInitialized == null || !isUserInitialized) {
@@ -187,6 +186,7 @@ public class UserRestService implements ResourceContainer {
     } else {
       chatCometDServerUrl = "/cometd";
     }
+    String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername, dbName);
 
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);

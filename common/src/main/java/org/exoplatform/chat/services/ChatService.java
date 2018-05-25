@@ -81,7 +81,7 @@ public interface ChatService
 
   public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limit, String dbName);
 
   public MessageBean getMessage(String roomId, String messageId, String dbName);
 

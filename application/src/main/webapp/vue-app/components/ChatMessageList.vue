@@ -1,6 +1,9 @@
 <template>
   <div class="uiRightContainerArea">
-    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
+      <div v-show="newMessagesLoading" class="center">
+        <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
+      </div>
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
         <div class="day-separator">{{ dayDate }}</div>
         <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
@@ -25,6 +28,8 @@ import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
 
+const MESSAGES_PER_PAGE = 50;
+
 const MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL = 25;
 
 export default {
@@ -39,7 +44,9 @@ export default {
       scrollToBottom: true,
       contact: {},
       messageToEdit: {},
-      showEditMessageModal: false
+      showEditMessageModal: false,
+      totalMessagesToLoad: 0,
+      newMessagesLoading: false
     };
   },
   computed: {
@@ -52,6 +59,12 @@ export default {
         messagesMap[element] = this.messages.filter((message) => chatTime.getDayDate(message.timestamp) === element);
       });
       return messagesMap;
+    },
+    hasMoreMessages() {
+      return this.totalMessagesToLoad <= this.messages.length;
+    },
+    chatMessageListContainer() {
+        return $('.chat-message-list');
     }
   },
   updated() {
@@ -94,8 +107,11 @@ export default {
       this.addOrUpdateMessageToList(message);
     },
     contactChanged(e) {
-      this.contact = e.detail;
       this.messages = [];
+      this.totalMessagesToLoad = 0;
+      this.newMessagesLoading = false;
+
+      this.contact = e.detail;
       if(this.contact.room) {
         this.retrieveRoomMessages(); 
       } else {
@@ -113,37 +129,59 @@ export default {
     scrollToEnd: function(e) {
       // If triggered using an event or explicitly asked to scroll to bottom
       if (e || this.scrollToBottom) {
-        const container = $('.chat-message-list');
-        container.scrollTop(container.prop('scrollHeight'));
+        this.chatMessageListContainer.scrollTop(this.chatMessageListContainer.prop('scrollHeight'));
         if (!e) {
           this.scrollToBottom = false;
         }
       }
     },
     isScrollPositionAtEnd() {
-      const $chatMessageList = $('.chat-message-list');
-      if($chatMessageList && $chatMessageList.length) {
-        return $chatMessageList[0].scrollHeight - $chatMessageList.scrollTop() - $chatMessageList.height() < MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+      if(this.chatMessageListContainer && this.chatMessageListContainer.length) {
+        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
       }
     },
-    retrieveRoomMessages() {
-      chatServices.getRoomMessages(eXo.chat.userSettings, this.contact).then(data => {
+    loadMoreMessages() {
+      if (this.newMessagesLoading || this.chatMessageListContainer.scrollTop() > 0 || !this.hasMoreMessages) {
+        return;
+      }
+      this.retrieveRoomMessages(true);
+    },
+    retrieveRoomMessages(avoidScrollingDown) {
+      if (this.newMessagesLoading) {
+        return;
+      }
+      let toTimestamp;
+      if(!this.messages || !this.messages.length) {
+        toTimestamp = '';
+        this.totalMessagesToLoad = 0;
+      } else {
+        toTimestamp = this.messages[0].timestamp;
+      }
+      const limit = MESSAGES_PER_PAGE;
+      this.newMessagesLoading = true;
+      chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
           // Scroll to bottom once messages list updated
-          this.scrollToBottom = true;
+          this.scrollToBottom = !avoidScrollingDown;
 
           const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(eXo.chat.userSettings.username, this.contact.room);
-          this.messages = data.messages.concat(roomNotSentMessages);
+          data.messages.concat(roomNotSentMessages).forEach(message => {
+            if (!this.messages.find(displayedMessage => (displayedMessage.msgId && displayedMessage.msgId === message.msgId) || (displayedMessage.clientId && displayedMessage.clientId === message.clientId))) {
+              this.messages.unshift(message);
+            }
+          });
           this.messages.sort((a, b) => {
             return a.timestamp - b.timestamp;
           });
+          this.totalMessagesToLoad += limit;
         }
-      });
+        this.newMessagesLoading = false;
+      }).catch(() => this.newMessagesLoading = false);
     },
-    findMessage(field, msgId) {
-      return this.messages.find(message => {return message[field] === msgId;});
+    findMessage(field, value) {
+      return this.messages.find(message => {return message[field] === value;});
     },
     getPrevMessage(i, messages) {
       return i <= 0 && messages.length >= i ? null : messages[i-1];

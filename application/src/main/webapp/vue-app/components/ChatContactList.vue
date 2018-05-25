@@ -53,7 +53,7 @@ const TYPE_FILTER_PARAM = 'exo.chat.type.filter';
 const TYPE_FILTER_DEFAULT = 'All';
 const SORT_FILTER_PARAM = 'exo.chat.sort.filter';
 const SORT_FILTER_DEFAULT = 'Recent';
-const CONTACTS_PER_PAGE = 10;
+const CONTACTS_PER_PAGE = 20;
 
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
@@ -144,6 +144,8 @@ export default {
         return this.roomsCount > this.totalEntriesToLoad;
       case 'Spaces':
         return this.spacesCount > this.totalEntriesToLoad;
+      case 'Favorites':
+        return this.favoritesCount > this.totalEntriesToLoad;
       default:
         return this.contacts.length > this.totalEntriesToLoad || this.usersCount >= this.totalEntriesToLoad;
       }
@@ -198,9 +200,14 @@ export default {
       this.$emit('exo-chat-contact-selected', contact);
     },
     contactChanged(e) {
-      const contact = e.detail;
-      contact.unreadTotal = 0;
-      window.chatNotification.setRoomMessagesAsRead(contact.room);
+      let selectedContact = e.detail;
+      if(this.filteredContacts.length > 0 && !this.filteredContacts.find(contact => contact.room === selectedContact.room)) {
+        // Select different contact if the contact is not visible
+        selectedContact = this.filteredContacts[0];
+        this.$emit('exo-chat-contact-selected', selectedContact);
+       }
+      selectedContact.unreadTotal = 0;
+      window.chatNotification.setRoomMessagesAsRead(selectedContact.room);
     },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);

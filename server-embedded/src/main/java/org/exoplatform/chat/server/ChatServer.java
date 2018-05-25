@@ -156,7 +156,7 @@ public class ChatServer
   @Resource
   @Route("/read")
   public Response.Content read(String user, String token, String room, String fromTimestamp, String toTimestamp,
-                               String isTextOnly, String dbName) throws IOException {
+                               String isTextOnly, String limit, String dbName) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
@@ -175,9 +175,18 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
 
+    Integer ilimit = 0;
+    try {
+      if (limit != null && !"".equals(limit)) {
+        ilimit = Integer.parseInt(limit);
+      }
+    } catch (NumberFormatException nfe) {
+      LOG.info("limit is not a valid Integer number");
+    }
+
     String data = null;
     try {
-      data = chatService.read(user, room, "true".equals(isTextOnly), from, to, dbName);
+      data = chatService.read(user, room, "true".equals(isTextOnly), from, to, ilimit, dbName);
     } catch (ChatException e) {
       return Response.content(e.getStatus(), e.getMessage());
     }
@@ -211,7 +220,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(user, room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, 0, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     String roomType = chatService.getTypeRoomChat(room, dbName);
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -319,7 +328,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(user, room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, 0, dbName);
     String typeRoom = chatService.getTypeRoomChat(room, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {

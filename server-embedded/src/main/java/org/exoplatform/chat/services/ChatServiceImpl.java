@@ -21,6 +21,8 @@ package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
+
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -69,11 +71,11 @@ public class ChatServiceImpl implements ChatService
     String roomType = roomBean.getType();
     if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType))
     {
-      List<String> usersToBeNotified = new ArrayList<String>();
-      if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
-        usersToBeNotified.add(roomBean.getUser());
-      } else {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
+      List<String> usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
+      if (usersToBeNotified == null) {
+        usersToBeNotified = Collections.singletonList(sender);
+      } else if (!usersToBeNotified.contains(sender)) {
+        usersToBeNotified.add(sender);
       }
 
       MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
@@ -97,17 +99,16 @@ public class ChatServiceImpl implements ChatService
           user.getName(),
           new Date(),
           data);
-      realTimeMessageService.sendMessage(messageBean, sender);
+      realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
 
       String intranetPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
       String content = ((message.length() > 30) ? message.substring(0, 29) + "..." : message);
       for (String receiver: usersToBeNotified) {
-        notificationService.addNotification(receiver, sender, "chat", "room", room, content,
-            intranetPage + "?room=" + room, options, dbName);
-
-        realTimeMessageService.sendMessage(messageBean, receiver);
+        if (!StringUtils.equals(receiver, sender)) {
+          notificationService.addNotification(receiver, sender, "chat", "room", room, content,
+                                              intranetPage + "?room=" + room, options, dbName);
+        }
       }
-
       notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
     }
   }
@@ -206,23 +207,23 @@ public class ChatServiceImpl implements ChatService
 
   public String read(String user, String room, String dbName)
   {
-    return read(user, room, false, null, null, dbName);
+    return read(user, room, false, null, null, 0, dbName);
   }
 
   @Override
   public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName)
   {
-    return read(user, room, isTextOnly, fromTimestamp, null, dbName);
+    return read(user, room, isTextOnly, fromTimestamp, null, 0, dbName);
   }
 
   @Override
-  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limit, String dbName) {
     // Only members of the room can view the messages
     if (!isMemberOfRoom(user, room, dbName)) {
       throw new ChatException(403, "Petit malin !");
     }
 
-    return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, dbName);
+    return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, dbName, limit);
   }
 
   public MessageBean getMessage(String roomId, String messageId, String dbName) {

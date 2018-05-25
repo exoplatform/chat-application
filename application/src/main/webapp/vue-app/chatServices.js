@@ -3,7 +3,7 @@ import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
 import * as desktopNotification from './desktopNotification';
 
-export const DEFAULT_LIMIT_USERS_TO_LOAD = 40;
+export const DEFAULT_LIMIT_USERS_TO_LOAD = 30;
 
 const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
@@ -129,8 +129,14 @@ export function getRoomDetail(userSettings, contact) {
     }}).then(resp =>  resp.json());
 }
 
-export function getRoomMessages(userSettings, contact) {
-  return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${contact.room}`, {
+export function getRoomMessages(userSettings, contact, toTimestamp, limit) {
+  if (!limit) {
+    limit = '';
+  }
+  if(!toTimestamp) {
+    toTimestamp = '';
+  }
+  return fetch(`${chatData.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${contact.room}&toTimestamp=${toTimestamp}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
