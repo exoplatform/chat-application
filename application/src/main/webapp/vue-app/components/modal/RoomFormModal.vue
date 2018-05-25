@@ -87,7 +87,7 @@ export default {
           hideSelected: true,
           renderMenuItem (item, escape) {
             const avatar = chatServices.getUserAvatar(item.name);
-            const defaultAvatar = '/chat/img/user-default.jpg';
+            const defaultAvatar = '/chat/img/room-default.jpg';
             return `
               <div class="avatarMini">
                 <img src="${avatar}" onerror="this.src='${defaultAvatar}'">
