@@ -63,7 +63,7 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
     if (!eXo) { eXo = {}; }
     if (!eXo.chat) { eXo.chat = {}; }
     eXo.chat.userSettings = userSettings;
-    eXo.chat.userSettings.chatPage = this.getBaseURL() + eXo.chat.userSettings.chatPage;
+    eXo.chat.userSettings.chatPage = getBaseURL() + eXo.chat.userSettings.chatPage;
     userSettingsLoadedCallback(userSettings);
     
     document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
