@@ -160,6 +160,12 @@ export default {
       type: Boolean,
       default: false
     },
+    highlight: {
+      type: String,
+      default: function () {
+        return {};
+      }
+    },
     hideTime: {
       type: Boolean,
       default: false
@@ -191,6 +197,7 @@ export default {
               return (
                 !comp.message.isSystem &&
                 !comp.message.isDeleted &&
+                !comp.message.notSent &&
                 comp.isCurrentUser
               );
             }
@@ -201,6 +208,7 @@ export default {
               return (
                 !comp.message.isSystem &&
                 !comp.message.isDeleted &&
+                !comp.message.notSent &&
                 comp.isCurrentUser
               );
             }
@@ -208,13 +216,13 @@ export default {
           {
             key: 'quote',
             enabled: comp => {
-              return !comp.message.isSystem && !comp.message.isDeleted;
+              return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
             }
           },
           {
             key: 'saveNotes',
             enabled: comp => {
-              return !comp.message.isSystem && !comp.message.isDeleted;
+              return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
             }
           }
         ]

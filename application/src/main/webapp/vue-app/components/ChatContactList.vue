@@ -205,7 +205,7 @@ export default {
         // Select different contact if the contact is not visible
         selectedContact = this.filteredContacts[0];
         this.$emit('exo-chat-contact-selected', selectedContact);
-       }
+      }
       selectedContact.unreadTotal = 0;
       window.chatNotification.setRoomMessagesAsRead(selectedContact.room);
     },

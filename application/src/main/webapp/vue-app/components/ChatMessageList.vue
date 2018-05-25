@@ -6,7 +6,7 @@
       </div>
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
         <div class="day-separator">{{ dayDate }}</div>
-        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
+        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
       </div>
     </div>
     <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>
@@ -46,6 +46,7 @@ export default {
       messageToEdit: {},
       showEditMessageModal: false,
       totalMessagesToLoad: 0,
+      searchKeyword: '',
       newMessagesLoading: false
     };
   },
@@ -56,7 +57,10 @@ export default {
       }, []);
       const messagesMap = {};
       days.forEach(element => {
-        messagesMap[element] = this.messages.filter((message) => chatTime.getDayDate(message.timestamp) === element);
+        const subMessages = this.messages.filter(message => chatTime.getDayDate(message.timestamp) === element);
+        if(subMessages && subMessages.length) {
+          messagesMap[element] = subMessages;
+        }
       });
       return messagesMap;
     },
@@ -64,7 +68,7 @@ export default {
       return this.totalMessagesToLoad <= this.messages.length;
     },
     chatMessageListContainer() {
-        return $('.chat-message-list');
+      return $('.chat-message-list');
     }
   },
   updated() {
@@ -77,6 +81,7 @@ export default {
     document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-message-edit-last', this.editLastMessage);
+    document.addEventListener('exo-chat-message-search', this.searchMessage);
   },
   destroyed() {
     document.removeEventListener('exo-chat-message-updated', this.messageReceived);
@@ -85,6 +90,7 @@ export default {
     document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.removeEventListener('exo-chat-message-edit-last', this.editLastMessage);
+    document.removeEventListener('exo-chat-message-search', this.searchMessage);
   },
   methods: {
     messageWritten(message) {
@@ -168,7 +174,7 @@ export default {
 
           const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(eXo.chat.userSettings.username, this.contact.room);
           data.messages.concat(roomNotSentMessages).forEach(message => {
-            if (!this.messages.find(displayedMessage => (displayedMessage.msgId && displayedMessage.msgId === message.msgId) || (displayedMessage.clientId && displayedMessage.clientId === message.clientId))) {
+            if (!this.messages.find(displayedMessage => displayedMessage.msgId && displayedMessage.msgId === message.msgId || displayedMessage.clientId && displayedMessage.clientId === message.clientId)) {
               this.messages.unshift(message);
             }
           });
@@ -271,6 +277,9 @@ export default {
     },
     closeModal() {
       this.showEditMessageModal = false;
+    },
+    searchMessage(e) {
+      this.searchKeyword = e.detail.trim();
     }
   }
 };

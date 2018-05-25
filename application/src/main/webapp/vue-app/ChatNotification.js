@@ -1,5 +1,7 @@
 import { cCometD } from '../js/lib/chatCometd3.js';
 
+const DEFAULT_TIME_TO_SUBSCRIBE = 200;
+
 export function initCometD() {
   window.chatNotification = {
     initSettings : function (settings) {
@@ -21,10 +23,11 @@ export function initCometD() {
             'exoId': window.chatNotification.username,
             'exoToken': window.chatNotification.cometdToken
           });
-          this.initChatCometd();
-          this.initChatCometdHandshake();
-          this.initChatConnectionListener();
         }
+        this.initChatCometdHandshake();
+        this.initChatConnectionListener();
+        this.initChatCometd();
+        this.cCometD.handshake();
         this.setStatus(settings.status);
       }
     },
@@ -51,7 +54,9 @@ export function initCometD() {
     },
     initChatCometdHandshake  : function () {
       this.cCometD.addListener('/meta/handshake', function (handshake) {
-        if (window.chatNotification.connected === false && handshake.successful === false) {
+        if (handshake.successful) {
+          window.chatNotification.initChatCometd();
+        } else if (window.chatNotification.connected === false) {
           // Reload the page when re-handshake denied.
           $.ajax({
             url: '/portal/rest/chat/api/1.0/user/cometdToken',
@@ -68,13 +73,14 @@ export function initCometD() {
       });
     },
     initChatCometd  : function () {
-      this.cCometD.subscribe('/service/chat', null, function (event) {
-        let message = event.data;
-        if (typeof message !== 'object') {
-          message = JSON.parse(message);
-        }
-        document.dispatchEvent(new CustomEvent(`exo-chat-${message.event}`, {'detail' : message}));
-      });
+      setTimeout(() => 
+        this.cCometD.subscribe('/service/chat', null, function (event) {
+          let message = event.data;
+          if (typeof message !== 'object') {
+            message = JSON.parse(message);
+          }
+          document.dispatchEvent(new CustomEvent(`exo-chat-${message.event}`, {'detail' : message}));
+        }), DEFAULT_TIME_TO_SUBSCRIBE);
     },
     setStatus : function (status, callback) {
       if (status) {

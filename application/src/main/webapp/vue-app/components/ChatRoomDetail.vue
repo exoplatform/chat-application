@@ -112,6 +112,11 @@ export default {
       return this.contact.type === 's' || this.contact.type === 't';
     }
   },
+  watch: {
+    searchText(value) {
+      document.dispatchEvent(new CustomEvent('exo-chat-message-search', {detail: value}));
+    }
+  },
   created() {
     document.addEventListener('exo-chat-setting-startMeeting', this.startMeeting);
     document.addEventListener('exo-chat-setting-stopMeeting', this.stopMeeting);
