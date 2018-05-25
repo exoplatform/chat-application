@@ -45,6 +45,7 @@ import * as chatServices from '../chatServices';
 const RAISE_HAND = 'type-hand';
 const QUESTION_MESSAGE = 'type-question';
 const LINK_MESSAGE = 'type-link';
+const EVENT_MESSAGE = 'type-event';
 
 export default {
   components: {
@@ -142,16 +143,21 @@ export default {
         break;
       case 'event':
         if (this.getEventFormValue()) {
-          chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then(()=> console.log('okkkk'));
+          message.options = this.getEventFormValue();
+          message.options.type = EVENT_MESSAGE;
+          chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then(()=> {
+            document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+          });
+        } else {
+          return; // TODO show error mesage modal
         }
-        
         break;        
       }
 
       if (this.appKey !== 'event') {
         document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
-        this.closeModal();
       }
+      this.closeModal();
     },
     checkURL(text) {
       // if user has not entered http:// https:// or ftp:// assume they mean http://
