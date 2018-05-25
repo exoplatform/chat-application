@@ -3,7 +3,7 @@
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
-    <div class="chat-message-bubble">
+    <div class="chat-message-bubble" @click="loge(message)">
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
       <div v-if="message.isSystem && message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
@@ -103,10 +103,7 @@
       <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
         <em class="muted">Ce message a été supprimé.</em>
       </div>
-      <div v-if="!message.isSystem && message.type !== constants.DELETED_MESSAGE" class="message-content">
-        {{ messageContent }}
-      </div>
-
+      <div v-if="!message.isSystem && message.type !== constants.DELETED_MESSAGE" class="message-content" v-html="$options.filters.messageFilter(messageContent)"></div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
       </div>
@@ -128,10 +125,14 @@
 <script>
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
+import messageFilter from '../messageFilter.js';
 import DropdownSelect from './DropdownSelect.vue';
 
 export default {
   components: { DropdownSelect },
+  filters: {
+    messageFilter: messageFilter
+  },
   props: {
     message: {
       type: Object,
@@ -461,6 +462,9 @@ export default {
           });
         }
       );
+    },
+  loge(msg) {
+    console.log(msg);
     }
   }
 };
