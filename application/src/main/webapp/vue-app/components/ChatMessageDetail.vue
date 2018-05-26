@@ -3,16 +3,20 @@
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
-    <div class="chat-message-bubble" @click="loge(message)">
+    <div class="chat-message-bubble">
       <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
-      <div v-if="message.isSystem && message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
+      <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
+        <em class="muted">Ce message a été supprimé.</em>
+      </div>
+      <div v-else-if="!message.isSystem" class="message-content" v-html="messageContent"></div>
+      <div v-if="message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.TASK_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.TASK_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.url" target="_blank">{{ message.options.task }}</a>
         </b>
@@ -25,7 +29,7 @@
         </div>
         <div class="custom-message-item"><span><i class="uiIconChatClock"></i>Echéance: </span><b>{{ message.options.dueDate || 'Non définie' }}</b></div>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.EVENT_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
@@ -39,7 +43,7 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.FILE_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.FILE_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.restPath" target="_blank">{{ message.options.name }}</a>
         </b>
@@ -66,19 +70,19 @@
           </div>
         </div>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.LINK_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.LINK_MESSAGE" class="message-content">
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
-      <div v-if="message.isSystem && (message.options.type === constants.RAISE_HAND || message.options.type === constants.QUESTION_MESSAGE)" class="message-content">
+      <div v-else-if="(message.options.type === constants.RAISE_HAND || message.options.type === constants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
-      <div v-if="message.isSystem && message.options.type === constants.START_MEETING_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === constants.START_MEETING_MESSAGE" class="message-content">
         <b>Réunion démarée</b>
         <div>
           <em class="muted">Arrêtez la réunion et enregistrez des notes à tout moment en cliquant sur le bouton Stop.</em>
         </div>
       </div>
-      <div v-if="message.isSystem && (message.options.type === constants.NOTES_MESSAGE || message.options.type === constants.STOP_MEETING_MESSAGE)" class="message-content msMeetingNotes">
+      <div v-else-if="(message.options.type === constants.NOTES_MESSAGE || message.options.type === constants.STOP_MEETING_MESSAGE)" class="message-content msMeetingNotes">
         <b>Les notes ont bien été enregistrées</b>
         <br />
         <div class="custom-message-item badge" @click="sendMeetingNotes">
@@ -100,10 +104,6 @@
           <a href="#" target="_blank">Open in wiki</a>.
         </div>
       </div>
-      <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
-        <em class="muted">Ce message a été supprimé.</em>
-      </div>
-      <div v-if="!message.isSystem && message.type !== constants.DELETED_MESSAGE" class="message-content" v-html="$options.filters.messageFilter(messageContent)"></div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
       </div>
@@ -130,9 +130,6 @@ import DropdownSelect from './DropdownSelect.vue';
 
 export default {
   components: { DropdownSelect },
-  filters: {
-    messageFilter: messageFilter
-  },
   props: {
     message: {
       type: Object,
@@ -266,7 +263,7 @@ export default {
       };
     },
     messageContent() {
-      return this.message.message ? this.message.message : this.message.msg;
+      return messageFilter(this.message.message ? this.message.message : this.message.msg);
     }
   },
   created() {
@@ -462,9 +459,6 @@ export default {
           });
         }
       );
-    },
-  loge(msg) {
-    console.log(msg);
     }
   }
 };

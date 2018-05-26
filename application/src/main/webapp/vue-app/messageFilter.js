@@ -1,29 +1,39 @@
 export default function(msg) {
-  const words = msg.split(' ');
+  if(!msg || !msg.trim().length) {
+    return msg;
+  }
+  let currentIndex = 0;
   let message = '';
 
+  const words = msg.split(/\s|\.|\?|!|$/);
   words.forEach(w => {
     // check link
-    if (w.indexOf('http:') ===0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
-      w = `<a href="${w}" target='_blank'>${w}</a>`;
-      message += w;
-      return;
-    }
-    // check emoticons
-    EMOTICONS.forEach(elm => {
-      if(elm.keys.indexOf(w) > -1) {
-        w = `<span class="chat-emoticon ${elm.class}"></span>`;
+    if(w) {
+      currentIndex += w.length;
+      if (w.indexOf('http:') ===0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
+        w = `<a href="${w}" target='_blank'>${w}</a>`;
         message += w;
-        return;
+      } else {
+        // check emoticons
+        const wordLowercase = w.toLowerCase();
+        const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordLowercase) >= 0);
+        if(emoticon) {
+          message += `<span class="chat-emoticon ${emoticon.class}"></span>`;
+        } else {
+          message += w;
+        }
       }
-    });
+    } else {
+      message += msg.charAt(currentIndex);
+      currentIndex++;
+    }
   });
   return message;
 }
 
 
 const EMOTICONS = [
-  { 
+  {
     keys: [':-)', ':)'],
     class: 'emoticon-smile'
   },
