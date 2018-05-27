@@ -6,4 +6,5 @@ export const chatData = {
   chatCalendarAPI: '/portal/rest/chat/api/1.0/calendar/',
   profilePageName: 'profile',
   chatServerAPI: '/chatServer/',
+  chatPluginAPI: '/chat/api/1.0/plugin/'
 };

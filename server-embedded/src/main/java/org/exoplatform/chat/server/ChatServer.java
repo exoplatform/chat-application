@@ -126,7 +126,7 @@ public class ChatServer
     }
 
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
-    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, false, ilimit,
+    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService, dbName);
     roomsBean.getRooms().forEach((roomBean) -> {
       roomBean.setFavorite(userService.isFavorite(user, roomBean.getRoom(), dbName));

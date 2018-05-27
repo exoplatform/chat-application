@@ -3,7 +3,8 @@ import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
 import * as desktopNotification from './desktopNotification';
 
-const DEFAULT_LIMIT_USERS_TO_LOAD = 30;
+const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
+const DEFAULT_USER_LIMIT = 10;
 
 const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
@@ -97,7 +98,7 @@ export function toggleFavorite(room, favorite) {
 
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   if(!limit) {
-    limit = DEFAULT_LIMIT_USERS_TO_LOAD;
+    limit = DEFAULT_USERS_ROOMS_TO_LOAD;
   }
   if(!filter) {
     filter = '';
@@ -200,6 +201,9 @@ export function loadNotificationSettings(settings) {
 }
 
 export function getChatUsers(userSettings, filter, limit) {
+  if(!limit) {
+    limit = DEFAULT_USER_LIMIT;
+  }
   return fetch(`${chatData.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
@@ -288,7 +292,6 @@ export function saveWiki(userSettings, targetFullName, content) {
 
   return fetch(`${chatData.chatWikiAPI}saveWiki`, {
     headers: {
-      'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
     credentials: 'include',
@@ -304,7 +307,17 @@ export function saveEvent(userSettings, data, target) {
 
   return fetch(`${chatData.chatCalendarAPI}saveEvent`, {
     headers: {
-      'Authorization': `Bearer ${userSettings.token}`,
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    credentials: 'include',
+    method: 'post',
+    body: $.param(data)
+  });
+}
+
+export function saveTask(userSettings, data) {
+  return fetch(`${chatData.chatPluginAPI}action`, {
+    headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
     credentials: 'include',

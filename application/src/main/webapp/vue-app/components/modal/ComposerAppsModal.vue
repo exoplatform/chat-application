@@ -1,6 +1,6 @@
 <template>
   <modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
-    <form id="appComposerForm" ref="appComposerForm">
+    <form id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
       <div v-show="error" class="alert alert-error">Error sending request. Please contact administrator.</div>
       <div v-if="sendingMessage" class="apps-composer-mask center">
         <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
@@ -22,14 +22,14 @@
         <div class="chat-event-date form-horizontal">
           <div class="event-item">
             <span class="action-label">from</span>
-            <input ref="eventDateFrom" type="text" format="MM/dd/yyyy" pattern="\d{2}/\d{2}/\d{4}" placeholder="mm/dd/yyyy" required @focus="initDatePicker($event)">
+            <input ref="eventDateFrom" :format="dateFormat" :placeholder="dateFormatTitle" type="text" pattern="\d{2}/\d{2}/\d{4}" required @focus="initDatePicker($event)">
             <select v-model="eventTimeFrom" class="selectbox" required @change="setTimeTo($event)">
               <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
             </select>
           </div>
           <div class="event-item">
             <span class="action-label">to</span>
-            <input ref="eventDateTo" type="text" format="MM/dd/yyyy" pattern="\d{2}/\d{2}/\d{4}" placeholder="mm/dd/yyyy" required @focus="initDatePicker($event)">
+            <input ref="eventDateTo" :format="dateFormat" :placeholder="dateFormatTitle" type="text" pattern="\d{2}/\d{2}/\d{4}" required @focus="initDatePicker($event)">
             <select v-model="eventTimeTo" class="selectbox" required>
               <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
             </select>
@@ -37,9 +37,24 @@
         </div>
         <input v-model="eventLocation" class="large" type="text" placeholder="Location">
       </div>
+      <div v-else-if="appKey == 'task'" class="task-form">
+        <input ref="taskTitle" class="large" type="text" placeholder="Task title" required>
+        <input ref="taskAssignee" class="large" type="text" placeholder="Assignee">
+        <input ref="taskDueDate" :format="dateFormat" placeholder="Due Date" class="large" type="text" pattern="\d{2}/\d{2}/\d{4}" readonly @focus="initDatePicker($event)">
+      </div>
+      <div v-else-if="appKey == 'file'" id="dropzone-container" class="chat-file-upload">
+        <div class="progressBar">
+          <div class="progress">
+            <div class="bar" style="width: 0.0%;"></div>
+            <div class="label">
+              <div class="label-inner">Déposez votre fichier ici</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="uiAction uiActionBorder">
-        <button type="submit" onsubmit="return false" class="btn btn-primary" @click="saveAppModal()">Enregistrer</button>
+        <button type="submit" class="btn btn-primary" @click="saveAppModal()">Enregistrer</button>
         <div class="btn" @click="closeModal">Annuler</div>
       </div>
     </form>
@@ -54,6 +69,7 @@ const RAISE_HAND = 'type-hand';
 const QUESTION_MESSAGE = 'type-question';
 const LINK_MESSAGE = 'type-link';
 const EVENT_MESSAGE = 'type-event';
+const TASK_MESSAGE = 'type-task';
 
 export default {
   components: {
@@ -81,6 +97,8 @@ export default {
   },
   data() {
     return {
+      dateFormat: 'MM/dd/yyyy',
+      dateFormatTitle: 'mm/dd/yyyy',
       raiseHandComment: '',
       questionText: '',
       linkText: '',
@@ -109,6 +127,8 @@ export default {
     this.populateSelectHour();
     this.eventTimeFrom = this.dayHourOptions[0].value;
     this.eventTimeTo = this.dayHourOptions[0].value;
+    this.initSuggester();
+    this.initUpload();
   },
   methods: {
     closeModal() {
@@ -177,6 +197,43 @@ export default {
           });
         }
         break;
+      case 'task': {
+        message.options.type = TASK_MESSAGE;
+        const isSpace = this.contact.user.indexOf('space-') === 0;
+        const isTeam = this.contact.user.indexOf('team-') === 0;
+        const data = {
+          'extension_action' : 'createTask',
+          'username' : $(this.$refs.taskAssignee).suggester('getValue'),
+          'dueDate' : this.$refs.taskDueDate.value,
+          'text' : this.$refs.taskTitle.value,
+          'roomName' : this.contact.fullName,
+          'isSpace' : isSpace,
+          'isTeam': isTeam,
+          'participants': isSpace || isTeam ? this.contact.participants.join(',') : this.contact.user
+        };
+        chatServices.saveTask(eXo.chat.userSettings, data).then((response) => {
+          if (!response.ok) {
+            this.error = true;
+            this.sendingMessage = false;
+            return;
+          }
+          return response.json();
+        }).then(data => {
+          const url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
+          message.options.url = url;
+          message.options.username = $(this.$refs.taskAssignee).suggester('getValue');
+          message.options.dueDate = this.$refs.taskDueDate.value;
+          message.options.task = this.$refs.taskTitle.value;
+          message.options.type = TASK_MESSAGE;
+
+          document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+          this.closeModal();
+          this.sendingMessage = false;
+        }).catch(() => {
+          this.error = true;
+          this.sendingMessage = false;
+        });
+      }break;
       }
       return false;
     },
@@ -216,6 +273,60 @@ export default {
         }
       }
     },
+    initSuggester() {
+      const $taskAssigneeSuggestor = $(this.$refs.taskAssignee);
+      if (!$taskAssigneeSuggestor.length) {
+        return;
+      }
+      if(!this.$refs.taskAssignee.selectize) {
+        //init suggester
+        $taskAssigneeSuggestor.suggester({
+          type : 'tag',
+          plugins: ['remove_button'],
+          valueField: 'name',
+          labelField: 'fullname',
+          searchField: ['fullname'],
+          sourceProviders: ['exo:task-add-user'],
+          providers: {
+            'exo:task-add-user': function(query, callback) {
+              if (!query || !query.trim().length) {
+                return callback();
+              }
+              chatServices.getChatUsers(eXo.chat.userSettings, query.trim()).then(data => {
+                if(data && data.users) {
+                  callback(data.users.filter(user => user.name !== eXo.chat.userSettings.username));
+                }
+              });
+            }
+          },
+          renderMenuItem (item, escape) {
+            const avatar = chatServices.getUserAvatar(item.name);
+            const defaultAvatar = '/chat/img/room-default.jpg';
+            return `
+              <div class="avatarMini">
+                <img src="${avatar}" onerror="this.src='${defaultAvatar}'">
+              </div>
+              <div class="user-name">${escape(item.fullname)} (${item.name})</div>
+              <div class="user-status"><i class="chat-status-${item.status}"></i></div>
+            `;
+          }
+        });
+      } else {
+        //clear suggester
+        $taskAssigneeSuggestor.suggester('setValue', '');
+        $taskAssigneeSuggestor[0].selectize.clear(true);
+        $taskAssigneeSuggestor[0].selectize.renderCache['item'] = {};
+      }
+
+      if(this.participants) {
+        this.participants.forEach(participant => {
+          if(participant.name !== eXo.chat.userSettings.username) {
+            $taskAssigneeSuggestor[0].selectize.addOption(participant);
+            $taskAssigneeSuggestor[0].selectize.addItem(participant.name);
+          }
+        });
+      }
+    },
     setTimeTo() {
       const TEN = 10;
       const time = this.eventTimeFrom;
@@ -249,6 +360,9 @@ export default {
       }
 
       return eventForm;
+    },
+    initUpload() {
+
     }
   }
 };

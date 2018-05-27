@@ -24,8 +24,6 @@
 import * as chatServices from '../../chatServices';
 import Modal from './Modal.vue';
 
-const USER_LIMIT = 10;
-
 export default {
   components: {Modal},
   props: {
@@ -108,7 +106,7 @@ export default {
               if (!query.length) {
                 return callback(); 
               }
-              chatServices.getChatUsers(eXo.chat.userSettings, query, USER_LIMIT).then(data => {
+              chatServices.getChatUsers(eXo.chat.userSettings, query).then(data => {
                 if(data && data.users) {
                   callback(data.users.filter(user => user.name !== eXo.chat.userSettings.username));
                 }
