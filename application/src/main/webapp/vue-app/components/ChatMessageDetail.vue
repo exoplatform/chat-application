@@ -160,9 +160,7 @@ export default {
     },
     highlight: {
       type: String,
-      default: function () {
-        return {};
-      }
+      default: ''
     },
     hideTime: {
       type: Boolean,
@@ -263,7 +261,7 @@ export default {
       };
     },
     messageContent() {
-      return messageFilter(this.message.message ? this.message.message : this.message.msg);
+      return messageFilter(this.message.message ? this.message.message : this.message.msg, this.highlight);
     }
   },
   created() {
