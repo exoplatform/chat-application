@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import ComposerAppsModal from './ComposerAppsModal.vue';
+import ComposerAppsModal from './modal/ComposerAppsModal.vue';
 
 const DEFAULT_COMPOSER_APPS = [
   {

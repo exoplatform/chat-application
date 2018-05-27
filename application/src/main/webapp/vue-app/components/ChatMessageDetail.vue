@@ -9,8 +9,8 @@
       <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
         <em class="muted">Ce message a été supprimé.</em>
       </div>
-      <div v-else-if="!message.isSystem" class="message-content" v-html="messageContent"></div>
-      <div v-if="message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
+      <div v-else-if="message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
       <div v-else-if="message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
@@ -34,25 +34,25 @@
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
           <span>De </span>
-          <b>{{ message.options.startDate }} {{ message.options.startTime }}</b>
+          <b>{{ message.options.startDate }} {{ message.options.startAllDay ? '(All day)' : message.options.startTime }}</b>
           <span> à </span>
-          <b>{{ message.options.endDate }} {{ message.options.endTime }}</b>
+          <b>{{ message.options.endDate }} {{ message.options.endAllDay ? '(All day)' : message.options.endTime }}</b>
         </div>
-        <div class="custom-message-item">
+        <div v-if="message.options.location" class="custom-message-item">
           <i class="uiIconChatCheckin"></i>
           {{ message.options.location }}
         </div>
       </div>
       <div v-else-if="message.options.type === constants.FILE_MESSAGE" class="message-content">
         <b>
-          <a :href="message.options.restPath" target="_blank">{{ message.options.name }}</a>
+          <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
         <span class="message-file-size">{{ message.options.sizeLabel }}</span>
         <div class="attachmentContainer">
           <div class="attachmentContentImage">
             <div class="imageAttachmentBox">
               <a class="imgAttach">
-                <img :src="message.options.restPath" :alt="message.options.name">
+                <img :src="message.options.restPath" :alt="message.options.title">
               </a>
               <div class="actionAttachImg">
                 <p>
@@ -85,11 +85,11 @@
       <div v-else-if="(message.options.type === constants.NOTES_MESSAGE || message.options.type === constants.STOP_MEETING_MESSAGE)" class="message-content msMeetingNotes">
         <b>Les notes ont bien été enregistrées</b>
         <br />
-        <div class="custom-message-item badge" @click="sendMeetingNotes">
+        <div class="custom-message-item" @click="sendMeetingNotes">
           <i class="uiIconChatSendEmail"></i><span class="btn-link send-meeting-notes">Envoyer les notes</span>
         </div>
         <br />
-        <div class="custom-message-item badge" @click="saveMeetingNotes">
+        <div class="custom-message-item" @click="saveMeetingNotes">
           <i class="uiIconChatWiki"></i><span class="btn-link save-meeting-notes">Enregistrer dans le Wiki</span>
         </div>
         <br />
@@ -261,7 +261,10 @@ export default {
       };
     },
     messageContent() {
-      return messageFilter(this.message.message ? this.message.message : this.message.msg, this.highlight);
+      return this.message.message ? this.message.message : this.message.msg;
+    },
+    messageFiltered() {
+      return messageFilter(this.messageContent);
     }
   },
   created() {
