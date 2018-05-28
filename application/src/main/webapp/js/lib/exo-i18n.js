@@ -1,5 +1,4 @@
 import VueI18n from 'vue-i18n';
-import axios from 'axios';
 
 const loadedLanguages = [''];
 const messages = {};
@@ -10,14 +9,14 @@ const i18n = new VueI18n({
   messages
 });
 
-async function loadLanguageAsync (lang) {
+function loadLanguageAsync (lang) {
   if(!lang) {
     lang = i18n.locale;
   }
-  if (!loadedLanguages.includes(lang)) {
+  if (loadedLanguages.indexOf(lang) < 0) {
     // TODO replace by a call to a new REST service which loads eXo resource bundles (ResourceBundleService)
-    return await axios.get(`/chat/lang/${lang}.json`).then(msgs => {
-      i18n.setLocaleMessage(lang, msgs.data);
+    return fetch(`/chat/lang/${lang}.json`).then(resp => resp.json()).then(msgs => {
+      i18n.setLocaleMessage(lang, msgs);
       loadedLanguages.push(lang);
       i18n.locale = lang;
       return i18n;
