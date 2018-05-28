@@ -1,12 +1,12 @@
 <template>
-  <modal v-show="show" id="chatPreferences" title="Chat Preferences" modal-class="chatPreferences" @modal-closed="closeModal">
+  <modal v-show="show" id="chatPreferences" :title="$t('exoplatform.chat.settings.button.tip')" modal-class="chatPreferences" @modal-closed="closeModal">
     <section>
       <h4>{{ $t('exoplatform.chat.desktopNotif.global.notifications') }}</h4>
       <div class="notification-item">
         <input id="notifyDonotdistrub" ref="notifyDonotdistrub" v-model="chatPreferences.notifyDonotdistrub" type="checkbox">
         <div class="notification-description">
-          <b> ${{'exoplatform.chat.desktopNotif.global.donotdist'}} </b>
-          <em> ${{'exoplatform.chat.desktopNotif.global.donotdist.description'}} </em>
+          <b> {{ $t('exoplatform.chat.desktopNotif.global.donotdist') }} </b>
+          <em> {{ $t('exoplatform.chat.desktopNotif.global.donotdist.description') }} </em>
         </div>
       </div>
     </section>
@@ -35,8 +35,8 @@
       </div>
     </section>
     <div class="uiAction uiActionBorder">
-      <div class="btn btn-primary" @click="saveNotificationSettings"> {{$('exoplatform.chat.save')}} </div>
-      <div class="btn" @click="closeModal"> {{$('exoplatform.chat.cancel')}} </div>
+      <div class="btn btn-primary" @click="saveNotificationSettings"> {{ $t('exoplatform.chat.save') }} </div>
+      <div class="btn" @click="closeModal"> {{ $t('exoplatform.chat.cancel') }} </div>
     </div>
   </modal>
 </template>

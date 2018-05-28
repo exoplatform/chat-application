@@ -17,7 +17,7 @@
         <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
-        {{ nbMembers }} members
+        {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
     </div>
   </div>
@@ -62,11 +62,11 @@ export default {
   data : function() {
     return {
       statusMap : {
-        available: 'Available',
-        away: 'Away',
-        donotdistrub: 'Do not disturb',
-        invisible: 'Invisible',
-        offline: 'Offline'
+        available: this.$t('exoplatform.chat.available'),
+        away: this.$t('exoplatform.chat.away'),
+        donotdistrub: this.$t('exoplatform.chat.donotdisturb'),
+        invisible: this.$t('exoplatform.chat.invisible'),
+        offline: this.$t('exoplatform.chat.button.offline')
       }
     };
   },

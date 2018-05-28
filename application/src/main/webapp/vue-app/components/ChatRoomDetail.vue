@@ -17,7 +17,7 @@
           <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction.key)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>
-              {{ $t(`chat.rooms.action.${settingAction.key}`) }}
+              {{ $t(settingAction.labelKey) }}
             </a>
           </li>
         </dropdown-select>
@@ -36,21 +36,25 @@ import * as chatWebStorage from '../chatWebStorage';
 
 const DEFAULT_ROOM_ACTIONS = [{
   key: 'startMeeting',
+  labelKey: 'exoplatform.chat.meeting.start',
   class: 'uiIconChatRecordStart',
   enabled: (comp) => {
     return !comp.meetingStarted;
   }
 }, {
   key: 'stopMeeting',
+  labelKey: 'exoplatform.chat.meeting.stop',
   class: 'uiIconChatRecordStop',
   enabled: (comp) => {
     return comp.meetingStarted;
   }
 } , {
   key: 'notificationSettings',
+  labelKey: 'exoplatform.stats.notifications',
   class: 'uiIconPLFNotifications'
 } , {
   key: 'editRoom',
+  labelKey: 'exoplatform.chat.team.edit',
   type: 't',
   class: 'uiIconEditInfo',
   enabled: (comp) => {
@@ -58,6 +62,7 @@ const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'deleteRoom',
+  labelKey: 'exoplatform.chat.team.delete',
   type: 't',
   class: 'uiIconDelete',
   enabled: (comp) => {
@@ -65,6 +70,7 @@ const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'leaveRoom',
+  labelKey: 'exoplatform.chat.team.leave',
   type: 't',
   class: 'uiIconDelete',
   enabled: (comp) => {

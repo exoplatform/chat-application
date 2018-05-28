@@ -2,18 +2,18 @@
   <div class="contactListContainer">
     <div class="contactFilter">
       <i class="uiIconSearchLight"></i>
-      <input v-model="searchTerm" type="text" placeholder="Filter people, spaces...">
+      <input v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
     </div>
     <div class="listHeader">
       <dropdown-select>
-        <span slot="toggle">{{ sortFilter }}</span>
+        <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <li v-for="filter in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#">{{ filter }}</a></li>
+        <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#">{{ label }}</a></li>
       </dropdown-select>
       <dropdown-select>
-        <span slot="toggle">{{ typeFilter }}</span>
+        <span slot="toggle">{{ filterByType[typeFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <li v-for="filter in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ filter }}</a></li>
+        <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ label }}</a></li>
       </dropdown-select>
       <div class="add-room-action" @click="openCreateRoomModal">
         <i class="uiIconSimplePlus"></i>
@@ -27,12 +27,12 @@
       </div>
       <div v-show="isSearchingContact" class="contact-list-item isList">
         <div class="seeMoreContacts">
-          Loading ...
+          {{ $t('exoplatform.chat.loading') }} ...
         </div>
       </div>
       <div v-show="hasMoreContacts" class="contact-list-item isList" @click="loadMore()">
         <div class="seeMoreContacts">
-          <a href="#"><u>See more</u></a>
+          <a href="#"><u>{{ $t('exoplatform.chat.seeMore') }}</u></a>
           <i class="uiIconArrowDownMini"></i>
         </div>
       </div>
@@ -76,9 +76,18 @@ export default {
   },
   data : function() {
     return {
-      sortByDate: ['Recent','Unread'], // TODO add to locale
+      sortByDate: {
+        'Recent': this.$t('exoplatform.chat.contact.recent'),
+        'Unread': this.$t('exoplatform.chat.contact.unread'),
+      },
       sortFilter: SORT_FILTER_DEFAULT,
-      filterByType: ['All','People','Rooms','Spaces','Favorites'],
+      filterByType: {
+        'All': this.$t('exoplatform.chat.contact.all'),
+        'People': this.$t('exoplatform.chat.people'),
+        'Rooms': this.$t('exoplatform.chat.teams'),
+        'Spaces': this.$t('exoplatform.chat.spaces'),
+        'Favorites': this.$t('exoplatform.chat.favorites')
+      },
       typeFilter: TYPE_FILTER_DEFAULT,
       createRoomModal: false,
       searchTerm: '',

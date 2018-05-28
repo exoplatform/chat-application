@@ -299,7 +299,7 @@ export function saveWiki(userSettings, targetFullName, content) {
 }
 
 export function saveEvent(userSettings, data, target) {
-  const users = target.participants.map(user => user.name);
+  const users = target.participants ? target.participants.map(user => user.name) : [];
   data.space = target.fullName;
   data.users = target.type === 's' ? '' : users.join(',');
 

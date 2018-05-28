@@ -5,22 +5,22 @@
         <div class="offset1 chat-room-config">
           <input v-model="selectedOption" :checked="selectedOption === 'normal'" type="radio" name="optionsRoomNotificationNormal" value="normal">
           <span class="label-head" for="optionsRoomNotificationNormal" @click="selectedOption = 'normal'"> {{ $t('exoplatform.chat.desktopNotif.local.normal.label') }} </span> <br>
-          <span class="label-text local"> {{ $('exoplatform.chat.desktopNotif.local.normal') }} </span><br>
+          <span class="label-text local"> {{ $t('exoplatform.chat.desktopNotif.local.normal') }} </span><br>
 
           <input v-model="selectedOption" :checked="selectedOption === 'silence'" type="radio" name="optionsRoomNotificationSilence" value="silence">
           <span class="label-head" for="optionsRoomNotificationSilence" @click="selectedOption = 'silence'"> {{ $t('exoplatform.chat.desktopNotif.local.silence.label') }} </span><br>
-          <span class="label-text local">{{ $('exoplatform.chat.desktopNotif.local.silence') }}</span><br>
+          <span class="label-text local">{{ $t('exoplatform.chat.desktopNotif.local.silence') }}</span><br>
 
           <input v-model="selectedOption" :checked="selectedOption === 'keywords'" type="radio" name="optionsRoomNotificationKeywords" value="keywords">
           <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> {{ $t('exoplatform.chat.desktopNotif.local.alerton.label') }} :</span><br>
 
-          <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" name="keyWord"><br>
-          <span class="label-text local">{{ $('exoplatform.chat.desktopNotif.local.alerton') }}</span><br><br>
+          <input v-model="keywords" :disabled="disableAdvancedFilter" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" class="radio-input-text" type="text" name="keyWord"><br>
+          <span class="label-text local">{{ $t('exoplatform.chat.desktopNotif.local.alerton') }}</span><br><br>
         </div>
       </div>
       <div class="row center">
-        <div class="btn btn-primary" @click="saveSettings">{{ $('exoplatform.chat.save') }}</div>
-        <div class="btn" @click="closeModal">{{ $('exoplatform.chat.cancel') }}</div>
+        <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.save') }}</div>
+        <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </div>
   </modal>
@@ -63,7 +63,7 @@ export default {
       return this.selectedOption !== 'keywords';
     },
     title() {
-      return this.$t('chat.rooms.notificationSettingTitle', {name: this.roomName});
+      return this.$t('exoplatform.chat.team.notifications', {0: this.roomName});
     }
   },
   created() {

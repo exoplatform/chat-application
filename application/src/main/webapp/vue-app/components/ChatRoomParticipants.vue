@@ -6,13 +6,13 @@
       </div>
       <div class="room-participants-header no-user-selection">
         <div v-show="!isCollapsed" class="room-participants-title">
-          {{ $t("chat.rooms.participants") }}
+          {{ $t("exoplatform.chat.participants") }}
           <span v-show="participants.length > 0" class="nb-participants">({{ participants.length }})</span>
         </div>
         <dropdown-select v-show="!isCollapsed" position="right">
-          <span slot="toggle">{{ participantFilter }}</span>
+          <span slot="toggle">{{ filterByStatus[participantFilter] }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
-          <li v-for="filter in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#">{{ filter }}</a></li>
+          <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#">{{ label }}</a></li>
         </dropdown-select>
       </div>
       <div class="room-participants-list isList">
@@ -36,7 +36,10 @@ export default {
   data : function() {
     return {
       isCollapsed: true,
-      filterByStatus: ['All', 'Online'],
+      filterByStatus: {
+        'All': this.$t('exoplatform.chat.contact.all'),
+        'Online':  this.$t('exoplatform.chat.online'),
+      },
       participantFilter: STATUS_FILTER_DEFAULT,
       contact: null,
       participants: []

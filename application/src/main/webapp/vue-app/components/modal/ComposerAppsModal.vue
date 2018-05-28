@@ -6,29 +6,26 @@
         <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
       </div>
       <div v-if="appKey == 'raise-hand'">
-        <input v-model="raiseHandComment" class="large" type="text" placeholder="Optional Comment" required>
+        <input v-model="raiseHandComment" :placeholder="$t('exoplatform.chat.optional.comment')" class="large" type="text">
       </div>
       <div v-else-if="appKey == 'link'">
         <input v-model="linkText" class="large" type="text" placeholder="E.g: http://www.exoplatform.com" required>
       </div>
       <div v-else-if="appKey == 'question'">
-        <input v-model="questionText" class="large" type="text" placeholder="What is your question?" required>
-      </div>
-      <div v-else-if="appKey == 'link'">
-        <input v-model="linkText" class="large" type="text" placeholder="E.g: http://www.exoplatform.com" required>
+        <input v-model="questionText" :placeholder="$t('exoplatform.chat.question.what')" class="large" type="text" required>
       </div>
       <div v-else-if="appKey == 'event'" class="chat-app-event">
-        <input v-model="eventName" class="large" type="text" placeholder="Event title" required>
+        <input v-model="eventName" :placeholder="$t('exoplatform.chat.event.title')" class="large" type="text" required>
         <div class="chat-event-date form-horizontal">
           <div class="event-item">
-            <span class="action-label">from</span>
+            <span class="action-label">{{ $t('exoplatform.chat.from') }}</span>
             <input ref="eventDateFrom" :format="dateFormat" :placeholder="dateFormatTitle" type="text" pattern="\d{2}/\d{2}/\d{4}" required @focus="initDatePicker($event)">
             <select v-model="eventTimeFrom" class="selectbox" required @change="setTimeTo($event)">
               <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
             </select>
           </div>
           <div class="event-item">
-            <span class="action-label">to</span>
+            <span class="action-label">{{ $t('exoplatform.chat.to') }}</span>
             <input ref="eventDateTo" :format="dateFormat" :placeholder="dateFormatTitle" type="text" pattern="\d{2}/\d{2}/\d{4}" required @focus="initDatePicker($event)">
             <select v-model="eventTimeTo" class="selectbox" required>
               <option v-for="hour in dayHourOptions" :key="hour.value" :value="hour.value">{{ hour.text }}</option>
@@ -43,8 +40,8 @@
         <input ref="taskDueDate" :format="dateFormat" placeholder="Due Date" class="large" type="text" pattern="\d{2}/\d{2}/\d{4}" readonly @focus="initDatePicker($event)">
       </div>
       <div class="uiAction uiActionBorder">
-        <button type="submit" class="btn btn-primary" @click="saveAppModal()">Enregistrer</button>
-        <div class="btn" @click="closeModal">Annuler</div>
+        <button type="submit" class="btn btn-primary" @click="saveAppModal()">{{ $t('exoplatform.chat.save') }}</button>
+        <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </form>
     <div v-else id="dropzone-container" class="chat-file-upload">
@@ -52,7 +49,7 @@
         <div class="progress">
           <div class="bar" style="width: 0.0%;"></div>
           <div class="label">
-            <div class="label-inner">Déposez votre fichier ici</div>
+            <div class="label-inner">{{ $t('exoplatform.chat.file.drop') }}</div>
           </div>
         </div>
       </div>
@@ -63,10 +60,10 @@
         <input id="chat-encoded-file-name" type="hidden" name="encodedFileName" value="---" />
         <div v-show="showButtons" class="uiActionBorder">
           <a href="#" class="btn btn-primary chat-file-upload" type="button">
-            <span>Select file</span>
+            <span>{{ $t('exoplatform.chat.file.manually') }}</span>
             <input id="chat-file-file" type="file" name="userfile" />
           </a>
-          <a href="#" type="button" class="btn btnClosePopup" @click="closeModal">Cancel</a>
+          <a href="#" type="button" class="btn btnClosePopup" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</a>
           <input id="chat-file-submit" type="submit" value="Select file" style="display:none" />
         </div>
       </form>
@@ -119,6 +116,7 @@ export default {
       questionText: '',
       linkText: '',
       errorCode: false,
+      errorOpts: {},
       sendingMessage: false,
       showButtons: true,
       dayHourOptions: [
@@ -206,7 +204,7 @@ export default {
           message.options.type = EVENT_MESSAGE;
           chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then((response)=> {
             if(!response.ok) {
-              this.errorCode = 'ErrorNetwork';
+              this.errorCode = 'ErrorSaveEvent';
               this.sendingMessage = false;
               return;
             }
@@ -359,7 +357,7 @@ export default {
     },
     errorMessage() {
       if(this.errorCode) {
-        return `Error with code ${this.errorCode}`;
+        return this.$t(`exoplatform.chat.${this.errorCode}`, this.errorOpts);
       }
     },
     getEventFormValue() {
@@ -406,7 +404,8 @@ export default {
             break;
           case 'ErrorFileTooLarge':
           case 'FileTooLarge':
-            thiss.errorCode = 'FileTooLarge';
+            thiss.errorCode = 'upload.filesize';
+            this.errorOpts = {0: eXo.chat.userSettings.maxUploadSize};
             break;
           case 'ErrorFileTypeNotAllowed':
           case 'FileTypeNotAllowed':

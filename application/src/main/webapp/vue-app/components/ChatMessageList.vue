@@ -10,11 +10,11 @@
       </div>
     </div>
     <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>
-    <modal v-show="showEditMessageModal" :title="$t('chat.message.editMessage')" modal-class="edit-message-modal" @modal-closed="closeModal">
+    <modal v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
       <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus></textarea>
       <div class="uiAction uiActionBorder">
-        <div class="btn btn-primary" @click="saveMessage">Enregistrer</div>
-        <div class="btn" @click="closeModal">Annuler</div>
+        <div class="btn btn-primary" @click="saveMessage">{{ $t('exoplatform.chat.save') }}</div>
+        <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </modal>
   </div>
