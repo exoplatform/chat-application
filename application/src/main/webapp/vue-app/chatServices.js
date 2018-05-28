@@ -1,5 +1,4 @@
 import {chatData} from './chatData.js';
-import * as chatNotification from './ChatNotification';
 import * as chatWebStorage from './chatWebStorage';
 import * as desktopNotification from './desktopNotification';
 
@@ -24,13 +23,12 @@ export function getUserStatus(userSettings, user) {
 }
 
 export function initChatSettings(username, chatRoomsLoadedCallback, userSettingsLoadedCallback) {
-  chatNotification.initCometD();
-
   document.addEventListener('exo-chat-settings-loaded', (e) => {
+    const settings = e.detail;
     getOnlineUsers().then(users => { // Fetch online users
-      getChatRooms(e.detail, users).then(data => {
+      getChatRooms(settings, users).then(data => {
         chatRoomsLoadedCallback(data);
-        
+
         const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
         updateTotalUnread(totalUnreadMsg);
 

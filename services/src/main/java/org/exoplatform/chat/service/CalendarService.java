@@ -15,6 +15,8 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -23,13 +25,13 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 @Path("/chat/api/1.0/calendar/")
 public class CalendarService implements ResourceContainer {
 
-  private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
+  private static final String                      DEFAULT_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
 
   org.exoplatform.calendar.service.CalendarService calendarService_;
 
   OrganizationService                              organizationService_;
 
-  private static final Logger                      LOG = Logger.getLogger("CalendarService");
+  private static final Log                         LOG                 = ExoLogger.getLogger(CalendarService.class);
 
   public CalendarService(org.exoplatform.calendar.service.CalendarService calendarService,
                          OrganizationService organizationService) {
@@ -51,6 +53,7 @@ public class CalendarService implements ResourceContainer {
                             @FormParam("location") String location) {
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
     try {
+      // TODO manage create event in space room (activity genration error)
       saveEvent(sc.getUserPrincipal().getName(),
                 space,
                 users,
@@ -59,7 +62,7 @@ public class CalendarService implements ResourceContainer {
                 sdf.parse(endDate + " " + endTime),
                 location);
     } catch (Exception e) {
-      LOG.warning("exception during event creation");
+      LOG.warn("exception during event creation", e);
       return Response.serverError().build();
     }
     return Response.ok().build();

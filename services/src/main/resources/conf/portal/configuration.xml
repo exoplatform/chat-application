@@ -41,4 +41,25 @@
         <type>org.exoplatform.chat.service.CalendarService</type>
     </component>
 
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
+        <component-plugin>
+        <name>Commons UI Component Resource Bundle</name>
+        <set-method>addResourceBundle</set-method>
+        <type>org.exoplatform.services.resources.impl.BaseResourceBundlePlugin</type>
+        <init-params>
+            <values-param>
+            <name>classpath.resources</name>
+            <description>The resources that start with the following package name should be load from file system</description>
+            <value>locale.portlet.chat.Resource</value>          
+            </values-param>
+            <values-param>
+            <name>portal.resource.names</name>
+            <description>The properties files of the portal , those file will be merged into one ResoruceBundle properties </description>
+            <value>locale.portlet.chat.Resource</value>
+            </values-param>
+        </init-params>
+        </component-plugin>
+    </external-component-plugins>
+
 </configuration>

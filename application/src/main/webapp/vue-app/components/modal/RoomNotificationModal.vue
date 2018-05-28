@@ -4,23 +4,23 @@
       <div class="row">
         <div class="offset1 chat-room-config">
           <input v-model="selectedOption" :checked="selectedOption === 'normal'" type="radio" name="optionsRoomNotificationNormal" value="normal">
-          <span class="label-head" for="optionsRoomNotificationNormal" @click="selectedOption = 'normal'"> {{ $t('chat.rooms.notificationSetting.normal') }}</span> <br>
-          <span class="label-text local">I want to receive notifications for this room</span><br>
+          <span class="label-head" for="optionsRoomNotificationNormal" @click="selectedOption = 'normal'"> {{ $t('exoplatform.chat.desktopNotif.local.normal.label') }} </span> <br>
+          <span class="label-text local"> {{ $('exoplatform.chat.desktopNotif.local.normal') }} </span><br>
 
           <input v-model="selectedOption" :checked="selectedOption === 'silence'" type="radio" name="optionsRoomNotificationSilence" value="silence">
-          <span class="label-head" for="optionsRoomNotificationSilence" @click="selectedOption = 'silence'"> Silence </span><br>
-          <span class="label-text local">I don't want to receive notifications for this room</span><br>
+          <span class="label-head" for="optionsRoomNotificationSilence" @click="selectedOption = 'silence'"> {{ $t('exoplatform.chat.desktopNotif.local.silence.label') }} </span><br>
+          <span class="label-text local">{{ $('exoplatform.chat.desktopNotif.local.silence') }}</span><br>
 
           <input v-model="selectedOption" :checked="selectedOption === 'keywords'" type="radio" name="optionsRoomNotificationKeywords" value="keywords">
-          <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> Alert on :</span><br>
+          <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> {{ $t('exoplatform.chat.desktopNotif.local.alerton.label') }} :</span><br>
 
-          <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" placeholder="Lunch, break, coffee, party..." name="keyWord"><br>
-          <span class="label-text local">Notify me when someone uses one of these keywords (the separator is commar or space characters)</span><br><br>
+          <input v-model="keywords" :disabled="disableAdvancedFilter" class="radio-input-text" type="text" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" name="keyWord"><br>
+          <span class="label-text local">{{ $('exoplatform.chat.desktopNotif.local.alerton') }}</span><br><br>
         </div>
       </div>
       <div class="row center">
-        <div class="btn btn-primary" @click="saveSettings">Enregistrer</div>
-        <div class="btn" @click="closeModal">Annuler</div>
+        <div class="btn btn-primary" @click="saveSettings">{{ $('exoplatform.chat.save') }}</div>
+        <div class="btn" @click="closeModal">{{ $('exoplatform.chat.cancel') }}</div>
       </div>
     </div>
   </modal>

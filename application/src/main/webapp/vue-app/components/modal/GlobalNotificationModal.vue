@@ -1,42 +1,42 @@
 <template>
   <modal v-show="show" id="chatPreferences" title="Chat Preferences" modal-class="chatPreferences" @modal-closed="closeModal">
     <section>
-      <h4>Notifications</h4>
+      <h4>{{ $t('exoplatform.chat.desktopNotif.global.notifications') }}</h4>
       <div class="notification-item">
         <input id="notifyDonotdistrub" ref="notifyDonotdistrub" v-model="chatPreferences.notifyDonotdistrub" type="checkbox">
         <div class="notification-description">
-          <b>Notifications "Ne pas Déranger"</b>
-          <em>M'avertir même lorsque je suis en "Ne pas Déranger"</em>
+          <b> ${{'exoplatform.chat.desktopNotif.global.donotdist'}} </b>
+          <em> ${{'exoplatform.chat.desktopNotif.global.donotdist.description'}} </em>
         </div>
       </div>
     </section>
     <section>
-      <h4>Notify me with</h4>
+      <h4>{{ $t('exoplatform.chat.desktopNotif.global.notifyme') }}</h4>
       <div class="notification-item">
         <input id="notifyDesktop" ref="notifyDesktop" v-model="chatPreferences.notifyDesktop" type="checkbox">
         <div class="notification-description">
-          <b>Notifications sur le bureau</b>
-          <em>Afficher une notification toast sur votre ordinateur</em>
+          <b>{{ $t('exoplatform.chat.desktopNotif.global.desktop') }}</b>
+          <em>{{ $t('exoplatform.chat.desktopNotif.global.desktop.description') }}</em>
         </div>
       </div>
       <div class="notification-item">
         <input id="notifyOnSite" ref="notifyOnSite" v-model="chatPreferences.notifyOnSite" type="checkbox">
         <div class="notification-description">
-          <b>Notifications sur site</b>
-          <em>Afficher un compteur sur l'icône dans la barre du haut</em>
+          <b>{{ $t('exoplatform.chat.desktopNotif.global.onsite') }}</b>
+          <em>{{ $t('exoplatform.chat.desktopNotif.global.onsite.description') }}</em>
         </div>
       </div>
       <div class="notification-item">
         <input id="notifyBip" ref="notifyBip" v-model="chatPreferences.notifyBip" type="checkbox">
         <div class="notification-description">
-          <b>Bips sonores</b>
-          <em>Émettre un signal sonore chaque fois qu’un nouveau message arrive</em>
+          <b>{{ $t('exoplatform.chat.desktopNotif.global.beep') }}</b>
+          <em>{{ $t('exoplatform.chat.desktopNotif.global.beep.description') }}</em>
         </div>
       </div>
     </section>
     <div class="uiAction uiActionBorder">
-      <div class="btn btn-primary" @click="saveNotificationSettings">Enregistrer</div>
-      <div class="btn" @click="closeModal">Annuler</div>
+      <div class="btn btn-primary" @click="saveNotificationSettings"> {{$('exoplatform.chat.save')}} </div>
+      <div class="btn" @click="closeModal"> {{$('exoplatform.chat.cancel')}} </div>
     </div>
   </modal>
 </template>

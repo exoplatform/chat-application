@@ -204,12 +204,17 @@ export default {
         if (this.getEventFormValue()) {
           message.options = this.getEventFormValue();
           message.options.type = EVENT_MESSAGE;
-          chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then(()=> {
+          chatServices.saveEvent(eXo.chat.userSettings, this.getEventFormValue(), this.contact).then((response)=> {
+            if(!response.ok) {
+              this.errorCode = 'ErrorNetwork';
+              this.sendingMessage = false;
+              return;
+            }
             document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
             this.closeModal();
             this.sendingMessage = false;
           }).catch(() => {
-            this.errorCode = 'ErrorSaveEvent';
+            this.errorCode = 'ErrorNetwork';
             this.sendingMessage = false;
           });
         }
@@ -413,7 +418,7 @@ export default {
         allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
         maxfiles: MAX_FILES,
         maxfilesize: eXo.chat.userSettings.maxUploadSize,    // max file size in MBs
-        uploadStarted: function(){
+        uploadStarted: function() {
           this.errorCode = false;
           thiss.showButtons = false;
         },

@@ -24,6 +24,7 @@
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import ChatMessageComposer from './ChatMessageComposer.vue';
 import Modal from './modal/Modal.vue';
+import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
@@ -212,7 +213,7 @@ export default {
       if(!message || !message.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
-      window.chatNotification.setRoomMessagesAsRead(this.contact.room);
+      chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       if(this.isScrollPositionAtEnd()) {
         this.setScrollToBottom();
       }

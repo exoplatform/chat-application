@@ -44,6 +44,7 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
+import * as chatWebSocket from '../chatWebSocket';
 
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
@@ -207,7 +208,7 @@ export default {
         this.$emit('exo-chat-contact-selected', selectedContact);
       }
       selectedContact.unreadTotal = 0;
-      window.chatNotification.setRoomMessagesAsRead(selectedContact.room);
+      chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
     },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
@@ -256,12 +257,12 @@ export default {
     },
     leaveRoom() {
       if(this.selected && this.selected.type === 't') {
-        window.chatNotification.leaveRoom(this.selected.room);
+        chatWebSocket.leaveRoom(this.selected.room);
       }
     },
     deleteRoom() {
       if(this.selected && this.selected.type === 't') {
-        window.chatNotification.deleteRoom(this.selected.room);
+        chatWebSocket.deleteRoom(this.selected.room);
       }
     },
     closeModal() {

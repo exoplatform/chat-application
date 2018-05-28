@@ -29,6 +29,8 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
+import * as chatWebSocket from '../chatWebSocket';
+
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
@@ -71,7 +73,7 @@ export default {
     chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.initChatRooms(chatRoomsData), userSettings => this.initSettings(userSettings));
     document.addEventListener('exo-chat-room-updated', this.roomUpdated);
     document.addEventListener('exo-chat-logout-sent', () => {
-      if (!window.chatNotification.isConnected()) {
+      if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
       }
       // TODO Display popin for disconnection
@@ -132,8 +134,8 @@ export default {
       }
     },
     setStatus(status) {
-      if (window.chatNotification && window.chatNotification.isConnected()) {
-        window.chatNotification.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
+      if (chatWebSocket && chatWebSocket.isConnected()) {
+        chatWebSocket.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
       }
     },
     roomUpdated() {
