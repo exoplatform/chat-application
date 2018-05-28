@@ -6,23 +6,26 @@ export default function(msg, highlight) {
   const words = msg.split(' ');
   
   words.forEach(w => {
-    if(w) {
-      // check link
-      if (w.indexOf('http:') === 0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
-        w = `<a href="${w}" target='_blank'>${w}</a>`;
-      } else if (highlight !== '' && w.indexOf(highlight) >= 0) {
-        w = w.replace(highlight, `<span class="search-highlight">${highlight}</span>`);
+    // check link
+    if (w.indexOf('http:') === 0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
+      // check image link
+      if (w.endsWith('.jpg') || w.endsWith('.png') || w.endsWith('.gif') || w.endsWith('.JPG') || w.endsWith('.PNG') || w.endsWith('.GIF')) {
+        w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
       } else {
-        // check emoticons
-        const wordCaseSensitive = w.replace(/\.|\?|!/, '');
-        const wordCaseInsensitive = wordCaseSensitive.toLowerCase();
-        const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
-        if(emoticon) {
-          w = w.replace(wordCaseSensitive, `<span class="chat-emoticon ${emoticon.class}"></span>`);
-        } 
+        w = `<a href="${w}" target='_blank'>${w}</a>`;
       }
-      message += `${w} `;
+    } else if (highlight !== '' && w.indexOf(highlight) >= 0) {
+      w = w.replace(highlight, `<span class="search-highlight">${highlight}</span>`);
+    } else {
+      // check emoticons
+      const wordCaseSensitive = w.replace(/\.|\?|!/, '');
+      const wordCaseInsensitive = wordCaseSensitive.toLowerCase();
+      const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
+      if(emoticon) {
+        w = w.replace(wordCaseSensitive, `<span class="chat-emoticon ${emoticon.class}"></span>`);
+      } 
     }
+    message += `${w} `;
   });
 
   //check quote
