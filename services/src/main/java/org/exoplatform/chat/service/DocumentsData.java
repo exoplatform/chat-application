@@ -1,332 +1,209 @@
 package org.exoplatform.chat.service;
 
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.StringUtils;
-
-import com.ibm.icu.text.Transliterator;
-
-import org.exoplatform.chat.bean.File;
-import org.exoplatform.chat.utils.ChatUtils;
-import org.exoplatform.services.cms.impl.Utils;
-import org.exoplatform.portal.webui.util.Util;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.access.PermissionType;
-import org.exoplatform.services.jcr.core.ExtendedNode;
-import org.exoplatform.services.jcr.ext.app.SessionProviderService;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
-import org.exoplatform.services.jcr.util.Text;
-import org.exoplatform.services.listener.ListenerService;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.space.spi.SpaceService;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.Session;
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
-public class DocumentsData {
+import javax.annotation.security.RolesAllowed;
+import javax.jcr.Node;
+import javax.jcr.Session;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
-  private static final Logger LOG = Logger.getLogger(DocumentsData.class.getName());
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.util.Text;
+import org.json.simple.JSONObject;
 
-  RepositoryService repositoryService_;
+import org.exoplatform.addons.chat.listener.ServerBootstrap;
+import org.exoplatform.chat.services.ChatService;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.cms.BasePath;
+import org.exoplatform.services.cms.jcrext.activity.ActivityCommonService;
+import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.services.jcr.access.PermissionType;
+import org.exoplatform.services.jcr.core.ManageableRepository;
+import org.exoplatform.services.jcr.ext.app.SessionProviderService;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.impl.core.NodeImpl;
+import org.exoplatform.services.listener.ListenerService;
+import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.exoplatform.services.wcm.core.NodetypeConstant;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.rest.api.RestUtils;
+import org.exoplatform.upload.UploadResource;
+import org.exoplatform.upload.UploadService;
 
-  NodeHierarchyCreator nodeHierarchyCreator_;
+@Path("/chat/api/1.0/file/")
+public class DocumentsData implements ResourceContainer {
 
-  SessionProviderService sessionProviderService_;
+  private static final Logger    LOG                   = Logger.getLogger(DocumentsData.class.getName());
 
-  SpaceService spaceService_;
+  private RepositoryService      repositoryService_;
 
-  ListenerService listenerService_;
+  private NodeHierarchyCreator   nodeHierarchyCreator_;
 
-  public static String FILE_CREATED_ACTIVITY         = "ActivityNotify.event.FileCreated";
+  private SessionProviderService sessionProviderService_;
 
-  public static final String TYPE_DOCUMENT="Documents";
+  private SpaceService           spaceService_;
 
-  @Inject
-  public DocumentsData(RepositoryService repositoryService, SessionProviderService sessionProviderService, NodeHierarchyCreator nodeHierarchyCreator, SpaceService spaceService, ListenerService listenerService)
-  {
+  private ListenerService        listenerService_;
+
+  private UploadService          uploadService_;
+
+  private ActivityCommonService  activityService_;
+
+  public static String           FILE_CREATED_ACTIVITY = "ActivityNotify.event.FileCreated";
+
+  public DocumentsData(RepositoryService repositoryService,
+                       SessionProviderService sessionProviderService,
+                       NodeHierarchyCreator nodeHierarchyCreator,
+                       UploadService uploadService,
+                       SpaceService spaceService,
+                       ActivityCommonService activityService,
+                       ListenerService listenerService) {
     repositoryService_ = repositoryService;
-    nodeHierarchyCreator_= nodeHierarchyCreator;
+    nodeHierarchyCreator_ = nodeHierarchyCreator;
     sessionProviderService_ = sessionProviderService;
     spaceService_ = spaceService;
     listenerService_ = listenerService;
+    uploadService_ = uploadService;
+    activityService_ = activityService;
   }
 
-  public SessionProvider getUserSessionProvider() {
+  @SuppressWarnings("unchecked")
+  @POST
+  @Path("persist")
+  @RolesAllowed("users")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response persistFile(@Context SecurityContext securityContext,
+                              @Context HttpServletRequest httpServletRequest,
+                              @FormParam("uploadId") String uploadId,
+                              @FormParam("targetRoom") String targetRoom,
+                              @FormParam("targetFullname") String targetFullname, 
+                              @FormParam("token") String token, 
+                              @FormParam("dbName") String dbName) throws Exception {
+    String remoteUser = securityContext.getUserPrincipal().getName();
+    String room = targetRoom.replace(ChatService.TEAM_PREFIX, "").replace(ChatService.SPACE_PREFIX, "");
+    String users = targetRoom.startsWith(ChatService.TEAM_PREFIX) ? ServerBootstrap.getUsers(remoteUser, token, room, dbName) : null;
+    UploadResource uploadResource = uploadService_.getUploadResource(uploadId);
+    Node node = storeFile(uploadResource, remoteUser, targetRoom, targetFullname, users);
+
+    String workspace = node.getSession().getWorkspace().getName();
+    String repository = ((ManageableRepository) node.getSession().getRepository()).getConfiguration().getName();
+    String basePath = "/jcr/" + repository + "/" + workspace + node.getPath();
+    String publicURL = RestUtils.getBaseRestUrl() + basePath;
+    String restPath = "/" + CommonsUtils.getRestContextName() + basePath;
+    String downloadLink = "/" + CommonsUtils.getRestContextName() + basePath;
+
+    String filename = getFileName(uploadResource);
+
+    JSONObject response = new JSONObject();
+    response.put("status", "ok");
+    response.put("name", node.getName());
+    response.put("title", filename);
+    response.put("size", uploadResource.getUploadedSize());
+    response.put("owner", remoteUser);
+    response.put("uuid", node.getUUID());
+    response.put("path", node.getPath());
+    response.put("createdDate",
+                 node.getNode(NodetypeConstant.JCR_CONTENT).getProperty(NodetypeConstant.JCR_LAST_MODIFIED).getString());
+    response.put("publicUrl", publicURL);
+    response.put("restPath", restPath);
+    response.put("downloadLink", downloadLink);
+    response.put("sizeLabel", calculateFileSize((long) uploadResource.getUploadedSize()));
+
+    return Response.ok(response.toJSONString(), MediaType.APPLICATION_JSON).build();
+  }
+
+  protected Node storeFile(UploadResource uploadResource, String remoteUser, String room, String roomFullName, String users) {
+    String filename = getFileName(uploadResource);
+    String title = filename;
+    filename = Text.escapeIllegalJcrChars(filename);
+
+    boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
+
     SessionProvider sessionProvider = sessionProviderService_.getSessionProvider(null);
-    return sessionProvider;
-  }
 
-
-  protected File getNode(String id)
-  {
-
-    SessionProvider sessionProvider = getUserSessionProvider();
-    try
-    {
-      //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
-
-      Node node = getNodeById(id, session);
-
-      File file = getFileFromNode(node);
-
-      return file;
-    }
-    catch (Exception e)
-    {
-      LOG.warning("JCR::\n" + e.getMessage());
-    }
-    return null;
-  }
-
-
-  private File getFileFromNode(Node node) throws Exception {
-    File file = new File();
-    //set name
-    file.setName(node.getName());
-    if (node.hasProperty("exo:title")) {
-      file.setTitle(Text.unescapeIllegalJcrChars(node.getProperty("exo:title").getString()));
-    }
-
-    //set uuid
-    if (node.isNodeType("mix:referenceable")) file.setUuid(node.getUUID());
-    //hasMeta?
-
-    // set created date
-    Calendar date = node.getProperty("exo:dateModified").getDate();
-    file.setCreatedDate(date);
-    //set file size
-    Long size = new Long(0);
-    if (node.hasNode("jcr:content"))
-    {
-      Node contentNode = node.getNode("jcr:content");
-      size = contentNode.getProperty("jcr:data").getLength();
-    }
-    file.setSizeLabel(calculateFileSize(size));
-    file.setSize(size);
-
-    if (node.hasProperty("exo:lastModifier")) {
-      String owner = node.getProperty("exo:lastModifier").getString();
-      if ("__system".equals(owner)) owner="System";
-      file.setOwner(owner);
-    }
-
-    // set path
-    file.setPath(Text.escapePath(node.getPath()));
-    // set public url
-    HttpServletRequest request = Util.getPortalRequestContext().getRequest();
-    String baseURI = request.getScheme() + "://" + request.getServerName() + ":"
-            + String.format("%s", request.getServerPort());
-
-    String url = baseURI+ "/documents/file/" +Util.getPortalRequestContext().getRemoteUser()+"/"+file.getUuid()+"/"+Text.escape(file.getName());
-    file.setPublicUrl(url);
-
-    return file;
-  }
-
-
-  private Node getNodeById(String id, Session session) throws Exception
-  {
     Node node = null;
-    if (!id.contains("/"))
-    {
-      node = session.getNodeByUUID(id);
-    }
-    else
-    {
-      Node rootNode = session.getRootNode();
-      String path = (id.startsWith("/"))?id.substring(1):id;
-      node = rootNode.getNode(path);
-    }
-
-    return node;
-  }
-
-  protected void setPermission(String id, String targetUser)
-  {
-    if (StringUtils.isEmpty(targetUser)) {
-      LOG.warning("No target User to set permission for " + id);
-      return;
-    }
-    SessionProvider sessionProvider = getUserSessionProvider();
-    String uuid = null;
-    try
-    {
-      //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
-      ExtendedNode node = (ExtendedNode)getNodeById(id, session);
-      if(node.canAddMixin("exo:privilegeable"))  {
-        node.addMixin("exo:privilegeable");
-        String[] users = targetUser.split(",");
-        for (String user:users)
-        {
-          node.setPermission(user, new String[]{ PermissionType.READ});
-        }
-
-        node.save();
-      }
-
-
-    }
-    catch (Exception e)
-    {
-      LOG.warning(e.getMessage());
-    }
-
-  }
-
-  protected String storeFile(FileItem item, String name, boolean isPrivateContext) {
-    return storeFile(item, name, null, isPrivateContext);
-  }
-
-  protected String storeFile(FileItem item, String encodedFileName, String name, boolean isPrivateContext) {
-    String filename;
-    if (encodedFileName != null) {
-      filename = encodedFileName;
-    } else {
-      filename = item.getName();
-    }
     try {
-      filename = URLDecoder.decode(filename,"utf-8");
-    } catch (UnsupportedEncodingException e1) {
-      // Do nothing because there is nothing to process here
-    }
-    filename = Utils.cleanName(filename);
-    String filenameExt = "";
-    String filenameBase = filename;
-    if (filename.lastIndexOf(".") > -1) {
-      filenameExt = filename.substring(filename.lastIndexOf("."));
-      filenameBase = filename.substring(0, filename.lastIndexOf("."));
-    }
-
-    String title = Text.escapeIllegalJcrChars(filename);
-    String cleanedFilenameBase = cleanString(filenameBase);
-    String cleanedFilenameExt = cleanString(filenameExt);
-    String cleanedFilename = cleanedFilenameBase.concat(cleanedFilenameExt);
-
-
-
-    SessionProvider sessionProvider = getUserSessionProvider();
-    String uuid = null;
-    try
-    {
-      //get info
-      Session session = sessionProvider.getSession("collaboration", repositoryService_.getCurrentRepository());
-
       Node homeNode;
-
-      if (isPrivateContext)
-      {
-        Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, name);
+      if (isPrivateContext) {
+        Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, remoteUser);
         homeNode = userNode.getNode("Private");
-      }
-      else
-      {
-        Node rootNode = session.getRootNode();
-        homeNode = rootNode.getNode(getSpacePath(name));
+      } else {
+        ManageableRepository currentRepository = repositoryService_.getCurrentRepository();
+        String workspaceName = currentRepository.getConfiguration().getDefaultWorkspaceName();
+        Session session = sessionProvider.getSession(workspaceName, currentRepository);
+
+        Space space = spaceService_.getSpaceByDisplayName(roomFullName);
+        String groupPath = nodeHierarchyCreator_.getJcrPath(BasePath.CMS_GROUPS_PATH);
+        String spaceParentPath = groupPath + space.getGroupId();
+        if (!session.itemExists(spaceParentPath)) {
+          throw new IllegalStateException("Root node of space '" + spaceParentPath + "' doesn't exist");
+        }
+        homeNode = (Node) session.getItem(spaceParentPath);
       }
 
       Node docNode = homeNode.getNode("Documents");
-      Node fileNode = null;
-      int cpt = 1;
-      
-      boolean fileExist = false;
-      do {
-        try {
-          while (docNode.hasNode(cleanedFilename))
-          {
-            cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(cleanedFilenameExt);
-            cpt++;
-          }
-    
-          fileNode = docNode.addNode(cleanedFilename, "nt:file");
-          // Change title
-          if (!fileNode.hasProperty("exo:title")) {
-            fileNode.addMixin("exo:rss-enable");
-          }
-          fileNode.setProperty("exo:title", title);
-          Node jcrContent = fileNode.addNode("jcr:content", "nt:resource");
-          jcrContent.setProperty("jcr:data", item.getInputStream());
-          jcrContent.setProperty("jcr:lastModified", Calendar.getInstance());
-          jcrContent.setProperty("jcr:encoding", "UTF-8");
 
-          if (filename.toLowerCase().endsWith(".jpg"))
-            jcrContent.setProperty("jcr:mimeType", "image/jpeg");
-          else if (filename.toLowerCase().endsWith(".png"))
-            jcrContent.setProperty("jcr:mimeType", "image/png");
-          else if (filename.toLowerCase().endsWith(".pdf"))
-            jcrContent.setProperty("jcr:mimeType", "application/pdf");
-          else if (filename.toLowerCase().endsWith(".doc"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-word");
-          else if (filename.toLowerCase().endsWith(".xls"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-excel");
-          else if (filename.toLowerCase().endsWith(".ppt"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.ms-powerpoint");
-          else if (filename.toLowerCase().endsWith(".docx"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-          else if (filename.toLowerCase().endsWith(".xlsx"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-          else if (filename.toLowerCase().endsWith(".pptx"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-          else if (filename.toLowerCase().endsWith(".odp"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.presentation");
-          else if (filename.toLowerCase().endsWith(".odt"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.text");
-          else if (filename.toLowerCase().endsWith(".ods"))
-            jcrContent.setProperty("jcr:mimeType", "application/vnd.oasis.opendocument.spreadsheet");
-          else if (filename.toLowerCase().endsWith(".zip"))
-            jcrContent.setProperty("jcr:mimeType", "application/zip");
-          else
-            jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
-          session.save();
-          fileExist = false;
-        } catch (ItemExistsException e) {
-          fileExist = true;
-          docNode.refresh(false);
-          cpt++;
-          cleanedFilename = cleanedFilenameBase.concat("-").concat(String.valueOf(cpt)).concat(".").concat(cleanedFilenameExt);
+      node = docNode.addNode(filename, NodetypeConstant.NT_FILE);
+      node.setProperty(NodetypeConstant.EXO_TITLE, title);
+      activityService_.setCreating(node, true);
+      Node resourceNode = node.addNode(NodetypeConstant.JCR_CONTENT, NodetypeConstant.NT_RESOURCE);
+      resourceNode.setProperty(NodetypeConstant.JCR_MIMETYPE, uploadResource.getMimeType());
+      resourceNode.setProperty(NodetypeConstant.JCR_LAST_MODIFIED, Calendar.getInstance());
+      String fileDiskLocation = uploadResource.getStoreLocation();
+      InputStream inputStream = null;
+      try {
+        inputStream = new FileInputStream(fileDiskLocation);
+        resourceNode.setProperty(NodetypeConstant.JCR_DATA, inputStream);
+        docNode.save();
+
+        node = docNode.getSession().getNodeByUUID(node.getUUID());
+      } finally {
+        if (inputStream != null) {
+          inputStream.close();
         }
-      } while (fileExist);
-      uuid = fileNode.getUUID();
+      }
+      if (StringUtils.isNoneBlank(users)) {
+        String[] usernames = users.split(",");
+        if (node.canAddMixin("exo:privilegeable")) {
+          node.addMixin("exo:privilegeable");
+        }
+        for (String user : usernames) {
+          ((NodeImpl) node).setPermission(user, new String[] { PermissionType.READ });
+        }
+        node.save();
+      }
+      activityService_.setCreating(node, false);
 
       // Broadcast an activity when uploading file in a space conversation
       if (!isPrivateContext) {
-        listenerService_.broadcast(FILE_CREATED_ACTIVITY, null, fileNode);
+        listenerService_.broadcast(FILE_CREATED_ACTIVITY, null, node);
       }
 
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       LOG.warning("JCR::" + e.getMessage());
     }
-
-    return uuid;
+    return node;
   }
 
-  private String getSpacePath(String spaceDisplayname)
-  {
-    Space spacet = spaceService_.getSpaceByDisplayName(spaceDisplayname);
-
-    if (spacet == null) {
-      LOG.warning("Cannot get the space of " + spaceDisplayname + ". Return null.");
-      return null;
+  private String getFileName(UploadResource uploadResource) {
+    String filename = uploadResource.getFileName();
+    try {
+      filename = URLDecoder.decode(filename, "UTF-8");
+    } catch (UnsupportedEncodingException e1) {
+      LOG.warning("can't decode " + filename);
     }
-
-    return "Groups".concat(spacet.getGroupId());
+    return filename;
   }
 
-  public static String calculateFileSize(long fileLengthLong) {
+  private String calculateFileSize(long fileLengthLong) {
     int fileLengthDigitCount = Long.toString(fileLengthLong).length();
     double fileSizeKB = 0.0;
     String howBig = "";
@@ -347,18 +224,7 @@ public class DocumentsData {
     return finalResult + " " + howBig;
   }
 
-  private static String cleanString(String str) {
-    Transliterator accentsconverter = Transliterator.getInstance("Latin; NFD; [:Nonspacing Mark:] Remove; NFC;");
-    if (str.indexOf('.') > 0) {
-      String ext = str.substring(str.lastIndexOf('.'));
-      str = accentsconverter.transliterate(str.substring(0, str.lastIndexOf('.'))).concat(ext);
-    } else {
-      str = accentsconverter.transliterate(str);
-    }
-    return Text.escapeIllegalJcrChars(str);
-  }
-
-  private static String roundTwoDecimals(double d) {
+  private String roundTwoDecimals(double d) {
     DecimalFormat twoDForm = new DecimalFormat("#.##");
     return twoDForm.format(d);
   }

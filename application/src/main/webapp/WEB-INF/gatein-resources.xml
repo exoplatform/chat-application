@@ -41,9 +41,22 @@
                 <module>iphoneStyleCheckbox</module>
             </depends>
             <depends>
+                <module>filedrop</module>
+            </depends>
+            <depends>
                 <module>CalDateTimePicker</module>
             </depends>
         </module>
     </portlet>
+
+    <module>
+        <name>filedrop</name>
+        <script>
+            <path>/js/lib/jquery.filedrop.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+        </depends>
+    </module>
 
 </gatein-resources>

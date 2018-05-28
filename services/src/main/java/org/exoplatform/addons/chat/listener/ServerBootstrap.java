@@ -72,6 +72,10 @@ public class ServerBootstrap {
     return callServer("getStatus", "user=" + username + "&targetUser=" + targetUser + "&token=" + token + "&dbName=" + dbName);
   }
 
+  public static String getUsers(String username, String token, String room, String dbName) {
+    return callServer("users", "username=" + username + "&dbName=" + dbName + "&room=" + room + "&token=" + token);
+  }
+
   public static String getUserFullName(String username, String dbName) {
     return callServer("getUserFullName", "username=" + username + "&dbName=" + dbName);
   }

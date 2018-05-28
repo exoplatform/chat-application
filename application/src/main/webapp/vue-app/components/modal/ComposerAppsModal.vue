@@ -1,6 +1,6 @@
 <template>
   <modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
-    <form id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
+    <form v-if="appKey !== 'file'" id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
       <div v-show="error" class="alert alert-error">Error sending request. Please contact administrator.</div>
       <div v-if="sendingMessage" class="apps-composer-mask center">
         <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
@@ -42,22 +42,35 @@
         <input ref="taskAssignee" class="large" type="text" placeholder="Assignee">
         <input ref="taskDueDate" :format="dateFormat" placeholder="Due Date" class="large" type="text" pattern="\d{2}/\d{2}/\d{4}" readonly @focus="initDatePicker($event)">
       </div>
-      <div v-else-if="appKey == 'file'" id="dropzone-container" class="chat-file-upload">
-        <div class="progressBar">
-          <div class="progress">
-            <div class="bar" style="width: 0.0%;"></div>
-            <div class="label">
-              <div class="label-inner">Déposez votre fichier ici</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="uiAction uiActionBorder">
         <button type="submit" class="btn btn-primary" @click="saveAppModal()">Enregistrer</button>
         <div class="btn" @click="closeModal">Annuler</div>
       </div>
     </form>
+    <div v-else id="dropzone-container" class="chat-file-upload">
+      <div class="progressBar">
+        <div class="progress">
+          <div class="bar" style="width: 0.0%;"></div>
+          <div class="label">
+            <div class="label-inner">Déposez votre fichier ici</div>
+          </div>
+        </div>
+      </div>
+      <form id="chat-file-form" action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+        <input id="chat-file-room" type="hidden" name="room" value="---" />
+        <input id="chat-file-target-user" type="hidden" name="targetUser" value="---" />
+        <input id="chat-file-target-fullname" type="hidden" name="targetFullname" value="---" />
+        <input id="chat-encoded-file-name" type="hidden" name="encodedFileName" value="---" />
+        <div v-show="!isUploading" class="uiActionBorder">
+          <a href="#" class="btn btn-primary chat-file-upload" type="button">
+            <span>&{exoplatform.chat.file.manually}</span>
+            <input id="chat-file-file" type="file" name="userfile" />
+          </a>
+          <a href="#" type="button" class="btn btnClosePopup" @click="closeModal">Cancel</a>
+          <input id="chat-file-submit" type="submit" value="Select file" style="display:none" />
+        </div>
+      </form>
+    </div>
   </modal>
 </template>
 
@@ -70,6 +83,10 @@ const QUESTION_MESSAGE = 'type-question';
 const LINK_MESSAGE = 'type-link';
 const EVENT_MESSAGE = 'type-event';
 const TASK_MESSAGE = 'type-task';
+
+const MAX_UPLOAD_SIZE_MB = 10;
+const MAX_FILES = 1;
+const UPLOAD_URI = '/portal/upload';
 
 export default {
   components: {
@@ -104,6 +121,7 @@ export default {
       linkText: '',
       error: false,
       sendingMessage: false,
+      isUploading: false,
       dayHourOptions: [
         { 
           text: 'All Day', 
@@ -362,7 +380,100 @@ export default {
       return eventForm;
     },
     initUpload() {
+      const MAX_RANDOM_NUMBER = 100000;
+      const uploadId = Math.round(Math.random() * MAX_RANDOM_NUMBER);
+      const $dropzoneContainer = $('#dropzone-container');
+      const thiss = this;
 
+      $('#dropzone-container').filedrop({
+        fallback_id: 'chat-file-file',  // an identifier of a standard file input element
+        url: `${UPLOAD_URI}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
+        paramname: 'userfile',          // POST parameter name used on serverside to reference file
+        error: function (err) {
+          switch (err) {
+          case 'BrowserNotSupported':
+            this.error = 'Drag & Drop is not supported by your browser';
+            break;
+          case 'TooManyFiles':
+            this.error = 'Only one file is allowed';
+            break;
+          case 'FileTooLarge':
+            this.error = 'File exceeded max upload size';
+            break;
+          case 'FileTypeNotAllowed':
+            this.error = 'File type is not supported';
+            break;
+          }
+          this.isUploading = false;
+        },
+        allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+        maxfiles: MAX_FILES,
+        maxfilesize: MAX_UPLOAD_SIZE_MB,    // max file size in MBs
+        uploadStarted: function () {
+          this.isUploading = true;
+        },
+        progressUpdated: function (i, file, progress) {
+          $dropzoneContainer.find('.bar').width(`${progress}%`);
+          $dropzoneContainer.find('.bar').html(`${progress}%`);
+        },
+        uploadFinished: function () {
+          fetch(UPLOAD_URI, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            method: 'post',
+            credentials: 'include',
+            body: $.param({
+              uploadId: uploadId,
+              action: 'progress'
+            })
+          }).then(resp =>  resp.text()).then(data => {
+            data = data.replace(' upload :', ' "upload" :');
+            data = JSON.parse(data);
+            const UPLOAD_PERCENT_COMPLETE = 100;
+            data = data && data.upload && data.upload[uploadId] ? data.upload[uploadId] : null;
+            if (!data || !data.percent || data.percent !== UPLOAD_PERCENT_COMPLETE && data.percent !== '100') {
+              this.error = 'Error occurred while uploading file';
+              return;
+            }
+            fetch('/portal/rest/chat/api/1.0/file/persist',{
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+              },
+              method: 'post',
+              credentials: 'include',
+              body: $.param({
+                uploadId: uploadId,
+                dbName: eXo.chat.userSettings.dbName,
+                token: eXo.chat.userSettings.token,
+                targetRoom: thiss.contact.user,
+                targetFullname: thiss.contact.fullName
+              })
+            }).then(resp =>  {
+              if(!resp.ok) {
+                thiss.error = 'Error while persisting file';
+                return;
+              }
+              return resp.json();
+            }).then(options => {
+              if(!options) {
+                return;
+              }
+              options.type = 'type-file';
+              const message = {
+                msg: options.name,
+                isSystem: true,
+                room : thiss.contact.room,
+                clientId: new Date().getTime().toString(),
+                user: eXo.chat.userSettings.username,
+                options : options
+              };
+              document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+              thiss.closeModal();
+            });
+          });
+        }
+      });
     }
   }
 };
