@@ -2,9 +2,7 @@ export default function(msg, highlight) {
   if(!msg || !msg.trim().length) {
     return msg;
   }
-  
   let message = '';
-
   const words = msg.split(' ');
   
   words.forEach(w => {
@@ -12,8 +10,8 @@ export default function(msg, highlight) {
       // check link
       if (w.indexOf('http:') === 0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
         w = `<a href="${w}" target='_blank'>${w}</a>`;
-      } else if (w === highlight) {
-        w = `<span class="search-highlight">${w}</span>`;
+      } else if (highlight !== '' && w.indexOf(highlight) >= 0) {
+        w = w.replace(highlight, `<span class="search-highlight">${highlight}</span>`);
       } else {
         // check emoticons
         const wordCaseSensitive = w.replace(/\.|\?|!/, '');
@@ -34,7 +32,6 @@ export default function(msg, highlight) {
 
   return message;
 }
-
 
 const EMOTICONS = [
   {
@@ -78,7 +75,6 @@ const EMOTICONS = [
     class: 'emoticon-cool'
   }
 ];
-
 const QUOTE_START = '[quote=';
 const QUOTE_END = '[/quote]';
 
