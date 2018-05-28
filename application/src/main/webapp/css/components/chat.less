@@ -5,6 +5,30 @@
 
 /* PLF */
 
+#chatApplicationContainer {
+  .favorite {
+    cursor: pointer;
+    &:before {
+      content: "\e97f";
+      color: #FAD86E;
+      visibility: hidden;
+    }
+    &.is-fav:before {
+      content: "\e97d";
+      visibility: visible;
+    }
+    &:hover:before {
+      visibility: visible;
+    }
+  }
+  .dropdown-menu {
+    min-width: 120px;
+  }
+  .dropdown-toggle {
+    cursor: pointer;
+  }
+}
+
 .modal-mask {
   .flex-center;
   justify-content: center;
@@ -15,22 +39,6 @@
     width: 600px;
     position: relative;
   } 
-}
-
-.favorite {
-  cursor: pointer;
-  &:before {
-    content: "\e97f";
-    color: #FAD86E;
-    visibility: hidden;
-  }
-  &.is-fav:before {
-    content: "\e97d";
-    visibility: visible;
-  }
-  &:hover:before {
-    visibility: visible;
-  }
 }
 
 #chatPreferences .chatPreferences {
@@ -51,6 +59,8 @@
     color: #fff;
   }
 }
+
+
 
 .uiLeftContainerArea .uiIconArrowDownMini:before {
   color: #fff;
