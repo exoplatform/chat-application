@@ -16,11 +16,11 @@ export default function(msg, highlight) {
         w = `<span class="search-highlight">${w}</span>`;
       } else {
         // check emoticons
-        const wordSpited = w.split(/\s|\.|\?|!|$/).join('');
-        const wordLowercase = wordSpited.toLowerCase();
-        const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordLowercase) >= 0);
+        const wordCaseSensitive = w.replace(/\.|\?|!/, '');
+        const wordCaseInsensitive = wordCaseSensitive.toLowerCase();
+        const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
         if(emoticon) {
-          w = w.replace(wordSpited, `<span class="chat-emoticon ${emoticon.class}"></span>`);
+          w = w.replace(wordCaseSensitive, `<span class="chat-emoticon ${emoticon.class}"></span>`);
         } 
       }
       message += `${w} `;
