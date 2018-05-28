@@ -46,6 +46,15 @@
             <depends>
                 <module>CalDateTimePicker</module>
             </depends>
+            <depends>
+                <module>fetchPolyfill</module>
+            </depends>
+            <depends>
+                <module>customEventPolyfill</module>
+            </depends>
+            <depends>
+                <module>iePolyfills</module>
+            </depends>
         </module>
     </portlet>
 
@@ -56,6 +65,37 @@
         </script>
         <depends>
             <module>jquery</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>customEventPolyfill</name>
+        <script>
+            <path>/js/lib/custom-event-polyfill.js</path>
+        </script>
+    </module>
+
+    <module>
+        <name>iePolyfills</name>
+        <script>
+            <path>/js/lib/ie-polyfills.js</path>
+        </script>
+    </module>
+
+    <module>
+        <name>promisePolyfill</name>
+        <script>
+            <path>/js/lib/promise.min.js</path>
+        </script>
+    </module>
+
+    <module>
+        <name>fetchPolyfill</name>
+        <script>
+            <path>/js/lib/fetch.js</path>
+        </script>
+        <depends>
+            <module>promisePolyfill</module>
         </depends>
     </module>
 
