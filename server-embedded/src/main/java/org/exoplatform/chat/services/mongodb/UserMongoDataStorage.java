@@ -47,6 +47,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   public static final String M_USERS_COLLECTION = "users";
   public static final String M_ROOMS_COLLECTION = "rooms";
 
+  public static final String DEFAULT_ENABLED_CHANNELS  = "[ \"desktop\" , \"on-site\" , \"bip\"]";
+
   private DB db(String dbName)
   {
     if (StringUtils.isEmpty(dbName)) {
@@ -291,6 +293,9 @@ public class UserMongoDataStorage implements UserDataStorage {
 
       if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION)!=null){
         settings.setEnabledChannels(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION).toString());
+      } else {
+        //default values to the untouched settings
+        settings.setEnabledChannels(DEFAULT_ENABLED_CHANNELS);
       }
       if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER)!=null){
         settings.setEnabledTriggers(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER).toString());

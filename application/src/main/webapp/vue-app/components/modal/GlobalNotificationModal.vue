@@ -65,13 +65,13 @@ export default {
   data() {
     return {
       chatPreferences: {
-        notifyDonotdistrub: true,
+        notifyDonotdistrub: false,
         notifyDesktop: true,
         notifyOnSite: true,
         notifyBip: true
       },
       originalChatPreferences: {
-        notifyDonotdistrub: true,
+        notifyDonotdistrub: false,
         notifyDesktop: true,
         notifyOnSite: true,
         notifyBip: true

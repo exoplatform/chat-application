@@ -3,7 +3,7 @@ import * as chatWebStorage from './chatWebStorage';
 import * as desktopNotification from './desktopNotification';
 
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
-const DEFAULT_USER_LIMIT = 10;
+const DEFAULT_USER_LIMIT = 20;
 
 const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
