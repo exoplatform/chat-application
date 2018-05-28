@@ -1,5 +1,5 @@
 <template>
-  <div :id="message.clientId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
+  <div :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
       <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
@@ -48,11 +48,11 @@
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
         <span class="message-file-size">{{ message.options.sizeLabel }}</span>
-        <div class="attachmentContainer">
+        <div v-show="message.options.thumbnailURL" :id="`${messageId}-attachmentContainer`" class="attachmentContainer">
           <div class="attachmentContentImage">
             <div class="imageAttachmentBox">
               <a class="imgAttach">
-                <img :src="message.options.restPath" :alt="message.options.title">
+                <img :src="message.options.thumbnailURL" :alt="message.options.title" @error="deleteThumbnail">
               </a>
               <div class="actionAttachImg">
                 <p>
@@ -242,6 +242,9 @@ export default {
         );
       }
     },
+    messageId() {
+      return this.message.clientId ? this.message.clientId : this.message.msgId;
+    },
     dateString() {
       return chatTime.getTimeString(this.message.timestamp);
     },
@@ -297,6 +300,9 @@ export default {
     );
   },
   methods: {
+    deleteThumbnail() {
+      $(`#${this.messageId} .attachmentContainer`).remove();
+    },
     executeAction(actionName) {
       document.dispatchEvent(
         new CustomEvent(`exo-chat-message-acton-${actionName}`, {

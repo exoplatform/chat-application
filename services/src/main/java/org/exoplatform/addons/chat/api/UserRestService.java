@@ -16,9 +16,8 @@ import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
+import org.exoplatform.chat.service.DocumentService;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -37,6 +36,24 @@ public class UserRestService implements ResourceContainer {
 
   /* The Constant IF_MODIFIED_SINCE_DATE_FORMAT */
   protected static final String IF_MODIFIED_SINCE_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+
+  private DocumentService       documentService;
+
+  private OrganizationService   organizationService;
+
+  private ContinuationService   continuationService;
+
+  private UserStateService      userStateService;
+
+  public UserRestService(UserStateService userStateService,
+                         ContinuationService continuationService,
+                         OrganizationService organizationService,
+                         DocumentService documentService) {
+    this.documentService = documentService;
+    this.organizationService = organizationService;
+    this.continuationService = continuationService;
+    this.userStateService = userStateService;
+  }
 
   @SuppressWarnings("unchecked")
   @GET
@@ -96,9 +113,7 @@ public class UserRestService implements ResourceContainer {
       token = MessageDigester.getHash(in);
       ;
     } else {
-      ContinuationService continuation = ExoContainerContext.getCurrentContainer()
-                                                            .getComponentInstanceOfType(ContinuationService.class);
-      token = continuation.getUserToken(userId);
+      token = continuationService.getUserToken(userId);
     }
 
     return Response.ok(token, MediaType.TEXT_PLAIN).build();
@@ -111,14 +126,12 @@ public class UserRestService implements ResourceContainer {
   public Response getOnlineStatus(@Context HttpServletRequest request, @QueryParam("users") String users) throws Exception {
     init(request);
 
-    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
-
     if (users != null) {
       String[] split = users.split(",");
 
       JSONObject data = new JSONObject();
       for (String u : split) {
-        data.put(u, userState.isOnline(u));
+        data.put(u, userStateService.isOnline(u));
       }
       return Response.ok(data.toString(), MediaType.APPLICATION_JSON).build();
     } else {
@@ -132,8 +145,7 @@ public class UserRestService implements ResourceContainer {
   public Response getOnlineUsers(@Context HttpServletRequest request) throws Exception {
     init(request);
 
-    UserStateService userState = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
-    List<String> list = userState.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
+    List<String> list = userStateService.online().stream().map(u -> u.getUserId()).collect(Collectors.toList());
     String users = String.join(",", list);
 
     return Response.ok(users, MediaType.TEXT_PLAIN).build();
@@ -159,7 +171,7 @@ public class UserRestService implements ResourceContainer {
 
       if (StringUtils.isBlank(userFullName)) {
         // Set user's Full Name in the DB
-        User user = CommonsUtils.getService(OrganizationService.class).getUserHandler().findUserByName(currentUsername);
+        User user = organizationService.getUserHandler().findUserByName(currentUsername);
         if (user != null) {
           userFullName = user.getDisplayName();
           ServerBootstrap.addUserFullNameAndEmail(currentUsername, userFullName, user.getEmail(), dbName);
@@ -169,12 +181,9 @@ public class UserRestService implements ResourceContainer {
       ServerBootstrap.saveSpaces(currentUsername, dbName);
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
     }
-    UserStateService userStateService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserStateService.class);
     boolean online = userStateService.isOnline(currentUsername);
 
-    ContinuationService continuation = ExoContainerContext.getCurrentContainer()
-                                                          .getComponentInstanceOfType(ContinuationService.class);
-    String cometdToken = continuation.getUserToken(currentUsername);
+    String cometdToken = continuationService.getUserToken(currentUsername);
 
     String isStandaloneString = PropertyManager.getProperty("standaloneChatServer");
     boolean isStandalone = isStandaloneString != null && Boolean.valueOf(isStandaloneString);
@@ -202,6 +211,7 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("chatPage", chatPage);
     userSettings.put("offilineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
+    userSettings.put("maxUploadSize", documentService.getUploadLimitInMB());
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }

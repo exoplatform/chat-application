@@ -1,7 +1,7 @@
 <template>
   <modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
+    <div v-show="errorCode" class="alert alert-error">{{ errorMessage() }}</div>
     <form v-if="appKey !== 'file'" id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
-      <div v-show="error" class="alert alert-error">Error sending request. Please contact administrator.</div>
       <div v-if="sendingMessage" class="apps-composer-mask center">
         <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
       </div>
@@ -61,9 +61,9 @@
         <input id="chat-file-target-user" type="hidden" name="targetUser" value="---" />
         <input id="chat-file-target-fullname" type="hidden" name="targetFullname" value="---" />
         <input id="chat-encoded-file-name" type="hidden" name="encodedFileName" value="---" />
-        <div v-show="!isUploading" class="uiActionBorder">
+        <div v-show="showButtons" class="uiActionBorder">
           <a href="#" class="btn btn-primary chat-file-upload" type="button">
-            <span>&{exoplatform.chat.file.manually}</span>
+            <span>Select file</span>
             <input id="chat-file-file" type="file" name="userfile" />
           </a>
           <a href="#" type="button" class="btn btnClosePopup" @click="closeModal">Cancel</a>
@@ -84,7 +84,6 @@ const LINK_MESSAGE = 'type-link';
 const EVENT_MESSAGE = 'type-event';
 const TASK_MESSAGE = 'type-task';
 
-const MAX_UPLOAD_SIZE_MB = 10;
 const MAX_FILES = 1;
 const UPLOAD_URI = '/portal/upload';
 
@@ -119,9 +118,9 @@ export default {
       raiseHandComment: '',
       questionText: '',
       linkText: '',
-      error: false,
+      errorCode: false,
       sendingMessage: false,
-      isUploading: false,
+      showButtons: true,
       dayHourOptions: [
         { 
           text: 'All Day', 
@@ -210,7 +209,7 @@ export default {
             this.closeModal();
             this.sendingMessage = false;
           }).catch(() => {
-            this.error = true;
+            this.errorCode = 'ErrorSaveEvent';
             this.sendingMessage = false;
           });
         }
@@ -231,7 +230,7 @@ export default {
         };
         chatServices.saveTask(eXo.chat.userSettings, data).then((response) => {
           if (!response.ok) {
-            this.error = true;
+            this.errorCode = 'ErrorSaveTask';
             this.sendingMessage = false;
             return;
           }
@@ -248,7 +247,7 @@ export default {
           this.closeModal();
           this.sendingMessage = false;
         }).catch(() => {
-          this.error = true;
+          this.errorCode = 'NetworkError';
           this.sendingMessage = false;
         });
       }break;
@@ -353,11 +352,12 @@ export default {
       if (h < TEN) {hh = `0${h}`;}
       this.eventTimeTo = `${hh}:${time.split(':')[1]}`;
     },
-    getEventFormValue() {
-      if (this.eventName === '' || this.$refs.eventDateFrom.value === '' || this.$refs.eventDateTo.value === '') {
-        // TODO show error message per field (in generic way)
-        return null;
+    errorMessage() {
+      if(this.errorCode) {
+        return `Error with code ${this.errorCode}`;
       }
+    },
+    getEventFormValue() {
       const eventForm = {
         summary: this.eventName,
         startDate: this.$refs.eventDateFrom.value,
@@ -391,26 +391,31 @@ export default {
         paramname: 'userfile',          // POST parameter name used on serverside to reference file
         error: function (err) {
           switch (err) {
+          case 'ErrorBrowserNotSupported':
           case 'BrowserNotSupported':
-            this.error = 'Drag & Drop is not supported by your browser';
+            thiss.errorCode = 'BrowserNotSupported';
             break;
+          case 'ErrorTooManyFiles':
           case 'TooManyFiles':
-            this.error = 'Only one file is allowed';
+            thiss.errorCode = 'TooManyFiles';
             break;
+          case 'ErrorFileTooLarge':
           case 'FileTooLarge':
-            this.error = 'File exceeded max upload size';
+            thiss.errorCode = 'FileTooLarge';
             break;
+          case 'ErrorFileTypeNotAllowed':
           case 'FileTypeNotAllowed':
-            this.error = 'File type is not supported';
+            thiss.errorCode = 'FileTypeNotAllowed';
             break;
           }
-          this.isUploading = false;
+          thiss.showButtons = true;
         },
         allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
         maxfiles: MAX_FILES,
-        maxfilesize: MAX_UPLOAD_SIZE_MB,    // max file size in MBs
-        uploadStarted: function () {
-          this.isUploading = true;
+        maxfilesize: eXo.chat.userSettings.maxUploadSize,    // max file size in MBs
+        uploadStarted: function(){
+          this.errorCode = false;
+          thiss.showButtons = false;
         },
         progressUpdated: function (i, file, progress) {
           $dropzoneContainer.find('.bar').width(`${progress}%`);
@@ -433,7 +438,7 @@ export default {
             const UPLOAD_PERCENT_COMPLETE = 100;
             data = data && data.upload && data.upload[uploadId] ? data.upload[uploadId] : null;
             if (!data || !data.percent || data.percent !== UPLOAD_PERCENT_COMPLETE && data.percent !== '100') {
-              this.error = 'Error occurred while uploading file';
+              this.errorCode = 'ErrorFileUploadNotComplete';
               return;
             }
             fetch('/portal/rest/chat/api/1.0/file/persist',{
@@ -451,7 +456,7 @@ export default {
               })
             }).then(resp =>  {
               if(!resp.ok) {
-                thiss.error = 'Error while persisting file';
+                thiss.errorCode = 'ErrorPersistFile';
                 return;
               }
               return resp.json();
