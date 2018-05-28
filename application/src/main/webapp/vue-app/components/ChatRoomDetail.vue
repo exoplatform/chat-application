@@ -14,7 +14,7 @@
         </div>
         <dropdown-select v-if="displayMenu" class="room-settings-dropdown" position="right">
           <i slot="toggle" class="uiIconVerticalDots"></i>
-          <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction.key)">
+          <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>
               {{ $t(settingAction.labelKey) }}
@@ -24,6 +24,19 @@
       </div>
     </div>
     <room-notification-modal :room="contact.room" :room-name="contact.fullName" :show="openNotificationSettings" @modal-closed="closeNotificationSettingsModal"></room-notification-modal>
+    <modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
+      <div class="modal-body">
+        <p>
+          <span id="team-delete-window-chat-name" class="confirmationIcon">
+            {{ $t(confirmMessage, {0: contact.fullName}) }}
+          </span>
+        </p>
+      </div>
+      <div class="uiAction uiActionBorder">
+        <a id="team-delete-button-ok" href="#" class="btn btn-primary" @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
+        <a id="team-delete-button-cancel" href="#" class="btn" @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -31,6 +44,7 @@
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import RoomNotificationModal from './modal/RoomNotificationModal.vue';
+import Modal from './modal/Modal.vue';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 
@@ -65,6 +79,15 @@ const DEFAULT_ROOM_ACTIONS = [{
   labelKey: 'exoplatform.chat.team.delete',
   type: 't',
   class: 'uiIconDelete',
+  confirm: {
+    title: 'exoplatform.chat.team.delete.title',
+    message: 'exoplatform.chat.team.delete.message',
+    okMessage: 'exoplatform.chat.team.delete.ok',
+    koMessage: 'exoplatform.chat.team.delete.ko',
+    confirmed(contact) {
+      document.dispatchEvent(new CustomEvent('exo-chat-setting-deleteRoom', {'detail': contact}));
+    }
+  },
   enabled: (comp) => {
     return comp.isAdmin;
   }
@@ -82,7 +105,8 @@ export default {
   components: {
     'chat-contact': ChatContact,
     'dropdown-select': DropdownSelect,
-    'room-notification-modal': RoomNotificationModal
+    'room-notification-modal': RoomNotificationModal,
+    'modal': Modal
   },
   props: {
     contact: {
@@ -97,7 +121,13 @@ export default {
       showSearchRoom: false,
       searchText: '',
       meetingStarted: false,
-      openNotificationSettings: false
+      openNotificationSettings: false,
+      showConfirmModal: false,
+      confirmTitle: '',
+      confirmMessage: '',
+      confirmOKMessage: '',
+      confirmKOMessage: '',
+      confirmAction(){return;}
     };
   },
   computed: {
@@ -158,8 +188,17 @@ export default {
     closeNotificationSettingsModal() {
       this.openNotificationSettings = false;
     },
-    executeAction(actionName) {
-      document.dispatchEvent(new CustomEvent(`exo-chat-setting-${actionName}`, {'detail': this.contact}));
+    executeAction(settingAction) {
+      if(settingAction.confirm) {
+        this.confirmTitle = settingAction.confirm.title;
+        this.confirmMessage = settingAction.confirm.message;
+        this.confirmOKMessage = settingAction.confirm.okMessage;
+        this.confirmKOMessage = settingAction.confirm.koMessage;
+        this.confirmAction = settingAction.confirm.confirmed;
+        this.showConfirmModal = true;
+      } else {
+        document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}`, {'detail': this.contact}));
+      }
     },
     startMeeting() {
       const room = this.contact.room;
