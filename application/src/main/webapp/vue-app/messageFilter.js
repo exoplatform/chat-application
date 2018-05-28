@@ -59,7 +59,7 @@ const EMOTICONS = [
   },
   { 
     keys: [':-p', ':p'],
-    class: 'emoticon-smile-tong'
+    class: 'emoticon-smile-tongue'
   },
   { 
     keys: [':-d', ':d'],
@@ -72,6 +72,10 @@ const EMOTICONS = [
   { 
     keys: ['(n)', '(no)'],
     class: 'emoticon-raise-down'
+  },
+  { 
+    keys: ['(cool)'],
+    class: 'emoticon-cool'
   }
 ];
 
