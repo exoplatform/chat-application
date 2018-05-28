@@ -59,16 +59,19 @@
     > input {
       width: auto;
     }
-    .room-suggest-list {
-      height: 30px;
-      max-height: 100px;
-      border: @bigBorder;
-      border-top: none;
-      padding: 12px 10px;
-      margin-top: -8px;
-      .uiMention {
-        margin: 0 15px 15px 0;
-      }
+  }
+
+  .room-suggest-list {
+    min-height: 40px;
+    max-height: 115px;
+    border: @bigBorder;
+    border-top: none;
+    border-radius: 5px;
+    padding: 12px 10px;
+    margin-top: -20px;
+    overflow-y: auto;
+    .uiMention {
+      margin: 10px 10px 0 0;
     }
   }
 }
