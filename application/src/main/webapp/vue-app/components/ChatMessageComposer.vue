@@ -134,6 +134,7 @@ export default {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
     $.initCursor(this.$refs.messageComposerArea);
+    $(this.$refs.messageComposerArea).focus();
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
@@ -201,8 +202,8 @@ export default {
       messageToSend = messageToSend.replace(/<br\/>/g, '\n');
       messageToSend = $('<div />').html(messageToSend).text();
       messageToSend = `[quote=${quotedMessage.fullname}] ${messageToSend} [/quote]`;
-      $('#messageComposerArea').insertAtCursor(messageToSend);
-      $('#messageComposerArea').focus();
+      $(this.$refs.messageComposerArea).insertAtCursor(messageToSend);
+      $(this.$refs.messageComposerArea).focus();
     },
     openAppModal(app) {
       this.appsClosed = true;

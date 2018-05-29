@@ -109,7 +109,7 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <dropdown-select v-if="!message.isDeleted && messageActions && messageActions.length" class="message-actions" position="right">
+      <dropdown-select v-if="displayActions" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots"></i>
         <li slot="menu">
           <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction.key)">
@@ -246,6 +246,9 @@ export default {
         );
       }
     },
+    displayActions() {
+      return !this.message.isDeleted && this.messageActions && this.messageActions.length;
+    },
     messageId() {
       return this.message.clientId ? this.message.clientId : this.message.msgId;
     },
@@ -334,6 +337,8 @@ export default {
       ) {
         return;
       }
+      this.message.isDeleted = true;
+      this.message.isSystem = true;
       document.dispatchEvent(
         new CustomEvent('exo-chat-message-todelete', {
           detail: { room: this.room, msgId: this.message.msgId }
