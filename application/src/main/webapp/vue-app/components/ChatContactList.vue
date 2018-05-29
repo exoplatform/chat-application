@@ -15,7 +15,7 @@
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ label }}</a></li>
       </dropdown-select>
-      <div class="add-room-action" @click="openCreateRoomModal">
+      <div v-exo-tooltip="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
         <i class="uiIconSimplePlus"></i>
       </div>
     </div>

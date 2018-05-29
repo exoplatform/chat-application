@@ -5,6 +5,16 @@ import './../css/main.less';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
 
+Vue.directive('exo-tooltip', function (el, binding) {
+  const element = $(el);
+  const placement = Object.keys(binding.modifiers)[0];
+  element.attr('data-original-title', binding.value);
+  if (placement) {
+    element.attr('data-placement', placement);
+  }
+  element.tooltip();
+});
+
 exoi18n.loadLanguageAsync(lang).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({
