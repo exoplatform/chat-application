@@ -14,7 +14,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
+        <div id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" contenteditable="true" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></div>
         <div class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -77,7 +77,6 @@ export default {
   },
   data() {
     return {
-      newMessage: '',
       appsModal: {
         appKey: '',
         title: '',
@@ -98,6 +97,7 @@ export default {
   created() {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
+    $.initCursor(this.$refs.messageComposerArea);
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
@@ -117,18 +117,22 @@ export default {
       }
     },
     sendMessage() {
-      if(!this.newMessage || !this.newMessage.trim()) {
+      const newMessage = this.getMessage();
+      if(!newMessage || !newMessage.trim()) {
         return;
       }
       const message = {
-        message : this.newMessage.trim(),
+        message : newMessage.trim(),
         room : this.contact.room,
         clientId: new Date().getTime().toString(),
         timestamp: Date.now(),
         user: eXo.chat.userSettings.username
       };
       this.$emit('exo-chat-message-written', message);
-      this.newMessage = '';
+      this.$refs.messageComposerArea.innerHTML = '';
+    },
+    getMessage() {
+      return this.$refs.messageComposerArea.innerText;
     },
     sendMessageWithKey(event) {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
@@ -147,10 +151,8 @@ export default {
       messageToSend = messageToSend.replace(/<br\/>/g, '\n');
       messageToSend = $('<div />').html(messageToSend).text();
       messageToSend = `[quote=${quotedMessage.fullname}] ${messageToSend} [/quote]`;
-      $('#messageComposerArea').insertAtCaret(messageToSend);
-
-      // The text insertion doesn't trigger Vue for modified field
-      this.newMessage = $('#messageComposerArea').val();
+      $('#messageComposerArea').insertAtCursor(messageToSend);
+      $('#messageComposerArea').focus();
     },
     openAppModal(app) {
       this.appsClosed = true;
@@ -159,7 +161,8 @@ export default {
       this.appsModal.isOpned = true;
     },
     editLastMessage() {
-      if (!this.newMessage || !this.newMessage.trim().length) {
+      const newMessage = this.getMessage();
+      if (!newMessage || !newMessage.trim().length) {
         document.dispatchEvent(new CustomEvent('exo-chat-message-edit-last'));
       }
     }

@@ -209,7 +209,7 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("serverURL", ServerBootstrap.getServerURL());
     userSettings.put("standalone", isStandalone);
     userSettings.put("chatPage", chatPage);
-    userSettings.put("offilineDelay", userStateService.getDelay());
+    userSettings.put("offlineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
     userSettings.put("maxUploadSize", documentService.getUploadLimitInMB());
 

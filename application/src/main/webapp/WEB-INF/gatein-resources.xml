@@ -55,6 +55,9 @@
             <depends>
                 <module>iePolyfills</module>
             </depends>
+            <depends>
+                <module>insetAtCursor</module>
+            </depends>
         </module>
     </portlet>
 
@@ -65,6 +68,18 @@
         </script>
         <depends>
             <module>jquery</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>insetAtCursor</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/lib/jquery.insert-at-cursor.min.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>jQuery</as>
         </depends>
     </module>
 

@@ -108,10 +108,10 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
-      if(this.userSettings.offilineDelay) {
+      if(this.userSettings.offlineDelay) {
         setInterval(
-          this.refreshContacts,
-          this.userSettings.offilineDelay);
+          function() {this.refreshContacts(true);},
+          this.userSettings.offlineDelay);
       }
     },
     initChatRooms(chatRoomsData) {
@@ -175,11 +175,11 @@ export default {
         });
       });
     },
-    refreshContacts() {
+    refreshContacts(keepSelectedContact) {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          if (this.selectedContact) {
+          if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room);
             if(contactToChange) {
               this.setSelectedContact(contactToChange);
