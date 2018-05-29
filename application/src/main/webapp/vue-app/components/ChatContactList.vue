@@ -15,14 +15,15 @@
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ label }}</a></li>
       </dropdown-select>
-      <div v-exo-tooltip="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
+      <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
         <i class="uiIconSimplePlus"></i>
       </div>
     </div>
     <div class="contactList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0}" class="contact-list-item isList" @click="selectContact(contact)">
+      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
+        <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
       <div v-show="isSearchingContact" class="contact-list-item isList">
@@ -173,7 +174,6 @@ export default {
     document.addEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
     document.addEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
     document.addEventListener('exo-chat-message-sent', this.messageReceived);
-    document.addEventListener('exo-chat-message-sent', this.notificationCountUpdated);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
     document.addEventListener('exo-chat-setting-editRoom', this.editRoom);
@@ -181,6 +181,7 @@ export default {
     document.addEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
     document.addEventListener('exo-chat-select-room', this.selectContact);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
     this.typeFilter = chatWebStorage.getStoredParam(TYPE_FILTER_PARAM, TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(SORT_FILTER_PARAM, SORT_FILTER_DEFAULT);
   },
@@ -198,6 +199,7 @@ export default {
     document.removeEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
     document.removeEventListener('exo-chat-select-room', this.selectContact);
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
+    document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
   },
   methods: {
     selectContact(contact) {
@@ -234,22 +236,32 @@ export default {
       this.newRoom = {};
       this.createRoomModal = true;
     },
+    messageNotSent(e) {
+      const foundContact = this.findContact(e.detail.room);
+      if (foundContact) {
+        foundContact.hasNotSentMessages = true;
+        this.$forceUpdate();
+      }
+    },
     messageReceived(event) {
       const room = event.detail.room;
-      let foundContact;
-      this.contacts.forEach(contact => {
-        if (contact.room === room) {
-          foundContact = contact;
-          contact.timestamp = event.detail.ts;
-          if (this.selected.room !== room) {
-            contact.unreadTotal ++;
-          }
+      if(!room) {
+        return;
+      }
+      const foundContact = this.findContact(room);
+      if(foundContact) {
+        foundContact.timestamp = event.detail.ts;
+        if (this.selected.room === foundContact.room) {
+          this.selected.unreadTotal = 0;
+        } else {
+          foundContact.unreadTotal ++;
         }
-      });
-
-      if(!foundContact) {
+      } else {
         chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
-          this.contacts.unshift(contact);
+          if(contact && contact.user && contact.user.length && contact.user !== 'undefined') {
+            contact.unreadTotal = 1;
+            this.contacts.unshift(contact);
+          }
         });
       }
     },
@@ -282,6 +294,7 @@ export default {
       const contactToUpdate = this.findContact(message.room);
       if(contactToUpdate) {
         contactToUpdate.unreadTotal = 0;
+        contactToUpdate.hasNotSentMessages = false;
       }
     },
     contactStatusChanged(event) {

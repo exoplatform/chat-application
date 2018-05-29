@@ -61,6 +61,7 @@ export default {
   },
   data : function() {
     return {
+      isOnline : true,
       statusMap : {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
@@ -72,14 +73,14 @@ export default {
   },
   computed: {
     statusStyle: function() {
-      if (this.status === 'invisible' && !this.isCurrentUser) {
+      if (!this.isOnline || this.status === 'invisible' && !this.isCurrentUser) {
         return 'user-offline';
       } else {
         return `user-${this.status}`;
       }
     },
     getStatus() {
-      if (this.status === 'invisible' && !this.isCurrentUser) {
+      if (!this.isOnline || this.status === 'invisible' && !this.isCurrentUser) {
         return this.statusMap.offline;
       } else {
         return this.statusMap[this.status];
@@ -95,10 +96,26 @@ export default {
       }
     }
   },
+  created() {
+    document.addEventListener('exo-chat-disconnected', this.setOffline);
+    document.addEventListener('exo-chat-connected', this.setOnline);
+    document.addEventListener('exo-chat-reconnected', this.setOnline);
+  },
+  destroyed() {
+    document.removeEventListener('exo-chat-disconnected', this.setOffline);
+    document.removeEventListener('exo-chat-connected', this.setOnline);
+    document.removeEventListener('exo-chat-reconnected', this.setOnline);
+  },
   methods: {
     setStatus(status) {
       this.$emit('exo-chat-status-changed', status);
-    }
+    },
+    setOnline() {
+      this.isOnline = true;
+    },
+    setOffline() {
+      this.isOnline = false;
+    }    
   }
 };
 </script>

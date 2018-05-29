@@ -30,7 +30,7 @@ public class RoomBean implements Comparable<RoomBean>
   String user = "";
   String fullname = "";
   String room = "";
-  int unreadTotal = -1;
+  int unreadTotal = 0;
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;

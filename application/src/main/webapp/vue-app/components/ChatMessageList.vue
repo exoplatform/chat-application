@@ -79,7 +79,7 @@ export default {
     document.addEventListener('exo-chat-message-updated', this.messageReceived);
     document.addEventListener('exo-chat-message-deleted', this.messageDeleted);
     document.addEventListener('exo-chat-message-sent', this.messageReceived);
-    document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
+    document.addEventListener('exo-chat-message-read', this.messageSent);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-message-edit-last', this.editLastMessage);
     document.addEventListener('exo-chat-message-search', this.searchMessage);
@@ -88,7 +88,7 @@ export default {
     document.removeEventListener('exo-chat-message-updated', this.messageReceived);
     document.removeEventListener('exo-chat-message-deleted', this.messageDeleted);
     document.removeEventListener('exo-chat-message-sent', this.messageReceived);
-    document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
+    document.removeEventListener('exo-chat-message-read', this.messageSent);
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.removeEventListener('exo-chat-message-edit-last', this.editLastMessage);
     document.removeEventListener('exo-chat-message-search', this.searchMessage);
@@ -112,6 +112,14 @@ export default {
       this.unifyMessageFormat(messageObj, message);
       chatWebStorage.storeMessageAsSent(message);
       this.addOrUpdateMessageToList(message);
+    },
+    messageSent(e) {
+      const messageObj = e.detail;
+      const message = messageObj.data;
+      if(message) {
+        chatWebStorage.storeMessageAsSent(message);
+        this.addOrUpdateMessageToList(message);
+      }
     },
     contactChanged(e) {
       this.messages = [];

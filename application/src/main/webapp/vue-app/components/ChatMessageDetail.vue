@@ -107,6 +107,7 @@
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
       </div>
+      <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
     </div>
     <div class="chat-message-action">
       <dropdown-select v-if="displayActions" class="message-actions" position="right">

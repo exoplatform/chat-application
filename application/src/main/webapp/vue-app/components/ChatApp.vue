@@ -1,5 +1,5 @@
 <template>
-  <div id="chatApplicationContainer">
+  <div id="chatApplicationContainer" :class="connected ? 'online' : 'offline'">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
@@ -64,6 +64,7 @@ export default {
         chatPage: null,
         wsEndpoint: null,
       },
+      connected: true,
       selectedContact: {},
       isSearchingContact: false,
       settingModal: false
@@ -77,16 +78,9 @@ export default {
         this.changeUserStatusToOffline();
       }
       // TODO Display popin for disconnection
-      // + Change user status
-      // + Change messages sent color (use of local storage)
       // + Display Session expired
     });
-    document.addEventListener('exo-chat-disconnected', () => {
-      this.changeUserStatusToOffline();
-      // TODO Display popin for disconnection
-      // + Change user status
-      // + Change messages sent color (use of local storage)
-    });
+    document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
     document.addEventListener('exo-chat-connected', this.connectionEstablished);
     document.addEventListener('exo-chat-reconnected', this.connectionEstablished);
     document.addEventListener('exo-chat-user-status-changed', (e) => {
@@ -98,6 +92,7 @@ export default {
     });
   },
   destroyed() {
+    document.removeEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
     document.removeEventListener('exo-chat-connected', this.connectionEstablished);
     document.removeEventListener('exo-chat-reconnected', this.connectionEstablished);
     document.removeEventListener('exo-chat-room-updated', this.roomUpdated);
@@ -143,6 +138,8 @@ export default {
       this.refreshContacts();
     },
     connectionEstablished() {
+      eXo.chat.isOnline = true;
+      this.connected = true;
       if (this.userSettings.originalStatus !== this.userSettings.status) {
         this.setStatus(this.userSettings.originalStatus);
       } else if (this.userSettings && this.userSettings.originalStatus) {
@@ -193,7 +190,8 @@ export default {
       if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {
         this.userSettings.originalStatus = this.userSettings.status;
       }
-      this.userSettings.status = 'offline';
+      eXo.chat.isOnline = false;
+      this.connected = false;
     },
     openSettingModal() {
       this.settingModal = true;

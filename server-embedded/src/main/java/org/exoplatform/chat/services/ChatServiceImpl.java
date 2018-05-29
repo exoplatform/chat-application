@@ -57,6 +57,7 @@ public class ChatServiceImpl implements ChatService
     write(null, message, user, room, isSystem, null, dbName);
   }
 
+  @SuppressWarnings("unchecked")
   public void write(String clientId, String message, String sender, String room, String isSystem, String options, String dbName)
   {
     if (!isMemberOfRoom(sender, room, dbName)) {
@@ -71,11 +72,12 @@ public class ChatServiceImpl implements ChatService
     String roomType = roomBean.getType();
     if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType))
     {
-      List<String> usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
-      if (usersToBeNotified == null) {
-        usersToBeNotified = Collections.singletonList(sender);
-      } else if (!usersToBeNotified.contains(sender)) {
-        usersToBeNotified.add(sender);
+      List<String> usersToBeNotified = null;
+      if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
+        usersToBeNotified = new ArrayList<>();//Collections.singletonList(sender);
+        usersToBeNotified.add(roomBean.getUser());
+      } else {
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
       }
 
       MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
@@ -92,8 +94,17 @@ public class ChatServiceImpl implements ChatService
         data.put("roomDisplayName", roomBean.getFullName());
       }
 
-      // Deliver the saved message to sender's subscribed channel itself.
+      // Deliver the saved message to sender.
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
+          RealTimeMessageBean.EventType.MESSAGE_READ,
+          room,
+          user.getName(),
+          new Date(),
+          data);
+      realTimeMessageService.sendMessage(messageBean, sender);
+
+      // Deliver the saved message to sender's subscribed channel itself.
+      messageBean = new RealTimeMessageBean(
           RealTimeMessageBean.EventType.MESSAGE_SENT,
           room,
           user.getName(),

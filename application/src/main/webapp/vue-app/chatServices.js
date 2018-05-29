@@ -23,6 +23,10 @@ export function getUserStatus(userSettings, user) {
 }
 
 export function initChatSettings(username, chatRoomsLoadedCallback, userSettingsLoadedCallback) {
+  if (!eXo) { eXo = {}; }
+  if (!eXo.chat) { eXo.chat = {}; }
+  if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
+
   document.addEventListener('exo-chat-settings-loaded', (e) => {
     const settings = e.detail;
     getOnlineUsers().then(users => { // Fetch online users
@@ -59,8 +63,6 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
   });
 
   getUserSettings(username).then(userSettings => {
-    if (!eXo) { eXo = {}; }
-    if (!eXo.chat) { eXo.chat = {}; }
     eXo.chat.userSettings = userSettings;
     eXo.chat.userSettings.chatPage = getBaseURL() + eXo.chat.userSettings.chatPage;
     userSettingsLoadedCallback(userSettings);
@@ -121,8 +123,8 @@ export function getRoomId(userSettings, targetUser) {
     }}).then(resp =>  resp.text());
 }
 
-export function getRoomDetail(userSettings, contact) {
-  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${contact.user}&user=${userSettings.username}&dbName=${userSettings.dbName}&withDetail=true`, {
+export function getRoomDetail(userSettings, room) {
+  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${room}&user=${userSettings.username}&dbName=${userSettings.dbName}&withDetail=true&type=room-id`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());

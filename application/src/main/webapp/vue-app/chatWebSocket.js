@@ -36,12 +36,13 @@ export function initChatConnectionListener() {
   cometDSettings.connected = false;
   cometDSettings.cCometD.addListener('/meta/connect', function (message) {
     if (cometDSettings.cCometD.isDisconnected()) {
+      eXo.chat.isOnline = false;
       cometDSettings.connected = false;
       return;
     }
 
     const wasConnected = cometDSettings.connected;
-    cometDSettings.connected = message.successful === true;
+    eXo.chat.isOnline = cometDSettings.connected = message.successful === true;
     if(cometDSettings.connected) {
       if (wasConnected) {
         document.dispatchEvent(new CustomEvent('exo-chat-reconnected'));
@@ -49,6 +50,11 @@ export function initChatConnectionListener() {
         document.dispatchEvent(new CustomEvent('exo-chat-connected'));
       }
     } else  if(wasConnected) {
+      document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
+    }
+  });
+  cometDSettings.cCometD.addListener('/meta/disconnect', function(message) {
+    if (message.successful) {
       document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
     }
   });
@@ -75,14 +81,17 @@ export function initChatCometdHandshake() {
 }
 
 export function initChatCometd() {
-  setTimeout(() => 
-    cometDSettings.cCometD.subscribe('/service/chat', null, function (event) {
-      let message = event.data;
-      if (typeof message !== 'object') {
-        message = JSON.parse(message);
-      }
-      document.dispatchEvent(new CustomEvent(`exo-chat-${message.event}`, {'detail' : message}));
-    }), DEFAULT_TIME_TO_SUBSCRIBE);
+  setTimeout(() => {
+    if(!cometDSettings.chatSubscription) {
+      cometDSettings.chatSubscription = cometDSettings.cCometD.subscribe('/service/chat', null, function (event) {
+        let message = event.data;
+        if (typeof message !== 'object') {
+          message = JSON.parse(message);
+        }
+        document.dispatchEvent(new CustomEvent(`exo-chat-${message.event}`, {'detail' : message}));
+      });
+    }
+  }, DEFAULT_TIME_TO_SUBSCRIBE);
 }
 
 export function setStatus(status, callback) {
@@ -151,6 +160,7 @@ export function sendMessage(messageObj, callback) {
 
   if (!isConnected()) {
     document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
+    document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
     return;
   }
 

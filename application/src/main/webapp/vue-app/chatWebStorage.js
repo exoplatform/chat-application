@@ -5,6 +5,8 @@ const STORED_NOT_SENT_MESSAGES = 'roomNotSentMessages';
 const NB_MILLISECONDS_PERD_SECOND = 1000;
 const DEFAULT_EXPIRATION_PERIOD = 300;
 
+const MAX_RESEND_MESSAGE_ATTEMPT = 2;
+
 export function getStoredParam(key, defaultValue) {
   let ts  = localStorage.getItem(`${key}TS`);
   const val = localStorage.getItem(key);
@@ -31,48 +33,62 @@ export function setStoredParam(key, value, expire) {
 }
 
 export function getRoomNotSentMessages(username, room) {
-  const notSentMessages = getStoredParam(`${STORED_NOT_SENT_MESSAGES}-${username}`);
-  if(notSentMessages) {
-    return JSON.parse(notSentMessages).filter(message => message.room === room);
-  } else {
-    return [];
+  const roomNotSentMessages = [];
+  if (room && username) {
+    const notSentMessages = getNotSentMessages(username);
+    if(notSentMessages && Object.keys(notSentMessages).length) {
+      Object.keys(notSentMessages).forEach(clientId => {
+        const notSenMessage = notSentMessages[clientId];
+        if (notSenMessage && notSenMessage.room === room) {
+          roomNotSentMessages.push(notSenMessage);
+        }
+      });
+    }
   }
+  return roomNotSentMessages;
 }
 
-  
 export function getNotSentMessages(username) {
-
-  const notSentMessages = getStoredParam(`${STORED_NOT_SENT_MESSAGES}-${username}`);
+  let notSentMessages = getStoredParam(`${STORED_NOT_SENT_MESSAGES}-${username}`);
   if(notSentMessages) {
-    return JSON.parse(notSentMessages);
+    notSentMessages = JSON.parse(notSentMessages);
+    if(Array.isArray(notSentMessages)) {
+      notSentMessages = {};
+      localStorage.removeItem(`${STORED_NOT_SENT_MESSAGES}-${username}`);
+    }
+    return notSentMessages;
   } else {
-    return [];
+    return {};
   }
 }
 
 export function storeNotSentMessage(messageToStore) {
-  if (messageToStore.user !== eXo.chat.userSettings.username) {
+  if (messageToStore.user !== eXo.chat.userSettings.username || !messageToStore.clientId || !messageToStore.room) {
     return;
   }
   const notSentMessages = getNotSentMessages(messageToStore.user);
-  const foundMessageIndex = notSentMessages.findIndex(message => message.clientId === messageToStore.clientId);
-  if (foundMessageIndex < 0) {
+  const foundMessage = notSentMessages[messageToStore.clientId];
+  if (!foundMessage) {
     messageToStore.notSent = true;
-    notSentMessages.push(messageToStore);
+    notSentMessages[messageToStore.clientId] = messageToStore;
     setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${messageToStore.user}`, JSON.stringify(notSentMessages));
   }
 }
 
 export function storeMessageAsSent(messageToStore) {
-  if (messageToStore.user !== eXo.chat.userSettings.username) {
+  if (messageToStore.user !== eXo.chat.userSettings.username || !messageToStore.clientId) {
     return false;
   }
   messageToStore.notSent = false;
+  return deleteFromStore(messageToStore);
+}
+
+export function deleteFromStore(messageToStore) {
   const notSentMessages = getNotSentMessages(messageToStore.user);
 
-  const foundMessageIndex = notSentMessages.findIndex(message => message.clientId === messageToStore.clientId);
-  if (foundMessageIndex >= 0 && foundMessageIndex < notSentMessages.length) {
-    notSentMessages.splice(foundMessageIndex, 1);
+  const foundMessage = notSentMessages[messageToStore.clientId];
+  if (foundMessage) {
+    delete notSentMessages[messageToStore.clientId];
     setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${messageToStore.user}`, JSON.stringify(notSentMessages));
     return true;
   }
@@ -84,9 +100,21 @@ export function sendFailedMessages() {
     window.messagesSending = true;
     try {
       const notSentMessages = getNotSentMessages(eXo.chat.userSettings.username);
-      if(notSentMessages && notSentMessages.length) {
-        notSentMessages.forEach(messageToResend => {
-          document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToResend}));
+      if(notSentMessages && Object.keys(notSentMessages).length) {
+        Object.keys(notSentMessages).forEach(clienId => {
+          const messageToResend = notSentMessages[clienId];
+          if(messageToResend) {
+            if (eXo.chat.isOnline) {
+              if(messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {
+                // Give up retrying send message when the user is online
+                // but the message sending always fails
+                storeMessageAsSent(messageToResend);
+              } else {
+                messageToResend.attemptCount = messageToResend.attemptCount ? messageToResend.attemptCount + 1 : 1;
+              }
+            }
+            document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToResend}));
+          }
         });
       }
       window.messagesSending = false;
