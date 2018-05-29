@@ -86,10 +86,12 @@
   }
   &.is-current-user {
     justify-content: flex-end;
+    padding-left: 50px;
     .chat-message-bubble {
-      flex: 0 0 85%;
       background: #cfe9ff;
       border: none;
+      width: 0;
+      .overflow-wrap;
       &:before {
         left: auto;
         right: -5px;
