@@ -13,6 +13,9 @@ describe('ChatContact.test.js', () => {
         list: false,
         type: 'u',
         isCurrentUser: true
+      },
+      mocks: {
+        $t: () => {}
       }
     });
   });
