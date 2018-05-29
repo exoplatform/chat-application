@@ -53,7 +53,6 @@ public class CalendarService implements ResourceContainer {
                             @FormParam("location") String location) {
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
     try {
-      // TODO manage create event in space room (activity genration error)
       saveEvent(sc.getUserPrincipal().getName(),
                 space,
                 users,
@@ -107,9 +106,9 @@ public class CalendarService implements ResourceContainer {
       event.setToDateTime(to);
       event.setPriority(CalendarEvent.PRIORITY_NORMAL);
       event.setLocation(location);
-      if (isPublic)
+      if (isPublic) {
         calendarService_.savePublicEvent(calId, event, true);
-      else {
+      } else {
         if (participants != null) {
           event.setParticipant(participants);
           String[] participantsStatus = new String[participants.length];
@@ -120,8 +119,6 @@ public class CalendarService implements ResourceContainer {
 
         }
         calendarService_.saveUserEvent(user, calId, event, true);
-        // calendarService_.confirmInvitation("john", "benjamin", "john",
-        // Utils.PRIVATE_TYPE, calId, eventId, Utils.ACCEPT);
       }
     }
   }
