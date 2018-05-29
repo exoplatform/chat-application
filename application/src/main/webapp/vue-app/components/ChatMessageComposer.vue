@@ -18,7 +18,7 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <div id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" contenteditable="true" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></div>
+        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
         <div class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -117,6 +117,7 @@ export default {
   },
   data() {
     return {
+      newMessage: '',
       appsModal: {
         appKey: '',
         title: '',
@@ -146,7 +147,6 @@ export default {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
     document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
-    $.initCursor(this.$refs.messageComposerArea);
     $(this.$refs.messageComposerArea).focus();
   },
   destroyed() {
@@ -177,12 +177,11 @@ export default {
       }
     },
     sendMessage() {
-      const newMessage = this.getMessage();
-      if(!newMessage || !newMessage.trim()) {
+      if(!this.newMessage || !this.newMessage.trim()) {
         return;
       }
       const message = {
-        message : newMessage.trim(),
+        message : this.newMessage.trim(),
         room : this.contact.room,
         clientId: new Date().getTime().toString(),
         timestamp: Date.now(),
@@ -190,23 +189,20 @@ export default {
       };
       let found = false;
       this.getApplications.forEach(application => {
-        if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
+        if(application.shortcutMatches && application.shortcutMatches(this.newMessage)) {
           if (application.shortcutCallback) {
             found = true;
-            application.shortcutCallback(newMessage, this.contact);
+            application.shortcutCallback(this.newMessage, this.contact);
           } else if(application.shortcutTriggeredEvent) {
             found = true;
-            document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact : this.contact}}));
+            document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: this.newMessage, contact : this.contact}}));
           }
         }
       });
       if (!found) {
         this.$emit('exo-chat-message-written', message);
       }
-      this.$refs.messageComposerArea.innerHTML = '';
-    },
-    getMessage() {
-      return this.$refs.messageComposerArea.innerText;
+      this.newMessage = '';
     },
     sendMessageWithKey(event) {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
@@ -215,6 +211,7 @@ export default {
     },
     quoteMessage(e) {
       const quotedMessage = e.detail;
+      const composer = $('#messageComposerArea');
       if(!quotedMessage) {
         return;
       }
@@ -225,8 +222,9 @@ export default {
       messageToSend = messageToSend.replace(/<br\/>/g, '\n');
       messageToSend = $('<div />').html(messageToSend).text();
       messageToSend = `[quote=${quotedMessage.fullname}] ${messageToSend} [/quote]`;
-      $(this.$refs.messageComposerArea).insertAtCursor(messageToSend);
-      $(this.$refs.messageComposerArea).focus();
+      composer.insertAtCaret(messageToSend);
+      // The text insertion doesn't trigger Vue for modified field
+      this.newMessage = composer.val();
     },
     openAppModal(app) {
       this.appsClosed = true;
@@ -235,8 +233,7 @@ export default {
       this.appsModal.isOpned = true;
     },
     editLastMessage() {
-      const newMessage = this.getMessage();
-      if (!newMessage || !newMessage.trim().length) {
+      if (!this.newMessage || !this.newMessage.trim().length) {
         document.dispatchEvent(new CustomEvent('exo-chat-message-edit-last'));
       }
     }
