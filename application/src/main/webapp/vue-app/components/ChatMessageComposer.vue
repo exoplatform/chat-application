@@ -13,7 +13,7 @@
             <i class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
             <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
               <div class="arrow"></div>
-              <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji.keys[0])"></span>
+              <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji)"></span>
             </div>
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
@@ -165,9 +165,10 @@ export default {
       this.showEmojiPanel = false;
     },
     selectEmoji(emoji) {
+      let emojiKey = emoji.keys[0];
       const $composer = $(this.$refs.messageComposerArea);
-      emoji = $composer.text().split(/\s/).slice(-1)[0] === '' ? emoji : ` ${emoji}`;
-      $composer.insertAtCursor(emoji);
+      emojiKey = $composer.text().split(/\s/).slice(-1)[0] === '' ? emojiKey : ` ${emojiKey}`;
+      $composer.insertAtCursor(emojiKey);
       this.closeEmojiPanel();
     },
     preventDefault(event) {

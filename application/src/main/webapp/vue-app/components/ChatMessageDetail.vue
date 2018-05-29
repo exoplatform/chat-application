@@ -13,6 +13,8 @@
       <div v-else-if="message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
+      <div v-else-if="message.options.type === constants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.userLeft', {0: message.options.fullName}))">
+      </div>
       <div v-else-if="message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
@@ -185,6 +187,7 @@ export default {
         START_MEETING_MESSAGE: 'type-meeting-start',
         STOP_MEETING_MESSAGE: 'type-meeting-stop',
         NOTES_MESSAGE: 'type-notes',
+        ROOM_MEMBER_LEFT: 'room-member-left',
         ANIMATION_PERIOD: 200,
         ANIMATION_DURATION: 1000,
         DEFAULT_MESSAGE_ACTIONS: [
@@ -411,6 +414,9 @@ export default {
             });
         }
       );
+    },
+    unescapeHTML(html) {
+      return unescape(html);
     },
     saveMeetingNotes() {
       const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);

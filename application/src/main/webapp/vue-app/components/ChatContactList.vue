@@ -304,9 +304,13 @@ export default {
         foundContact.status = contactChanged.data.status;
       }
     },
-    leftRoom(message) {
-      message = message.detail ? message.detail: message;
-      const roomLeft = message.data ? message.data.room : message.room;
+    leftRoom(e) {
+      const message = e.detail ? e.detail: e;
+      const sender = message.data && message.data.sender ? message.data.sender : message.sender;
+      if(message.event === 'room-member-left' && sender !== eXo.chat.userSettings.username) {
+        return;
+      }
+      const roomLeft = message.data && message.data.room ? message.data.room : message.room;
       const roomIndex = this.contacts.findIndex(contact => contact.room === roomLeft);
       if (roomIndex >= 0) {
         this.contacts.splice(roomIndex, 1);

@@ -55,11 +55,13 @@ export default {
   created() {
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
+    document.addEventListener('exo-chat-room-member-left', this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(STATUS_FILTER_PARAM, STATUS_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
+    document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
   },
   methods: {
     toggleCollapsed() {
@@ -68,6 +70,18 @@ export default {
     selectParticipantFilter(filter) {
       chatWebStorage.setStoredParam(STATUS_FILTER_PARAM, filter);
       this.participantFilter = filter;
+    },
+    leftRoom(e) {
+      const message = e.detail ? e.detail: e;
+      const sender = message.data && message.data.sender ? message.data.sender : message.sender;
+      const roomLeft = message.data && message.data.room ? message.data.room : message.room;
+      if (roomLeft !== this.contact.room) {
+        return;
+      }
+      const roomIndex = this.participants.findIndex(contact => contact.name === sender);
+      if (roomIndex >= 0) {
+        this.participants.splice(roomIndex, 1);
+      }
     },
     contactChanged(e) {
       const contact = e.detail;

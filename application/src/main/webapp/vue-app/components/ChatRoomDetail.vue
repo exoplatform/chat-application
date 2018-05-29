@@ -27,8 +27,7 @@
     <modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
-          <span id="team-delete-window-chat-name" class="confirmationIcon">
-            {{ $t(confirmMessage, {0: contact.fullName}) }}
+          <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage, {0: contact.fullName}))">
           </span>
         </p>
       </div>
@@ -98,6 +97,15 @@ const DEFAULT_ROOM_ACTIONS = [{
   class: 'uiIconDelete',
   enabled: (comp) => {
     return !comp.isAdmin;
+  },
+  confirm: {
+    title: 'exoplatform.chat.team.leave',
+    message: 'exoplatform.chat.team.leave.confirm',
+    okMessage: 'exoplatform.chat.team.leave.confirm.yes',
+    koMessage: 'exoplatform.chat.team.leave.confirm.no',
+    confirmed(contact) {
+      document.dispatchEvent(new CustomEvent('exo-chat-setting-leaveRoom', {'detail': contact}));
+    }
   }
 }];
 
@@ -235,6 +243,9 @@ export default {
     },
     displayItem(settingAction) {
       return (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
+    },
+    unescapeHTML(html) {
+      return unescape(html);
     }
   }
 };

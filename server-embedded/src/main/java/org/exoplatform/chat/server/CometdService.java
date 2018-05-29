@@ -11,7 +11,6 @@ import org.exoplatform.chat.services.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.exoplatform.chat.services.UserService;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -48,6 +47,7 @@ public class CometdService {
    * @param remoteSession
    * @param message
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[]{COMETD_CHANNEL_NAME, message.getJSON()});
@@ -137,8 +137,35 @@ public class CometdService {
         chatService.deleteTeamRoom(room, sender, dbName);
       } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_MEMBER_LEAVE)) {
         String room = jsonMessage.get("room").toString();
+        String clientId = jsonMessage.get("clientId").toString();
+        String msg = "";
+        String isSystem = "true";
+        JSONObject options = jsonMessage.get("options") != null ? (JSONObject) jsonMessage.get("options") : new JSONObject();
+        options.put("type", RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT.toString());
+
+        try {
+          chatService.write(clientId, msg, sender, room, isSystem, options.toString(), dbName);
+        } catch (ChatException e) {
+          // Should response a message somehow in websocket.
+        }
 
         userService.removeTeamUsers(room, Collections.singletonList(sender), dbName);
+
+        List<String> usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TEAM_PREFIX, dbName);
+        if (usersToBeNotified == null) {
+          usersToBeNotified = Collections.singletonList(sender);
+        } else {
+          usersToBeNotified.add(sender);
+        }
+
+        // Send a websocket message of type 'room-member-left' to all the room members
+        RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
+            room,
+            sender,
+            new Date(),
+            options);
+        realTimeMessageService.sendMessage(leaveRoomMessage, usersToBeNotified);
         notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
       }
     } catch (ParseException e) {

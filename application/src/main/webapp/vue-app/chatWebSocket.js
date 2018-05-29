@@ -12,6 +12,7 @@ export function initSettings(settings) {
   cometDSettings.sessionId = settings.sessionId;
   cometDSettings.dbName = settings.dbName;
   cometDSettings.spaceId = settings.spaceId;
+  cometDSettings.fullname = settings.fullName;
   cometDSettings.cometdToken = settings.cometdToken;
   cometDSettings.standalone = settings.standalone === 'true' || settings.standalone === true;
   cometDSettings.wsEndpoint = settings.wsEndpoint;
@@ -120,10 +121,14 @@ export function isConnected() {
 export function leaveRoom(room, callback) {
   const content = JSON.stringify({
     'event': 'room-member-leave',
+    'clientId': new Date().getTime().toString(),
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
     'dbName': cometDSettings.dbName,
-    'room': room
+    'room': room,
+    'options' : {
+      'fullName': cometDSettings.fullname
+    }
   });
   cometDSettings.cCometD.publish('/service/chat', content, function(publishAck) {
     if (publishAck && publishAck.successful && callback) {
