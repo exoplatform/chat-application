@@ -99,7 +99,7 @@ public class ChatTools
     if (StringUtils.equals(uniqueSession, "true")) {
       // Notify other users about the session logout of user
       Map<String, Object> data = new HashMap<String, Object>();
-      data.put("status", UserService.STATUS_AWAY);
+      data.put("status", UserService.STATUS_OFFLINE);
       realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.USER_STATUS_CHANGED,
                                                     username,
                                                     username,
