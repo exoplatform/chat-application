@@ -1,4 +1,4 @@
-export default function(msg, highlight) {
+export default function(msg, highlight, emojis) {
   if(!msg || !msg.trim().length) {
     return msg;
   }
@@ -20,7 +20,7 @@ export default function(msg, highlight) {
       // check emoticons
       const wordCaseSensitive = w.replace(/\.|\?|!/, '');
       const wordCaseInsensitive = wordCaseSensitive.toLowerCase();
-      const emoticon = EMOTICONS.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
+      const emoticon = emojis.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
       if(emoticon) {
         w = w.replace(wordCaseSensitive, `<span class="chat-emoticon ${emoticon.class}"></span>`);
       } 
@@ -36,48 +36,6 @@ export default function(msg, highlight) {
   return message;
 }
 
-const EMOTICONS = [
-  {
-    keys: [':-)', ':)'],
-    class: 'emoticon-smile'
-  },
-  { 
-    keys: [':-(', ':('],
-    class: 'emoticon-sad'
-  },
-  { 
-    keys: [';-)', ';)'],
-    class: 'emoticon-wink'
-  },
-  { 
-    keys: [':-|', ':|'],
-    class: 'emoticon-speechless'
-  },
-  { 
-    keys: [':-o', ':o'],
-    class: 'emoticon-surprise'
-  },
-  { 
-    keys: [':-p', ':p'],
-    class: 'emoticon-smile-tongue'
-  },
-  { 
-    keys: [':-d', ':d'],
-    class: 'emoticon-flaugh'
-  },
-  { 
-    keys: ['(y)', '(yes)'],
-    class: 'emoticon-raise-up'
-  },
-  { 
-    keys: ['(n)', '(no)'],
-    class: 'emoticon-raise-down'
-  },
-  { 
-    keys: ['(cool)'],
-    class: 'emoticon-cool'
-  }
-];
 const QUOTE_START = '[quote=';
 const QUOTE_END = '[/quote]';
 

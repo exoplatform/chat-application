@@ -48,6 +48,25 @@
     > * {
       cursor: pointer;
     }
+    .action-emoji {
+      position: relative;
+    }
+    .composer-emoji-panel {
+      display: flex;
+      flex-wrap: wrap;
+      .flex-space-evenly;
+      top: auto;
+      bottom: 43px;
+      left: -13px;
+      width: 120px;
+      .chat-emoticon {
+        position: static;
+        margin: 10px;
+      }
+      .arrow {
+        left: 25px;
+      }
+    }
   }
   #messageComposerArea {
     flex: 1;

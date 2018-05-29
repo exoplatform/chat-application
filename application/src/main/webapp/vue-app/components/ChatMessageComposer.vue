@@ -10,7 +10,11 @@
       <div class="composer-box">
         <div class="composer-action">
           <div class="action-emoji">
-            <i class="uiIconChatSmile"></i>
+            <i class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
+            <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
+              <div class="arrow"></div>
+              <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji.keys[0])"></span>
+            </div>
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
@@ -118,7 +122,8 @@ export default {
         title: '',
         isOpned: false
       },
-      appsClosed: true
+      appsClosed: true,
+      showEmojiPanel: false
     };
   },
   computed: {
@@ -128,16 +133,25 @@ export default {
       } else {
         return DEFAULT_COMPOSER_APPS;
       }
+    },
+    getEmoticons() {
+      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraEmoticons) {
+        return this.EMOTICONS.concat(eXo.chat.room.extraEmoticons);
+      } else {
+        return this.EMOTICONS;
+      } 
     }
   },
   created() {
     document.addEventListener('keyup', this.closeApps);
+    document.addEventListener('click', this.closeEmojiPanel);
     document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
     $.initCursor(this.$refs.messageComposerArea);
     $(this.$refs.messageComposerArea).focus();
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
+    document.removeEventListener('click', this.closeEmojiPanel);
     document.removeEventListener('exo-chat-message-acton-quote', this.quoteMessage);
   },
   methods: {
@@ -146,6 +160,15 @@ export default {
       if (e.keyCode === ESC_KEY) {
         this.appsClosed = true;
       }
+    },
+    closeEmojiPanel() {
+      this.showEmojiPanel = false;
+    },
+    selectEmoji(emoji) {
+      const $composer = $(this.$refs.messageComposerArea);
+      emoji = $composer.text().split(/\s/).slice(-1)[0] === '' ? emoji : ` ${emoji}`;
+      $composer.insertAtCursor(emoji);
+      this.closeEmojiPanel();
     },
     preventDefault(event) {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {

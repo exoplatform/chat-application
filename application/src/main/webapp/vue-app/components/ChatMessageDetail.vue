@@ -274,7 +274,7 @@ export default {
       return this.message.message ? this.message.message : this.message.msg;
     },
     messageFiltered() {
-      return messageFilter(this.messageContent, this.highlight);
+      return messageFilter(this.messageContent, this.highlight, this.EMOTICONS);
     }
   },
   created() {

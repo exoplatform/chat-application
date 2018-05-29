@@ -54,3 +54,55 @@ $.fn.extend({
     });
   }
 });
+
+// A global data
+Vue.mixin({
+  data: function() {
+    return {
+      get EMOTICONS() {
+        return [
+          {
+            keys: [':)', ':-)'],
+            class: 'emoticon-smile'
+          },
+          { 
+            keys: [':(', ':-('],
+            class: 'emoticon-sad'
+          },
+          { 
+            keys: [';)', ';-)'],
+            class: 'emoticon-wink'
+          },
+          { 
+            keys: [':|', ':-|'],
+            class: 'emoticon-speechless'
+          },
+          { 
+            keys: [':o', ':-o'],
+            class: 'emoticon-surprise'
+          },
+          { 
+            keys: [':p', ':-p'],
+            class: 'emoticon-smile-tongue'
+          },
+          { 
+            keys: [':d', ':-d'],
+            class: 'emoticon-flaugh'
+          },
+          { 
+            keys: ['(cool)'],
+            class: 'emoticon-cool'
+          },
+          { 
+            keys: ['(y)', '(yes)'],
+            class: 'emoticon-raise-up'
+          },
+          { 
+            keys: ['(n)', '(no)'],
+            class: 'emoticon-raise-down'
+          }
+        ];
+      }
+    };
+  }
+});
