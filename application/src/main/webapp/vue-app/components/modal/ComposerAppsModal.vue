@@ -244,7 +244,6 @@ export default {
           message.options.username = $(this.$refs.taskAssignee).suggester('getValue');
           message.options.dueDate = this.$refs.taskDueDate.value;
           message.options.task = this.$refs.taskTitle.value;
-          message.options.type = TASK_MESSAGE;
 
           document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
           this.closeModal();

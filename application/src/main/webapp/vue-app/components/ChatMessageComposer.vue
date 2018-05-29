@@ -28,6 +28,7 @@
 
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
+import * as chatServices from '../chatServices';
 
 const ENTER_CODE_KEY = 13;
 const DEFAULT_COMPOSER_APPS = [
@@ -38,6 +39,41 @@ const DEFAULT_COMPOSER_APPS = [
   }, 
   {
     key: 'task',
+    shortcutMatches(msg) {
+      return /\s*\+\+\S+/.test(msg);
+    },
+    shortcutCallback(msg, contact) {
+      const message = {
+        msg : '',
+        room : contact.room,
+        clientId: new Date().getTime().toString(),
+        user: eXo.chat.userSettings.username,
+        isSystem: true,
+        options: {
+          fromUser: eXo.chat.userSettings.username,
+          fromFullname: eXo.chat.userSettings.fullName
+        }
+      };
+      message.options.type = 'type-task';
+      const isSpace = contact.user.indexOf('space-') === 0;
+      const isTeam = contact.user.indexOf('team-') === 0;
+      const data = {
+        'extension_action' : 'createTaskInline',
+        'text' : msg,
+        'roomName' : contact.fullName,
+        'isSpace' : isSpace,
+        'isTeam': isTeam,
+        'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
+      };
+      chatServices.saveTask(eXo.chat.userSettings, data).then((response) => response.json()).then(data => {
+        const url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
+        const title = data.title ? data.title : data.length && data.length === 1 && data[0].title ? data[0].title : '';
+        message.options.url = url;
+        message.options.task = title;
+
+        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+      });
+    },
     labelKey: 'exoplatform.chat.assign.task',
     class: 'uiIconChatCreateTask'
   }, 
@@ -128,7 +164,21 @@ export default {
         timestamp: Date.now(),
         user: eXo.chat.userSettings.username
       };
-      this.$emit('exo-chat-message-written', message);
+      let found = false;
+      this.getApplications.forEach(application => {
+        if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
+          if (application.shortcutCallback) {
+            found = true;
+            application.shortcutCallback(newMessage, this.contact);
+          } else if(application.shortcutTriggeredEvent) {
+            found = true;
+            document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact : this.contact}}));
+          }
+        }
+      });
+      if (!found) {
+        this.$emit('exo-chat-message-written', message);
+      }
       this.$refs.messageComposerArea.innerHTML = '';
     },
     getMessage() {

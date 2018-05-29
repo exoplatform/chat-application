@@ -108,9 +108,10 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
+      const thiss = this;
       if(this.userSettings.offlineDelay) {
         setInterval(
-          function() {this.refreshContacts(true);},
+          function() {thiss.refreshContacts(true);},
           this.userSettings.offlineDelay);
       }
     },
