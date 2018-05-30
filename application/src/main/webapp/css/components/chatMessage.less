@@ -2,12 +2,16 @@
   .flex-column;
   .day-separator {
     height: 30px;
+    padding: 0 60px;
     .flex-center;
     justify-content: space-around;
     text-align: center;
+    span {
+      flex: 0 0 250px;
+    }
     &:before, &:after {
       content: "";
-      width: 40%;
+      flex: 1;
       border-top: @defaultBorder;
     }
     + .chat-message-box {
@@ -107,6 +111,9 @@
       font-size: 15px;
       color: #999;
     }
+  }
+  .uiIconNotification {
+    top: -2px;
   }
 }
 .custom-message-item {

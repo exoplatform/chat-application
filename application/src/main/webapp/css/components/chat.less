@@ -33,19 +33,13 @@
   .uiIconNotification {
     color: #c72222;
     display: none;
-    position: absolute;
   }
 
   &.offline {
-    .chat-message-not-sent .uiIconNotification {
-      display: initial;
-      top: 12px;
-      right: 3px;
-    }
-    .has-not-sent-messages .uiIconNotification {
-      display: initial;
-      top: 9px;
-      right: 2px;
+    .chat-message-not-sent, .has-not-sent-messages {
+      .uiIconNotification {
+        display: block;
+      }
     }
   }
   

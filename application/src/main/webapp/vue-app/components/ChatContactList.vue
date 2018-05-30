@@ -23,7 +23,7 @@
       <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item isList" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
-        <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
+        <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
         <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
       <div v-show="isSearchingContact" class="contact-list-item isList">

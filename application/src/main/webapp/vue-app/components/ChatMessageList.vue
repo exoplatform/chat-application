@@ -5,7 +5,7 @@
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
-        <div class="day-separator">{{ dayDate }}</div>
+        <div class="day-separator"><span>{{ dayDate }}</span></div>
         <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
       </div>
     </div>

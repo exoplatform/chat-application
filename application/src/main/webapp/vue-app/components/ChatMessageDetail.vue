@@ -1,10 +1,10 @@
 <template>
   <div :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
-      <div v-if="!hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
+      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
     <div class="chat-message-bubble">
-      <div v-if="!hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
+      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
       <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -108,8 +108,14 @@
       </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
+        <i v-if="message.options && message.options.type === constants.RAISE_HAND" class="uiIconChatRaiseHand"></i>
+        <i v-if="message.options && message.options.type === constants.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
+        <i v-if="message.options && message.options.type === constants.LINK_MESSAGE" class="uiIconChatLink"></i>
+        <i v-if="message.options && message.options.type === constants.FILE_MESSAGE" class="uiIconChatUpload"></i>
+        <i v-if="message.options && message.options.type === constants.TASK_MESSAGE" class="uiIconChatCreateTask"></i>
+        <i v-if="message.options && message.options.type === constants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
       </div>
-      <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
     </div>
     <div class="chat-message-action">
       <dropdown-select v-if="displayActions" class="message-actions" position="right">
