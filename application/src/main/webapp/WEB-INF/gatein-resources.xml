@@ -8,6 +8,12 @@
         <css-path>/css/chat.css</css-path>
     </portlet-skin>
 
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatNotificationApplication</portlet-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
     <!-- TODO move to a common project -->
     <module>
         <name>vue</name>
@@ -20,43 +26,60 @@
     <portlet>
         <name>ChatApplication</name>
         <module>
-            <script>
-                <minify>false</minify>
-                <path>/js/chat.bundle.js</path>
-            </script>
             <depends>
-                <module>vue</module>
-            </depends>
-            <depends>
-                <module>jquery</module>
-                <as>$</as>
-            </depends>
-            <depends>
-                <module>jquery_cometd</module>
-            </depends>
-            <depends>
-                <module>suggester</module>
-            </depends>
-            <depends>
-                <module>iphoneStyleCheckbox</module>
-            </depends>
-            <depends>
-                <module>filedrop</module>
-            </depends>
-            <depends>
-                <module>CalDateTimePicker</module>
-            </depends>
-            <depends>
-                <module>fetchPolyfill</module>
-            </depends>
-            <depends>
-                <module>customEventPolyfill</module>
-            </depends>
-            <depends>
-                <module>iePolyfills</module>
+                <module>chat</module>
             </depends>
         </module>
     </portlet>
+
+    <portlet>
+        <name>ChatNotificationApplication</name>
+        <module>
+            <depends>
+                <module>chat</module>
+            </depends>
+        </module>
+    </portlet>
+
+    <module>
+        <name>chat</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/chat.bundle.js</path>
+        </script>
+        <depends>
+            <module>vue</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>chatCometD</module>
+            <as>cCometD</as>
+        </depends>
+        <depends>
+            <module>suggester</module>
+        </depends>
+        <depends>
+            <module>iphoneStyleCheckbox</module>
+        </depends>
+        <depends>
+            <module>filedrop</module>
+        </depends>
+        <depends>
+            <module>CalDateTimePicker</module>
+        </depends>
+        <depends>
+            <module>fetchPolyfill</module>
+        </depends>
+        <depends>
+            <module>customEventPolyfill</module>
+        </depends>
+        <depends>
+            <module>iePolyfills</module>
+        </depends>
+    </module>
 
     <module>
         <name>filedrop</name>
@@ -99,4 +122,17 @@
         </depends>
     </module>
 
+    <module>
+        <name>chatCometD</name>
+        <as>cCometD</as>
+        <script>
+            <path>/js/lib/chatCometd3.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+        </depends>
+        <depends>
+            <module>jquery_cometd</module>
+        </depends>
+    </module>
 </gatein-resources>

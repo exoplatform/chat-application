@@ -71,7 +71,9 @@ export default {
     };
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username, chatRoomsData => this.initChatRooms(chatRoomsData), userSettings => this.initSettings(userSettings));
+    chatServices.initChatSettings(this.userSettings.username,
+      userSettings => this.initSettings(userSettings),
+      chatRoomsData => this.initChatRooms(chatRoomsData));
     document.addEventListener('exo-chat-room-updated', this.roomUpdated);
     document.addEventListener('exo-chat-logout-sent', () => {
       if (!chatWebSocket.isConnected()) {
@@ -89,6 +91,10 @@ export default {
         this.userSettings.status = contactChanged.status;
         this.userSettings.originalStatus = contactChanged.status;
       }
+    });
+    document.addEventListener('exo-chat-notification-count-updated', (e) => {
+      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
+      chatServices.updateTotalUnread(totalUnreadMsg);
     });
   },
   destroyed() {
@@ -116,6 +122,9 @@ export default {
       if(selectedRoom) {
         this.setSelectedContact(selectedRoom);
       }
+
+      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
+      chatServices.updateTotalUnread(totalUnreadMsg);
     },
     setSelectedContact(selectedContact) {
       if(!selectedContact) {
@@ -202,3 +211,8 @@ export default {
   }
 };
 </script>
+<style>
+#PlatformAdminToolbarContainer {
+  display: none;
+}
+</style>

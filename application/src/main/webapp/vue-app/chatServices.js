@@ -1,5 +1,6 @@
 import {chatData} from './chatData.js';
 import * as chatWebStorage from './chatWebStorage';
+import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
 
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
@@ -7,6 +8,8 @@ const DEFAULT_USER_LIMIT = 20;
 
 const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
+
+const REATTEMPT_INIT_PERIOD = 1000;
 
 let resendIntervalID;
 
@@ -22,7 +25,7 @@ export function getUserStatus(userSettings, user) {
     }}).then(resp =>  resp.text());
 }
 
-export function initChatSettings(username, chatRoomsLoadedCallback, userSettingsLoadedCallback) {
+export function initChatSettings(username, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
@@ -32,9 +35,6 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
     getOnlineUsers().then(users => { // Fetch online users
       getChatRooms(settings, users).then(data => {
         chatRoomsLoadedCallback(data);
-
-        const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
-        updateTotalUnread(totalUnreadMsg);
 
         if (!resendIntervalID) {
           window.clearInterval(resendIntervalID);
@@ -54,21 +54,25 @@ export function initChatSettings(username, chatRoomsLoadedCallback, userSettings
       loadNotificationSettings(settings);
       desktopNotification.initDesktopNotifications();
     });
-
-  });
-
-  document.addEventListener('exo-chat-notification-count-updated', (e) => {
-    const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-    updateTotalUnread(totalUnreadMsg);
   });
 
   getUserSettings(username).then(userSettings => {
     eXo.chat.userSettings = userSettings;
+    initSettings(username, userSettings, userSettingsLoadedCallback);
+  });
+}
+
+export function initSettings(username, userSettings, userSettingsLoadedCallback) {
+  try {
+    eXo.chat.userSettings = userSettings;
+    chatWebSocket.initSettings(userSettings);
     eXo.chat.userSettings.chatPage = getBaseURL() + eXo.chat.userSettings.chatPage;
     userSettingsLoadedCallback(userSettings);
     
     document.dispatchEvent(new CustomEvent('exo-chat-settings-loaded', {'detail' : userSettings}));
-  });
+  } catch(e) {
+    setTimeout(() => initSettings(status, userSettings, userSettingsLoadedCallback), REATTEMPT_INIT_PERIOD);
+  }
 }
 
 export function updateTotalUnread(totalUnreadMsg) {

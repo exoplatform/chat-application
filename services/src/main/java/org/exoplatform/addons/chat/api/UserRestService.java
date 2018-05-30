@@ -191,9 +191,9 @@ public class UserRestService implements ResourceContainer {
     String chatPage = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE);
     String chatCometDServerUrl = null;
     if (isStandalone) {
-      chatCometDServerUrl = chatServerURI;
+      chatCometDServerUrl = chatServerURI + "/cometd";
     } else {
-      chatCometDServerUrl = "/cometd";
+      chatCometDServerUrl = "/cometd/cometd";
     }
     String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername, dbName);
 

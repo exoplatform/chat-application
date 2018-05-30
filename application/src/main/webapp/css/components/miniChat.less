@@ -1,0 +1,53 @@
+#chatApplicationNotification {
+
+  .dropdown-menu .uiIconStatus {
+    position: static;
+    font-size: 14px;
+  }
+  .uiIconStatus {
+    position: static;
+  }
+  .uiNotifChatIcon {
+    display: inline-block;
+    width: 24px;
+    height: 53px;
+    line-height: 53px;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:before { // Changing the background image to font-icon
+      content: "\e601";
+      font-size: @sizeIcon24x24;
+    }
+    span { // reset the font for the number of notifications
+      font-family: @sansFontFamily;
+    }
+  }
+  .chat-status-icon {
+    font-family: "PLF-FONT-ICONS";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+
+    &.chat-status-open {
+      color: @iconStatusDefaultContainerLight;
+      font-size: 15px;
+      position: relative;
+      top: 2px;
+    }
+  }
+  [class^="chat-status-"]:before {
+    content: "\e76e";
+  }
+  .chat-status-open:before {
+    content: "\e601";
+  }
+  .notif-total {
+    position: absolute;
+    right: -10px;
+    top: 4px;
+  }
+}

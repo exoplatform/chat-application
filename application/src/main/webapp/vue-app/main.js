@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import exoi18n from '../js/lib/exo-i18n';
 import ChatApp from './components/ChatApp.vue';
+import MiniChatApp from './components/MiniChatApp.vue';
+
 import './../css/main.less';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
@@ -29,7 +31,7 @@ exoi18n.loadLanguageAsync(lang).then(i18n => {
   } else if ($('#chatApplicationNotification').length) {
     new Vue({
       el: '#chatApplicationNotification',
-      render: h => h(ChatApp),
+      render: h => h(MiniChatApp),
       i18n
     });
   }

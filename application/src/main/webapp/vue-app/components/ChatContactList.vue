@@ -248,11 +248,7 @@ export default {
       if(!room) {
         return;
       }
-      console.log("room" + room);
       const foundContact = this.findContact(room);
-      console.log("foundContact");
-      console.log(foundContact);
-      console.log(this.contacts);
       if(foundContact) {
         foundContact.timestamp = event.detail.ts;
         if (this.selected.room === foundContact.room) {
@@ -263,8 +259,6 @@ export default {
       } else {
         chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
           if(contact && contact.user && contact.user.length && contact.user !== 'undefined') {
-            console.log("foundContact");
-            console.log(foundContact);
             contact.unreadTotal = 1;
             this.contacts.unshift(contact);
           }

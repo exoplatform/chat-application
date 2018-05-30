@@ -12,6 +12,7 @@
     "globals": {
         "eXo": true,
         "$": true,
+        "cCometD": true,
         "CalDateTimePicker": true,
         "global": true
     },
