@@ -1,5 +1,5 @@
 <template>
-  <div :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
+  <div ref="message" :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
       <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
@@ -119,7 +119,7 @@
     </div>
     <div class="chat-message-action">
       <dropdown-select v-if="displayActions" class="message-actions" position="right">
-        <i slot="toggle" class="uiIconDots"></i>
+        <i slot="toggle" class="uiIconDots" @click="setActionsPosition"></i>
         <li slot="menu">
           <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction.key)">
             {{ $t(messageAction.labelKey) }}
@@ -488,6 +488,17 @@ export default {
           });
         }
       );
+    },
+    setActionsPosition() {
+      const $message = $(this.$refs.message);
+      const $dropdown = $message.find('.dropdown');
+      const $dropdownMenu = $message.find('.dropdown-menu');
+      const DROPDOWN_MARGIN = 20;
+      const ROOM_BAR_HEIGHT = $('.room-detail').outerHeight();
+
+      if ($message.offset().top + $dropdownMenu.outerHeight() + DROPDOWN_MARGIN > $('#chats').outerHeight() + ROOM_BAR_HEIGHT) {
+        $dropdown.addClass('top');
+      }
     }
   }
 };
