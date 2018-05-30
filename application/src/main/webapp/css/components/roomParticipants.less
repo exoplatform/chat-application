@@ -2,36 +2,42 @@
 .room-users-collapse-btn .uiIcon{
   top: 2px;
   color: #ced2d5;
-}
-.room-users-collapse-btn .uiIcon:before{
-  content: "\e903"
-}
-.collapsed .room-users-collapse-btn .uiIcon:before{
-  content: "\e901"
+  &:before{
+    content: "\e903"
+  }
 }
 .room-participants-title {
   margin-right: auto;
-}
-.room-participants-title {
   font-weight: bold;
   text-transform: uppercase;
 }
 .room-participants-filter .actionIcon {
   border: 1px solid #e1e8ee;
+   .uiIconChatMember {
+    top: 2px;
+    &.all-participants {
+      color: #4d5466;
+    }
+  }
 }
 .uiIconChatMember:before {
   content: "\eac1";
 }
 .room-participants-list {
   padding: 10px 20px;
+  .chat-contact {
+    margin: 5px 0;
+  }
 }
-.room-participants-list .chat-contact {
-  margin: 5px 0;
-}
-.collapsed .room-participants-list {
-  align-items: center;
-}
-.collapsed .room-participants-list .chat-contact .contactLabel {
-  display: none;
+.collapsed {
+  .room-participants-list {
+    align-items: center;
+    .chat-contact .contactLabel {
+      display: none;
+    }
+  }
+  .room-users-collapse-btn .uiIcon:before{
+    content: "\e901"
+  }
 }
 /* list participants area */

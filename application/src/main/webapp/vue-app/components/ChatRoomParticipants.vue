@@ -5,6 +5,11 @@
         <i class="uiIcon"></i>
       </div>
       <div class="room-participants-header no-user-selection">
+        <div class="room-participants-filter">
+          <div v-show="isCollapsed" class="actionIcon" @click="toggleParticipantFilter">
+            <i :class="{'all-participants': participantFilterClass}" class="uiIconChatMember uiIconChatLightGray"></i>
+          </div>
+        </div>
         <div v-show="!isCollapsed" class="room-participants-title">
           {{ $t("exoplatform.chat.participants") }}
           <span v-show="participants.length > 0" class="nb-participants">({{ participants.length }})</span>
@@ -50,6 +55,9 @@ export default {
       return this.participants.filter(participant => {
         return this.participantFilter === 'All' ||  ['available','busy','absent'].indexOf(participant.status) > -1;
       });
+    },
+    participantFilterClass() {
+      return this.participantFilter === 'All';
     }
   },
   created() {
@@ -70,6 +78,13 @@ export default {
     selectParticipantFilter(filter) {
       chatWebStorage.setStoredParam(STATUS_FILTER_PARAM, filter);
       this.participantFilter = filter;
+    },
+    toggleParticipantFilter() {
+      if (this.participantFilter === 'All') {
+        this.selectParticipantFilter('Online');
+      } else {
+        this.selectParticipantFilter('All');
+      }
     },
     leftRoom(e) {
       const message = e.detail ? e.detail: e;
