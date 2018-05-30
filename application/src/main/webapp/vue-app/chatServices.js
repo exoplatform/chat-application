@@ -6,12 +6,9 @@ import * as desktopNotification from './desktopNotification';
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
 
-const RESEND_MESSAGE_PERIOD = 5000;
 const DEFAULT_HTTP_PORT = 80;
 
 const REATTEMPT_INIT_PERIOD = 1000;
-
-let resendIntervalID;
 
 export function getUser(userName) {
   return fetch(`/portal/rest/v1/social/users/${userName}`, {credentials: 'include'})
@@ -35,11 +32,6 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
     getOnlineUsers().then(users => { // Fetch online users
       getChatRooms(settings, users).then(data => {
         chatRoomsLoadedCallback(data);
-
-        if (!resendIntervalID) {
-          window.clearInterval(resendIntervalID);
-        }
-        resendIntervalID = window.setInterval(chatWebStorage.sendFailedMessages, RESEND_MESSAGE_PERIOD);
       });
     });
 

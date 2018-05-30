@@ -195,6 +195,7 @@ export function sendMessage(messageObj, callback) {
       if (!publishAck || !publishAck.successful) {
         document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
       } else {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-sent-ack', {detail: content}));
         if (callback) {
           callback(data);
         }
@@ -246,7 +247,8 @@ document.addEventListener('exo-chat-logout-sent', () => {
 });
 
 document.addEventListener('exo-chat-message-tosend', (e) => {
-  sendMessage(e.detail);
+  const message = e.detail;
+  sendMessage(message);
 });
 
 document.addEventListener('exo-chat-message-todelete', (e) => {

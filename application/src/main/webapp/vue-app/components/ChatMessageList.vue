@@ -110,14 +110,12 @@ export default {
       const messageObj = e.detail;
       const message = messageObj.data;
       this.unifyMessageFormat(messageObj, message);
-      chatWebStorage.storeMessageAsSent(message);
       this.addOrUpdateMessageToList(message);
     },
     messageSent(e) {
       const messageObj = e.detail;
       const message = messageObj.data;
       if(message) {
-        chatWebStorage.storeMessageAsSent(message);
         this.addOrUpdateMessageToList(message);
       }
     },

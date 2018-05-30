@@ -244,13 +244,14 @@ export default {
       }
     },
     messageReceived(event) {
-      const room = event.detail.room;
+      const message = event.detail;
+      const room = message.room;
       if(!room) {
         return;
       }
       const foundContact = this.findContact(room);
       if(foundContact) {
-        foundContact.timestamp = event.detail.ts;
+        foundContact.timestamp = message.ts;
         if (this.selected.room === foundContact.room) {
           this.selected.unreadTotal = 0;
         } else {
@@ -293,7 +294,6 @@ export default {
     markRoomMessagesRead(message) {
       const contactToUpdate = this.findContact(message.room);
       if(contactToUpdate) {
-        contactToUpdate.unreadTotal = 0;
         contactToUpdate.hasNotSentMessages = false;
       }
     },

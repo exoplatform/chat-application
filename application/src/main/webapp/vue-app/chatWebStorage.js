@@ -7,6 +7,10 @@ const DEFAULT_EXPIRATION_PERIOD = 300;
 
 const MAX_RESEND_MESSAGE_ATTEMPT = 2;
 
+const RESEND_MESSAGE_PERIOD = 5000;
+
+let resendIntervalID;
+
 export function getStoredParam(key, defaultValue) {
   let ts  = localStorage.getItem(`${key}TS`);
   const val = localStorage.getItem(key);
@@ -25,11 +29,16 @@ export function getStoredParam(key, defaultValue) {
 }
 
 export function setStoredParam(key, value, expire) {
-  if (expire && expire > -1) {
-    expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
-    localStorage.setItem(`${key}TS`, Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND) + expire);
+  if(value && value.length) {
+    if (expire && expire > -1) {
+      expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
+      localStorage.setItem(`${key}TS`, Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND) + expire);
+    }
+    localStorage.setItem(key, value);
+  } else {
+    localStorage.removeItem(key);
+    localStorage.removeItem(`${key}TS`);
   }
-  localStorage.setItem(key, value);
 }
 
 export function getRoomNotSentMessages(username, room) {
@@ -63,46 +72,53 @@ export function getNotSentMessages(username) {
 }
 
 export function storeNotSentMessage(messageToStore) {
-  if (messageToStore.user !== eXo.chat.userSettings.username || !messageToStore.clientId || !messageToStore.room) {
+  if(!messageToStore) {
     return;
   }
-  const notSentMessages = getNotSentMessages(messageToStore.user);
-  const foundMessage = notSentMessages[messageToStore.clientId];
+  const user = messageToStore.sender ? messageToStore.sender : messageToStore.data && messageToStore.data.sender ? messageToStore.data.sender : messageToStore.user ? messageToStore.user : messageToStore.data ? messageToStore.data.user : null;
+  const clientId = messageToStore.clientId ? messageToStore.clientId : messageToStore.data ? messageToStore.data.clientId : null;
+  const room = messageToStore.room ? messageToStore.room : messageToStore.data ? messageToStore.data.room : null;
+  if (user !== eXo.chat.userSettings.username || !room || !clientId) {
+    return;
+  }
+  const notSentMessages = getNotSentMessages(user);
+  const foundMessage = notSentMessages[clientId];
   if (!foundMessage) {
     messageToStore.notSent = true;
-    notSentMessages[messageToStore.clientId] = messageToStore;
-    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${messageToStore.user}`, JSON.stringify(notSentMessages));
+    notSentMessages[clientId] = messageToStore;
+    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
   }
 }
 
 export function storeMessageAsSent(messageToStore) {
-  if (messageToStore.user !== eXo.chat.userSettings.username || !messageToStore.clientId) {
+  const user = messageToStore.sender ? messageToStore.sender : messageToStore.data && messageToStore.data.sender ? messageToStore.data.sender : messageToStore.user ? messageToStore.user : messageToStore.data ? messageToStore.data.user : null;
+  const clientId = messageToStore.clientId ? messageToStore.clientId : messageToStore.data ? messageToStore.data.clientId : null;
+  const room = messageToStore.room ? messageToStore.room : messageToStore.data ? messageToStore.data.room : null;
+  if (user !== eXo.chat.userSettings.username || !room || !clientId) {
     return false;
   }
   messageToStore.notSent = false;
-  return deleteFromStore(messageToStore);
+  return deleteFromStore(user, clientId);
 }
 
-export function deleteFromStore(messageToStore) {
-  const notSentMessages = getNotSentMessages(messageToStore.user);
-
-  const foundMessage = notSentMessages[messageToStore.clientId];
-  if (foundMessage) {
-    delete notSentMessages[messageToStore.clientId];
-    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${messageToStore.user}`, JSON.stringify(notSentMessages));
+export function deleteFromStore(user, clientId) {
+  const notSentMessages = getNotSentMessages(user);
+  if (notSentMessages && notSentMessages[clientId]) {
+    delete notSentMessages[clientId];
+    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
     return true;
   }
   return false;
 }
 
 export function sendFailedMessages() {
-  if(!window.messagesSending) {
-    window.messagesSending = true;
+  if(!getStoredParam('messagesSending')) {
+    setStoredParam('messagesSending', 'true', RESEND_MESSAGE_PERIOD / NB_MILLISECONDS_PERD_SECOND);
     try {
       const notSentMessages = getNotSentMessages(eXo.chat.userSettings.username);
       if(notSentMessages && Object.keys(notSentMessages).length) {
-        Object.keys(notSentMessages).forEach(clienId => {
-          const messageToResend = notSentMessages[clienId];
+        Object.keys(notSentMessages).forEach(clientId => {
+          const messageToResend = notSentMessages[clientId];
           if(messageToResend) {
             if (eXo.chat.isOnline) {
               if(messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {
@@ -117,9 +133,21 @@ export function sendFailedMessages() {
           }
         });
       }
-      window.messagesSending = false;
+      setStoredParam('messagesSending');
     } catch(e) {
-      window.messagesSending = false;
+      setStoredParam('messagesSending');
     }
   }
 }
+
+document.addEventListener('exo-chat-message-sent-ack', (e) => {
+  const message = e.detail;
+  storeMessageAsSent(message);
+});
+
+document.addEventListener('exo-chat-connected', () => {
+  if (resendIntervalID) {
+    window.clearInterval(resendIntervalID);
+  }
+  resendIntervalID = window.setInterval(sendFailedMessages, RESEND_MESSAGE_PERIOD);
+});
