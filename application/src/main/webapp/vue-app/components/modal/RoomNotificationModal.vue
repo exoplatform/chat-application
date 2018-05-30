@@ -1,27 +1,28 @@
 <template>
   <modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
-    <div id="room-config" style="display: inline-block;">
-      <div class="row">
-        <div class="offset1 chat-room-config">
-          <input v-model="selectedOption" type="radio" name="optionsRoomNotificationNormal" value="normal">
-          <span class="label-head" for="optionsRoomNotificationNormal" @click="selectedOption = 'normal'"> {{ $t('exoplatform.chat.desktopNotif.local.normal.label') }} </span> <br>
-          <span class="label-text local"> {{ $t('exoplatform.chat.desktopNotif.local.normal') }} </span><br>
+    <div class="chat-room-config">
+      <span class="uiRadio">
+        <input v-model="selectedOption" type="radio" value="normal">
+        <span @click="selectedOption = 'normal'"> {{ $t('exoplatform.chat.desktopNotif.local.normal.label') }}</span>
+      </span>
+      <em class="notif-description"> {{ $t('exoplatform.chat.desktopNotif.local.normal') }}</em>
 
-          <input v-model="selectedOption" type="radio" name="optionsRoomNotificationSilence" value="silence">
-          <span class="label-head" for="optionsRoomNotificationSilence" @click="selectedOption = 'silence'"> {{ $t('exoplatform.chat.desktopNotif.local.silence.label') }} </span><br>
-          <span class="label-text local">{{ $t('exoplatform.chat.desktopNotif.local.silence') }}</span><br>
+      <span class="uiRadio">
+        <input v-model="selectedOption" type="radio" value="silence">
+        <span @click="selectedOption = 'silence'"> {{ $t('exoplatform.chat.desktopNotif.local.silence.label') }}</span>
+      </span>
+      <em class="notif-description">{{ $t('exoplatform.chat.desktopNotif.local.silence') }}</em>
 
-          <input v-model="selectedOption" type="radio" name="optionsRoomNotificationKeywords" value="keywords">
-          <span class="label-head" for="optionsRoomNotificationKeywords" @click="selectedOption = 'keywords'"> {{ $t('exoplatform.chat.desktopNotif.local.alerton.label') }} :</span><br>
-
-          <input v-model="keywords" :disabled="disableAdvancedFilter" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" class="radio-input-text" type="text" name="keyWord"><br>
-          <span class="label-text local">{{ $t('exoplatform.chat.desktopNotif.local.alerton') }}</span><br><br>
-        </div>
-      </div>
-      <div class="row center">
-        <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.save') }}</div>
-        <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
-      </div>
+      <span class="uiRadio">
+        <input v-model="selectedOption" type="radio" value="keywords">
+        <span @click="selectedOption = 'keywords'"> {{ $t('exoplatform.chat.desktopNotif.local.alerton.label') }} :</span>
+      </span>
+      <input v-model="keywords" :disabled="disableAdvancedFilter" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" class="notif-keyword" type="text">
+      <span class="notif-description">{{ $t('exoplatform.chat.desktopNotif.local.alerton') }}</span>
+    </div>
+    <div class="uiAction uiActionBorder">
+      <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.save') }}</div>
+      <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
     </div>
   </modal>
 </template>
