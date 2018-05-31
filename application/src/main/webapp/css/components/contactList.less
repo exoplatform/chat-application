@@ -36,7 +36,8 @@
   }
   .contactList {
     padding: 10px 0;
-    overflow-y: auto;
+    flex: 1;
+    position: relative;
   }
   .chat-contact {
     margin-right: auto;
@@ -73,6 +74,13 @@
     .uiMention {
       margin: 10px 10px 0 0;
     }
+  }
+  .ps__scrollbar-y-rail {
+    background: none !important;
+  }
+  .ps > .ps__scrollbar-y-rail > .ps__scrollbar-y {
+    background: #ced2d5 !important;
+    right: 6px;
   }
 }
 

@@ -79,6 +79,9 @@
         <depends>
             <module>iePolyfills</module>
         </depends>
+        <depends>
+            <module>jq_perfect_scrollbar</module>
+        </depends>
     </module>
 
     <module>
