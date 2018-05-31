@@ -40,6 +40,7 @@
     this.jzUsers = "";
     this.jzDeleteTeamRoom = "";
     this.jzSaveTeamRoom = "";
+    this.jzRemoveRoomUser = "";
     this.userFilter = "";    //not set
     this.plfUserStatusUpdateUrl = "";
     this.chatIntervalSession = "";
@@ -445,6 +446,33 @@
       }
     });
   };
+
+  /**
+     * Remove user from team room
+     *
+     * @param roomId
+     * @param callback : callback method with roomId as a parameter
+     */
+    ChatApplication.prototype.removeRoomUser = function (roomId, callback) {
+      jqchat.ajax({
+        type: 'POST',
+        url: this.jzRemoveRoomUser,
+        data: {
+          "roomId": roomId,
+          "user": this.username,
+          "dbName": this.dbName
+        },
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
+
+        success: function (response) {
+          if (typeof callback === "function") {
+            callback(response);
+          }
+        }
+      });
+    };
 
   ChatApplication.prototype.resize = function () {
     var $chatApplication = jqchat("#chat-application");
@@ -958,6 +986,8 @@
 
     // hide admin actions - we need to check if the current is the admin of the room before displaying them
     jqchat("#chat-team-button-dropdown .only-admin").hide();
+    //Unregister event, only team user has this event
+    jqchat("#team-leave-button").hide().off();
     // reset room users panel
     this.chatRoom.users = [];
     jqchat("#room-users-list").html("");
@@ -1049,6 +1079,12 @@
             jqchat("#chat-team-button-dropdown").show();
             jqchat("#userRoomStatus").hide();
           } else {
+            jqchat(".only-team-user").show();
+            jqchat("#team-leave-button").show().on('click', function() {
+               jqchat("#team-leave-window-chat-name").text(
+                    chatBundleData["exoplatform.chat.team.leave.message"].replace("{0}", chatApplication.targetFullname));
+               showPopupWindow("team-leave-window", true, true);
+            });
             jqchat("#userRoomStatus").removeClass("hide").show();
           }
         },
@@ -1837,6 +1873,13 @@
     }); // End suggester component
   }
 
+  function emptyChatZone(chatApplication) {
+    chatApplication.chatRoom.emptyChatZone();
+    jqchat("#users-online-team-" + chatApplication.room).hide();
+    chatApplication.room = "";
+    chatApplication.chatRoom.id = "";
+  }
+
   (function ($) {
     $(document).ready(function () {
       /**
@@ -1876,6 +1919,7 @@
       chatApplication.jzUsers = chatServerURL + "/users";
       chatApplication.jzDeleteTeamRoom = chatServerURL + "/deleteTeamRoom";
       chatApplication.jzSaveTeamRoom = chatServerURL + "/saveTeamRoom";
+      chatApplication.jzRemoveRoomUser = chatServerURL + "/removeRoomUser";
       chatApplication.room = "";
 
       // init chat application
@@ -2943,19 +2987,23 @@
         }
       });
 
-      $("#team-delete-button").on("click", function (e) {
-        jqchat("#team-delete-window-chat-name").text(chatBundleData["exoplatform.chat.team.delete.message"].replace("{0}", chatApplication.targetFullname));
-        showPopupWindow("team-delete-window", true, true);
+      $("#team-leave-button-ok").on("click", function () {
+        hidePopupWindow("team-leave-window", true);
+        chatApplication.removeRoomUser(chatApplication.room, function() {
+          emptyChatZone(chatApplication);
+        });
+      });
+
+      $("#team-leave-button-cancel").on("click", function () {
+        hidePopupWindow("team-leave-window", true);
+        jqchat("#team-leave-window-chat-name").empty();
       });
 
       $("#team-delete-button-ok").on("click", function () {
         hidePopupWindow("team-delete-window", true);
         jqchat("#team-delete-window-chat-name").empty();
-        chatApplication.deleteTeamRoom(function () {
-          chatApplication.chatRoom.emptyChatZone();
-          jqchat("#users-online-team-" + chatApplication.room).hide();
-          chatApplication.room = "";
-          chatApplication.chatRoom.id = "";
+        chatApplication.deleteTeamRoom(function() {
+          emptyChatZone(chatApplication);
         });
 
         if (window.innerWidth <= 767) {
@@ -3001,6 +3049,8 @@
         $uitext.val("");
         $uitext.attr("data-id", "---");
       });
+
+
 
       $(".team-modal-save").on("click", function () {
         var $uitext = $("#team-modal-name");

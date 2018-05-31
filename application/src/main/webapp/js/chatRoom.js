@@ -759,7 +759,7 @@
 
       out += "          <div class='msContBox'>";
       out += "            <div class='inner'>";
-      if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-kicked'  ) {
+      if (message.options !== undefined && message.options.type !== 'type-add-team-user' && message.options.type !=='type-remove-team-user' && message.options.type !=='type-leave-team-user' && message.options.type !=='type-kicked'  ) {
         out += "            <div class='msTiltleLn'>";
         out += "              <a class='msNameUser muted' href='/portal/intranet/profile/"+message.user+"'>" +message.fullname  + "</a>";
         out += "            </div>";
@@ -1041,6 +1041,9 @@
       } else if (options.type==="type-remove-team-user") {
         var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
         out += chatBundleData["exoplatform.chat.team.msg.removeuser"].replace("{0}", "<b>" + options.fullname + "</b>").replace("{1}", users);
+      } else if (options.type==="type-leave-team-user") {
+        var users = "<b>" + options.users.replace("; ","</b>; <b>") + "</b>";
+        out += chatBundleData["exoplatform.chat.team.msg.leaveroom"].replace("{0}", "<b>" + options.fullname + "</b>");
       } else if (options.type==="type-kicked") {
         out += "<b>" + chatBundleData["exoplatform.chat.team.msg.kicked"] + "</b>";
       } else if (options.type==="type-question" || options.type==="type-hand") {

@@ -165,6 +165,7 @@
             <li><a href="#" id="team-remove-from-favorites-button" class="auto-wrap"><i class="uiIconChatFavorite pull-left user-favorite"></i>&nbsp;&{exoplatform.chat.remove.favorites}</a></li>
             <li><a href="#" id="team-notification-button" class="auto-wrap"><i class="uiIconPLFNotifications"></i>&nbsp;&{exoplatform.stats.notifications}</a></li>
             <li class="only-admin"><a href="#" id="team-edit-button" class="auto-wrap"><i class="uiIconEdit uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.edit}</span></a></li>
+            <li class="only-team-user"><a href="#" id="team-leave-button" class="auto-wrap"><i class="uiIconChatLeaveRoom uiIconLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.leave}</span></a></li>
             <li class="only-admin"><a href="#" id="team-delete-button" class="auto-wrap"><i class="uiIconDelete uiIconChatLightGray"></i><span href="javaScript:void(0)" data-toggle="tooltip">&nbsp;&{exoplatform.chat.team.delete}</span></a></li>
             <li class="participantsList">
               <a href="#" class="auto-wrap" data-placement="left" disabled>
@@ -478,6 +479,26 @@
     </div>
   </div>
   <span class="uiIconResize pull-right uiIconLightGray"></span>
+</div>
+
+<!-- ################################## -->
+<!-- ######### TEAM LEAVE MODAL ###### -->
+<!-- ################################## -->
+<div id="team-leave-window" class="uiPopup hide team-leave-modal">
+<div class="popupHeader clearfix">
+<a class="uiIconClose pull-right" data-dismiss="modal" aria-hidden="true"></a>
+    <span id="team-leave-window-label" class="PopupTitle popupTitle">&{exoplatform.chat.team.leave.title}</span>
+</div>
+
+  <div class="PopupContent popupContent">
+    <div class="modal-body">
+      <p><span id="team-leave-window-chat-name" class="confirmationIcon">&{exoplatform.chat.team.leave.message}</span></p>
+    </div>
+<div class="uiAction uiActionBorder">
+<a id="team-leave-button-ok" href="#" class="btn btn-primary">&{exoplatform.chat.team.leave.ok}</a>
+      <a id="team-leave-button-cancel" href="#" class="btn">&{exoplatform.chat.team.leave.ko}</a>
+</div>
+  </div>
 </div>
 
 <!-- ################################## -->
