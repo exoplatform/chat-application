@@ -8,7 +8,10 @@
       <dropdown-select>
         <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
+        <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
         <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+        <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
+        <li slot="menu"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
       </dropdown-select>
       <dropdown-select>
         <span slot="toggle">{{ filterByType[typeFilter] }}</span>
