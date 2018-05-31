@@ -103,9 +103,10 @@ export default {
     document.addEventListener('exo-chat-reconnected', this.connectionEstablished);
     document.addEventListener('exo-chat-user-status-changed', (e) => {
       const contactChanged = e.detail;
-      if (this.userSettings.username === contactChanged.name) {
-        this.userSettings.status = contactChanged.status;
-        this.status = contactChanged.status;
+      if (this.userSettings.username === contactChanged.sender) {
+        this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
+        this.userSettings.originalStatus = this.userSettings.status;
+        this.status = this.userSettings.status;
       }
     });
     document.addEventListener('exo-chat-notification-count-updated', (e) => {

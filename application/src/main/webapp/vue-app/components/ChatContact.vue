@@ -1,19 +1,21 @@
 <template>
-  <div :class="statusStyle" class="chat-contact">
-    <div :style="`backgroundImage: url(${contactAvatar})`" class="chat-contact-avatar">
+  <div class="chat-contact">
+    <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
-      <div class="contactLabel">
+      <div :class="statusStyle" class="contactLabel">
         {{ name }}
         <slot></slot>
       </div>
-      <div v-if="type =='u' && !list && !isCurrentUser" class="user-status">
+      <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
         <i class="uiIconStatus"></i><span>{{ getStatus }}</span>
       </div>
       <dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
-        <i slot="toggle" class="uiIconStatus"></i>
-        <span slot="toggle">{{ getStatus }}</span>
+        <div slot="toggle" :class="statusStyle">
+          <i class="uiIconStatus"></i>
+          <span class="user-status">{{ getStatus }}</span>
+        </div>
         <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">

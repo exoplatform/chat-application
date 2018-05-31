@@ -297,13 +297,6 @@ export default {
         contactToUpdate.hasNotSentMessages = false;
       }
     },
-    contactStatusChanged(event) {
-      const contactChanged = event.detail;
-      const foundContact = this.findContact(contactChanged.sender, 'user');
-      if (foundContact) {
-        foundContact.status = contactChanged.data.status;
-      }
-    },
     leftRoom(e) {
       const message = e.detail ? e.detail: e;
       const sender = message.data && message.data.sender ? message.data.sender : message.sender;

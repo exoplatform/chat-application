@@ -14,8 +14,9 @@ function loadLanguageAsync (lang) {
     lang = i18n.locale;
   }
   if (loadedLanguages.indexOf(lang) < 0) {
-    // TODO replace by a call to a new REST service which loads eXo resource bundles (ResourceBundleService)
-    return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`).then(resp => resp.json()).then(msgs => {
+    return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`, {
+      credentials: 'include'
+    }).then(resp => resp.json()).then(msgs => {
       i18n.setLocaleMessage(lang, msgs);
       loadedLanguages.push(lang);
       i18n.locale = lang;

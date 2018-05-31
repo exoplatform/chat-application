@@ -1,8 +1,8 @@
 <template>
   <div class="dropdown">
-    <span :class="togglerClass" class="dropdown-toggle" data-toggle="dropdown">
+    <div :class="togglerClass" class="dropdown-toggle" data-toggle="dropdown">
       <slot name="toggle"></slot>
-    </span>
+    </div>
     <ul :class="positionClass" class="dropdown-menu">
       <slot name="menu"></slot>
     </ul>

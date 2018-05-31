@@ -140,7 +140,7 @@ export default {
   },
   computed: {
     getMembersNumber() {
-      return /*(this.contact.type != 'u') ? this.contact.participants.length :*/ 0;
+      return this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
     },
     settingActions() {
       if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraActions) {
