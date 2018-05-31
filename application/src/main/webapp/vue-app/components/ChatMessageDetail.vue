@@ -498,6 +498,8 @@ export default {
 
       if ($message.offset().top + $dropdownMenu.outerHeight() + DROPDOWN_MARGIN > $('#chats').outerHeight() + ROOM_BAR_HEIGHT) {
         $dropdown.addClass('top');
+      } else {
+        $dropdown.removeClass('top');
       }
     }
   }
