@@ -140,6 +140,10 @@ import DropdownSelect from './DropdownSelect.vue';
 export default {
   components: { DropdownSelect },
   props: {
+    miniChat: {
+      type: Boolean,
+      default: false
+    },
     message: {
       type: Object,
       default: function() {
@@ -257,7 +261,7 @@ export default {
       }
     },
     displayActions() {
-      return !this.message.isDeleted && this.messageActions && this.messageActions.length;
+      return !this.miniChat && !this.message.isDeleted && this.messageActions && this.messageActions.length;
     },
     messageId() {
       return this.message.clientId ? this.message.clientId : this.message.msgId;

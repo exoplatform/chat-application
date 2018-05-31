@@ -1,16 +1,16 @@
 <template>
-  <div class="uiRightContainerArea">
+  <div class="uiRightContainerArea message-list">
     <div v-exo-scroll v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
       <div v-show="newMessagesLoading" class="center">
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
         <div class="day-separator"><span>{{ dayDate }}</span></div>
-        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" @edit-message="editMessage"></chat-message-detail>
+        <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" :mini-chat="miniChat" @edit-message="editMessage"></chat-message-detail>
       </div>
     </div>
-    <chat-message-composer :contact="contact" @exo-chat-message-written="messageWritten"></chat-message-composer>
-    <modal v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
+    <chat-message-composer :contact="contact" :mini-chat="miniChat" @exo-chat-message-written="messageWritten"></chat-message-composer>
+    <modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
       <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus></textarea>
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveMessage">{{ $t('exoplatform.chat.save') }}</div>
@@ -39,6 +39,12 @@ export default {
     'chat-message-detail': ChatMessageDetail,
     'chat-message-composer': ChatMessageComposer
   },
+  props: {
+    miniChat: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       messages: [],
@@ -54,7 +60,7 @@ export default {
   computed: {
     messagesMap() {
       const days = this.messages.map((message) => chatTime.getDayDate(message.timestamp).toString() ).reduce(function(result, current){
-        return result.indexOf(current) === -1 ? result.concat(current) : result;
+        return current && current.length && result.indexOf(current) === -1 ? result.concat(current) : result;
       }, []);
       const messagesMap = {};
       days.forEach(element => {

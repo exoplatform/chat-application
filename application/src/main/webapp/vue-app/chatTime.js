@@ -7,7 +7,7 @@ export function getDayDate(timestampServer) {
   return date.toLocaleDateString();
 }
 
-export function getTimeString(timestampServer) {
+export function getTimeString(timestampServer, displayDate) {
   let date = new Date();
   if (timestampServer) {
     date = new Date(timestampServer);
@@ -45,12 +45,13 @@ export function getTimeString(timestampServer) {
     sTime += ` ${ampm}`;
   }
 
-  /*
-  const sNowDate = new Date().toLocaleDateString();
-  const sDate = date.toLocaleDateString();
-  if (sNowDate !== sDate) {
-    sTime = `${sDate} ${sTime}`;
+  if(displayDate) {
+    const sNowDate = new Date().toLocaleDateString();
+    const sDate = date.toLocaleDateString();
+    if (sNowDate !== sDate) {
+      sTime = `${sDate} ${sTime}`;
+    }
   }
-   */
+
   return sTime;
 }

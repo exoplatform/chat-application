@@ -32,7 +32,7 @@
             </select>
           </div>
         </div>
-        <input v-model="eventLocation" class="large" type="text" placeholder="Location">
+        <input v-model="eventLocation" class="large" type="text" placeholder="Location" required>
       </div>
       <div v-else-if="appKey == 'task'" class="task-form">
         <input ref="taskTitle" class="large" type="text" placeholder="Task title" required>

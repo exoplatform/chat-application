@@ -50,4 +50,210 @@
     right: -10px;
     top: 4px;
   }
+
+  #chat-notifications-details {
+    max-height: 345px;
+    overflow: auto;
+    overflow-x: hidden;
+    width: 255px;
+
+    .chat-notification-detail {
+      min-height: 59px;
+      .avatarXSmall {
+        float: left;
+        margin-right: 10px;
+        margin-top: 4px;
+      }
+      .chat-label-status {
+        margin-left: 46px;
+      }
+      .name {
+        font-weight: bold;
+        .text-overflow;
+        display: block;
+      }
+      .timestamp, .team {
+        font-size: 12px;
+        line-height: 18px;
+        .text-overflow;
+      }
+      .timestamp {
+        float: left;
+        width: 100px;
+      }
+      .team {
+        text-align: right;
+      }
+      .text {
+        .text-overflow;
+        max-height: 20px;
+        > i {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
+  .chat-notification-loading {
+    padding-left: 10px;
+    line-height: 16px;
+    vertical-align: bottom;
+  }
+
+  .mini-chat {
+    display: none;
+    position: fixed;
+    width: 300px;
+    position: fixed;
+    top: auto!important;
+    left: auto!important;
+    bottom: 0;
+    right: 10px;
+    z-index: 1000;
+
+    .msgln{
+      height: 100%;
+      padding: 0px !important;
+      color: @white;
+    }
+    .msgln-odd {
+      padding: 20px 0px;
+      background: @grayLighter;
+      .msg-text{
+        margin: 0px 60px 0px 110px;
+        word-wrap: break-word;
+        font-weight: bold;
+      }
+      .msg-date{
+        margin-right: 20px;
+      }
+      .msg-user{
+        padding: 0px 10px 0px 45px;
+        color: @grayDark;
+      }
+    }
+
+    .box-shadow(0px 2px 6px 0px rgba(35, 44, 48, 0.5));
+
+    .uiIconNotification {
+      color: #c72222;
+      display: none;
+    }
+
+    &.uiBox {
+      margin-bottom: 0;
+    }
+    &.mini-chat-collapse {
+      .history,.message {
+        display: none;
+      }
+    }
+
+    .title {
+      height: 26px;
+      line-height: 23px;
+      border:none;
+      border: 1px solid #3d3d3d;
+      padding: 5px 10px;
+      margin:-1px -1px 0px -1px;
+      .border-top-left-radius(3px);
+      .border-top-right-radius(3px);
+      #gradient > .vertical (#4f4f4f,#474747);
+      .title-left {
+        color: #fff;
+        display: block;
+        .text-overflow;
+      }
+      .title-right {
+        float: right;
+        margin-left: 5px;
+      }
+      .fullname {
+          font-weight: bold;
+          color:@white;
+          font-size: 14px;
+          line-height: 16px;
+          vertical-align: middle;
+          .text-overflow;
+          max-width: 175px;
+      }
+    }
+
+    .btn-maxi {
+      display: none;
+    }
+
+    .uiActionWithLabel {
+          border: medium none;
+          float: none;
+          line-height: 18px;
+          min-height: 20px;
+          min-width: 20px;
+          padding: 0;
+          text-align: center;
+          vertical-align: middle;
+          i {
+              font-size: 9px;
+              top: 2px;
+          }
+      &:hover ,&:active,&:focus,&.actived {
+          .box-shadow(none);
+          border: none;
+                  background: @grayDark;
+          .uiIconMinimize ,.uiIconMaximize ,.uiIconClose {
+            //background-image: url("@{images-path}/Icons/uiIconsSecondary.png")!important;
+                    color: @colorIconSecondary;
+          }
+          .uiIconChatPopOut {
+            //background-image: url('@{imgPath}uiIconChatWhite.png')!important;
+                    color: @colorIconSecondary;
+          }
+      }
+
+    }
+
+    .chat-message-list {
+      display: block;
+      overflow-x: hidden;
+      overflow-y: auto;
+      max-height: 294px;
+      min-height: 294px;
+      max-width: 100%;
+      padding: 0;
+    }
+    .chat-message {
+      height: auto;
+
+      .composer-container {
+        padding: 0;
+      }
+      input {
+        margin: 0;
+      }
+    }
+    .chat-message-box.is-current-user {
+      padding: 0;
+    }
+    .chat-contact-avatar {
+      margin: auto;
+    }
+
+    &.minimized {
+      .message-list, .btn-mini {
+        display: none;
+      }
+
+      .btn-maxi {
+        display: initial;
+      }
+    }
+  }
+
+  [class^="uiIconChat"], .uiIconChatLightGray {
+    color: #999999;
+  }
+
+  .uiIconChatPopOut:before {
+      content: "\e754";
+  }
 }

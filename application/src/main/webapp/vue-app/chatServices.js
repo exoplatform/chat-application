@@ -22,6 +22,13 @@ export function getUserStatus(userSettings, user) {
     }}).then(resp =>  resp.text());
 }
 
+export function getNotReadMessages(userSettings) {
+  return fetch(`${chatData.chatServerAPI}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=true`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
+
 export function initChatSettings(username, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }

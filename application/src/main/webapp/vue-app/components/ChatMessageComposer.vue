@@ -1,6 +1,6 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message">
-    <div class="apps-container">
+    <div v-if="!miniChat" class="apps-container">
       <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
         <div class="apps-item-icon"><i :class="app.class"></i></div>
         <div class="apps-item-label">{{ $t(app.labelKey) }}</div>
@@ -8,7 +8,7 @@
     </div>
     <div class="composer-container">
       <div class="composer-box">
-        <div class="composer-action">
+        <div v-if="!miniChat" class="composer-action">
           <div class="action-emoji">
             <i class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
             <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
@@ -18,8 +18,9 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed">+</div>
         </div>
-        <textarea id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
-        <div class="composer-action">
+        <input v-if="miniChat" id="messageComposerArea" v-model="newMessage" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
+        <textarea v-if="!miniChat" id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
+        <div v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
           </div>
@@ -108,6 +109,10 @@ export default {
     'apps-modal': ComposerAppsModal
   },
   props: {
+    miniChat: {
+      type: Boolean,
+      default: false
+    },
     contact: {
       type: Object,
       default: function() {
@@ -189,17 +194,19 @@ export default {
         user: eXo.chat.userSettings.username
       };
       let found = false;
-      this.getApplications.forEach(application => {
-        if(application.shortcutMatches && application.shortcutMatches(this.newMessage)) {
-          if (application.shortcutCallback) {
-            found = true;
-            application.shortcutCallback(this.newMessage, this.contact);
-          } else if(application.shortcutTriggeredEvent) {
-            found = true;
-            document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: this.newMessage, contact : this.contact}}));
+      if(!this.miniChat) {
+        this.getApplications.forEach(application => {
+          if(application.shortcutMatches && application.shortcutMatches(this.newMessage)) {
+            if (application.shortcutCallback) {
+              found = true;
+              application.shortcutCallback(this.newMessage, this.contact);
+            } else if(application.shortcutTriggeredEvent) {
+              found = true;
+              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: this.newMessage, contact : this.contact}}));
+            }
           }
-        }
-      });
+        });
+      }
       if (!found) {
         this.$emit('exo-chat-message-written', message);
       }
