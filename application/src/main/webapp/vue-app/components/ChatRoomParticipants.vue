@@ -17,7 +17,7 @@
         <dropdown-select v-show="!isCollapsed" position="right">
           <span slot="toggle">{{ filterByStatus[participantFilter] }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
-          <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#">{{ label }}</a></li>
+          <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#"><i :class="{'not-filter': participantFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         </dropdown-select>
       </div>
       <div class="room-participants-list isList">

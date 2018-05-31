@@ -8,12 +8,12 @@
       <dropdown-select>
         <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#">{{ label }}</a></li>
+        <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
       </dropdown-select>
       <dropdown-select>
         <span slot="toggle">{{ filterByType[typeFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#">{{ label }}</a></li>
+        <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
       </dropdown-select>
       <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
         <i class="uiIconSimplePlus"></i>
