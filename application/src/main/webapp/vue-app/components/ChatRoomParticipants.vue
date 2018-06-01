@@ -65,6 +65,9 @@ export default {
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-room-member-left', this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(STATUS_FILTER_PARAM, STATUS_FILTER_DEFAULT);
+    if (this.mq === 'tablet') {
+      this.isCollapsed = true;
+    }
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);

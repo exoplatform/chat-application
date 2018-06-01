@@ -65,6 +65,7 @@ $.fn.extend({
 Vue.mixin({
   data: function() {
     return {
+      mq: '',
       get EMOTICONS() {
         return [
           {
@@ -110,5 +111,20 @@ Vue.mixin({
         ];
       }
     };
+  },
+  created() {
+    this.handleMediaQuery();
+    window.addEventListener('resize', this.handleMediaQuery);
+  },
+  methods: {
+    handleMediaQuery() {
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        this.mq = 'mobile';
+      } else if (window.matchMedia('(max-width: 1024px)').matches) {
+        this.mq = 'tablet';
+      } else {
+        this.mq = 'desktop';
+      }
+    }
   }
 });
