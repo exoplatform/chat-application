@@ -16,6 +16,16 @@
       </div>
     </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
+    <modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" display-close="false" modal-class="logout-popup">
+      <div class="modal-body">
+        {{ $t('exoplatform.chat.timeout.description') }}
+      </div>
+      <div class="uiAction uiActionBorder">
+        <a href="#" class="btn btn-primary" @click="reloadPage">
+          {{ $t('exoplatform.chat.timeout.login') }}
+        </a>
+      </div>
+    </modal>
     <div style="display: none;">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
@@ -31,6 +41,7 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 
+import Modal from './modal/Modal.vue';
 import ChatContact from './ChatContact.vue';
 import ChatContactList from './ChatContactList.vue';
 import ChatRoomParticipants from './ChatRoomParticipants.vue';
@@ -40,6 +51,7 @@ import GlobalNotificationModal from './modal/GlobalNotificationModal.vue';
 
 export default {
   components: {
+    'modal': Modal,
     'chat-contact': ChatContact,
     'chat-contact-list': ChatContactList,
     'chat-room-participants': ChatRoomParticipants,
@@ -65,6 +77,7 @@ export default {
         wsEndpoint: null,
       },
       connected: true,
+      loggedout: false,
       selectedContact: {},
       isSearchingContact: false,
       settingModal: false
@@ -78,6 +91,7 @@ export default {
     document.addEventListener('exo-chat-logout-sent', () => {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
+        this.loggedout = true;
       }
     });
     document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
@@ -214,6 +228,9 @@ export default {
     setContactParticipants(participants) {
       this.selectedContact.participants = participants;
       document.dispatchEvent(new CustomEvent('exo-chat-participants-loaded', {'detail' : this.selectedContact}));
+    },
+    reloadPage() {
+      window.location.reload();
     }
   }
 };

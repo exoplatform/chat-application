@@ -3,7 +3,7 @@
     <div :class="modalClass" class="uiPopup chat-modal">
       <div class="popupHeader">
         <span class="PopupTitle popupTitle">{{ title }}</span>
-        <a class="uiIconClose pull-right" @click="closeModal"></a> 
+        <a v-show="displayClose === 'true'" class="uiIconClose pull-right" @click="closeModal"></a> 
       </div>
       <div class="PopupContent popupContent">
         <slot></slot>
@@ -15,6 +15,10 @@
 <script>
 export default {
   props: {
+    displayClose: {
+      type: String,
+      default: 'true'
+    },
     title: {
       type: String,
       default: ''
