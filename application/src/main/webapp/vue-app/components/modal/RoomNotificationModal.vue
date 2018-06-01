@@ -36,19 +36,19 @@ export default {
   props: {
     show: {
       type: Boolean,
-      default: function () {
+      default() {
         return false;
       }
     },
     room: {
       type: String,
-      default: function () {
+      default() {
         return '';
       }
     },
     roomName: {
       type: String,
-      default: function () {
+      default() {
         return '';
       }
     }

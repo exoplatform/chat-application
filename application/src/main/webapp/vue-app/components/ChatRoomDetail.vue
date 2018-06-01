@@ -1,6 +1,6 @@
 <template>
   <div class="room-detail">
-    <chat-contact :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :nb-members="getMembersNumber">
+    <chat-contact :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
       <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
     </chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
@@ -119,13 +119,14 @@ export default {
   props: {
     contact: {
       type: Object,
-      default: function () {
+      default() {
         return {};
       }
     }
   },
   data() {
     return {
+      nbMembers: 0,
       showSearchRoom: false,
       searchText: '',
       meetingStarted: false,
@@ -139,9 +140,6 @@ export default {
     };
   },
   computed: {
-    getMembersNumber() {
-      return this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length -1 : 0;
-    },
     settingActions() {
       if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraActions) {
         return DEFAULT_ROOM_ACTIONS.concat(eXo.chat.room.extraActions);
@@ -165,6 +163,7 @@ export default {
     document.addEventListener('exo-chat-setting-startMeeting', this.startMeeting);
     document.addEventListener('exo-chat-setting-stopMeeting', this.stopMeeting);
     document.addEventListener('exo-chat-setting-notificationSettings', this.openNotificationSettingsModal);
+    document.addEventListener('exo-chat-participants-loaded', this.participantsLoaded);
     this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
   },
   updated() {
@@ -174,6 +173,7 @@ export default {
     document.removeEventListener('exo-chat-setting-startMeeting', this.startMeeting);
     document.removeEventListener('exo-chat-setting-stopMeeting', this.stopMeeting);
     document.removeEventListener('exo-chat-setting-notificationSettings', this.openNotificationSettingsModal);
+    document.removeEventListener('exo-chat-participants-loaded', this.participantsLoaded);
   },
   methods: {
     toggleFavorite(contact) {
@@ -246,6 +246,9 @@ export default {
     },
     unescapeHTML(html) {
       return unescape(html);
+    },
+    participantsLoaded() {
+      this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
     }
   }
 };

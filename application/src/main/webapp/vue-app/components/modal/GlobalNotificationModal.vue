@@ -57,7 +57,7 @@ export default {
   props: {
     show: {
       type: Boolean,
-      default: function () {
+      default() {
         return false;
       }
     }

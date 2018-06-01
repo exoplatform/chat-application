@@ -207,6 +207,7 @@ export default {
     },
     setContactParticipants(participants) {
       this.selectedContact.participants = participants;
+      document.dispatchEvent(new CustomEvent('exo-chat-participants-loaded', {'detail' : this.selectedContact}));
     }
   }
 };
