@@ -38,21 +38,26 @@
   transform: translateY(-100%);
   transition: transform .5s linear, opacity 1s ease-out;
 }
-.room-action-menu {
-  .room-search-btn, .room-settings-btn {
-    margin-left: 15px;
-    cursor: pointer;
-  }
+.room-action-menu .room-search-btn {
+  margin-left: 15px;
+  cursor: pointer;
 }
 .room-search {
   visibility: hidden;
-  input {
+  input[type="text"] {
     margin: 0;
     width: 400px;
+    .placeholder({
+      color: inherit;
+      opacity: .3;
+    });
   }
-  input, input:focus {
+  input[type="text"], input[type="text"]:focus {
     border: none;
     box-shadow: none;
+  }
+  [class^="uiIcon"] {
+    cursor: pointer;
   }
 }
 
