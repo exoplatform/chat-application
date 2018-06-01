@@ -143,8 +143,16 @@ export default {
         chatWebSocket.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
       }
     },
-    roomUpdated() {
-      this.refreshContacts();
+    roomUpdated(e) {
+      const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
+      if (updatedContact) {
+        const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room);
+        if(indexOfRoom < 0) {
+          this.contactList.unshift(updatedContact);
+        } else {
+          this.contactList.splice(indexOfRoom, 1, updatedContact);
+        }
+      }
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;

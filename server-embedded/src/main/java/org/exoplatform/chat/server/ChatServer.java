@@ -691,17 +691,6 @@ public class ChatServer
 =======
       List<String> usersToNotifyForAdd = new JSONArray();
       List<String> usersToAdd = new JSONArray();
-      JSONObject data = new JSONObject();
-      data.put("title", teamName);
-      data.put("members", usersToAdd);
-
-      
-      RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
-          RealTimeMessageBean.EventType.ROOM_UPDATED,
-          room,
-          user,
-          null,
-          data);
 
       if (users != null && !users.isEmpty()) {
         List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
@@ -775,11 +764,24 @@ public class ChatServer
 
       }
 
+      RoomBean roomBean = userService.getRoom(user, room, dbName);
+      JSONObject data = roomBean.toJSONObject();
+      data.put("title", teamName);
+      data.put("participants", usersToAdd);
+
+      RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+          RealTimeMessageBean.EventType.ROOM_UPDATED,
+          room,
+          user,
+          null,
+          data);
+
       if (!usersToNotifyForAdd.contains(creator)) {
         usersToNotifyForAdd.add(creator);
       }
       realTimeMessageService.sendMessage(updatedRoomMessage, usersToNotifyForAdd);
 
+      jsonObject.putAll(data);
       jsonObject.put("name", teamName);
       jsonObject.put("room", room);
     }

@@ -574,6 +574,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
         roomBean.setFullName(doc.get("team").toString());
+        String creator = (String) doc.get("user");
+        roomBean.setAdmins(new String[]{creator});
       }
       else if (ChatService.TYPE_ROOM_USER.equals(type))
       {
