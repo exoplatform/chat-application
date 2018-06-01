@@ -84,14 +84,12 @@
   }
   .action-apps {
     .square-rounded(23px);
-    line-height: 24px;
-    color: #fff;
-    font-size: 21px;
-    font-weight: bold;
     margin-top: 6px;
+    transform: rotate(45deg);
     transition: transform .2s linear;
-    &.close-apps {
-      transform: rotate(45deg);
+    > [class^="uiIcon"] {
+      color: #fff;
+      font-size: 11px;
     }
   }
   .action-send {
@@ -151,6 +149,9 @@
       opacity: 0;
       transition: top .3s ease-out, opacity .5s ease-in;
     }
+    .action-apps {
+      transform: rotate(0);
+    }
   }
   input[readonly] {
     background: none;
@@ -180,6 +181,10 @@
       margin-left: 15px;
     }
   }
+}
+
+#appComposerForm .selectize-input {
+    margin-bottom: 5px;
 }
 
 .uiIconChatSmile {
