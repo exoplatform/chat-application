@@ -1,6 +1,6 @@
 <template>
   <div class="uiRightContainerArea message-list">
-    <div v-exo-scroll v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
       <div v-show="newMessagesLoading" class="center">
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>

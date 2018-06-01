@@ -37,7 +37,7 @@
   .contactList {
     padding: 10px 0;
     flex: 1;
-    position: relative;
+    overflow-y: scroll;
   }
   .chat-contact {
     margin-right: auto;
@@ -75,12 +75,12 @@
       margin: 10px 10px 0 0;
     }
   }
-  .ps__scrollbar-y-rail {
-    background: none !important;
+  ::-webkit-scrollbar {
+    width: @scrollSize;
   }
-  .ps > .ps__scrollbar-y-rail > .ps__scrollbar-y {
-    background: #ced2d5 !important;
-    right: 6px;
+  ::-webkit-scrollbar-thumb {
+    background: @scrollSecondaryThumbColor;
+    border-radius: @scrollThumbRaduis;
   }
 }
 

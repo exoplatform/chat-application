@@ -74,6 +74,13 @@
     border: none;
     margin: 0;
     box-shadow: none;
+    &::-webkit-scrollbar {
+      width: @scrollSize;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: @scrollDefaultThumbColor;
+      border-radius: @scrollThumbRaduis;
+    }
   }
   .action-apps {
     .square-rounded(23px);

@@ -21,10 +21,6 @@ Vue.directive('exo-tooltip', function (el, binding) {
   element.tooltip();
 });
 
-Vue.directive('exo-scroll', function (el) {
-  $(el).perfectScrollbar({'suppressScrollX': true, scrollYMarginOffset: 30});
-});
-
 exoi18n.loadLanguageAsync(lang).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({
