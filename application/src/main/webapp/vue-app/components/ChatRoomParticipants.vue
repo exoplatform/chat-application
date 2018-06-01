@@ -6,7 +6,7 @@
       </div>
       <div class="room-participants-header no-user-selection">
         <div class="room-participants-filter">
-          <div v-show="isCollapsed" class="actionIcon" @click="toggleParticipantFilter">
+          <div v-show="isCollapsed" :class="{'active': participantFilterClass}" class="actionIcon" @click="toggleParticipantFilter">
             <i :class="{'all-participants': participantFilterClass}" class="uiIconChatMember uiIconChatLightGray"></i>
           </div>
         </div>

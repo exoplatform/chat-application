@@ -7,7 +7,7 @@
     <external-component-plugins>
         <target-component>org.exoplatform.services.listener.ListenerService</target-component>
         <component-plugin>
-            <name>exo.core.security.ConversationRegistry.unregister</name>
+            <name>org.exoplatform.web.GenericHttpListener.sessionDestroyed</name>
             <set-method>addListener</set-method>
             <type>org.exoplatform.addons.chat.listener.UpdateUserStatusListener</type>
         </component-plugin>

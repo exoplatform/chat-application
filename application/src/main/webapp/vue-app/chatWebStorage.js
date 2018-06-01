@@ -44,10 +44,9 @@ export function setStoredParam(key, value, expire) {
 export function getRoomNotSentMessages(username, room) {
   const roomNotSentMessages = [];
   if (room && username) {
-    const notSentMessages = getNotSentMessages(username);
-    if(notSentMessages && Object.keys(notSentMessages).length) {
-      Object.keys(notSentMessages).forEach(clientId => {
-        const notSenMessage = notSentMessages[clientId];
+    const notSentMessages = getSortedNotSentMessages(username);
+    if(notSentMessages && notSentMessages.length) {
+      notSentMessages.forEach(notSenMessage => {
         if (notSenMessage && notSenMessage.room === room) {
           roomNotSentMessages.push(notSenMessage);
         }
@@ -64,11 +63,23 @@ export function getNotSentMessages(username) {
     if(Array.isArray(notSentMessages)) {
       notSentMessages = {};
       localStorage.removeItem(`${STORED_NOT_SENT_MESSAGES}-${username}`);
+    } else {
+      return notSentMessages;
     }
-    return notSentMessages;
-  } else {
-    return {};
   }
+  return {};
+}
+
+function getSortedNotSentMessages(username) {
+  const notSentMessages = getNotSentMessages(username);
+  if(notSentMessages) {
+    const notSentMessagesArray = Object.values(notSentMessages);
+    if(notSentMessagesArray.length > 1) {
+      notSentMessagesArray.sort((a, b) => a.timestamp - b.timestamp);
+    }
+    return notSentMessagesArray;
+  }
+  return [];
 }
 
 export function storeNotSentMessage(messageToStore) {
@@ -82,7 +93,7 @@ export function storeNotSentMessage(messageToStore) {
     return;
   }
   const notSentMessages = getNotSentMessages(user);
-  const foundMessage = notSentMessages[clientId];
+  const foundMessage = notSentMessages && notSentMessages[clientId];
   if (!foundMessage) {
     messageToStore.notSent = true;
     notSentMessages[clientId] = messageToStore;
@@ -115,10 +126,9 @@ export function sendFailedMessages() {
   if(!getStoredParam('messagesSending')) {
     setStoredParam('messagesSending', 'true', RESEND_MESSAGE_PERIOD / NB_MILLISECONDS_PERD_SECOND);
     try {
-      const notSentMessages = getNotSentMessages(eXo.chat.userSettings.username);
-      if(notSentMessages && Object.keys(notSentMessages).length) {
-        Object.keys(notSentMessages).forEach(clientId => {
-          const messageToResend = notSentMessages[clientId];
+      const notSentMessages = getSortedNotSentMessages(eXo.chat.userSettings.username);
+      if(notSentMessages && notSentMessages.length) {
+        notSentMessages.forEach(messageToResend => {
           if(messageToResend) {
             if (eXo.chat.isOnline) {
               if(messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {

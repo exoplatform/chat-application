@@ -79,13 +79,17 @@ public class ChatTools
     return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
+  @SuppressWarnings("unchecked")
   @Resource
   @Route("/logout")
-  public Response.Content logout(String username, String token, String passphrase, String dbName, String uniqueSession)
+  public Response.Content logout(String username, String token, String sessionId, String passphrase, String dbName, String uniqueSession)
   {
     if (!checkPassphrase(passphrase)) {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
+
+    Map options = new HashMap<>();
+    options.put("sessionId", sessionId);
 
     // send logout message to all sessions of the given user to check if their
     // session is closed
@@ -93,7 +97,7 @@ public class ChatTools
                                                                       null,
                                                                       username,
                                                                       new Date(),
-                                                                      null);
+                                                                      options);
     realTimeMessageService.sendMessage(realTimeMessageBean, username);
 
     if (StringUtils.equals(uniqueSession, "true")) {

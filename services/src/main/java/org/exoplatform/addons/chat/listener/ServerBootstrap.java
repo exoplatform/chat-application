@@ -84,8 +84,8 @@ public class ServerBootstrap {
     postServer("addUser", "username=" + username + "&token=" + token + "&dbName=" + dbName);
   }
 
-  public static void logout(String username, String token, String dbName, boolean uniqueSession) {
-    postServer("logout", "username=" + username + "&token=" + token + "&dbName=" + dbName + "&uniqueSession=" + uniqueSession);
+  public static void logout(String username, String token, String sessionId, String dbName, boolean uniqueSession) {
+    postServer("logout", "username=" + username + "&token=" + token + "&sessionId=" + sessionId + "&dbName=" + dbName + "&uniqueSession=" + uniqueSession);
   }
 
   public static void setAsAdmin(String username, boolean isAdmin, String dbName) {

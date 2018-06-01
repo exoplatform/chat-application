@@ -242,8 +242,12 @@ export function setRoomMessagesAsRead(room, callback) {
   });
 }
 
-document.addEventListener('exo-chat-logout-sent', () => {
-  cometDSettings.cCometD.disconnect();
+document.addEventListener('exo-chat-logout-sent', (e) => {
+  const message = e.detail;
+
+  if(message && message.data && message.data.sessionId === cometDSettings.sessionId) {
+    cometDSettings.cCometD.disconnect();
+  }
 });
 
 document.addEventListener('exo-chat-message-tosend', (e) => {
