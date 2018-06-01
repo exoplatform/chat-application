@@ -47,20 +47,31 @@ export default {
       selectedContact: {}
     };
   },
-  computed: {},
+  watch: {
+    room() {
+      this.refreshSelectedRoom();
+    }
+  },
   created() {
-    if (this.room) {
-      chatServices.getRoomDetail(eXo.chat.userSettings, this.room).then(contact => {
-        if (
-          contact &&
-          contact.user &&
-          contact.user.length &&
-          contact.user !== 'undefined'
-        ) {
-          this.selectedContact = contact;
-          document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {detail: this.selectedContact}));
-        }
-      });
+    this.refreshSelectedRoom();
+  },
+  methods: {
+    refreshSelectedRoom() {
+      if (this.room) {
+        chatServices.getRoomDetail(eXo.chat.userSettings, this.room).then(contact => {
+          if (
+            contact &&
+            contact.user &&
+            contact.user.length &&
+            contact.user !== 'undefined'
+          ) {
+            this.selectedContact = contact;
+            document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {detail: this.selectedContact}));
+          }
+        });
+      } else {
+        this.selectedContact = null;
+      }
     }
   }
 };

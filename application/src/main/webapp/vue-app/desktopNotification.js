@@ -1,3 +1,5 @@
+import {chatData} from './chatData.js';
+
 const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
 const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = 'keywords';
 const ROOM_ON_SITE = 'on-site';
@@ -159,9 +161,9 @@ function showDesktopNotif(path, msg) {
     } else {
       let avatarUrl = null;
       if (msg.roomType === 'u') {
-        avatarUrl = `/rest/v1/social/users/${msg.from}/avatar`;
+        avatarUrl = `${chatData.socialUserAPI}${msg.from}/avatar`;
       } else {
-        avatarUrl = `/rest/v1/social/spaces/${msg.roomDisplayName}/avatar`;
+        avatarUrl = `${chatData.socialSpaceAPI}${msg.roomDisplayName}/avatar`;
       }
       notification = new Notification(msg.roomDisplayName, {
         icon: avatarUrl,

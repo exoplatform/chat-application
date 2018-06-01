@@ -6,7 +6,7 @@
           <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
         </div>
       </a>
-      <chat-notif-list ref="menuItems" @set-status="setStatus($event)" @select-room="room = $event"></chat-notif-list>
+      <chat-notif-list ref="menuItems" :total-unread-msg="totalUnreadMsg" @set-status="setStatus($event)" @select-room="room = $event"></chat-notif-list>
     </div>
     <div style="display: none;">
       <audio id="chat-audio-notif" controls>
