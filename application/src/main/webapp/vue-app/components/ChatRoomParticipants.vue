@@ -40,7 +40,7 @@ export default {
   components: {ChatContact, DropdownSelect},
   data : function() {
     return {
-      isCollapsed: true,
+      isCollapsed: false,
       filterByStatus: {
         'All': this.$t('exoplatform.chat.contact.all'),
         'Online':  this.$t('exoplatform.chat.online'),
