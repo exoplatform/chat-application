@@ -8,7 +8,7 @@
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
-    <div class="uiGlobalRoomsContainer">
+    <div v-show="selectedContact && selectedContact.room" class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
       <div class="room-content">
         <chat-message-list :contact="selectedContact"></chat-message-list>
@@ -79,8 +79,6 @@ export default {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
       }
-      // TODO Display popin for disconnection
-      // + Display Session expired
     });
     document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
     document.addEventListener('exo-chat-connected', this.connectionEstablished);

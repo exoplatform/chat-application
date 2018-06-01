@@ -157,6 +157,16 @@ export default {
   watch: {
     searchText(value) {
       document.dispatchEvent(new CustomEvent('exo-chat-message-search', {detail: value}));
+    },
+    contact(newContact) {
+      if(!newContact) {
+        this.nbMembers = 0;
+      } else {
+        this.nbMembers = newContact.participants ? newContact.participants.length : 0;
+      }
+      this.showSearchRoom = false;
+      this.searchText = '';
+      this.meetingStarted = false;
     }
   },
   created() {
