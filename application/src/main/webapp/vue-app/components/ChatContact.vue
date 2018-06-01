@@ -9,7 +9,8 @@
         <slot></slot>
       </div>
       <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
-        <i class="uiIconStatus"></i><span>{{ getStatus }}</span>
+        <i class="uiIconStatus"></i>
+        <span class="user-status">{{ getStatus }}</span>
       </div>
       <dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
         <div slot="toggle" :class="statusStyle">

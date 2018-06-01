@@ -1,21 +1,6 @@
 /* PLF */
 
 #chatApplicationContainer {
-  .favorite {
-    cursor: pointer;
-    &:before {
-      content: "\e97f";
-      color: #FAD86E;
-      visibility: hidden;
-    }
-    &.is-fav:before {
-      content: "\e97d";
-      visibility: visible;
-    }
-    &:hover:before {
-      visibility: visible;
-    }
-  }
   .dropdown.top .dropdown-menu{
     bottom: 25px;
     top: auto;
@@ -52,7 +37,6 @@
       }
     }
   }
-  
 }
 
 .modal-mask {
@@ -92,8 +76,6 @@
   }
 }
 
-
-
 .uiLeftContainerArea .uiIconArrowDownMini:before {
   color: #fff;
 }
@@ -127,6 +109,22 @@
   }
 }
 /* suggester */
+
+.favorite.uiIcon {
+  cursor: pointer;
+  &:before {
+    content: "\e97f";
+    color: #FAD86E;
+    visibility: hidden;
+  }
+  &.is-fav:before {
+    content: "\e97d";
+    visibility: visible;
+  }
+  &:hover:before {
+    visibility: visible;
+  }
+}
 
 .uiIconVerticalDots:before { // TODO move to PLF
   content: "\e79c";
