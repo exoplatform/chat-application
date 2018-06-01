@@ -6,7 +6,7 @@
           <div class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
         </chat-contact>
       </div>
-      <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @exo-chat-contact-selected="setSelectedContact" @exo-chat-refresh-contats="refreshContacts($event)"></chat-contact-list>
+      <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
     <div class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>

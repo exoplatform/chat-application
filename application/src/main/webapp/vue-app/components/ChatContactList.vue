@@ -11,7 +11,7 @@
         <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
         <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
-        <li slot="menu"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
+        <li slot="menu" @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
       </dropdown-select>
       <dropdown-select>
         <span slot="toggle">{{ filterByType[typeFilter] }}</span>
@@ -212,17 +212,20 @@ export default {
       if(contact.detail) {
         contact = contact.detail;
       }
-      this.$emit('exo-chat-contact-selected', contact);
+      this.$emit('contact-selected', contact);
     },
     contactChanged(e) {
       let selectedContact = e.detail;
       if(this.filteredContacts.length > 0 && !this.filteredContacts.find(contact => contact.room === selectedContact.room)) {
         // Select different contact if the contact is not visible
         selectedContact = this.filteredContacts[0];
-        this.$emit('exo-chat-contact-selected', selectedContact);
+        this.$emit('contact-selected', selectedContact);
       }
       selectedContact.unreadTotal = 0;
       chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
+    },
+    markAllAsRead() {
+      chatWebSocket.setRoomMessagesAsRead();
     },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
@@ -295,9 +298,17 @@ export default {
       this.newRoom = {};
     },
     markRoomMessagesRead(message) {
-      const contactToUpdate = this.findContact(message.room);
-      if(contactToUpdate) {
-        contactToUpdate.hasNotSentMessages = false;
+      if (message.room) {
+        const contactToUpdate = this.findContact(message.room);
+        if(contactToUpdate) {
+          contactToUpdate.hasNotSentMessages = false;
+        }
+      } else {
+        this.contacts.forEach(contact => {
+          contact.unreadTotal = 0;
+        });
+        this.$emit('refresh-contacts', true);
+        this.$forceUpdate();
       }
     },
     leftRoom(e) {

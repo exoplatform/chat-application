@@ -1,5 +1,6 @@
 package org.exoplatform.chat.server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
 import org.cometd.bayeux.server.ServerMessage;
@@ -86,10 +87,16 @@ public class CometdService {
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
         String room = (String) jsonMessage.get("room");
 
-        notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
+        String category = "room";
+        if (StringUtils.isBlank(room)) {
+          room = null;
+          category = null;
+        }
+
+        notificationService.setNotificationsAsRead(sender, "chat", category, room, dbName);
         if (userService.isAdmin(sender, dbName))
         {
-          notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room, dbName);
+          notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", category, room, dbName);
         }
 
         // send real time message to all others clients of the same user
