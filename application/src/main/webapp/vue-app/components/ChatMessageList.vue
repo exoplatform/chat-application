@@ -11,7 +11,7 @@
     </div>
     <chat-message-composer :contact="contact" :mini-chat="miniChat" @exo-chat-message-written="messageWritten"></chat-message-composer>
     <modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
-      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus></textarea>
+      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveMessage"></textarea>
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveMessage">{{ $t('exoplatform.chat.save') }}</div>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
@@ -32,6 +32,8 @@ import * as chatTime from '../chatTime';
 const MESSAGES_PER_PAGE = 50;
 
 const MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL = 25;
+
+const ENTER_CODE_KEY = 13;
 
 export default {
   components: {
@@ -281,19 +283,35 @@ export default {
     },
     editMessage(message) {
       this.messageToEdit = JSON.parse(JSON.stringify(message));
+      this.messageToEdit.msg = this.messageToEdit.msg ? this.messageToEdit.msg : this.messageToEdit.message;
+      this.messageToEdit.msg = this.messageToEdit.msg
+        .replace(/&#92/g, '\\')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/<br( *)\/?>/g, '\n')
+        .replace('&#38', '&');
       this.showEditMessageModal = true;
       this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
     },
-    saveMessage() {
-      this.messageModified(this.messageToEdit);
-      this.showEditMessageModal = false;
+    saveMessage(event) {
+      if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+        this.messageModified(this.messageToEdit);
+        this.showEditMessageModal = false;
+      }
     },
     closeModal() {
       this.showEditMessageModal = false;
     },
     searchMessage(e) {
       this.searchKeyword = e.detail.trim();
-    }
+    },
+    preventDefault(event) {
+      if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
   }
 };
 </script>

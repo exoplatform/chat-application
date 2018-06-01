@@ -18,8 +18,8 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconSimplePlus"></i></div>
         </div>
-        <input v-if="miniChat" id="messageComposerArea" v-model="newMessage" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <textarea v-if="!miniChat" id="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
+        <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" v-model="newMessage" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
         <div v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -152,7 +152,7 @@ export default {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
     document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
-    $(this.$refs.messageComposerArea).focus();
+    this.$nextTick(() => $('#messageComposerArea').focus());
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
