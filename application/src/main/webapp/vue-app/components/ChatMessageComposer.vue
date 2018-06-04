@@ -216,6 +216,9 @@ export default {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         this.sendMessage();
       }
+      if (event.keyCode === ENTER_CODE_KEY && (event.ctrlKey || event.altKey)) {
+        $(this.$refs.messageComposerArea).insertAtCaret('\n');
+      }
     },
     quoteMessage(e) {
       const quotedMessage = e.detail;
