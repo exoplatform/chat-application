@@ -18,8 +18,12 @@
   flex-direction: column;
 }
 .flex-space-evenly {
-  justify-content: space-around; // for browsers dont support 'space-evenly'
-  justify-content: space-evenly;
+  justify-content: space-between;
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+  }
 }
 .flex-center {
   display: flex;

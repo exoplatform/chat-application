@@ -3,7 +3,7 @@
     <div v-show="errorCode" class="alert alert-error">{{ errorMessage() }}</div>
     <form v-if="appKey !== 'file'" id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
       <div v-if="sendingMessage" class="chat-loading-mask">
-        <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
+        <img src="/chat/img/sync.gif" class="chat-loading">
       </div>
       <div v-if="appKey == 'raise-hand'">
         <input v-model="raiseHandComment" :placeholder="$t('exoplatform.chat.optional.comment')" class="large" type="text">
