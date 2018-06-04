@@ -181,7 +181,10 @@ export default {
     },
     addRooms(rooms) {
       const contacts = this.contactList.slice(0);
-      rooms = rooms.filter(contact => contact.fullName && !contacts.find(otherContact => otherContact.room === contact.room));
+      rooms = rooms.filter(contact => contact.fullName
+        && contact.fullName.trim().length > 0
+        && contact.room && contact.room.trim().length > 0
+        && !contacts.find(otherContact => otherContact.room === contact.room));
       if(rooms && rooms.length > 0) {
         rooms.forEach(room => {
           this.contactList.push(room);
