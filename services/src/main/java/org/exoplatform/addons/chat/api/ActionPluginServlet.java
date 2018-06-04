@@ -60,10 +60,10 @@ public class ActionPluginServlet extends GenericServlet {
     }
 
     if (response != null) {
-      PrintWriter writer = httpServletResponse.getWriter();
-      writer.append(new String(response.getData(), Charset.forName("UTF-8")));
-      writer.flush();
-      writer.close();
+      ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+      outputStream.write(response.getData());
+      outputStream.flush();
+      outputStream.close();
     } else {
       httpServletResponse.setStatus(HTTPStatus.NOT_FOUND);
     }

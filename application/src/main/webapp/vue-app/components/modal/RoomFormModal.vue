@@ -1,5 +1,7 @@
 <template>
   <modal v-show="show" :title="title" modal-class="create-room-modal" @modal-closed="closeModal">
+    <meta charset="utf-8">
+
     <div class="add-room-form">
       <label>{{ $t('exoplatform.chat.team.name') }}</label>
       <input v-model="fullName" type="text">

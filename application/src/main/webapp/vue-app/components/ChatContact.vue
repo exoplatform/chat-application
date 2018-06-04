@@ -5,7 +5,7 @@
     </div>
     <div class="contactDetail">
       <div :class="statusStyle" class="contactLabel">
-        <span>{{ name }}</span>
+        <span v-html="name" />
         <slot></slot>
       </div>
       <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">

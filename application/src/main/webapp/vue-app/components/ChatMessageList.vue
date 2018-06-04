@@ -295,7 +295,7 @@ export default {
       this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
     },
     saveMessage(event) {
-      if (!event || (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey)) {
+      if (!event || event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         this.messageModified(this.messageToEdit);
         this.showEditMessageModal = false;
       }

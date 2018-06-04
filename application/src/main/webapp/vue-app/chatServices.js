@@ -228,7 +228,7 @@ export function saveRoom(userSettings, roomName, users, room) {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   }).then(resp =>  resp.json());
 }
 
@@ -258,7 +258,7 @@ export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp)
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   }).then(resp =>  resp.text());
 }
 
@@ -280,7 +280,7 @@ export function getMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) 
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   }).then(resp =>  resp.text());
 }
 
@@ -299,7 +299,7 @@ export function saveWiki(userSettings, targetFullName, content) {
     },
     credentials: 'include',
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   }).then(resp =>  resp.json());
 }
 
@@ -314,7 +314,7 @@ export function saveEvent(userSettings, data, target) {
     },
     credentials: 'include',
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   });
 }
 
@@ -325,7 +325,7 @@ export function saveTask(userSettings, data) {
     },
     credentials: 'include',
     method: 'post',
-    body: $.param(data)
+    body: decodeURI($.param(data))
   });
 }
 
