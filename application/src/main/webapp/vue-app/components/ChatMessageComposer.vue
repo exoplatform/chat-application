@@ -18,8 +18,8 @@
           </div>
           <div class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconSimplePlus"></i></div>
         </div>
-        <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" v-model="newMessage" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <textarea v-else id="messageComposerArea" ref="messageComposerArea" v-model="newMessage" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
+        <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
         <div v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -122,7 +122,6 @@ export default {
   },
   data() {
     return {
-      newMessage: '',
       appsModal: {
         appKey: '',
         title: '',
@@ -173,7 +172,7 @@ export default {
       let emojiKey = emoji.keys[0];
       const $composer = $(this.$refs.messageComposerArea);
       emojiKey = $composer.text().split(/\s/).slice(-1)[0] === '' ? emojiKey : ` ${emojiKey}`;
-      $composer.insertAtCursor(emojiKey);
+      $composer.insertAtCaret(emojiKey);
       this.closeEmojiPanel();
     },
     preventDefault(event) {
@@ -183,11 +182,12 @@ export default {
       }
     },
     sendMessage() {
-      if(!this.newMessage || !this.newMessage.trim()) {
+      const newMessage = this.$refs.messageComposerArea.value;
+      if(!newMessage || !newMessage.trim()) {
         return;
       }
       const message = {
-        message : this.newMessage.trim(),
+        message : newMessage.trim(),
         room : this.contact.room,
         clientId: new Date().getTime().toString(),
         timestamp: Date.now(),
@@ -196,13 +196,13 @@ export default {
       let found = false;
       if(!this.miniChat) {
         this.getApplications.forEach(application => {
-          if(application.shortcutMatches && application.shortcutMatches(this.newMessage)) {
+          if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;
-              application.shortcutCallback(this.newMessage, this.contact);
+              application.shortcutCallback(newMessage, this.contact);
             } else if(application.shortcutTriggeredEvent) {
               found = true;
-              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: this.newMessage, contact : this.contact}}));
+              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact : this.contact}}));
             }
           }
         });
@@ -210,7 +210,7 @@ export default {
       if (!found) {
         this.$emit('exo-chat-message-written', message);
       }
-      this.newMessage = '';
+      this.$refs.messageComposerArea.value = '';
     },
     sendMessageWithKey(event) {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
@@ -234,8 +234,6 @@ export default {
       messageToSend = $('<div />').html(messageToSend).text();
       messageToSend = `[quote=${quotedMessage.fullname}] ${messageToSend} [/quote]`;
       composer.insertAtCaret(messageToSend);
-      // The text insertion doesn't trigger Vue for modified field
-      this.newMessage = composer.val();
     },
     openAppModal(app) {
       this.appsClosed = true;
@@ -244,7 +242,10 @@ export default {
       this.appsModal.isOpned = true;
     },
     editLastMessage() {
-      if (!this.newMessage || !this.newMessage.trim().length) {
+      const newMessage = this.$refs.messageComposerArea.value;
+
+      if (!newMessage || !newMessage.trim().length) {
+        this.$refs.messageComposerArea.value = '';
         document.dispatchEvent(new CustomEvent('exo-chat-message-edit-last'));
       }
     }
