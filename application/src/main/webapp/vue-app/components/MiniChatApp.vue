@@ -85,10 +85,13 @@ export default {
       }
     });
     document.addEventListener('exo-chat-room-open', (e) => {
-      const roomName = e.detail;
-      chatServices.getRoomId(this.userSettings, roomName).then(rommId => {
-        this.room = rommId;
-      });
+      const roomName = e.detail ? e.detail.name : null;
+      const roomType = e.detail ? e.detail.type : null;
+      if(roomName && roomName.trim().length) {
+        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
+          this.room = rommId;
+        });
+      }
     });
     document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
     document.addEventListener('exo-chat-connected', this.connectionEstablished);

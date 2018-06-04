@@ -119,8 +119,8 @@ export function getRoomParticipants(userSettings, room) {
     }}).then(resp =>  resp.json());
 }
 
-export function getRoomId(userSettings, targetUser) {
-  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${targetUser}&user=${userSettings.username}&dbName=${userSettings.dbName}`, {
+export function getRoomId(userSettings, targetUser, fieldName) {
+  return fetch(`${chatData.chatServerAPI}getRoom?targetUser=${targetUser}&user=${userSettings.username}&dbName=${userSettings.dbName}&type=${fieldName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
