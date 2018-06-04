@@ -2,7 +2,7 @@
   <modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
     <div v-show="errorCode" class="alert alert-error">{{ errorMessage() }}</div>
     <form v-if="appKey !== 'file'" id="appComposerForm" ref="appComposerForm" onsubmit="return false;">
-      <div v-if="sendingMessage" class="apps-composer-mask center">
+      <div v-if="sendingMessage" class="chat-loading-mask">
         <img src="/chat/img/sync.gif" width="64px" class="chat-loading">
       </div>
       <div v-if="appKey == 'raise-hand'">

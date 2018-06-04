@@ -15,6 +15,9 @@
         <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)"></chat-room-participants> 
       </div>
     </div>
+    <div v-if="!(selectedContact && selectedContact.room)" class="chat-no-conversation muted">
+      <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
+    </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
     <modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" display-close="false" modal-class="logout-popup">
       <div class="modal-body">
@@ -26,7 +29,8 @@
         </a>
       </div>
     </modal>
-    <div style="display: none;">
+    <div v-if="!connected" class="chat-loading-mask"><img src="/chat/img/sync.gif" width="64px" class="chat-loading"></div>
+    <div class="hide">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
         <source src="/chat/audio/notif.mp3">
@@ -76,7 +80,7 @@ export default {
         chatPage: null,
         wsEndpoint: null,
       },
-      connected: true,
+      connected: false,
       loggedout: false,
       selectedContact: {},
       isSearchingContact: false,
