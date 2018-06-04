@@ -31,7 +31,7 @@
       </div>
       <div v-show="isSearchingContact" class="contact-list-item isList">
         <div class="seeMoreContacts">
-          {{ $t('exoplatform.chat.loading') }} ...
+          {{ $t('exoplatform.chat.loading') }}
         </div>
       </div>
       <div v-show="hasMoreContacts" class="contact-list-item isList" @click="loadMore()">
