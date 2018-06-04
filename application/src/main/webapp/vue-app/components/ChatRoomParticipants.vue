@@ -21,7 +21,9 @@
         </dropdown-select>
       </div>
       <div class="room-participants-list isList">
-        <chat-contact v-for="contact in filteredParticipant" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
+        <div class="contact-list-item">
+          <chat-contact v-for="contact in filteredParticipant" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
+        </div>
       </div>
     </div>
   </div>

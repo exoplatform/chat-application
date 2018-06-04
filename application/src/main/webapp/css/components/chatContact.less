@@ -1,8 +1,15 @@
+@avatarDefaultSize: 40px;
+@avatarListSize: 26px;
+
 /* chat-contact component */
 .chat-contact {
   display: inline-flex;
   align-items: center;
 
+  &, .chat-contact, .contactDetail {
+    flex: 1;
+    width: 0;
+  }
   .contactDetail {
     margin-left: 10px;
   }
@@ -10,11 +17,17 @@
     position: static;
     font-size: 10px;
   }
+  .contactLabel {
+    display: flex;
+    > span {
+      .text-ellipsis;
+    }
+  }
   .user-status {
     text-transform: uppercase;
   }
   .user-status, .room-number-members, .status-dropdown {
-    margin-top: -5px;
+    margin-top: -7px;
   }
   .user-status, .room-number-members {
     font-size: 11px;
@@ -56,9 +69,8 @@
 
 .chat-contact-avatar {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  flex-shrink: 0;
+  .square-rounded(@avatarDefaultSize);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -71,8 +83,7 @@
 }
 .isList {
   .chat-contact-avatar {
-    width: 26px;
-    height: 26px;
+    .square(@avatarListSize);
   }
 }
 

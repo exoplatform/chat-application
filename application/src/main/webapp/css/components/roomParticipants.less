@@ -1,4 +1,32 @@
 /* list participants area */
+.room-users-collapse-btn {
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: @defaultBorder;
+  text-align: center;
+  display: none;
+}
+.room-participants:hover .room-users-collapse-btn {
+  display: initial;
+}
+.room-participants-header {
+  .flex-center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 50px;
+  border-bottom: @defaultBorder;
+  padding: 0 20px;
+}
+.room-participants-list {
+  padding: 10px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 .room-users-collapse-btn .uiIcon{
   top: 2px;
   color: #ced2d5;
@@ -22,12 +50,6 @@
 }
 .uiIconChatMember:before {
   content: "\eac1";
-}
-.room-participants-list {
-  padding: 10px 20px;
-  .chat-contact {
-    margin: 5px 0;
-  }
 }
 .collapsed {
   .room-participants-list {
