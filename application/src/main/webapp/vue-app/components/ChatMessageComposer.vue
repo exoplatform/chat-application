@@ -16,7 +16,7 @@
               <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji)"></span>
             </div>
           </div>
-          <div class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconSimplePlus"></i></div>
+          <div class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
         <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
