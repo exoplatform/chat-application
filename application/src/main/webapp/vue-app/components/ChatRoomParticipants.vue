@@ -40,7 +40,7 @@ export default {
   components: {ChatContact, DropdownSelect},
   data : function() {
     return {
-      isCollapsed: false,
+      isCollapsed: true,
       filterByStatus: {
         'All': this.$t('exoplatform.chat.contact.all'),
         'Online':  this.$t('exoplatform.chat.online'),
@@ -65,9 +65,6 @@ export default {
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-room-member-left', this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(STATUS_FILTER_PARAM, STATUS_FILTER_DEFAULT);
-    if (this.mq === 'tablet') {
-      this.isCollapsed = true;
-    }
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
