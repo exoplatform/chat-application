@@ -22,6 +22,7 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
+import {initTiptip} from '../tiptip';
 
 import MiniChatNotifList from './MiniChatNotifList.vue';
 import ChatMessageList from './ChatMessageList.vue';
@@ -68,6 +69,7 @@ export default {
     }
   },
   created() {
+    initTiptip();
     chatServices.initChatSettings(this.userSettings.username,
       userSettings => this.initSettings(userSettings),
       data => {
@@ -81,6 +83,12 @@ export default {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
       }
+    });
+    document.addEventListener('exo-chat-room-open', (e) => {
+      const roomName = e.detail;
+      chatServices.getRoomId(this.userSettings, roomName).then(rommId => {
+        this.room = rommId;
+      });
     });
     document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
     document.addEventListener('exo-chat-connected', this.connectionEstablished);
