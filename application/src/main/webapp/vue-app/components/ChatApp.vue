@@ -149,7 +149,7 @@ export default {
       if (typeof selectedContact === 'string') {
         selectedContact = this.contactList.find(contact => contact.room === selectedContact);
       }
-      if (selectedContact) {
+      if (selectedContact && selectedContact.room && selectedContact.fullName) {
         this.selectedContact = selectedContact;
         document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : selectedContact}));
       }

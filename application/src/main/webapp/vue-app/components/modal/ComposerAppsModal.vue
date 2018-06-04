@@ -239,7 +239,6 @@ export default {
           }
           return response.json();
         }).then(data => {
-          console.log(data);
           const url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
           message.options.url = url;
           message.options.username = $(this.$refs.taskAssignee).suggester('getValue');

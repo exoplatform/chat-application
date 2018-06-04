@@ -71,16 +71,10 @@ const DEFAULT_COMPOSER_APPS = [
         'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
       };
       chatServices.saveTask(eXo.chat.userSettings, data).then((response) => response.text()).then(data => {
-        console.log(data);
-        console.log(encodeURI(data));
-        console.log(decodeURI(data));
         data = JSON.parse(data);
         const url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
         const title = data.title ? data.title : data.length && data.length === 1 && data[0].title ? data[0].title : '';
-        console.log(data);
         message.options.url = url;
-        console.log('title to send');
-        console.log(title);
         message.options.task = decodeURI(title);
 
         document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));

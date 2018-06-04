@@ -221,7 +221,6 @@ export default {
         selectedContact = this.filteredContacts[0];
         this.$emit('contact-selected', selectedContact);
       }
-      selectedContact.unreadTotal = 0;
       chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
     },
     markAllAsRead() {
@@ -258,9 +257,7 @@ export default {
       const foundContact = this.findContact(room);
       if(foundContact) {
         foundContact.timestamp = message.ts;
-        if (this.selected.room === foundContact.room) {
-          this.selected.unreadTotal = 0;
-        } else {
+        if (this.selected.room !== foundContact.room) {
           foundContact.unreadTotal ++;
         }
       } else {
@@ -297,10 +294,12 @@ export default {
       this.createRoomModal = false;
       this.newRoom = {};
     },
-    markRoomMessagesRead(message) {
+    markRoomMessagesRead(e) {
+      const message = e.detail;
       if (message.room) {
         const contactToUpdate = this.findContact(message.room);
         if(contactToUpdate) {
+          contactToUpdate.unreadTotal = 0;
           contactToUpdate.hasNotSentMessages = false;
         }
       } else {
