@@ -3,7 +3,7 @@
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
-          <div class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
+          <div v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')" class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
         </chat-contact>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>

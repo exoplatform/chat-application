@@ -1,11 +1,11 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && contact.type != 'u'" class="uiRoomUsersContainerArea">
     <div :class="{collapsed: isCollapsed}" class="room-participants">
-      <div class="room-users-collapse-btn" @click="toggleCollapsed">
+      <div v-exo-tooltip.left.body="tooltipCollapse" class="room-users-collapse-btn" @click="toggleCollapsed">
         <i class="uiIcon"></i>
       </div>
       <div class="room-participants-header no-user-selection">
-        <div class="room-participants-filter">
+        <div v-exo-tooltip.left.body="tooltipParticipants" class="room-participants-filter">
           <div v-show="isCollapsed" :class="{'active': participantFilterClass}" class="actionIcon" @click="toggleParticipantFilter">
             <i :class="{'all-participants': participantFilterClass}" class="uiIconChatMember uiIconChatLightGray"></i>
           </div>
@@ -58,6 +58,12 @@ export default {
     },
     participantFilterClass() {
       return this.participantFilter === 'All';
+    },
+    tooltipParticipants() {
+      return this.participantFilter === 'All' ? this.$t('exoplatform.chat.hide.users') : this.$t('exoplatform.chat.show.users');
+    },
+    tooltipCollapse() {
+      return this.isCollapsed === true ? this.$t('exoplatform.chat.expand.users') : this.$t('exoplatform.chat.reduce.users');
     }
   },
   created() {
