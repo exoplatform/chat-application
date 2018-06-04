@@ -16,8 +16,8 @@
       <span class="team-add-user-label">{{ $t('exoplatform.chat.team.help') }}</span>
     </div>
     <div class="uiAction uiActionBorder">
-      <div class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</div>
-      <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
+      <button :disabled="disableSave" class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</button>
+      <button class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</button>
     </div>
   </modal>
 </template>
@@ -55,6 +55,9 @@ export default {
     },
     otherParticiants() {
       return this.participants.filter(participant => participant.name !== eXo.chat.userSettings.username);
+    },
+    disableSave() {
+      return !this.fullName || !this.fullName.trim().length;
     }
   },
   watch: {
