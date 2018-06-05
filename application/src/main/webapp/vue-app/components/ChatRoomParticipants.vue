@@ -47,11 +47,11 @@ export default {
         restURL: chatData.tiptipAPI,
         userId: binding.value,
         labels: {
-          StatusTitle: vnode.context.$t("exoplatform.chat.user.popup.status"),
-          Connect: vnode.context.$t("exoplatform.chat.user.popup.connect"),
-          Confirm: vnode.context.$t("exoplatform.chat.user.popup.confirm"),
-          CancelRequest: vnode.context.$t("exoplatform.chat.user.popup.cancel"),
-          RemoveConnection: vnode.context.$t("exoplatform.chat.user.popup.remove.connection")
+          StatusTitle: vnode.context.$t('exoplatform.chat.user.popup.status'),
+          Connect: vnode.context.$t('exoplatform.chat.user.popup.connect'),
+          Confirm: vnode.context.$t('exoplatform.chat.user.popup.confirm'),
+          CancelRequest: vnode.context.$t('exoplatform.chat.user.popup.cancel'),
+          RemoveConnection: vnode.context.$t('exoplatform.chat.user.popup.remove.connection')
         },
         content: false,
         defaultPosition: 'left',
