@@ -47,6 +47,9 @@
   input[type="text"] {
     margin: 0;
     width: 400px;
+    .responsive(@tablet,{
+      width: 150px;
+    });
     .placeholder({
       color: inherit;
       opacity: .3;

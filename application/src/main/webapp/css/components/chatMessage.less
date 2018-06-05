@@ -110,6 +110,9 @@
   &.is-current-user {
     justify-content: flex-end;
     padding-left: 50px;
+    .responsive(@tablet,{
+      padding-left: 0;
+    });
     .chat-message-bubble {
       background: #cfe9ff;
       border: none;

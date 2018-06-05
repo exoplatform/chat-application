@@ -60,3 +60,22 @@
   position: relative;
   user-select: none;
 }
+
+/* Responsive */
+
+@media (max-width: @tablet) {
+  .uiRoomUsersContainerArea {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    .room-users-collapse-btn {
+      display: block;
+    }
+  }
+  .room-content {
+    position: relative;
+    padding-right: 70px;
+  }
+}

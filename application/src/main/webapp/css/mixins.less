@@ -41,6 +41,12 @@
   text-overflow: ellipsis;
 }
 
+.responsive(@maxWidth; @rules) {
+  @media (max-width: @maxWidth) {
+      @rules();
+  }
+}
+
 .box-shadow(@shadow) {
   -webkit-box-shadow: @shadow;
      -moz-box-shadow: @shadow;
