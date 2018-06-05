@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="contactList isList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+      <div v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
@@ -119,7 +119,7 @@ export default {
       return this.contacts.filter(contact => contact.isFavorite).length;
     },
     filteredContacts: function() {
-      let sortedContacts = this.contacts.slice(0);
+      let sortedContacts = this.contacts.slice(0).filter(contact => contact.room && contact.fullName);
       if(this.typeFilter !== 'All') {
         sortedContacts = sortedContacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'

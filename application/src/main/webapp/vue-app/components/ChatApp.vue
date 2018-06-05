@@ -150,6 +150,12 @@ export default {
         selectedContact = this.contactList.find(contact => contact.room === selectedContact);
       }
       if (selectedContact && selectedContact.room && selectedContact.fullName) {
+        const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room);
+        if(indexOfRoom < 0) {
+          this.contactList.unshift(selectedContact);
+        } else {
+          this.contactList.splice(indexOfRoom, 1, selectedContact);
+        }
         this.selectedContact = selectedContact;
         document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : selectedContact}));
       }
@@ -161,7 +167,7 @@ export default {
     },
     roomUpdated(e) {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
-      if (updatedContact) {
+      if (updatedContact && updatedContact.room) {
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room);
         if(indexOfRoom < 0) {
           this.contactList.unshift(updatedContact);

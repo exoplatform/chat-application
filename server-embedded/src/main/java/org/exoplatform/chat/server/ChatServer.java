@@ -664,7 +664,6 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    System.out.println("teamName=" + teamName);
     try {
       teamName = URLDecoder.decode(teamName,"UTF-8");
     } catch (UnsupportedEncodingException e) {
