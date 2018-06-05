@@ -1828,6 +1828,25 @@
                 var users = users();
                 users = users.filter({name: {"!is": chatApplication.username}});
                 users = JSON.parse(users.stringify());
+                var usernames = '';
+                users.forEach(function (currentValue, index, arr) {
+                      usernames += arr[index].name;
+                });
+
+                jqchat.ajax({
+                      url: '/rest/chat/api/1.0/user/onlineStatus',
+                      data: {
+                          users: usernames
+                      },
+                      async: false,
+                      success: function (response) {
+                          users.forEach(function (currentValue, index, arr) {
+                              if (!response[currentValue.name]) {
+                                  arr[index].status = "offline";
+                              }
+                          });
+                      }
+                });
                 callback(users);
               }
             });
