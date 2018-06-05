@@ -7,7 +7,7 @@
       <input v-model="fullName" type="text">
       <label>{{ $t('exoplatform.chat.team.people') }}</label>
       <input id="add-room-suggestor" type="text">
-      <div class="room-suggest-list">
+      <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">
         <div v-for="participant in otherParticiants" :key="participant.name" class="uiMention">
           {{ participant.fullname }}
           <span @click="removeSuggest(participant)"><i class="uiIconClose"></i></span>
