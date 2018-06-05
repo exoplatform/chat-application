@@ -22,7 +22,7 @@
       </div>
       <div class="room-participants-list isList">
         <div class="contact-list-item">
-          <chat-contact v-for="contact in filteredParticipant" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
+          <chat-contact v-tiptip="contact.name" v-for="contact in filteredParticipant" :key="contact.name" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></chat-contact>
         </div>
       </div>
     </div>
@@ -34,12 +34,32 @@ import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
+import {chatData} from '../chatData';
 
 const STATUS_FILTER_PARAM = 'exo.chat.room.participant.filter';
 const STATUS_FILTER_DEFAULT = 'All';
 
 export default {
   components: {ChatContact, DropdownSelect},
+  directives: {
+    tiptip(el, binding, vnode) {
+      $(el).find('.chat-contact-avatar').userPopup({
+        restURL: chatData.tiptipAPI,
+        userId: binding.value,
+        labels: {
+          StatusTitle: vnode.context.$t("exoplatform.chat.user.popup.status"),
+          Connect: vnode.context.$t("exoplatform.chat.user.popup.connect"),
+          Confirm: vnode.context.$t("exoplatform.chat.user.popup.confirm"),
+          CancelRequest: vnode.context.$t("exoplatform.chat.user.popup.cancel"),
+          RemoveConnection: vnode.context.$t("exoplatform.chat.user.popup.remove.connection")
+        },
+        content: false,
+        defaultPosition: 'left',
+        keepAlive: true,
+        maxWidth: '240px'
+      });
+    }
+  },
   data : function() {
     return {
       isCollapsed: true,
