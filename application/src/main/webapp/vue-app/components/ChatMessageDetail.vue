@@ -88,13 +88,13 @@
         <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
         <br />
         <div class="custom-message-item" @click="sendMeetingNotes">
-          <i class="uiIconChatSendEmail"></i><span class="btn-link send-meeting-notes">{{ $t('exoplatform.chat.notes') }}</span>
+          <i class="uiIconChatSendEmail"></i>
+          <a class="btn-link send-meeting-notes">{{ $t('exoplatform.chat.notes') }}</a>
         </div>
-        <br />
         <div class="custom-message-item" @click="saveMeetingNotes">
-          <i class="uiIconChatWiki"></i><span class="btn-link save-meeting-notes">{{ $t('exoplatform.chat.save.wiki') }}</span>
+          <i class="uiIconChatWiki"></i>
+          <a class="btn-link save-meeting-notes">{{ $t('exoplatform.chat.save.wiki') }}</a>
         </div>
-        <br />
         <div class="alert alert-success meetingNotesSent" style="display:none;">
           <button type="button" class="close" style="right: 0;">×</button>
           <strong>{{ $t('exoplatform.chat.sent') }}</strong>
