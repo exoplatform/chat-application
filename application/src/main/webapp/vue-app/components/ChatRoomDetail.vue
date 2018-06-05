@@ -94,7 +94,7 @@ const DEFAULT_ROOM_ACTIONS = [{
   key: 'leaveRoom',
   labelKey: 'exoplatform.chat.team.leave',
   type: 't',
-  class: 'uiIconDelete',
+  class: 'uiIconExit',
   enabled: (comp) => {
     return !comp.isAdmin;
   },
