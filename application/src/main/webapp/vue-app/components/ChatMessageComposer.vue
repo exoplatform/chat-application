@@ -9,18 +9,18 @@
     <div class="composer-container">
       <div class="composer-box">
         <div v-if="!miniChat" class="composer-action">
-          <div class="action-emoji">
+          <div v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')" class="action-emoji">
             <i class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
             <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
               <div class="arrow"></div>
               <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji)"></span>
             </div>
           </div>
-          <div class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
+          <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
         <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
-        <div v-if="!miniChat" class="composer-action">
+        <div v-exo-tooltip.top="$t('exoplatform.chat.moreActions')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
           </div>

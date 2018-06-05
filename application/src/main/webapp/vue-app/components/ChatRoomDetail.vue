@@ -9,11 +9,11 @@
         <i class="uiIconCloseLight" @click="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
-        <div class="room-search-btn" @click="openSearchRoom">
+        <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
         <dropdown-select v-if="displayMenu" class="room-settings-dropdown" position="right">
-          <i slot="toggle" class="uiIconVerticalDots"></i>
+          <i v-exo-tooltip.bottom="$t('exoplatform.chat.send')" slot="toggle" class="uiIconVerticalDots"></i>
           <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>
