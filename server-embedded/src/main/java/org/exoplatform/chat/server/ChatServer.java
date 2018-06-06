@@ -130,6 +130,18 @@ public class ChatServer
             notificationService, tokenService, dbName);
     roomsBean.getRooms().forEach((roomBean) -> {
       roomBean.setFavorite(userService.isFavorite(user, roomBean.getRoom(), dbName));
+      String lastMesageString = chatService.read(user, roomBean.getRoom(), false, null, null, 1, dbName);
+      if (StringUtils.isNotBlank(lastMesageString)) {
+        try {
+          org.json.JSONObject lastMessage = new org.json.JSONObject(lastMesageString);
+          lastMessage = (lastMessage == null || lastMessage.get("messages") == null
+              || ((org.json.JSONArray) lastMessage.get("messages")).length() == 0) ? null
+                                                                                   : ((org.json.JSONObject) ((org.json.JSONArray) lastMessage.get("messages")).get(0));
+          roomBean.setLastMessage(lastMessage);
+        } catch (JSONException e) {
+          LOG.warning("Error while setting last message");
+        }
+      }
     });
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);

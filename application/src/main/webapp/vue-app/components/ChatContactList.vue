@@ -33,9 +33,9 @@
     </div>
     <div class="contactList isList">
       <div v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
-        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status">
+        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="contact.lastMessage.msg">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-          <div v-if="mq === 'mobile'" class="last-message-time">22:30</div>
+          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage.timestamp) }}</div>
         </chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
@@ -61,6 +61,7 @@
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
+import * as chatTime from '../chatTime';
 
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
@@ -374,6 +375,16 @@ export default {
     },
     favoriteTooltip(contact) {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
+    },
+    getLastMessageTime(timestamp) {
+      if (timestamp) {
+        if (chatTime.getDayDate(timestamp) === chatTime.getDayDate(new Date())) {
+          return chatTime.getTimeString(timestamp);
+        } else {
+          return chatTime.getDayDate(timestamp);
+        }
+      }
+      return '';
     }
   }
 };

@@ -22,7 +22,7 @@
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
-      <div v-if="mq === 'mobile' && list" class="last-message">Ceci est un message</div>
+      <div v-if="mq === 'mobile' && list && lastMessage" class="last-message">{{ lastMessage }}</div>
     </div>
   </div>
 </template>
@@ -61,6 +61,10 @@ export default {
     isCurrentUser: {
       type: Boolean,
       default: false
+    },
+    lastMessage: {
+      type: String,
+      default: ''
     }
   },
   data : function() {

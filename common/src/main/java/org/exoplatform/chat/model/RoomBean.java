@@ -37,6 +37,15 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isFavorite = false;
   String[] admins = null;
   long timestamp = -1;
+  org.json.JSONObject lastMessage;
+
+  public org.json.JSONObject getLastMessage() {
+    return lastMessage;
+  }
+
+  public void setLastMessage(org.json.JSONObject lastMessage) {
+    this.lastMessage = lastMessage;
+  }
 
   public String getUser() {
     return user;
@@ -137,6 +146,7 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("isActive", String.valueOf(this.isActive()));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
+    obj.put("lastMessage", this.getLastMessage());
     if (this.getAdmins() != null) {
       try {
         obj.put("admins", new JSONArray(this.getAdmins()));
