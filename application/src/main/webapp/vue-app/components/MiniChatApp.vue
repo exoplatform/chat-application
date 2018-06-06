@@ -23,12 +23,11 @@
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
 import {initTiptip} from '../tiptip';
+import {chatData} from '../chatData';
 
 import MiniChatNotifList from './MiniChatNotifList.vue';
 import ChatMessageList from './ChatMessageList.vue';
 import MiniChatRoom from './MiniChatRoom.vue';
-
-const REATTEMPT_PERIOD = 1000;
 
 export default {
   components: {
@@ -137,10 +136,10 @@ export default {
           this.userSettings.status = newStatus;
           this.status = newStatus;
         }, () => {
-          setTimeout(() => thiss.setStatus(status), REATTEMPT_PERIOD);
+          setTimeout(() => thiss.setStatus(status), chatData.REATTEMPT_PERIOD);
         });
       } else {
-        setTimeout(() => thiss.setStatus(status), REATTEMPT_PERIOD);
+        setTimeout(() => thiss.setStatus(status), chatData.REATTEMPT_PERIOD);
       }
     },
     connectionEstablished() {

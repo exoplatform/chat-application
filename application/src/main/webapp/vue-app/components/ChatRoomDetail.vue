@@ -46,68 +46,7 @@ import RoomNotificationModal from './modal/RoomNotificationModal.vue';
 import Modal from './modal/Modal.vue';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
-
-const DEFAULT_ROOM_ACTIONS = [{
-  key: 'startMeeting',
-  labelKey: 'exoplatform.chat.meeting.start',
-  class: 'uiIconChatRecordStart',
-  enabled: (comp) => {
-    return !comp.meetingStarted;
-  }
-}, {
-  key: 'stopMeeting',
-  labelKey: 'exoplatform.chat.meeting.stop',
-  class: 'uiIconChatRecordStop',
-  enabled: (comp) => {
-    return comp.meetingStarted;
-  }
-} , {
-  key: 'notificationSettings',
-  labelKey: 'exoplatform.stats.notifications',
-  class: 'uiIconPLFNotifications'
-} , {
-  key: 'editRoom',
-  labelKey: 'exoplatform.chat.team.edit',
-  type: 't',
-  class: 'uiIconEditInfo',
-  enabled: (comp) => {
-    return comp.isAdmin;
-  }
-} , {
-  key: 'deleteRoom',
-  labelKey: 'exoplatform.chat.team.delete',
-  type: 't',
-  class: 'uiIconDelete',
-  confirm: {
-    title: 'exoplatform.chat.team.delete.title',
-    message: 'exoplatform.chat.team.delete.message',
-    okMessage: 'exoplatform.chat.team.delete.ok',
-    koMessage: 'exoplatform.chat.team.delete.ko',
-    confirmed(contact) {
-      document.dispatchEvent(new CustomEvent('exo-chat-setting-deleteRoom', {'detail': contact}));
-    }
-  },
-  enabled: (comp) => {
-    return comp.isAdmin;
-  }
-} , {
-  key: 'leaveRoom',
-  labelKey: 'exoplatform.chat.team.leave',
-  type: 't',
-  class: 'uiIconExit',
-  enabled: (comp) => {
-    return !comp.isAdmin;
-  },
-  confirm: {
-    title: 'exoplatform.chat.team.leave',
-    message: 'exoplatform.chat.team.leave.confirm',
-    okMessage: 'exoplatform.chat.team.leave.confirm.yes',
-    koMessage: 'exoplatform.chat.team.leave.confirm.no',
-    confirmed(contact) {
-      document.dispatchEvent(new CustomEvent('exo-chat-setting-leaveRoom', {'detail': contact}));
-    }
-  }
-}];
+import {DEFAULT_ROOM_ACTIONS} from '../extension';
 
 export default {
   components: {

@@ -68,18 +68,7 @@ export default {
     return {
       contactList: [],
       userSettings: {
-        username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root',
-        token: null,
-        fullName: null,
-        status: null,
-        isOnline: false,
-        cometdToken: null,
-        dbName: null,
-        sessionId: null,
-        serverURL: null,
-        standalone: false,
-        chatPage: null,
-        wsEndpoint: null,
+        username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root'
       },
       connected: false,
       loggedout: false,

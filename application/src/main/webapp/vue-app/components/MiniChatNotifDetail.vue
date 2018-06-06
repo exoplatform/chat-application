@@ -23,6 +23,7 @@
 
 <script>
 import * as chatTime from '../chatTime';
+import {chatData} from '../chatData';
 
 export default {
   props: {
@@ -53,20 +54,20 @@ export default {
       const messageType = this.notif.options ? this.notif.options.type : '';
       if(messageType) {
         switch(messageType) {
-        case 'type-question': return 'uiIconChatQuestion uiIconChatLightGray pull-left';
-        case 'type-hand': return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
-        case 'type-file': return 'uiIconChatUpload uiIconChatLightGray pull-left';
-        case 'type-link': return 'uiIconChatLink uiIconChatLightGray pull-left';
-        case 'type-task': return 'uiIconChatCreateTask uiIconChatLightGray pull-left';
-        case 'type-event': return 'uiIconChatCreateEvent uiIconChatLightGray pull-left';
-        case 'type-notes': return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case 'type-meeting-start': return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case 'type-meeting-stop': return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case 'type-add-team-user': return '';
-        case 'type-remove-team-user': return '';
-        case 'call-join': return 'uiIconChatAddPeopleToMeeting uiIconChatLightGray pull-left';
-        case 'call-on': return 'uiIconChatStartCall uiIconChatLightGray pull-left';
-        case 'call-off': return 'uiIconChatFinishCall uiIconChatLightGray pull-left';
+        case chatData.QUESTION_MESSAGE: return 'uiIconChatQuestion uiIconChatLightGray pull-left';
+        case chatData.RAISE_HAND: return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
+        case chatData.FILE_MESSAGE: return 'uiIconChatUpload uiIconChatLightGray pull-left';
+        case chatData.LINK_MESSAGE: return 'uiIconChatLink uiIconChatLightGray pull-left';
+        case chatData.TASK_MESSAGE: return 'uiIconChatCreateTask uiIconChatLightGray pull-left';
+        case chatData.EVENT_MESSAGE: return 'uiIconChatCreateEvent uiIconChatLightGray pull-left';
+        case chatData.NOTES_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case chatData.MEETING_START_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case chatData.MEETING_STOP_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case chatData.ADD_USER_MESSAGE: return '';
+        case chatData.REMOVE_USER_MESSAGE: return '';
+        case chatData.CALL_JOIN_MESSAGE: return 'uiIconChatAddPeopleToMeeting uiIconChatLightGray pull-left';
+        case chatData.CALL_ON_MESSAGE: return 'uiIconChatStartCall uiIconChatLightGray pull-left';
+        case chatData.CALL_OFF_MESSAGE: return 'uiIconChatFinishCall uiIconChatLightGray pull-left';
         }
       }
       return '';
@@ -79,17 +80,17 @@ export default {
       let content = this.notif.content;
       if (messageType) {
         switch(messageType) {
-        case 'type-event' : content = this.notif.options.summary; break;
-        case 'type-task' : content = this.notif.options.task; break;
-        case 'type-link' : content = this.notif.options.link; break;
-        case 'type-notes' : content = this.$t('exoplatform.chat.notes.saved'); break;
-        case 'type-meeting-start' : content = this.$t('exoplatform.chat.meeting.started'); break;
-        case 'type-meeting-stop' : content = this.$t('exoplatform.chat.meeting.finished'); break;
-        case 'type-add-team-user' : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
-        case 'type-remove-team-user' : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullnam,1: this.notif.options.users}); break;
-        case 'call-join' : content = this.$t('exoplatform.chat.meeting.joined'); break;
-        case 'call-on' : content = this.$t('exoplatform.chat.meeting.started'); break;
-        case 'call-off' : content = this.$t('exoplatform.chat.meeting.finished'); break;
+        case chatData.EVENT_MESSAGE : content = this.notif.options.summary; break;
+        case chatData.TASK_MESSAGE : content = this.notif.options.task; break;
+        case chatData.LINK_MESSAGE : content = this.notif.options.link; break;
+        case chatData.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;
+        case chatData.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
+        case chatData.MEETING_STOP_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
+        case chatData.ADD_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
+        case chatData.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullnam,1: this.notif.options.users}); break;
+        case chatData.CALL_JOIN_MESSAGE : content = this.$t('exoplatform.chat.meeting.joined'); break;
+        case chatData.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
+        case chatData.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
         }
         content = `<a href='#'>${content}</a>`;
       } else {

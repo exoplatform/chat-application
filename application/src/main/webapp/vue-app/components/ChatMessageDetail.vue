@@ -6,19 +6,19 @@
     <div class="chat-message-bubble">
       <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
-      <div v-if="message.type === constants.DELETED_MESSAGE" class="message-content">
+      <div v-if="message.type === chatData.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
       </div>
       <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
-      <div v-else-if="message.options.type === constants.ADD_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === constants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.userLeft', {0: message.options.fullName}))">
+      <div v-else-if="message.options.type === chatData.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.userLeft', {0: message.options.fullName}))">
       </div>
-      <div v-else-if="message.options.type === constants.REMOVE_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === constants.TASK_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.TASK_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.url" target="_blank">{{ message.options.task }}</a>
         </b>
@@ -31,7 +31,7 @@
         </div>
         <div class="custom-message-item"><span><i class="uiIconChatClock"></i>{{ $t('exoplatform.chat.due.date') }}: </span><b>{{ message.options.dueDate || $t('exoplatform.chat.due.date.none') }}</b></div>
       </div>
-      <div v-else-if="message.options.type === constants.EVENT_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
@@ -45,7 +45,7 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-else-if="message.options.type === constants.FILE_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.FILE_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
@@ -72,19 +72,19 @@
           </div>
         </div>
       </div>
-      <div v-else-if="message.options.type === constants.LINK_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.LINK_MESSAGE" class="message-content">
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
-      <div v-else-if="(message.options.type === constants.RAISE_HAND || message.options.type === constants.QUESTION_MESSAGE)" class="message-content">
+      <div v-else-if="(message.options.type === chatData.RAISE_HAND || message.options.type === chatData.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
-      <div v-else-if="message.options.type === constants.START_MEETING_MESSAGE" class="message-content">
+      <div v-else-if="message.options.type === chatData.MEETING_START_MESSAGE" class="message-content">
         <b>{{ $t('exoplatform.chat.meeting.started') }}</b>
         <div>
           <em class="muted">{{ $t('exoplatform.chat.meeting.started.message') }}</em>
         </div>
       </div>
-      <div v-else-if="(message.options.type === constants.NOTES_MESSAGE || message.options.type === constants.STOP_MEETING_MESSAGE)" class="message-content msMeetingNotes">
+      <div v-else-if="(message.options.type === chatData.NOTES_MESSAGE || message.options.type === chatData.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
         <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
         <br />
         <div class="custom-message-item" @click="sendMeetingNotes">
@@ -108,12 +108,12 @@
       </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
-        <i v-if="message.options && message.options.type === constants.RAISE_HAND" class="uiIconChatRaiseHand"></i>
-        <i v-if="message.options && message.options.type === constants.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
-        <i v-if="message.options && message.options.type === constants.LINK_MESSAGE" class="uiIconChatLink"></i>
-        <i v-if="message.options && message.options.type === constants.FILE_MESSAGE" class="uiIconChatUpload"></i>
-        <i v-if="message.options && message.options.type === constants.TASK_MESSAGE" class="uiIconChatCreateTask"></i>
-        <i v-if="message.options && message.options.type === constants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-if="message.options && message.options.type === chatData.RAISE_HAND" class="uiIconChatRaiseHand"></i>
+        <i v-if="message.options && message.options.type === chatData.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
+        <i v-if="message.options && message.options.type === chatData.LINK_MESSAGE" class="uiIconChatLink"></i>
+        <i v-if="message.options && message.options.type === chatData.FILE_MESSAGE" class="uiIconChatUpload"></i>
+        <i v-if="message.options && message.options.type === chatData.TASK_MESSAGE" class="uiIconChatCreateTask"></i>
+        <i v-if="message.options && message.options.type === chatData.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
         <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
       </div>
     </div>
@@ -132,6 +132,7 @@
 </template>
 
 <script>
+import {chatData} from '../chatData.js';
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
 import messageFilter from '../messageFilter.js';
@@ -183,64 +184,46 @@ export default {
   data: function() {
     return {
       isCurrentUser: eXo.chat.userSettings.username === this.message.user,
-      constants: {
-        ADD_TEAM_MESSAGE: 'type-add-team-user',
-        REMOVE_TEAM_MESSAGE: 'type-remove-team-user',
-        TASK_MESSAGE: 'type-task',
-        EVENT_MESSAGE: 'type-event',
-        FILE_MESSAGE: 'type-file',
-        LINK_MESSAGE: 'type-link',
-        RAISE_HAND: 'type-hand',
-        QUESTION_MESSAGE: 'type-question',
-        DELETED_MESSAGE: 'DELETED',
-        EDITED_MESSAGE: 'EDITED',
-        START_MEETING_MESSAGE: 'type-meeting-start',
-        STOP_MEETING_MESSAGE: 'type-meeting-stop',
-        NOTES_MESSAGE: 'type-notes',
-        ROOM_MEMBER_LEFT: 'room-member-left',
-        ANIMATION_PERIOD: 200,
-        ANIMATION_DURATION: 1000,
-        DEFAULT_MESSAGE_ACTIONS: [
-          {
-            key: 'edit',
-            labelKey: 'exoplatform.chat.msg.edit',
-            enabled: comp => {
-              return (
-                !comp.message.isSystem &&
-                !comp.message.isDeleted &&
-                !comp.message.notSent &&
-                comp.isCurrentUser
-              );
-            }
-          },
-          {
-            key: 'delete',
-            labelKey: 'exoplatform.chat.delete',
-            enabled: comp => {
-              return (
-                !comp.message.isSystem &&
-                !comp.message.isDeleted &&
-                !comp.message.notSent &&
-                comp.isCurrentUser
-              );
-            }
-          },
-          {
-            key: 'quote',
-            labelKey: 'exoplatform.chat.quote',
-            enabled: comp => {
-              return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
-            }
-          },
-          {
-            key: 'saveNotes',
-            labelKey: 'exoplatform.chat.notes',
-            enabled: comp => {
-              return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
-            }
+      DEFAULT_MESSAGE_ACTIONS: [
+        {
+          key: 'edit',
+          labelKey: 'exoplatform.chat.msg.edit',
+          enabled: comp => {
+            return (
+              !comp.message.isSystem &&
+              !comp.message.isDeleted &&
+              !comp.message.notSent &&
+              comp.isCurrentUser
+            );
           }
-        ]
-      }
+        },
+        {
+          key: 'delete',
+          labelKey: 'exoplatform.chat.delete',
+          enabled: comp => {
+            return (
+              !comp.message.isSystem &&
+              !comp.message.isDeleted &&
+              !comp.message.notSent &&
+              comp.isCurrentUser
+            );
+          }
+        },
+        {
+          key: 'quote',
+          labelKey: 'exoplatform.chat.quote',
+          enabled: comp => {
+            return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+          }
+        },
+        {
+          key: 'saveNotes',
+          labelKey: 'exoplatform.chat.notes',
+          enabled: comp => {
+            return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+          }
+        }
+      ]
     };
   },
   computed: {
@@ -251,14 +234,17 @@ export default {
         eXo.chat.message &&
         eXo.chat.message.extraActions
       ) {
-        return this.constants.DEFAULT_MESSAGE_ACTIONS.concat(
+        return this.DEFAULT_MESSAGE_ACTIONS.concat(
           eXo.chat.message.extraActions
         ).filter(menu => !menu.enabled || menu.enabled(this));
       } else {
-        return this.constants.DEFAULT_MESSAGE_ACTIONS.filter(
+        return this.DEFAULT_MESSAGE_ACTIONS.filter(
           menu => !menu.enabled || menu.enabled(this)
         );
       }
+    },
+    chatData() {
+      return chatData;
     },
     displayActions() {
       return !this.miniChat && !this.message.isDeleted && this.messageActions && this.messageActions.length;
@@ -274,7 +260,7 @@ export default {
     },
     isEditedMessage() {
       return this.message.type &&
-        this.message.type === this.constants.EDITED_MESSAGE
+        this.message.type === chatData.EDITED_MESSAGE
         ? true
         : false;
     },
@@ -303,7 +289,7 @@ export default {
     );
     if (this.message) {
       this.message.isDeleted =
-        this.message.type === this.constants.DELETED_MESSAGE;
+        this.message.type === chatData.DELETED_MESSAGE;
     }
   },
   destroyed() {
@@ -376,7 +362,7 @@ export default {
         user: eXo.chat.userSettings.username,
         isSystem: true,
         options: {
-          type: 'type-notes',
+          type: chatData.NOTES_MESSAGE,
           fromTimestamp: this.message.timestamp
             ? this.message.timestamp
             : this.message.options.timestamp,
@@ -395,7 +381,7 @@ export default {
       );
       $meetingNotes.animate(
         { opacity: 'toggle' },
-        this.constants.ANIMATION_PERIOD,
+        chatData.ANIMATION_PERIOD,
         () => {
           const room = this.room;
           let from = this.message.options.fromTimestamp;
@@ -405,18 +391,17 @@ export default {
           to = Math.round(to) + 1;
 
           $meetingNotes.find('.meetingNotesSent').hide();
-          const thiss = this;
           chatServices
             .sendMeetingNotes(eXo.chat.userSettings, room, from, to)
             .then(response => {
               if (response === 'sent') {
                 $meetingNotes.find('.meetingNotesSent').animate(
                   { opacity: 'toggle' },
-                  thiss.constants.ANIMATION_PERIOD,
+                  chatData.ANIMATION_PERIOD,
                   () => {
                     $meetingNotes.animate(
                       { opacity: 'toggle' },
-                      thiss.constants.ANIMATION_DURATION
+                      chatData.ANIMATION_DURATION
                     );
                   }
                 );
@@ -435,7 +420,7 @@ export default {
       );
       $meetingNotes.animate(
         { opacity: 'toggle' },
-        this.constants.ANIMATION_PERIOD,
+        chatData.ANIMATION_PERIOD,
         () => {
           const room = this.room;
           let from = this.message.options.fromTimestamp;
@@ -446,7 +431,6 @@ export default {
 
           $meetingNotes.find('.meetingNotesSaved').hide();
 
-          const thiss = this;
           chatServices.getMeetingNotes(eXo.chat.userSettings, room, from, to).then(content => {
             chatServices
               .saveWiki(eXo.chat.userSettings, this.roomFullname, content)
@@ -454,7 +438,7 @@ export default {
                 if (data.path && data.path.trim().length) {
                   const wikiPageURI = `${eXo.env.portal.context}/${eXo.env.portal.portalName}${data.path}`;
                   const options = {
-                    type: 'type-link',
+                    type: chatData.LINK_MESSAGE,
                     link: wikiPageURI,
                     from: eXo.chat.userSettings.username,
                     fullname: this.roomFullname
@@ -479,11 +463,11 @@ export default {
                   $meetingNotes.find('.meetingNotesSaved a').attr('href', wikiPageURI);
                   $meetingNotes.find('.meetingNotesSaved').animate(
                     { opacity: 'toggle' },
-                    thiss.constants.ANIMATION_PERIOD,
+                    chatData.ANIMATION_PERIOD,
                     function() {
                       $meetingNotes.animate(
                         { opacity: 'toggle' },
-                        thiss.constants.ANIMATION_DURATION
+                        chatData.ANIMATION_DURATION
                       );
                     }
                   );

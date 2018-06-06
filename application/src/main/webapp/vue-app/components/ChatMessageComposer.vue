@@ -34,7 +34,7 @@
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
 import * as chatServices from '../chatServices';
-import {DEFAULT_COMPOSER_APPS} from '../appsMenu';
+import {DEFAULT_COMPOSER_APPS} from '../extension';
 
 const ENTER_CODE_KEY = 13;
 export default {

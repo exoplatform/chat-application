@@ -36,9 +36,6 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import {chatData} from '../chatData';
 
-const STATUS_FILTER_PARAM = 'exo.chat.room.participant.filter';
-const STATUS_FILTER_DEFAULT = 'All';
-
 export default {
   components: {ChatContact, DropdownSelect},
   directives: {
@@ -67,7 +64,7 @@ export default {
         'All': this.$t('exoplatform.chat.contact.all'),
         'Online':  this.$t('exoplatform.chat.online'),
       },
-      participantFilter: STATUS_FILTER_DEFAULT,
+      participantFilter: chatData.STATUS_FILTER_DEFAULT,
       contact: null,
       participants: []
     };
@@ -92,7 +89,7 @@ export default {
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
     document.addEventListener('exo-chat-room-member-left', this.leftRoom);
-    this.participantFilter = chatWebStorage.getStoredParam(STATUS_FILTER_PARAM, STATUS_FILTER_DEFAULT);
+    this.participantFilter = chatWebStorage.getStoredParam(chatData.STATUS_FILTER_PARAM, chatData.STATUS_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
@@ -104,7 +101,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     },
     selectParticipantFilter(filter) {
-      chatWebStorage.setStoredParam(STATUS_FILTER_PARAM, filter);
+      chatWebStorage.setStoredParam(chatData.STATUS_FILTER_PARAM, filter);
       this.participantFilter = filter;
     },
     toggleParticipantFilter() {

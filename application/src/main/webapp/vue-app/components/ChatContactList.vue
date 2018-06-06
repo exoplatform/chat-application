@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import {chatData} from '../chatData.js';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
@@ -66,12 +67,6 @@ import * as chatTime from '../chatTime';
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import RoomFormModal from './modal/RoomFormModal.vue';
-
-const TYPE_FILTER_PARAM = 'exo.chat.type.filter';
-const TYPE_FILTER_DEFAULT = 'All';
-const SORT_FILTER_PARAM = 'exo.chat.sort.filter';
-const SORT_FILTER_DEFAULT = 'Recent';
-const CONTACTS_PER_PAGE = 20;
 
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
@@ -97,7 +92,7 @@ export default {
         'Recent': this.$t('exoplatform.chat.contact.recent'),
         'Unread': this.$t('exoplatform.chat.contact.unread'),
       },
-      sortFilter: SORT_FILTER_DEFAULT,
+      sortFilter: chatData.SORT_FILTER_DEFAULT,
       filterByType: {
         'All': this.$t('exoplatform.chat.contact.all'),
         'People': this.$t('exoplatform.chat.people'),
@@ -105,10 +100,10 @@ export default {
         'Spaces': this.$t('exoplatform.chat.spaces'),
         'Favorites': this.$t('exoplatform.chat.favorites')
       },
-      typeFilter: TYPE_FILTER_DEFAULT,
+      typeFilter: chatData.TYPE_FILTER_DEFAULT,
       createRoomModal: false,
       searchTerm: '',
-      totalEntriesToLoad: CONTACTS_PER_PAGE,
+      totalEntriesToLoad: chatData.CONTACTS_PER_PAGE,
       newRoom: {
         name: '',
         participants: []
@@ -198,8 +193,8 @@ export default {
     document.addEventListener('exo-chat-select-room', this.selectContact);
     document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
     document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
-    this.typeFilter = chatWebStorage.getStoredParam(TYPE_FILTER_PARAM, TYPE_FILTER_DEFAULT);
-    this.sortFilter = chatWebStorage.getStoredParam(SORT_FILTER_PARAM, SORT_FILTER_DEFAULT);
+    this.typeFilter = chatWebStorage.getStoredParam(chatData.TYPE_FILTER_PARAM, chatData.TYPE_FILTER_DEFAULT);
+    this.sortFilter = chatWebStorage.getStoredParam(chatData.SORT_FILTER_PARAM, chatData.SORT_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
@@ -244,11 +239,11 @@ export default {
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
-      chatWebStorage.setStoredParam(SORT_FILTER_PARAM, this.sortFilter);
+      chatWebStorage.setStoredParam(chatData.SORT_FILTER_PARAM, this.sortFilter);
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
-      chatWebStorage.setStoredParam(TYPE_FILTER_PARAM, this.typeFilter);
+      chatWebStorage.setStoredParam(chatData.TYPE_FILTER_PARAM, this.typeFilter);
     },
     openCreateRoomModal() {
       this.newRoom = {};
@@ -370,7 +365,7 @@ export default {
       return this.contacts.find(contact => contact[field] === value);
     },
     loadMore() {
-      this.totalEntriesToLoad += CONTACTS_PER_PAGE;
+      this.totalEntriesToLoad += chatData.CONTACTS_PER_PAGE;
       this.$emit('load-more-contacts', this.totalEntriesToLoad);
     },
     favoriteTooltip(contact) {

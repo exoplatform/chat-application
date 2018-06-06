@@ -24,16 +24,11 @@
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import ChatMessageComposer from './ChatMessageComposer.vue';
 import Modal from './modal/Modal.vue';
+import {chatData} from '../chatData.js';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
-
-const MESSAGES_PER_PAGE = 50;
-
-const MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL = 25;
-
-const ENTER_CODE_KEY = 13;
 
 export default {
   components: {
@@ -158,7 +153,7 @@ export default {
     },
     isScrollPositionAtEnd() {
       if(this.chatMessageListContainer && this.chatMessageListContainer.length) {
-        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < chatData.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
       }
@@ -180,7 +175,7 @@ export default {
       } else {
         toTimestamp = this.messages[0].timestamp;
       }
-      const limit = MESSAGES_PER_PAGE;
+      const limit = chatData.MESSAGES_PER_PAGE;
       this.newMessagesLoading = true;
       chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
@@ -295,7 +290,7 @@ export default {
       this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
     },
     saveMessage(event) {
-      if (!event || event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (!event || event.keyCode === chatData.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         this.messageModified(this.messageToEdit);
         this.showEditMessageModal = false;
       }
@@ -307,7 +302,7 @@ export default {
       this.searchKeyword = e.detail.trim();
     },
     preventDefault(event) {
-      if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (event.keyCode === chatData.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         event.stopPropagation();
         event.preventDefault();
       }

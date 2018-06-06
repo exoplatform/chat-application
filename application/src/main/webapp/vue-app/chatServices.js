@@ -5,9 +5,7 @@ import * as desktopNotification from './desktopNotification';
 
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
-
 const DEFAULT_HTTP_PORT = 80;
-
 const REATTEMPT_INIT_PERIOD = 1000;
 
 export function getUser(userName) {

@@ -199,11 +199,15 @@ public class ChatServer
     String data = null;
     try {
       data = chatService.read(user, room, "true".equals(isTextOnly), from, to, ilimit, dbName);
-    } catch (ChatException e) {
-      return Response.content(e.getStatus(), e.getMessage());
+      notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+    } catch (Exception e) {
+      if (e instanceof ChatException) {
+        return Response.content(((ChatException)e).getStatus(), e.getMessage());
+      } else {
+        return Response.content(500, e.getMessage());
+      }
     }
 
-    notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
     return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
