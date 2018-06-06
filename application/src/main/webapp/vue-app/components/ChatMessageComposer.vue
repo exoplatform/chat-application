@@ -2,7 +2,7 @@
   <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message">
     <div v-if="!miniChat" class="apps-container">
       <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
-        <div class="apps-item-icon"><i :class="app.class"></i></div>
+        <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
         <div class="apps-item-label">{{ $t(app.labelKey) }}</div>
       </div>
     </div>
@@ -27,84 +27,15 @@
         </div>
       </div>
     </div>
-    <apps-modal v-if="appsModal.isOpned" :app-key="appsModal.appKey" :title="appsModal.title" :contact="contact" :room-id="contact.room" @modal-closed="appsModal.isOpned = false"></apps-modal>
+    <apps-modal v-if="appsModal.isOpned" :app="appsModal.app" :title="appsModal.title" :contact="contact" :room-id="contact.room" @modal-closed="appsModal.isOpned = false"></apps-modal>
   </div>
 </template>
 
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
-import * as chatServices from '../chatServices';
+import {DEFAULT_COMPOSER_APPS} from '../appsMenu';
 
 const ENTER_CODE_KEY = 13;
-const DEFAULT_COMPOSER_APPS = [
-  {
-    key: 'event',
-    labelKey: 'exoplatform.chat.add.event',
-    class: 'uiIconChatCreateEvent'
-  }, 
-  {
-    key: 'task',
-    shortcutMatches(msg) {
-      return /\s*\+\+\S+/.test(msg);
-    },
-    shortcutCallback(msg, contact) {
-      const message = {
-        msg : '',
-        room : contact.room,
-        clientId: new Date().getTime().toString(),
-        user: eXo.chat.userSettings.username,
-        isSystem: true,
-        options: {
-          fromUser: eXo.chat.userSettings.username,
-          fromFullname: eXo.chat.userSettings.fullName
-        }
-      };
-      message.options.type = 'type-task';
-      const isSpace = contact.user.indexOf('space-') === 0;
-      const isTeam = contact.user.indexOf('team-') === 0;
-      const data = {
-        'extension_action' : 'createTaskInline',
-        'text' : msg,
-        'roomName' : contact.fullName,
-        'isSpace' : isSpace,
-        'isTeam': isTeam,
-        'participants': isSpace || isTeam ? contact.participants.join(',') : contact.user
-      };
-      chatServices.saveTask(eXo.chat.userSettings, data).then((response) => response.text()).then(data => {
-        data = JSON.parse(data);
-        const url = data.url ? data.url : data.length && data.length === 1 && data[0].url ? data[0].url : '';
-        const title = data.title ? data.title : data.length && data.length === 1 && data[0].title ? data[0].title : '';
-        message.options.url = url;
-        message.options.task = decodeURI(title);
-
-        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
-      });
-    },
-    labelKey: 'exoplatform.chat.assign.task',
-    class: 'uiIconChatCreateTask'
-  }, 
-  {
-    key: 'link',
-    labelKey: 'exoplatform.chat.share.link',
-    class: 'uiIconChatLink'
-  },
-  {
-    key: 'file',
-    labelKey: 'exoplatform.chat.upload.file',
-    class: 'uiIconChatUpload'
-  },
-  {
-    key: 'question',
-    labelKey: 'exoplatform.chat.ask.question',
-    class: 'uiIconChatQuestion'
-  },
-  {
-    key: 'raise-hand',
-    labelKey: 'exoplatform.chat.raise.hand',
-    class: 'uiIconChatRaiseHand'
-  }
-];
-
 export default {
   components: {
     'apps-modal': ComposerAppsModal
@@ -145,7 +76,7 @@ export default {
         return this.EMOTICONS.concat(eXo.chat.room.extraEmoticons);
       } else {
         return this.EMOTICONS;
-      } 
+      }
     }
   },
   created() {
@@ -238,7 +169,7 @@ export default {
     },
     openAppModal(app) {
       this.appsClosed = true;
-      this.appsModal.appKey = app.key;
+      this.appsModal.app = app;
       this.appsModal.title = this.$t(app.labelKey);
       this.appsModal.isOpned = true;
     },

@@ -3,7 +3,6 @@ package org.exoplatform.chat.service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.FormParam;
@@ -25,7 +24,7 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 @Path("/chat/api/1.0/calendar/")
 public class CalendarService implements ResourceContainer {
 
-  private static final String                      DEFAULT_DATE_FORMAT = "MM/dd/yyyy hh:mm a";
+  private static final String                      DEFAULT_DATE_FORMAT = "MM/dd/yyyy hh:mm";
 
   org.exoplatform.calendar.service.CalendarService calendarService_;
 

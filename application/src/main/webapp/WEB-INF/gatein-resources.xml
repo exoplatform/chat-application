@@ -68,9 +68,6 @@
             <module>filedrop</module>
         </depends>
         <depends>
-            <module>CalDateTimePicker</module>
-        </depends>
-        <depends>
             <module>userPopupPlugin</module>
         </depends>
         <depends>

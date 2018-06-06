@@ -36,8 +36,9 @@ exoi18n.loadLanguageAsync(lang).then(i18n => {
     });
   }
 });
+
 $.fn.extend({
-  insertAtCaret: function(newValue) {
+  insertAtCaret(newValue) {
     this.each(( i, element ) => {
       if (document.selection) {
         element.focus();
@@ -58,6 +59,21 @@ $.fn.extend({
         element.focus();
       }
     });
+  },
+  serializeFormJSON() {
+    const o = {};
+    const a = this.serializeArray();
+    $.each(a, function () {
+      if (o[this.name]) {
+        if (!o[this.name].push) {
+          o[this.name] = [o[this.name]];
+        }
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
+      }
+    });
+    return o;
   }
 });
 
