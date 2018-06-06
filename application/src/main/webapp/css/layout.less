@@ -5,8 +5,10 @@
   overflow: hidden;
 }
 .uiLeftContainerArea {
-  background: #476a9c;
-  color: #ffffff;
+  .responsive-reverse(@mobile + 1, {
+    background: #476a9c;
+    color: #ffffff;
+  });
   user-select: none;
 }
 .uiLeftContainerArea, .uiRightContainerArea, .room-participants {

@@ -1,0 +1,126 @@
+@media (max-width: @mobile) {
+  .uiLeftContainerArea, .uiGlobalRoomsContainer {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    transition: left .5s ease-out;
+  }
+  .uiLeftContainerArea {
+    left: 0;
+  }
+  .uiGlobalRoomsContainer {
+    left: 100%;
+  }
+  .show-conversation {
+    .uiGlobalRoomsContainer {
+      left: 0;
+    }
+    .uiLeftContainerArea {
+      left: -100%;
+    }
+  }
+  .contactListContainer {
+    height: 100%;
+    .contactFilter {
+      position: absolute;
+      display: none;
+    }
+    .listHeader {
+      height: @headerMobile;
+      border-bottom: 1px solid #a1a5ad;
+      .hamburger-menu {
+        padding: 0 10px;
+      }
+      .room-actions {
+        > * {
+          margin-left: 8px;
+        }
+        [class^="uiIcon"] {
+          color: @secondaryIconColor;
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .userDetails, .contactListContainer .listHeader {
+    padding: 0 10px;
+  }
+  
+  .userDetails {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: @headerMobile;
+    align-items: center;
+
+    .chat-contact-avatar, .contactLabel, .dropdown-toggle .user-status {
+      display: none;
+    }
+    .user-status, .status-dropdown {
+      margin: 0;
+    }
+    .user-status {
+      .square(20px);
+      text-align: center;
+    }
+    .discussion-label {
+      color: @titleColor;
+      font-weight: bold;
+    }
+    .contactDetail {
+      margin-left: 0;
+    }
+  }
+
+  .contactList {
+    .chat-contact-avatar {
+      .square(45px);
+      .uiIconStatus {
+        bottom: 5px;
+        right: -1px;
+        font-size: 12px;
+      }
+    }
+    .contact-list-item {
+      color: @titleColor;
+      padding: 10px 15px;
+      &.hasUnreadMessages {
+        font-weight: normal;
+      }
+      .contactLabel > span, .last-message-time {
+        font-weight: bold;
+      }
+      .last-message {
+        font-size: 13px;
+        .text-ellipsis;
+      }
+      .last-message-time {
+        margin-left: auto;
+      }
+      &.hasUnreadMessages .last-message-time {
+        margin-right: -27px
+      }
+      .unreadMessages {
+        .square-rounded(16px);
+        align-self: flex-end;
+        margin-bottom: 5px;
+        color: #fff;
+      }
+      .seeMoreContacts > a, .uiIconArrowDownMini:before {
+        color: @primaryColor;
+      }
+      &:after {
+        content: "";
+        position: absolute;
+        width: calc(100% - 50px);
+        margin: 0 10px;
+        bottom: 0;
+        border-bottom: @defaultBorder;
+      }
+      &:nth-last-child(-n+3):after {
+        display: none;
+      }
+    }
+  }
+}

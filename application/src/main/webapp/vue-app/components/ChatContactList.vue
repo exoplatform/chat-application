@@ -5,7 +5,8 @@
       <input v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
     </div>
     <div class="listHeader">
-      <dropdown-select>
+      <div v-if="mq === 'mobile'" class="hamburger-menu"><i class="uiIconMenu"></i></div>
+      <dropdown-select v-if="mq !== 'mobile'">
         <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
@@ -13,21 +14,32 @@
         <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
         <li slot="menu" @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
       </dropdown-select>
-      <dropdown-select>
+      <dropdown-select v-if="mq !== 'mobile'">
         <span slot="toggle">{{ filterByType[typeFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>
         <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
       </dropdown-select>
-      <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
-        <i class="uiIconSimplePlus"></i>
+      <div class="room-actions">
+        <div v-if="mq === 'mobile'" class="filter-action">
+          <i class="uiIconFilter"></i>
+        </div>
+        <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
+          <i class="uiIconSimplePlus"></i>
+        </div>
+        <div v-if="mq === 'mobile'">
+          <i class="uiIconSearch"></i>
+        </div>
       </div>
     </div>
     <div class="contactList isList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
-        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status"></chat-contact>
+      <div v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status">
+          <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
+          <div v-if="mq === 'mobile'" class="last-message-time">22:30</div>
+        </chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
-        <div v-exo-tooltip.top.body="favoriteTooltip(contact)" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+        <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
       </div>
       <div v-show="isSearchingContact" class="contact-list-item isList">
         <div class="seeMoreContacts">

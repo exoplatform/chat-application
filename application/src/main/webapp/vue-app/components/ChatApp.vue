@@ -1,21 +1,22 @@
 <template>
-  <div id="chatApplicationContainer" :class="connected ? 'online' : 'offline'">
+  <div id="chatApplicationContainer" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations}">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
-          <div v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')" class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
+          <div v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')" v-if="mq !== 'mobile'" class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
         </chat-contact>
+        <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
-    <div v-show="selectedContact && selectedContact.room" class="uiGlobalRoomsContainer">
+    <div v-show="(selectedContact && selectedContact.room) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
       <div class="room-content">
         <chat-message-list :contact="selectedContact"></chat-message-list>
         <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)"></chat-room-participants> 
       </div>
     </div>
-    <div v-if="!(selectedContact && selectedContact.room)" class="chat-no-conversation muted">
+    <div v-if="mq !== 'mobile' && !(selectedContact && selectedContact.room)" class="chat-no-conversation muted">
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
     </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
@@ -84,8 +85,14 @@ export default {
       loggedout: false,
       selectedContact: {},
       isSearchingContact: false,
-      settingModal: false
+      settingModal: false,
+      conversationArea: false
     };
+  },
+  computed: {
+    showMobileConversations() {
+      return this.mq === 'mobile' && this.conversationArea === true ? true : false;
+    }
   },
   created() {
     chatServices.initChatSettings(this.userSettings.username,
@@ -134,15 +141,21 @@ export default {
     },
     initChatRooms(chatRoomsData) {
       this.addRooms(chatRoomsData.rooms);
-      const selectedRoom = chatWebStorage.getStoredParam(chatWebStorage.LAST_SELECTED_ROOM_PARAM);
-      if(selectedRoom) {
-        this.setSelectedContact(selectedRoom);
+
+      if (this.mq !== 'mobile') {
+        const selectedRoom = chatWebStorage.getStoredParam(chatWebStorage.LAST_SELECTED_ROOM_PARAM);
+        if(selectedRoom) {
+          this.setSelectedContact(selectedRoom);
+        }
       }
 
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
     setSelectedContact(selectedContact) {
+      if(this.mq === 'mobile') {
+        this.conversationArea = true;
+      }
       if(!selectedContact) {
         selectedContact = {};
       }

@@ -22,6 +22,7 @@
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
+      <div v-if="mq === 'mobile' && list" class="last-message">Ceci est un message</div>
     </div>
   </div>
 </template>
