@@ -19,6 +19,7 @@
 
 <script>
 import Modal from './Modal.vue';
+import * as chatServices from '../../chatServices';
 
 export default {
   components: {
@@ -85,7 +86,7 @@ export default {
   created() {
     document.addEventListener('exo-chat-apps-close', this.closeModal);
     if(this.app && this.app.htmlAdded) {
-      this.$nextTick(() => this.app.htmlAdded($));
+      this.$nextTick(() => this.app.htmlAdded($, chatServices));
     }
   },
   destroyed() {
@@ -124,7 +125,7 @@ export default {
 
       let submitResult;
       if(this.app.submit) {
-        submitResult = this.app.submit(message, formData, this.contact);
+        submitResult = this.app.submit(chatServices, message, formData, this.contact);
       } else {
         submitResult = {ok: true};
       }

@@ -1,5 +1,3 @@
-import * as chatServices from './chatServices.js';
-
 export const MAX_FILES = 1;
 export const UPLOAD_URI = '/portal/upload';
 
@@ -42,7 +40,7 @@ export const DEFAULT_COMPOSER_APPS = [
         </div> \
         <input name="location" class="large" type="text" placeholder="Location" required> `;
     },
-    submit(message, formData, contact) {
+    submit(chatServices, message, formData, contact) {
       if (formData.startTime === 'all-day') {
         formData.startTime = '00:00';
         formData.startAllDay = true;
@@ -78,7 +76,7 @@ export const DEFAULT_COMPOSER_APPS = [
       }
       return text;
     },
-    submit(message, formData) {
+    submit(chatServices, message, formData) {
       message.options.link = this.checkURL(formData['link']);
       return {ok: true};
     }
@@ -246,7 +244,7 @@ export const DEFAULT_COMPOSER_APPS = [
     html(i18NConverter) {
       return `<input name="msg" placeholder="${i18NConverter('exoplatform.chat.question.what')}" class="large" type="text" required>`;
     },
-    submit(message, formData) {
+    submit(chatServices, message, formData) {
       message.msg = formData['msg'];
       return {ok: true};
     }
@@ -259,7 +257,7 @@ export const DEFAULT_COMPOSER_APPS = [
     html(i18NConverter) {
       return `<input name="msg" placeholder="${i18NConverter('exoplatform.chat.optional.comment')}" class="large" type="text">`;
     },
-    submit(message, formData) {
+    submit(chatServices, message, formData) {
       message.msg = formData['msg'];
       return {ok: true};
     }

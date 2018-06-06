@@ -33,6 +33,7 @@
 
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
+import * as chatServices from '../chatServices';
 import {DEFAULT_COMPOSER_APPS} from '../appsMenu';
 
 const ENTER_CODE_KEY = 13;
@@ -131,7 +132,7 @@ export default {
           if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;
-              application.shortcutCallback(newMessage, this.contact);
+              application.shortcutCallback(chatServices, $, newMessage, this.contact);
             } else if(application.shortcutTriggeredEvent) {
               found = true;
               document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact : this.contact}}));

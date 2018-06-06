@@ -318,17 +318,6 @@ export function saveEvent(userSettings, data, target) {
   });
 }
 
-export function saveTask(userSettings, data) {
-  return fetch(`${chatData.chatPluginAPI}action`, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    },
-    credentials: 'include',
-    method: 'post',
-    body: decodeURI($.param(data))
-  });
-}
-
 export function getBaseURL() {
   const port = !window.location.port || window.location.port === DEFAULT_HTTP_PORT ? '':`:${  window.location.port}`;
   return `${window.location.protocol  }//${  window.location.hostname  }${port}`;
