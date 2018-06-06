@@ -13,7 +13,7 @@
           <i class="uiIconSearchLight"></i>    
         </div>
         <dropdown-select v-if="displayMenu" class="room-settings-dropdown" position="right">
-          <i v-exo-tooltip.bottom="$t('exoplatform.chat.send')" slot="toggle" class="uiIconVerticalDots"></i>
+          <i v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')" slot="toggle" class="uiIconVerticalDots"></i>
           <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>

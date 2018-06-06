@@ -20,7 +20,7 @@
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
         <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
-        <div v-exo-tooltip.top="$t('exoplatform.chat.moreActions')" v-if="!miniChat" class="composer-action">
+        <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
           </div>
