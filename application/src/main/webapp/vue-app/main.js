@@ -24,6 +24,13 @@ Vue.directive('exo-tooltip', function (el, binding) {
   element.tooltip();
 });
 
+Vue.directive('hold-tap', function (el, binding, vnode) {
+  if (vnode.context.mq === 'mobile') {
+    const callback = binding.value;
+    $(el).on('taphold', () => callback());
+  }
+});
+
 exoi18n.loadLanguageAsync(lang).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({

@@ -6,6 +6,7 @@ export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'event',
     type: 'type-event',
+    nameKey: 'exoplatform.chat.event',
     labelKey: 'exoplatform.chat.add.event',
     iconClass: 'uiIconChatCreateEvent',
     appClass: 'chat-app-event',
@@ -65,6 +66,7 @@ export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'link',
     type: 'type-link',
+    nameKey: 'exoplatform.chat.link',
     labelKey: 'exoplatform.chat.share.link',
     iconClass: 'uiIconChatLink',
     html() {
@@ -85,6 +87,7 @@ export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'file',
     type: 'type-file',
+    nameKey: 'exoplatform.chat.file',
     labelKey: 'exoplatform.chat.upload.file',
     iconClass: 'uiIconChatUpload',
     hideModalActions: true,
@@ -240,6 +243,7 @@ export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'question',
     type: 'type-question',
+    nameKey: 'exoplatform.chat.question',
     labelKey: 'exoplatform.chat.ask.question',
     iconClass: 'uiIconChatQuestion',
     html(i18NConverter) {

@@ -32,10 +32,10 @@
       </div>
     </div>
     <div class="contactList isList">
-      <div v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
-        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="contact.lastMessage.msg">
+      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage.timestamp) }}</div>
+          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
         </chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
@@ -66,6 +66,7 @@ import * as chatTime from '../chatTime';
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import RoomFormModal from './modal/RoomFormModal.vue';
+import {DEFAULT_COMPOSER_APPS} from '../extension';
 
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
@@ -370,8 +371,26 @@ export default {
     favoriteTooltip(contact) {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
     },
-    getLastMessageTime(timestamp) {
-      if (timestamp) {
+    getLastMessage(message) {
+      if (message) {
+        if (!message.isSystem) {
+          return this.filterLastMessage(message.msg);
+        } else {
+          const apps = this.getApplications();
+          let systemMsg = '';
+          apps.forEach(element => {
+            if (message.options.type === element.type) {
+              systemMsg = `<span><i class="${element.iconClass || ''}"></i>${this.$t(element.nameKey || element.labelKey || '')}</span>`;
+            }
+          });
+          return systemMsg;
+        }
+      }
+      return '';
+    },
+    getLastMessageTime(message) {
+      if (message && message.timestamp) {
+        const timestamp = message.timestamp;
         if (chatTime.getDayDate(timestamp) === chatTime.getDayDate(new Date())) {
           return chatTime.getTimeString(timestamp);
         } else {
@@ -379,6 +398,23 @@ export default {
         }
       }
       return '';
+    },
+    filterLastMessage(msg) {
+      // replace line breaks with an ellipsis
+      if (msg.indexOf('<br/>') >= 0) {
+        return msg.replace(msg.slice(msg.indexOf('<br/>')),'...');
+      }
+      return msg;
+    },
+    getApplications() {
+      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
+        return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
+      } else {
+        return DEFAULT_COMPOSER_APPS;
+      }
+    },
+    openContactActions() {
+      console.log('deezdezdezdezqd');
     }
   }
 };
