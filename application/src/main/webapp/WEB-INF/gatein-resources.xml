@@ -14,15 +14,6 @@
         <css-path>/css/chat.css</css-path>
     </portlet-skin>
 
-    <!-- TODO move to a common project -->
-    <module>
-        <name>vue</name>
-        <script>
-            <minify>false</minify>
-            <path>/js/lib/vue.js</path>
-        </script>
-    </module>
-
     <portlet>
         <name>ChatApplication</name>
         <module>
@@ -78,47 +69,6 @@
         </depends>
         <depends>
             <module>iePolyfills</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>filedrop</name>
-        <script>
-            <path>/js/lib/jquery.filedrop.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>customEventPolyfill</name>
-        <script>
-            <path>/js/lib/custom-event-polyfill.js</path>
-        </script>
-    </module>
-
-    <module>
-        <name>iePolyfills</name>
-        <script>
-            <path>/js/lib/ie-polyfills.js</path>
-        </script>
-    </module>
-
-    <module>
-        <name>promisePolyfill</name>
-        <script>
-            <path>/js/lib/promise.min.js</path>
-        </script>
-    </module>
-
-    <module>
-        <name>fetchPolyfill</name>
-        <script>
-            <path>/js/lib/fetch.js</path>
-        </script>
-        <depends>
-            <module>promisePolyfill</module>
         </depends>
     </module>
 

@@ -98,7 +98,7 @@
       this.eXoResubs = [];
     };
 
-    this.disconnect = function(config) {
+    this.disconnect = function() {
       this.eXoSecret = {exoId: null, exoToken: null};
       this.explicitlyDisconnected = true;
       this.parent.disconnect.apply(this, arguments);
