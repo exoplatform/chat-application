@@ -1,12 +1,8 @@
-export const LAST_SELECTED_ROOM_PARAM = 'lastSelectedRoom';
-
-const STORED_NOT_SENT_MESSAGES = 'roomNotSentMessages';
+import {chatConstants} from './chatConstants';
 
 const NB_MILLISECONDS_PERD_SECOND = 1000;
 const DEFAULT_EXPIRATION_PERIOD = 300;
-
 const MAX_RESEND_MESSAGE_ATTEMPT = 2;
-
 const RESEND_MESSAGE_PERIOD = 5000;
 
 let resendIntervalID;
@@ -57,12 +53,12 @@ export function getRoomNotSentMessages(username, room) {
 }
 
 export function getNotSentMessages(username) {
-  let notSentMessages = getStoredParam(`${STORED_NOT_SENT_MESSAGES}-${username}`);
+  let notSentMessages = getStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${username}`);
   if(notSentMessages) {
     notSentMessages = JSON.parse(notSentMessages);
     if(Array.isArray(notSentMessages)) {
       notSentMessages = {};
-      localStorage.removeItem(`${STORED_NOT_SENT_MESSAGES}-${username}`);
+      localStorage.removeItem(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${username}`);
     } else {
       return notSentMessages;
     }
@@ -97,7 +93,7 @@ export function storeNotSentMessage(messageToStore) {
   if (!foundMessage) {
     messageToStore.notSent = true;
     notSentMessages[clientId] = messageToStore;
-    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
+    setStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
   }
 }
 
@@ -116,7 +112,7 @@ export function deleteFromStore(user, clientId) {
   const notSentMessages = getNotSentMessages(user);
   if (notSentMessages && notSentMessages[clientId]) {
     delete notSentMessages[clientId];
-    setStoredParam(`${STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
+    setStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
     return true;
   }
   return false;
@@ -139,7 +135,7 @@ export function sendFailedMessages() {
                 messageToResend.attemptCount = messageToResend.attemptCount ? messageToResend.attemptCount + 1 : 1;
               }
             }
-            document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : messageToResend}));
+            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : messageToResend}));
           }
         });
       }
@@ -150,12 +146,12 @@ export function sendFailedMessages() {
   }
 }
 
-document.addEventListener('exo-chat-message-sent-ack', (e) => {
+document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
   const message = e.detail;
   storeMessageAsSent(message);
 });
 
-document.addEventListener('exo-chat-connected', () => {
+document.addEventListener(chatConstants.EVENT_CONNECTED, () => {
   if (resendIntervalID) {
     window.clearInterval(resendIntervalID);
   }

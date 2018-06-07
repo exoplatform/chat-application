@@ -2,10 +2,13 @@ import Vue from 'vue';
 import exoi18n from '../js/lib/exo-i18n';
 import ChatApp from './components/ChatApp.vue';
 import MiniChatApp from './components/MiniChatApp.vue';
+import {chatConstants} from './chatConstants.js';
 
 import './../css/main.less';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
+
+Vue.prototype.$constants = chatConstants;
 
 Vue.directive('exo-tooltip', function (el, binding) {
   const element = $(el);

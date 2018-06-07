@@ -23,7 +23,6 @@
 
 <script>
 import * as chatTime from '../chatTime';
-import {chatData} from '../chatData';
 
 export default {
   props: {
@@ -54,19 +53,19 @@ export default {
       const messageType = this.notif.options ? this.notif.options.type : '';
       if(messageType) {
         switch(messageType) {
-        case chatData.QUESTION_MESSAGE: return 'uiIconChatQuestion uiIconChatLightGray pull-left';
-        case chatData.RAISE_HAND: return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
-        case chatData.FILE_MESSAGE: return 'uiIconChatUpload uiIconChatLightGray pull-left';
-        case chatData.LINK_MESSAGE: return 'uiIconChatLink uiIconChatLightGray pull-left';
-        case chatData.EVENT_MESSAGE: return 'uiIconChatCreateEvent uiIconChatLightGray pull-left';
-        case chatData.NOTES_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case chatData.MEETING_START_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case chatData.MEETING_STOP_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
-        case chatData.ADD_USER_MESSAGE: return '';
-        case chatData.REMOVE_USER_MESSAGE: return '';
-        case chatData.CALL_JOIN_MESSAGE: return 'uiIconChatAddPeopleToMeeting uiIconChatLightGray pull-left';
-        case chatData.CALL_ON_MESSAGE: return 'uiIconChatStartCall uiIconChatLightGray pull-left';
-        case chatData.CALL_OFF_MESSAGE: return 'uiIconChatFinishCall uiIconChatLightGray pull-left';
+        case this.$constants.QUESTION_MESSAGE: return 'uiIconChatQuestion uiIconChatLightGray pull-left';
+        case this.$constants.RAISE_HAND: return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
+        case this.$constants.FILE_MESSAGE: return 'uiIconChatUpload uiIconChatLightGray pull-left';
+        case this.$constants.LINK_MESSAGE: return 'uiIconChatLink uiIconChatLightGray pull-left';
+        case this.$constants.EVENT_MESSAGE: return 'uiIconChatCreateEvent uiIconChatLightGray pull-left';
+        case this.$constants.NOTES_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case this.$constants.MEETING_START_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case this.$constants.MEETING_STOP_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
+        case this.$constants.ADD_USER_MESSAGE: return '';
+        case this.$constants.REMOVE_USER_MESSAGE: return '';
+        case this.$constants.CALL_JOIN_MESSAGE: return 'uiIconChatAddPeopleToMeeting uiIconChatLightGray pull-left';
+        case this.$constants.CALL_ON_MESSAGE: return 'uiIconChatStartCall uiIconChatLightGray pull-left';
+        case this.$constants.CALL_OFF_MESSAGE: return 'uiIconChatFinishCall uiIconChatLightGray pull-left';
         default:
           return this.specificMessageClass;
         }
@@ -101,16 +100,16 @@ export default {
       let content = this.notif.content;
       if (messageType) {
         switch(messageType) {
-        case chatData.EVENT_MESSAGE : content = this.notif.options.summary; break;
-        case chatData.LINK_MESSAGE : content = this.notif.options.link; break;
-        case chatData.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;
-        case chatData.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
-        case chatData.MEETING_STOP_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
-        case chatData.ADD_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
-        case chatData.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullnam,1: this.notif.options.users}); break;
-        case chatData.CALL_JOIN_MESSAGE : content = this.$t('exoplatform.chat.meeting.joined'); break;
-        case chatData.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
-        case chatData.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
+        case this.$constants.EVENT_MESSAGE : content = this.notif.options.summary; break;
+        case this.$constants.LINK_MESSAGE : content = this.notif.options.link; break;
+        case this.$constants.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;
+        case this.$constants.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
+        case this.$constants.MEETING_STOP_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
+        case this.$constants.ADD_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
+        case this.$constants.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullnam,1: this.notif.options.users}); break;
+        case this.$constants.CALL_JOIN_MESSAGE : content = this.$t('exoplatform.chat.meeting.joined'); break;
+        case this.$constants.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
+        case this.$constants.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
         default:
           content = this.specificMessageContent;
         }

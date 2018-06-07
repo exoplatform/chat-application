@@ -23,7 +23,6 @@
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
 import {initTiptip} from '../tiptip';
-import {chatData} from '../chatData';
 
 import MiniChatNotifList from './MiniChatNotifList.vue';
 import ChatMessageList from './ChatMessageList.vue';
@@ -78,7 +77,7 @@ export default {
         }
       }
     );
-    document.addEventListener('exo-chat-logout-sent', () => {
+    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, () => {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
       }
@@ -92,10 +91,10 @@ export default {
         });
       }
     });
-    document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
-    document.addEventListener('exo-chat-connected', this.connectionEstablished);
-    document.addEventListener('exo-chat-reconnected', this.connectionEstablished);
-    document.addEventListener('exo-chat-user-status-changed', (e) => {
+    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
+    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, (e) => {
       const contactChanged = e.detail;
       if (this.userSettings.username === contactChanged.sender) {
         this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
@@ -103,7 +102,7 @@ export default {
         this.status = this.userSettings.status;
       }
     });
-    document.addEventListener('exo-chat-notification-count-updated', (e) => {
+    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, (e) => {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
       if(totalUnreadMsg >= 0) {
         this.totalUnreadMsg = totalUnreadMsg;
@@ -117,10 +116,10 @@ export default {
     }
   },
   destroyed() {
-    document.removeEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
-    document.removeEventListener('exo-chat-connected', this.connectionEstablished);
-    document.removeEventListener('exo-chat-reconnected', this.connectionEstablished);
-    document.removeEventListener('exo-chat-room-updated', this.roomUpdated);
+    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
+    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.removeEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
     // TODO remove added listeners
   },
   methods: {
@@ -136,10 +135,10 @@ export default {
           this.userSettings.status = newStatus;
           this.status = newStatus;
         }, () => {
-          setTimeout(() => thiss.setStatus(status), chatData.REATTEMPT_PERIOD);
+          setTimeout(() => thiss.setStatus(status), this.$constants.REATTEMPT_PERIOD);
         });
       } else {
-        setTimeout(() => thiss.setStatus(status), chatData.REATTEMPT_PERIOD);
+        setTimeout(() => thiss.setStatus(status), this.$constants.REATTEMPT_PERIOD);
       }
     },
     connectionEstablished() {

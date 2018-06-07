@@ -58,7 +58,6 @@
 </template>
 
 <script>
-import {chatData} from '../chatData.js';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
@@ -92,7 +91,7 @@ export default {
         'Recent': this.$t('exoplatform.chat.contact.recent'),
         'Unread': this.$t('exoplatform.chat.contact.unread'),
       },
-      sortFilter: chatData.SORT_FILTER_DEFAULT,
+      sortFilter: this.$constants.SORT_FILTER_DEFAULT,
       filterByType: {
         'All': this.$t('exoplatform.chat.contact.all'),
         'People': this.$t('exoplatform.chat.people'),
@@ -100,10 +99,10 @@ export default {
         'Spaces': this.$t('exoplatform.chat.spaces'),
         'Favorites': this.$t('exoplatform.chat.favorites')
       },
-      typeFilter: chatData.TYPE_FILTER_DEFAULT,
+      typeFilter: this.$constants.TYPE_FILTER_DEFAULT,
       createRoomModal: false,
       searchTerm: '',
-      totalEntriesToLoad: chatData.CONTACTS_PER_PAGE,
+      totalEntriesToLoad: this.$constants.CONTACTS_PER_PAGE,
       newRoom: {
         name: '',
         participants: []
@@ -179,38 +178,38 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-room-member-left', this.leftRoom);
-    document.addEventListener('exo-chat-room-deleted', this.leftRoom);
-    document.addEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
-    document.addEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
-    document.addEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
-    document.addEventListener('exo-chat-message-sent', this.messageReceived);
-    document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
-    document.addEventListener('exo-chat-message-read', this.markRoomMessagesRead);
-    document.addEventListener('exo-chat-setting-editRoom', this.editRoom);
-    document.addEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
-    document.addEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
-    document.addEventListener('exo-chat-select-room', this.selectContact);
-    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.addEventListener('exo-chat-message-not-sent', this.messageNotSent);
-    this.typeFilter = chatWebStorage.getStoredParam(chatData.TYPE_FILTER_PARAM, chatData.TYPE_FILTER_DEFAULT);
-    this.sortFilter = chatWebStorage.getStoredParam(chatData.SORT_FILTER_PARAM, chatData.SORT_FILTER_DEFAULT);
+    document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
+    document.addEventListener(this.$constants.EVENT_ROOM_DELETED, this.leftRoom);
+    document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_JOINED, this.joinedToNewRoom);
+    document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
+    document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
+    document.addEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
+    document.addEventListener(this.$constants.ACTION_ROOM_LEAVE, this.leaveRoom);
+    document.addEventListener(this.$constants.ACTION_ROOM_DELETE, this.deleteRoom);
+    document.addEventListener(this.$constants.ACTION_ROOM_SELECT, this.selectContact);
+    document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
+    this.typeFilter = chatWebStorage.getStoredParam(this.$constants.TYPE_FILTER_PARAM, this.$constants.TYPE_FILTER_DEFAULT);
+    this.sortFilter = chatWebStorage.getStoredParam(this.$constants.SORT_FILTER_PARAM, this.$constants.SORT_FILTER_DEFAULT);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
-    document.removeEventListener('exo-chat-room-deleted', this.leftRoom);
-    document.removeEventListener('exo-chat-room-member-joined', this.joinedToNewRoom);
-    document.removeEventListener('exo-chat-room-favorite-added', this.favoriteAdded);
-    document.removeEventListener('exo-chat-room-favorite-removed', this.favoriteRemoved);
-    document.removeEventListener('exo-chat-message-sent', this.messageReceived);
-    document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
-    document.removeEventListener('exo-chat-message-read', this.markRoomMessagesRead);
-    document.removeEventListener('exo-chat-setting-editRoom', this.editRoom);
-    document.removeEventListener('exo-chat-setting-leaveRoom', this.leaveRoom);
-    document.removeEventListener('exo-chat-setting-deleteRoom', this.deleteRoom);
-    document.removeEventListener('exo-chat-select-room', this.selectContact);
-    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.removeEventListener('exo-chat-message-not-sent', this.messageNotSent);
+    document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
+    document.removeEventListener(this.$constants.EVENT_ROOM_DELETED, this.leftRoom);
+    document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_JOINED, this.joinedToNewRoom);
+    document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
+    document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
+    document.removeEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
+    document.removeEventListener(this.$constants.ACTION_ROOM_LEAVE, this.leaveRoom);
+    document.removeEventListener(this.$constants.ACTION_ROOM_DELETE, this.deleteRoom);
+    document.removeEventListener(this.$constants.ACTION_ROOM_SELECT, this.selectContact);
+    document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
   },
   methods: {
     selectContact(contact) {
@@ -239,11 +238,11 @@ export default {
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
-      chatWebStorage.setStoredParam(chatData.SORT_FILTER_PARAM, this.sortFilter);
+      chatWebStorage.setStoredParam(this.$constants.SORT_FILTER_PARAM, this.sortFilter);
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
-      chatWebStorage.setStoredParam(chatData.TYPE_FILTER_PARAM, this.typeFilter);
+      chatWebStorage.setStoredParam(this.$constants.TYPE_FILTER_PARAM, this.typeFilter);
     },
     openCreateRoomModal() {
       this.newRoom = {};
@@ -365,7 +364,7 @@ export default {
       return this.contacts.find(contact => contact[field] === value);
     },
     loadMore() {
-      this.totalEntriesToLoad += chatData.CONTACTS_PER_PAGE;
+      this.totalEntriesToLoad += this.$constants.CONTACTS_PER_PAGE;
       this.$emit('load-more-contacts', this.totalEntriesToLoad);
     },
     favoriteTooltip(contact) {

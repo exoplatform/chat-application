@@ -100,14 +100,14 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-message-updated', this.messageReceived);
-    document.addEventListener('exo-chat-message-deleted', this.messageReceived);
-    document.addEventListener('exo-chat-notification-count-updated', this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-message-updated', this.messageReceived);
-    document.removeEventListener('exo-chat-message-deleted', this.messageReceived);
-    document.removeEventListener('exo-chat-notification-count-updated', this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
   },
   methods: {
     refreshMessages() {

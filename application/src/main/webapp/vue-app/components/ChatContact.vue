@@ -105,14 +105,14 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-disconnected', this.setOffline);
-    document.addEventListener('exo-chat-connected', this.setOnline);
-    document.addEventListener('exo-chat-reconnected', this.setOnline);
+    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.setOffline);
+    document.addEventListener(this.$constants.EVENT_CONNECTED, this.setOnline);
+    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.setOnline);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-disconnected', this.setOffline);
-    document.removeEventListener('exo-chat-connected', this.setOnline);
-    document.removeEventListener('exo-chat-reconnected', this.setOnline);
+    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.setOffline);
+    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.setOnline);
+    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.setOnline);
   },
   methods: {
     setStatus(status) {

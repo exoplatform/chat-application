@@ -83,13 +83,13 @@ export default {
   created() {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
-    document.addEventListener('exo-chat-message-acton-quote', this.quoteMessage);
+    document.addEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
     this.$nextTick(() => $('#messageComposerArea').focus());
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
     document.removeEventListener('click', this.closeEmojiPanel);
-    document.removeEventListener('exo-chat-message-acton-quote', this.quoteMessage);
+    document.removeEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   methods: {
     closeApps(e) {
@@ -179,7 +179,7 @@ export default {
 
       if (!newMessage || !newMessage.trim().length) {
         this.$refs.messageComposerArea.value = '';
-        document.dispatchEvent(new CustomEvent('exo-chat-message-edit-last'));
+        document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_EDIT_LAST));
       }
     }
   }

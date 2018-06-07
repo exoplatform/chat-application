@@ -84,13 +84,13 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-apps-close', this.closeModal);
+    document.addEventListener(this.$constants.ACTION_APPS_CLOSE, this.closeModal);
     if(this.app && this.app.htmlAdded) {
       this.$nextTick(() => this.app.htmlAdded($, chatServices));
     }
   },
   destroyed() {
-    document.removeEventListener('exo-chat-apps-close', this.closeModal);
+    document.removeEventListener(this.$constants.ACTION_APPS_CLOSE, this.closeModal);
   },
   methods: {
     closeModal() {
@@ -146,7 +146,7 @@ export default {
       if(result.errorCode) {
         this.errorCode = result.errorCode;
       } else if(result.ok) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+        document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
         this.closeModal();
       } else if(result.hide) {
         this.closeModal();

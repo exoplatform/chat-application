@@ -66,7 +66,7 @@ export default {
             contact.user !== 'undefined'
           ) {
             this.selectedContact = contact;
-            document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {detail: this.selectedContact}));
+            document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
           }
         });
       } else {

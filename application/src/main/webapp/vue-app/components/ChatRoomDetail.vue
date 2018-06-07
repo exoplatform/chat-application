@@ -95,7 +95,7 @@ export default {
   },
   watch: {
     searchText(value) {
-      document.dispatchEvent(new CustomEvent('exo-chat-message-search', {detail: value}));
+      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEARCH, {detail: value}));
     },
     contact(newContact) {
       if(!newContact) {
@@ -109,20 +109,20 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-setting-startMeeting', this.startMeeting);
-    document.addEventListener('exo-chat-setting-stopMeeting', this.stopMeeting);
-    document.addEventListener('exo-chat-setting-notificationSettings', this.openNotificationSettingsModal);
-    document.addEventListener('exo-chat-participants-loaded', this.participantsLoaded);
+    document.addEventListener(this.$constants.ACTION_ROOM_START_MEETING, this.startMeeting);
+    document.addEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
+    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
+    document.addEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
   },
   updated() {
     this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-setting-startMeeting', this.startMeeting);
-    document.removeEventListener('exo-chat-setting-stopMeeting', this.stopMeeting);
-    document.removeEventListener('exo-chat-setting-notificationSettings', this.openNotificationSettingsModal);
-    document.removeEventListener('exo-chat-participants-loaded', this.participantsLoaded);
+    document.removeEventListener(this.$constants.ACTION_ROOM_START_MEETING, this.startMeeting);
+    document.removeEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
+    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
+    document.removeEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
   },
   methods: {
     toggleFavorite(contact) {
@@ -188,7 +188,7 @@ export default {
           fromTimestamp: fromTimestamp
         }
       };
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     displayItem(settingAction) {
       return (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);

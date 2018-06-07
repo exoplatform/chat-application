@@ -34,14 +34,13 @@ import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
-import {chatData} from '../chatData';
 
 export default {
   components: {ChatContact, DropdownSelect},
   directives: {
     tiptip(el, binding, vnode) {
       $(el).find('.chat-contact-avatar').userPopup({
-        restURL: chatData.tiptipAPI,
+        restURL: vnode.context.$constants.tiptipAPI,
         userId: binding.value,
         labels: {
           StatusTitle: vnode.context.$t('exoplatform.chat.user.popup.status'),
@@ -64,7 +63,7 @@ export default {
         'All': this.$t('exoplatform.chat.contact.all'),
         'Online':  this.$t('exoplatform.chat.online'),
       },
-      participantFilter: chatData.STATUS_FILTER_DEFAULT,
+      participantFilter: this.$constants.STATUS_FILTER_DEFAULT,
       contact: null,
       participants: []
     };
@@ -86,22 +85,22 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.addEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
-    document.addEventListener('exo-chat-room-member-left', this.leftRoom);
-    this.participantFilter = chatWebStorage.getStoredParam(chatData.STATUS_FILTER_PARAM, chatData.STATUS_FILTER_DEFAULT);
+    document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
+    this.participantFilter = chatWebStorage.getStoredParam(this.$constants.STATUS_FILTER_PARAM, this.$constants.STATUS_FILTER_DEFAULT);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.removeEventListener('exo-chat-user-status-changed', this.contactStatusChanged);
-    document.removeEventListener('exo-chat-room-member-left', this.leftRoom);
+    document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
   },
   methods: {
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
     },
     selectParticipantFilter(filter) {
-      chatWebStorage.setStoredParam(chatData.STATUS_FILTER_PARAM, filter);
+      chatWebStorage.setStoredParam(this.$constants.STATUS_FILTER_PARAM, filter);
       this.participantFilter = filter;
     },
     toggleParticipantFilter() {

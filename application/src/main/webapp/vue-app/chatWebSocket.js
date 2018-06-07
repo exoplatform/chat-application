@@ -1,3 +1,5 @@
+import {chatConstants} from './chatConstants';
+
 const cometDSettings = {
   connected: false
 };
@@ -49,17 +51,17 @@ export function initChatConnectionListener() {
     eXo.chat.isOnline = cometDSettings.connected = message.successful === true;
     if(cometDSettings.connected) {
       if (wasConnected) {
-        document.dispatchEvent(new CustomEvent('exo-chat-reconnected'));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_RECONNECTED));
       } else {
-        document.dispatchEvent(new CustomEvent('exo-chat-connected'));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_CONNECTED));
       }
     } else  if(wasConnected) {
-      document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_DISCONNECTED));
     }
   });
   cometDSettings.cCometD.addListener('/meta/disconnect', function(message) {
     if (message.successful) {
-      document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_DISCONNECTED));
     }
   });
 }
@@ -97,7 +99,7 @@ function initChatCometd() {
     }, null, function(subscribeReply) {
       if (subscribeReply.successful) {
         cometDSettings.chatSubscription = subscribeReply;
-        document.dispatchEvent(new CustomEvent('exo-chat-connected'));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_CONNECTED));
       }
     });
   }
@@ -176,8 +178,8 @@ export function sendMessage(messageObj, callback) {
   };
 
   if (!isConnected()) {
-    document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
-    document.dispatchEvent(new CustomEvent('exo-chat-disconnected'));
+    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail' : data}));
+    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_DISCONNECTED));
     return;
   }
 
@@ -193,16 +195,16 @@ export function sendMessage(messageObj, callback) {
   try {
     cometDSettings.cCometD.publish('/service/chat', JSON.stringify(content), function(publishAck) {
       if (!publishAck || !publishAck.successful) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail' : data}));
       } else {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-sent-ack', {detail: content}));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_SENT, {detail: content}));
         if (callback) {
           callback(data);
         }
       }
     });
   } catch (e) {
-    document.dispatchEvent(new CustomEvent('exo-chat-message-not-sent', {'detail' : data}));
+    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail' : data}));
   }
 }
 export function deleteMessage(messageObj, callback) {
@@ -242,7 +244,7 @@ export function setRoomMessagesAsRead(room, callback) {
   });
 }
 
-document.addEventListener('exo-chat-logout-sent', (e) => {
+document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
   const message = e.detail;
 
   if(message && message.data && message.data.sessionId === cometDSettings.sessionId) {
@@ -250,11 +252,11 @@ document.addEventListener('exo-chat-logout-sent', (e) => {
   }
 });
 
-document.addEventListener('exo-chat-message-tosend', (e) => {
+document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, (e) => {
   const message = e.detail;
   sendMessage(message);
 });
 
-document.addEventListener('exo-chat-message-todelete', (e) => {
+document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, (e) => {
   deleteMessage(e.detail);
 });

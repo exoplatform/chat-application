@@ -24,7 +24,6 @@
 import ChatMessageDetail from './ChatMessageDetail.vue';
 import ChatMessageComposer from './ChatMessageComposer.vue';
 import Modal from './modal/Modal.vue';
-import {chatData} from '../chatData.js';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
@@ -79,35 +78,35 @@ export default {
     this.scrollToEnd();
   },
   created() {
-    document.addEventListener('exo-chat-message-updated', this.messageReceived);
-    document.addEventListener('exo-chat-message-deleted', this.messageDeleted);
-    document.addEventListener('exo-chat-message-sent', this.messageReceived);
-    document.addEventListener('exo-chat-message-read', this.messageSent);
-    document.addEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.addEventListener('exo-chat-message-edit-last', this.editLastMessage);
-    document.addEventListener('exo-chat-message-search', this.searchMessage);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageDeleted);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_READ, this.messageSent);
+    document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.addEventListener(this.$constants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
+    document.addEventListener(this.$constants.ACTION_MESSAGE_SEARCH, this.searchMessage);
   },
   destroyed() {
-    document.removeEventListener('exo-chat-message-updated', this.messageReceived);
-    document.removeEventListener('exo-chat-message-deleted', this.messageDeleted);
-    document.removeEventListener('exo-chat-message-sent', this.messageReceived);
-    document.removeEventListener('exo-chat-message-read', this.messageSent);
-    document.removeEventListener('exo-chat-selected-contact-changed', this.contactChanged);
-    document.removeEventListener('exo-chat-message-edit-last', this.editLastMessage);
-    document.removeEventListener('exo-chat-message-search', this.searchMessage);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageDeleted);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_READ, this.messageSent);
+    document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.removeEventListener(this.$constants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
+    document.removeEventListener(this.$constants.ACTION_MESSAGE_SEARCH, this.searchMessage);
   },
   methods: {
     messageWritten(message) {
       chatWebStorage.storeNotSentMessage(message);
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     messageModified(message) {
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
       message.room = this.contact.room;
-      document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     messageReceived(e) {
       const messageObj = e.detail;
@@ -153,7 +152,7 @@ export default {
     },
     isScrollPositionAtEnd() {
       if(this.chatMessageListContainer && this.chatMessageListContainer.length) {
-        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < chatData.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < this.$constants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
       }
@@ -175,7 +174,7 @@ export default {
       } else {
         toTimestamp = this.messages[0].timestamp;
       }
-      const limit = chatData.MESSAGES_PER_PAGE;
+      const limit = this.$constants.MESSAGES_PER_PAGE;
       this.newMessagesLoading = true;
       chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
@@ -290,7 +289,7 @@ export default {
       this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
     },
     saveMessage(event) {
-      if (!event || event.keyCode === chatData.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         this.messageModified(this.messageToEdit);
         this.showEditMessageModal = false;
       }
@@ -302,7 +301,7 @@ export default {
       this.searchKeyword = e.detail.trim();
     },
     preventDefault(event) {
-      if (event.keyCode === chatData.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (event.keyCode === this.$constants.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         event.stopPropagation();
         event.preventDefault();
       }

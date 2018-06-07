@@ -1,4 +1,4 @@
-import {chatData} from './chatData.js';
+import {chatConstants} from './chatConstants.js';
 
 const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
 const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = 'keywords';
@@ -143,7 +143,7 @@ function showDesktopNotif(path, msg) {
 
     const clickHandler = function (notif) {
       notif.onclick = function () {
-        document.dispatchEvent(new CustomEvent('exo-chat-select-room', {'detail' : msg.room}));
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {'detail' : msg.room}));
         window.focus();
         notif.close();
       };
@@ -161,9 +161,9 @@ function showDesktopNotif(path, msg) {
     } else {
       let avatarUrl = null;
       if (msg.roomType === 'u') {
-        avatarUrl = `${chatData.socialUserAPI}${msg.from}/avatar`;
+        avatarUrl = `${chatConstants.socialUserAPI}${msg.from}/avatar`;
       } else {
-        avatarUrl = `${chatData.socialSpaceAPI}${msg.roomDisplayName}/avatar`;
+        avatarUrl = `${chatConstants.socialSpaceAPI}${msg.roomDisplayName}/avatar`;
       }
       notification = new Notification(msg.roomDisplayName, {
         icon: avatarUrl,
@@ -175,6 +175,6 @@ function showDesktopNotif(path, msg) {
 }
 
 export function initDesktopNotifications() {
-  document.addEventListener('exo-chat-message-sent', notfy);
-  document.addEventListener('exo-chat-message-updated', notfy);
+  document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, notfy);
+  document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, notfy);
 }

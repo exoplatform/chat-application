@@ -1,5 +1,6 @@
 import { shallow } from 'vue-test-utils';
 import ChatContact from '../../main/webapp/vue-app/components/ChatContact';
+import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 describe('ChatContact.test.js', () => {
   let cmp;
@@ -15,7 +16,8 @@ describe('ChatContact.test.js', () => {
         isCurrentUser: true
       },
       mocks: {
-        $t: () => {}
+        $t: () => {},
+        $constants : chatConstants
       }
     });
   });

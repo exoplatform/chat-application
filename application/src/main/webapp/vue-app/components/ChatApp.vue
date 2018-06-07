@@ -87,33 +87,33 @@ export default {
     chatServices.initChatSettings(this.userSettings.username,
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
-    document.addEventListener('exo-chat-room-updated', this.roomUpdated);
-    document.addEventListener('exo-chat-logout-sent', () => {
+    document.addEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
+    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, () => {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
         this.loggedout = true;
       }
     });
-    document.addEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
-    document.addEventListener('exo-chat-connected', this.connectionEstablished);
-    document.addEventListener('exo-chat-reconnected', this.connectionEstablished);
-    document.addEventListener('exo-chat-user-status-changed', (e) => {
+    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
+    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, (e) => {
       const contactChanged = e.detail;
       if (this.userSettings.username === contactChanged.sender) {
         this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
         this.userSettings.originalStatus = this.userSettings.status;
       }
     });
-    document.addEventListener('exo-chat-notification-count-updated', (e) => {
+    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, (e) => {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
       chatServices.updateTotalUnread(totalUnreadMsg);
     });
   },
   destroyed() {
-    document.removeEventListener('exo-chat-disconnected', this.changeUserStatusToOffline);
-    document.removeEventListener('exo-chat-connected', this.connectionEstablished);
-    document.removeEventListener('exo-chat-reconnected', this.connectionEstablished);
-    document.removeEventListener('exo-chat-room-updated', this.roomUpdated);
+    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
+    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.removeEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
     // TODO remove added listeners
   },
   methods: {
@@ -132,7 +132,7 @@ export default {
       this.addRooms(chatRoomsData.rooms);
 
       if (this.mq !== 'mobile') {
-        const selectedRoom = chatWebStorage.getStoredParam(chatWebStorage.LAST_SELECTED_ROOM_PARAM);
+        const selectedRoom = chatWebStorage.getStoredParam(this.$constants.LAST_SELECTED_ROOM_PARAM);
         if(selectedRoom) {
           this.setSelectedContact(selectedRoom);
         }
@@ -159,7 +159,7 @@ export default {
           this.contactList.splice(indexOfRoom, 1, selectedContact);
         }
         this.selectedContact = selectedContact;
-        document.dispatchEvent(new CustomEvent('exo-chat-selected-contact-changed', {'detail' : selectedContact}));
+        document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
       }
     },
     setStatus(status) {
@@ -242,7 +242,7 @@ export default {
     },
     setContactParticipants(participants) {
       this.selectedContact.participants = participants;
-      document.dispatchEvent(new CustomEvent('exo-chat-participants-loaded', {'detail' : this.selectedContact}));
+      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, {'detail' : this.selectedContact}));
     },
     reloadPage() {
       window.location.reload();

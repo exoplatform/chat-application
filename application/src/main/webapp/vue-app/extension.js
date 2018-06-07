@@ -1,5 +1,6 @@
+import {chatConstants} from './chatConstants.js';
+
 export const MAX_FILES = 1;
-export const UPLOAD_URI = '/portal/upload';
 
 export const DEFAULT_COMPOSER_APPS = [
   {
@@ -109,7 +110,7 @@ export const DEFAULT_COMPOSER_APPS = [
                   <input id="chat-file-file" type="file" name="userfile" /> \
                 </a> \
                 <input id="chat-file-submit" value="${i18NConverter('exoplatform.chat.file.manually')}" type="submit" style="display:none" /> \
-                <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent('exo-chat-apps-close'))">${i18NConverter('exoplatform.chat.cancel')}</a> \
+                <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent(chatConstants.ACTION_APPS_CLOSE))">${i18NConverter('exoplatform.chat.cancel')}</a> \
               </div>`;
     },
     htmlAdded($) {
@@ -140,7 +141,7 @@ export const DEFAULT_COMPOSER_APPS = [
 
       $dropzoneContainer.filedrop({
         fallback_id: 'chat-file-file',  // an identifier of a standard file input element
-        url: `${UPLOAD_URI}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
+        url: `${chatConstants.uploadAPI}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
         paramname: 'userfile',          // POST parameter name used on serverside to reference file
         error: function (err) {
           switch (err) {
@@ -164,7 +165,7 @@ export const DEFAULT_COMPOSER_APPS = [
           thiss.showButtons($, true);
         },
         allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
-        maxfiles: MAX_FILES,
+        maxfiles: chatConstants.MAX_UPLOAD_FILES,
         maxfilesize: eXo.chat.userSettings.maxUploadSize,    // max file size in MBs
         uploadStarted: function() {
           thiss.setErrorCode($, '');
@@ -175,7 +176,7 @@ export const DEFAULT_COMPOSER_APPS = [
           $dropzoneContainer.find('.bar').html(`${progress}%`);
         },
         uploadFinished: function () {
-          fetch(UPLOAD_URI, {
+          fetch(chatConstants.uploadAPI, {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
@@ -228,8 +229,8 @@ export const DEFAULT_COMPOSER_APPS = [
                 user: eXo.chat.userSettings.username,
                 options : options
               };
-              document.dispatchEvent(new CustomEvent('exo-chat-message-tosend', {'detail' : message}));
-              document.dispatchEvent(new CustomEvent('exo-chat-apps-close'));
+              document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+              document.dispatchEvent(new CustomEvent(chatConstants.ACTION_APPS_CLOSE));
             });
           });
         }
@@ -302,7 +303,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
     okMessage: 'exoplatform.chat.team.delete.ok',
     koMessage: 'exoplatform.chat.team.delete.ko',
     confirmed(contact) {
-      document.dispatchEvent(new CustomEvent('exo-chat-setting-deleteRoom', {'detail': contact}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_DELETE, {'detail': contact}));
     }
   },
   enabled: (comp) => {
@@ -322,7 +323,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
     okMessage: 'exoplatform.chat.team.leave.confirm.yes',
     koMessage: 'exoplatform.chat.team.leave.confirm.no',
     confirmed(contact) {
-      document.dispatchEvent(new CustomEvent('exo-chat-setting-leaveRoom', {'detail': contact}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_LEAVE, {'detail': contact}));
     }
   }
 }];
