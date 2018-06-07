@@ -18,26 +18,13 @@
       <div v-else-if="message.options.type === chatData.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === chatData.TASK_MESSAGE" class="message-content">
-        <b>
-          <a :href="message.options.url" target="_blank">{{ message.options.task }}</a>
-        </b>
-        <div class="custom-message-item">
-          <span>
-            <i class="uiIconChatAssign"></i>
-            {{ $t('exoplatform.chat.assign.to') }}:
-          </span>
-          <b>{{ message.options.username || $t('exoplatform.chat.assign.to.none') }}</b>
-        </div>
-        <div class="custom-message-item"><span><i class="uiIconChatClock"></i>{{ $t('exoplatform.chat.due.date') }}: </span><b>{{ message.options.dueDate || $t('exoplatform.chat.due.date.none') }}</b></div>
-      </div>
       <div v-else-if="message.options.type === chatData.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
-          <span>De </span>
+          <span>{{ $t('exoplatform.chat.from') }} </span>
           <b>{{ message.options.startDate }} {{ message.options.startAllDay ? this.$t('exoplatform.chat.all.day') : message.options.startTime }}</b>
-          <span> à </span>
+          <span> {{ $t('exoplatform.chat.to') }} </span>
           <b>{{ message.options.endDate }} {{ message.options.endAllDay ? this.$t('exoplatform.chat.all.day') : message.options.endTime }}</b>
         </div>
         <div v-if="message.options.location" class="custom-message-item">
@@ -106,14 +93,17 @@
           <a href="#" target="_blank">{{ $t('exoplatform.chat.open.wiki') }}</a>.
         </div>
       </div>
+      <div v-else-if="isSpecificMessageType" class="message-content" v-html="specificMessageContent">
+      </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
-        <i v-if="message.options && message.options.type === chatData.RAISE_HAND" class="uiIconChatRaiseHand"></i>
-        <i v-if="message.options && message.options.type === chatData.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
-        <i v-if="message.options && message.options.type === chatData.LINK_MESSAGE" class="uiIconChatLink"></i>
-        <i v-if="message.options && message.options.type === chatData.FILE_MESSAGE" class="uiIconChatUpload"></i>
-        <i v-if="message.options && message.options.type === chatData.TASK_MESSAGE" class="uiIconChatCreateTask"></i>
-        <i v-if="message.options && message.options.type === chatData.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-else-if="message.options && message.options.type === chatData.RAISE_HAND" class="uiIconChatRaiseHand"></i>
+        <i v-else-if="message.options && message.options.type === chatData.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
+        <i v-else-if="message.options && message.options.type === chatData.LINK_MESSAGE" class="uiIconChatLink"></i>
+        <i v-else-if="message.options && message.options.type === chatData.FILE_MESSAGE" class="uiIconChatUpload"></i>
+        <i v-else-if="message.options && message.options.type === chatData.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-else-if="isSpecificMessageType && specificMessageClass" :class="specificMessageClass"></i>
+
         <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
       </div>
     </div>
@@ -275,6 +265,26 @@ export default {
     },
     messageFiltered() {
       return messageFilter(this.messageContent, this.highlight, this.EMOTICONS);
+    },
+    isSpecificMessageType() {
+      return this.message && this.message.options && this.message.options.type
+        && eXo.chat && eXo.chat.message && eXo.chat.message.types
+        && eXo.chat.message.types[this.message.options.type];
+    },
+    specificMessageObj() {
+      if (this.isSpecificMessageType) {
+        return eXo.chat.message.types[this.message.options.type];
+      }
+      return {};
+    },
+    specificMessageContent() {
+      if(this.specificMessageObj.html) {
+        return this.specificMessageObj.html(this.message, this.$t);
+      }
+      return '';
+    },
+    specificMessageClass() {
+      return this.specificMessageObj.iconClass;
     }
   },
   created() {

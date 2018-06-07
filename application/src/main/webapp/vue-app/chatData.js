@@ -19,7 +19,6 @@ export const chatData = {
   CONTACTS_PER_PAGE: 20,
   ADD_TEAM_MESSAGE: 'type-add-team-user',
   REMOVE_TEAM_MESSAGE: 'type-remove-team-user',
-  TASK_MESSAGE: 'type-task',
   EVENT_MESSAGE: 'type-event',
   FILE_MESSAGE: 'type-file',
   LINK_MESSAGE: 'type-link',

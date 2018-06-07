@@ -58,7 +58,6 @@ export default {
         case chatData.RAISE_HAND: return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
         case chatData.FILE_MESSAGE: return 'uiIconChatUpload uiIconChatLightGray pull-left';
         case chatData.LINK_MESSAGE: return 'uiIconChatLink uiIconChatLightGray pull-left';
-        case chatData.TASK_MESSAGE: return 'uiIconChatCreateTask uiIconChatLightGray pull-left';
         case chatData.EVENT_MESSAGE: return 'uiIconChatCreateEvent uiIconChatLightGray pull-left';
         case chatData.NOTES_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
         case chatData.MEETING_START_MESSAGE: return 'uiIconChatMeeting uiIconChatLightGray pull-left';
@@ -68,9 +67,31 @@ export default {
         case chatData.CALL_JOIN_MESSAGE: return 'uiIconChatAddPeopleToMeeting uiIconChatLightGray pull-left';
         case chatData.CALL_ON_MESSAGE: return 'uiIconChatStartCall uiIconChatLightGray pull-left';
         case chatData.CALL_OFF_MESSAGE: return 'uiIconChatFinishCall uiIconChatLightGray pull-left';
+        default:
+          return this.specificMessageClass;
         }
       }
       return '';
+    },
+    isSpecificMessageType() {
+      return this.message && this.message.options && this.message.options.type
+        && eXo.chat && eXo.chat.message && eXo.chat.message.notifs
+        && eXo.chat.message.notifs[this.message.options.type];
+    },
+    specificMessageObj() {
+      if (this.isSpecificMessageType) {
+        return eXo.chat.message.notifs[this.message.options.type];
+      }
+      return {};
+    },
+    specificMessageContent() {
+      if(this.specificMessageObj.html) {
+        return this.specificMessageObj.html(this.message, this.$t);
+      }
+      return '';
+    },
+    specificMessageClass() {
+      return this.specificMessageObj.iconClass;
     },
     messageDate() {
       return chatTime.getTimeString(this.notif.timestamp);
@@ -81,7 +102,6 @@ export default {
       if (messageType) {
         switch(messageType) {
         case chatData.EVENT_MESSAGE : content = this.notif.options.summary; break;
-        case chatData.TASK_MESSAGE : content = this.notif.options.task; break;
         case chatData.LINK_MESSAGE : content = this.notif.options.link; break;
         case chatData.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;
         case chatData.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
@@ -91,6 +111,8 @@ export default {
         case chatData.CALL_JOIN_MESSAGE : content = this.$t('exoplatform.chat.meeting.joined'); break;
         case chatData.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
         case chatData.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
+        default:
+          content = this.specificMessageContent;
         }
         content = `<a href='#'>${content}</a>`;
       } else {
