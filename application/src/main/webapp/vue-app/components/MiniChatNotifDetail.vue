@@ -73,19 +73,19 @@ export default {
       return '';
     },
     isSpecificMessageType() {
-      return this.message && this.message.options && this.message.options.type
+      return this.notif && this.notif.options && this.notif.options.type
         && eXo.chat && eXo.chat.message && eXo.chat.message.notifs
-        && eXo.chat.message.notifs[this.message.options.type];
+        && eXo.chat.message.notifs[this.notif.options.type];
     },
     specificMessageObj() {
       if (this.isSpecificMessageType) {
-        return eXo.chat.message.notifs[this.message.options.type];
+        return eXo.chat.message.notifs[this.notif.options.type];
       }
       return {};
     },
     specificMessageContent() {
       if(this.specificMessageObj.html) {
-        return this.specificMessageObj.html(this.message, this.$t);
+        return this.specificMessageObj.html(this.notif, this.$t);
       }
       return '';
     },

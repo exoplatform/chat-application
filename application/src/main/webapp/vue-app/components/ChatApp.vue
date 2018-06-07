@@ -87,34 +87,23 @@ export default {
     chatServices.initChatSettings(this.userSettings.username,
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
+
     document.addEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
-    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, () => {
-      if (!chatWebSocket.isConnected()) {
-        this.changeUserStatusToOffline();
-        this.loggedout = true;
-      }
-    });
+    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
     document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
     document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, (e) => {
-      const contactChanged = e.detail;
-      if (this.userSettings.username === contactChanged.sender) {
-        this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
-        this.userSettings.originalStatus = this.userSettings.status;
-      }
-    });
-    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, (e) => {
-      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      chatServices.updateTotalUnread(totalUnreadMsg);
-    });
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
   },
   destroyed() {
     document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
     document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
     document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
     document.removeEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
-    // TODO remove added listeners
+    document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
   },
   methods: {
     initSettings(userSettings) {
@@ -167,6 +156,12 @@ export default {
         chatWebSocket.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
       }
     },
+    userLoggedout() {
+      if (!chatWebSocket.isConnected()) {
+        this.changeUserStatusToOffline();
+        this.loggedout = true;
+      }
+    },
     roomUpdated(e) {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
       if (updatedContact && updatedContact.room) {
@@ -176,6 +171,17 @@ export default {
         } else {
           this.contactList.splice(indexOfRoom, 1, updatedContact);
         }
+      }
+    },
+    totalUnreadMessagesUpdated(e) {
+      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
+      chatServices.updateTotalUnread(totalUnreadMsg);
+    },
+    userStatusChanged(e) {
+      const contactChanged = e.detail;
+      if (this.userSettings.username === contactChanged.sender) {
+        this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
+        this.userSettings.originalStatus = this.userSettings.status;
       }
     },
     connectionEstablished() {

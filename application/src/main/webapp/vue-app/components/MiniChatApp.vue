@@ -77,37 +77,14 @@ export default {
         }
       }
     );
-    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, () => {
-      if (!chatWebSocket.isConnected()) {
-        this.changeUserStatusToOffline();
-      }
-    });
-    document.addEventListener('exo-chat-room-open', (e) => {
-      const roomName = e.detail ? e.detail.name : null;
-      const roomType = e.detail ? e.detail.type : null;
-      if(roomName && roomName.trim().length) {
-        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          this.room = rommId;
-        });
-      }
-    });
+
     document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
     document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
     document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, (e) => {
-      const contactChanged = e.detail;
-      if (this.userSettings.username === contactChanged.sender) {
-        this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
-        this.userSettings.originalStatus = this.userSettings.status;
-        this.status = this.userSettings.status;
-      }
-    });
-    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, (e) => {
-      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      if(totalUnreadMsg >= 0) {
-        this.totalUnreadMsg = totalUnreadMsg;
-      }
-    });
+    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_MINI_CHAT, this.openRoomInMiniChat);
 
     if (chatWebSocket.isConnected()) {
       this.connectionEstablished();
@@ -119,14 +96,44 @@ export default {
     document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
     document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
     document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.removeEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
-    // TODO remove added listeners
+    document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_MINI_CHAT, this.openRoomInMiniChat);
   },
   methods: {
     initSettings(userSettings) {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
+    },
+    userLoggedout() {
+      if (!chatWebSocket.isConnected()) {
+        this.changeUserStatusToOffline();
+      }
+    },
+    openRoomInMiniChat(e) {
+      const roomName = e.detail ? e.detail.name : null;
+      const roomType = e.detail ? e.detail.type : null;
+      if(roomName && roomName.trim().length) {
+        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
+          this.room = rommId;
+        });
+      }
+    },
+    userStatusChanged(e) {
+      const contactChanged = e.detail;
+      if (this.userSettings.username === contactChanged.sender) {
+        this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
+        this.userSettings.originalStatus = this.userSettings.status;
+        this.status = this.userSettings.status;
+      }
+    },
+    totalUnreadMessagesUpdated(e) {
+      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
+      if(totalUnreadMsg >= 0) {
+        this.totalUnreadMsg = totalUnreadMsg;
+      }
     },
     setStatus(status) {
       const thiss = this;
