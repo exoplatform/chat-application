@@ -20,7 +20,7 @@
         <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
       </dropdown-select>
       <div class="room-actions">
-        <div v-if="mq === 'mobile'" class="filter-action">
+        <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
           <i class="uiIconFilter"></i>
         </div>
         <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
@@ -55,7 +55,21 @@
       <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="contactMenuClosed = true">
         <ul class="mobile-options">
           <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
-          <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">view Profile</a></li>
+          <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
+        </ul>
+      </div>
+      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="filterMenuClosed = true">
+        <ul class="mobile-options filter-options" @click.stop>
+          <li class="options-category">
+            <i class="uiIconClose"></i>
+            <span><i class="uiIconFilter"></i>Filter</span>
+            <div>Save</div>
+          </li>
+          <li class="options-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</li>
+          <li v-for="(label, filter) in filterByType" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li class="options-category">{{ $t('exoplatform.chat.contact.filter.by') }}</li>
+          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
         </ul>
       </div>
     </div>
@@ -115,7 +129,8 @@ export default {
         participants: []
       },
       contactMenu: null,
-      contactMenuClosed: true
+      contactMenuClosed: true,
+      filterMenuClosed: true
     };
   },
   computed: {
