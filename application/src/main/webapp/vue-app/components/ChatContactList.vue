@@ -52,6 +52,12 @@
           <i class="uiIconArrowDownMini"></i>
         </div>
       </div>
+      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="contactMenuClosed = true">
+        <ul class="mobile-options">
+          <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
+          <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">view Profile</a></li>
+        </ul>
+      </div>
     </div>
     <room-form-modal :show="createRoomModal" :selected="newRoom" @room-saved="roomSaved" @modal-closed="closeModal"></room-form-modal>
   </div>
@@ -107,7 +113,9 @@ export default {
       newRoom: {
         name: '',
         participants: []
-      }
+      },
+      contactMenu: null,
+      contactMenuClosed: true
     };
   },
   computed: {
@@ -413,8 +421,10 @@ export default {
         return DEFAULT_COMPOSER_APPS;
       }
     },
-    openContactActions() {
-      console.log('deezdezdezdezqd');
+    openContactActions(user) {
+      const contact = this.contacts.find(contact => contact['user'] === user)
+      this.contactMenuClosed = false;
+      this.contactMenu = contact;
     }
   }
 };

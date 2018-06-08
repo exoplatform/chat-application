@@ -151,6 +151,22 @@
   }
 }
 
+.mobile-options {
+  background: #fff;
+  min-width: 260px;
+  max-width: 90vw;
+  border-radius: 5px;
+  text-align: center;
+  > li > a {
+    display: block;
+    padding: 15px;
+    color: inherit;
+  }
+  > li + li {
+    border-top: @defaultBorder;
+  }
+}
+
 .uiIconPlusCircled:before {
   content: "\eb5c";
 }

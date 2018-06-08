@@ -27,7 +27,7 @@ Vue.directive('exo-tooltip', function (el, binding) {
 Vue.directive('hold-tap', function (el, binding, vnode) {
   if (vnode.context.mq === 'mobile') {
     const callback = binding.value;
-    $(el).on('taphold', () => callback());
+    $(el).off('taphold').on('taphold', () => callback(vnode.key));
   }
 });
 
