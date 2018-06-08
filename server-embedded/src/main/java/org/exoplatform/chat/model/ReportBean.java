@@ -216,7 +216,7 @@ public class ReportBean {
      * Questions
      */
     if (questions.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.questions")+" ===\n");
+      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.questions")+" ====\n");
       for (String question:this.getQuestions())
       {
         xwiki.append(question).append("\n");
@@ -227,7 +227,7 @@ public class ReportBean {
      * Links
      */
     if (links.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.links")+" ===\n");
+      xwiki.append("\n===== "+ res.getString("exoplatform.chat.meetingnotes.links")+" ====\n");
       for (String link:this.getLinks())
       {
         xwiki.append("[[").append(link).append("]]").append("\n");
@@ -238,7 +238,7 @@ public class ReportBean {
      * Files
      */
     if (files.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.files")+" ===\n");
+      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.files")+" ====\n");
       for (FileBean file:this.getFiles())
       {
         xwiki.append("[[");
@@ -251,7 +251,7 @@ public class ReportBean {
      * Tasks
      */
     if (tasks.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.tasks")+" ===\n");
+      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.tasks")+" ====\n");
       xwiki.append("|= "+ res.getString("exoplatform.chat.meetingnotes.tasks.task")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.assignee")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.due")+"\n");
@@ -268,7 +268,7 @@ public class ReportBean {
      * Events
      */
     if (events.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.events")+" ===\n");
+      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.events")+" ====\n");
       xwiki.append("|= "+ res.getString("exoplatform.chat.meetingnotes.events.event")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.events.start")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.events.end")+"\n");
@@ -284,7 +284,7 @@ public class ReportBean {
     /**
      * Attendees
      */
-    xwiki.append("\n{{column}}\n=== "+ res.getString("exoplatform.chat.meetingnotes.attendees")+" ===\n{{panel}}\n");
+    xwiki.append("\n{{column}}\n==== "+ res.getString("exoplatform.chat.meetingnotes.attendees")+" ====\n{{panel}}\n");
     for (UserBean userBean:this.getAttendees()) {
       if ("available".equals(userBean.getStatus()))
         xwiki.append("(/) ");
