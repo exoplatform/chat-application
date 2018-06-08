@@ -11,7 +11,7 @@ export function initTiptip() {
       divUIAction.append(`<a title="Chat"  \
         class="btn chatPopupOverlay chatPopup" \
         type="button" \
-        onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open', {detail: {name: '${ownerId}', type: '${type}'}}))"> \
+        onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open-mini', {detail: {name: '${ownerId}', type: '${type}'}}))"> \
           <i class="uiIconBannerChat uiIconLightGray"></i> \
           Chat \
       </a>`);
@@ -19,7 +19,7 @@ export function initTiptip() {
   });
   if ($('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.spaceName) {
     $('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').append(`<li>
-        <a onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open', {detail: {name: '${eXo.env.portal.spaceName}', type: 'space-name'}}))" \
+        <a onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open-mini', {detail: {name: '${eXo.env.portal.spaceName}', type: 'space-name'}}))" \
         class="chat-button btn" href="javascript:void(0);"> \
           <i class="uiIconBannerChat"></i> \
           <span class="chat-label-status">&nbsp;Chat</span> \
@@ -27,7 +27,7 @@ export function initTiptip() {
       </li>`);
   } else if ($('.profileMenuNav .profileMenuNavHeader .profileMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.profileOwner) {
     $('.profileMenuNav .profileMenuNavHeader .profileMenuApps').append(`<li>
-        <a onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open', {detail: {name: '${eXo.env.portal.profileOwner}', type: 'username'}}))" \
+        <a onclick="document.dispatchEvent(new CustomEvent('exo-chat-room-open-mini', {detail: {name: '${eXo.env.portal.profileOwner}', type: 'username'}}))" \
         class="chat-button btn" href="javascript:void(0);"> \
           <i class="uiIconBannerChat"></i> \
           <span class="chat-label-status">&nbsp;Chat</span> \

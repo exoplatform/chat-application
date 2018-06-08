@@ -9,14 +9,14 @@
       </div>
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
-    <div v-show="(selectedContact && selectedContact.room) || mq === 'mobile'" class="uiGlobalRoomsContainer">
+    <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
       <div class="room-content">
         <chat-message-list :contact="selectedContact"></chat-message-list>
         <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)"></chat-room-participants> 
       </div>
     </div>
-    <div v-if="mq !== 'mobile' && !(selectedContact && selectedContact.room)" class="chat-no-conversation muted">
+    <div v-if="mq !== 'mobile' && !(selectedContact && (selectedContact.room || selectedContact.user))" class="chat-no-conversation muted">
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
     </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
@@ -138,10 +138,10 @@ export default {
         selectedContact = {};
       }
       if (typeof selectedContact === 'string') {
-        selectedContact = this.contactList.find(contact => contact.room === selectedContact);
+        selectedContact = this.contactList.find(contact => contact.room === selectedContact || contact.user === selectedContact);
       }
-      if (selectedContact && selectedContact.room && selectedContact.fullName) {
-        const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room);
+      if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
+        const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
         if(indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         } else {
@@ -164,8 +164,8 @@ export default {
     },
     roomUpdated(e) {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
-      if (updatedContact && updatedContact.room) {
-        const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room);
+      if (updatedContact && (updatedContact.room || updatedContact.user)) {
+        const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room || contact.user === updatedContact.user);
         if(indexOfRoom < 0) {
           this.contactList.unshift(updatedContact);
         } else {
@@ -197,8 +197,8 @@ export default {
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
         && contact.fullName.trim().length > 0
-        && contact.room && contact.room.trim().length > 0
-        && !contacts.find(otherContact => otherContact.room === contact.room));
+        && (contact.room && contact.room.trim().length > 0 || contact.user && contact.user.trim().length > 0)
+        && !contacts.find(otherContact => otherContact.room === contact.room || otherContact.user === contact.user));
       if(rooms && rooms.length > 0) {
         rooms.forEach(room => {
           this.contactList.push(room);
@@ -228,7 +228,7 @@ export default {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
-            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room);
+            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
             if(contactToChange) {
               this.setSelectedContact(contactToChange);
             }

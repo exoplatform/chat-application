@@ -126,7 +126,7 @@ export default {
   },
   methods: {
     toggleFavorite(contact) {
-      chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
+      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
     },
     openSearchRoom() {
       this.showSearchRoom = true;

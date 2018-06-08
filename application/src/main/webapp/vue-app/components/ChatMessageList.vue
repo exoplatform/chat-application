@@ -1,6 +1,6 @@
 <template>
   <div class="uiRightContainerArea message-list">
-    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" :class="!messages || !messages.length ? 'chat-no-conversation muted' : ''" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
       <div v-show="newMessagesLoading" class="center">
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>
@@ -8,6 +8,7 @@
         <div class="day-separator"><span>{{ dayDate }}</span></div>
         <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" :mini-chat="miniChat" @edit-message="editMessage"></chat-message-detail>
       </div>
+      <span v-show="!messages || !messages.length" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
     <chat-message-composer :contact="contact" :mini-chat="miniChat" @exo-chat-message-written="messageWritten"></chat-message-composer>
     <modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
@@ -130,7 +131,7 @@ export default {
       if(this.contact.room) {
         this.retrieveRoomMessages(); 
       } else {
-        chatServices.getRoomId(eXo.chat.userSettings, this.contact.user).then((room) => {
+        chatServices.getRoomId(eXo.chat.userSettings, this.contact.user, 'username').then((room) => {
           if(room) {
             this.contact.room = room;
             this.retrieveRoomMessages(); 
@@ -164,6 +165,10 @@ export default {
       this.retrieveRoomMessages(true);
     },
     retrieveRoomMessages(avoidScrollingDown) {
+      if(!this.contact || !this.contact.room || !this.contact.room.trim().length) {
+        this.messages = [];
+        return;
+      }
       if (this.newMessagesLoading) {
         return;
       }

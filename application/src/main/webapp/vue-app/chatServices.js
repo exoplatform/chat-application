@@ -90,11 +90,21 @@ export function getOnlineUsers() {
     .then(resp => resp.text());
 }
 
-export function toggleFavorite(room, favorite) {
-  return fetch(`${chatConstants.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
-    headers: {
-      'Authorization': `Bearer ${eXo.chat.userSettings.token}`
-    }}).then(resp =>  resp.text());
+export function toggleFavorite(room, user, favorite) {
+  if ((!room || !room.trim().length) && user && user.trim().length) {
+    return getRoomId(eXo.chat.userSettings, user, 'username').then((roomId) => {
+      room = roomId;
+      return fetch(`${chatConstants.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
+        headers: {
+          'Authorization': `Bearer ${eXo.chat.userSettings.token}`
+        }}).then(resp =>  resp.text());
+    });
+  } else {
+    return fetch(`${chatConstants.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
+      headers: {
+        'Authorization': `Bearer ${eXo.chat.userSettings.token}`
+      }}).then(resp =>  resp.text());
+  }
 }
 
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {

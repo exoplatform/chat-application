@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="contactList isList">
-      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.room" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
           <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
@@ -135,7 +135,7 @@ export default {
       return this.contacts.filter(contact => contact.isFavorite).length;
     },
     filteredContacts: function() {
-      let sortedContacts = this.contacts.slice(0).filter(contact => contact.room && contact.fullName);
+      let sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       if(this.typeFilter !== 'All') {
         sortedContacts = sortedContacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'
@@ -228,22 +228,27 @@ export default {
       if(contact.detail) {
         contact = contact.detail;
       }
+      if(!contact && !contact.room && contact.user) {
+        contact = contact.user;
+      }
       this.$emit('contact-selected', contact);
     },
     contactChanged(e) {
       let selectedContact = e.detail;
-      if(this.filteredContacts.length > 0 && !this.filteredContacts.find(contact => contact.room === selectedContact.room)) {
+      if(this.filteredContacts.length > 0 && !this.filteredContacts.find(contact => contact.room === selectedContact.room || contact.user && contact.user.trim().length && contact.user === selectedContact.user)) {
         // Select different contact if the contact is not visible
         selectedContact = this.filteredContacts[0];
         this.$emit('contact-selected', selectedContact);
       }
-      chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
+      if (selectedContact.room) {
+        chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
+      }
     },
     markAllAsRead() {
       chatWebSocket.setRoomMessagesAsRead();
     },
     toggleFavorite(contact) {
-      chatServices.toggleFavorite(contact.room, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
+      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
@@ -270,7 +275,7 @@ export default {
       if(!room) {
         return;
       }
-      const foundContact = this.findContact(room);
+      const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
       if(foundContact) {
         foundContact.timestamp = message.ts;
         if (this.selected.room !== foundContact.room) {
@@ -371,6 +376,16 @@ export default {
         field = 'room';
       }
       return this.contacts.find(contact => contact[field] === value);
+    },
+    findContactByRoomOrUser(room, targetUser) {
+      let foundContact = null;
+      if (room && room.trim().length)  {
+        foundContact = this.findContact(room, 'room');
+      }
+      if (!foundContact && targetUser && targetUser.trim().length) {
+        foundContact = this.findContact(targetUser, 'user');
+      }
+      return foundContact;
     },
     loadMore() {
       this.totalEntriesToLoad += this.$constants.CONTACTS_PER_PAGE;
