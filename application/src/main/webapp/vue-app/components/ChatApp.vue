@@ -179,6 +179,7 @@ export default {
     },
     userStatusChanged(e) {
       const contactChanged = e.detail;
+
       if (this.userSettings.username === contactChanged.sender) {
         this.userSettings.status = contactChanged.status ? contactChanged.status : contactChanged.data ? contactChanged.data.status : null;
         this.userSettings.originalStatus = this.userSettings.status;

@@ -436,8 +436,18 @@ export default {
         return DEFAULT_COMPOSER_APPS;
       }
     },
+    contactStatusChanged(e) {
+      const contactChanged = e.detail;
+
+      if (contactChanged.data && contactChanged.data.status && contactChanged.sender && contactChanged.sender.trim().length && eXo.chat.userSettings.username !== contactChanged.sender) {
+        const foundContact = this.findContactByRoomOrUser(null, contactChanged.sender);
+        if (foundContact) {
+          foundContact.status = contactChanged.data.status
+        }
+      }
+    },
     openContactActions(user) {
-      const contact = this.contacts.find(contact => contact['user'] === user)
+      const contact = this.contacts.find(contact => contact['user'] === user);
       this.contactMenuClosed = false;
       this.contactMenu = contact;
     }
