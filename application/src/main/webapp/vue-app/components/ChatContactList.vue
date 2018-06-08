@@ -442,7 +442,7 @@ export default {
       if (contactChanged.data && contactChanged.data.status && contactChanged.sender && contactChanged.sender.trim().length && eXo.chat.userSettings.username !== contactChanged.sender) {
         const foundContact = this.findContactByRoomOrUser(null, contactChanged.sender);
         if (foundContact) {
-          foundContact.status = contactChanged.data.status
+          foundContact.status = contactChanged.data.status;
         }
       }
     },

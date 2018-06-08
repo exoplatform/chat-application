@@ -55,6 +55,7 @@ export const chatConstants = {
   ACTION_MESSAGE_EDIT_LAST: 'exo-chat-message-edit-last',
   ACTION_MESSAGE_SEARCH: 'exo-chat-message-search',
   ACTION_MESSAGE_DELETE: 'exo-chat-message-todelete',
+  ACTION_ROOM_SET_READ: 'exo-chat-set-room-as-read',
   ACTION_ROOM_SELECT: 'exo-chat-select-room',
   ACTION_ROOM_DELETE: 'exo-chat-setting-deleteRoom',
   ACTION_ROOM_EDIT: 'exo-chat-setting-editRoom',

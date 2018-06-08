@@ -181,8 +181,11 @@ export default {
       }
       const limit = this.$constants.MESSAGES_PER_PAGE;
       this.newMessagesLoading = true;
-      chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
+      return chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
+          // Mark room messages as read
+          document.dispatchEvent(new CustomEvent(this.$constants.ACTION_ROOM_SET_READ, {detail: this.contact.room}));
+
           // Scroll to bottom once messages list updated
           this.scrollToBottom = !avoidScrollingDown;
 

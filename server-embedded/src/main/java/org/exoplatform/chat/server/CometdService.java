@@ -71,7 +71,6 @@ public class CometdService {
 
       if (eventType.equals(RealTimeMessageBean.EventType.USER_STATUS_CHANGED)) {
         // forward the status change to all connected users
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(
                 RealTimeMessageBean.EventType.USER_STATUS_CHANGED,
                 (String) jsonMessage.get("room"),
