@@ -293,6 +293,20 @@ export const DEFAULT_ROOM_ACTIONS = [{
   labelKey: 'exoplatform.stats.notifications',
   class: 'uiIconPLFNotifications'
 } , {
+  key: 'addToFavorite',
+  labelKey: 'exoplatform.chat.add.favorites',
+  class: 'uiIconChatFavorite',
+  enabled: (comp) => {
+    return !comp.contact.isFavorite;
+  }
+} , {
+  key: 'removeFromFavorite',
+  labelKey: 'exoplatform.chat.remove.favorites',
+  class: 'uiIconChatFavorite',
+  enabled: (comp) => {
+    return comp.contact.isFavorite;
+  }
+} , {
   key: 'editRoom',
   labelKey: 'exoplatform.chat.team.edit',
   type: 't',

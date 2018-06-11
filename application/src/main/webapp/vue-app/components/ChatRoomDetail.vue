@@ -1,7 +1,7 @@
 <template>
   <div class="room-detail">
     <chat-contact :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
-      <div :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+      <div v-exo-tooltip.bottom.body="favoriteTooltip" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
     </chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
@@ -89,6 +89,9 @@ export default {
     isAdmin() {
       return this.contact.admins && this.contact.admins.indexOf(eXo.chat.userSettings.username) >= 0;
     },
+    favoriteTooltip() {
+      return this.contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
+    },
     displayMenu() {
       return this.contact.type === 's' || this.contact.type === 't';
     }
@@ -113,6 +116,8 @@ export default {
     document.addEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
     document.addEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
     document.addEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
+    document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
+    document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
     this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
   },
   updated() {
@@ -123,8 +128,18 @@ export default {
     document.removeEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
     document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
     document.removeEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
+    document.removeEventListener(this.$constants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
+    document.removeEventListener(this.$constants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
   },
   methods: {
+    addToFavorite(e) {
+      const contact = e.detail;
+      chatServices.toggleFavorite(contact.room, contact.user, true).then(contact.isFavorite = true);
+    },
+    removeFromFavorite(e) {
+      const contact = e.detail;
+      chatServices.toggleFavorite(contact.room, contact.user, false).then(contact.isFavorite = false);
+    },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
     },
