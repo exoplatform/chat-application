@@ -23,7 +23,32 @@
     height: 100%;
     .contactFilter {
       position: absolute;
-      display: none;
+      width: 100%;
+      padding: 3px 5px;
+      box-sizing: border-box;
+      z-index: 1;
+      input {
+        width: 100%;
+        margin: 0;
+        padding-right: 30px;
+        border-width: 1px;
+        .placeholder({
+          color: inherit;
+          opacity: .3;
+        });
+      }
+      .contact-search-close {
+        .square(20px);
+        line-height: 20px;
+        margin-left: -20px;
+        .uiIconClose {
+          top: 1px;
+          &:before {
+            color: @secondaryIconColor;
+            font-size: 16px;
+          }
+        }
+      }
     }
     .listHeader {
       height: @headerMobile;
@@ -53,6 +78,7 @@
     transform: translateX(-50%);
     height: @headerMobile;
     align-items: center;
+    z-index: 1;
 
     .chat-contact-avatar, .contactLabel, .dropdown-toggle .user-status {
       display: none;
@@ -134,5 +160,10 @@
 
   .modal-mask .chat-modal {
     transform: none;
+  }
+  #chatApplicationContainer {
+    .uiIconClose {
+      opacity: 1;
+    }
   }
 }

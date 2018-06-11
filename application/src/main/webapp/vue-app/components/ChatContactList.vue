@@ -1,8 +1,9 @@
 <template>
   <div class="contactListContainer">
-    <div class="contactFilter">
-      <i class="uiIconSearchLight"></i>
+    <div v-show="contactSearchMobile" class="contactFilter">
+      <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
       <input v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
+      <div class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
     </div>
     <div class="listHeader">
       <div v-if="mq === 'mobile'" class="hamburger-menu"><i class="uiIconMenu"></i></div>
@@ -26,7 +27,7 @@
         <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
           <i class="uiIconSimplePlus"></i>
         </div>
-        <div v-if="mq === 'mobile'">
+        <div v-if="mq === 'mobile'" @click="contactSearchMobile = true">
           <i class="uiIconSearch"></i>
         </div>
       </div>
@@ -58,18 +59,18 @@
           <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
         </ul>
       </div>
-      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="filterMenuClosed = true">
+      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="cancelFilterMobile">
         <ul class="mobile-options filter-options" @click.stop>
           <li class="options-category">
-            <i class="uiIconClose"></i>
-            <span><i class="uiIconFilter"></i>Filter</span>
-            <div>Save</div>
+            <i class="uiIconClose" @click="cancelFilterMobile"></i>
+            <span><i class="uiIconFilter"></i>{{ $t('exoplatform.chat.contact.filter') }}</span>
+            <div @click="saveFilterMobile">{{ $t('exoplatform.chat.contact.filter.save') }}</div>
           </li>
           <li class="options-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</li>
-          <li v-for="(label, filter) in filterByType" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li v-for="(label, filter) in filterByType" :key="filter" @click="typeFilterMobile = filter"><a href="#"><i :class="{'not-filter': typeFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
           <li class="options-category">{{ $t('exoplatform.chat.contact.filter.by') }}</li>
-          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
-          <li @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
+          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="sortFilterMobile = filter"><a href="#"><i :class="{'not-filter': sortFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li @click="allAsReadFilterMobile = !allAsReadFilterMobile"><a href="#"><i :class="{'not-filter': !allAsReadFilterMobile}" class="uiIconTick"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
         </ul>
       </div>
     </div>
@@ -113,6 +114,7 @@ export default {
         'Unread': this.$t('exoplatform.chat.contact.unread'),
       },
       sortFilter: this.$constants.SORT_FILTER_DEFAULT,
+      sortFilterMobile: null,
       filterByType: {
         'All': this.$t('exoplatform.chat.contact.all'),
         'People': this.$t('exoplatform.chat.people'),
@@ -121,6 +123,9 @@ export default {
         'Favorites': this.$t('exoplatform.chat.favorites')
       },
       typeFilter: this.$constants.TYPE_FILTER_DEFAULT,
+      typeFilterMobile: null,
+      allAsReadFilterMobile: false,
+      contactSearchMobile: false,
       createRoomModal: false,
       searchTerm: '',
       totalEntriesToLoad: this.$constants.CONTACTS_PER_PAGE,
@@ -218,6 +223,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
     this.typeFilter = chatWebStorage.getStoredParam(this.$constants.TYPE_FILTER_PARAM, this.$constants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(this.$constants.SORT_FILTER_PARAM, this.$constants.SORT_FILTER_DEFAULT);
+    this.initFilterMobile();
   },
   destroyed() {
     document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
@@ -272,6 +278,28 @@ export default {
     selectTypeFilter(filter) {
       this.typeFilter = filter;
       chatWebStorage.setStoredParam(this.$constants.TYPE_FILTER_PARAM, this.typeFilter);
+    },
+    initFilterMobile() {
+      this.typeFilterMobile = this.typeFilter;
+      this.sortFilterMobile = this.sortFilter;
+    },
+    saveFilterMobile() {
+      this.filterMenuClosed = true;
+      this.selectTypeFilter(this.typeFilterMobile);
+      this.selectSortFilter(this.sortFilterMobile);
+      if (this.allAsReadFilterMobile) {
+        this.markAllAsRead();
+      }
+      this.allAsReadFilterMobile = false;
+    },
+    cancelFilterMobile() {
+      this.filterMenuClosed = true;
+      this.allAsReadFilterMobile = false;
+      this.initFilterMobile();
+    },
+    closeContactSearch() {
+      this.contactSearchMobile = false;
+      this.searchTerm = '';
     },
     openCreateRoomModal() {
       this.newRoom = {};

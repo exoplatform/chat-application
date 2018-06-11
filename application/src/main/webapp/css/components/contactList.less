@@ -6,24 +6,26 @@
     flex-shrink: 0;
   }
   .contactFilter {
-    height: 36px;
-    background: #355788;
-    padding: 0 20px;
-    input {
-      font-size: 13px;
-      background: none;
-      border: none;
-      box-shadow: none;
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      .placeholder({
-        color: #7a90b1;
-      });
-    }
-    input, i {
-      color: #fff;
-    }
+    .responsive-reverse(@mobile + 1, {
+      height: 36px;
+      background: #355788;
+      padding: 0 20px;
+      input {
+        font-size: 13px;
+        background: none;
+        border: none;
+        box-shadow: none;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        .placeholder({
+          color: #7a90b1;
+        });
+      }
+      input, i {
+        color: #fff;
+      }
+    });
   }
   .listHeader {
     justify-content: space-between;
@@ -67,33 +69,47 @@
     width: 100vw;
     max-width: 100vw;
     border-radius: 0;
-    > li:first-child {
-      .flex-center;
-      justify-content: space-between;
-      background: @primaryColor;
-      padding: 0 20px;
-      
-      &, [class^="uiIcon"]:before {
-        color: #fff;
+    > li {
+      > a {
+        position: relative;
+        padding: 10px 20px;
       }
-      .uiIconClose {
-        opacity: 1;
-        &:before {
+      &:first-child {
+        .flex-center;
+        justify-content: space-between;
+        background: @primaryColor;
+        padding: 0 20px;
+        
+        &, [class^="uiIcon"]:before {
+          color: #fff;
+        }
+        .uiIconClose:before {
           font-size: 16px;
         }
+        .uiIconFilter {
+          font-size: 14px;
+          margin-right: 5px;
+        }
       }
-      .uiIconFilter {
-        font-size: 14px;
-        margin-right: 5px;
+      &:last-child {
+        border-top-width: 3px;
       }
     }
-    > li:last-child {
-      border-top-width: 2px;
-    }
+    
     .options-category {
       height: 35px;
       line-height: 35px;
       background: #e0e2e4;
+    }
+
+    .uiIconTick {
+      font-size: 13px;
+      position: absolute;
+      left: 20%;
+      top: 35%;
+      &.not-filter {
+        visibility: hidden;
+      }
     }
   }
 
