@@ -10,7 +10,7 @@
       <div :class="app.appClass" v-html="appHtml"></div>
 
       <div v-show="app.hideModalActions !== true" class="uiAction uiActionBorder">
-        <button type="submit" class="btn btn-primary" @click="saveAppModal">{{ $t('exoplatform.chat.save') }}</button>
+        <button type="submit" class="btn btn-primary" @click="saveAppModal">{{ $t(saveLabelKey) }}</button>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </form>
@@ -76,6 +76,9 @@ export default {
     },
     appHtml() {
       return this.app.html(this.$t);
+    },
+    saveLabelKey() {
+      return this.app.saveLabelKey ? this.app.saveLabelKey : 'exoplatform.chat.post';
     }
   },
   mounted() {
@@ -85,6 +88,7 @@ export default {
   },
   created() {
     document.addEventListener(this.$constants.ACTION_APPS_CLOSE, this.closeModal);
+
     if(this.app && this.app.htmlAdded) {
       this.$nextTick(() => this.app.htmlAdded($, chatServices));
     }

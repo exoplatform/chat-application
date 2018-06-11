@@ -21,7 +21,7 @@
       <span class="notif-description">{{ $t('exoplatform.chat.desktopNotif.local.alerton') }}</span>
     </div>
     <div class="uiAction uiActionBorder">
-      <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.save') }}</div>
+      <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.user.popup.confirm') }}</div>
       <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
     </div>
   </modal>
