@@ -4,7 +4,7 @@ export function getDayDate(timestampServer) {
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  return date.toLocaleDateString();
+  return date.toLocaleDateString(eXo.env.portal.language);
 }
 
 export function getTimeString(timestampServer, displayDate) {
