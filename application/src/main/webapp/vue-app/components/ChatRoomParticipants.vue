@@ -85,17 +85,22 @@ export default {
     }
   },
   created() {
+    document.addEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(this.$constants.STATUS_FILTER_PARAM, this.$constants.STATUS_FILTER_DEFAULT);
   },
   destroyed() {
+    document.removeEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
   },
   methods: {
+    showParticipants() {
+      this.isCollapsed = false;
+    },
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
     },

@@ -307,6 +307,13 @@ export const DEFAULT_ROOM_ACTIONS = [{
     return comp.contact.isFavorite;
   }
 } , {
+  key: 'showParticipants',
+  labelKey: 'exoplatform.chat.show.participants',
+  class: 'uiIconViewList',
+  enabled: () => {
+    return true;
+  }
+} , {
   key: 'editRoom',
   labelKey: 'exoplatform.chat.team.edit',
   type: 't',
