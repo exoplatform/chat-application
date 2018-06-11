@@ -2,7 +2,7 @@
   <div class="contactListContainer">
     <div v-show="contactSearchMobile" class="contactFilter">
       <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
-      <input v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
+      <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
       <div class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
     </div>
     <div class="listHeader">
@@ -27,7 +27,7 @@
         <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
           <i class="uiIconSimplePlus"></i>
         </div>
-        <div v-if="mq === 'mobile'" @click="contactSearchMobile = true">
+        <div v-if="mq === 'mobile'" @click="selectContactSearch">
           <i class="uiIconSearch"></i>
         </div>
       </div>
@@ -59,8 +59,8 @@
           <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
         </ul>
       </div>
-      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="cancelFilterMobile">
-        <ul class="mobile-options filter-options" @click.stop>
+      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask">
+        <ul class="mobile-options filter-options">
           <li class="options-category">
             <i class="uiIconClose" @click="cancelFilterMobile"></i>
             <span><i class="uiIconFilter"></i>{{ $t('exoplatform.chat.contact.filter') }}</span>
@@ -296,6 +296,10 @@ export default {
       this.filterMenuClosed = true;
       this.allAsReadFilterMobile = false;
       this.initFilterMobile();
+    },
+    selectContactSearch() {
+      this.contactSearchMobile = true;
+      this.$nextTick(() => this.$refs.contactSearch.focus());
     },
     closeContactSearch() {
       this.contactSearchMobile = false;

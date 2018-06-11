@@ -28,8 +28,6 @@
       box-sizing: border-box;
       z-index: 1;
       input {
-        width: 100%;
-        margin: 0;
         padding-right: 30px;
         border-width: 1px;
         .placeholder({
@@ -109,7 +107,6 @@
       }
     }
     .contact-list-item {
-      color: @titleColor;
       padding: 10px 15px;
       &.hasUnreadMessages {
         font-weight: normal;
@@ -147,8 +144,7 @@
       &:after {
         content: "";
         position: absolute;
-        width: calc(100% - 50px);
-        margin: 0 10px;
+        width: calc(100% - 30px);
         bottom: 0;
         border-bottom: @defaultBorder;
       }
