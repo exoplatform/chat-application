@@ -236,6 +236,7 @@
     }
     .message-description {
       right: 45px;
+      bottom: 2px;
     }
     &.is-current-user {
       .chat-message-bubble {
@@ -247,12 +248,66 @@
     }
   }
 
+  .chat-message-composer {
+    height: auto;
+    .composer-container {
+      padding: 0;
+      border-top: @defaultBorder;
+    }
+    .composer-box {
+      position: relative;
+      padding: 10px;
+      border: none;
+    }
+    textarea {
+      height: 40px;
+      max-height: 80px;
+      border: @defaultBorder;
+      margin: 0 7px;
+      padding: 9px 40px 9px 10px;
+    }
+    .composer-action {
+      flex: 0;
+      align-items: flex-end;
+      .action-emoji {
+        position: absolute;
+        right: 60px;
+      }
+    }
+    .action-apps > [class^="uiIcon"] {
+      font-size: 30px;
+    }
+    .action-send, .action-apps {
+      margin: 0;
+    }
+    .action-send {
+      .square(36px);
+      line-height: 45px;
+      [class*="uiIcon"] {
+        font-size: 26px;
+      }
+    }
+    .uiIconChatSmile {
+      font-size: 33px;
+      margin-bottom: 4px;
+    }
+    .apps-container {
+      width: 100%;
+      left: auto;
+      top: -180px;
+      height: 180px;
+    }
+  }
+
   .modal-mask .chat-modal {
     transform: none;
   }
   #chatApplicationContainer {
     .uiIconClose {
       opacity: 1;
+    }
+    ::-webkit-scrollbar {
+      display: none;
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message">
+  <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
     <div v-if="!miniChat" class="apps-container">
       <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
         <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
@@ -19,7 +19,7 @@
           <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage"></textarea>
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
         <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -181,6 +181,15 @@ export default {
         this.$refs.messageComposerArea.value = '';
         document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_EDIT_LAST));
       }
+    },
+    resizeTextarea(e) {
+      if (this.mq !== 'mobile') {return;}
+      const BORDER_SIZE = 2;
+      const INITIAL_HEIGHT = '40px';
+      const elem = e.target;
+      elem.style.height = INITIAL_HEIGHT;
+      elem.style.height = `${elem.scrollHeight + BORDER_SIZE}px`;
+      elem.scrollTop = elem.scrollHeight;
     }
   }
 };

@@ -1,4 +1,4 @@
-.chat-message {
+.chat-message-composer {
   .apps-composer-modal {
     .chat-loading-mask {
       position: absolute;
@@ -103,7 +103,7 @@
     padding: 16px 20px;
     box-sizing: border-box;
     box-shadow: @defaultShadow;
-    transition: top .3s ease-out;
+    transition: top .3s cubic-bezier(0, 0.88, 0.58, 1);
   }
   .apps-item {
     .flex-column;
@@ -131,7 +131,7 @@
   }
   &.is-apps-closed {
     .apps-container {
-      top: 0;
+      top: 100px;
       opacity: 0;
       transition: top .3s ease-out, opacity .5s ease-in;
     }
