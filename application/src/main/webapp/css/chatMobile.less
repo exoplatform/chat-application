@@ -273,6 +273,15 @@
         position: absolute;
         right: 60px;
       }
+      .composer-emoji-panel {
+        right: -13px;
+        left: auto;
+        margin-bottom: 5px;
+        .arrow {
+          right: 15px;
+          left: auto;
+        }
+      }
     }
     .action-apps > [class^="uiIcon"] {
       font-size: 30px;
@@ -292,10 +301,16 @@
       margin-bottom: 4px;
     }
     .apps-container {
+      flex-wrap: wrap;
+      justify-content: center;
       width: 100%;
       left: auto;
-      top: -180px;
-      height: 180px;
+      top: -160px;
+      height: 160px;
+    }
+    .apps-item {
+      width: 33%;
+      margin-bottom: 10px;
     }
   }
 

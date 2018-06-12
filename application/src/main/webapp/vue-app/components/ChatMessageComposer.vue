@@ -3,7 +3,7 @@
     <div v-if="!miniChat" class="apps-container">
       <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
         <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
-        <div class="apps-item-label">{{ $t(app.labelKey) }}</div>
+        <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
       </div>
     </div>
     <div class="composer-container">
