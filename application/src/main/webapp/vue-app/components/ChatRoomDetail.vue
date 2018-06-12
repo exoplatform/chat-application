@@ -10,27 +10,7 @@
         <i class="uiIconCloseLight" @click="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
-        <div class="callButtonContainerWrapper pull-left">
-          <div v-if="callApps && callApps.length" class="callButtonContainer pull-left">
-            <a v-exo-tooltip.bottom.body="callAppTitle(firstCallApp)" :id="callAppId(firstCallApp)" :href="callAppHref(firstCallApp)" :class="callAppClass(firstCallApp)" class="btn callButton preferred" @click="callAppClick(firstCallApp)">
-              <i :class="callAppIconClass(firstCallApp)" class="uiIconLightGray"></i>
-              <span class="callTitle">{{ callAppButtonLabel(firstCallApp) }}</span>
-            </a>
-            <button class="btn dropdown-toggle" data-toggle="dropdown">
-              <i class="uiIconArrowDown uiIconLightGray"></i>
-            </button>
-            <ul class="dropdown-menu pull-right">
-              <li v-for="callApp in callApps" :key="callApp.id">
-                <a :id="callAppId(callApp)" :title="callAppTitle(callApp)" :href="callAppHref(callApp)" :class="callAppClass(callApp)" class="btn callButton" @click="callAppClick(callApp)">
-                  <i :class="callAppIconClass(callApp)" class="uiIconLightGray"></i>
-                  <span class="callTitle">
-                    {{ callAppButtonLabel(callApp) }}
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <div class="callButtonContainerWrapper pull-left"></div>
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
@@ -116,23 +96,6 @@ export default {
     },
     displayMenu() {
       return this.contact.type === 's' || this.contact.type === 't';
-    },
-    callApps() {
-      if (!this.contact || !eXo.chat.extraCallApps || !eXo.chat.extraCallApps.length) {
-        return [];
-      }
-      const extraApps = eXo.chat.extraCallApps.filter(app => app.isEnabled && app.isEnabled(this.contact, eXo.chat.userSettings));
-      return extraApps.sort(function(a, b) {
-        const orderA = a.order ? a.order : 0;
-        const orderB = b.order ? b.order : 0;
-        return orderB - orderA;
-      });
-    },
-    firstCallApp() {
-      if (!this.callApps || !this.callApps.length) {
-        return {};
-      }
-      return this.callApps[0];
     }
   },
   watch: {
@@ -252,29 +215,6 @@ export default {
     },
     participantsLoaded() {
       this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
-    },
-    callAppId(app) {
-      return app.id;
-    },
-    callAppTitle(app) {
-      return app.title && app.title(this.$t) ? app.title(this.$t) : this.callAppButtonLabel(app);
-    },
-    callAppHref(app) {
-      return app.href ? app.href(this.contact, eXo.chat.userSettings) : '#';
-    },
-    callAppClick(app) {
-      if(app.click) {
-        app.click(this.contact, eXo.chat.userSettings);
-      }
-    },
-    callAppClass(app) {
-      return app.buttonClass ? app.buttonClass : '';
-    },
-    callAppIconClass(app) {
-      return app.iconClass ? app.iconClass : '';
-    },
-    callAppButtonLabel(app) {
-      return app.appButtonLabel && app.appButtonLabel(this.$t) ? app.appButtonLabel(this.$t) : this.$t('exoplatform.chat.button.call');
     },
     backToContactList() {
       this.$emit('back-to-contact-list');

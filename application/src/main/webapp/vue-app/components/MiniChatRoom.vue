@@ -2,9 +2,7 @@
   <div :class="{minimized : minimized}" class="mini-chat uiBox" style="position: fixed; bottom: 0px; right: 10px; display: block;">
     <div class="title clearfix">
       <div class="title-right">
-        <div class="callButtonContainerMiniWrapper pull-left" style="display: inline-block;">
-          <div style="" class="callButtonContainer"></div>
-        </div>
+        <div class="callButtonContainerMiniWrapper pull-left" style="display: inline-block;"></div>
         <a :title="$t('exoplatform.chat.minimize')" class="uiActionWithLabel btn-mini" href="javaScript:void(0);" data-placement="top" data-toggle="tooltip" @click="minimized = true">
           <i class="uiIconMinimize uiIconWhite"></i>
         </a>
@@ -66,6 +64,7 @@ export default {
             contact.user !== 'undefined'
           ) {
             this.selectedContact = contact;
+            eXo.chat.selectedContact = contact;
             document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
           }
         });
