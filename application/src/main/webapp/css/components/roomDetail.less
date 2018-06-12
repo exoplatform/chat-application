@@ -15,15 +15,20 @@
     .callButton, .dropdown-menu , .dropdown-toggle {
       padding: 0;
       line-height: 28px;
+      height: 28px;
       border-radius: 0;
     }
-  
+
     .callButton , .dropdown-menu {
-      min-width: 70px !important;
+      min-width: 85px !important;
     }
 
     .callButton , .dropdown-toggle {
-      border: 1px solid #578dc9 !important;
+      border: 1px solid #578dc9;
+    }
+
+    .dropdown-toggle .callButton {
+      border: 0;
     }
 
     .callButton {
@@ -55,7 +60,7 @@
   }
 }
 
-.room-settings-dropdown .dropdown-toggle{
+.room-settings-dropdown .dropdown-toggle {
   padding: 0 7px;
   cursor: pointer;
   display: block;
