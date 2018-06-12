@@ -1,6 +1,7 @@
 @media (max-width: @mobile) {
-  .uiLeftContainerArea, .uiGlobalRoomsContainer {
+  .uiLeftContainerArea, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea {
     position: fixed;
+    top: 0;
     width: 100vw;
     height: 100vh;
     transition: left .5s ease-out;
@@ -8,7 +9,7 @@
   .uiLeftContainerArea {
     left: 0;
   }
-  .uiGlobalRoomsContainer {
+  .uiGlobalRoomsContainer, .uiRoomUsersContainerArea {
     left: 100%;
   }
   .show-conversation {
@@ -16,6 +17,14 @@
       left: 0;
     }
     .uiLeftContainerArea {
+      left: -100%;
+    }
+  }
+  .show-participants {
+    .uiRoomUsersContainerArea {
+      left: 0;
+    }
+    .uiGlobalRoomsContainer {
       left: -100%;
     }
   }
@@ -49,7 +58,6 @@
       }
     }
     .listHeader {
-      height: @headerMobile;
       border-bottom: 1px solid #a1a5ad;
       .hamburger-menu {
         padding: 0 10px;
@@ -66,7 +74,8 @@
     }
   }
 
-  .userDetails, .contactListContainer .listHeader {
+  .userDetails, .contactListContainer .listHeader, .room-detail, .room-participants-header {
+    height: @headerMobile;
     padding: 0 10px;
   }
   
@@ -74,7 +83,6 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    height: @headerMobile;
     align-items: center;
     z-index: 1;
 
@@ -150,6 +158,91 @@
       }
       &:nth-last-child(-n+3):after {
         display: none;
+      }
+    }
+  }
+
+  .room-detail {
+    height: @headerMobile;
+    .chat-contact-avatar, .user-status > span, .room-number-members {
+      display: none;
+    }
+    .contactDetail {
+      .flex-center;
+    }
+    .contactLabel {
+      flex: 1;
+      min-width: 0;
+      order: 1;
+    }
+    .user-status {
+      margin: 0 7px 0 3px;
+    }
+    .room-search {
+      position: absolute;
+      width: calc(100vw - 40px);
+      right: 0;
+      input[type="text"] {
+        margin: 0;
+        width: 100%;
+      }
+    }
+    .room-action-menu {
+      transform: none;
+    }
+    .search-active {
+      overflow: visible;
+      .room-action-menu {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .room-participants {
+    width: 100%;
+    .uiIconGoBack {
+      margin-right: 15px; 
+    }
+  }
+
+  .room-content {
+    height: calc(100% - @headerMobile);
+    padding: 0;
+  }
+
+  #chats {
+    padding: 0 15px;
+  }
+
+  .chat-message-day .day-separator {
+    padding: 0;
+    > span {
+      flex: 0 0 100px;
+    }
+  }
+
+  .chat-message-box {
+    position: relative;
+    .chat-message-bubble {
+      padding-bottom: 18px;
+    }
+    .chat-sender-avatar {
+      flex: 0 0 50px;
+    }
+    .chat-message-action {
+      position: absolute;
+      bottom: 2px;
+      right: 5px;
+    }
+    .message-description {
+      right: 45px;
+    }
+    &.is-current-user {
+      .chat-message-bubble {
+        margin: 0;
+      }
+      .chat-message-bubble:before {
+        top: 10px;
       }
     }
   }

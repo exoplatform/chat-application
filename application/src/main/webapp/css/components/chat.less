@@ -1,6 +1,8 @@
-/* PLF */
-
 #chatApplicationContainer {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  ::-webkit-scrollbar {
+    display: none;
+  }
   .dropdown.top .dropdown-menu{
     bottom: 25px;
     top: auto;
@@ -28,6 +30,9 @@
   .uiIconNotification {
     color: #c72222;
     display: none;
+  }
+  .uiIconGoBack {
+    color: @secondaryIconColor;
   }
 
   &.offline {

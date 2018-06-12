@@ -1,7 +1,8 @@
 <template>
   <div class="room-detail">
+    <div v-if="mq == 'mobile'" @click="backToContactList"><i class="uiIconGoBack"></i></div>
     <chat-contact :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
-      <div v-exo-tooltip.bottom.body="favoriteTooltip" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+      <div v-exo-tooltip.bottom.body="favoriteTooltip" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
     </chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
@@ -213,6 +214,9 @@ export default {
     },
     participantsLoaded() {
       this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
+    },
+    backToContactList() {
+      this.$emit('back-to-contact-list');
     }
   }
 };

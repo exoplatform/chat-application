@@ -3,7 +3,7 @@
     <div class="chat-sender-avatar">
       <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
-    <div class="chat-message-bubble">
+    <div v-hold-tap="openMessageActions" class="chat-message-bubble">
       <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
 
       <div v-if="message.type === this.$constants.DELETED_MESSAGE" class="message-content">
@@ -108,7 +108,7 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <dropdown-select v-if="displayActions" class="message-actions" position="right">
+      <dropdown-select v-if="displayActions && mq !=='mobile'" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots" @click="setActionsPosition"></i>
         <li slot="menu">
           <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction)">
@@ -116,6 +116,15 @@
           </a>
         </li>
       </dropdown-select>
+      <div v-else-if="displayActions" v-show="displayActionMobile" class="uiPopupWrapper modal-mask" @click="displayActionMobile = false">
+        <ul class="mobile-options filter-options">
+          <li v-for="messageAction in messageActions" :key="messageAction.key">
+            <a :class="messageAction.class" href="#" @click.prevent="executeAction(messageAction)">
+              {{ $t(messageAction.labelKey) }}
+            </a>
+          </li>
+        </ul>
+      </div>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
     <modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
@@ -187,6 +196,7 @@ export default {
     return {
       isCurrentUser: eXo.chat.userSettings.username === this.message.user,
       showConfirmModal: false,
+      displayActionMobile: false,
       confirmTitle: '',
       confirmMessage: '',
       confirmOKMessage: '',
@@ -528,6 +538,9 @@ export default {
       } else {
         $dropdown.removeClass('top');
       }
+    },
+    openMessageActions() {
+      this.displayActionMobile = true;
     }
   }
 };

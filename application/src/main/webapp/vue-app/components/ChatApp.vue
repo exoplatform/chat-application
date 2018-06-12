@@ -1,5 +1,5 @@
 <template>
-  <div id="chatApplicationContainer" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations}">
+  <div id="chatApplicationContainer" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants}">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
@@ -10,10 +10,10 @@
       <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
-      <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact"></chat-room-detail>
+      <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></chat-room-detail>
       <div class="room-content">
         <chat-message-list :contact="selectedContact"></chat-message-list>
-        <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)"></chat-room-participants> 
+        <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></chat-room-participants> 
       </div>
     </div>
     <div v-if="mq !== 'mobile' && !(selectedContact && (selectedContact.room || selectedContact.user))" class="chat-no-conversation muted">
@@ -75,12 +75,16 @@ export default {
       selectedContact: {},
       isSearchingContact: false,
       settingModal: false,
-      conversationArea: false
+      conversationArea: false,
+      participantsArea: false
     };
   },
   computed: {
     showMobileConversations() {
       return this.mq === 'mobile' && this.conversationArea === true ? true : false;
+    },
+    showMobileParticipants() {
+      return this.mq === 'mobile' && this.participantsArea === true ? true : false;
     }
   },
   created() {
@@ -95,6 +99,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.addEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
   },
   destroyed() {
     document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
