@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-    <div class="contactList isList">
+    <div id="chat-users" class="contactList isList">
       <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
@@ -252,6 +252,7 @@ export default {
       if(!contact && !contact.room && contact.user) {
         contact = contact.user;
       }
+      eXo.chat.selectedContact = contact;
       this.$emit('contact-selected', contact);
     },
     contactChanged(e) {

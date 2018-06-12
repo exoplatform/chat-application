@@ -32,6 +32,8 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
 
+  eXo.chat.constants = chatConstants;
+
   document.addEventListener(chatConstants.EVENT_USER_SETTINGS_LOADED, (e) => {
     const settings = e.detail;
     getOnlineUsers().then(users => { // Fetch online users

@@ -1,5 +1,5 @@
 <template>
-  <div id="chatApplicationContainer" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants}">
+  <div id="chat-application" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants}">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
@@ -146,6 +146,7 @@ export default {
         selectedContact = this.contactList.find(contact => contact.room === selectedContact || contact.user === selectedContact);
       }
       if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
+        eXo.chat.selectedContact = selectedContact;
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
         if(indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
