@@ -10,24 +10,26 @@
         <i class="uiIconCloseLight" @click="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
-        <div v-show="callApps && callApps.length" class="callButtonContainerWrapper pull-left">
-          <a v-exo-tooltip.bottom.body="callAppTitle(firstCallApp)" :id="callAppId(firstCallApp)" :href="callAppHref(firstCallApp)" :class="callAppClass(firstCallApp)" class="btn callButton preferred" @click="callAppClick(firstCallApp)">
-            <i :class="callAppIconClass(firstCallApp)" class="uiIconLightGray"></i>
-            <span class="callTitle">{{ callAppButtonLabel(firstCallApp) }}</span>
-          </a>
-          <button class="btn dropdown-toggle" data-toggle="dropdown">
-            <i class="uiIconArrowDown uiIconLightGray"></i>
-          </button>
-          <ul class="dropdown-menu pull-right">
-            <li v-for="callApp in callApps" :key="callApp.id">
-              <a :id="callAppId(callApp)" :title="callAppTitle(callApp)" :href="callAppHref(callApp)" :class="callAppClass(callApp)" class="btn callButton" @click="callAppClick(callApp)">
-                <i :class="callAppIconClass(callApp)" class="uiIconLightGray"></i>
-                <span class="callTitle">
-                  {{ callAppButtonLabel(callApp) }}
-                </span>
-              </a>
-            </li>
-          </ul>
+        <div class="callButtonContainerWrapper pull-left">
+          <div v-if="callApps && callApps.length" class="callButtonContainer pull-left">
+            <a v-exo-tooltip.bottom.body="callAppTitle(firstCallApp)" :id="callAppId(firstCallApp)" :href="callAppHref(firstCallApp)" :class="callAppClass(firstCallApp)" class="btn callButton preferred" @click="callAppClick(firstCallApp)">
+              <i :class="callAppIconClass(firstCallApp)" class="uiIconLightGray"></i>
+              <span class="callTitle">{{ callAppButtonLabel(firstCallApp) }}</span>
+            </a>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+              <i class="uiIconArrowDown uiIconLightGray"></i>
+            </button>
+            <ul class="dropdown-menu pull-right">
+              <li v-for="callApp in callApps" :key="callApp.id">
+                <a :id="callAppId(callApp)" :title="callAppTitle(callApp)" :href="callAppHref(callApp)" :class="callAppClass(callApp)" class="btn callButton" @click="callAppClick(callApp)">
+                  <i :class="callAppIconClass(callApp)" class="uiIconLightGray"></i>
+                  <span class="callTitle">
+                    {{ callAppButtonLabel(callApp) }}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
