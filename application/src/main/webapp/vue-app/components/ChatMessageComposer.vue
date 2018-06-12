@@ -9,8 +9,8 @@
     <div class="composer-container">
       <div class="composer-box">
         <div v-if="!miniChat" class="composer-action">
-          <div v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')" class="action-emoji">
-            <i class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
+          <div class="action-emoji">
+            <i v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')" class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
             <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
               <div class="arrow"></div>
               <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji)"></span>
