@@ -1,6 +1,6 @@
 <template>
   <div class="contactListContainer">
-    <div v-show="contactSearchMobile" class="contactFilter">
+    <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
       <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
       <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
       <div class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>

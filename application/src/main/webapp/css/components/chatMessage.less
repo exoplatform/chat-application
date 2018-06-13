@@ -58,6 +58,9 @@
       &:not(.open) {
         display: none;
       }
+      [class^="uiIcon"] {
+        color: @secondaryIconColor;
+      }
     }
   }
   &:hover {
@@ -88,10 +91,15 @@
     }
     blockquote {
       margin: 10px;
+      padding-left: 6px;
+      font-style: italic;
+      color: @quoteTextColor;
+      border-color: @quoteBarColor;
       .quote-user-name {
         display: block;
-        font-style: italic;
-        font-weight: bold;
+      }
+      + br {
+        display: none;
       }
     }
     .search-highlight {
@@ -116,7 +124,7 @@
     .chat-message-bubble {
       background: #cfe9ff;
       border: none;
-      width: 0;
+      min-width: 0;
       margin-right: 8px;
       .overflow-wrap;
       &:before {
