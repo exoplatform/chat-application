@@ -471,6 +471,9 @@ export default {
       return '';
     },
     filterLastMessage(msg) {
+      if (msg === this.$constants.DELETED_MESSAGE) {
+        return '';
+      }
       // replace line breaks with an ellipsis
       if (msg.indexOf('<br/>') >= 0) {
         return msg.replace(msg.slice(msg.indexOf('<br/>')),'...');
