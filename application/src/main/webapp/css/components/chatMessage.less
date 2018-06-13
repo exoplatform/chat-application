@@ -69,12 +69,14 @@
     }
   }
   .chat-message-bubble {
-    flex: 1;
+    .flex-remaining-width;
     background: #f0f8fe;
     border: @defaultBorder;
     border-radius: 2px; 
     padding: 12px 7px;
     position: relative;
+    .overflow-wrap;
+    
     &:before {
       content: "";
       position: absolute;
@@ -124,9 +126,7 @@
     .chat-message-bubble {
       background: #cfe9ff;
       border: none;
-      min-width: 0;
       margin-right: 8px;
-      .overflow-wrap;
       &:before {
         left: auto;
         right: -5px;
