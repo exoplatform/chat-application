@@ -1,5 +1,5 @@
 @media (max-width: @mobile) {
-  .uiLeftContainerArea, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea {
+  .uiLeftContainerArea, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea, .chat-side-menu {
     position: fixed;
     top: 0;
     width: 100vw;
@@ -28,6 +28,75 @@
       left: -100%;
     }
   }
+  .show-sideMenu {
+    .chat-side-menu {
+      left: 0;
+      transition: left .45s ease-out;
+    }
+    .uiLeftContainerArea {
+      left: 80%;
+    }
+  }
+
+  //side menu
+  .chat-side-menu {
+    left: -100%;
+    width: 80%;
+    box-shadow: @defaultShadow;
+    transition: left .45s linear;
+    .side-menu-header {
+      .flex-center;
+      justify-content: center;
+      height: 130px;
+      background: @primaryColor;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .chat-contact {
+      flex-direction: column;
+    }
+    .contactLabel > span {
+      color: #fff;
+      font-size: 17px;
+    }
+    .contactDetail {
+      max-width: 100%;
+      margin: 5px 0 0;
+    }
+    .chat-contact-avatar {
+      .square(70px);
+      border: 2px solid #fff;
+      .uiIconStatus {
+        font-size: 16px;
+        right: 1px;
+      }
+    }
+    .side-menu-list {
+      > li {
+        border-bottom: @defaultBorder;
+        > a {
+          .flex-center;
+          padding: 15px;
+          color: inherit;
+          [class^="uiIcon"] {
+            position: static;
+            font-size: 16px;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+  #chatPreferences {
+    .notification-item {
+      padding-left: 0;
+    }
+    section + section {
+      margin-top: 5px;
+    }
+  }
+
+  // contact list
   .contactListContainer {
     height: 100%;
     .contactFilter {
@@ -162,6 +231,7 @@
     }
   }
 
+  //room detail
   .room-detail {
     height: @headerMobile;
     .chat-contact-avatar, .user-status > span, .room-number-members {
@@ -198,20 +268,19 @@
     }
   }
 
+  // rooms messages
+  #chats {
+    padding: 0 15px;
+  }
   .room-participants {
     width: 100%;
     .uiIconGoBack {
       margin-right: 15px; 
     }
   }
-
   .room-content {
     height: calc(100% - @headerMobile);
     padding: 0;
-  }
-
-  #chats {
-    padding: 0 15px;
   }
 
   .chat-message-day .day-separator {
@@ -248,6 +317,7 @@
     }
   }
 
+  // message composer
   .chat-message-composer {
     height: auto;
     .composer-container {
@@ -314,9 +384,19 @@
     }
   }
 
+  // modal
   .modal-mask .chat-modal {
     transform: none;
   }
+  .chat-modal {
+    .popupHeader, .uiAction {
+      margin: 0;
+    }
+    .popupContent {
+      padding: 10px;
+    }
+  }
+
   #chat-application {
     .uiIconClose {
       opacity: 1;

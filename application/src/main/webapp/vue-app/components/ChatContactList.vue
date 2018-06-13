@@ -6,7 +6,7 @@
       <div class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
     </div>
     <div class="listHeader">
-      <div v-if="mq === 'mobile'" class="hamburger-menu"><i class="uiIconMenu"></i></div>
+      <div v-if="mq === 'mobile'" class="hamburger-menu" @click="$emit('open-side-menu')"><i class="uiIconMenu"></i></div>
       <dropdown-select v-if="mq !== 'mobile'">
         <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
         <i slot="toggle" class="uiIconArrowDownMini"></i>

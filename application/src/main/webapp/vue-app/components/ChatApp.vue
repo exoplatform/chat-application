@@ -1,5 +1,5 @@
 <template>
-  <div id="chat-application" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants}">
+  <div id="chat-application" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants, 'show-sideMenu': sideMenuArea}">
     <div class="uiLeftContainerArea">
       <div class="userDetails">
         <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @exo-chat-status-changed="setStatus($event)">
@@ -7,7 +7,7 @@
         </chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
+      <chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></chat-room-detail>
@@ -15,6 +15,15 @@
         <chat-message-list :contact="selectedContact"></chat-message-list>
         <chat-room-participants :contact="selectedContact" @exo-chat-particpants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></chat-room-participants> 
       </div>
+    </div>
+    <div v-if="mq==='mobile'" class="chat-side-menu">
+      <div class="side-menu-header">
+        <chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u" list @exo-chat-status-changed="setStatus($event)"></chat-contact>
+      </div>
+      <ul class="side-menu-list">
+        <li><a href="#" @click="openSettingModal"><i class="uiIconSetting"></i>{{ $t('exoplatform.chat.settings.button.tip') }}</a></li>
+        <li><a href="/"><i class="uiIconHomeInfo"></i>{{ $t('exoplatform.chat.home') }}</a></li>
+      </ul>
     </div>
     <div v-if="mq !== 'mobile' && !(selectedContact && (selectedContact.room || selectedContact.user))" class="chat-no-conversation muted">
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
@@ -76,7 +85,8 @@ export default {
       isSearchingContact: false,
       settingModal: false,
       conversationArea: false,
-      participantsArea: false
+      participantsArea: false,
+      sideMenuArea: false
     };
   },
   computed: {
