@@ -38,14 +38,22 @@ public class ConnectionHelper {
     } else {
       String host = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_HOST);
       String port = PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT);
-      LOG.warning("The parameters 'dbServerHost' and 'dbServerPort' are deprecated. Please use the parameter 'dbServerHosts' instead.");
-      try {
-        ServerAddress address = new ServerAddress(host, Integer.parseInt(port));
-        serverList.add(address);
-      } catch (NumberFormatException e) {
-        throw new UnknownHostException(host + ":" + port + " is not a valid mongodb host");
+      if(StringUtils.isNotBlank(host) && StringUtils.isNotBlank(port)) {
+        LOG.warning("The parameters 'dbServerHost' and 'dbServerPort' are deprecated. Please use the parameter 'dbServerHosts' instead.");
+        try {
+          ServerAddress address = new ServerAddress(host, Integer.parseInt(port));
+          serverList.add(address);
+        } catch (NumberFormatException e) {
+          throw new UnknownHostException(host + ":" + port + " is not a valid mongodb host");
+        }
       }
     }
+
+    if(serverList.isEmpty()) {
+      LOG.info("MongoDB connection parameter 'dbServerHosts' is not set, using default value : localhost:27017");
+      serverList.add(new ServerAddress("localhost", 27017));
+    }
+
     return serverList;
   }
 }

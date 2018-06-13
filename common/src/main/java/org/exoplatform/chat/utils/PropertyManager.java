@@ -133,9 +133,6 @@ public class PropertyManager {
 
       overridePropertyIfNotSet(PROPERTY_SERVICES_IMPLEMENTATION, PROPERTY_SERVICE_IMPL_MONGO);
       overridePropertyIfNotSet(PROPERTY_SERVER_TYPE, "mongo");
-      overridePropertyIfNotSet(PROPERTY_SERVER_HOST, "localhost");
-      overridePropertyIfNotSet(PROPERTY_SERVERS_HOSTS, "");
-      overridePropertyIfNotSet(PROPERTY_SERVER_PORT, "27017");
       overridePropertyIfNotSet(PROPERTY_DB_NAME, "chat");
       overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
       overridePropertyIfNotSet(PROPERTY_DB_USER, "");

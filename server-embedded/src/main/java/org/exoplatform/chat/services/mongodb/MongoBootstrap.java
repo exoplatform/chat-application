@@ -22,6 +22,7 @@ package org.exoplatform.chat.services.mongodb;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -138,12 +139,18 @@ public class MongoBootstrap
     return db;
   }
 
-  private static void setupEmbedMongo() throws IOException {
+  private static void setupEmbedMongo() throws Exception {
     MongodStarter runtime = MongodStarter.getDefaultInstance();
-    int port = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_PORT));
+    List<ServerAddress> mongoServerAdresses = ConnectionHelper.getMongoServerAdresses();
+    if(mongoServerAdresses == null || mongoServerAdresses.isEmpty()) {
+      throw new Exception("No mongodb server host and port defined");
+    } else if(mongoServerAdresses.size() > 1) {
+      throw new Exception("Several mongodb server host and port defined, embedded mode supports only one mongodb server");
+    }
+    ServerAddress mongdbServer = mongoServerAdresses.get(0);
     IMongodConfig mongodConfig = new MongodConfigBuilder()
             .version(Version.Main.V2_6)
-            .net(new Net(port, Network.localhostIsIPv6()))
+            .net(new Net(mongdbServer.getPort(), Network.localhostIsIPv6()))
             .build();
     mongodExe = runtime.prepare(mongodConfig);
     mongod = mongodExe.start();
