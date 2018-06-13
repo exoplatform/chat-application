@@ -212,9 +212,14 @@
       &.hasUnreadMessages .last-message-time {
         margin-right: -27px
       }
+      &.has-not-sent-messages .last-message-time {
+        margin-right: -19px
+      }
+      .unreadMessages, .uiIconNotification {
+        align-self: flex-end;
+      }
       .unreadMessages {
         .square-rounded(16px);
-        align-self: flex-end;
         margin-bottom: 5px;
         color: #fff;
       }
