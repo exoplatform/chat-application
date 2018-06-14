@@ -19,8 +19,6 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -149,7 +147,7 @@ public class MongoBootstrap
     }
     ServerAddress mongdbServer = mongoServerAdresses.get(0);
     IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.Main.V2_6)
+            .version(Version.V3_6_0)
             .net(new Net(mongdbServer.getPort(), Network.localhostIsIPv6()))
             .build();
     mongodExe = runtime.prepare(mongodConfig);
