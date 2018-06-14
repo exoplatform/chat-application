@@ -8,7 +8,7 @@
         <div class="day-separator"><span>{{ dayDate }}</span></div>
         <chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" :mini-chat="miniChat" @edit-message="editMessage"></chat-message-detail>
       </div>
-      <span v-show="!messages || !messages.length" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
+      <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
     <chat-message-composer :contact="contact" :mini-chat="miniChat" @exo-chat-message-written="messageWritten"></chat-message-composer>
     <modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
