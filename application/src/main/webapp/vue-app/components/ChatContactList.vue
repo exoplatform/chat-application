@@ -34,7 +34,7 @@
     </div>
     <div id="chat-users" class="contactList isList">
       <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
-        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage)">
+        <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
           <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
         </chat-contact>
@@ -442,10 +442,11 @@ export default {
     favoriteTooltip(contact) {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
     },
-    getLastMessage(message) {
+    getLastMessage(message, contactType) {
       if (message) {
         if (!message.isSystem) {
-          return this.filterLastMessage(message.msg);
+          const filteredMessage = this.filterLastMessage(message.msg);
+          return contactType === 'u' ? message.msg : `${message.fullname}: ${filteredMessage}`;
         } else {
           const apps = this.getApplications();
           let systemMsg = '';
@@ -472,7 +473,7 @@ export default {
     },
     filterLastMessage(msg) {
       if (msg === this.$constants.DELETED_MESSAGE) {
-        return '';
+        return this.$t('exoplatform.chat.deleted');
       }
       // replace line breaks with an ellipsis
       if (msg.indexOf('<br/>') >= 0) {
