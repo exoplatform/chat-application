@@ -102,6 +102,7 @@
         <i v-else-if="message.options && message.options.type === this.$constants.LINK_MESSAGE" class="uiIconChatLink"></i>
         <i v-else-if="message.options && message.options.type === this.$constants.FILE_MESSAGE" class="uiIconChatUpload"></i>
         <i v-else-if="message.options && message.options.type === this.$constants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-else-if="message.options && (message.options.type === this.$constants.MEETING_START_MESSAGE || message.options.type === this.$constants.MEETING_STOP_MESSAGE || message.options.type === this.$constants.NOTES_MESSAGE)" class="uiIconChatMeeting"></i>
         <i v-else-if="isSpecificMessageType && specificMessageClass" :class="specificMessageClass"></i>
 
         <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
