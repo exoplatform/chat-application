@@ -19,7 +19,7 @@
           <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
         <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -80,11 +80,15 @@ export default {
       }
     }
   },
+  updated() {
+    if (this.mq === 'desktop') { // set autofocus only on desktop
+      this.$nextTick(() => this.$refs.messageComposerArea.focus());
+    }
+  },
   created() {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
     document.addEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
-    this.$nextTick(() => $('#messageComposerArea').focus());
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
