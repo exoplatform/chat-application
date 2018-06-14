@@ -211,7 +211,7 @@ export default {
     },
     isHideTime(i, messages) {
       const prevMsg = this.getPrevMessage(i, messages);
-      if (prevMsg === null) {
+      if (prevMsg === null || this.mq === 'mobile') {
         return false;
       } else {
         return chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp) ? true : false;
