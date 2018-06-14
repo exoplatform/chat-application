@@ -1,4 +1,7 @@
 /* contact list component */
+@selectedContactColor: #578DC9;
+@currentContactMenuColor: #e6eef7;
+
 .contactListContainer {
   .flex-column;
   .contactFilter, .listHeader {
@@ -147,7 +150,10 @@
   padding: 5px 20px;
   position: relative;
   &.selected {
-    background: #578DC9;
+    background: @selectedContactColor;
+  }
+  &.currentContactMenu {
+    background: @currentContactMenuColor;
   }
   &:hover .favorite:before {
     .hover({

@@ -33,7 +33,7 @@
       </div>
     </div>
     <div id="chat-users" class="contactList isList">
-      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: selected && contact && selected.user == contact.user && mq !== 'mobile', hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user == contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
           <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
@@ -53,7 +53,7 @@
           <i class="uiIconArrowDownMini"></i>
         </div>
       </div>
-      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="contactMenuClosed = true">
+      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="closeContactActions">
         <ul class="mobile-options">
           <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
           <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
@@ -502,6 +502,10 @@ export default {
       const contact = this.contacts.find(contact => contact['user'] === user);
       this.contactMenuClosed = false;
       this.contactMenu = contact;
+    },
+    closeContactActions() {
+      this.contactMenuClosed = true;
+      this.contactMenu = null;
     }
   }
 };
