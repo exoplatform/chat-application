@@ -1,3 +1,10 @@
+@messageListGutter: 60px;
+@messageBubbleColor: #f0f8fe;
+@messageBubbleRadius: 2px;
+@messageBubbleCurrentUserColor: #cfe9ff;
+@messageSeachHighlightColor: #ff0;
+@messageAvatarSize: 35px;
+
 .chat-message-list {
   &::-webkit-scrollbar {
     width: @scrollSize;
@@ -15,7 +22,7 @@
   .flex-column;
   .day-separator {
     height: 30px;
-    padding: 0 60px;
+    padding: 0 @messageListGutter;
     .flex-center;
     justify-content: space-around;
     text-align: center;
@@ -40,7 +47,7 @@
   display: flex;
   margin-top: 20px;
   .chat-sender-avatar, .chat-message-action {
-    flex: 0 0 60px;
+    flex: 0 0 @messageListGutter;
   }
   .sender-name {
     font-weight: bold;
@@ -70,9 +77,9 @@
   }
   .chat-message-bubble {
     .flex-remaining-width;
-    background: #f0f8fe;
+    background: @messageBubbleColor;
     border: @defaultBorder;
-    border-radius: 2px; 
+    border-radius: @messageBubbleRadius; 
     padding: 12px 7px;
     position: relative;
     .overflow-wrap;
@@ -105,11 +112,11 @@
       }
     }
     .search-highlight {
-      background: #FF0;
+      background: @messageSeachHighlightColor;
     }
   }
   .chat-contact-avatar {
-    .square(35px);
+    .square(@messageAvatarSize);
   }
   &.is-same-contact {
     margin-top: 3px;
@@ -124,7 +131,7 @@
       padding-left: 0;
     });
     .chat-message-bubble {
-      background: #cfe9ff;
+      background: @messageBubbleCurrentUserColor;
       border: none;
       margin-right: 8px;
       &:before {
@@ -140,7 +147,7 @@
     bottom: 0;
     [class^="uiIcon"] {
       font-size: 15px;
-      color: #999;
+      color: @grayLight;
     }
   }
   .uiIconNotification {
@@ -150,7 +157,7 @@
 .custom-message-item {
   margin-top: 5px;
   > span, [class^="uiIcon"] {
-    color: #999;
+    color: @grayLight;
   }
   [class^="uiIcon"] {
     font-size: 16px;
@@ -159,11 +166,11 @@
 }
 .message-file-size {
   margin-left: 10px;
-  color: #999;
+  color: @grayLight;
 }
 .send-meeting-notes {
   display: inline;
 }
 #editMessageComposerArea {
-    width: 100%;
+  width: 100%;
 }

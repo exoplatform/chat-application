@@ -1,6 +1,11 @@
 /* contact list component */
 @selectedContactColor: #578DC9;
 @currentContactMenuColor: #e6eef7;
+@contactFilterColor: #355788;
+@contactFilterPlaceHolderColor: #7a90b1;
+@contactFilterHeight: 36px;
+@contactFilterTextSize: 13px;
+@actionIconsSize: 20px;
 
 .contactListContainer {
   .flex-column;
@@ -10,11 +15,11 @@
   }
   .contactFilter {
     .responsive-reverse(@mobile + 1, {
-      height: 36px;
-      background: #355788;
+      height: @contactFilterHeight;
+      background: @contactFilterColor;
       padding: 0 20px;
       input {
-        font-size: 13px;
+        font-size: @contactFilterTextSize;
         background: none;
         border: none;
         box-shadow: none;
@@ -22,11 +27,11 @@
         width: 100%;
         margin: 0;
         .placeholder({
-          color: #7a90b1;
+          color: @contactFilterPlaceHolderColor;
         });
       }
       input, i {
-        color: #fff;
+        color: @leftContainerTextColor;
       }
     });
     input {
@@ -54,10 +59,10 @@
     display: flex;
   }
   .add-room-action {
-    .square(20px);
+    .square(@actionIconsSize);
     text-align: center;
     .uiIconSimplePlus {
-      color: #fff;
+      color: @leftContainerTextColor;
       font-size: 12px;
     }
   }
@@ -90,7 +95,7 @@
         padding: 0 20px;
         
         &, [class^="uiIcon"]:before {
-          color: #fff;
+          color: @leftContainerTextColor;
         }
         .uiIconClose:before {
           font-size: 16px;
@@ -165,13 +170,13 @@
     cursor: pointer;
   }
   .unreadMessages, .favorite {
-    .square(20px);
+    .square(@actionIconsSize);
     margin-left: 10px;
   }
   .unreadMessages {
     background: #578DC9;
     text-align: center;
-    line-height: 20px;
+    line-height: @actionIconsSize;
     font-size: 12px;
   }
   &.hasUnreadMessages {
@@ -182,7 +187,7 @@
     cursor: pointer;
     
     a {
-      color: #fff;
+      color: @leftContainerTextColor;
     }
   }
 }

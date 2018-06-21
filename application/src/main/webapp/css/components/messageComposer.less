@@ -1,3 +1,7 @@
+@iconAppsSize: 60px;
+@iconAppsFontSize: 36px;
+@appsContainerHeight: 120px;
+
 .chat-message-composer {
   .apps-composer-modal {
     .chat-loading-mask {
@@ -94,10 +98,10 @@
     display: flex;
     .flex-space-evenly;
     position: absolute;
-    top: -120px;
+    top: -@appsContainerHeight;
     left: 30px;
     width: calc(~"100%" - 60px);
-    height: 120px;
+    height: @appsContainerHeight;
     padding: 16px 20px;
     box-sizing: border-box;
     box-shadow: @defaultShadow;
@@ -113,13 +117,13 @@
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-    .square-rounded(60px);
+    .square-rounded(@iconAppsSize);
     box-sizing: border-box;
     border: @bigBorder;
     border-radius: 50%;
     [class*="uiIcon"] {
       position: static;
-      font-size: 36px;
+      font-size: @iconAppsFontSize;
     }
   }
   .apps-item-label {
@@ -129,7 +133,7 @@
   }
   &.is-apps-closed {
     .apps-container {
-      top: 100px;
+      top: @appsContainerHeight;
       opacity: 0;
       transition: top .3s ease-out, opacity .5s ease-in;
     }
@@ -171,7 +175,7 @@
 }
 
 #appComposerForm .selectize-input {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .chat-file-upload {
@@ -179,27 +183,27 @@
   overflow: hidden;
 
   input {
-      position: absolute;
-      top: 0;
-      right: 0;
-      margin: 0;
-      padding: 0;
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0;
-      filter: alpha(opacity=0);
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
   }
   
   .action-label {
-      padding-right: 10px;
-      line-height: 28px;
-      vertical-align: top;
-      text-align: right;
+    padding-right: 10px;
+    line-height: 28px;
+    vertical-align: top;
+    text-align: right;
   }
   
   .btn {
-      vertical-align: top;
-      margin: 5px 0;
+    vertical-align: top;
+    margin: 5px 0;
   }
   
   .uiSelectbox {
