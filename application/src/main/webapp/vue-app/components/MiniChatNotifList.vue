@@ -24,7 +24,7 @@
     <li class="divider">&nbsp;</li>
     <li>
       <a href="/portal/intranet/chat" class="notif-chat-open-link" target="_chat">
-        <div class="chat-status-open chat-status-icon"></div>
+        <i class="uiIconBannerChat"></i>
         <span class="chat-label-status">{{ $t('exoplatform.chat.open.chat') }}</span>
       </a>
     </li>
