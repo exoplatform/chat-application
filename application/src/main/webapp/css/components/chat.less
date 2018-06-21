@@ -40,6 +40,8 @@
       }
     }
   }
+
+  
 }
 
 .modal-mask {
@@ -66,7 +68,7 @@
   left: -1px;
   right: -1px;
   bottom: -1px;
-  background-color: rgba(0,0,0,0.3);
+  background-color: @maskColor;
   z-index: 1000;
 
   .chat-loading {
@@ -78,7 +80,7 @@
 .chat-no-conversation {
   .flex-column;
   flex: 1;
-  background: url(/chat/img/no-conversation.png) no-repeat center;
+  background: url('@{imgPath}/no-conversation.png') no-repeat center;
   > span {
     margin: auto;
   }
@@ -173,21 +175,7 @@
   }
 }
 
-.uiIconPlusCircled:before {
-  content: "\eb5c";
-}
-.uiIconVerticalDots:before { // TODO move to PLF
-  content: "\e79c";
-}
-.uiIconSearchLight:before {
-  content: "\eaf0";
-}
-.uiIconCloseLight:before {
-  content: "\e937";
-}
-.uiIconSend:before {
-  content: "\e97b";
-}
+// chat icons
 .uiIconChatCreateEvent:before {
   content: "\e92a";
 }
@@ -209,88 +197,34 @@
 .uiIconChatMeeting:before {
   content: "\e61a";
 }
-.uiIconChatFavorite:before {
-    content: "\e779";
+.uiIconChatRecordStart:before {
+  content: "\e775";
 }
-.uiIconGear:before {
-  content: "\e9fa";
+.uiIconChatRecordStop:before {
+  content: "\e76c";
+}
+.uiIconChatMember:before {
+  content: "\eac1";
+}
+.uiIconChatAssign:before {
+  content: "\e6c6";
+}
+.uiIconChatClock:before {
+  content: "\e742";
+}
+.uiIconChatCheckin:before {
+  content: "\e782";
+}
+.uiIconChatSendEmail:before {
+  content: "\e6b8";
+}
+.uiIconChatWiki:before {
+  content: "\e695";
+}
+.uiIconChatEdit:before {
+  content: "\e9e4";
 }
 
 .chat-message-not-sent {
 	color:#999999;
-}
-
-.chat-file-upload {
-  position: relative;
-  overflow: hidden;
-
-  input {
-      position: absolute;
-      top: 0;
-      right: 0;
-      margin: 0;
-      padding: 0;
-      font-size: 20px;
-      cursor: pointer;
-      opacity: 0;
-      filter: alpha(opacity=0);
-  }
-  
-  .action-label {
-      padding-right: 10px;
-      line-height: 28px;
-      vertical-align: top;
-      text-align: right;
-  }
-  
-  .btn {
-      vertical-align: top;
-      margin: 5px 0;
-  }
-  
-  .uiSelectbox {
-    vertical-align: top;
-    width: 90px;
-
-    .selectbox {
-      width: 92px;
-      font-size: 12px;
-    }
-  }
-  
-  .progressBar {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 18px;
-
-    .bar {
-      line-height: 68px;
-    }
-
-    .progress {
-      margin: 0;
-      height: 68px;
-      -webkit-border-radius: 5px;
-      -moz-border-radius: 5px;
-      border-radius: 5px;
-    }
-
-    .label {
-      width: 100%;
-      line-height: 20px;
-      padding: 0px;
-      white-space: normal;
-      display: table;
-
-      .label-inner {
-        display: table-cell;
-        vertical-align: middle;
-        height: 68px;
-        width: 100%;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 18px;
-      }
-    }
-  }
 }

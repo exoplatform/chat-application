@@ -295,14 +295,14 @@ export const DEFAULT_ROOM_ACTIONS = [{
 } , {
   key: 'addToFavorite',
   labelKey: 'exoplatform.chat.add.favorites',
-  class: 'uiIconChatFavorite',
+  class: 'uiIconStar',
   enabled: (comp) => {
     return !comp.contact.isFavorite;
   }
 } , {
   key: 'removeFromFavorite',
   labelKey: 'exoplatform.chat.remove.favorites',
-  class: 'uiIconChatFavorite',
+  class: 'uiIconStar',
   enabled: (comp) => {
     return comp.contact.isFavorite;
   }
