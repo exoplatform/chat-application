@@ -5,7 +5,6 @@
 @contactFilterPlaceHolderColor: #7a90b1;
 @contactFilterHeight: 36px;
 @contactFilterTextSize: 13px;
-@actionIconsSize: 20px;
 
 .contactListContainer {
   .flex-column;
@@ -17,7 +16,7 @@
     .responsive-reverse(@mobile + 1, {
       height: @contactFilterHeight;
       background: @contactFilterColor;
-      padding: 0 20px;
+      padding: @defaultPadding;
       input {
         font-size: @contactFilterTextSize;
         background: none;
@@ -43,8 +42,8 @@
   }
   .listHeader {
     justify-content: space-between;
-    height: 50px;
-    padding: 0 20px;
+    height: @listHeaderHeight;
+    padding: @defaultPadding;
     border-bottom: 2px solid #7f97ba;
   }
   .contactList {
@@ -92,7 +91,7 @@
         .flex-center;
         justify-content: space-between;
         background: @primaryColor;
-        padding: 0 20px;
+        padding: @defaultPadding;
         
         &, [class^="uiIcon"]:before {
           color: @leftContainerTextColor;
@@ -152,7 +151,7 @@
 .contact-list-item {
   display: flex;
   align-items: center;
-  padding: 5px 20px;
+  padding: 5px @defaultGutter;
   position: relative;
   &.selected {
     background: @selectedContactColor;
@@ -174,7 +173,7 @@
     margin-left: 10px;
   }
   .unreadMessages {
-    background: #578DC9;
+    background: @primaryColor;
     text-align: center;
     line-height: @actionIconsSize;
     font-size: 12px;

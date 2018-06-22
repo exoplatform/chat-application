@@ -1,35 +1,42 @@
+@participantsToggleColor: #4d5466;
+
 /* list participants area */
 .room-users-collapse-btn {
   background: #fff;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
+  .square-rounded(23px);
   border: @defaultBorder;
   text-align: center;
   display: none;
 }
 .room-participants:hover .room-users-collapse-btn {
-  display: initial;
+  display: block;
 }
 .room-participants-header {
   .flex-center;
   justify-content: center;
   flex-shrink: 0;
-  height: 50px;
+  height: @listHeaderHeight;
   border-bottom: @defaultBorder;
-  padding: 0 20px;
+  padding: @defaultPadding;
 }
 .room-participants-list {
   padding: 10px 0;
   overflow-y: auto;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: @scrollSize;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: @scrollDefaultThumbColor;
+    border-radius: @scrollThumbRaduis;
+  }
 }
 .room-users-collapse-btn .uiIcon {
   top: 2px;
-  color: #ced2d5;
+  color: @secondaryIconColor;
   &:before {
     content: "\e903"
   }
@@ -40,11 +47,11 @@
   text-transform: uppercase;
 }
 .room-participants-filter .actionIcon {
-  border: 1px solid #e1e8ee;
+  border: @defaultBorder;
    .uiIconChatMember {
     top: 2px;
     &.all-participants {
-      color: #4d5466;
+      color: @participantsToggleColor;
     }
   }
 }

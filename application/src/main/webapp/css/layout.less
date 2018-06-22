@@ -6,7 +6,7 @@
 }
 .uiLeftContainerArea {
   .responsive-reverse(@mobile + 1, {
-    background: #476a9c;
+    background: @secondaryColor;
     color: @leftContainerTextColor;
   });
   user-select: none;
@@ -19,7 +19,7 @@
 }
 .uiLeftContainerArea, .room-participants {
   width: @sideBarWidth;
-  min-width: 250px;
+  min-width: @sideBarMinWidth;
   box-sizing: border-box;
 }
 .room-content, .contactListContainer {
@@ -30,7 +30,7 @@
   display: flex;
   flex-shrink: 0;
   height: @headerHeight;
-  padding: 0 20px;
+  padding: @defaultPadding;
   box-sizing: border-box;
 }
 .room-detail {
@@ -42,7 +42,7 @@
   height: 100%;
 }
 .room-participants.collapsed {
-  width: 70px;
+  width: @sideBarCollapsedWidth;
   min-width: 0;
 }
 .uiRoomUsersContainerArea {
@@ -78,6 +78,6 @@
   }
   .room-content {
     position: relative;
-    padding-right: 70px;
+    padding-right: @sideBarCollapsedWidth;
   }
 }
