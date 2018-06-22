@@ -11,50 +11,26 @@
 
   // web conf integration
   .callButtonContainerWrapper {
-     position: relative;
+    position: relative;
+    margin: 0;
 
-    .callButton, .dropdown-menu , .dropdown-toggle {
-      padding: 0;
-      line-height: 28px;
-      height: 28px;
-      border-radius: 0;
-    }
-
-    .callButton , .dropdown-menu {
-      min-width: 85px !important;
-    }
-
-    .callButton , .dropdown-toggle {
-      border: 1px solid #578dc9;
-    }
-
-    .dropdown-toggle .callButton {
-      border: 0;
-    }
-
-    .callButton {
-      > * {
-        float: left;
+    .callButtonContainer{
+      > .callButton {
+        &, ~ .dropdown-toggle {
+          padding: 4px 10px;
+          border-radius: 0;
+          border: 1px solid #578dc9;
+          color: @primaryColor;
+          background: none;
+          [class*="Icon"]:before {
+            color: @primaryColor;
+          }
+        }
+        ~ .dropdown-toggle {
+          background: none;
+        }
       }
-      i {
-        margin: 3px 5px 0 10px;
-      }
-    }
-
-    .dropdown-toggle {
-      padding: 0px 4px;
-      margin-left: -5px;
-      background-color: #fff;
-    }
-  
-    [class*="Icon"], [class*="Icon"]:before {
-      color: #578dc9
-    }
-  
-    .dropdown-menu {
-      padding: 0;
-      margin-right: 22px;
-      > li > a > [class^="uiIcon"] {
+      .dropdown-menu > li > a > [class^="uiIcon"] {
         font-size: 18px;
       }
     }
