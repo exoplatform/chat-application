@@ -10,6 +10,14 @@
   border: @defaultBorder;
   text-align: center;
   display: none;
+  
+  .uiIcon {
+    top: 2px;
+    color: @secondaryIconColor;
+    &:before {
+      content: "\e903"
+    }
+  }
 }
 .room-participants:hover .room-users-collapse-btn {
   display: block;
@@ -32,13 +40,6 @@
   &::-webkit-scrollbar-thumb {
     background: @scrollDefaultThumbColor;
     border-radius: @scrollThumbRaduis;
-  }
-}
-.room-users-collapse-btn .uiIcon {
-  top: 2px;
-  color: @secondaryIconColor;
-  &:before {
-    content: "\e903"
   }
 }
 .room-participants-title {
