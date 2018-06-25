@@ -250,6 +250,15 @@ export function getSpaceAvatar(space) {
   return `${chatConstants.socialSpaceAPI}${space}/avatar`;
 }
 
+export function getUserProfileLink(user) {
+  return `${chatConstants.PORTAL}/${chatConstants.PORTAL_NAME}/${chatConstants.PROFILE_PAGE_NAME}/${user}`;
+}
+
+export function getSpaceProfileLink(space) {
+  const spaceId = space.toLowerCase().split(' ').join('_');
+  return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${spaceId}/${spaceId}`;
+}
+
 export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) {
   const serverBase = getBaseURL();
 

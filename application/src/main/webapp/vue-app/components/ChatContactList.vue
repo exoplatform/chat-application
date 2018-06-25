@@ -56,7 +56,7 @@
       <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="closeContactActions">
         <ul class="mobile-options">
           <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
-          <li v-show="contactMenu.type != 't'" @click.stop><a :href="`${$constants.PORTAL}/${$constants.PORTAL_NAME}/${$constants.PROFILE_PAGE_NAME}/${contactMenu.user}`">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
+          <li v-show="contactMenu.type != 't'" @click.stop><a :href="getProfileLink()">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
         </ul>
       </div>
       <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask">
@@ -506,6 +506,14 @@ export default {
     closeContactActions() {
       this.contactMenuClosed = true;
       this.contactMenu = null;
+    },
+    getProfileLink() {
+      if (this.contactMenu.type === 'u') {
+        return chatServices.getUserProfileLink(this.contactMenu.user);
+      } else if (this.contactMenu.type === 's') {
+        return chatServices.getSpaceProfileLink(this.contactMenu.fullName);
+      }
+      return '#';
     }
   }
 };

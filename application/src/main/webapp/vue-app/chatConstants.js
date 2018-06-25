@@ -8,6 +8,7 @@ export const chatConstants = {
   chatWikiAPI: '/portal/rest/chat/api/1.0/wiki/',
   chatCalendarAPI: '/portal/rest/chat/api/1.0/calendar/',
   PROFILE_PAGE_NAME: 'profile',
+  PROFILE_SPACE_LINK: '/g/:spaces:',
   chatServerAPI: '/chatServer/',
   chatPluginAPI: '/chat/api/1.0/plugin/',
   uploadAPI: '/portal/upload',
