@@ -33,7 +33,7 @@
       </div>
     </div>
     <div id="chat-users" class="contactList isList">
-      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user == contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item" @click="selectContact(contact)">
+      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
         <chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
           <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
@@ -92,18 +92,57 @@ import {DEFAULT_COMPOSER_APPS} from '../extension';
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
   props: {
+    /**
+     * List of contacts objects to display in List.
+     * Contact {
+     *   fullName: {string} full name of contact
+     *   isActive: {string} if the contact is of type user, this will be equals to "true" when the user is enabled
+     *   isFavorite: {Boolean} whether is favortie of current user or not
+     *   lastMessage: {string} Last message object with current user
+     *   room: {string} contact room id
+     *   status: {string} if the contact is of type user, this variable determines the user status (away, offline, available...)
+     *   timestamp: {number} contact update timestamp
+     *   type: {string} contact type, 'u' for user, 't' for team and 's' for space
+     *   unreadTotal: {number} unread total number of messages for this contact
+     *   user: {string} contact id, if user , username else team-{CONTACT_ID} or space-{CONTACT_ID}
+     * }
+     */
     contacts: {
       type: Array,
       default: function() { return [];}
     },
+    /**
+     * whether some additional contacts are currently loading or not
+     */
     isSearchingContact: {
       type: Boolean,
       default: function() { return false;}
     },
+    /**
+    * Select contact object
+    * Contact {
+      *   fullName: {string} full name of contact
+      *   isActive: {string} if the contact is of type user, this will be equals to "true" when the user is enabled
+      *   isFavorite: {Boolean} whether is favortie of current user or not
+      *   lastMessage: {string} Last message object with current user
+      *   room: {string} contact room id
+      *   status: {string} if the contact is of type user, this variable determines the user status (away, offline, available...)
+      *   timestamp: {number} contact update timestamp
+      *   type: {string} contact type, 'u' for user, 't' for team and 's' for space
+      *   unreadTotal: {number} unread total number of messages for this contact
+      *   user: {string} contact id, if user , username else team-{CONTACT_ID} or space-{CONTACT_ID}
+      * }
+    **/
     selected: {
       type: Object,
       default: function() {
         return {};
+      }
+    },
+    totalEntriesToLoad: {
+      type: Number,
+      default: function() {
+        return this.$constants.CONTACTS_PER_PAGE;
       }
     }
   },
@@ -128,7 +167,6 @@ export default {
       contactSearchMobile: false,
       createRoomModal: false,
       searchTerm: '',
-      totalEntriesToLoad: this.$constants.CONTACTS_PER_PAGE,
       newRoom: {
         name: '',
         participants: []
