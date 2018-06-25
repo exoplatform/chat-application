@@ -31,11 +31,8 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
 
   document.addEventListener(chatConstants.EVENT_USER_SETTINGS_LOADED, (e) => {
     const settings = e.detail;
-    getOnlineUsers().then(users => { // Fetch online users
-      getChatRooms(settings, users).then(data => {
-        chatRoomsLoadedCallback(data);
-      });
-    });
+    // fetch online users then fetch chat rooms
+    getOnlineUsers().then(users => getChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
 
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
       const selectedContact = e.detail;
