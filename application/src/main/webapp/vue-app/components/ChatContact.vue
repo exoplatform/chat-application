@@ -1,6 +1,7 @@
 <template>
   <div class="chat-contact">
     <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
+      <a v-if="!list && type!=='t'" :href="getProfileLink()" class="chat-contact-link"></a>
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
@@ -28,8 +29,9 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink } from '../chatServices';
 import DropdownSelect from './DropdownSelect.vue';
+
 export default {
   components: {DropdownSelect},
   props: {
@@ -123,7 +125,15 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
-    }    
+    },
+    getProfileLink() {
+      if (this.type === 'u') {
+        return getUserProfileLink(this.userName);
+      } else if (this.type === 's') {
+        return getSpaceProfileLink(this.name);
+      }
+      return '#';
+    }
   }
 };
 </script>
