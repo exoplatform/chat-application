@@ -146,7 +146,7 @@ export const DEFAULT_COMPOSER_APPS = [
 
       $dropzoneContainer.filedrop({
         fallback_id: 'chat-file-file',  // an identifier of a standard file input element
-        url: `${chatConstants.uploadAPI}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
+        url: `${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
         paramname: 'userfile',          // POST parameter name used on serverside to reference file
         error: function (err) {
           switch (err) {
@@ -181,7 +181,7 @@ export const DEFAULT_COMPOSER_APPS = [
           $dropzoneContainer.find('.bar').html(`${progress}%`);
         },
         uploadFinished: function () {
-          fetch(chatConstants.uploadAPI, {
+          fetch(chatConstants.UPLOAD_API, {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },

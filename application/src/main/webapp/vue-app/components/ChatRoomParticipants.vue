@@ -40,8 +40,9 @@ export default {
   components: {ChatContact, DropdownSelect},
   directives: {
     tiptip(el, binding, vnode) {
+      const chatConstants = vnode.context.$constants;
       $(el).find('.chat-contact-avatar').userPopup({
-        restURL: vnode.context.$constants.tiptipAPI,
+        restURL: `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.PEOPLE_INFO_API}`,
         userId: binding.value,
         labels: {
           StatusTitle: vnode.context.$t('exoplatform.chat.user.popup.status'),

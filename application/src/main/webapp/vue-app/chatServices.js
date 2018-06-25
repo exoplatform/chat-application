@@ -8,20 +8,15 @@ const DEFAULT_USER_LIMIT = 20;
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
 
-export function getUser(userName) {
-  return fetch(`/portal/rest/v1/social/users/${userName}`, {credentials: 'include'})
-    .then(resp => resp.json());
-}
-
 export function getUserStatus(userSettings, user) {
-  return fetch(`${chatConstants.chatServerAPI}getStatus?user=${userSettings.username}&targetUser=${user}&dbName=${userSettings.dbName}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}getStatus?user=${userSettings.username}&targetUser=${user}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
 }
 
 export function getNotReadMessages(userSettings) {
-  return fetch(`${chatConstants.chatServerAPI}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=true`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=true`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -83,12 +78,12 @@ export function updateTotalUnread(totalUnreadMsg) {
 }
 
 export function getUserSettings() {
-  return fetch('/portal/rest/chat/api/1.0/user/settings', {credentials: 'include'})
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}settings`, {credentials: 'include'})
     .then(resp => resp.json());
 }
 
 export function getOnlineUsers() {
-  return fetch(`${chatConstants.chatAPI}onlineUsers`, {credentials: 'include'})
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}onlineUsers`, {credentials: 'include'})
     .then(resp => resp.text());
 }
 
@@ -96,13 +91,13 @@ export function toggleFavorite(room, user, favorite) {
   if ((!room || !room.trim().length) && user && user.trim().length) {
     return getRoomId(eXo.chat.userSettings, user, 'username').then((roomId) => {
       room = roomId;
-      return fetch(`${chatConstants.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
+      return fetch(`${chatConstants.CHAT_SERVER_API}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
         headers: {
           'Authorization': `Bearer ${eXo.chat.userSettings.token}`
         }}).then(resp =>  resp.text());
     });
   } else {
-    return fetch(`${chatConstants.chatServerAPI}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
+    return fetch(`${chatConstants.CHAT_SERVER_API}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}&dbName=${eXo.chat.userSettings.dbName}`, {
       headers: {
         'Authorization': `Bearer ${eXo.chat.userSettings.token}`
       }}).then(resp =>  resp.text());
@@ -116,28 +111,28 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   if(!filter) {
     filter = '';
   }
-  return fetch(`${chatConstants.chatServerAPI}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}&timestamp=${new Date().getTime()}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getRoomParticipants(userSettings, room) {
-  return fetch(`${chatConstants.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room.room}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getRoomId(userSettings, targetUser, fieldName) {
-  return fetch(`${chatConstants.chatServerAPI}getRoom?targetUser=${targetUser}&user=${userSettings.username}&dbName=${userSettings.dbName}&type=${fieldName}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}getRoom?targetUser=${targetUser}&user=${userSettings.username}&dbName=${userSettings.dbName}&type=${fieldName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());
 }
 
 export function getRoomDetail(userSettings, room) {
-  return fetch(`${chatConstants.chatServerAPI}getRoom?targetUser=${room}&user=${userSettings.username}&dbName=${userSettings.dbName}&withDetail=true&type=room-id`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}getRoom?targetUser=${room}&user=${userSettings.username}&dbName=${userSettings.dbName}&withDetail=true&type=room-id`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -150,14 +145,14 @@ export function getRoomMessages(userSettings, contact, toTimestamp, limit) {
   if(!toTimestamp) {
     toTimestamp = '';
   }
-  return fetch(`${chatConstants.chatServerAPI}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${contact.room}&toTimestamp=${toTimestamp}&limit=${limit}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}read?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${contact.room}&toTimestamp=${toTimestamp}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function setRoomNotificationTrigger(userSettings, room, notifConditionType, notifCondition, time) {
-  return fetch(`${chatConstants.chatServerAPI}setRoomNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room}&notifConditionType=${notifConditionType}&notifCondition=${notifCondition}&time=${time}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}setRoomNotificationTrigger?user=${userSettings.username}&dbName=${userSettings.dbName}&room=${room}&notifConditionType=${notifConditionType}&notifCondition=${notifCondition}&time=${time}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -172,21 +167,21 @@ export function setUserNotificationPreferences(userSettings, preferredNotificati
   preferredNotificationTriggers.forEach(preferredNotificationTrigger => {
     preferredNotificationTriggerParam += `&notifManners=${preferredNotificationTrigger}`;
   });
-  return fetch(`${chatConstants.chatServerAPI}setNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}${preferredNotificationParam}${preferredNotificationTriggerParam}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}setNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}${preferredNotificationParam}${preferredNotificationTriggerParam}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function setUserPreferredNotification(userSettings, notifManner) {
-  return fetch(`${chatConstants.chatServerAPI}setPreferredNotification?user=${userSettings.username}&dbName=${userSettings.dbName}&notifManner=${notifManner}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}setPreferredNotification?user=${userSettings.username}&dbName=${userSettings.dbName}&notifManner=${notifManner}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
 export function getUserNotificationSettings(userSettings) {
-  return fetch(`${chatConstants.chatServerAPI}getUserDesktopNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}getUserDesktopNotificationSettings?user=${userSettings.username}&dbName=${userSettings.dbName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -217,7 +212,7 @@ export function getChatUsers(userSettings, filter, limit) {
   if(!limit) {
     limit = DEFAULT_USER_LIMIT;
   }
-  return fetch(`${chatConstants.chatServerAPI}users?user=${userSettings.username}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&dbName=${userSettings.dbName}&filter=${filter}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -232,7 +227,7 @@ export function saveRoom(userSettings, roomName, users, room) {
     room: room
   };
 
-  return fetch(`${chatConstants.chatServerAPI}saveTeamRoom`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}saveTeamRoom`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -243,11 +238,11 @@ export function saveRoom(userSettings, roomName, users, room) {
 }
 
 export function getUserAvatar(user) {
-  return `${chatConstants.socialUserAPI}${user}/avatar`;
+  return `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.SOCIAL_USER_API}${user}/avatar`;
 }
 
 export function getSpaceAvatar(space) {
-  return `${chatConstants.socialSpaceAPI}${space}/avatar`;
+  return `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
 }
 
 export function getUserProfileLink(user) {
@@ -271,7 +266,7 @@ export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp)
     toTimestamp: toTimestamp
   };
 
-  return fetch(`${chatConstants.chatServerAPI}sendMeetingNotes`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}sendMeetingNotes`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -293,7 +288,7 @@ export function getMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) 
     toTimestamp: toTimestamp
   };
 
-  return fetch(`${chatConstants.chatServerAPI}getMeetingNotes`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}getMeetingNotes`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -312,7 +307,7 @@ export function saveWiki(userSettings, targetFullName, content) {
     content: typeof content === Object ? JSON.stringify(content) : content
   };
 
-  return fetch(`${chatConstants.chatWikiAPI}saveWiki`, {
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_WIKI_API}saveWiki`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
@@ -327,7 +322,7 @@ export function saveEvent(userSettings, data, target) {
   data.space = target.fullName;
   data.users = target.type === 's' ? '' : users.join(',');
 
-  return fetch(`${chatConstants.chatCalendarAPI}saveEvent`, {
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_CALENDAR_API}saveEvent`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
