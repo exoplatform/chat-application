@@ -5,7 +5,7 @@
       <i v-if="list && type=='u'" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
-      <div :class="statusStyle" class="contactLabel">
+      <div class="contactLabel">
         <span v-html="name" />
         <slot></slot>
       </div>
@@ -35,35 +35,49 @@ import DropdownSelect from './DropdownSelect.vue';
 export default {
   components: {DropdownSelect},
   props: {
+    /** Contact display name */
     name: {
       type: String,
       default: ''
     },
+    /** Contact id */
     userName: {
       type: String,
       default: ''
     },
+    /** Contact status: offline, invisible, available, away, donotdistrub*/
     status: {
       type: String,
       default: ''
     },
+    /** For list contact or simple contact */
     list: {
       type: Boolean,
       default: false
     },
+    /** Contact type
+     * u: user
+     * t: room
+     * s: space
+     */
     type: {
       type: String,
       default: '',
       required: true
     },
+    /**
+     * Number of room or space members
+     */
     nbMembers: {
       type: Number,
       default: 0
     },
+    /** the Current user have status dropdown */
     isCurrentUser: {
       type: Boolean,
       default: false
     },
+    /** last reveiced message for chat Contact used only on mobile display */
     lastMessage: {
       type: String,
       default: ''
@@ -102,7 +116,7 @@ export default {
       } else if (this.type === 's') {
         return getSpaceAvatar(encodeURI(this.name));
       } else {
-        return '/chat/img/room-default.jpg'; // TODO add room default avatar
+        return '/chat/img/room-default.jpg';
       }
     }
   },
