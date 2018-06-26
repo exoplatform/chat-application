@@ -11,7 +11,7 @@
     "watch": "webpack --config webpack.dev.js --progress --colors --watch -d",
     "test": "jest",
     "test-coverage": "jest --coverage",
-    "build": "webpack --config webpack.prod.js -p"
+    "build": "webpack --config webpack.prod.js --mode production"
   },
   "author": "eXo",
   "license": "LGPL",
