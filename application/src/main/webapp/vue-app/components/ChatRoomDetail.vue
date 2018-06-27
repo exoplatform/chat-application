@@ -7,7 +7,7 @@
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
         <input ref="searchRoom" v-model="searchText" type="text" placeholder="search here" @blur="closeSearchRoom" @keyup.esc="closeSearchRoom">
-        <i class="uiIconCloseLight" @click="closeSearchRoom"></i>
+        <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
         <div class="callButtonContainerWrapper pull-left"></div>
@@ -58,6 +58,19 @@ export default {
     'modal': Modal
   },
   props: {
+    /**
+     * fullName: {string} full name of contact
+     * isActive: {string} if the contact is of type user, this will be equals to "true" when the user is enabled
+     * isFavorite: {Boolean} whether is favortie of current user or not
+     * lastMessage: {string} Last message object with current user
+     * room: {string} contact room id
+     * status: {string} if the contact is of type user, this variable determines the user status (away, offline, available...)
+     * timestamp: {number} contact update timestamp
+     * type: {string} contact type, 'u' for user, 't' for team and 's' for space
+     * unreadTotal: {number} unread total number of messages for this contact
+     * user: {string} contact id, if user , username else team-{CONTACT_ID} or space-{CONTACT_ID}
+     * Admins: {Array} Room admins list (only for room)
+     */
     contact: {
       type: Object,
       default() {
@@ -108,8 +121,6 @@ export default {
       } else {
         this.nbMembers = newContact.participants ? newContact.participants.length : 0;
       }
-      this.showSearchRoom = false;
-      this.searchText = '';
       this.meetingStarted = false;
     }
   },
