@@ -403,7 +403,7 @@ export default {
     },
     markRoomMessagesRead(e) {
       const message = e.detail;
-      if (message.room) {
+      if (message && message.room) {
         const contactToUpdate = this.findContact(message.room);
         if(contactToUpdate) {
           contactToUpdate.unreadTotal = 0;
@@ -445,14 +445,16 @@ export default {
         this.contacts.push(e.detail.data);
       }
     },
-    favoriteAdded(message) {
-      const contactToUpdate = this.findContact(message.room);
+    favoriteAdded(event) {
+      const room = event.room ? event.room : event.detail && event.detail.room ? event.detail.room : null;
+      const contactToUpdate = this.findContact(room);
       if(contactToUpdate) {
         contactToUpdate.isFavorite = true;
       }
     },
-    favoriteRemoved(message) {
-      const contactToUpdate = this.findContact(message.room);
+    favoriteRemoved(event) {
+      const room = event.room ? event.room : event.detail && event.detail.room ? event.detail.room : null;
+      const contactToUpdate = this.findContact(room);
       if(contactToUpdate) {
         contactToUpdate.isFavorite = false;
       }

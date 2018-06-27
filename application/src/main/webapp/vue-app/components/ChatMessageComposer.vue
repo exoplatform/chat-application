@@ -34,7 +34,7 @@
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
 import * as chatServices from '../chatServices';
-import {DEFAULT_COMPOSER_APPS} from '../extension';
+import {DEFAULT_COMPOSER_APPS,EMOTICONS} from '../extension';
 
 const ENTER_CODE_KEY = 13;
 export default {
@@ -74,9 +74,11 @@ export default {
     },
     getEmoticons() {
       if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraEmoticons) {
-        return this.EMOTICONS.concat(eXo.chat.room.extraEmoticons);
+        return EMOTICONS.concat(eXo.chat.room.extraEmoticons);
+      } else if(EMOTICONS) {
+        return EMOTICONS;
       } else {
-        return this.EMOTICONS;
+        return [];
       }
     }
   },
@@ -113,7 +115,7 @@ export default {
       this.closeEmojiPanel();
     },
     preventDefault(event) {
-      if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (event.keyCode === ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
       }
@@ -153,13 +155,13 @@ export default {
       if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
         this.sendMessage();
       }
-      if (event.keyCode === ENTER_CODE_KEY && (event.ctrlKey || event.altKey)) {
+      if (event.keyCode === ENTER_CODE_KEY && (event.ctrlKey || event.altKey || event.shiftKey)) {
         $(this.$refs.messageComposerArea).insertAtCaret('\n');
       }
     },
     quoteMessage(e) {
       const quotedMessage = e.detail;
-      const composer = $('#messageComposerArea');
+      const composer = $(this.$refs.messageComposerArea);
       if(!quotedMessage) {
         return;
       }

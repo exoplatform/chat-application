@@ -244,13 +244,15 @@ export function setRoomMessagesAsRead(room, callback) {
     'token': cometDSettings.token
   });
 
-  cCometD.publish('/service/chat', data, function(publishAck) {
-    if (publishAck.successful) {
-      if (typeof callback === 'function') {
-        callback();
+  if (cometDSettings.cCometD) {
+    cometDSettings.cCometD.publish('/service/chat', data, function(publishAck) {
+      if (publishAck.successful) {
+        if (typeof callback === 'function') {
+          callback();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {

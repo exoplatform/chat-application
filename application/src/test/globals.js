@@ -1,6 +1,8 @@
-import * as $ from 'jquery';
+import $ from 'jquery'
+import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret'
 
 global.$ = $;
+addCaretJQueryExtension($);
 global.eXo = {
   env: {
     portal: {

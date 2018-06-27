@@ -146,6 +146,7 @@
 <script>
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
+import {EMOTICONS} from '../extension';
 import messageFilter from '../messageFilter.js';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './modal/Modal.vue';
@@ -299,7 +300,7 @@ export default {
       return this.message.message ? this.message.message : this.message.msg;
     },
     messageFiltered() {
-      return messageFilter(this.messageContent, this.highlight, this.EMOTICONS);
+      return messageFilter(this.messageContent, this.highlight, EMOTICONS);
     },
     isSpecificMessageType() {
       return this.message && this.message.options && this.message.options.type
