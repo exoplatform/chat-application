@@ -7,5 +7,12 @@ global.eXo = {
       context: 'portal',
       rest: 'rest'
     }
+  },
+  chat: {
+    userSettings: {
+      username: 'root',
+      fullName: 'Root Root',
+      isOnline: true
+    }
   }
 };
