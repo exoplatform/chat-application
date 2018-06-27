@@ -4,23 +4,6 @@ import ChatContact from '../../main/webapp/vue-app/components/ChatContact';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 describe('ChatContactList.test.js', () => {
-  window.eXo = { chat: {
-      userSettings: {
-        username: 'root',
-        token: null,
-        fullName: 'Root Root',
-        status: 'available',
-        isOnline: true,
-        cometdToken: null,
-        dbName: null,
-        sessionId: null,
-        serverURL: null,
-        standalone: false,
-        chatPage: null,
-        wsEndpoint: null,
-      }
-    }
-  };
   let cmp = shallow(ChatContactList, {
     propsData: {
       isSearchingContact : false,
@@ -37,7 +20,7 @@ describe('ChatContactList.test.js', () => {
       },
       contacts: [
          {
-            'lastMessage':{  
+            'lastMessage':{
                'msg':'Test Message',
                'isSystem':false,
                'options':{},

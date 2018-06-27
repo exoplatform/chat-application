@@ -146,7 +146,7 @@
 <script>
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
-import {EMOTICONS} from '../extension';
+import {DEFAULT_MESSAGE_ACTIONS, EMOTICONS} from '../extension';
 import messageFilter from '../messageFilter.js';
 import DropdownSelect from './DropdownSelect.vue';
 import Modal from './modal/Modal.vue';
@@ -203,56 +203,7 @@ export default {
       confirmMessage: '',
       confirmOKMessage: '',
       confirmKOMessage: '',
-      confirmAction(){return;},
-      DEFAULT_MESSAGE_ACTIONS: [
-        {
-          key: 'edit',
-          labelKey: 'exoplatform.chat.msg.edit',
-          enabled: comp => {
-            return (
-              !comp.message.isSystem &&
-              !comp.message.isDeleted &&
-              !comp.message.notSent &&
-              comp.isCurrentUser
-            );
-          }
-        },
-        {
-          key: 'delete',
-          labelKey: 'exoplatform.chat.delete',
-          enabled: comp => {
-            return (
-              !comp.message.isSystem &&
-              !comp.message.isDeleted &&
-              !comp.message.notSent &&
-              comp.isCurrentUser
-            );
-          },
-          confirm: {
-            title: 'exoplatform.chat.popup.delete.title',
-            message: 'exoplatform.chat.popup.delete.message',
-            okMessage: 'exoplatform.chat.user.popup.confirm',
-            koMessage: 'exoplatform.chat.cancel',
-            confirmed(message) {
-              document.dispatchEvent(new CustomEvent('exo-chat-message-acton-delete', {'detail': message}));
-            }
-          }
-        },
-        {
-          key: 'quote',
-          labelKey: 'exoplatform.chat.quote',
-          enabled: comp => {
-            return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
-          }
-        },
-        {
-          key: 'saveNotes',
-          labelKey: 'exoplatform.chat.notes',
-          enabled: comp => {
-            return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
-          }
-        }
-      ]
+      confirmAction(){return;}
     };
   },
   computed: {
@@ -263,11 +214,11 @@ export default {
         eXo.chat.message &&
         eXo.chat.message.extraActions
       ) {
-        return this.DEFAULT_MESSAGE_ACTIONS.concat(
+        return DEFAULT_MESSAGE_ACTIONS.concat(
           eXo.chat.message.extraActions
         ).filter(menu => !menu.enabled || menu.enabled(this));
       } else {
-        return this.DEFAULT_MESSAGE_ACTIONS.filter(
+        return DEFAULT_MESSAGE_ACTIONS.filter(
           menu => !menu.enabled || menu.enabled(this)
         );
       }

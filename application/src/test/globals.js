@@ -15,6 +15,20 @@ global.eXo = {
       username: 'root',
       fullName: 'Root Root',
       isOnline: true
+    },
+    room : {
+      extraApplications : [{
+        key: 'test',
+        iconClass: 'testIcon',
+        labelKey: 'testLabel'
+      }]
+    },
+    message : {
+      extraActions : [{
+        key: 'testAction',
+        labelKey: 'testAction',
+        enabled: () => {return true}
+      }]
     }
   }
 };

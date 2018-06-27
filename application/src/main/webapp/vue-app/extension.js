@@ -399,3 +399,53 @@ export const EMOTICONS = [
     class: 'emoticon-raise-down'
   }
 ];
+
+export const DEFAULT_MESSAGE_ACTIONS = [
+  {
+    key: 'edit',
+    labelKey: 'exoplatform.chat.msg.edit',
+    enabled: comp => {
+      return (
+        !comp.message.isSystem &&
+        !comp.message.isDeleted &&
+        !comp.message.notSent &&
+        comp.isCurrentUser
+      );
+    }
+  },
+  {
+    key: 'delete',
+    labelKey: 'exoplatform.chat.delete',
+    enabled: comp => {
+      return (
+        !comp.message.isSystem &&
+        !comp.message.isDeleted &&
+        !comp.message.notSent &&
+        comp.isCurrentUser
+      );
+    },
+    confirm: {
+      title: 'exoplatform.chat.popup.delete.title',
+      message: 'exoplatform.chat.popup.delete.message',
+      okMessage: 'exoplatform.chat.user.popup.confirm',
+      koMessage: 'exoplatform.chat.cancel',
+      confirmed(message) {
+        document.dispatchEvent(new CustomEvent('exo-chat-message-acton-delete', {'detail': message}));
+      }
+    }
+  },
+  {
+    key: 'quote',
+    labelKey: 'exoplatform.chat.quote',
+    enabled: comp => {
+      return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+    }
+  },
+  {
+    key: 'saveNotes',
+    labelKey: 'exoplatform.chat.notes',
+    enabled: comp => {
+      return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+    }
+  }
+];

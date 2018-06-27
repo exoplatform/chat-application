@@ -4,30 +4,6 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 import {EMOTICONS} from '../../main/webapp/vue-app/extension.js';
 
 describe('ChatMessageComposer.test.js', () => {
-  window.eXo = { chat : {
-      userSettings: {
-        username: 'root',
-        token: null,
-        fullName: 'Root Root',
-        status: 'available',
-        isOnline: true,
-        cometdToken: null,
-        dbName: null,
-        sessionId: null,
-        serverURL: null,
-        standalone: false,
-        chatPage: null,
-        wsEndpoint: null,
-      },
-      room : {
-        extraApplications : [{
-          key: 'test',
-          iconClass: 'testIcon',
-          labelKey: 'testLabel'
-        }]
-      }
-    }
-  };
   let cmp = shallow(ChatMessageComposer, {
     propsData: {
       miniChat : false,
