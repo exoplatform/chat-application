@@ -21,7 +21,8 @@ global.eXo = {
         key: 'test',
         iconClass: 'testIcon',
         labelKey: 'testLabel'
-      }]
+      }],
+      extraActions: []
     },
     message : {
       extraActions : [{

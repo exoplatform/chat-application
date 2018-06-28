@@ -5,6 +5,7 @@ import DropdownSelect from '../../main/webapp/vue-app/components/DropdownSelect'
 import RoomNotificationModal from '../../main/webapp/vue-app/components/modal/RoomNotificationModal';
 import Modal from '../../main/webapp/vue-app/components/modal/Modal';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
+import {DEFAULT_ROOM_ACTIONS} from '../../main/webapp/vue-app/extension.js';
 
 describe('ChatRoomDetail.test.js', () => {
   let roomDetail;
@@ -45,6 +46,26 @@ describe('ChatRoomDetail.test.js', () => {
     isFavorite: false
   };
 
+  const confirmMock = jest.fn();
+  const extraAction = {
+    key: 'test',
+    labelKey: 'Test',
+    type: 't',
+    class: 'uiIconTest',
+    confirm: {
+      title: 'Test comfirmation',
+      message: 'Comfirm the test',
+      okMessage: 'ok',
+      koMessage: 'cancel',
+      confirmed: confirmMock
+    },
+    enabled: (comp) => {
+      return comp.isAdmin;
+    }
+  };
+
+  eXo.chat.room.extraActions.push(extraAction);
+
   beforeEach(() => {
     roomDetail = shallow(ChatRoomDetail, {
       propsData: {
@@ -53,7 +74,8 @@ describe('ChatRoomDetail.test.js', () => {
       stubs: {
         'chat-contact': ChatContact,
         'modal': Modal,
-        'Room-notification-modal': RoomNotificationModal
+        'Room-notification-modal': RoomNotificationModal,
+        'dropdown-select': DropdownSelect
       },
       mocks: {
         $t: () => {},
@@ -133,6 +155,47 @@ describe('ChatRoomDetail.test.js', () => {
     expect(vm.showSearchRoom).toBe(true);
     searchInput.trigger('keyup.esc');
     expect(vm.showSearchRoom).toBe(false);
+  });
+
+  it('room actions list must contain extra actions', () => {
+    const vm = roomDetail.vm;
+    expect(vm.settingActions).toHaveLength(DEFAULT_ROOM_ACTIONS.length + eXo.chat.room.extraActions.length);
+  });
+
+  it('click on action list elemnt with comfirmation', () => {
+    const roomDetailActions = shallow(ChatRoomDetail, {
+      propsData: {
+        contact : room
+      },
+      computed: {
+        settingActions: () => eXo.chat.room.extraActions
+      },
+      stubs: {
+        'chat-contact': ChatContact,
+        'modal': Modal,
+        'Room-notification-modal': RoomNotificationModal,
+        'dropdown-select': DropdownSelect
+      },
+      mocks: {
+        $t: () => {},
+        $constants : chatConstants
+      },
+      attachToDocument: true
+    });
+    const vm = roomDetailActions.vm;
+    const action = roomDetailActions.find('.chat-team-button-dropdown .dropdown-menu li');
+    const okButton = roomDetailActions.find('#team-delete-button-ok');
+    expect(vm.settingActions).toHaveLength(1);
+    action.trigger('click');
+    // comfimation modal should be opned with action texts
+    expect(vm.showConfirmModal).toBe(true);
+    expect(vm.confirmTitle).toEqual(extraAction.confirm.title);
+    expect(vm.confirmMessage).toEqual(extraAction.confirm.message);
+    expect(vm.confirmOKMessage).toEqual(extraAction.confirm.okMessage);
+    expect(vm.confirmKOMessage).toEqual(extraAction.confirm.koMessage);
+    // click on confirm button
+    okButton.trigger('click');
+    expect(confirmMock).toBeCalled();
   });
 
   it('Room detail contain action menu only for rooms and spaces', () => {
