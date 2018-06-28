@@ -36,14 +36,12 @@ export default {
       type: Object,
       default: function() {
         return {
-          fullname: null,
-          isSystem: false,
-          msg: null,
-          msgId: null,
-          options: null,
-          timestamp: 0,
-          type: null,
-          user: null
+          content: null,
+          options: {
+            type: null,
+            fullname: null
+          },
+          timestamp: 0
         };
       }
     }

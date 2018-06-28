@@ -7,7 +7,8 @@ global.eXo = {
   env: {
     portal: {
       context: 'portal',
-      rest: 'rest'
+      rest: 'rest',
+      language: 'fr'
     }
   },
   chat: {
@@ -29,7 +30,10 @@ global.eXo = {
         key: 'testAction',
         labelKey: 'testAction',
         enabled: () => {return true}
-      }]
+      }],
+      notifs: {
+        
+      }
     }
   }
 };

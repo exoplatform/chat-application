@@ -90,13 +90,6 @@ export default {
       } else {
         return [];
       }
-    },
-    statusClass() {
-      if (!this.connected || this.status === 'invisible') {
-        return 'user-offline';
-      } else {
-        return `user-${this.status}`;
-      }
     }
   },
   created() {

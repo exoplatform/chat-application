@@ -47,7 +47,7 @@ function getMessageListDetail() {
 }
 
 describe('ChatMessageList.test.js', () => {
-  let cmp = getMessageListDetail();
+  const cmp = getMessageListDetail();
 
   it('test no messages container', () => {
     expect(cmp.html()).toContain('exoplatform.chat.no.messages');
@@ -78,13 +78,20 @@ describe('ChatMessageList.test.js', () => {
   });
   cmp.update();
 
+  const dates = [
+    new Date(Date.UTC(2000, 11, 10)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 11)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 12)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 13)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 14)).toLocaleDateString(eXo.env.portal.language)
+  ]
   it('message list test', () => {
     expect(cmp.vm.messagesMap).not.toBeUndefined();
     expect(cmp.findAll(ChatMessageDetail)).toHaveLength(8);
-    expect(Object.keys(cmp.vm.messagesMap)).toEqual(['10/12/2000', '11/12/2000']);
+    expect(Object.keys(cmp.vm.messagesMap)).toEqual([dates[0], dates[1]]);
     expect(cmp.findAll('.day-separator')).toHaveLength(2);
-    expect(cmp.vm.messagesMap['10/12/2000']).toHaveLength(2);
-    expect(cmp.vm.messagesMap['11/12/2000']).toHaveLength(6);
+    expect(cmp.vm.messagesMap[dates[0]]).toHaveLength(2);
+    expect(cmp.vm.messagesMap[dates[1]]).toHaveLength(6);
     expect(cmp.findAll(ChatMessageDetail).at(0).vm.hideTime).toBeFalsy();
     expect(cmp.findAll(ChatMessageDetail).at(1).vm.hideTime).toBeTruthy();
     expect(cmp.findAll(ChatMessageDetail).at(2).vm.hideTime).toBeFalsy();
@@ -108,8 +115,8 @@ describe('ChatMessageList.test.js', () => {
     cmp.vm.messageWritten(getMessage("Test message 4", "testuser1", Date.UTC(2000, 11, 12, 3, 0, 10)));
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(3);
-    expect(Object.keys(cmp.vm.messagesMap)).toEqual(['10/12/2000', '11/12/2000', '12/12/2000']);
-    expect(cmp.vm.messagesMap['12/12/2000']).toHaveLength(1);
+    expect(Object.keys(cmp.vm.messagesMap)).toEqual([dates[0],dates[1],dates[2]]);
+    expect(cmp.vm.messagesMap[dates[2]]).toHaveLength(1);
   });
 
   it('test message modified', () => {
@@ -120,8 +127,8 @@ describe('ChatMessageList.test.js', () => {
     cmp.vm.messageModified(newMessage);
     expect(cmp.findAll('.day-separator')).toHaveLength(3);
     expect(cmp.vm.messages).toHaveLength(10);
-    expect(cmp.vm.messagesMap['12/12/2000']).toHaveLength(2);
-    expect(cmp.vm.messagesMap['12/12/2000'][1].msg).toBe('Message modified');
+    expect(cmp.vm.messagesMap[dates[2]]).toHaveLength(2);
+    expect(cmp.vm.messagesMap[dates[2]][1].msg).toBe('Message modified');
   });
 
   it('test message received', () => {
@@ -130,8 +137,8 @@ describe('ChatMessageList.test.js', () => {
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(4);
     expect(cmp.vm.messages).toHaveLength(11);
-    expect(cmp.vm.messagesMap['13/12/2000']).toHaveLength(1);
-    expect(cmp.vm.messagesMap['13/12/2000'][0].msg).toBe('Test message received');
+    expect(cmp.vm.messagesMap[dates[3]]).toHaveLength(1);
+    expect(cmp.vm.messagesMap[dates[3]][0].msg).toBe('Test message received');
   });
 
   it('test message sent', () => {
@@ -140,8 +147,8 @@ describe('ChatMessageList.test.js', () => {
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(5);
     expect(cmp.vm.messages).toHaveLength(12);
-    expect(cmp.vm.messagesMap['14/12/2000']).toHaveLength(1);
-    expect(cmp.vm.messagesMap['14/12/2000'][0].msg).toBe('Test message sent');
+    expect(cmp.vm.messagesMap[dates[4]]).toHaveLength(1);
+    expect(cmp.vm.messagesMap[dates[4]][0].msg).toBe('Test message sent');
   });
 
   it('test delete message', () => {
@@ -151,7 +158,7 @@ describe('ChatMessageList.test.js', () => {
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(5);
     expect(cmp.vm.messages).toHaveLength(12);
-    expect(cmp.vm.messagesMap['14/12/2000'][0].type).toBe(chatConstants.DELETE_MESSAGE);
+    expect(cmp.vm.messagesMap[dates[4]][0].type).toBe(chatConstants.DELETE_MESSAGE);
   });
 
   it('test edit last message', () => {
