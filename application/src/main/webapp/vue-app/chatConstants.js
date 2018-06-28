@@ -49,6 +49,7 @@ export const chatConstants = {
   STATUS_FILTER_PARAM: 'exo.chat.room.participant.filter',
   STATUS_FILTER_DEFAULT: 'All',
   REATTEMPT_PERIOD: 1000,
+  NB_MILLISECONDS_PERD_SECOND: 1000,
   LAST_SELECTED_ROOM_PARAM: 'lastSelectedRoom',
   STORED_NOT_SENT_MESSAGES: 'roomNotSentMessages',
   ACTION_MESSAGE_SEND: 'exo-chat-message-tosend',

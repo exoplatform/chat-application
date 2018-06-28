@@ -28,6 +28,7 @@ import Modal from './modal/Modal.vue';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
+import {chatConstants} from '../chatConstants';
 import * as chatTime from '../chatTime';
 
 export default {
@@ -214,7 +215,7 @@ export default {
       if (prevMsg === null || this.mq === 'mobile') {
         return false;
       } else {
-        return chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp) ? true : false;
+        return !messages[i].timestamp || prevMsg.timestamp / chatConstants.NB_MILLISECONDS_PERD_SECOND === messages[i].timestamp / chatConstants.NB_MILLISECONDS_PERD_SECOND;
       }
     },
     isHideAvatar(i, messages) {
@@ -222,7 +223,7 @@ export default {
       if (prevMsg === null) {
         return false;
       } else {
-        return prevMsg.user === messages[i].user ? true : false;
+        return prevMsg.user === messages[i].user && prevMsg.timestamp && messages[i].timestamp && chatTime.getDayDate(prevMsg.timestamp) ===  chatTime.getDayDate(messages[i].timestamp);
       }
     },
     addOrUpdateMessageToList(message) {
@@ -294,7 +295,11 @@ export default {
         .replace(/<br( *)\/?>/g, '\n')
         .replace('&#38', '&');
       this.showEditMessageModal = true;
-      this.$nextTick(() => this.$refs.editMessageComposerArea.focus());
+      this.$nextTick(() => {
+        if(this.$refs.editMessageComposerArea) {
+          this.$refs.editMessageComposerArea.focus();
+        }
+      });
     },
     saveMessage(event) {
       if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {

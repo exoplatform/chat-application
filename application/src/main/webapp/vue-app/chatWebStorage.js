@@ -1,6 +1,5 @@
 import {chatConstants} from './chatConstants';
 
-const NB_MILLISECONDS_PERD_SECOND = 1000;
 const DEFAULT_EXPIRATION_PERIOD = 300;
 const MAX_RESEND_MESSAGE_ATTEMPT = 2;
 const RESEND_MESSAGE_PERIOD = 5000;
@@ -13,7 +12,7 @@ export function getStoredParam(key, defaultValue) {
   if (!ts) {
     ts=-1;
   }
-  const now = Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND);
+  const now = Math.round(new Date() / chatConstants.NB_MILLISECONDS_PERD_SECOND);
   if (val && (now < ts || ts === -1 )) {
     return val;
   } else {
@@ -28,7 +27,7 @@ export function setStoredParam(key, value, expire) {
   if(value && value.length) {
     if (expire && expire > -1) {
       expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
-      localStorage.setItem(`${key}TS`, Math.round(new Date() / NB_MILLISECONDS_PERD_SECOND) + expire);
+      localStorage.setItem(`${key}TS`, Math.round(new Date() / chatConstants.NB_MILLISECONDS_PERD_SECOND) + expire);
     }
     localStorage.setItem(key, value);
   } else {
@@ -120,7 +119,7 @@ export function deleteFromStore(user, clientId) {
 
 export function sendFailedMessages() {
   if(!getStoredParam('messagesSending')) {
-    setStoredParam('messagesSending', 'true', RESEND_MESSAGE_PERIOD / NB_MILLISECONDS_PERD_SECOND);
+    setStoredParam('messagesSending', 'true', RESEND_MESSAGE_PERIOD / chatConstants.NB_MILLISECONDS_PERD_SECOND);
     try {
       const notSentMessages = getSortedNotSentMessages(eXo.chat.userSettings.username);
       if(notSentMessages && notSentMessages.length) {
