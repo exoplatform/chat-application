@@ -305,7 +305,7 @@ export default {
   },
   methods: {
     deleteThumbnail() {
-      $(`#${this.messageId} .attachmentContainer`).remove();
+      $(`#${this.messageId}-attachmentContainer`).remove();
     },
     executeAction(messageAction) {
       if(messageAction.confirm) {
@@ -380,36 +380,41 @@ export default {
         '.msMeetingNotes'
       );
       const ANIMATION_PERIOD = this.$constants.ANIMATION_PERIOD;
-      $meetingNotes.animate(
-        { opacity: 'toggle' },
-        ANIMATION_PERIOD,
-        () => {
-          const room = this.room;
-          let from = this.message.options.fromTimestamp;
-          let to = this.message.timestamp;
+      $meetingNotes.animate({ opacity: 'toggle' },
+        ANIMATION_PERIOD, this.sendMeetingNotesAnimationDone
+      );
+    },
+    sendMeetingNotesAnimationDone() {
+      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
+      const $meetingNotes = $chatMessageDetailContainer.closest(
+        '.msMeetingNotes'
+      );
+      const ANIMATION_PERIOD = this.$constants.ANIMATION_PERIOD;
 
-          from = Math.round(from) - 1;
-          to = Math.round(to) + 1;
+      const room = this.room;
+      let from = this.message.options.fromTimestamp;
+      let to = this.message.timestamp;
 
-          $meetingNotes.find('.meetingNotesSent').hide();
-          chatServices
-            .sendMeetingNotes(eXo.chat.userSettings, room, from, to)
-            .then(response => {
-              if (response === 'sent') {
-                $meetingNotes.find('.meetingNotesSent').animate(
+      from = Math.round(from) - 1;
+      to = Math.round(to) + 1;
+
+      $meetingNotes.find('.meetingNotesSent').hide();
+      chatServices
+        .sendMeetingNotes(eXo.chat.userSettings, room, from, to)
+        .then(response => {
+          if (response === 'sent') {
+            $meetingNotes.find('.meetingNotesSent').animate(
+              { opacity: 'toggle' },
+              ANIMATION_PERIOD,
+              () => {
+                $meetingNotes.animate(
                   { opacity: 'toggle' },
-                  ANIMATION_PERIOD,
-                  () => {
-                    $meetingNotes.animate(
-                      { opacity: 'toggle' },
-                      ANIMATION_PERIOD
-                    );
-                  }
+                  ANIMATION_PERIOD
                 );
               }
-            });
-        }
-      );
+            );
+          }
+        });
     },
     unescapeHTML(html) {
       return unescape(html);
@@ -420,64 +425,72 @@ export default {
         '.msMeetingNotes'
       );
       const ANIMATION_PERIOD = this.$constants.ANIMATION_PERIOD;
-      $meetingNotes.animate(
-        { opacity: 'toggle' },
-        ANIMATION_PERIOD,
-        () => {
-          const room = this.room;
-          let from = this.message.options.fromTimestamp;
-          let to = this.message.timestamp;
+      $meetingNotes.animate({ opacity: 'toggle' },
+        ANIMATION_PERIOD, this.saveMeetingNotesAnimationDone
+      );
+    },
+    saveMeetingNotesAnimationDone() {
+      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
+      const $meetingNotes = $chatMessageDetailContainer.closest(
+        '.msMeetingNotes'
+      );
+      const ANIMATION_PERIOD = this.$constants.ANIMATION_PERIOD;
 
-          from = Math.round(from) - 1;
-          to = Math.round(to) + 1;
+      const room = this.room;
+      let from = this.message.options.fromTimestamp;
+      let to = this.message.timestamp;
 
-          $meetingNotes.find('.meetingNotesSaved').hide();
+      from = Math.round(from) - 1;
+      to = Math.round(to) + 1;
 
-          chatServices.getMeetingNotes(eXo.chat.userSettings, room, from, to).then(content => {
-            chatServices
-              .saveWiki(eXo.chat.userSettings, this.roomFullname, content)
-              .then(data => {
-                if (data.path && data.path.trim().length) {
-                  const wikiPageURI = `${eXo.env.portal.context}/${eXo.env.portal.portalName}${data.path}`;
-                  const options = {
-                    type: this.$constants.LINK_MESSAGE,
-                    link: wikiPageURI,
-                    from: eXo.chat.userSettings.username,
-                    fullname: this.roomFullname
-                  };
-                  const msg = this.$t('exoplatform.chat.meeting.notes');
+      $meetingNotes.find('.meetingNotesSaved').hide();
 
-                  const messageToSend = {
-                    message: msg,
-                    room: this.room,
-                    clientId: new Date().getTime().toString(),
-                    timestamp: Date.now(),
-                    user: eXo.chat.userSettings.username,
-                    isSystem: true,
-                    options: options
-                  };
-                  document.dispatchEvent(
-                    new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {
-                      detail: messageToSend
-                    })
-                  );
+      chatServices.getMeetingNotes(eXo.chat.userSettings, room, from, to).then(content => {
+        if (!content) {
+          return;
+        }
+        chatServices
+          .saveWiki(eXo.chat.userSettings, this.roomFullname, content)
+          .then(data => {
+            if (data.path && data.path.trim().length) {
+              const wikiPageURI = `${eXo.env.portal.context}/${eXo.env.portal.portalName}${data.path}`;
+              const options = {
+                type: this.$constants.LINK_MESSAGE,
+                link: wikiPageURI,
+                from: eXo.chat.userSettings.username,
+                fullname: this.roomFullname
+              };
+              const msg = this.$t('exoplatform.chat.meeting.notes');
 
-                  $meetingNotes.find('.meetingNotesSaved a').attr('href', wikiPageURI);
-                  $meetingNotes.find('.meetingNotesSaved').animate(
+              const messageToSend = {
+                message: msg,
+                room: this.room,
+                clientId: new Date().getTime().toString(),
+                timestamp: Date.now(),
+                user: eXo.chat.userSettings.username,
+                isSystem: true,
+                options: options
+              };
+              document.dispatchEvent(
+                new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {
+                  detail: messageToSend
+                })
+              );
+
+              $meetingNotes.find('.meetingNotesSaved a').attr('href', wikiPageURI);
+              $meetingNotes.find('.meetingNotesSaved').animate(
+                { opacity: 'toggle' },
+                ANIMATION_PERIOD,
+                function() {
+                  $meetingNotes.animate(
                     { opacity: 'toggle' },
-                    ANIMATION_PERIOD,
-                    function() {
-                      $meetingNotes.animate(
-                        { opacity: 'toggle' },
-                        ANIMATION_PERIOD
-                      );
-                    }
+                    ANIMATION_PERIOD
                   );
                 }
-              });
+              );
+            }
           });
-        }
-      );
+      });
     },
     setActionsPosition() {
       const $message = $(this.$refs.message);

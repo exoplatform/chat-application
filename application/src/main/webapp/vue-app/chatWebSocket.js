@@ -133,6 +133,9 @@ export function isConnected() {
   return cometDSettings.cCometD && !cometDSettings.cCometD.isDisconnected() && cometDSettings.chatSubscription;
 }
 export function leaveRoom(room, callback) {
+  if (!cometDSettings.cCometD) {
+    return;
+  }
   const content = JSON.stringify({
     'event': 'room-member-leave',
     'clientId': new Date().getTime().toString(),
@@ -151,6 +154,9 @@ export function leaveRoom(room, callback) {
   });
 }
 export function deleteRoom(room, callback) {
+  if (!cometDSettings.cCometD) {
+    return;
+  }
   const content = JSON.stringify({
     'event': 'room-deleted',
     'sender': cometDSettings.username,
@@ -208,7 +214,10 @@ export function sendMessage(messageObj, callback) {
   }
 }
 export function setRoomAsRead(room) {
-  cCometD.publish('/service/chat', JSON.stringify({
+  if (!cometDSettings.cCometD) {
+    return;
+  }
+  cometDSettings.cCometD.publish('/service/chat', JSON.stringify({
     'event': 'message-read',
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
@@ -217,6 +226,9 @@ export function setRoomAsRead(room) {
   }));
 }
 export function deleteMessage(messageObj, callback) {
+  if (!cometDSettings.cCometD) {
+    return;
+  }
   const content = {
     'event': 'message-deleted',
     'sender': cometDSettings.username,
@@ -227,7 +239,7 @@ export function deleteMessage(messageObj, callback) {
       'msgId': messageObj.msgId
     }
   };
-  cCometD.publish('/service/chat', JSON.stringify(content), function (publishAck) {
+  cometDSettings.cCometD.publish('/service/chat', JSON.stringify(content), function (publishAck) {
     if (publishAck.successful) {
       if (typeof callback === 'function') {
         callback();
