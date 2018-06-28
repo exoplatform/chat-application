@@ -54,7 +54,7 @@ describe('ChatMessageDetail.test.js', () => {
   });
 
   it('display message date', () => {
-    expect(cmp.vm.dateString).toBe('13:44');
+    expect(cmp.vm.dateString).toContain(':44');
   });
 
   it('display contact avatar', () => {
