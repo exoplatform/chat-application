@@ -104,10 +104,6 @@ describe('ChatMessageList.test.js', () => {
     expect(cmp.findAll(ChatMessageDetail).at(7).vm.hideAvatar).toBeFalsy();
   });
 
-  it('test not having more messages to load', () => {
-    expect(cmp.vm.hasMoreMessages).toBeFalsy();
-  });
-
   it('test new message added', () => {
     cmp.vm.messageWritten(getMessage("Test message 4", "testuser1", Date.UTC(2000, 11, 12, 3, 0, 10)));
     cmp.update();
