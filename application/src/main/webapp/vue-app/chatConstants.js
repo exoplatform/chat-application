@@ -13,6 +13,7 @@ export const chatConstants = {
   CHAT_SERVER_API: '/chatServer/',
   CHAT_PLUGIN_API: '/chat/api/1.0/plugin/',
   UPLOAD_API: '/portal/upload',
+  FILE_PERSIST_URL: '/portal/rest/chat/api/1.0/file/persist',
   MAX_UPLOAD_FILES: 1,
   ON_SITE_NOTIF: 'on-site',
   DESKTOP_NOTIF: 'desktop',

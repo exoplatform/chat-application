@@ -200,7 +200,7 @@ export const DEFAULT_COMPOSER_APPS = [
               thiss.setErrorCode($, 'ErrorFileUploadNotComplete');
               return;
             }
-            fetch('/portal/rest/chat/api/1.0/file/persist',{
+            fetch(chatConstants.FILE_PERSIST_URL, {
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
               },
