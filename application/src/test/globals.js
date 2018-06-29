@@ -21,7 +21,8 @@ global.eXo = {
     userSettings: {
       username: 'root',
       fullName: 'Root Root',
-      isOnline: true
+      isOnline: true,
+      status: 'invisible'
     },
     room : {
       extraApplications : [{

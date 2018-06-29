@@ -25,13 +25,11 @@ import * as chatWebSocket from '../chatWebSocket';
 import {initTiptip} from '../tiptip';
 
 import MiniChatNotifList from './MiniChatNotifList.vue';
-import ChatMessageList from './ChatMessageList.vue';
 import MiniChatRoom from './MiniChatRoom.vue';
 
 export default {
   components: {
     'chat-notif-list': MiniChatNotifList,
-    'chat-message-list': ChatMessageList,
     'chat-room': MiniChatRoom
   },
   props: {
