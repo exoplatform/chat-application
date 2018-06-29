@@ -10,7 +10,7 @@
       </div>
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
-    <chat-message-composer :contact="contact" :mini-chat="miniChat" @exo-chat-message-written="messageWritten"></chat-message-composer>
+    <chat-message-composer :contact="contact" :mini-chat="miniChat" @message-written="messageWritten"></chat-message-composer>
     <modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
       <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveMessage"></textarea>
       <div class="uiAction uiActionBorder">

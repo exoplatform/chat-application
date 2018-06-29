@@ -53,7 +53,7 @@ describe('ChatMessageComposer.test.js', () => {
 
   it('send message', () => {
     cmp.vm.sendMessage();
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
@@ -61,12 +61,12 @@ describe('ChatMessageComposer.test.js', () => {
     cmp.vm.$refs.messageComposerArea.value = '';
 
     cmp.vm.sendMessage();
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
   it('send message with key', () => {
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
 
     cmp.vm.$refs.messageComposerArea.value = 'test message';
 
@@ -77,7 +77,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\ntest message');
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -86,7 +86,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\ntest message');
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -95,7 +95,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : true
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\n\ntest message');
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(1);
+    expect(cmp.emitted('message-written').length).toBe(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -104,7 +104,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
-    expect(cmp.emitted('exo-chat-message-written').length).toBe(2);
+    expect(cmp.emitted('message-written').length).toBe(2);
   });
 
   it('quote message', () => {

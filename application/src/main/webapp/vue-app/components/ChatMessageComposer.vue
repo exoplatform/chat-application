@@ -142,7 +142,7 @@ export default {
         });
       }
       if (!found) {
-        this.$emit('exo-chat-message-written', message);
+        this.$emit('message-written', message);
       }
       this.$refs.messageComposerArea.value = '';
     },
