@@ -1,7 +1,6 @@
 import { shallow } from 'vue-test-utils';
 import ChatContact from '../../main/webapp/vue-app/components/ChatContact';
-import chatRoomParticipants from '../../main/webapp/vue-app/components/chatRoomParticipants';
-//import DropdownSelect from '../../main/webapp/vue-app/components/DropdownSelect';
+import ChatRoomParticipants from '../../main/webapp/vue-app/components/ChatRoomParticipants';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 describe('chatRoomParticipants.test.js', () => {
@@ -79,7 +78,7 @@ describe('chatRoomParticipants.test.js', () => {
   });
 
   beforeEach(() => {
-    roomParticipant = shallow(chatRoomParticipants, {
+    roomParticipant = shallow(ChatRoomParticipants, {
       stubs: {
         'chat-contact': ChatContact
       },
