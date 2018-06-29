@@ -79,7 +79,7 @@ export default {
   methods: {
     initSuggester() {
       const $roomFormSuggestor = $('#add-room-suggestor');
-      if($roomFormSuggestor && $roomFormSuggestor.length) {
+      if($roomFormSuggestor && $roomFormSuggestor.length && $roomFormSuggestor.suggester) {
         if(!$roomFormSuggestor[0].selectize) {
           const component = this;
           const suggesterData = {

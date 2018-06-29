@@ -29,7 +29,7 @@
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
     </div>
     <global-notification-modal :show="settingModal" @close-modal="settingModal = false"></global-notification-modal>
-    <modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" display-close="false" modal-class="logout-popup">
+    <modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" display-close="false" class="logout-popup">
       <div class="modal-body">
         {{ $t('exoplatform.chat.timeout.description') }}
       </div>
@@ -76,6 +76,22 @@ export default {
   data() {
     return {
       contactList: [],
+      /**
+       * chatPage: {String}
+       * cometdToken: {String}
+       * dbName: {String}
+       * fullName: {String}
+       * isOnline: {Boolean}
+       * maxUploadSize: {Number}
+       * offlineDelay: {Number}
+       * serverURL: {String}
+       * sessionId: {String}
+       * standalone: {Boolean}
+       * status: {String}
+       * token: {String}
+       * username: {String}
+       * wsEndpoint: {String}
+       */
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root'
       },
