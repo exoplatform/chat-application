@@ -1,5 +1,5 @@
-import $ from 'jquery'
-import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret'
+import $ from 'jquery';
+import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret';
 
 global.$ = $;
 addCaretJQueryExtension($);
@@ -36,7 +36,7 @@ global.eXo = {
       extraActions : [{
         key: 'testAction',
         labelKey: 'testAction',
-        enabled: () => {return true}
+        enabled: () => {return true;}
       }],
       notifs: {
         

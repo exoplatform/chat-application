@@ -2,11 +2,10 @@ import { shallow } from 'vue-test-utils';
 import MiniChatApp from '../../main/webapp/vue-app/components/MiniChatApp';
 import MiniChatNotifList from '../../main/webapp/vue-app/components/MiniChatNotifList';
 import MiniChatRoom from '../../main/webapp/vue-app/components/MiniChatRoom';
-import ChatMessageList from '../../main/webapp/vue-app/components/ChatMessageList';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() { 
         return '';
@@ -57,7 +56,7 @@ describe('MiniChatApp.test.js', () => {
       if(url && url.indexOf('type=u') >= 0) {
         cmp.vm.room = 'eaea96e9ae5aea8e1ae8a1ea8e6eaea';
       }
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';

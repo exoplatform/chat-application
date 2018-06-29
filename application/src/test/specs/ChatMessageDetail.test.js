@@ -39,10 +39,10 @@ function getMessage(msg, isSystem, options) {
 }
 
 describe('ChatMessageDetail.test.js', () => {
-  let cmp = getMessage();
+  const cmp = getMessage();
 
   it('message actions count', () => {
-    expect(cmp.vm.messageActions.length).toBe(3);
+    expect(cmp.vm.messageActions).toHaveLength(3);
   });
 
   it('could display actions', () => {
@@ -91,12 +91,12 @@ describe('ChatMessageDetail.test.js', () => {
     cmp.vm.editMessage({ detail: {
       msgId: MSG_ID
     }});
-    expect(cmp.emitted('edit-message').length).toBe(1);
+    expect(cmp.emitted('edit-message')).toHaveLength(1);
   });
 
   it('delete message event trigger', () => {
     let deleteMessageEventCalled = false;
-    document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, () => {deleteMessageEventCalled = true});
+    document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, () => {deleteMessageEventCalled = true;});
     cmp.vm.deleteMessage({ detail: {
       msgId: MSG_ID
     }});
@@ -105,7 +105,7 @@ describe('ChatMessageDetail.test.js', () => {
 
   it('save notes', () => {
     let saveNotesEventCalled = false;
-    document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, () => {saveNotesEventCalled = true});
+    document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, () => {saveNotesEventCalled = true;});
     cmp.vm.saveNotes({ detail: {
       msgId: MSG_ID
     }});
@@ -116,7 +116,7 @@ describe('ChatMessageDetail.test.js', () => {
     let sendMeetingNotesCalled = false;
     global.fetch = jest.fn().mockImplementation((url) => {
       sendMeetingNotesCalled = url && url.indexOf('sendMeetingNotes') >= 0;
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';
@@ -137,7 +137,7 @@ describe('ChatMessageDetail.test.js', () => {
     let saveMeetingNotesCalled = false;
     global.fetch = jest.fn().mockImplementation((url) => {
       saveMeetingNotesCalled = url && url.indexOf('getMeetingNotes') >= 0;
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';

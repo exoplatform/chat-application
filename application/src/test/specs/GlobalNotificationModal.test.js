@@ -1,10 +1,9 @@
 import { mount } from 'vue-test-utils';
 import GlobalNotificationModal from '../../main/webapp/vue-app/components/modal/GlobalNotificationModal';
-import Modal from '../../main/webapp/vue-app/components/modal/Modal';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() {
         return '';
@@ -60,7 +59,7 @@ describe('GlobalNotificationModal.test.js', () => {
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeTruthy();
   });
 
-  it('test GlobalNotificationModal DOM', () => {
+  it('test GlobalNotificationModal DOM with different settings', () => {
     const cmp = getComponent(false);
     eXo.chat.desktopNotificationSettings = {
       preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
@@ -69,7 +68,7 @@ describe('GlobalNotificationModal.test.js', () => {
         chatConstants.DESKTOP_NOTIF,
         chatConstants.BIP_NOTIF
       ]
-    }
+    };
 
     cmp.vm.show = false;
     cmp.update();
@@ -92,7 +91,7 @@ describe('GlobalNotificationModal.test.js', () => {
         chatConstants.ON_SITE_NOTIF,
         chatConstants.BIP_NOTIF
       ]
-    }
+    };
     cmp.vm.show = false;
     cmp.update();
     cmp.vm.show = true;
@@ -113,7 +112,7 @@ describe('GlobalNotificationModal.test.js', () => {
       preferredNotification: [
         chatConstants.BIP_NOTIF
       ]
-    }
+    };
     cmp.vm.show = false;
     cmp.update();
     cmp.vm.show = true;
@@ -133,7 +132,7 @@ describe('GlobalNotificationModal.test.js', () => {
     eXo.chat.desktopNotificationSettings = {
       preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
       preferredNotification: []
-    }
+    };
     cmp.vm.show = false;
     cmp.update();
     cmp.vm.show = true;
@@ -152,7 +151,7 @@ describe('GlobalNotificationModal.test.js', () => {
     eXo.chat.desktopNotificationSettings = {
       preferredNotificationTrigger: [],
       preferredNotification: []
-    }
+    };
     cmp.vm.show = false;
     cmp.update();
     cmp.vm.show = true;
@@ -191,7 +190,7 @@ describe('GlobalNotificationModal.test.js', () => {
       if(url.indexOf(`notifConditions=${chatConstants.BIP_NOTIF}`) >= 0) {
         notifyBipSaved = true;
       }
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';
@@ -205,7 +204,7 @@ describe('GlobalNotificationModal.test.js', () => {
     });
     cmp.find('#notifyDonotdistrub').element.checked = true;
     cmp.vm.saveNotificationSettings();
-    expect(cmp.emitted('close-modal').length).toBe(1);
+    expect(cmp.emitted('close-modal')).toHaveLength(1);
 
     expect(notifsMannerSaved).toBeTruthy();
     expect(notifyDesktopSaved).toBeFalsy();
@@ -237,6 +236,6 @@ describe('GlobalNotificationModal.test.js', () => {
   it('test GlobalNotificationModal close', () => {
     const cmp = getComponent(true);
     cmp.findAll('.btn').at(1).trigger('click');
-    expect(cmp.emitted('close-modal').length).toBe(1);
+    expect(cmp.emitted('close-modal')).toHaveLength(1);
   });
 });

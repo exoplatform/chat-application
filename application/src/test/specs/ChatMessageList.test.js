@@ -4,7 +4,7 @@ import ChatMessageDetail from '../../main/webapp/vue-app/components/ChatMessageD
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() {
         return '';
@@ -27,7 +27,7 @@ function getMessage(msg, username, timestamp) {
     fullname: username,
     user: username,
     timestamp: timestamp
-  }
+  };
 }
 
 function getMessageListDetail() {
@@ -55,14 +55,14 @@ describe('ChatMessageList.test.js', () => {
 
   cmp.setData({
     messages: [
-      getMessage("Test message 1", "testuser1", Date.UTC(2000, 11, 10, 3, 0, 0)),
-      getMessage("Test message 2", "testuser1", Date.UTC(2000, 11, 10, 3, 0, 0)),
-      getMessage("Test message 3", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 0)),
-      getMessage("Test message 2", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 2)),
-      getMessage("Test message 2", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 4)),
-      getMessage("Test message 2", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 5)),
-      getMessage("Test message 2", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 6)),
-      getMessage("Test message 2", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 7))
+      getMessage('Test message 1', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
+      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
+      getMessage('Test message 3', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 0)),
+      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 2)),
+      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 4)),
+      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 5)),
+      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 6)),
+      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 7))
     ],
     contact: {
       'fullName':'Test User',
@@ -84,7 +84,7 @@ describe('ChatMessageList.test.js', () => {
     new Date(Date.UTC(2000, 11, 12)).toLocaleDateString(eXo.env.portal.language),
     new Date(Date.UTC(2000, 11, 13)).toLocaleDateString(eXo.env.portal.language),
     new Date(Date.UTC(2000, 11, 14)).toLocaleDateString(eXo.env.portal.language)
-  ]
+  ];
   it('message list test', () => {
     expect(cmp.vm.messagesMap).not.toBeUndefined();
     expect(cmp.findAll(ChatMessageDetail)).toHaveLength(8);
@@ -112,7 +112,7 @@ describe('ChatMessageList.test.js', () => {
   });
 
   it('test new message added', () => {
-    cmp.vm.messageWritten(getMessage("Test message 4", "testuser1", Date.UTC(2000, 11, 12, 3, 0, 10)));
+    cmp.vm.messageWritten(getMessage('Test message 4', 'testuser1', Date.UTC(2000, 11, 12, 3, 0, 10)));
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(3);
     expect(Object.keys(cmp.vm.messagesMap)).toEqual([dates[0],dates[1],dates[2]]);
@@ -120,7 +120,7 @@ describe('ChatMessageList.test.js', () => {
   });
 
   it('test message modified', () => {
-    const newMessage = getMessage("Test message 4", "testuser1", Date.UTC(2000, 11, 12, 3, 0, 20));
+    const newMessage = getMessage('Test message 4', 'testuser1', Date.UTC(2000, 11, 12, 3, 0, 20));
     cmp.vm.messageWritten(newMessage);
     cmp.update();
     newMessage.msg = 'Message modified';
@@ -132,7 +132,7 @@ describe('ChatMessageList.test.js', () => {
   });
 
   it('test message received', () => {
-    const newMessage = getMessage("Test message received", "testuser2", Date.UTC(2000, 11, 13, 3, 0, 20));
+    const newMessage = getMessage('Test message received', 'testuser2', Date.UTC(2000, 11, 13, 3, 0, 20));
     cmp.vm.messageReceived({detail: {data: newMessage}});
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(4);
@@ -142,7 +142,7 @@ describe('ChatMessageList.test.js', () => {
   });
 
   it('test message sent', () => {
-    const newMessage = getMessage("Test message sent", "testuser2", Date.UTC(2000, 11, 14, 3, 0, 20));
+    const newMessage = getMessage('Test message sent', 'testuser2', Date.UTC(2000, 11, 14, 3, 0, 20));
     cmp.vm.messageSent({detail: {data: newMessage}});
     cmp.update();
     expect(cmp.findAll('.day-separator')).toHaveLength(5);
@@ -162,7 +162,7 @@ describe('ChatMessageList.test.js', () => {
   });
 
   it('test edit last message', () => {
-    const newMessage = getMessage("Test message to edit", "root", Date.UTC(2000, 11, 15, 3, 0, 0));
+    const newMessage = getMessage('Test message to edit', 'root', Date.UTC(2000, 11, 15, 3, 0, 0));
     cmp.vm.messageWritten(newMessage);
     const editMessageSpy = jest.spyOn(cmp.vm, 'editMessage');
     cmp.vm.editLastMessage();

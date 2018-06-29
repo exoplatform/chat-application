@@ -4,7 +4,7 @@ import Modal from '../../main/webapp/vue-app/components/modal/Modal';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() {
         return '';
@@ -159,7 +159,7 @@ describe('RoomFormModal.test.js', () => {
           && data.body.indexOf('Test User') >= 0) {
         roomSaved = true;
       }
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';
@@ -178,7 +178,7 @@ describe('RoomFormModal.test.js', () => {
   it('test RoomFormModal close', () => {
     const cmp = getComponent(true, {});
     cmp.findAll('.btn').at(1).trigger('click');
-    expect(cmp.emitted('modal-closed').length).toBe(1);
+    expect(cmp.emitted('modal-closed')).toHaveLength(1);
   });
 
   it('test RoomFormModal findUser', () => {
@@ -188,7 +188,7 @@ describe('RoomFormModal.test.js', () => {
       if(url && url.indexOf('tessst') >= 0) {
         searchUserRequestCalled = true;
       }
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';

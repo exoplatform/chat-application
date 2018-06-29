@@ -1,10 +1,9 @@
 import { mount } from 'vue-test-utils';
 import RoomNotificationModal from '../../main/webapp/vue-app/components/modal/RoomNotificationModal';
-import Modal from '../../main/webapp/vue-app/components/modal/Modal';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() {
         return '';
@@ -62,13 +61,13 @@ describe('RoomNotificationModal.test.js', () => {
     let notifTypeSaved = false;
     let notifKeywordSaved = false;
     global.fetch = jest.fn().mockImplementation((url) => {
-      if(url.indexOf(`notifConditionType=keywords`) >= 0) {
+      if(url.indexOf('notifConditionType=keywords') >= 0) {
         notifTypeSaved = true;
       }
-      if(url.indexOf(`notifCondition=TestKeyword`) >= 0) {
+      if(url.indexOf('notifCondition=TestKeyword') >= 0) {
         notifKeywordSaved = true;
       }
-      var p = new Promise((resolve) => {
+      const p = new Promise((resolve) => {
         resolve({
           text: function() { 
             return '';
@@ -85,7 +84,7 @@ describe('RoomNotificationModal.test.js', () => {
     cmp.update();
 
     cmp.vm.saveSettings();
-    expect(cmp.emitted('modal-closed').length).toBe(1);
+    expect(cmp.emitted('modal-closed')).toHaveLength(1);
     expect(notifTypeSaved).toBeTruthy();
     expect(notifKeywordSaved).toBeTruthy();
   });
@@ -93,6 +92,6 @@ describe('RoomNotificationModal.test.js', () => {
   it('test RoomNotificationModal close', () => {
     const cmp = getComponent(true);
     cmp.findAll('.btn').at(1).trigger('click');
-    expect(cmp.emitted('modal-closed').length).toBe(1);
+    expect(cmp.emitted('modal-closed')).toHaveLength(1);
   });
 });

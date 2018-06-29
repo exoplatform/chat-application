@@ -35,7 +35,7 @@ describe('ChatRoomParticipants.test.js', () => {
       fullname: 'User C',
       status: 'offline'
     }
-  ]
+  ];
 
   const user = {
     fullName: 'John Smith',

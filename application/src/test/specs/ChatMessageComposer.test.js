@@ -4,7 +4,7 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 import {EMOTICONS} from '../../main/webapp/vue-app/extension.js';
 
 describe('ChatMessageComposer.test.js', () => {
-  let cmp = shallow(ChatMessageComposer, {
+  const cmp = shallow(ChatMessageComposer, {
     propsData: {
       miniChat : false,
       contact: {
@@ -27,11 +27,11 @@ describe('ChatMessageComposer.test.js', () => {
   });
 
   it('composer apps count', () => {
-    expect(cmp.vm.applications.length).toBe(6);
+    expect(cmp.vm.applications).toHaveLength(6);
   });
 
   it('composer emoticons count', () => {
-    expect(cmp.vm.getEmoticons.length).toBe(EMOTICONS.length);
+    expect(cmp.vm.getEmoticons).toHaveLength(EMOTICONS.length);
   });
 
   it('close emoji panel', () => {
@@ -53,7 +53,7 @@ describe('ChatMessageComposer.test.js', () => {
 
   it('send message', () => {
     cmp.vm.sendMessage();
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
@@ -61,12 +61,12 @@ describe('ChatMessageComposer.test.js', () => {
     cmp.vm.$refs.messageComposerArea.value = '';
 
     cmp.vm.sendMessage();
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
   it('send message with key', () => {
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.$refs.messageComposerArea.value = 'test message';
 
@@ -77,7 +77,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\ntest message');
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -86,7 +86,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\ntest message');
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -95,7 +95,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : true
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\n\ntest message');
-    expect(cmp.emitted('message-written').length).toBe(1);
+    expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -104,7 +104,7 @@ describe('ChatMessageComposer.test.js', () => {
       altKey : false
     });
     expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
-    expect(cmp.emitted('message-written').length).toBe(2);
+    expect(cmp.emitted('message-written')).toHaveLength(2);
   });
 
   it('quote message', () => {
@@ -118,7 +118,7 @@ describe('ChatMessageComposer.test.js', () => {
   it('edit last message', () => {
     let editLastEventCalled = false;
     cmp.vm.$refs.messageComposerArea.value = '';
-    document.addEventListener(chatConstants.ACTION_MESSAGE_EDIT_LAST, () => {editLastEventCalled = true});
+    document.addEventListener(chatConstants.ACTION_MESSAGE_EDIT_LAST, () => {editLastEventCalled = true;});
     cmp.vm.editLastMessage();
     expect(editLastEventCalled).toBeTruthy();
   });

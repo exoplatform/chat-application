@@ -4,7 +4,7 @@ import MiniChatNotifDetail from '../../main/webapp/vue-app/components/MiniChatNo
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() { 
         return '';
@@ -18,14 +18,14 @@ global.fetch = jest.fn().mockImplementation(() => {
 });
 
 const messages = [
-  getMessage("Test message 1", "testuser1", Date.UTC(2000, 11, 10, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
-  getMessage("Test message 2", "testuser1", Date.UTC(2000, 11, 10, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
-  getMessage("Test message 3", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
-  getMessage("Test message 4", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 2), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
-  getMessage("Test message 5", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 4), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
-  getMessage("Test message 6", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 5), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
-  getMessage("Test message 7", "testuser1", Date.UTC(2000, 11, 11, 3, 0, 6), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
-  getMessage("Test message 8", "testuser2", Date.UTC(2000, 11, 11, 3, 0, 7), 'eb74205830cf97546269bbdc5d439b2fffee735b')
+  getMessage('Test message 1', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
+  getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
+  getMessage('Test message 3', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 0), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
+  getMessage('Test message 4', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 2), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
+  getMessage('Test message 5', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 4), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
+  getMessage('Test message 6', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 5), 'eb74205830cf97546269bbdc5d439b2fffee735b'),
+  getMessage('Test message 7', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 6), 'eb74205830cf97546269bbdc5d439b29ddd1735b'),
+  getMessage('Test message 8', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 7), 'eb74205830cf97546269bbdc5d439b2fffee735b')
 ];
 
 
@@ -40,7 +40,7 @@ function getMessage(msg, username, timestamp, room) {
     fullname: username,
     user: username,
     timestamp: timestamp
-  }
+  };
 }
 
 function getComponent() {

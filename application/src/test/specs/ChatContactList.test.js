@@ -4,7 +4,7 @@ import ChatContact from '../../main/webapp/vue-app/components/ChatContact';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 describe('ChatContactList.test.js', () => {
-  let cmp = shallow(ChatContactList, {
+  const cmp = shallow(ChatContactList, {
     propsData: {
       isSearchingContact : false,
       selected: {
@@ -19,91 +19,91 @@ describe('ChatContactList.test.js', () => {
         'isFavorite':false
       },
       contacts: [
-         {
-            'lastMessage':{
-               'msg':'Test Message',
-               'isSystem':false,
-               'options':{},
-               'msgId':'5b1a7a4067c9a30c23b5223d',
-               'fullname':'Test User 2',
-               'type':null,
-               'user':'testuser2',
-               'timestamp':1528461888213
-            },
-            'fullName':'Test User 2',
-            'unreadTotal':0,
-            'isActive':'true',
-            'type':'u',
+        {
+          'lastMessage':{
+            'msg':'Test Message',
+            'isSystem':false,
+            'options':{},
+            'msgId':'5b1a7a4067c9a30c23b5223d',
+            'fullname':'Test User 2',
+            'type':null,
             'user':'testuser2',
-            'room':'ca5dc389cc131008d504a44e64dc3d06279a93ae',
-            'status':'invisible',
-            'timestamp':1528461888215,
-            'isFavorite':true
-         },
-         {
-           'fullName':'Test User',
-           'unreadTotal':0,
-           'isActive':'true',
-           'type':'u',
-           'user':'testuser',
-           'room':'eb74205830cf97546269bbdc5d439b29ddd1735b',
-           'status':'invisible',
-           'timestamp':1558455913624,
-           'isFavorite':false
+            'timestamp':1528461888213
+          },
+          'fullName':'Test User 2',
+          'unreadTotal':0,
+          'isActive':'true',
+          'type':'u',
+          'user':'testuser2',
+          'room':'ca5dc389cc131008d504a44e64dc3d06279a93ae',
+          'status':'invisible',
+          'timestamp':1528461888215,
+          'isFavorite':true
         },
-         {
-            'lastMessage':{
-               'msg':'',
-               'isSystem':true,
-               'options':{
-                  'fullname':'Root Root',
-                  'type':'type-add-team-user'
-               },
-               'msgId':'5b311b0a4b8734281e6e80c5',
-               'fullname':'Root Root',
-               'type':null,
-               'user':'root',
-               'timestamp':1529944842645
-            },
-            'fullName':'Team Room',
-            'unreadTotal':2,
-            'isActive':'true',
-            'type':'t',
-            'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
-            'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f',
-            'admins':[
-               'root'
-            ],
-            'status':'team',
-            'timestamp':1529944842647,
-            'isFavorite':true
-         },
-         {
-           'lastMessage':{
-              'msg':'',
-              'isSystem':true,
-              'options':{
-                 'fullname':'Root Root',
-                 'type':'type-add-team-user'
-              },
-              'msgId':'5b311b0a4b8734281e6e90f5',
+        {
+          'fullName':'Test User',
+          'unreadTotal':0,
+          'isActive':'true',
+          'type':'u',
+          'user':'testuser',
+          'room':'eb74205830cf97546269bbdc5d439b29ddd1735b',
+          'status':'invisible',
+          'timestamp':1558455913624,
+          'isFavorite':false
+        },
+        {
+          'lastMessage':{
+            'msg':'',
+            'isSystem':true,
+            'options':{
               'fullname':'Root Root',
-              'type':null,
-              'user':'root',
-              'timestamp':1529944842505
-           },
-           'fullName':'qdqsdsqdqsdqsdsqdsqd',
-           'unreadTotal':0,
-           'isActive':'true',
-           'type':'s',
-           'user':'space-be95776cd7c3950f190f0e21ea1e4848fed8995',
-           'room':'be95776cd7c3950f190f0e21ea1e4848fed8995',
-           'admins':[
-              'root'
-           ],
-           'status':'team',
-           'timestamp':1529944842515,
-           'isFavorite':true
+              'type':'type-add-team-user'
+            },
+            'msgId':'5b311b0a4b8734281e6e80c5',
+            'fullname':'Root Root',
+            'type':null,
+            'user':'root',
+            'timestamp':1529944842645
+          },
+          'fullName':'Team Room',
+          'unreadTotal':2,
+          'isActive':'true',
+          'type':'t',
+          'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
+          'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f',
+          'admins':[
+            'root'
+          ],
+          'status':'team',
+          'timestamp':1529944842647,
+          'isFavorite':true
+        },
+        {
+          'lastMessage':{
+            'msg':'',
+            'isSystem':true,
+            'options':{
+              'fullname':'Root Root',
+              'type':'type-add-team-user'
+            },
+            'msgId':'5b311b0a4b8734281e6e90f5',
+            'fullname':'Root Root',
+            'type':null,
+            'user':'root',
+            'timestamp':1529944842505
+          },
+          'fullName':'qdqsdsqdqsdqsdsqdsqd',
+          'unreadTotal':0,
+          'isActive':'true',
+          'type':'s',
+          'user':'space-be95776cd7c3950f190f0e21ea1e4848fed8995',
+          'room':'be95776cd7c3950f190f0e21ea1e4848fed8995',
+          'admins':[
+            'root'
+          ],
+          'status':'team',
+          'timestamp':1529944842515,
+          'isFavorite':true
         }
       ]
     },
@@ -165,31 +165,31 @@ describe('ChatContactList.test.js', () => {
   it('Test display with type filter', () => {
     cmp.setData({typeFilter : 'All'});
     try {
-      expect(cmp.vm.filteredContacts.length).toBe(4);
+      expect(cmp.vm.filteredContacts).toHaveLength(4);
     } finally {
       cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
     }
     cmp.setData({typeFilter : 'People'});
     try {
-      expect(cmp.vm.filteredContacts.length).toBe(2);
+      expect(cmp.vm.filteredContacts).toHaveLength(2);
     } finally {
       cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
     }
     cmp.setData({typeFilter : 'Rooms'});
     try {
-      expect(cmp.vm.filteredContacts.length).toBe(1);
+      expect(cmp.vm.filteredContacts).toHaveLength(1);
     } finally {
       cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
     }
     cmp.setData({typeFilter : 'Spaces'});
     try {
-      expect(cmp.vm.filteredContacts.length).toBe(1);
+      expect(cmp.vm.filteredContacts).toHaveLength(1);
     } finally {
       cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
     }
     cmp.setData({typeFilter : 'Favorites'});
     try {
-      expect(cmp.vm.filteredContacts.length).toBe(3);
+      expect(cmp.vm.filteredContacts).toHaveLength(3);
     } finally {
       cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
     }
@@ -207,7 +207,7 @@ describe('ChatContactList.test.js', () => {
 
   it('emits load-more-contacts event when calling loadMore method', () => {
     cmp.vm.loadMore();
-    expect(cmp.emitted('load-more-contacts').length).toBe(1);
+    expect(cmp.emitted('load-more-contacts')).toHaveLength(1);
   });
 
   it('Current user joined new room that should be displayed in contact list', () => {
@@ -221,7 +221,7 @@ describe('ChatContactList.test.js', () => {
         'user':'team-be95776cd7c3950f190f0e21ea1e4848fec38aaa',
         'room':'be95776cd7c3950f190f0e21ea1e4848fec38aaa',
         'admins':[
-           'root'
+          'root'
         ],
         'status':'team',
         'timestamp':1529944842800,
@@ -238,14 +238,14 @@ describe('ChatContactList.test.js', () => {
         'user':'team-be95776cd7c3950f190f0e21ea1e4848fec38bbb',
         'room':'be95776cd7c3950f190f0e21ea1e4848fec38bbb',
         'admins':[
-           'root'
+          'root'
         ],
         'status':'team',
         'timestamp':1529944842801,
         'isFavorite':false
       }
     }}));
-    expect(cmp.vm.filteredContacts.length).toBe(6);
+    expect(cmp.vm.filteredContacts).toHaveLength(6);
     expect(cmp.vm.roomsCount).toBe(3);
   });
 
@@ -260,14 +260,14 @@ describe('ChatContactList.test.js', () => {
         'user':'team-be95776cd7c3950f190f0e21ea1e4848fec38aaa',
         'room':'be95776cd7c3950f190f0e21ea1e4848fec38aaa',
         'admins':[
-           'root'
+          'root'
         ],
         'status':'team',
         'timestamp':1529944842800,
         'isFavorite':false
       }
     }}));
-    expect(cmp.vm.filteredContacts.length).toBe(5);
+    expect(cmp.vm.filteredContacts).toHaveLength(5);
     expect(cmp.vm.roomsCount).toBe(2);
   });
 
@@ -283,13 +283,13 @@ describe('ChatContactList.test.js', () => {
         'room':'be95776cd7c3950f190f0e21ea1e4848fec38bbb',
         'admins':[
           'root'
-          ],
-          'status':'team',
-          'timestamp':1529944842801,
-          'isFavorite':false
+        ],
+        'status':'team',
+        'timestamp':1529944842801,
+        'isFavorite':false
       }
     }}));
-    expect(cmp.vm.filteredContacts.length).toBe(4);
+    expect(cmp.vm.filteredContacts).toHaveLength(4);
     expect(cmp.vm.roomsCount).toBe(1);
   });
 
@@ -379,7 +379,7 @@ describe('ChatContactList.test.js', () => {
       'isFavorite':true
     }}));
 
-    expect(cmp.emitted('contact-selected').length).toBe(1);
+    expect(cmp.emitted('contact-selected')).toHaveLength(1);
   });
 
   it('emits contact-selected event when selecting a room', () => {
@@ -387,7 +387,7 @@ describe('ChatContactList.test.js', () => {
       'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
       'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f'
     });
-    expect(cmp.emitted('contact-selected').length).toBe(2);
+    expect(cmp.emitted('contact-selected')).toHaveLength(2);
   });
 
 });

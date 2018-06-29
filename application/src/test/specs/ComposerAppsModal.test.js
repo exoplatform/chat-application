@@ -1,10 +1,9 @@
 import { mount } from 'vue-test-utils';
 import ComposerAppsModal from '../../main/webapp/vue-app/components/modal/ComposerAppsModal';
-import Modal from '../../main/webapp/vue-app/components/modal/Modal';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 global.fetch = jest.fn().mockImplementation(() => {
-  var p = new Promise((resolve) => {
+  const p = new Promise((resolve) => {
     resolve({
       text: function() {
         return '';
@@ -76,11 +75,11 @@ function getComponent(show) {
 describe('ComposerAppsModal.test.js', () => {
 
   it('test ComposerAppsModal DOM and attributes', () => {
-    var initialized = false;
-    var htmlAdded = false;
-    var validateFormData = null;
-    var saveObject = null;
-    var sentMessage = null;
+    let initialized = false;
+    let htmlAdded = false;
+    let validateFormData = null;
+    let saveObject = null;
+    let sentMessage = null;
 
     document.addEventListener('chat-custom-app-init', () => initialized = true);
     document.addEventListener('chat-custom-app-validate', (e) => validateFormData = e.detail);

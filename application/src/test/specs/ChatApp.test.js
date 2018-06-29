@@ -11,7 +11,7 @@ describe('ChatApp.test.js', () => {
     fullName: 'Root Root',
     isOnline: true,
     status: 'available'
-  }
+  };
   const roomsData = {
     unreadOffline: '0',
     unreadOnline: '0',
@@ -29,7 +29,7 @@ describe('ChatApp.test.js', () => {
         room: 'a11192fa4a461dc023ac8b6d1cd85951a385d419'
       }
     ]
-  }
+  };
 
   beforeEach(() => {
     app = mount(ChatApp, {
@@ -77,7 +77,7 @@ describe('ChatApp.test.js', () => {
       detail: {
         data : roomsData.rooms[0]
       }
-    })
+    });
     expect(app.vm.contactList[0].fullName).toEqual('room3');
   });
 

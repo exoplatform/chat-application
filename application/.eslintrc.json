@@ -75,5 +75,12 @@
         "yoda": ["error", "never", { "exceptRange": true }],
         "vue/html-self-closing": "off",
         "vue/max-attributes-per-line": "off"
-    }
+    },
+    "overrides": [{
+        "files": [ "src/test/**/*" ],
+        "rules": {
+            "no-empty-function": "off",
+            "no-magic-numbers": "off"
+        }
+    }]
 }
