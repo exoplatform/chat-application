@@ -16,8 +16,8 @@
 export default {
   props: {
     displayClose: {
-      type: String,
-      default: 'true'
+      type: Boolean,
+      default: true
     },
     title: {
       type: String,
