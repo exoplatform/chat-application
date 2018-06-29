@@ -1,7 +1,7 @@
 <template>
   <a class="chat-notification-detail block-item" href="#" @click="$emit('select-room', room)">
     <span class="avatarXSmall">
-      <img :src="`/rest/v1/social/users/${notif.from}/avatar`" onerror="this.src='/chat/img/user-default.jpg'" class="avatar-image">
+      <img :src="avatar" onerror="this.src='/chat/img/user-default.jpg'" class="avatar-image">
     </span>
     <div class="chat-label-status">
       <div class="content">
@@ -23,6 +23,7 @@
 
 <script>
 import * as chatTime from '../chatTime';
+import * as chatServices from '../chatServices';
 
 export default {
   props: {
@@ -47,6 +48,9 @@ export default {
     }
   },
   computed: {
+    avatar() {
+      return chatServices.getUserAvatar(this.notif.from);
+    },
     messageClass() {
       const messageType = this.notif.options ? this.notif.options.type : '';
       if(messageType) {
