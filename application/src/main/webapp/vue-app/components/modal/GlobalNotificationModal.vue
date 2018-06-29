@@ -87,13 +87,15 @@ export default {
         this.originalChatPreferences = JSON.parse(JSON.stringify(this.chatPreferences));
 
         if(!this.checkboxesEnhanced) {
-          $('#chatPreferences :checkbox').iphoneStyle({
-            disabledClass: 'switchBtnDisabled',
-            containerClass: 'uiSwitchBtn',
-            labelOnClass: 'switchBtnLabelOn',
-            labelOffClass: 'switchBtnLabelOff',
-            handleClass: 'switchBtnHandle',
-          });
+          if ($.iphoneStyle) {
+            $('#chatPreferences :checkbox').iphoneStyle({
+              disabledClass: 'switchBtnDisabled',
+              containerClass: 'uiSwitchBtn',
+              labelOnClass: 'switchBtnLabelOn',
+              labelOffClass: 'switchBtnLabelOff',
+              handleClass: 'switchBtnHandle',
+            });
+          }
           this.checkboxesEnhanced = true;
         }
       }
