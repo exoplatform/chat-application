@@ -3,6 +3,12 @@ import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret'
 
 global.$ = $;
 addCaretJQueryExtension($);
+
+$.fn.extend({
+  //mock userPopup extension
+  userPopup() {}
+});
+
 global.eXo = {
   env: {
     portal: {
