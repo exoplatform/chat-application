@@ -49,31 +49,12 @@ export default {
   },
   data() {
     return {
-      dateFormat: 'MM/dd/yyyy',
-      linkText: '',
       errorCode: false,
       errorOpts: {},
-      sendingMessage: false,
-      dayHourOptions: [
-        { 
-          text: 'All Day', 
-          value: 'all-day'
-        }
-      ],
-      eventDateFrom: '',
-      eventDateTo: '',
-      eventTimeFrom: '',
-      eventTimeTo: '',
-      eventLocation: ''
+      sendingMessage: false
     };
   },
   computed: {
-    disableAdvancedFilter() {
-      return this.selectedOption !== 'keywords';
-    },
-    appKey() {
-      return this.app.key;
-    },
     appHtml() {
       return this.app.html(this.$t);
     },

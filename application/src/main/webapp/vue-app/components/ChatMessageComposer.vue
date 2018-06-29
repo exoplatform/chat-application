@@ -56,7 +56,6 @@ export default {
   data() {
     return {
       appsModal: {
-        appKey: '',
         title: '',
         isOpned: false
       },
