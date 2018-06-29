@@ -52,6 +52,7 @@ export default {
       showEditMessageModal: false,
       totalMessagesToLoad: 0,
       searchKeyword: '',
+      windowFocused: true,
       newMessagesLoading: false
     };
   },
@@ -76,6 +77,13 @@ export default {
       return $('.chat-message-list');
     }
   },
+  watch: {
+    windowFocused(newValue) {
+      if (newValue) {
+        chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+      }
+    }
+  },
   updated() {
     this.scrollToEnd();
   },
@@ -87,6 +95,9 @@ export default {
     document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(this.$constants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
     document.addEventListener(this.$constants.ACTION_MESSAGE_SEARCH, this.searchMessage);
+
+    $(window).focus(this.chatFocused);
+    $(window).blur(this.chatFocused);
   },
   destroyed() {
     document.removeEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
@@ -122,6 +133,9 @@ export default {
       if(message) {
         this.addOrUpdateMessageToList(message);
       }
+    },
+    chatFocused(e) {
+      this.windowFocused = e.type === 'focus';
     },
     contactChanged(e) {
       this.messages = [];
@@ -230,7 +244,9 @@ export default {
       if(!message || !message.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
-      chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+      if (this.windowFocused) {
+        chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+      }
       if(this.isScrollPositionAtEnd()) {
         this.setScrollToBottom();
       }

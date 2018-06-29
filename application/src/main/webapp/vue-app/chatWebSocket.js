@@ -213,18 +213,6 @@ export function sendMessage(messageObj, callback) {
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail' : data}));
   }
 }
-export function setRoomAsRead(room) {
-  if (!cometDSettings.cCometD) {
-    return;
-  }
-  cometDSettings.cCometD.publish('/service/chat', JSON.stringify({
-    'event': 'message-read',
-    'sender': cometDSettings.username,
-    'token': cometDSettings.token,
-    'dbName': cometDSettings.dbName,
-    'room': room
-  }));
-}
 export function deleteMessage(messageObj, callback) {
   if (!cometDSettings.cCometD) {
     return;
@@ -250,10 +238,10 @@ export function deleteMessage(messageObj, callback) {
 export function setRoomMessagesAsRead(room, callback) {
   const data = JSON.stringify({
     'event': 'message-read',
-    'room': room,
     'sender': cometDSettings.username,
     'dbName': cometDSettings.dbName,
-    'token': cometDSettings.token
+    'token': cometDSettings.token,
+    'room': room
   });
 
   if (cometDSettings.cCometD) {
@@ -286,6 +274,6 @@ document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, (e) => {
 
 document.addEventListener(chatConstants.ACTION_ROOM_SET_READ, (e) => {
   if(e.detail && e.detail.trim()) {
-    setRoomAsRead(e.detail);
+    setRoomMessagesAsRead(e.detail);
   }
 });
