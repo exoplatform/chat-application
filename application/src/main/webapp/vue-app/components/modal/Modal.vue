@@ -3,7 +3,7 @@
     <div :class="modalClass" class="uiPopup chat-modal">
       <div class="popupHeader">
         <span class="PopupTitle popupTitle">{{ title }}</span>
-        <a v-show="displayClose === 'true'" class="uiIconClose pull-right" @click="closeModal"></a> 
+        <a v-if="displayClose" class="uiIconClose pull-right" @click="closeModal"></a> 
       </div>
       <div class="PopupContent popupContent">
         <slot></slot>
