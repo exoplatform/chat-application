@@ -163,6 +163,9 @@ describe('RoomFormModal.test.js', () => {
         resolve({
           text: function() { 
             return '';
+          },
+          json: function() { 
+            return {};
           }
         });
       });
@@ -189,6 +192,9 @@ describe('RoomFormModal.test.js', () => {
         resolve({
           text: function() { 
             return '';
+          },
+          json: function() { 
+            return {};
           }
         });
       });

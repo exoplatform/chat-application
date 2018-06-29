@@ -120,6 +120,9 @@ describe('ChatMessageDetail.test.js', () => {
         resolve({
           text: function() { 
             return '';
+          },
+          json: function() { 
+            return {};
           }
         });
       });
@@ -138,6 +141,9 @@ describe('ChatMessageDetail.test.js', () => {
         resolve({
           text: function() { 
             return '';
+          },
+          json: function() { 
+            return {};
           }
         });
       });

@@ -6,10 +6,10 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 global.fetch = jest.fn().mockImplementation(() => {
   var p = new Promise((resolve) => {
     resolve({
-      text: function() {
+      text: function() { 
         return '';
       },
-      json: function() {
+      json: function() { 
         return {};
       }
     });

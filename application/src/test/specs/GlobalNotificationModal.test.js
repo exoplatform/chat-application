@@ -195,6 +195,9 @@ describe('GlobalNotificationModal.test.js', () => {
         resolve({
           text: function() { 
             return '';
+          },
+          json: function() { 
+            return {};
           }
         });
       });
@@ -233,7 +236,6 @@ describe('GlobalNotificationModal.test.js', () => {
 
   it('test GlobalNotificationModal close', () => {
     const cmp = getComponent(true);
-    console.log(cmp.findAll('.btn').at(1).html());
     cmp.findAll('.btn').at(1).trigger('click');
     expect(cmp.emitted('close-modal').length).toBe(1);
   });
