@@ -3,7 +3,7 @@ import ChatContact from '../../main/webapp/vue-app/components/ChatContact';
 import ChatRoomParticipants from '../../main/webapp/vue-app/components/ChatRoomParticipants';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
-describe('chatRoomParticipants.test.js', () => {
+describe('ChatRoomParticipants.test.js', () => {
   
   let roomParticipant;
   const room = {

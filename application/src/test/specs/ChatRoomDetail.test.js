@@ -208,7 +208,5 @@ describe('ChatRoomDetail.test.js', () => {
     roomDetail.setProps({ contact: space });
     expect(roomDetail.contains(DropdownSelect)).toBe(true);
   });
-
-
   
 });
