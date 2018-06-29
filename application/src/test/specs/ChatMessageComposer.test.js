@@ -27,7 +27,7 @@ describe('ChatMessageComposer.test.js', () => {
   });
 
   it('composer apps count', () => {
-    expect(cmp.vm.getApplications.length).toBe(6);
+    expect(cmp.vm.applications.length).toBe(6);
   });
 
   it('composer emoticons count', () => {

@@ -87,7 +87,7 @@ import * as chatTime from '../chatTime';
 import ChatContact from './ChatContact.vue';
 import DropdownSelect from './DropdownSelect.vue';
 import RoomFormModal from './modal/RoomFormModal.vue';
-import {DEFAULT_COMPOSER_APPS} from '../extension';
+import {getComposerApplications} from '../extension';
 
 export default {
   components: {ChatContact, DropdownSelect, RoomFormModal},
@@ -488,7 +488,7 @@ export default {
           const filteredMessage = this.filterLastMessage(message.msg);
           return contactType === 'u' ? message.msg : `${message.fullname}: ${filteredMessage}`;
         } else {
-          const apps = this.getApplications();
+          const apps = getComposerApplications();
           let systemMsg = '';
           apps.forEach(element => {
             if (message.options.type === element.type) {
@@ -520,13 +520,6 @@ export default {
         return msg.replace(msg.slice(msg.indexOf('<br/>')),'...');
       }
       return msg;
-    },
-    getApplications() {
-      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
-        return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
-      } else {
-        return DEFAULT_COMPOSER_APPS;
-      }
     },
     contactStatusChanged(e) {
       const contactChanged = e.detail;

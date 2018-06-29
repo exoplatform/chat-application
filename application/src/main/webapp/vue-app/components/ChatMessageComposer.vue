@@ -1,7 +1,7 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
     <div v-if="!miniChat" class="apps-container">
-      <div v-for="app in getApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
+      <div v-for="app in applications" :key="app.key" class="apps-item" @click="openAppModal(app)">
         <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
         <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
       </div>
@@ -34,7 +34,7 @@
 <script>
 import ComposerAppsModal from './modal/ComposerAppsModal.vue';
 import * as chatServices from '../chatServices';
-import {DEFAULT_COMPOSER_APPS,EMOTICONS} from '../extension';
+import {getComposerApplications,EMOTICONS} from '../extension';
 
 const ENTER_CODE_KEY = 13;
 export default {
@@ -64,13 +64,6 @@ export default {
     };
   },
   computed: {
-    getApplications() {
-      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
-        return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
-      } else {
-        return DEFAULT_COMPOSER_APPS;
-      }
-    },
     getEmoticons() {
       if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraEmoticons) {
         return EMOTICONS.concat(eXo.chat.room.extraEmoticons);
@@ -79,6 +72,9 @@ export default {
       } else {
         return [];
       }
+    },
+    applications() {
+      return getComposerApplications();
     }
   },
   updated() {
@@ -133,7 +129,7 @@ export default {
       };
       let found = false;
       if(!this.miniChat) {
-        this.getApplications.forEach(application => {
+        getComposerApplications().forEach(application => {
           if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;

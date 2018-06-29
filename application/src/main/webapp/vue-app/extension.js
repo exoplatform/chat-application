@@ -449,3 +449,11 @@ export const DEFAULT_MESSAGE_ACTIONS = [
     }
   }
 ];
+
+export function getComposerApplications() {
+  if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
+    return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
+  } else {
+    return DEFAULT_COMPOSER_APPS;
+  }
+}
