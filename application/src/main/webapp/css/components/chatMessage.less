@@ -83,6 +83,10 @@
     padding: 12px 7px;
     position: relative;
     .overflow-wrap;
+
+    .sender-name a {
+      color: inherit;
+    }
     
     &:before {
       content: "";
@@ -116,6 +120,7 @@
     }
   }
   .chat-contact-avatar {
+    display: block;
     .square(@messageAvatarSize);
   }
   &.is-same-contact {

@@ -1,10 +1,10 @@
 <template>
   <div ref="message" :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
-      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
+      <a v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
-      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name">{{ message.fullname }} :</div>
+      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
 
       <div v-if="message.type === this.$constants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -511,6 +511,9 @@ export default {
     },
     openMessageActions() {
       this.displayActionMobile = true;
+    },
+    getProfileLink(user) {
+      return chatServices.getUserProfileLink(user);
     }
   }
 };
