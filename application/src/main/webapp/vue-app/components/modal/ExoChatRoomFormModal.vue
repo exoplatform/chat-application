@@ -1,5 +1,5 @@
 <template>
-  <exo-modal v-show="show" :title="title" display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
+  <exo-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
     <meta charset="utf-8">
 
     <div class="add-room-form">

@@ -155,7 +155,7 @@ import ExoModal from './modal/ExoModal.vue';
 export default {
   components: {
     'exo-chat-dropdown-select': ExoDropdownSelect,
-    'exo-chat-modal': ExoModal
+    'exo-modal': ExoModal
   },
   props: {
     miniChat: {

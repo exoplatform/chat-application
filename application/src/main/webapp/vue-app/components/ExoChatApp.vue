@@ -29,7 +29,7 @@
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
     </div>
     <exo-chat-global-notification-modal :show="settingModal" @close-modal="settingModal = false"></exo-chat-global-notification-modal>
-    <exo-modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" display-close="false" class="logout-popup">
+    <exo-modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" :display-close="false" class="logout-popup">
       <div class="modal-body">
         {{ $t('exoplatform.chat.timeout.description') }}
       </div>
