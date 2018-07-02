@@ -117,7 +117,7 @@
           </a>
         </li>
       </exo-chat-dropdown-select>
-      <div v-else-if="displayActions" v-show="displayActionMobile" class="uiPopupWrapper modal-mask" @click="displayActionMobile = false">
+      <div v-else-if="displayActions" v-show="displayActionMobile" class="uiPopupWrapper chat-modal-mask" @click="displayActionMobile = false">
         <ul class="mobile-options filter-options">
           <li v-for="messageAction in messageActions" :key="messageAction.key">
             <a :class="messageAction.class" href="#" @click.prevent="executeAction(messageAction)">

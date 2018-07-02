@@ -53,13 +53,13 @@
           <i class="uiIconArrowDownMini"></i>
         </div>
       </div>
-      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper modal-mask" @click.prevent.stop="closeContactActions">
+      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper chat-modal-mask" @click.prevent.stop="closeContactActions">
         <ul class="mobile-options">
           <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
           <li v-show="contactMenu.type != 't'" @click.stop><a :href="getProfileLink()">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
         </ul>
       </div>
-      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper modal-mask">
+      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper chat-modal-mask">
         <ul class="mobile-options filter-options">
           <li class="options-category">
             <i class="uiIconClose" @click="cancelFilterMobile"></i>

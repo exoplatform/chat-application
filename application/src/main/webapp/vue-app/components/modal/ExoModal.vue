@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-mask uiPopupWrapper">
+  <div class="chat-modal-mask uiPopupWrapper">
     <div :class="modalClass" class="uiPopup chat-modal">
       <div class="popupHeader">
         <span class="PopupTitle popupTitle">{{ title }}</span>
