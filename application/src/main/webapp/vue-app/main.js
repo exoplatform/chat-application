@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import exoi18n from '../js/lib/exo-i18n';
 import {addCaretJQueryExtension} from '../js/lib/text-caret';
-import ChatApp from './components/ChatApp.vue';
-import MiniChatApp from './components/MiniChatApp.vue';
+import ExoChatApp from './components/ExoChatApp.vue';
+import ExoMiniChatApp from './components/ExoMiniChatApp.vue';
 import {chatConstants} from './chatConstants.js';
 
 import './../css/main.less';
@@ -36,13 +36,13 @@ exoi18n.loadLanguageAsync(lang).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({
       el: '#chatApplication',
-      render: h => h(ChatApp),
+      render: h => h(ExoChatApp),
       i18n
     });
   } else if ($('#chatApplicationNotification').length) {
     new Vue({
       el: '#chatApplicationNotification',
-      render: h => h(MiniChatApp),
+      render: h => h(ExoMiniChatApp),
       i18n
     });
   }

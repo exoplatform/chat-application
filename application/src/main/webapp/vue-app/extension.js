@@ -430,7 +430,7 @@ export const DEFAULT_MESSAGE_ACTIONS = [
       okMessage: 'exoplatform.chat.user.popup.confirm',
       koMessage: 'exoplatform.chat.cancel',
       confirmed(message) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-acton-delete', {'detail': message}));
+        document.dispatchEvent(new CustomEvent('exo-chat-message-action-delete', {'detail': message}));
       }
     }
   },
