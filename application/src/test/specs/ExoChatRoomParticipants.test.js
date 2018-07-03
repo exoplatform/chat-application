@@ -116,7 +116,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
   });
 
   it('room participants should be extended when exo-chat-setting-showParticipants event triggred', () => {
-    roomParticipant.trigger('exo-chat-setting-showParticipants');
+    roomParticipant.trigger(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS);
     expect(roomParticipant.find('.room-participants').classes()).not.toContain('collapsed');
   });
 
@@ -148,13 +148,13 @@ describe('ExoChatRoomParticipants.test.js', () => {
   });
 
   it('when trigger exo-chat-selected-contact-changed event the contact must be changed', () => {
-    roomParticipant.trigger('exo-chat-selected-contact-changed', {detail: space});
+    roomParticipant.trigger(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: space});
     expect(roomParticipant.vm.contact.name).toEqual(space.name); 
   });
 
   it('when trigger exo-chat-user-status-changed event the contact status must be changed', () => {
     expect(roomParticipant.vm.participants[0].status).toEqual('available');
-    roomParticipant.trigger('exo-chat-user-status-changed', 
+    roomParticipant.trigger(chatConstants.EVENT_USER_STATUS_CHANGED, 
       {
         detail: {
           sender:'usera',
@@ -169,7 +169,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
   
   it('participant should be removed from participant list when he left the room', () => {
     expect(roomParticipant.vm.participants[0].name).toEqual('usera');
-    roomParticipant.trigger('exo-chat-room-member-left', 
+    roomParticipant.trigger(chatConstants.EVENT_ROOM_MEMBER_LEFT, 
       {
         detail: {
           sender:'usera',

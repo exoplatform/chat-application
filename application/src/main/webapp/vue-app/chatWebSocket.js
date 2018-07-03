@@ -137,7 +137,7 @@ export function leaveRoom(room, callback) {
     return;
   }
   const content = JSON.stringify({
-    'event': 'room-member-leave',
+    'event': 'room-member-leave-requested',
     'clientId': new Date().getTime().toString(),
     'sender': cometDSettings.username,
     'token': cometDSettings.token,

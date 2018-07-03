@@ -18,7 +18,7 @@ public class RealTimeMessageBean {
     MESSAGE_READ("message-read"),
     USER_STATUS_CHANGED("user-status-changed"),
     ROOM_MEMBER_JOIN("room-member-joined"),
-    ROOM_MEMBER_LEAVE("room-member-leave"),
+    ROOM_MEMBER_LEAVE_REQUESTED("room-member-leave-requested"),
     ROOM_MEMBER_LEFT("room-member-left"),
     ROOM_UPDATED("room-updated"),
     ROOM_DELETED("room-deleted"),

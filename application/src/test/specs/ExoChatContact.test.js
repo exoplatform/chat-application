@@ -71,7 +71,7 @@ describe('ExoChatContact.test.js', () => {
 
   it('emits exo-chat-status-changed event when calling setStatus method', () => {
     currentUser.vm.setStatus('invisible');
-    expect(currentUser.emitted()['exo-chat-status-changed'][0]).toEqual(['invisible']);
+    expect(currentUser.emitted()['status-changed'][0]).toEqual(['invisible']);
   });
 
   it('set isOnLine to false when disconnect event triggred', () => {

@@ -162,7 +162,7 @@ export default {
       if (contact.type && contact.type !== 'u') {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
-            this.$emit('exo-chat-particpants-loaded', data.users);
+            this.$emit('particpants-loaded', data.users);
             this.participants = data.users.reduce((prev, curr) => {
               // if user is not online, set its status as offline
               if(users.indexOf(curr.name) < 0) {

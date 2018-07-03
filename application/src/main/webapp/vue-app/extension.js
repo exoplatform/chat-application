@@ -115,7 +115,7 @@ export const DEFAULT_COMPOSER_APPS = [
                   <input id="chat-file-file" type="file" name="userfile" /> \
                 </a> \
                 <input id="chat-file-submit" value="${i18NConverter('exoplatform.chat.file.manually')}" type="submit" style="display:none" /> \
-                <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent('exo-chat-apps-close'))">${i18NConverter('exoplatform.chat.cancel')}</a> \
+                <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_APPS_CLOSE}'))">${i18NConverter('exoplatform.chat.cancel')}</a> \
               </div>`;
     },
     htmlAdded($) {
@@ -430,7 +430,7 @@ export const DEFAULT_MESSAGE_ACTIONS = [
       okMessage: 'exoplatform.chat.user.popup.confirm',
       koMessage: 'exoplatform.chat.cancel',
       confirmed(message) {
-        document.dispatchEvent(new CustomEvent('exo-chat-message-action-delete', {'detail': message}));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_MEMBER_LEFT, {'detail': message}));
       }
     }
   },

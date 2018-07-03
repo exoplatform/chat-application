@@ -134,7 +134,7 @@ export default {
   },
   methods: {
     setStatus(status) {
-      this.$emit('exo-chat-status-changed', status);
+      this.$emit('status-changed', status);
     },
     setOnline() {
       this.isOnline = true;

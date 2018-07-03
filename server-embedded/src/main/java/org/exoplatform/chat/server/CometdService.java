@@ -141,7 +141,7 @@ public class CometdService {
         String room = jsonMessage.get("room").toString();
 
         chatService.deleteTeamRoom(room, sender, dbName);
-      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_MEMBER_LEAVE)) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_MEMBER_LEAVE_REQUESTED)) {
         String room = jsonMessage.get("room").toString();
         String clientId = jsonMessage.get("clientId").toString();
         String msg = "";
