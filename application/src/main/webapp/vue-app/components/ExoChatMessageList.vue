@@ -80,7 +80,7 @@ export default {
   },
   watch: {
     windowFocused(newValue) {
-      if (newValue) {
+      if (newValue && this.contact && this.contact.room) {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       }
     }
@@ -144,9 +144,9 @@ export default {
       this.newMessagesLoading = false;
 
       this.contact = e.detail;
-      if(this.contact.room) {
+      if (this.contact.room) {
         this.retrieveRoomMessages(); 
-      } else {
+      } else if (this.contact.user) {
         chatServices.getRoomId(eXo.chat.userSettings, this.contact.user, 'username').then((room) => {
           if(room) {
             this.contact.room = room;
@@ -242,7 +242,7 @@ export default {
       }
     },
     addOrUpdateMessageToList(message) {
-      if(!message || !message.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
+      if(!message || !message.room || !this.contact.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
       if (this.windowFocused) {

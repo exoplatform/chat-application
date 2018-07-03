@@ -229,6 +229,7 @@ export default {
       this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
     },
     backToContactList() {
+      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
       this.$emit('back-to-contact-list');
     }
   }
