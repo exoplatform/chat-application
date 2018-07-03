@@ -118,6 +118,7 @@ export default {
           this.room = rommId;
         });
       }
+      document.getElementById('tiptip_holder').style.display = 'none';
     },
     userStatusChanged(e) {
       const contactChanged = e.detail;
