@@ -59,6 +59,9 @@ function highlightMessage(msgObject) {
 
   if (msgObject.options) {
     switch (msgObject.options.type) {
+    case 'type-event':
+      highlightedMsg = msgObject.options.summary;
+      break;
     case 'type-hand':
       highlightedMsg = `raises hand: ${msgObject.content}`;
       break;
