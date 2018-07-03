@@ -72,9 +72,9 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     expect(cmp.vm.specificMessageObj).toEqual({});
     expect(cmp.vm.specificMessageContent).toEqual('');
     expect(cmp.vm.specificMessageClass).toBeUndefined();
-    expect(cmp.vm.messageContent).not.toContain('Test message');
+    expect(cmp.vm.messageContent).toContain('Test message');
     expect(cmp.html()).toContain('Test User');
-    expect(cmp.html()).not.toContain('Test message');
+    expect(cmp.html()).toContain('Test message');
     expect(cmp.findAll('.timestamp')).toHaveLength(1);
   });
 
@@ -85,9 +85,9 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     expect(cmp.vm.specificMessageObj).toEqual({});
     expect(cmp.vm.specificMessageContent).toEqual('');
     expect(cmp.vm.specificMessageClass).toBeUndefined();
-    expect(cmp.vm.messageContent).not.toContain('Test message');
+    expect(cmp.vm.messageContent).toContain('Test message');
     expect(cmp.html()).toContain('Test User');
-    expect(cmp.html()).not.toContain('Test message');
+    expect(cmp.html()).toContain('Test message');
     expect(cmp.findAll('.timestamp')).toHaveLength(1);
   });
 
@@ -98,9 +98,7 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     expect(cmp.vm.specificMessageObj).toEqual({});
     expect(cmp.vm.specificMessageContent).toEqual('');
     expect(cmp.vm.specificMessageClass).toBeUndefined();
-    expect(cmp.vm.messageContent).not.toContain('Test message');
     expect(cmp.html()).toContain('Test User');
-    expect(cmp.html()).not.toContain('Test message');
     expect(cmp.findAll('.timestamp')).toHaveLength(1);
   });
 
