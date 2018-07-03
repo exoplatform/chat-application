@@ -118,7 +118,10 @@ export default {
           this.room = rommId;
         });
       }
-      document.getElementById('tiptip_holder').style.display = 'none';
+      const tiptip = document.getElementById('tiptip_holder');
+      if (tiptip) {
+        tiptip.style.display = 'none';
+      }
     },
     userStatusChanged(e) {
       const contactChanged = e.detail;
