@@ -366,19 +366,12 @@ describe('ExoChatContactList.test.js', () => {
     expect(contact.status).toBe('available');
   });
 
-  it('emits contact-selected event when a room is selected', () => {
-    document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {detail: {
-      'fullName':'Team Room 222',
-      'isActive':'true',
-      'type':'t',
-      'user':'team-be95776cd7c3950f190f0e21ea1e4848fec38zzzf',
-      'room':'be95776cd7c3950f190f0e21ea1e4848fec38zzzf',
-      'admins':['root'],
-      'status':'team',
-      'timestamp':1529944842658,
-      'isFavorite':true
-    }}));
-
+  it('emits contact-selected event when selecting a room', () => {
+    cmp.vm.selectContact({
+      'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
+      'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f'
+    });
     expect(cmp.emitted('contact-selected')).toHaveLength(1);
   });
+
 });
