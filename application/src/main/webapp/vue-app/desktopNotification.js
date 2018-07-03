@@ -164,9 +164,9 @@ function showDesktopNotif(path, msg) {
     } else {
       let avatarUrl = null;
       if (msg.roomType === 'u') {
-        avatarUrl = `${chatConstants.socialUserAPI}${msg.from}/avatar`;
+        avatarUrl = `${chatConstants.SOCIAL_USER_API}${msg.from}/avatar`;
       } else {
-        avatarUrl = `${chatConstants.socialSpaceAPI}${msg.roomDisplayName}/avatar`;
+        avatarUrl = `${chatConstants.SOCIAL_SPACE_API}${msg.roomDisplayName}/avatar`;
       }
       notification = new Notification(msg.roomDisplayName, {
         icon: avatarUrl,

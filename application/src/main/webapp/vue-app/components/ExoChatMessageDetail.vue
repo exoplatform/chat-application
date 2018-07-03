@@ -228,7 +228,8 @@ export default {
       }
     },
     displayUserInformation() {
-      return this.message.options.type !== this.$constants.ROOM_MEMBER_LEFT && this.message.options.type !== this.$constants.REMOVE_TEAM_MESSAGE && this.message.options.type !== this.$constants.ADD_TEAM_MESSAGE && !this.hideAvatar && !this.isCurrentUser;
+      const messageType = this.message.options ? this.message.options.type : null;
+      return messageType !== this.$constants.ROOM_MEMBER_LEFT && messageType !== this.$constants.REMOVE_TEAM_MESSAGE && messageType !== this.$constants.ADD_TEAM_MESSAGE && !this.hideAvatar && !this.isCurrentUser;
     },
     displayActions() {
       return !this.miniChat && this.message.type !== this.$constants.DELETED_MESSAGE && this.messageActions && this.messageActions.length;

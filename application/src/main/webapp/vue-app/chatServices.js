@@ -235,11 +235,11 @@ export function saveRoom(userSettings, roomName, users, room) {
 }
 
 export function getUserAvatar(user) {
-  return `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.SOCIAL_USER_API}${user}/avatar`;
+  return `${chatConstants.SOCIAL_USER_API}${user}/avatar`;
 }
 
 export function getSpaceAvatar(space) {
-  return `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
+  return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
 }
 
 export function getUserProfileLink(user) {

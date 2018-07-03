@@ -47,7 +47,7 @@ export default {
     tiptip(el, binding, vnode) {
       const chatConstants = vnode.context.$constants;
       $(el).find('.chat-contact-avatar').userPopup({
-        restURL: `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.PEOPLE_INFO_API}`,
+        restURL: chatConstants.PEOPLE_INFO_API,
         userId: binding.value,
         labels: {
           StatusTitle: vnode.context.$t('exoplatform.chat.user.popup.status'),
