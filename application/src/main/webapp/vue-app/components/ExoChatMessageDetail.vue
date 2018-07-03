@@ -281,11 +281,11 @@ export default {
   created() {
     document.addEventListener(this.$constants.ACTION_MESSAGE_EDIT, this.editMessage);
     document.addEventListener(
-      'exo-chat-message-action-delete',
+      'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
     document.addEventListener(
-      'exo-chat-message-action-saveNotes',
+      'exo-chat-message-action-saveNotes-requested',
       this.saveNotes
     );
   },
@@ -295,11 +295,11 @@ export default {
       this.editMessage
     );
     document.removeEventListener(
-      'exo-chat-message-action-delete',
+      'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
     document.removeEventListener(
-      'exo-chat-message-action-saveNotes',
+      'exo-chat-message-action-saveNotes-requested',
       this.saveNotes
     );
   },
@@ -313,10 +313,10 @@ export default {
         this.confirmMessage = messageAction.confirm.message;
         this.confirmOKMessage = messageAction.confirm.okMessage;
         this.confirmKOMessage = messageAction.confirm.koMessage;
-        this.confirmAction = (message) => document.dispatchEvent(new CustomEvent(`exo-chat-message-action-${messageAction.key}`, {detail: message}));
+        this.confirmAction = (message) => document.dispatchEvent(new CustomEvent(`exo-chat-message-action-${messageAction.key}-requested`, {detail: message}));
         this.showConfirmModal = true;
       } else {
-        document.dispatchEvent(new CustomEvent(`exo-chat-message-action-${messageAction.key}`, {detail: this.message}));
+        document.dispatchEvent(new CustomEvent(`exo-chat-message-action-${messageAction.key}-requested`, {detail: this.message}));
       }
     },
     editMessage(e) {
