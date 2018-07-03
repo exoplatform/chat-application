@@ -367,7 +367,7 @@ describe('ExoChatContactList.test.js', () => {
   });
 
   it('emits contact-selected event when a room is selected', () => {
-    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: {
+    document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {detail: {
       'fullName':'Team Room 222',
       'isActive':'true',
       'type':'t',

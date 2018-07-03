@@ -46,14 +46,14 @@ describe('ExoChatApp.test.js', () => {
   it('chat-application has offline class and change to online when chat server connected', () => {
     expect(app.find('#chat-application').classes()).toContain('offline');
     expect(app.find('#chat-application').classes()).not.toContain('online');
-    app.trigger('exo-chat-connected');
+    app.trigger(chatConstants.EVENT_CONNECTED);
     expect(app.find('#chat-application').classes()).toContain('online');
     expect(app.find('#chat-application').classes()).not.toContain('offline');
   });
 
   it('chat loading mask should be displayed and hidden when user connect', () => {
     expect(app.find('.chat-loading-mask').exists()).toBeTruthy();
-    app.trigger('exo-chat-connected');
+    app.trigger(chatConstants.EVENT_CONNECTED);
     expect(app.find('.chat-loading-mask').exists()).toBeFalsy();
   });
 
