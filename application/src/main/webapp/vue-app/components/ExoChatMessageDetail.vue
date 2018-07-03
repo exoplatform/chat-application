@@ -228,7 +228,7 @@ export default {
       }
     },
     displayActions() {
-      return !this.miniChat && !this.message.isDeleted && this.messageActions && this.messageActions.length;
+      return !this.miniChat && this.message.type !== this.$constants.DELETED_MESSAGE && this.messageActions && this.messageActions.length;
     },
     messageId() {
       return this.message.clientId ? this.message.clientId : this.message.msgId;
@@ -288,10 +288,6 @@ export default {
       'exo-chat-message-action-saveNotes',
       this.saveNotes
     );
-    if (this.message) {
-      this.message.isDeleted =
-        this.message.type === this.$constants.DELETED_MESSAGE;
-    }
   },
   destroyed() {
     document.removeEventListener(
