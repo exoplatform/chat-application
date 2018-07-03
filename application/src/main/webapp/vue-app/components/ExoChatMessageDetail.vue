@@ -456,7 +456,7 @@ export default {
           .saveWiki(eXo.chat.userSettings, this.roomFullname, content)
           .then(data => {
             if (data.path && data.path.trim().length) {
-              const wikiPageURI = `${eXo.env.portal.context}/${eXo.env.portal.portalName}${data.path}`;
+              const wikiPageURI = `${data.path}`;
               const options = {
                 type: this.$constants.LINK_MESSAGE,
                 link: wikiPageURI,

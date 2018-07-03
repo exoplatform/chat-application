@@ -16,6 +16,7 @@ import org.xwiki.rendering.syntax.Syntax;
 
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.space.model.Space;
@@ -162,7 +163,7 @@ public class WikiService implements ResourceContainer {
           path = "/wiki/" + wikiType + wikiOwner + "/" + TitleResolver.getId(title, false);
         } else if (wikiType.equals(PortalConfig.PORTAL_TYPE)) {
           // http://demo.exoplatform.net/portal/intranet/wiki/Sales_Meetings_Meeting_06-11-2013
-          path = "/wiki/" + TitleResolver.getId(title, false);
+          path = "/" + PortalContainer.getInstance().getName() + "/" + wikiOwner + "/wiki/" + TitleResolver.getId(title, false);
         }
         page.setUrl(path);
         Wiki wiki = new Wiki();
