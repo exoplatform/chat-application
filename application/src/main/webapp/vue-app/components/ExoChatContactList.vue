@@ -66,9 +66,9 @@
             <span><i class="uiIconFilter"></i>{{ $t('exoplatform.chat.contact.filter') }}</span>
             <div @click="saveFilterMobile">{{ $t('exoplatform.chat.contact.filter.save') }}</div>
           </li>
-          <li class="options-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</li>
-          <li v-for="(label, filter) in filterByType" :key="filter" @click="typeFilterMobile = filter"><a href="#"><i :class="{'not-filter': typeFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
           <li class="options-category">{{ $t('exoplatform.chat.contact.filter.by') }}</li>
+          <li v-for="(label, filter) in filterByType" :key="filter" @click="typeFilterMobile = filter"><a href="#"><i :class="{'not-filter': typeFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li class="options-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</li>
           <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="sortFilterMobile = filter"><a href="#"><i :class="{'not-filter': sortFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
           <li @click="allAsReadFilterMobile = !allAsReadFilterMobile"><a href="#"><i :class="{'not-filter': !allAsReadFilterMobile}" class="uiIconTick"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
         </ul>
