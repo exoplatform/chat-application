@@ -36,7 +36,7 @@
       <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
         <exo-chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
           <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact.lastMessage) }}</div>
+          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact) }}</div>
         </exo-chat-contact>
         <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
         <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
@@ -255,6 +255,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
     document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
     document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.updateLastMessage);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.addEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
     document.addEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
@@ -274,6 +275,7 @@ export default {
     document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
     document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
     document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.updateLastMessage);
     document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.removeEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
     document.removeEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
@@ -357,13 +359,20 @@ export default {
     messageReceived(event) {
       const message = event.detail;
       const room = message.room;
+      
       if(!room) {
         return;
       }
+
       const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
+      
       if(foundContact) {
+        if (!foundContact.lastMessage) {
+          foundContact.lastMessage = {};
+        }
+        foundContact.lastMessage = message.data;
         foundContact.timestamp = message.ts;
-        if (this.selected.room !== foundContact.room) {
+        if (this.selected.room !== foundContact.room || this.mq === 'mobile') {
           foundContact.unreadTotal ++;
         }
       } else {
@@ -373,6 +382,16 @@ export default {
             this.contacts.unshift(contact);
           }
         });
+      }
+    },
+    updateLastMessage(event) {
+      const message = event.detail;
+      const foundContact = this.findContactByRoomOrUser(message.room, message.data ? message.data.user : message.sender);
+      if(foundContact) {
+        if (!foundContact.lastMessage) {
+          foundContact.lastMessage = {};
+        }
+        foundContact.lastMessage = message.data;
       }
     },
     roomSaved(room) {
@@ -499,9 +518,9 @@ export default {
       }
       return '';
     },
-    getLastMessageTime(message) {
-      if (message && message.timestamp) {
-        const timestamp = message.timestamp;
+    getLastMessageTime(contact) {
+      const timestamp = contact.lastMessage && contact.lastMessage.timestamp ? contact.lastMessage.timestamp : contact.timestamp;
+      if (timestamp) {
         if (chatTime.getDayDate(timestamp) === chatTime.getDayDate(new Date())) {
           return chatTime.getTimeString(timestamp);
         } else {
