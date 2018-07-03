@@ -183,7 +183,7 @@ export default {
         this.confirmAction = settingAction.confirm.confirmed;
         this.showConfirmModal = true;
       } else {
-        document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}`, {'detail': this.contact}));
+        document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}-requested`, {'detail': this.contact}));
       }
     },
     startMeeting() {

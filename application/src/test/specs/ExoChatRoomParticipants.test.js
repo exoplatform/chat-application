@@ -115,7 +115,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
     expect(roomParticipant.find('.room-participants').classes()).toContain('collapsed');
   });
 
-  it('room participants should be extended when exo-chat-setting-showParticipants event triggred', () => {
+  it('room participants should be extended when exo-chat-setting-showParticipants-requested event triggred', () => {
     roomParticipant.trigger(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS);
     expect(roomParticipant.find('.room-participants').classes()).not.toContain('collapsed');
   });
