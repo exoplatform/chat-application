@@ -381,13 +381,4 @@ describe('ExoChatContactList.test.js', () => {
 
     expect(cmp.emitted('contact-selected')).toHaveLength(1);
   });
-
-  it('emits contact-selected event when selecting a room', () => {
-    cmp.vm.selectContact({
-      'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
-      'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f'
-    });
-    expect(cmp.emitted('contact-selected')).toHaveLength(2);
-  });
-
 });

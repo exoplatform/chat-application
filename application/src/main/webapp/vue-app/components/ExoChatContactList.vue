@@ -298,9 +298,8 @@ export default {
       this.$emit('contact-selected', contact);
     },
     contactChanged(e) {
-      let selectedContact = e.detail;
+      const selectedContact = e.detail;
       if (selectedContact.room) {
-        this.$emit('contact-selected', selectedContact);
         chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
       }
     },
