@@ -299,11 +299,6 @@ export default {
     },
     contactChanged(e) {
       let selectedContact = e.detail;
-      if(this.filteredContacts.length > 0 && !this.filteredContacts.find(contact => contact.room === selectedContact.room || contact.user && contact.user.trim().length && contact.user === selectedContact.user)) {
-        // Select different contact if the contact is not visible
-        selectedContact = this.filteredContacts[0];
-        this.$emit('contact-selected', selectedContact);
-      }
       if (selectedContact.room) {
         chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
       }
