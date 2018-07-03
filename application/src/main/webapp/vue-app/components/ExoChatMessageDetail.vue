@@ -1,10 +1,10 @@
 <template>
   <div ref="message" :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
-      <a v-if="!message.isSystem && !hideAvatar && !isCurrentUser" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
+      <a v-if="displayUserInformation" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
-      <div v-if="!message.isSystem && !hideAvatar && !isCurrentUser" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
+      <div v-if="displayUserInformation" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
 
       <div v-if="message.type === this.$constants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -226,6 +226,9 @@ export default {
           menu => !menu.enabled || menu.enabled(this)
         );
       }
+    },
+    displayUserInformation() {
+      return this.message.options.type !== this.$constants.ROOM_MEMBER_LEFT && this.message.options.type !== this.$constants.REMOVE_TEAM_MESSAGE && this.message.options.type !== this.$constants.ADD_TEAM_MESSAGE && !this.hideAvatar && !this.isCurrentUser;
     },
     displayActions() {
       return !this.miniChat && this.message.type !== this.$constants.DELETED_MESSAGE && this.messageActions && this.messageActions.length;
