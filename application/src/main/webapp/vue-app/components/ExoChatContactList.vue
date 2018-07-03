@@ -360,7 +360,6 @@ export default {
       if(!room) {
         return;
       }
-      console.log(message);
       const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
       if(foundContact) {
         foundContact.timestamp = message.ts;

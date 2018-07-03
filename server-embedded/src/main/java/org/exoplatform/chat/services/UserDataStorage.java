@@ -43,7 +43,7 @@ public interface UserDataStorage {
     * This methode is responsible for setting a notification triggers for a specific user
     * available triggers :
     *  -mention
-    *  -even-on-do-not-distrub
+    *  -even-on-do-not-disturb
     *
     */
   void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;

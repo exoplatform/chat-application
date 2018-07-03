@@ -3,7 +3,7 @@
     <section>
       <h4>{{ $t('exoplatform.chat.desktopNotif.global.notifications') }}</h4>
       <div class="notification-item">
-        <input id="notifyDonotdistrub" ref="notifyDonotdistrub" v-model="chatPreferences.notifyDonotdistrub" type="checkbox">
+        <input id="notifyDonotdisturb" ref="notifyDonotdisturb" v-model="chatPreferences.notifyDonotdisturb" type="checkbox">
         <div class="notification-description">
           <b> {{ $t('exoplatform.chat.desktopNotif.global.donotdist') }} </b>
           <em> {{ $t('exoplatform.chat.desktopNotif.global.donotdist.description') }} </em>
@@ -60,13 +60,13 @@ export default {
   data() {
     return {
       chatPreferences: {
-        notifyDonotdistrub: false,
+        notifyDonotdisturb: false,
         notifyDesktop: true,
         notifyOnSite: true,
         notifyBip: true
       },
       originalChatPreferences: {
-        notifyDonotdistrub: false,
+        notifyDonotdisturb: false,
         notifyDesktop: true,
         notifyOnSite: true,
         notifyBip: true
@@ -79,7 +79,7 @@ export default {
       if(this.show) {
         if (eXo && eXo.chat && eXo.chat.desktopNotificationSettings) {
           const notifSettings = eXo.chat.desktopNotificationSettings;
-          this.$refs.notifyDonotdistrub.checked = this.chatPreferences.notifyDonotdistrub = notifSettings.preferredNotificationTrigger.indexOf(this.$constants.NOT_DISTRUB_NOTIF) < 0 ? false : true;
+          this.$refs.notifyDonotdisturb.checked = this.chatPreferences.notifyDonotdisturb = notifSettings.preferredNotificationTrigger.indexOf(this.$constants.NOT_DISTURB_NOTIF) < 0 ? false : true;
           this.$refs.notifyOnSite.checked = this.chatPreferences.notifyOnSite = notifSettings.preferredNotification.indexOf(this.$constants.ON_SITE_NOTIF) < 0 ? false : true;
           this.$refs.notifyDesktop.checked = this.chatPreferences.notifyDesktop = notifSettings.preferredNotification.indexOf(this.$constants.DESKTOP_NOTIF) < 0 ? false : true;
           this.$refs.notifyBip.checked = this.chatPreferences.notifyBip = notifSettings.preferredNotification.indexOf(this.$constants.BIP_NOTIF) < 0 ? false : true;
@@ -107,13 +107,13 @@ export default {
       const preferredNotificationTrigger = [];
       const preferredNotification = [];
 
-      this.chatPreferences.notifyDonotdistrub = this.$refs.notifyDonotdistrub.checked;
+      this.chatPreferences.notifyDonotdisturb = this.$refs.notifyDonotdisturb.checked;
       this.chatPreferences.notifyDesktop = this.$refs.notifyDesktop.checked;
       this.chatPreferences.notifyOnSite = this.$refs.notifyOnSite.checked;
       this.chatPreferences.notifyBip = this.$refs.notifyBip.checked;
 
-      if (this.originalChatPreferences.notifyDonotdistrub !== this.chatPreferences.notifyDonotdistrub) {
-        preferredNotificationTrigger.push(this.$constants.NOT_DISTRUB_NOTIF);
+      if (this.originalChatPreferences.notifyDonotdisturb !== this.chatPreferences.notifyDonotdisturb) {
+        preferredNotificationTrigger.push(this.$constants.NOT_DISTURB_NOTIF);
       }
       if (this.originalChatPreferences.notifyDesktop !== this.chatPreferences.notifyDesktop) {
         preferredNotification.push(this.$constants.DESKTOP_NOTIF);

@@ -47,7 +47,7 @@ export default {
       type: String,
       default: ''
     },
-    /** Contact status: offline, invisible, available, away, donotdistrub*/
+    /** Contact status: offline, invisible, available, away, donotdisturb*/
     status: {
       type: String,
       default: ''
@@ -91,7 +91,7 @@ export default {
       statusMap : {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
-        donotdistrub: this.$t('exoplatform.chat.donotdisturb'),
+        donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
       }

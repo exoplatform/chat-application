@@ -44,17 +44,17 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     expect(cmp.findAll('.notification-item').at(2).html()).toContain('exoplatform.chat.desktopNotif.global.onsite');
     expect(cmp.findAll('.notification-item').at(3).html()).toContain('exoplatform.chat.desktopNotif.global.beep');
 
-    expect(cmp.find('#notifyDonotdistrub').element.checked).toBe(cmp.vm.chatPreferences.notifyDonotdistrub);
+    expect(cmp.find('#notifyDonotdisturb').element.checked).toBe(cmp.vm.chatPreferences.notifyDonotdisturb);
     expect(cmp.find('#notifyDesktop').element.checked).toBe(cmp.vm.chatPreferences.notifyDesktop);
     expect(cmp.find('#notifyOnSite').element.checked).toBe(cmp.vm.chatPreferences.notifyOnSite);
     expect(cmp.find('#notifyBip').element.checked).toBe(cmp.vm.chatPreferences.notifyBip);
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeFalsy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeTruthy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeFalsy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeTruthy();
@@ -63,7 +63,7 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
   it('test ExoChatGlobalNotificationModal DOM with different settings', () => {
     const cmp = getComponent(false);
     eXo.chat.desktopNotificationSettings = {
-      preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
+      preferredNotificationTrigger: [chatConstants.NOT_DISTURB_NOTIF],
       preferredNotification: [
         chatConstants.ON_SITE_NOTIF,
         chatConstants.DESKTOP_NOTIF,
@@ -76,18 +76,18 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     cmp.vm.show = true;
     cmp.update();
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeTruthy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeTruthy();
 
     eXo.chat.desktopNotificationSettings = {
-      preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
+      preferredNotificationTrigger: [chatConstants.NOT_DISTURB_NOTIF],
       preferredNotification: [
         chatConstants.ON_SITE_NOTIF,
         chatConstants.BIP_NOTIF
@@ -98,18 +98,18 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     cmp.vm.show = true;
     cmp.update();
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeTruthy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeTruthy();
 
     eXo.chat.desktopNotificationSettings = {
-      preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
+      preferredNotificationTrigger: [chatConstants.NOT_DISTURB_NOTIF],
       preferredNotification: [
         chatConstants.BIP_NOTIF
       ]
@@ -119,19 +119,19 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     cmp.vm.show = true;
     cmp.update();
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeTruthy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeTruthy();
 
 
     eXo.chat.desktopNotificationSettings = {
-      preferredNotificationTrigger: [chatConstants.NOT_DISTRUB_NOTIF],
+      preferredNotificationTrigger: [chatConstants.NOT_DISTURB_NOTIF],
       preferredNotification: []
     };
     cmp.vm.show = false;
@@ -139,12 +139,12 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     cmp.vm.show = true;
     cmp.update();
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeFalsy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeTruthy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeTruthy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeFalsy();
@@ -158,12 +158,12 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     cmp.vm.show = true;
     cmp.update();
 
-    expect(cmp.vm.chatPreferences.notifyDonotdistrub).toBeFalsy();
+    expect(cmp.vm.chatPreferences.notifyDonotdisturb).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.chatPreferences.notifyBip).toBeFalsy();
 
-    expect(cmp.vm.originalChatPreferences.notifyDonotdistrub).toBeFalsy();
+    expect(cmp.vm.originalChatPreferences.notifyDonotdisturb).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyDesktop).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyOnSite).toBeFalsy();
     expect(cmp.vm.originalChatPreferences.notifyBip).toBeFalsy();
@@ -179,7 +179,7 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
     let notifyOnSiteSaved = false;
     let notifyBipSaved = false;
     global.fetch = jest.fn().mockImplementation((url) => {
-      if(url.indexOf(`notifManners=${chatConstants.NOT_DISTRUB_NOTIF}`) >= 0) {
+      if(url.indexOf(`notifManners=${chatConstants.NOT_DISTURB_NOTIF}`) >= 0) {
         notifsMannerSaved = true;
       }
       if(url.indexOf(`notifConditions=${chatConstants.ON_SITE_NOTIF}`) >= 0) {
@@ -203,7 +203,7 @@ describe('ExoChatGlobalNotificationModal.test.js', () => {
       });
       return p;
     });
-    cmp.find('#notifyDonotdistrub').element.checked = true;
+    cmp.find('#notifyDonotdisturb').element.checked = true;
     cmp.vm.saveNotificationSettings();
     expect(cmp.emitted('close-modal')).toHaveLength(1);
 

@@ -29,7 +29,7 @@ describe('ExoChatContact.test.js', () => {
       propsData: {
         name : 'John Smith',
         userName: 'smith',
-        status: 'donotdistrub',
+        status: 'donotdisturb',
         list: true,
         type: 'u'
       },
@@ -61,8 +61,8 @@ describe('ExoChatContact.test.js', () => {
     expect(currentUser.contains(ExoDropdownSelect)).toBe(true);
   });
 
-  it('contactionList has user-donotdistrub css class', () => {
-    expect(contactionList.find('.chat-contact-avatar').classes()).toContain('user-donotdistrub');
+  it('contactionList has user-donotdisturb css class', () => {
+    expect(contactionList.find('.chat-contact-avatar').classes()).toContain('user-donotdisturb');
   });
 
   it('selected room has number members', () => {

@@ -21,15 +21,15 @@ function containKeyWord(message, keywords) {
 }
 
 function canNotifySwitchStatus() {
-  return canBypassDonotDistrub() || canBypassStatusCondition();
+  return canBypassDonotDisturb() || canBypassStatusCondition();
 }
 
 function canBypassStatusCondition() {
   return eXo.chat.userSettings.status !== 'donotdisturb' && eXo.chat.userSettings.status !== 'offline';
 }
 
-function canBypassDonotDistrub() {
-  return eXo.chat.userSettings.status !== 'donotdisturb' || eXo.chat.desktopNotificationSettings.preferredNotificationTrigger.indexOf('notify-even-not-distrub') !== -1;
+function canBypassDonotDisturb() {
+  return eXo.chat.userSettings.status !== 'donotdisturb' || eXo.chat.desktopNotificationSettings.preferredNotificationTrigger.indexOf('notify-even-not-disturb') !== -1;
 }
 
 function canPlaySound() {
@@ -86,7 +86,7 @@ function unifyMessageFormat(messageObj, message) {
   }
 }
 
-function notfy(e) {
+function notify(e) {
   const messageObj = e.detail;
   const message = messageObj.data;
   unifyMessageFormat(messageObj, message);
@@ -103,7 +103,7 @@ function notfy(e) {
     }
     localStorage.setItem(`lastNotify-${message.room}`, message.msgId);
 
-    const notify = {
+    const notification = {
       roomType: message.roomType,
       options: message.options,
       roomDisplayName: message.roomDisplayName,
@@ -112,12 +112,12 @@ function notfy(e) {
       from: message.user
     };
 
-    if (canNotifySwitchStatus() && canBypassRoomNotif(notify)) {
+    if (canNotifySwitchStatus() && canBypassRoomNotif(notification)) {
       if (canPlaySound()) {
         $('#chat-audio-notif')[0].play();
       }
       if (canShowDesktopNotif()) {
-        showDesktopNotif(eXo.chat.userSettings.chatPage, notify);
+        showDesktopNotif(eXo.chat.userSettings.chatPage, notification);
       }
     }
   });
@@ -175,6 +175,6 @@ function showDesktopNotif(path, msg) {
 }
 
 export function initDesktopNotifications() {
-  document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, notfy);
-  document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, notfy);
+  document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, notify);
+  document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, notify);
 }

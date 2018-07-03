@@ -18,7 +18,7 @@ export const chatConstants = {
   ON_SITE_NOTIF: 'on-site',
   DESKTOP_NOTIF: 'desktop',
   BIP_NOTIF: 'bip',
-  NOT_DISTRUB_NOTIF: 'notify-even-not-distrub',
+  NOT_DISTURB_NOTIF: 'notify-even-not-disturb',
   TYPE_FILTER_PARAM: 'exo.chat.type.filter',
   TYPE_FILTER_DEFAULT: 'All',
   SORT_FILTER_PARAM: 'exo.chat.sort.filter',

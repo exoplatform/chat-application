@@ -167,7 +167,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
-      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
+      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTURB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
         BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;

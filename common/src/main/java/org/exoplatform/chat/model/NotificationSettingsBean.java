@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
  */
 /*
 *  "notificationsSettings" : {
-	"enabledTriggers": ["notify-even-not-distrub"],
+	"enabledTriggers": ["notify-even-not-disturb"],
 	"enabledChannels": ["desktop", "on-site"],
 	"rooms" : {
 		"f223373a3614ab887e84b7be01713cb491dbbdda" : {
