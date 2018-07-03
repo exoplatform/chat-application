@@ -113,7 +113,9 @@ export default {
         case this.$constants.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
         case this.$constants.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
         default:
-          content = this.specificMessageContent;
+          if (this.isSpecificMessageType) {
+            content = this.specificMessageContent;
+          }
         }
         content = `<a href='#'>${content}</a>`;
       } else {
