@@ -19,9 +19,9 @@ export function initTiptip() {
       </a>`);
     }
   });
-  if ($('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.spaceName) {
+  if ($('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.spaceGroup) {
     $('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').append(`<li>
-        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_MINI_CHAT}', {detail: {name: '${eXo.env.portal.spaceName}', type: 'space-name'}}))" \
+        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_MINI_CHAT}', {detail: {name: '${eXo.env.portal.spaceGroup}', type: 'space-name'}}))" \
         class="chat-button btn" href="javascript:void(0);"> \
           <i class="uiIconBannerChat"></i> \
           <span class="chat-label-status">&nbsp;Chat</span> \
