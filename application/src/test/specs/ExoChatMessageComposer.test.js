@@ -49,7 +49,7 @@ describe('ExoChatMessageComposer.test.js', () => {
 
   it('select emoji', () => {
     cmp.vm.selectEmoji({keys: [':)', ':-)'],class: 'emoticon-smile'});
-    expect(cmp.vm.$refs.messageComposerArea.value).toBe(':)');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe(' :) ');
   });
 
   it('send message', () => {

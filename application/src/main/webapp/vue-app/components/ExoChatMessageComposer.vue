@@ -105,7 +105,7 @@ export default {
     selectEmoji(emoji) {
       let emojiKey = emoji.keys[0];
       const $composer = $(this.$refs.messageComposerArea);
-      emojiKey = $composer.text().split(/\s/).slice(-1)[0] === '' ? emojiKey : ` ${emojiKey}`;
+      emojiKey = ` ${emojiKey} `;
       $composer.insertAtCaret(emojiKey);
       this.closeEmojiPanel();
     },

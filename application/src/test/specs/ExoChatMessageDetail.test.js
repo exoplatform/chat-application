@@ -71,7 +71,7 @@ describe('ExoChatMessageDetail.test.js', () => {
   });
 
   it('get displayed message filtered', () => {
-    expect(cmp.vm.messageFiltered.trim()).toBe('Test Message <span class="chat-emoticon emoticon-smile"></span>');
+    expect(cmp.vm.messageFiltered.trim()).toBe('Test Message <span class="chat-emoticon emoticon-smile"><span>:)</span></span>');
   });
 
   it('not specific message type', () => {

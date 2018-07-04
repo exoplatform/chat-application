@@ -254,7 +254,7 @@ export default {
         this.setScrollToBottom();
       }
 
-      const index = this.messages.findIndex(messageObj => (messageObj.clientId && messageObj.clientId === message.clientId) || (messageObj.msgId && messageObj.msgId === message.msgId));
+      const index = this.messages.findIndex(messageObj => messageObj.clientId && messageObj.clientId === message.clientId || messageObj.msgId && messageObj.msgId === message.msgId);
       if (index > -1) {
         this.messages.splice(index, 1, message);
       } else {
