@@ -142,12 +142,6 @@ export default {
       default: function() {
         return {};
       }
-    },
-    totalEntriesToLoad: {
-      type: Number,
-      default: function() {
-        return this.$constants.CONTACTS_PER_PAGE;
-      }
     }
   },
   data : function() {
@@ -175,6 +169,7 @@ export default {
         name: '',
         participants: []
       },
+      totalEntriesToLoad: this.$constants.CONTACTS_PER_PAGE,
       contactMenu: null,
       contactMenuClosed: true,
       filterMenuClosed: true
