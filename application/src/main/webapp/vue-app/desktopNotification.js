@@ -127,15 +127,15 @@ function notify(e) {
 }
 
 function showDesktopNotif(path, msg) {
+  if (!window.Notification) {
+    return;
+  }
+
   let displayMsg = highlightMessage(msg);
   displayMsg = $('<div />').html(displayMsg).text();
 
   if (Notification.permission !== 'granted') {
     Notification.requestPermission();
-  }
-
-  if (!Notification) {
-    return;
   }
 
   if (Notification.permission !== 'granted') {
