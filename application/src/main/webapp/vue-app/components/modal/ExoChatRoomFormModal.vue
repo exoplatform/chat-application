@@ -1,25 +1,35 @@
 <template>
-  <exo-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
-    <meta charset="utf-8">
-
-    <div class="add-room-form">
-      <label>{{ $t('exoplatform.chat.team.name') }}</label>
-      <input v-model="fullName" type="text">
-      <label>{{ $t('exoplatform.chat.team.people') }}</label>
-      <input id="add-room-suggestor" type="text">
-      <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">
-        <div v-for="participant in otherParticiants" :key="participant.name" class="uiMention">
-          {{ participant.fullname }}
-          <span @click="removeSuggest(participant)"><i class="uiIconClose"></i></span>
+  <div>
+    <exo-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
+      <meta charset="utf-8">
+  
+      <div class="add-room-form">
+        <label>{{ $t('exoplatform.chat.team.name') }}</label>
+        <input v-model="fullName" type="text">
+        <label>{{ $t('exoplatform.chat.team.people') }}</label>
+        <input id="add-room-suggestor" type="text">
+        <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">
+          <div v-for="participant in otherParticiants" :key="participant.name" class="uiMention">
+            {{ participant.fullname }}
+            <span @click="removeSuggest(participant)"><i class="uiIconClose"></i></span>
+          </div>
         </div>
+        <span class="team-add-user-label">{{ $t('exoplatform.chat.team.help') }}</span>
       </div>
-      <span class="team-add-user-label">{{ $t('exoplatform.chat.team.help') }}</span>
-    </div>
-    <div class="uiAction uiActionBorder">
-      <button :disabled="disableSave" class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</button>
-      <button class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</button>
-    </div>
-  </exo-modal>
+      <div class="uiAction uiActionBorder">
+        <button :disabled="disableSave" class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</button>
+        <button class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</button>
+      </div>
+    </exo-modal>
+    <exo-modal v-show="showErrorModal" :title="errorModalTitle" :display-close="true" @modal-closed="showErrorModal = false">
+      <ul class="singleMessage popupMessage resizable">
+        <li><span class="errorIcon">{{ errorModalMessage }}</span></li>
+      </ul>
+      <div class="uiAction uiActionBorder">
+        <button class="btn btn-primary" @click="showErrorModal = false">{{ $t('exoplatform.chat.close') }}</button>
+      </div>
+    </exo-modal>
+  </div>
 </template>
 
 <script>
@@ -47,7 +57,10 @@ export default {
   data() {
     return {
       participants: [],
-      fullName: ''
+      fullName: '',
+      showErrorModal: false,
+      errorModalTitle: '',
+      errorModalMessage: ''
     };
   },
   computed: {
@@ -180,10 +193,29 @@ export default {
           users.unshift(eXo.chat.userSettings.username);
         }
         users = users.join(',');
-        chatServices.saveRoom(eXo.chat.userSettings,  this.fullName, users, this.selected.room).then((roomDetails) => {
-          this.$emit('room-saved', roomDetails.room);
-        });
-        this.closeModal();
+        chatServices.saveRoom(eXo.chat.userSettings,  this.fullName, users, this.selected.room)
+          .then(resp => {
+            const HTTP_OK_CODE = 200;
+            if(resp.status === HTTP_OK_CODE) {
+              return resp.json();
+            } else {
+              return resp.text();
+            }
+          })
+          .then((response) => {
+            if (response && response.room) {
+              this.$emit('room-saved', response.room);
+              this.closeModal();
+            } else if(response === 'roomAlreadyExists.creator') {
+              this.errorModalTitle = this.$t('exoplatform.chat.ErrorRoomCreationTitle');
+              this.errorModalMessage = this.$t('exoplatform.chat.CreatorErrorRoomCreationMessage');
+              this.showErrorModal = true;
+            } else if(response === 'roomAlreadyExists.notCreator') {
+              this.errorModalTitle = this.$t('exoplatform.chat.ErrorRoomCreationTitle');
+              this.errorModalMessage = this.$t('exoplatform.chat.NotCreatorErrorRoomCreationMessage');
+              this.showErrorModal = true;
+            }
+          });
       }
     },
     closeModal() {

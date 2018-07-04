@@ -98,6 +98,15 @@ public interface ChatService
   public void setRoomName(String room, String name, String dbName);
 
   /**
+   * Get rooms by name
+   * 
+   * @param teamName
+   * @param dbName
+   * @return
+   */
+  public List<RoomBean> getTeamRoomsByName(String teamName, String dbName);
+
+  /**
    * Retrieve a Room by its ID
    * @param roomId the ID of the room
    * @param dbName the database to use for the query

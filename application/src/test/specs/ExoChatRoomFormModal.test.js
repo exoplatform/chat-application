@@ -71,7 +71,7 @@ describe('ExoChatRoomFormModal.test.js', () => {
     expect(cmp.vm.title).toContain('exoplatform.chat.team.edit');
     expect(cmp.vm.fullName).toBe('Test User');
 
-    expect(cmp.findAll(ExoModal)).toHaveLength(1);
+    expect(cmp.findAll(ExoModal)).toHaveLength(2);
     expect(cmp.find(ExoModal).element.style.display).toBe('');
     cmp.vm.show = false;
     cmp.update();

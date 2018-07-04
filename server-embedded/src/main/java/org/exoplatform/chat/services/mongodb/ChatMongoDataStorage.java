@@ -126,6 +126,34 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
+  @Override
+  public List<RoomBean> getTeamRoomByName(String teamName, String dbName) {
+    if (StringUtils.isBlank(teamName))
+      return null;
+    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject qRoom = new BasicDBObject();
+    qRoom.put("team", teamName);
+    qRoom.put("type", TYPE_ROOM_TEAM);
+    List<RoomBean> roomBeans = new ArrayList<>();
+    DBCursor roomsCursor = cRooms.find(qRoom);
+    while (roomsCursor.hasNext()) {
+      DBObject dbRoom = roomsCursor.next();
+      RoomBean room = new RoomBean();
+      room.setRoom((String) dbRoom.get("_id"));
+      room.setFullName((String) dbRoom.get("team"));
+      room.setUser((String) dbRoom.get("user"));
+      room.setType((String) dbRoom.get("type"));
+      if (StringUtils.isNotBlank(room.getUser())) {
+        room.setAdmins(new String[]{room.getUser()});
+      }
+      if (dbRoom.containsField("timestamp")) {
+        room.setTimestamp((Long) dbRoom.get("timestamp"));
+      }
+      roomBeans.add(room);
+    }
+    return roomBeans;
+  }
+
   public RoomBean getTeamRoomById(String roomId, String dbName) {
     if (roomId == null || roomId.isEmpty())
       return null;
@@ -526,7 +554,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       DBObject doc = cursor.next();
       roomType = doc.get("type");
     }
-    return roomType.toString();
+    return roomType == null ? "" : roomType.toString();
   }
 
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {

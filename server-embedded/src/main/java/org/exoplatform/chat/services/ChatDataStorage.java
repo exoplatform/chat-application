@@ -113,4 +113,13 @@ public interface ChatDataStorage
 
   public int getNumberOfMessages(String dbName);
 
+  /**
+   * Return rooms by name
+   * 
+   * @param teamName
+   * @param dbName
+   * @return
+   */
+  public List<RoomBean> getTeamRoomByName(String teamName, String dbName);
+
 }

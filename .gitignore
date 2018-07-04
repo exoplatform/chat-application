@@ -51,6 +51,7 @@ transaction.log
 
 chat-mongohq.properties
 rebel.xml
+.rebel.xml.bak
 target
 
 release.properties

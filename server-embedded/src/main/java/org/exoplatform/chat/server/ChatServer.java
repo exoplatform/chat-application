@@ -706,6 +706,19 @@ public class ChatServer
       // Room creation
       if (room==null || "".equals(room) || "---".equals(room))
       {
+        List<RoomBean> roomBeans =  chatService.getTeamRoomsByName(teamName, dbName);
+        if (roomBeans != null && !roomBeans.isEmpty()) {
+          for (RoomBean roomBean : roomBeans) {
+            if (user.equals(roomBean.getUser())) {
+              return Response.content(400, "roomAlreadyExists.creator");
+            } else {
+              List<String> existingUsers = userService.getUsersFilterBy(null, roomBean.getRoom(), ChatService.TYPE_ROOM_TEAM, dbName);
+              if (existingUsers != null && existingUsers.contains(user)) {
+                return Response.content(400, "roomAlreadyExists.notCreator");
+              }
+            }
+          }
+        }
         room = chatService.getTeamRoom(teamName, user, dbName);
       }
       // Only creator can edit members or set team name

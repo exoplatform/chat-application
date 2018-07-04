@@ -245,7 +245,7 @@ export function saveRoom(userSettings, roomName, users, room) {
     },
     method: 'post',
     body: decodeURI($.param(data))
-  }).then(resp =>  resp.json());
+  });
 }
 
 export function getUserAvatar(user) {

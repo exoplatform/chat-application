@@ -169,6 +169,11 @@ public class ChatServiceImpl implements ChatService
     return chatStorage.getTeamRoomById(roomId, dbName);
   }
 
+  @Override
+  public List<RoomBean> getTeamRoomsByName(String teamName, String dbName) {
+    return chatStorage.getTeamRoomByName(teamName, dbName);
+  }
+
   public void deleteTeamRoom(String room, String user, String dbName) {
     List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM, dbName);
 
