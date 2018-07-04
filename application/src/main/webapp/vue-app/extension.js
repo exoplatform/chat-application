@@ -79,11 +79,27 @@ export const DEFAULT_COMPOSER_APPS = [
       if (!/^(https?|ftp):\/\//i.test(text)) {
         text = `http://${text}`; // set both the value
       }
+      const pattern = new RegExp('^((https?:)?\\/\\/)?'+ // protocol
+        '(?:\\S+(?::\\S*)?@)?' + // authentication
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locater
+      if(!pattern.test(text)) {
+        return false;
+      } 
       return text;
     },
     submit(chatServices, message, formData) {
-      message.options.link = this.checkURL(formData['link']);
-      return {ok: true};
+      const checkURL = this.checkURL(formData['link']);
+      if (checkURL) {
+        message.options.link = checkURL;
+        return {ok: true};
+      }
+      else {
+        return {errorCode : 'link.invalid.message'};
+      }
     }
   },
   {
