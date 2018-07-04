@@ -260,6 +260,7 @@ document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
 
   if(message && message.data && message.data.sessionId === cometDSettings.sessionId) {
     cometDSettings.cCometD.disconnect();
+    cometDSettings.cCometD.explicitlyDisconnected = true;
   }
 });
 
