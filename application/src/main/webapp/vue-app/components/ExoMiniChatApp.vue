@@ -104,6 +104,8 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
+
+      this.userSettings.statusLabels = this.statusMap;
     },
     userLoggedout() {
       if (!chatWebSocket.isConnected()) {

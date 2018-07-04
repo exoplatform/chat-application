@@ -348,9 +348,9 @@ export const DEFAULT_ROOM_ACTIONS = [{
   },
   confirm: {
     title: 'exoplatform.chat.team.leave',
-    message: 'exoplatform.chat.team.leave.confirm',
-    okMessage: 'exoplatform.chat.team.leave.confirm.yes',
-    koMessage: 'exoplatform.chat.team.leave.confirm.no',
+    message: 'exoplatform.chat.team.leave.message',
+    okMessage: 'exoplatform.chat.team.leave.ok',
+    koMessage: 'exoplatform.chat.team.leave.ko',
     confirmed(contact) {
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_LEAVE, {'detail': contact}));
     }

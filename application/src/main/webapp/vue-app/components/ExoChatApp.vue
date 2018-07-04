@@ -185,7 +185,10 @@ export default {
     },
     setStatus(status) {
       if (chatWebSocket && chatWebSocket.isConnected()) {
-        chatWebSocket.setStatus(status, newStatus => {this.userSettings.status = newStatus; this.userSettings.originalStatus = newStatus;});
+        chatWebSocket.setStatus(status, newStatus => {
+          this.userSettings.status = newStatus;
+          this.userSettings.originalStatus = newStatus;
+        });
       }
     },
     userLoggedout() {

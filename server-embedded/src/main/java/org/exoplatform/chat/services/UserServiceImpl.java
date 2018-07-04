@@ -20,6 +20,10 @@
 package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.*;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.user.UserStateModel;
+import org.exoplatform.services.user.UserStateService;
+
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
@@ -159,10 +163,6 @@ public class UserServiceImpl implements UserService {
     userStorage.removeTeamUsers(teamRoomId, users, dbName);
   }
 
-  private RoomBean getTeam(String teamId, String dbName) {
-    return getTeam(teamId, dbName);
-  }
-
   public List<RoomBean> getTeams(String user, String dbName) {
     return userStorage.getTeams(user, dbName);
   }
@@ -192,7 +192,14 @@ public class UserServiceImpl implements UserService {
   }
 
   public String setStatus(String user, String status, String dbName) {
-    return userStorage.setStatus(user, status, dbName);
+    String newStoredStatus = userStorage.setStatus(user, status, dbName);
+    UserStateService userStateService = CommonsUtils.getService(UserStateService.class);
+    UserStateModel userState = userStateService.getUserState(user);
+    if (userState != null) {
+      userState.setStatus(status);
+      userStateService.save(userState);
+    }
+    return newStoredStatus;
   }
 
   public void setAsAdmin(String user, boolean isAdmin, String dbName) {

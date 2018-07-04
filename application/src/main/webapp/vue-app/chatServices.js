@@ -51,6 +51,8 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
     eXo.chat.userSettings = userSettings;
     initSettings(username, userSettings, userSettingsLoadedCallback);
   });
+
+  document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, setProfileStatus);
 }
 
 export function initSettings(username, userSettings, userSettingsLoadedCallback) {
@@ -71,6 +73,18 @@ export function updateTotalUnread(totalUnreadMsg) {
     document.title = `Chat (${totalUnreadMsg})`;
   } else {
     document.title = 'Chat';
+  }
+}
+
+export function setProfileStatus(event) {
+  const contactChanged = event.detail;
+  const status = contactChanged.data ? contactChanged.data.status : contactChanged.status;
+  const username = contactChanged.sender;
+  if (username && status) {
+    const $profileMenuStatusBtn = $(`.uiProfileMenu .profileMenuNavHeader [data-userid='${username}'] i`);
+    if($profileMenuStatusBtn.length) {
+      updateStatusElement($profileMenuStatusBtn, status, eXo.chat.userSettings.statusLabels ? eXo.chat.userSettings.statusLabels[status] : '');
+    }
   }
 }
 
@@ -332,4 +346,18 @@ export function saveEvent(userSettings, data, target) {
 export function getBaseURL() {
   const port = !window.location.port || window.location.port === DEFAULT_HTTP_PORT ? '':`:${  window.location.port}`;
   return `${window.location.protocol  }//${  window.location.hostname  }${port}`;
+}
+
+function updateStatusElement($profileMenuStatusBtn, status,  statusTitle) {
+  $profileMenuStatusBtn.removeClass('uiIconUserAvailable uiIconUserOnline uiIconUserInvisible uiIconUserOffline uiIconUserAway uiIconUserDonotdisturb');
+  if (status === 'available') {
+    $profileMenuStatusBtn.addClass('uiIconUserAvailable');
+  } else if (status === 'away') {
+    $profileMenuStatusBtn.addClass('uiIconUserAway');
+  } else if (status === 'donotdisturb') {
+    $profileMenuStatusBtn.addClass('uiIconUserDonotdisturb');
+  } else if (status === 'invisible') {
+    $profileMenuStatusBtn.addClass('uiIconUserInvisible');
+  }
+  $profileMenuStatusBtn.attr('data-original-title', statusTitle);
 }

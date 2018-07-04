@@ -5,12 +5,28 @@
     <portlet-skin>
         <application-name>chat</application-name>
         <portlet-name>ChatApplication</portlet-name>
+        <skin-name>Enterprise</skin-name>
         <css-path>/css/chat.css</css-path>
     </portlet-skin>
 
     <portlet-skin>
         <application-name>chat</application-name>
         <portlet-name>ChatNotificationApplication</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatApplication</portlet-name>
+        <skin-name>Default</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatNotificationApplication</portlet-name>
+        <skin-name>Default</skin-name>
         <css-path>/css/chat.css</css-path>
     </portlet-skin>
 

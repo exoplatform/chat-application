@@ -13,7 +13,7 @@
       <div v-else-if="message.options.type === this.$constants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === this.$constants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.userLeft', {0: message.options.fullName}))">
+      <div v-else-if="message.options.type === this.$constants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
       </div>
       <div v-else-if="message.options.type === this.$constants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
