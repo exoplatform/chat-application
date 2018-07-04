@@ -365,6 +365,12 @@ export function unescapeHtml(html) {
     .replace(/&quot;/g, '"');
 }
 
+export function encodeSpecialCharacters(word) {
+  word = encodeURIComponent(word);
+  const ASCII = 16;
+  return word.replace(/[&<>"']/g, (w) => `%${w.charCodeAt(0).toString(ASCII)}`);
+}
+
 function updateStatusElement($profileMenuStatusBtn, status,  statusTitle) {
   $profileMenuStatusBtn.removeClass('uiIconUserAvailable uiIconUserOnline uiIconUserInvisible uiIconUserOffline uiIconUserAway uiIconUserDonotdisturb');
   if (status === 'available') {
