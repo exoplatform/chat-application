@@ -65,4 +65,3 @@ cache/data
 
 *.classpath
 *.project
-*package-lock.json
