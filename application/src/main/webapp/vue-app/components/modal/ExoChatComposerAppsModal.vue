@@ -104,6 +104,7 @@ export default {
       if (this.app.validate) {
         this.errorCode = this.app.validate(formData);
         if(this.errorCode) {
+          this.sendingMessage = false;
           return;
         }
       }

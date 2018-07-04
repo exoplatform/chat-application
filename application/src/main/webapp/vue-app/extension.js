@@ -43,6 +43,46 @@ export const DEFAULT_COMPOSER_APPS = [
         </div> \
         <input name="location" class="large" type="text" placeholder="Location" required> `;
     },
+    validate(formData) {
+      const startDateParts = formData['startDate'].split('/');
+      const startTime = formData['startTime'];
+      const endDateParts = formData['endDate'].split('/');
+      const endTime = formData['endTime'];
+
+      // To avoid magic-number eslint verification
+      const THIRD_INDEX = 2;
+      const START_YEAR = 1900;
+
+      const startMonth = parseInt(startDateParts[0]) - 1;
+      const startDay = parseInt(startDateParts[1]);
+      const startYear = parseInt(startDateParts[THIRD_INDEX]) - START_YEAR;
+      let startHour = 0;
+      let startMinutes = 0;
+      const endMonth = parseInt(endDateParts[0]) - 1;
+      const endDay = parseInt(endDateParts[1]);
+      const endYear = parseInt(endDateParts[THIRD_INDEX]) - START_YEAR;
+      let endHour = 0;
+      let endMinutes = 0;
+      if (startTime !== 'all-day') {
+        const startTimeParts = startTime.split(':');
+        startHour = parseInt(startTimeParts[0]);
+        startMinutes = parseInt(startTimeParts[1]);
+      }
+      if (endTime === 'all-day') {
+        const MAX_HOURS = 22;
+        const MAX_MINUTES = 59;
+        endHour = MAX_HOURS;
+        endMinutes = MAX_MINUTES;
+      } else {
+        const endTimeParts = endTime.split(':');
+        endHour = parseInt(endTimeParts[0]);
+        endMinutes = parseInt(endTimeParts[1]);
+      }
+
+      if (Date.UTC(endYear, endMonth, endDay, endHour, endMinutes) <= Date.UTC(startYear, startMonth, startDay, startHour, startMinutes)) {
+        return 'compareddate.invalid.message';
+      }
+    },
     submit(chatServices, message, formData, contact) {
       if (formData.startTime === 'all-day') {
         formData.startTime = '00:00';
