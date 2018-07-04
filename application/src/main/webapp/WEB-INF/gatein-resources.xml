@@ -34,7 +34,7 @@
         <name>ChatApplication</name>
         <module>
             <depends>
-                <module>chat</module>
+                <module>chatBundle</module>
             </depends>
         </module>
     </portlet>
@@ -43,13 +43,13 @@
         <name>ChatNotificationApplication</name>
         <module>
             <depends>
-                <module>chat</module>
+                <module>chatBundle</module>
             </depends>
         </module>
     </portlet>
 
     <module>
-        <name>chat</name>
+        <name>chatBundle</name>
         <script>
             <minify>false</minify>
             <path>/js/chat.bundle.js</path>
