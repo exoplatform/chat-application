@@ -158,6 +158,10 @@
       > * {
         display: table-cell;
         padding-right: 10px;
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) { // hack for IE11
+          display: inline-block;
+          min-width: 40px;
+        }
       }
       > span {
         text-align: right;
