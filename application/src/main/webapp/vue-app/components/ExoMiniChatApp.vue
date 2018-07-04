@@ -32,20 +32,6 @@ export default {
     'exo-chat-notif-list': ExoMiniChatNotifList,
     'exo-chat-room': ExoMiniChatRoom
   },
-  props: {
-    statusMap: {
-      type: Object,
-      default: function() {
-        return {
-          available: this.$t('exoplatform.chat.available'),
-          away: this.$t('exoplatform.chat.away'),
-          donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
-          invisible: this.$t('exoplatform.chat.invisible'),
-          offline: this.$t('exoplatform.chat.button.offline')
-        };
-      }
-    }
-  },
   data() {
     return {
       status: 'offline',
@@ -105,7 +91,13 @@ export default {
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
 
-      this.userSettings.statusLabels = this.statusMap;
+      this.userSettings.statusLabels = {
+        available: this.$t('exoplatform.chat.available'),
+        away: this.$t('exoplatform.chat.away'),
+        donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
+        invisible: this.$t('exoplatform.chat.button.offline'),
+        offline: this.$t('exoplatform.chat.button.offline')
+      };
     },
     userLoggedout() {
       if (!chatWebSocket.isConnected()) {
