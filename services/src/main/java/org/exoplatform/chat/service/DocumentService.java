@@ -68,7 +68,7 @@ public class DocumentService implements ResourceContainer {
 
   private ActivityCommonService  activityService_;
 
-  private int                    uploadLimit            = 200;
+  private int                    uploadLimit            = 100;
 
   public DocumentService(RepositoryService repositoryService,
                          SessionProviderService sessionProviderService,

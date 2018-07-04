@@ -32,7 +32,7 @@
         <init-params>
           <value-param>
             <name>upload.limit</name>
-            <value>${exo.chat.upload.limit:200}</value>
+            <value>${exo.chat.upload.limit:100}</value>
           </value-param>
         </init-params>
     </component>
