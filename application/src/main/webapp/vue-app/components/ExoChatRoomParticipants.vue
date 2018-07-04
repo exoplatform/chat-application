@@ -101,17 +101,13 @@ export default {
       let listParticipants = [];
       const offline = ['invisible', 'offline'];
       listParticipants = this.participants.filter(participant => {
-        return this.participantFilter === 'All' ||  ['available','busy','absent'].indexOf(participant.status) > -1;
+        return this.participantFilter === 'All' ||  offline.indexOf(participant.status) < 0;
       });
-      if (this.participantFilter === 'All') {
-        return listParticipants.sort((p1, p2) => {
-          if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
-            return 1;
-          }
-        });
-      } else {
-        return listParticipants;
-      }
+      return listParticipants.sort((p1, p2) => {
+        if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
+          return 1;
+        }
+      });
     },
     participantFilterClass() {
       return this.participantFilter === 'All';
