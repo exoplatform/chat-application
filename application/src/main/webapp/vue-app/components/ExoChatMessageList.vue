@@ -245,29 +245,20 @@ export default {
       if(!message || !message.room || !this.contact.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
+
       if (this.windowFocused) {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       }
+
       if(this.isScrollPositionAtEnd()) {
         this.setScrollToBottom();
       }
 
-      if (message.clientId) {
-        this.messages = this.messages.filter(messageObj => messageObj.clientId !== message.clientId);
+      const index = this.messages.findIndex(messageObj => (messageObj.clientId && messageObj.clientId === message.clientId) || (messageObj.msgId && messageObj.msgId === message.msgId));
+      if (index > -1) {
+        this.messages.splice(index, 1, message);
+      } else {
         this.messages.push(message);
-      } else if (message.type === 'EDITED') {
-        const messageModified = this.messages.find(messageObj => messageObj.msgId === message.msgId);
-        if (messageModified) {
-          messageModified.type = message.type;
-          messageModified.msg = message.msg;
-        }
-      } else if (message.type === 'DELETED') {
-        const messageDeleted = this.messages.find(messageObj => messageObj.msgId === message.msgId);
-        if (messageDeleted) {
-          messageDeleted.type = message.type;
-          messageDeleted.msg = message.msg;
-          messageDeleted.isDeleted = message.isDeleted;
-        }
       }
     },
     messageDeleted(e) {
