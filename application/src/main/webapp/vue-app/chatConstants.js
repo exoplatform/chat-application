@@ -71,7 +71,7 @@ export const chatConstants = {
   ACTION_ROOM_FAVORITE_REMOVE: 'exo-chat-setting-removeFromFavorite-requested',
   ACTION_ROOM_SHOW_PARTICIPANTS: 'exo-chat-setting-showParticipants-requested',
   ACTION_APPS_CLOSE: 'exo-chat-apps-close-requested',
-  ACTION_ROOM_OPEN_MINI_CHAT: 'exo-chat-room-open-mini-requested',
+  ACTION_ROOM_OPEN_CHAT: 'exo-chat-room-open-requested',
   EVENT_CONNECTED: 'exo-chat-connected',
   EVENT_DISCONNECTED: 'exo-chat-disconnected',
   EVENT_RECONNECTED: 'exo-chat-reconnected',

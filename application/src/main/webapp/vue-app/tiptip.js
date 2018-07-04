@@ -13,7 +13,7 @@ export function initTiptip() {
       divUIAction.append(`<a title="Chat"  \
         class="btn chatPopupOverlay chatPopup" \
         type="button" \
-        onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_MINI_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))"> \
+        onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))"> \
           <i class="uiIconBannerChat uiIconLightGray"></i> \
           Chat \
       </a>`);
@@ -21,7 +21,7 @@ export function initTiptip() {
   });
   if ($('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.spaceGroup) {
     $('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').append(`<li>
-        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_MINI_CHAT}', {detail: {name: '${eXo.env.portal.spaceGroup}', type: 'space-name'}}))" \
+        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${eXo.env.portal.spaceGroup}', type: 'space-name'}}))" \
         class="chat-button btn" href="javascript:void(0);"> \
           <i class="uiIconBannerChat"></i> \
           <span class="chat-label-status">&nbsp;Chat</span> \
@@ -29,7 +29,7 @@ export function initTiptip() {
       </li>`);
   } else if ($('.profileMenuNav .profileMenuNavHeader .profileMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.profileOwner && eXo.env.portal.profileOwner !== eXo.env.portal.userName) {
     $('.profileMenuNav .profileMenuNavHeader .profileMenuApps').append(`<li>
-        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_MINI_CHAT}', {detail: {name: '${eXo.env.portal.profileOwner}', type: 'username'}}))" \
+        <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${eXo.env.portal.profileOwner}', type: 'username'}}))" \
         class="chat-button btn" href="javascript:void(0);"> \
           <i class="uiIconBannerChat"></i> \
           <span class="chat-label-status">&nbsp;Chat</span> \

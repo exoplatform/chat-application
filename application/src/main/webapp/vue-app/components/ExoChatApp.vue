@@ -126,6 +126,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
+    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   destroyed() {
     document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -135,6 +136,7 @@ export default {
     document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   methods: {
     initSettings(userSettings) {
@@ -288,6 +290,19 @@ export default {
     },
     reloadPage() {
       window.location.reload();
+    },
+    openRoom(e) {
+      const roomName = e.detail ? e.detail.name : null;
+      const roomType = e.detail ? e.detail.type : null;
+      if(roomName && roomName.trim().length) {
+        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
+          this.setSelectedContact(rommId);
+        });
+      }
+      const tiptip = document.getElementById('tiptip_holder');
+      if (tiptip) {
+        tiptip.style.display = 'none';
+      }
     }
   }
 };

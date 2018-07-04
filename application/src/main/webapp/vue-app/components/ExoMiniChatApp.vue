@@ -22,7 +22,6 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
-import {initTiptip} from '../tiptip';
 
 import ExoMiniChatNotifList from './ExoMiniChatNotifList.vue';
 import ExoMiniChatRoom from './ExoMiniChatRoom.vue';
@@ -51,7 +50,6 @@ export default {
     }
   },
   created() {
-    initTiptip();
     chatServices.initChatSettings(this.userSettings.username,
       userSettings => this.initSettings(userSettings),
       data => {
@@ -68,7 +66,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_MINI_CHAT, this.openRoomInMiniChat);
+    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
 
     if (chatWebSocket.isConnected()) {
       this.connectionEstablished();
@@ -83,7 +81,7 @@ export default {
     document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_MINI_CHAT, this.openRoomInMiniChat);
+    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
   },
   methods: {
     initSettings(userSettings) {
