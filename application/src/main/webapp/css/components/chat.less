@@ -157,11 +157,11 @@
     content: "\e97d";
     visibility: visible;
   }
-  &:hover:before {
-    .hover({
+  .responsive-reverse(@mobile + 1, {
+    &:hover:before {
       visibility: visible;
-    })
-  }
+    }
+  });
 }
 
 .mobile-options {

@@ -159,11 +159,11 @@
   &.currentContactMenu {
     background: @currentContactMenuColor;
   }
-  &:hover .favorite:before {
-    .hover({
+  .responsive-reverse(@mobile + 1, {
+    &:hover .favorite:before {
       visibility: visible;
-    })
-  }
+    }
+  });
   .favorite {
     position: static;
     cursor: pointer;
