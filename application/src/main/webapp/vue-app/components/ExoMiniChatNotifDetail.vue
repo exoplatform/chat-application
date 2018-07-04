@@ -14,7 +14,7 @@
           {{ messageDate }}
         </div>
         <div v-if="notif.roomDisplayName && notif.roomDisplayName.length" class="team muted">
-          {{ notif.roomDisplayName }}
+          {{ unescapeHTML(notif.roomDisplayName) }}
         </div>
       </div>
     </div>
@@ -124,6 +124,11 @@ export default {
         }
       }
       return content;
+    }
+  },
+  methods: {
+    unescapeHTML(html) {
+      return chatServices.unescapeHtml(html);
     }
   }
 };

@@ -348,6 +348,23 @@ export function getBaseURL() {
   return `${window.location.protocol  }//${  window.location.hostname  }${port}`;
 }
 
+export function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+export function unescapeHtml(html) {
+  return html
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"');
+}
+
 function updateStatusElement($profileMenuStatusBtn, status,  statusTitle) {
   $profileMenuStatusBtn.removeClass('uiIconUserAvailable uiIconUserOnline uiIconUserInvisible uiIconUserOffline uiIconUserAway uiIconUserDonotdisturb');
   if (status === 'available') {

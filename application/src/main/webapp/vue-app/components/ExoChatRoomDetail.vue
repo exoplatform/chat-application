@@ -29,7 +29,7 @@
     <exo-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
-          <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage, {0: contact.fullName}))">
+          <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
           </span>
         </p>
       </div>
@@ -224,6 +224,9 @@ export default {
     },
     unescapeHTML(html) {
       return unescape(html);
+    },
+    escapeHTML(html) {
+      return chatServices.escapeHtml(html);
     },
     participantsLoaded() {
       this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;

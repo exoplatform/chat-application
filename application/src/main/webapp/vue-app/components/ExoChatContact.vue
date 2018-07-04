@@ -6,7 +6,7 @@
     </div>
     <div class="contactDetail">
       <div class="contactLabel">
-        <span v-html="name" />
+        <span v-html="escapedName" />
         <slot></slot>
       </div>
       <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import ExoDropdownSelect from './ExoDropdownSelect.vue';
 
 export default {
@@ -120,6 +120,9 @@ export default {
       } else {
         return '/chat/img/room-default.jpg';
       }
+    },
+    escapedName() {
+      return escapeHtml(this.name);
     }
   },
   created() {
