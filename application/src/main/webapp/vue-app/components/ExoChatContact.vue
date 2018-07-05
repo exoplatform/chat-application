@@ -118,7 +118,7 @@ export default {
       } else if (this.type === 's') {
         return getSpaceAvatar(encodeSpecialCharacters(this.name));
       } else {
-        return '/chat/img/room-default.jpg';
+        return this.$constants.DEFAULT_ROOM_AVATAR;
       }
     },
     escapedName() {
