@@ -694,6 +694,7 @@ public class ChatServer
 
     try {
       teamName = URLDecoder.decode(teamName,"UTF-8");
+      teamName = teamName.trim();
     } catch (UnsupportedEncodingException e) {
       LOG.info("Cannot decode message: " + teamName);
     }
