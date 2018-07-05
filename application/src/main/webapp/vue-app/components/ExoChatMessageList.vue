@@ -283,7 +283,7 @@ export default {
       let index = this.messages.length -1;
       while(!lastMessage && index >= 0) {
         const message = this.messages[index];
-        if(!message.isDeleted && !message.isSystem && message.user === eXo.chat.userSettings.username) {
+        if(!message.isDeleted && !message.type && !message.isSystem && message.user === eXo.chat.userSettings.username) {
           lastMessage = message;
         }
         index--;
