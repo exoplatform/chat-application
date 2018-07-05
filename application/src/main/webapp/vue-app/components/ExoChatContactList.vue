@@ -250,7 +250,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
     document.addEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
     document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.updateLastMessage);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.messageSent);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.addEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
     document.addEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
@@ -270,7 +270,7 @@ export default {
     document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
     document.removeEventListener(this.$constants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
     document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.updateLastMessage);
+    document.addEventListener(this.$constants.EVENT_MESSAGE_SENT, this.messageSent);
     document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.removeEventListener(this.$constants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
     document.removeEventListener(this.$constants.ACTION_ROOM_EDIT, this.editRoom);
@@ -379,7 +379,7 @@ export default {
         });
       }
     },
-    updateLastMessage(event) {
+    messageSent(event) {
       const message = event.detail;
       const foundContact = this.findContactByRoomOrUser(message.room, message.data ? message.data.user : message.sender);
       if(foundContact) {
@@ -387,6 +387,7 @@ export default {
           foundContact.lastMessage = {};
         }
         foundContact.lastMessage = message.data;
+        foundContact.timestamp = message.data.timestamp;
       }
     },
     roomSaved(room) {
