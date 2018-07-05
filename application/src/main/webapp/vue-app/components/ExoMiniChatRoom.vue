@@ -17,10 +17,10 @@
         </a>
       </div>
       <div class="title-left">
-        <span class="notify-info badgeDefault badgePrimary mini" style="display: none;">0</span> <span class="fullname">{{ selectedContact.fullName }}</span>
+        <span :class="{'hidden': !selectedContact.unreadTotal}" class="notify-info badgeDefault badgePrimary mini">{{ selectedContact.unreadTotal }}</span> <span class="fullname">{{ selectedContact.fullName }}</span>
       </div>
     </div>
-    <exo-chat-message-list :mini-chat="true"></exo-chat-message-list>
+    <exo-chat-message-list :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
   </div>
 </template>
 
@@ -48,12 +48,32 @@ export default {
   watch: {
     room() {
       this.refreshSelectedRoom();
+    },
+    minimized(value) {
+      if (!value) {
+        this.selectedContact.unreadTotal = 0;
+      }
     }
   },
   created() {
+    document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     this.refreshSelectedRoom();
   },
+  destroyed() {
+    document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+  },
   methods: {
+    messageReceived(e) {
+      if (!e || !e.detail) {
+        return;
+      }
+      const message = e.detail;
+      const user = message.data ? message.data.user : message.sender;
+      const room = message.room;
+      if (this.selectedContact && (this.selectedContact.room === room || this.selectedContact.user === user ) && this.minimized) {
+        this.selectedContact.unreadTotal ++;
+      }
+    },
     refreshSelectedRoom() {
       if (this.room) {
         chatServices.getRoomDetail(eXo.chat.userSettings, this.room).then(contact => {
@@ -65,7 +85,9 @@ export default {
           ) {
             this.selectedContact = contact;
             eXo.chat.selectedContact = contact;
-            document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
+            if (!this.minimized) {
+              document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
+            }
           }
         });
       } else {

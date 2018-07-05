@@ -42,6 +42,10 @@ export default {
     miniChat: {
       type: Boolean,
       default: false
+    },
+    minimized: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -82,6 +86,15 @@ export default {
     windowFocused(newValue) {
       if (newValue && this.contact && this.contact.room) {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+      }
+    },
+    minimized(value) {
+      if(this.contact && this.contact.room) {
+        if(!value) {
+          chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+          this.scrollToBottom = true;
+          this.scrollToEnd();
+        }
       }
     }
   },
@@ -246,7 +259,7 @@ export default {
         return;
       }
 
-      if (this.windowFocused) {
+      if (this.windowFocused && !this.minimized) {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       }
 
