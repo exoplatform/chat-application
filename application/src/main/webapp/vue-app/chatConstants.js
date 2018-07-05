@@ -94,3 +94,5 @@ export const chatConstants = {
   EVENT_USER_SETTINGS_LOADED: 'exo-chat-settings-loaded',
   EVENT_USER_STATUS_CHANGED: 'exo-chat-user-status-changed'
 };
+
+window.eXo.chat.constants = chatConstants;

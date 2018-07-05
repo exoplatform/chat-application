@@ -29,8 +29,6 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
   initTiptip();
 
-  eXo.chat.constants = chatConstants;
-
   document.addEventListener(chatConstants.EVENT_USER_SETTINGS_LOADED, (e) => {
     const settings = e.detail;
     // fetch online users then fetch chat rooms
