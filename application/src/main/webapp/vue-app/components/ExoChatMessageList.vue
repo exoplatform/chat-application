@@ -283,7 +283,7 @@ export default {
       let index = this.messages.length -1;
       while(!lastMessage && index >= 0) {
         const message = this.messages[index];
-        if(!message.isDeleted && !message.type && !message.isSystem && message.user === eXo.chat.userSettings.username) {
+        if(!message.isDeleted && message.type !== this.$constants.DELETED_MESSAGE && !message.isSystem && message.user === eXo.chat.userSettings.username) {
           lastMessage = message;
         }
         index--;
@@ -310,9 +310,14 @@ export default {
       });
     },
     saveMessage(event) {
-      if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
-        this.messageModified(this.messageToEdit);
-        this.showEditMessageModal = false;
+      if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY) {
+        if (event && (event.ctrlKey || event.altKey || event.shiftKey)) {
+          $(this.$refs.editMessageComposerArea).insertAtCaret('\n');
+        } else {
+          this.messageToEdit.msg = this.messageToEdit.msg.trim();
+          this.messageModified(this.messageToEdit);
+          this.showEditMessageModal = false;
+        }
       }
     },
     closeModal() {
@@ -322,11 +327,11 @@ export default {
       this.searchKeyword = e.detail.trim();
     },
     preventDefault(event) {
-      if (event.keyCode === this.$constants.ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+      if (event.keyCode === this.$constants.ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
       }
-    },
+    }
   }
 };
 </script>

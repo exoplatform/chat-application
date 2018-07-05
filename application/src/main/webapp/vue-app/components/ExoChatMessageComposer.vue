@@ -36,7 +36,6 @@ import ExoChatComposerAppsModal from './modal/ExoChatComposerAppsModal.vue';
 import * as chatServices from '../chatServices';
 import {getComposerApplications,EMOTICONS} from '../extension';
 
-const ENTER_CODE_KEY = 13;
 export default {
   components: {
     'exo-chat-apps-modal': ExoChatComposerAppsModal
@@ -110,7 +109,7 @@ export default {
       this.closeEmojiPanel();
     },
     preventDefault(event) {
-      if (event.keyCode === ENTER_CODE_KEY) {
+      if (event.keyCode === this.$constants.ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
       }
@@ -147,11 +146,12 @@ export default {
       this.$refs.messageComposerArea.value = '';
     },
     sendMessageWithKey(event) {
-      if (event.keyCode === ENTER_CODE_KEY && !event.shiftKey && !event.ctrlKey && !event.altKey) {
-        this.sendMessage();
-      }
-      if (event.keyCode === ENTER_CODE_KEY && (event.ctrlKey || event.altKey || event.shiftKey)) {
-        $(this.$refs.messageComposerArea).insertAtCaret('\n');
+      if (event && event.keyCode === this.$constants.ENTER_CODE_KEY) {
+        if (event.ctrlKey || event.altKey || event.shiftKey) {
+          $(this.$refs.messageComposerArea).insertAtCaret('\n');
+        } else {
+          this.sendMessage();
+        }
       }
     },
     quoteMessage(e) {
