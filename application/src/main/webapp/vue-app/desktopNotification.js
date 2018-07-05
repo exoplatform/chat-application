@@ -104,7 +104,9 @@ function notify(e) {
   const messageObj = e.detail;
   const message = messageObj.data;
   unifyMessageFormat(messageObj, message);
-  if (message.user === eXo.chat.userSettings.username) {
+  if (!message || message.user === eXo.chat.userSettings.username
+      || message.type === chatConstants.EDITED_MESSAGE
+      || message.type === chatConstants.DELETED_MESSAGE) {
     return;
   }
 
