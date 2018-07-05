@@ -78,7 +78,15 @@ export default {
   },
   updated() {
     if (this.mq === 'desktop') { // set autofocus only on desktop
-      this.$nextTick(() => this.$refs.messageComposerArea.focus());
+      this.$nextTick(() => {
+        this.$refs.messageComposerArea.focus();
+
+        getComposerApplications().forEach(application => {
+          if(application.mount) {
+            application.mount($, chatServices);
+          }
+        });
+      });
     }
   },
   created() {
