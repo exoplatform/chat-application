@@ -68,8 +68,10 @@ export function getNotSentMessages(username) {
 function getSortedNotSentMessages(username) {
   const notSentMessages = getNotSentMessages(username);
   if(notSentMessages) {
-    const notSentMessagesArray = Object.values(notSentMessages);
-    if(notSentMessagesArray.length > 1) {
+    const notSentMessagesKeys = Object.keys(notSentMessages);
+    const notSentMessagesArray = [];
+    if(notSentMessagesKeys.length > 1) {
+      notSentMessagesKeys.forEach(key => notSentMessagesArray.push(notSentMessages[key]));
       notSentMessagesArray.sort((a, b) => a.timestamp - b.timestamp);
     }
     return notSentMessagesArray;
