@@ -1,4 +1,5 @@
 import {chatConstants} from './chatConstants.js';
+import {getComposerApplications} from './extension.js';
 
 const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
 const ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = 'keywords';
@@ -58,22 +59,32 @@ function highlightMessage(msgObject) {
   let highlightedMsg = msgObject.content;
 
   if (msgObject.options) {
-    switch (msgObject.options.type) {
-    case 'type-event':
-      highlightedMsg = msgObject.options.summary;
-      break;
-    case 'type-hand':
-      highlightedMsg = `raises hand: ${msgObject.content}`;
-      break;
-    case 'type-link':
-      highlightedMsg = msgObject.options.link;
-      break;
-    case 'type-meeting-start':
-      highlightedMsg = 'Start Meeting';
-      break;
-    case 'type-meeting-stop':
-      highlightedMsg = 'End Meeting';
-      break;
+    if (msgObject.options.type) {
+      switch (msgObject.options.type) {
+      case 'type-event':
+        highlightedMsg = msgObject.options.summary;
+        break;
+      case 'type-hand':
+        highlightedMsg = `raises hand: ${msgObject.content}`;
+        break;
+      case 'type-link':
+        highlightedMsg = msgObject.options.link;
+        break;
+      case 'type-meeting-start':
+        highlightedMsg = 'Start Meeting';
+        break;
+      case 'type-meeting-stop':
+        highlightedMsg = 'End Meeting';
+        break;
+      default: {
+        const applications = getComposerApplications();
+        applications.forEach((application) => {
+          if (application.type === msgObject.options.type && application.notificationContent) {
+            highlightedMsg = application.notificationContent(msgObject);
+          }
+        });
+      }
+      }
     }
   }
 
