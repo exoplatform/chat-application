@@ -247,8 +247,7 @@ var chatApplication = new ChatApplication();
     });
 
     $('#msg').focus(function() {
-       var chatheight = document.getElementById("chats");
-       chatheight.scrollTop = chatheight.scrollHeight;
+       var chatheight = document.getElementById("chats");       
        chatApplication.chatRoom.updateUnreadMessages();
        chatheight.scrollHeight;
     });

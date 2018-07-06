@@ -317,6 +317,9 @@ ChatRoom.prototype.sendMessage = function(msg, options, isSystemMessage, callbac
 
     this.addMessage(data, true);
     this.pushMessage(data, callback);
+	
+	// While sending a new message, the scroll bar of the current is automatically scrolled to the bottom of see this newly sent message
+    this.messagesContainer[0].scrollTop = this.messagesContainer[0].scrollHeight;
 
     this.messagesContainer.trigger("chat:sendMessage", data);
   }
@@ -800,8 +803,8 @@ ChatRoom.prototype.showMessage = function(message, checkToScroll, $container) {
   }
 
   // if scroll was at max, scroll to the new max to display the new message. Otherwise don't move the scroll.
-  if (checkToScroll && scrollAtMax) {
-    $chats.scrollTop($chats.prop('scrollHeight') - $chats.innerHeight());
+  if (scrollAtMax) {
+           $chats[0].scrollTop = $chats[0].scrollHeight;
   }
 }
 
