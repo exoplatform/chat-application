@@ -131,7 +131,8 @@ ChatRoom.prototype.init = function(username, fullname, token, targetUser, target
                   var last = thiss.messagesContainer.prop('scrollHeight');
 
                   var $div = jqchat('<div></div>');
-                  thiss.showMessages(data.messages, $div);
+                  var tmpMessages = thiss.messages.concat(data.messages);
+                  thiss.showMessages(tmpMessages, $div);
 
                   loadMore.after($div.html());
                   thiss.messagesContainer.scrollTop(thiss.messagesContainer.prop('scrollHeight') - last);
@@ -600,7 +601,9 @@ ChatRoom.prototype.showMessages = function(msgs, $container) {
   if (msgs.length > 0) {
     var thiss = this;
     var messages = TAFFY(msgs);
-
+    if($container === undefined){
+       this.messagesContainer.html('');
+	}
     messages().order("timestamp asec").each(function (message, i) {
       thiss.showMessage(message, false, $container);
     });
