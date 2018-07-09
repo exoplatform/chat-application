@@ -310,7 +310,7 @@ export default {
     },
     editMessage(message) {
       this.messageToEdit = JSON.parse(JSON.stringify(message));
-      this.messageToEdit.msg = this.messageToEdit.msg ? this.messageToEdit.msg : this.messageToEdit.message;
+      this.messageToEdit.msg = this.messageToEdit.msg || this.messageToEdit.message || '';
       this.messageToEdit.msg = this.messageToEdit.msg
         .replace(/&#92/g, '\\')
         .replace(/&lt;/g, '<')
