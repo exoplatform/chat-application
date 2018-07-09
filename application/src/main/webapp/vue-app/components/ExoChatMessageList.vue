@@ -269,6 +269,9 @@ export default {
 
       const index = this.messages.findIndex(messageObj => messageObj.clientId && messageObj.clientId === message.clientId || messageObj.msgId && messageObj.msgId === message.msgId);
       if (index > -1) {
+        if (!message.fullname) {
+          message.fullname = this.messages[index].fullname;
+        }
         this.messages.splice(index, 1, message);
       } else {
         this.messages.push(message);
