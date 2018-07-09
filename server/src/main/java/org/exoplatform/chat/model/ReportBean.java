@@ -227,7 +227,7 @@ public class ReportBean {
      * Links
      */
     if (links.size()>0) {
-      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.links")+" ====\n");
+      xwiki.append("\n===== "+ res.getString("exoplatform.chat.meetingnotes.links")+" ====\n");
       for (String link:this.getLinks())
       {
         xwiki.append("[[").append(link).append("]]").append("\n");
@@ -251,7 +251,7 @@ public class ReportBean {
      * Tasks
      */
     if (tasks.size()>0) {
-      xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.tasks")+" ===\n");
+      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.tasks")+" ====\n");
       xwiki.append("|= "+ res.getString("exoplatform.chat.meetingnotes.tasks.task")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.assignee")+
         " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.due")+"\n");
