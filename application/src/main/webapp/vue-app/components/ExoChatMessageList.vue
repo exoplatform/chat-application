@@ -25,7 +25,6 @@
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
-import {chatConstants} from '../chatConstants';
 import * as chatTime from '../chatTime';
 
 import ExoChatMessageDetail from './ExoChatMessageDetail.vue';
@@ -243,7 +242,7 @@ export default {
       if (prevMsg === null || this.mq === 'mobile') {
         return false;
       } else {
-        return !messages[i].timestamp || prevMsg.timestamp / chatConstants.NB_MILLISECONDS_PERD_SECOND === messages[i].timestamp / chatConstants.NB_MILLISECONDS_PERD_SECOND;
+        return !messages[i].timestamp || chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp);
       }
     },
     isHideAvatar(i, messages) {
