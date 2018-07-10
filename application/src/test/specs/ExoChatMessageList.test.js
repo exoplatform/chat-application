@@ -96,11 +96,11 @@ describe('ExoChatMessageList.test.js', () => {
     expect(cmp.findAll(ExoChatMessageDetail).at(0).vm.hideTime).toBeFalsy();
     expect(cmp.findAll(ExoChatMessageDetail).at(1).vm.hideTime).toBeTruthy();
     expect(cmp.findAll(ExoChatMessageDetail).at(2).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(3).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(4).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(5).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(6).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(7).vm.hideTime).toBeFalsy();
+    expect(cmp.findAll(ExoChatMessageDetail).at(3).vm.hideTime).toBeTruthy();
+    expect(cmp.findAll(ExoChatMessageDetail).at(4).vm.hideTime).toBeTruthy();
+    expect(cmp.findAll(ExoChatMessageDetail).at(5).vm.hideTime).toBeTruthy();
+    expect(cmp.findAll(ExoChatMessageDetail).at(6).vm.hideTime).toBeTruthy();
+    expect(cmp.findAll(ExoChatMessageDetail).at(7).vm.hideTime).toBeTruthy();
 
     expect(cmp.findAll(ExoChatMessageDetail).at(0).vm.hideAvatar).toBeFalsy();
     expect(cmp.findAll(ExoChatMessageDetail).at(1).vm.hideAvatar).toBeTruthy();
