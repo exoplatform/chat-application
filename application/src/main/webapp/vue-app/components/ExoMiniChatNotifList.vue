@@ -12,7 +12,7 @@
         @select-room="$emit('select-room', room)">
       </exo-chat-message-detail>
     </li>
-    <li v-if="isRetrievingMessagges || messagesList.length > 0" class="divider">&nbsp;</li>
+    <li v-if="onsiteNotif && (isRetrievingMessagges || messagesList.length > 0)" class="divider">&nbsp;</li>
     <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" :class="`user-${key}`" :key="key" @click="$emit('set-status', key)">
       <a href="#">
         <span>

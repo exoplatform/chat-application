@@ -42,7 +42,11 @@ function canShowDesktopNotif() {
 }
 
 export function canShowOnSiteNotif() {
-  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_ON_SITE) !== -1;
+  if (eXo && eXo.chat && eXo.chat.desktopNotificationSettings) {
+    return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_ON_SITE) !== -1;
+  } else {
+    return true;
+  }
 }
 
 function canBypassRoomNotif(msgObj) {
