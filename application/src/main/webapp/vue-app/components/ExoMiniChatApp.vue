@@ -3,10 +3,10 @@
     <div class="dropdown uiDropdownWithIcon status-dropdown pull-right">
       <a :class="statusClass" data-toggle="dropdown" class="dropdown-toggle" @click="loadMessages">
         <div class="uiIconStatus uiNotifChatIcon">
-          <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+          <span :class="canShowOnSiteNotif && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
         </div>
       </a>
-      <exo-chat-notif-list ref="menuItems" :total-unread-msg="totalUnreadMsg" @set-status="setStatus($event)" @select-room="room = $event"></exo-chat-notif-list>
+      <exo-chat-notif-list ref="menuItems" :onsite-notif="canShowOnSiteNotif" :total-unread-msg="totalUnreadMsg" @set-status="setStatus($event)" @select-room="room = $event"></exo-chat-notif-list>
     </div>
     <div style="display: none;">
       <audio id="chat-audio-notif" controls>
@@ -22,6 +22,7 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
+import * as desktopNotification from '../desktopNotification';
 
 import ExoMiniChatNotifList from './ExoMiniChatNotifList.vue';
 import ExoMiniChatRoom from './ExoMiniChatRoom.vue';
@@ -47,6 +48,9 @@ export default {
       } else {
         return `user-${this.status}`;
       }
+    },
+    canShowOnSiteNotif() {
+      return desktopNotification.canShowOnSiteNotif();
     }
   },
   created() {

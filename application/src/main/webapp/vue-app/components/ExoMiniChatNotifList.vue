@@ -1,7 +1,7 @@
 <template>
   <ul class="dropdown-menu pull-right">
     <li v-if="totalUnreadMsg > 0 && messagesList.length === 0 && isRetrievingMessagges" class="chat-notification-loading">{{ $t('exoplatform.chat.loading') }}</li>
-    <li v-if="totalUnreadMsg > 0 && !isRetrievingMessagges && messagesList.length > 0" id="chat-notifications-details">
+    <li v-if="onsiteNotif && totalUnreadMsg > 0 && !isRetrievingMessagges && messagesList.length > 0" id="chat-notifications-details">
       <exo-chat-message-detail
         v-for="(messages, room) in messagesFiltered"
         v-if="messages && messages.length"
@@ -46,6 +46,10 @@ export default {
       default: function() {
         return 0;
       }
+    },
+    onsiteNotif: {
+      type: Boolean,
+      default: true
     },
     statusMap: {
       type: Object,
