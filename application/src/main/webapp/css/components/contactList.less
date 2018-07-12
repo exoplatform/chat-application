@@ -193,4 +193,19 @@
     }
   }
 }
+
+ /* Animations */
+.chat-contact-list-move {
+  transition: transform .6s ease-out;
+}
+.chat-contact-list-leave {
+  transition: opacity 1s;
+}
+.chat-contact-list-leave-active, .chat-contact-list-enter-active {
+  transition: opacity .5s ease-in;
+}
+.chat-contact-list-enter, .chat-contact-list-leave-to {
+  opacity: 0;
+}
+
 /* contact list component */

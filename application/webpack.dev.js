@@ -5,7 +5,7 @@ const webpackCommonConfig = require('./webpack.common.js');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('connect-api-mocker');
 // change the server path to your server location path
-const exoServerPath = "/media/boubaker/Data/exo_sources/exo-working/platform-5.1.x-SNAPSHOT/";
+const exoServerPath = "../../../exo-servers/platform-5.1.x-improve-chat-ux-SNAPSHOT/";
 
 let config = merge(webpackCommonConfig, {
   output: {

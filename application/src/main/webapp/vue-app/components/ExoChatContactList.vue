@@ -33,15 +33,17 @@
       </div>
     </div>
     <div id="chat-users" class="contactList isList">
-      <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
-        <exo-chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
-          <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-          <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact) }}</div>
-        </exo-chat-contact>
-        <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
-        <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
-        <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
-      </div>
+      <transition-group name="chat-contact-list">
+        <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contact.fullName" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
+          <exo-chat-contact :list="true" :type="contact.type" :user-name="contact.user" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
+            <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
+            <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact) }}</div>
+          </exo-chat-contact>
+          <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
+          <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
+          <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+        </div>
+      </transition-group>
       <div v-show="isSearchingContact" class="contact-list-item isList">
         <div class="seeMoreContacts">
           {{ $t('exoplatform.chat.loading') }}
