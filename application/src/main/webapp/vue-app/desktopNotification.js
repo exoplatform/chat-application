@@ -113,7 +113,6 @@ function notify(e) {
       || message.type === chatConstants.DELETED_MESSAGE) {
     return;
   }
-
   // A tip that helps making a tiny delay in execution of block code in the function,
   // to avoid concurrency issue in condition checking.
   setTimeout(function () {
@@ -129,7 +128,8 @@ function notify(e) {
       roomDisplayName: message.roomDisplayName,
       content: message.msg,
       room: message.room,
-      from: message.user
+      from: message.user,
+      msgId: message.msgId
     };
 
     if (canNotifySwitchStatus() && canBypassRoomNotif(notification)) {
@@ -152,11 +152,14 @@ function showDesktopNotif(path, msg) {
   displayMsg = $('<div />').html(displayMsg).text();
 
   if (Notification.permission !== 'granted') {
-    Notification.requestPermission();
-  }
-
-  if (Notification.permission !== 'granted') {
-    Notification.requestPermission();
+    Notification.requestPermission(function (status) {
+      if (Notification.permission !== status) {
+        Notification.permission = status;
+      }
+      if (Notification.permission === 'granted') {
+        showDesktopNotif(path, msg);
+      }
+    });
   } else {
     const isFirefox = typeof InstallTrigger !== 'undefined';
     const isLinux = navigator.platform.indexOf('Linux') >= 0;
@@ -174,10 +177,10 @@ function showDesktopNotif(path, msg) {
     // bug firefox on Linux : https://bugzilla.mozilla.org/show_bug.cgi?id=1295974
     if (isLinux && isFirefox) {
       notification = new Notification(msg.roomDisplayName, {
-        body: displayMsg
+        body: displayMsg,
+        tag: msg.msgId
       });
       clickHandler(notification);
-
     } else {
       let avatarUrl = null;
       if (msg.roomType === 'u') {
@@ -189,7 +192,8 @@ function showDesktopNotif(path, msg) {
       }
       notification = new Notification(msg.roomDisplayName, {
         icon: avatarUrl,
-        body: displayMsg
+        body: displayMsg,
+        tag: msg.msgId
       });
       clickHandler(notification);
     }
