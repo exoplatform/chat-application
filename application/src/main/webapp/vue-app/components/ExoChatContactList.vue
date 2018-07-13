@@ -445,7 +445,7 @@ export default {
         this.contacts.splice(roomIndex, 1);
         if(this.selected && this.selected.room === roomLeft) {
           if(!this.contacts || this.contacts.length === 0) {
-            this.selected = null;
+            this.selectContact();
           } else {
             if(this.filteredContacts && this.filteredContacts.length) {
               this.selectContact(this.filteredContacts[0]);

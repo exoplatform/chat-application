@@ -182,9 +182,9 @@ export default {
         } else {
           this.contactList.splice(indexOfRoom, 1, selectedContact);
         }
-        this.selectedContact = selectedContact;
-        document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
       }
+      this.selectedContact = selectedContact;
+      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
     },
     setStatus(status) {
       if (chatWebSocket && chatWebSocket.isConnected()) {
