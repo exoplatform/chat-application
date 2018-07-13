@@ -39,7 +39,7 @@
         </a>
       </div>
     </exo-modal>
-    <div v-show="!initialised" class="chat-loading-mask"><img src="/chat/img/sync.gif" class="chat-loading"></div>
+    <div v-if="!initialised" class="chat-loading-mask"><img src="/chat/img/sync.gif" class="chat-loading"></div>
     <div class="hide">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
