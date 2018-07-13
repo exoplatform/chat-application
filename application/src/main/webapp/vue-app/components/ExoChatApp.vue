@@ -39,7 +39,7 @@
         </a>
       </div>
     </exo-modal>
-    <div v-if="!connected" class="chat-loading-mask"><img src="/chat/img/sync.gif" class="chat-loading"></div>
+    <div v-show="!initialised" class="chat-loading-mask"><img src="/chat/img/sync.gif" class="chat-loading"></div>
     <div class="hide">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
@@ -95,6 +95,7 @@ export default {
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root'
       },
+      initialised: false,
       connected: false,
       loggedout: false,
       selectedContact: {},
@@ -224,6 +225,7 @@ export default {
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;
+      this.initialised = true;
       this.connected = true;
       if (this.userSettings.originalStatus !== this.userSettings.status) {
         this.setStatus(this.userSettings.originalStatus);
