@@ -1,4 +1,4 @@
-# Chat - POC with Vue.js
+# Chat Front-end application with Vue.js
 
 ## Build
 
@@ -14,37 +14,43 @@ The new portlet should be available and can be added in any page of the portal.
 
 ## Development mode
 
-In development mode, the application can be executed in standalone mode (no portal).
-The web server Express is used to serve resources and simulate server calls.
+In development mode, the application can be executed in eXo server.
+Chat application should be installed on eXo server.
+Edit the webpack.dev.js file with the path location of eXo server.
 
 ### Install Node
 
-### Build
+### Install modules
 
 At the root of the application, run
 ```
 npm install
-npm run build
 ```
 
-### Run
+### Run development mode
 
 At the root of the application, run
 ```
 npm start
 ```
-This command starts the Node Express server.
-The application is now available at http://localhost:3000
+This command will build and put output files on the eXo server.
 
-The application served by Express is located in the target folder (in order to be compliant with Maven).
 Therefore, if you change a file in the folder src, the change will not be considered.
 Use the following command to see all you changes immediately:
 ```
 npm run watch
 ```
-As soon as a file is changed, it will be copied to target and be available.
+As soon as a file is changed, chages will be available immediately.
 
 
 ### Running Tests
 
-// TODO
+At the root of the application, run
+```
+npm run test
+```
+
+To see the coverage of tests, run
+```
+npm run test-coverage
+```
