@@ -1,5 +1,4 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 let config = {
