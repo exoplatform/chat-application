@@ -253,7 +253,9 @@ export function getUserAvatar(user) {
 }
 
 export function getSpaceAvatar(space) {
-  return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
+  // FIXME very ugly, the technical ID should be used here instead
+  const spaceId = space.toLowerCase().split(' ').join('_');
+  return `${chatConstants.SOCIAL_SPACE_API}${spaceId}/avatar`;
 }
 
 export function getUserProfileLink(user) {
@@ -261,6 +263,7 @@ export function getUserProfileLink(user) {
 }
 
 export function getSpaceProfileLink(space) {
+  // FIXME very ugly, the technical ID should be used here instead
   const spaceId = space.toLowerCase().split(' ').join('_');
   return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${spaceId}/${spaceId}`;
 }
