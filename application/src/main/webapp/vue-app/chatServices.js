@@ -254,7 +254,8 @@ export function getUserAvatar(user) {
 
 export function getSpaceAvatar(space) {
   // FIXME very ugly, the technical ID should be used here instead
-  const spaceId = space.toLowerCase().split(' ').join('_');
+  let spaceId = space.toLowerCase().split(' ').join('_');
+  spaceId = encodeSpecialCharacters(spaceId);
   return `${chatConstants.SOCIAL_SPACE_API}${spaceId}/avatar`;
 }
 

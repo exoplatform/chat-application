@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml, encodeSpecialCharacters } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import ExoDropdownSelect from './ExoDropdownSelect.vue';
 
 export default {
@@ -116,7 +116,7 @@ export default {
       if (this.type === 'u') {
         return getUserAvatar(this.userName);
       } else if (this.type === 's') {
-        return getSpaceAvatar(encodeSpecialCharacters(this.name));
+        return getSpaceAvatar(this.name);
       } else {
         return this.$constants.DEFAULT_ROOM_AVATAR;
       }
