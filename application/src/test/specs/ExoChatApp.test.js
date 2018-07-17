@@ -40,7 +40,6 @@ describe('ExoChatApp.test.js', () => {
       attachToDocument: true
     });
     
-    
   });
 
   it('chat-application has offline class and change to online when chat server connected', () => {
@@ -64,11 +63,6 @@ describe('ExoChatApp.test.js', () => {
     expect(app.find('.contactDetail .contactLabel span').text()).toBe(userSettings.fullName);
   });
 
-  it('init rooms data', () => {
-    app.vm.initChatRooms(roomsData);
-    expect(app.vm.contactList[0]).toEqual(roomsData.rooms[0]);
-  });
-
   it('updated room must be at updated on contact list', () => {
     app.vm.initChatRooms(roomsData);
     expect(app.vm.contactList[0].fullName).toEqual('room1');
@@ -79,6 +73,11 @@ describe('ExoChatApp.test.js', () => {
       }
     });
     expect(app.vm.contactList[0].fullName).toEqual('room3');
+  });
+
+  it('init rooms data', () => {
+    app.vm.initChatRooms(roomsData);
+    expect(app.vm.contactList[0]).toEqual(roomsData.rooms[0]);
   });
 
   it('logout modal should be displayed when logged out', () => {
