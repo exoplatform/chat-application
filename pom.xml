@@ -56,6 +56,8 @@
     <org.codehaus.janino.version>2.6.1</org.codehaus.janino.version>
     <org.fusesource.jansi.version>1.11</org.fusesource.jansi.version>
 
+    <!-- Maven Plugin for JS and CSS bundling and Unit Test execution -->
+    <com.github.eirslett.frontend.version>1.6</com.github.eirslett.frontend.version>
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
     <jenkins.job.name>chat-application-develop-ci</jenkins.job.name>
@@ -284,4 +286,15 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+	<plugin>
+	  <groupId>com.github.eirslett</groupId>
+	  <artifactId>frontend-maven-plugin</artifactId>
+	  <version>${com.github.eirslett.frontend.version}</version>
+	</plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
