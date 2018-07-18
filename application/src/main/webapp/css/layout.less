@@ -1,0 +1,83 @@
+/* Layout */
+#chat-application {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+.uiLeftContainerArea {
+  .responsive-reverse(@mobile + 1, {
+    background: @secondaryColor;
+    color: @leftContainerTextColor;
+  });
+  user-select: none;
+}
+.uiLeftContainerArea, .uiRightContainerArea, .room-participants {
+  .flex-column;
+}
+.uiGlobalRoomsContainer, .uiRightContainerArea {
+  .flex-remaining-width;
+}
+.uiLeftContainerArea, .room-participants {
+  width: @sideBarWidth;
+  min-width: @sideBarMinWidth;
+  box-sizing: border-box;
+}
+.room-content, .contactListContainer {
+  display: flex;
+  height: calc(100% - @headerHeight);
+}
+.room-detail, .userDetails {
+  display: flex;
+  flex-shrink: 0;
+  height: @headerHeight;
+  padding: @defaultPadding;
+  box-sizing: border-box;
+}
+.room-detail {
+  align-items: center;
+  border-bottom: @defaultBorder;
+  user-select: none;
+}
+.room-participants {
+  height: 100%;
+}
+.room-participants.collapsed {
+  width: @sideBarCollapsedWidth;
+  min-width: 0;
+}
+.uiRoomUsersContainerArea {
+  border-left: @defaultBorder;
+  position: relative;
+  user-select: none;
+}
+
+#chats {
+  background-color: @chatBackground;
+  flex: 1;
+  padding: 0 10px 0 30px;
+  overflow-y: auto;
+}
+.chat-message-composer {
+  height: 100px;
+  position: relative;
+  user-select: none;
+}
+
+/* Responsive */
+
+@media (max-width: @tablet) {
+  .uiRoomUsersContainerArea {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    .room-users-collapse-btn {
+      display: block;
+    }
+  }
+  .room-content {
+    position: relative;
+    padding-right: @sideBarCollapsedWidth;
+  }
+}

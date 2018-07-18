@@ -1,0 +1,112 @@
+.room-detail {
+  .favorite {
+    margin-left: 5px;
+  }
+  .contactLabel {
+    color: @titleColor;
+  }
+  .uiIconSearchLight {
+    font-size: 22px;
+  }
+
+  // web conf integration
+  .callButtonContainerWrapper {
+    position: relative;
+    margin: 0;
+
+    .callButtonContainer{
+      > .callButton {
+        &, ~ .dropdown-toggle {
+          padding: 4px 10px;
+          border-radius: 0;
+          border: 1px solid #578dc9;
+          color: @primaryColor;
+          background: none;
+          [class*="Icon"]:before {
+            color: @primaryColor;
+          }
+        }
+        ~ .dropdown-toggle {
+          background: none;
+        }
+      }
+      .dropdown-menu > li > a > [class^="uiIcon"] {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+.room-settings-dropdown .dropdown-toggle {
+  padding: 0 7px;
+  cursor: pointer;
+  display: block;
+}
+
+.room-actions-container, .room-search, .room-action-menu {
+  height: 40px;
+}
+.room-actions-container {
+  position: relative;
+  margin-left: auto;
+  z-index: 10;
+
+  [class^="uiIcon"]:before {
+    color: @secondaryIconColor;
+  }
+}
+.room-search, .room-action-menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: translateY(-100%);
+  transition: transform .5s linear, opacity 1s ease-out;
+}
+.room-action-menu .room-search-btn {
+  margin-left: 15px;
+  cursor: pointer;
+}
+.room-search {
+  visibility: hidden;
+  input[type="text"] {
+    margin: 0;
+    width: 400px;
+    .responsive(@tablet,{
+      width: 150px;
+    });
+    .placeholder({
+      color: inherit;
+      opacity: .3;
+    });
+  }
+  input[type="text"], input[type="text"]:focus {
+    border: none;
+    box-shadow: none;
+  }
+  [class^="uiIcon"] {
+    cursor: pointer;
+  }
+}
+
+.chat-room-config {
+  margin-left: 10px;
+  .flex-column;
+  .notif-description {
+    margin: 0 0 7px 20px;
+  }
+  .notif-keyword {
+    margin: 5px 0 3px 20px;
+  }
+}
+
+.search-active {
+  overflow: hidden;
+  .room-search {
+    transform: translateY(0);
+    visibility: visible;
+  }
+  .room-action-menu {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}

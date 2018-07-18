@@ -1,0 +1,430 @@
+@media (max-width: @mobile) {
+  .uiLeftContainerArea, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea, .chat-side-menu {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    transition: left .5s ease-out;
+  }
+  .uiLeftContainerArea {
+    left: 0;
+    z-index: 1;
+  }
+  .uiGlobalRoomsContainer, .uiRoomUsersContainerArea {
+    left: 100%;
+  }
+  .show-conversation {
+    .uiGlobalRoomsContainer {
+      left: 0;
+    }
+    .uiLeftContainerArea {
+      left: -100%;
+    }
+  }
+  .show-participants {
+    .uiRoomUsersContainerArea {
+      left: 0;
+    }
+    .uiGlobalRoomsContainer {
+      left: -100%;
+    }
+  }
+  .show-sideMenu {
+    .chat-side-menu {
+      left: 0;
+      transition: left .45s ease-out;
+    }
+    .uiLeftContainerArea {
+      left: 80%;
+    }
+    .contactList {
+      pointer-events: none;
+    }
+  }
+
+  //side menu
+  .chat-side-menu {
+    left: -100%;
+    width: 80%;
+    box-shadow: @defaultShadow;
+    transition: left .45s linear;
+    .side-menu-header {
+      .flex-center;
+      justify-content: center;
+      height: 130px;
+      background: @primaryColor;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .chat-contact {
+      flex-direction: column;
+    }
+    .contactLabel > span {
+      color: #fff;
+      font-size: 17px;
+    }
+    .contactDetail {
+      max-width: 100%;
+      margin: 5px 0 0;
+    }
+    .chat-contact-avatar {
+      .square(70px);
+      border: 2px solid #fff;
+      .uiIconStatus {
+        font-size: 16px;
+        right: 1px;
+      }
+    }
+    .side-menu-list {
+      > li {
+        border-bottom: @defaultBorder;
+        > a {
+          .flex-center;
+          padding: 15px;
+          color: inherit;
+          [class^="uiIcon"] {
+            position: static;
+            font-size: 16px;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+  #chatPreferences {
+    .notification-item {
+      padding-left: 0;
+    }
+    section + section {
+      margin-top: 5px;
+    }
+  }
+
+  // contact list
+  .contactListContainer {
+    height: 100%;
+    .contactFilter {
+      position: absolute;
+      width: 100%;
+      padding: 3px 5px;
+      box-sizing: border-box;
+      z-index: 1;
+      input {
+        padding-right: 30px;
+        border-width: 1px;
+        .placeholder({
+          color: inherit;
+          opacity: .3;
+        });
+      }
+      .contact-search-close {
+        .square(@actionIconsSize);
+        line-height: @actionIconsSize;
+        margin-left: -@actionIconsSize;
+        .uiIconClose {
+          top: 1px;
+          &:before {
+            color: @secondaryIconColor;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+    .listHeader {
+      border-bottom: 1px solid #a1a5ad;
+      .hamburger-menu {
+        padding: 0 10px;
+      }
+      .room-actions {
+        > * {
+          margin-left: 8px;
+        }
+        [class^="uiIcon"] {
+          color: @secondaryIconColor;
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .userDetails, .contactListContainer .listHeader, .room-detail, .room-participants-header {
+    height: @headerMobile;
+    padding: 0 10px;
+  }
+  
+  .userDetails {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    z-index: 1;
+
+    .chat-contact-avatar, .contactLabel, .dropdown-toggle .user-status {
+      display: none;
+    }
+    .user-status, .status-dropdown {
+      margin: 0;
+    }
+    .user-status {
+      .square(@actionIconsSize);
+      text-align: center;
+    }
+    .discussion-label {
+      color: @titleColor;
+      font-weight: bold;
+    }
+    .contactDetail {
+      margin-left: 0;
+    }
+  }
+
+  .contactList {
+    .chat-contact-avatar {
+      .square(45px);
+      .uiIconStatus {
+        bottom: 5px;
+        right: -1px;
+        font-size: 12px;
+      }
+    }
+    .contact-list-item {
+      padding: 10px 15px;
+      &.hasUnreadMessages {
+        font-weight: normal;
+      }
+      .contactLabel > span, .last-message-time {
+        font-weight: bold;
+      }
+      .last-message {
+        font-size: 13px;
+        .text-ellipsis;
+        [class^="uiIcon"] {
+          font-size: inherit;
+          color: inherit;
+          margin-right: 5px;
+        }
+      }
+      .last-message-time {
+        margin-left: auto;
+      }
+      .favorite {
+        margin-right: 10px;
+      }
+      &.hasUnreadMessages .last-message-time {
+        margin-right: -27px
+      }
+      &.has-not-sent-messages .last-message-time {
+        margin-right: -19px
+      }
+      .unreadMessages, .uiIconNotification {
+        align-self: flex-end;
+      }
+      .unreadMessages {
+        .square-rounded(16px);
+        margin-bottom: 5px;
+        color: #fff;
+      }
+      .seeMoreContacts > a, .uiIconArrowDownMini:before {
+        color: @primaryColor;
+      }
+      &:after {
+        content: "";
+        position: absolute;
+        width: calc(100% - 30px);
+        bottom: 0;
+        border-bottom: @defaultBorder;
+      }
+      &:nth-last-child(-n+3):after {
+        display: none;
+      }
+    }
+  }
+
+  //room detail
+  .room-detail {
+    height: @headerMobile;
+    .chat-contact-avatar, .user-status > span, .room-number-members {
+      display: none;
+    }
+    .contactDetail {
+      .flex-center;
+    }
+    .contactLabel {
+      .flex-remaining-width;
+      order: 1;
+    }
+    .user-status {
+      margin: 0 7px 0 3px;
+    }
+    .room-search {
+      position: absolute;
+      width: calc(100vw - 40px);
+      right: 0;
+      input[type="text"] {
+        margin: 0;
+        width: 100%;
+      }
+    }
+    .room-action-menu {
+      transform: none;
+    }
+    .search-active {
+      overflow: visible;
+      .room-action-menu {
+        visibility: hidden;
+      }
+    }
+  }
+
+  // rooms messages
+  #chats {
+    padding: 0 15px;
+  }
+  .room-participants {
+    width: 100%;
+    .uiIconGoBack {
+      margin-right: 15px; 
+    }
+  }
+  .room-content {
+    height: calc(100% - @headerMobile);
+    padding: 0;
+  }
+
+  .chat-message-day .day-separator {
+    padding: 0;
+    > span {
+      flex: 0 0 100px;
+    }
+  }
+
+  .chat-message-box {
+    position: relative;
+    .chat-message-bubble {
+      padding-bottom: 18px;
+    }
+    .chat-sender-avatar {
+      flex: 0 0 50px;
+    }
+    .chat-message-action {
+      position: absolute;
+      bottom: 2px;
+      right: 5px;
+    }
+    .message-description {
+      right: 45px;
+      bottom: 2px;
+    }
+    &.is-current-user {
+      .chat-message-bubble {
+        margin: 0;
+      }
+      .chat-message-bubble:before {
+        top: 10px;
+      }
+    }
+  }
+
+  // message composer
+  .chat-message-composer {
+    height: auto;
+    .composer-container {
+      padding: 0;
+      border-top: @defaultBorder;
+    }
+    .composer-box {
+      position: relative;
+      padding: 10px;
+      border: none;
+    }
+    textarea {
+      height: 40px;
+      max-height: 80px;
+      border: @defaultBorder;
+      margin: 0 7px;
+      padding: 9px 40px 9px 10px;
+    }
+    .composer-action {
+      flex: 0;
+      align-items: flex-end;
+      .action-emoji {
+        position: absolute;
+        right: 60px;
+      }
+      .composer-emoji-panel {
+        right: -13px;
+        left: auto;
+        margin-bottom: 5px;
+        .arrow {
+          right: 15px;
+          left: auto;
+        }
+      }
+    }
+    .action-apps > [class^="uiIcon"] {
+      font-size: 30px;
+    }
+    .action-send, .action-apps {
+      margin: 0;
+    }
+    .action-send {
+      .square(36px);
+      line-height: 45px;
+      [class*="uiIcon"] {
+        font-size: 26px;
+      }
+    }
+    .uiIconChatSmile {
+      font-size: 33px;
+      margin-bottom: 4px;
+    }
+    .apps-container {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      left: auto;
+      top: -160px;
+      height: 160px;
+    }
+    .apps-item {
+      width: 33%;
+      margin-bottom: 10px;
+    }
+  }
+
+  // add event modal 
+  .chat-app-event {
+    .chat-event-date .event-item {
+      margin-bottom: 10px;
+      input, .selectbox {
+        width: 100%;
+      }
+      .selectbox {
+        margin: 0 0 10px 0;
+      }
+    }
+  }
+
+  // modal
+  .chat-modal-mask .chat-modal {
+    transform: none;
+  }
+  .chat-modal {
+    min-width: 90%;
+    .popupHeader, .uiAction {
+      margin: 0;
+    }
+    .popupContent {
+      max-height: calc(100vh - 50px);
+      box-sizing: border-box;
+      padding: 10px;
+      overflow-x: hidden;
+    }
+  }
+
+  #chat-application {
+    .uiIconClose {
+      opacity: 1;
+    }
+  }
+}

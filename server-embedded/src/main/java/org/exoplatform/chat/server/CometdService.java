@@ -1,5 +1,6 @@
 package org.exoplatform.chat.server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cometd.annotation.Listener;
 import org.cometd.annotation.Service;
 import org.cometd.bayeux.server.ServerMessage;
@@ -11,10 +12,8 @@ import org.exoplatform.chat.services.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.exoplatform.chat.services.UserService;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +48,7 @@ public class CometdService {
    * @param remoteSession
    * @param message
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[]{COMETD_CHANNEL_NAME, message.getJSON()});
@@ -86,10 +86,16 @@ public class CometdService {
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
         String room = (String) jsonMessage.get("room");
 
-        notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
+        String category = "room";
+        if (StringUtils.isBlank(room)) {
+          room = null;
+          category = null;
+        }
+
+        notificationService.setNotificationsAsRead(sender, "chat", category, room, dbName);
         if (userService.isAdmin(sender, dbName))
         {
-          notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", "room", room, dbName);
+          notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", category, room, dbName);
         }
 
         // send real time message to all others clients of the same user
@@ -100,8 +106,8 @@ public class CometdService {
         JSONObject data = (JSONObject) jsonMessage.get("data");
         String room = data.get("room").toString();
         String clientId = data.get("clientId").toString();
-        String msg = data.get("msg").toString();
-        String isSystem = data.get("isSystem").toString();
+        String msg = data.get("msg") != null ? data.get("msg").toString() : "";
+        String isSystem = data.get("isSystem") == null ? "false" : data.get("isSystem").toString();
         String options = data.get("options") != null ? data.get("options").toString() : null;
 
         try {
@@ -135,6 +141,38 @@ public class CometdService {
         String room = jsonMessage.get("room").toString();
 
         chatService.deleteTeamRoom(room, sender, dbName);
+      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_MEMBER_LEAVE_REQUESTED)) {
+        String room = jsonMessage.get("room").toString();
+        String clientId = jsonMessage.get("clientId").toString();
+        String msg = "";
+        String isSystem = "true";
+        JSONObject options = jsonMessage.get("options") != null ? (JSONObject) jsonMessage.get("options") : new JSONObject();
+        options.put("type", RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT.toString());
+
+        try {
+          chatService.write(clientId, msg, sender, room, isSystem, options.toString(), dbName);
+        } catch (ChatException e) {
+          // Should response a message somehow in websocket.
+        }
+
+        userService.removeTeamUsers(room, Collections.singletonList(sender), dbName);
+
+        List<String> usersToBeNotified = userService.getUsersFilterBy(sender, room, ChatService.TEAM_PREFIX, dbName);
+        if (usersToBeNotified == null) {
+          usersToBeNotified = Collections.singletonList(sender);
+        } else {
+          usersToBeNotified.add(sender);
+        }
+
+        // Send a websocket message of type 'room-member-left' to all the room members
+        RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
+            RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
+            room,
+            sender,
+            new Date(),
+            options);
+        realTimeMessageService.sendMessage(leaveRoomMessage, usersToBeNotified);
+        notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
       }
     } catch (ParseException e) {
       LOG.log(Level.SEVERE, "Error while processing Cometd message : " + e.getMessage(), e);

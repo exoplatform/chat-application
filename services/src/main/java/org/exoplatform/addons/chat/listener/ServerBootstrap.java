@@ -19,16 +19,9 @@
 
 package org.exoplatform.addons.chat.listener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,12 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
-import org.exoplatform.chat.utils.ChatUtils;
-import org.exoplatform.chat.utils.MessageDigester;
-import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.chat.utils.*;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
@@ -53,8 +43,11 @@ public class ServerBootstrap {
 
   private static final Log LOG = ExoLogger.getLogger(ServerBootstrap.class.getName());
 
-  private static String serverURL;
-  private static String serverURI;
+  private static String    serverBase;
+
+  private static String    serverURL;
+
+  private static String    serverURI;
 
   /**
    * Get mongo database name for current tenant if on cloud environment
@@ -69,54 +62,53 @@ public class ServerBootstrap {
     if (StringUtils.isEmpty(dbName)) {
       dbName = prefixDB;
     } else {
-      StringBuilder sb = new StringBuilder()
-                                    .append(prefixDB)
-                                    .append("_")
-                                    .append(dbName);
+      StringBuilder sb = new StringBuilder().append(prefixDB).append("_").append(dbName);
       dbName = sb.toString();
     }
     return dbName;
   }
 
-  public static String getUserFullName(String username, String dbName)
-  {
-    return callServer("getUserFullName", "username="+username+"&dbName="+dbName);
+  public static String getStatus(String username, String token, String targetUser, String dbName) {
+    return callServer("getStatus", "user=" + username + "&targetUser=" + targetUser + "&token=" + token + "&dbName=" + dbName);
   }
 
-  public static void addUser(String username, String token, String dbName)
-  {
-    postServer("addUser", "username="+username+"&token="+token+"&dbName="+dbName);
+  public static String getUsers(String username, String token, String room, String dbName) {
+    return callServer("users", "user=" + username + "&dbName=" + dbName + "&room=" + room + "&token=" + token);
   }
 
-  public static void logout(String username, String token, String dbName)
-  {
-    postServer("logout", "username="+username+"&token="+token+"&dbName="+dbName);
+  public static String getUserFullName(String username, String dbName) {
+    return callServer("getUserFullName", "username=" + username + "&dbName=" + dbName);
   }
 
-  public static void setAsAdmin(String username, boolean isAdmin, String dbName)
-  {
-    postServer("setAsAdmin", "username="+username+"&isAdmin="+isAdmin+"&dbName="+dbName);
+  public static void addUser(String username, String token, String dbName) {
+    postServer("addUser", "username=" + username + "&token=" + token + "&dbName=" + dbName);
   }
 
-  public static void addUserFullNameAndEmail(String username, String fullname, String email, String dbName)
-  {
+  public static void logout(String username, String token, String sessionId, String dbName, boolean uniqueSession) {
+    postServer("logout", "username=" + username + "&token=" + token + "&sessionId=" + sessionId + "&dbName=" + dbName + "&uniqueSession=" + uniqueSession);
+  }
+
+  public static void setAsAdmin(String username, boolean isAdmin, String dbName) {
+    postServer("setAsAdmin", "username=" + username + "&isAdmin=" + isAdmin + "&dbName=" + dbName);
+  }
+
+  public static void addUserFullNameAndEmail(String username, String fullname, String email, String dbName) {
     try {
-      postServer("addUserFullNameAndEmail", "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email + "&dbName=" + dbName);
+      postServer("addUserFullNameAndEmail",
+                 "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email + "&dbName=" + dbName);
     } catch (IOException e) {
-      LOG.error("Error while updating user information for user {} [ {} ]", username, email,e);
+      LOG.error("Error while updating user information for user {} [ {} ]", username, email, e);
     }
   }
 
-  public static String getToken(String username)
-  {
+  public static String getToken(String username) {
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
-    String in = username+passphrase;
+    String in = username + passphrase;
     String token = MessageDigester.getHash(in);
     return token;
   }
 
-  public static void saveSpaces(String username, String dbName)
-  {
+  public static void saveSpaces(String username, String dbName) {
     try {
       SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
       ListAccess<Space> spacesListAccess = spaceService.getAccessibleSpacesWithListAccess(username);
@@ -136,26 +128,24 @@ public class ServerBootstrap {
     }
   }
 
-  public static void setSpaces(String username, SpaceBeans beans, String dbName)
-  {
-    String params = "username="+username;
+  public static void setSpaces(String username, SpaceBeans beans, String dbName) {
+    String params = "username=" + username;
     String serSpaces = "";
     try {
       serSpaces = ChatUtils.toString(beans);
       serSpaces = URLEncoder.encode(serSpaces, "UTF-8");
     } catch (IOException e) {
-      LOG.error("Error encoding spaces",e);
+      LOG.error("Error encoding spaces", e);
     }
-    params += "&spaces="+serSpaces;
-    params += "&dbName="+dbName;
+    params += "&spaces=" + serSpaces;
+    params += "&dbName=" + dbName;
     postServer("setSpaces", params);
   }
 
-  private static String callServer(String serviceUri, String params)
-  {
+  private static String callServer(String serviceUri, String params) {
     String serverURLBase = getServerURL() + "/" + serviceUri;
-    String serviceUrl = serverURLBase+"?passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE)
-            +"&"+params;
+    String serviceUrl = serverURLBase + "?passphrase=" + PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&"
+        + params;
     String body = null;
     try {
       URL url = new URL(serviceUrl);
@@ -164,7 +154,8 @@ public class ServerBootstrap {
       String encoding = con.getContentEncoding();
       encoding = encoding == null ? "UTF-8" : encoding;
       body = IOUtils.toString(in, encoding);
-      if ("null".equals(body)) body = null;
+      if ("null".equals(body))
+        body = null;
     } catch (MalformedURLException e) {
       LOG.error("Malformed URI " + serverURLBase, e);
     } catch (IOException e) {
@@ -175,10 +166,9 @@ public class ServerBootstrap {
     return body;
   }
 
-  private static String postServer(String serviceUri, String params)
-  {
+  private static String postServer(String serviceUri, String params) {
     String serviceUrl = getServerURL() + "/" + serviceUri;
-    String allParams = "passphrase="+PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
+    String allParams = "passphrase=" + PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
     String body = null;
     OutputStreamWriter writer = null;
     try {
@@ -189,7 +179,7 @@ public class ServerBootstrap {
       con.setReadTimeout(timeout);
       con.setDoOutput(true);
 
-      //envoi de la requête
+      // envoi de la requête
       writer = new OutputStreamWriter(con.getOutputStream());
       writer.write(allParams);
       writer.flush();
@@ -198,7 +188,8 @@ public class ServerBootstrap {
       String encoding = con.getContentEncoding();
       encoding = encoding == null ? "UTF-8" : encoding;
       body = IOUtils.toString(in, encoding);
-      if ("null".equals(body)) body = null;
+      if ("null".equals(body))
+        body = null;
 
     } catch (MalformedURLException e) {
       LOG.error("Malformed URL " + serviceUrl, e);
@@ -218,22 +209,6 @@ public class ServerBootstrap {
     return body;
   }
 
-  public static String getServerBase()
-  {
-    String serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
-    if ("".equals(serverBase)) {
-      HttpServletRequest request = Util.getPortalRequestContext().getRequest();
-      String scheme = request.getScheme();
-      String serverName = request.getServerName();
-      int serverPort= request.getServerPort();
-      serverBase = scheme+"://"+serverName;
-      if (serverPort != 80) serverBase += ":" + serverPort;
-    }
-
-    return serverBase;
-
-  }
-
   public static String getServerURL() {
     if (serverURL == null) {
       String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
@@ -251,6 +226,28 @@ public class ServerBootstrap {
       serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     }
     return serverURI;
+  }
+
+  public static String getServerBase() {
+    return serverBase;
+  }
+
+  public static void init(HttpServletRequest request) {
+    if (request == null) {
+      throw new IllegalArgumentException();
+    }
+    if (StringUtils.isNotBlank(serverBase)) {
+      return;
+    }
+    serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+    if (StringUtils.isBlank(serverBase)) {
+      String scheme = request.getScheme();
+      String serverName = request.getServerName();
+      int serverPort = request.getServerPort();
+      serverBase = scheme + "://" + serverName;
+      if (serverPort != 80)
+        serverBase += ":" + serverPort;
+    }
   }
 
 }

@@ -1,0 +1,17 @@
+{
+    "id": "1",
+    "href": "https://localhost:4000/rest/v1/social/users/root",
+    "identity": "https://localhost:4000/rest/v1/social/identities/1",
+    "username": "root",
+    "firstname": "Root",
+    "lastname": "Root",
+    "fullname": "Root Root",
+    "gender": "male",
+    "position": "",
+    "email": "root@exoplatform.com",
+    "avatar": "/rest/v1/social/users/root/avatar",
+    "experiences": [],
+    "ims": [],
+    "url": [],
+    "deleted": false
+}

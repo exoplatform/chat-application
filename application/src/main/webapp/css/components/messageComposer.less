@@ -1,0 +1,258 @@
+@iconAppsSize: 60px;
+@iconAppsFontSize: 36px;
+@appsContainerHeight: 120px;
+
+.chat-message-composer {
+  .apps-composer-modal {
+    .chat-loading-mask {
+      position: absolute;
+    }
+    input.large {
+      width: 100%;
+    }
+    .uiAction {
+      margin-top: 0;
+    }
+  }
+  .composer-container, .composer-box, textarea {
+    height: 100%;
+    box-sizing: border-box;
+  }
+  .composer-container {
+    padding: 20px 30px 0;
+    border-top: @defaultBorder;
+    background: #fff;
+    opacity: .99;
+    user-select: none;
+  }
+  .composer-box {
+    display: flex;
+    height: 100%;
+    padding: 10px;
+    border: @bigBorder;
+    border-bottom: none;
+  }
+  .composer-action {
+    display: flex;
+    flex: 0 0 70px;
+    align-items: flex-start;
+    .flex-space-evenly;
+    > * {
+      cursor: pointer;
+    }
+    .action-emoji {
+      position: relative;
+    }
+    .composer-emoji-panel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      top: auto;
+      bottom: 43px;
+      left: -13px;
+      width: 120px;
+      .chat-emoticon {
+        position: static;
+        margin: 10px;
+      }
+      .arrow {
+        left: 25px;
+      }
+    }
+  }
+  textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+    &::-webkit-scrollbar {
+      width: @scrollSize;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: @scrollDefaultThumbColor;
+      border-radius: @scrollThumbRaduis;
+    }
+  }
+  .action-apps {
+    margin-top: 4px;
+    transform: rotate(45deg);
+    transition: transform .2s linear;
+    > [class^="uiIcon"] {
+      font-size: 26px;
+    }
+  }
+  .action-send {
+    background: @primaryColor;
+    text-align: center;
+    .square-rounded(42px);
+    line-height: 55px;
+    margin-top: 8px;
+    [class*="uiIcon"] {
+      color: #fff;
+      font-size: 32px;
+    }
+  }
+  .apps-container {
+    background: #fff;
+    display: flex;
+    .flex-space-evenly;
+    position: absolute;
+    top: -@appsContainerHeight;
+    left: 30px;
+    width: calc(~"100%" - 60px);
+    height: @appsContainerHeight;
+    padding: 16px @defaultGutter;
+    box-sizing: border-box;
+    box-shadow: @defaultShadow;
+    transition: top .3s cubic-bezier(0, 0.88, 0.58, 1);
+  }
+  .apps-item {
+    .flex-column;
+    align-items: center;
+    cursor: pointer;
+  }
+  .apps-item-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    .square-rounded(@iconAppsSize);
+    box-sizing: border-box;
+    border: @bigBorder;
+    border-radius: 50%;
+    [class*="uiIcon"] {
+      position: static;
+      font-size: @iconAppsFontSize;
+    }
+  }
+  .apps-item-label {
+    color: @titleColor;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  &.is-apps-closed {
+    .apps-container {
+      top: @appsContainerHeight;
+      opacity: 0;
+      transition: top .3s ease-out, opacity .5s ease-in;
+    }
+    .action-apps {
+      transform: rotate(0);
+    }
+  }
+  input[readonly] {
+    background: none;
+    cursor: pointer;
+  }
+  .uiIconChatSmile {
+    font-size: 29px;
+  }
+}
+
+.chat-app-event {
+  .chat-event-date {
+    display: table;
+    .event-item {
+      display: table-row;
+      > * {
+        display: table-cell;
+        padding-right: 10px;
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) { // hack for IE11
+          display: inline-block;
+          min-width: 40px;
+        }
+      }
+      > span {
+        text-align: right;
+      }
+    }
+    input {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+    .selectbox {
+      width: 130px;
+      margin-left: 15px;
+    }
+  }
+}
+
+#appComposerForm .selectize-input {
+  margin-bottom: 5px;
+}
+
+.chat-file-upload {
+  position: relative;
+  overflow: hidden;
+
+  input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+  }
+  
+  .action-label {
+    padding-right: 10px;
+    line-height: 28px;
+    vertical-align: top;
+    text-align: right;
+  }
+  
+  .btn {
+    vertical-align: top;
+    margin: 5px 0;
+  }
+  
+  .uiSelectbox {
+    vertical-align: top;
+    width: 90px;
+
+    .selectbox {
+      width: 92px;
+      font-size: 12px;
+    }
+  }
+  
+  .progressBar {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 18px;
+
+    .bar {
+      line-height: 68px;
+    }
+
+    .progress {
+      margin: 0;
+      height: 68px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+
+    .label {
+      width: 100%;
+      line-height: 20px;
+      padding: 0px;
+      white-space: normal;
+      display: table;
+
+      .label-inner {
+        display: table-cell;
+        vertical-align: middle;
+        height: 68px;
+        width: 100%;
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 18px;
+      }
+    }
+  }
+}

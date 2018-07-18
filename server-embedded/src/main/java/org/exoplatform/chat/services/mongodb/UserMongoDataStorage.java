@@ -47,6 +47,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   public static final String M_USERS_COLLECTION = "users";
   public static final String M_ROOMS_COLLECTION = "rooms";
 
+  public static final String DEFAULT_ENABLED_CHANNELS  = "[ \"desktop\" , \"on-site\" , \"bip\"]";
+
   private DB db(String dbName)
   {
     if (StringUtils.isEmpty(dbName)) {
@@ -165,7 +167,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
-      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTRUB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
+      if(ChatService.NOTIFY_ME_EVEN_NOT_DISTURB.equals(notifCond) || ChatService.NOTIFY_ME_WHEN_MENTION.equals(notifCond)) {
         BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;
@@ -291,6 +293,9 @@ public class UserMongoDataStorage implements UserDataStorage {
 
       if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION)!=null){
         settings.setEnabledChannels(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION).toString());
+      } else {
+        //default values to the untouched settings
+        settings.setEnabledChannels(DEFAULT_ENABLED_CHANNELS);
       }
       if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER)!=null){
         settings.setEnabledTriggers(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER).toString());
@@ -509,6 +514,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
       }
+      if (StringUtils.isNotBlank(roomBean.getUser())) {
+        roomBean.setAdmins(new String[]{roomBean.getUser()});
+      }
     }
 
     return roomBean;
@@ -566,6 +574,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         roomBean.setUser(ChatService.TEAM_PREFIX+roomId);
         roomBean.setFullName(doc.get("team").toString());
+        String creator = (String) doc.get("user");
+        roomBean.setAdmins(new String[]{creator});
       }
       else if (ChatService.TYPE_ROOM_USER.equals(type))
       {

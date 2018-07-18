@@ -56,7 +56,18 @@ public interface ChatDataStorage
 
   public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+  /**
+   * Read messages from room from a dedicated timestamp to another usin dbName with limit.
+   * 
+   * @param room
+   * @param isTextOnly
+   * @param fromTimestamp
+   * @param toTimestamp
+   * @param dbName
+   * @param limitToLoad
+   * @return
+   */
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName, int limitToLoad);
 
   public MessageBean getMessage(String roomId, String messageId, String dbName);
 
@@ -101,5 +112,14 @@ public interface ChatDataStorage
   public int getNumberOfRooms(String dbName);
 
   public int getNumberOfMessages(String dbName);
+
+  /**
+   * Return rooms by name
+   * 
+   * @param teamName
+   * @param dbName
+   * @return
+   */
+  public List<RoomBean> getTeamRoomByName(String teamName, String dbName);
 
 }

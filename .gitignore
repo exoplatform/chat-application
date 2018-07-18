@@ -21,6 +21,9 @@ target/
 bin/
 pom.xml.versionsBackup
 
+# Npm
+node_modules/
+
 # IntelliJ project files
 *.iml
 *.iws
@@ -47,7 +50,8 @@ pom.xml.versionsBackup
 transaction.log
 
 chat-mongohq.properties
-application/src/main/resources/rebel.xml
+rebel.xml
+.rebel.xml.bak
 target
 
 release.properties

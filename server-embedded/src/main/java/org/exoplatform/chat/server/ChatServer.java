@@ -126,8 +126,25 @@ public class ChatServer
     }
 
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
-    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, false, true, false, ilimit,
+    RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService, dbName);
+    roomsBean.getRooms().forEach((roomBean) -> {
+      if (StringUtils.isNotBlank(roomBean.getRoom())) {
+        try {
+          roomBean.setFavorite(userService.isFavorite(user, roomBean.getRoom(), dbName));
+          String lastMesageString = chatService.read(user, roomBean.getRoom(), false, null, null, 1, dbName);
+          if (StringUtils.isNotBlank(lastMesageString)) {
+            org.json.JSONObject lastMessage = new org.json.JSONObject(lastMesageString);
+            lastMessage = (lastMessage == null || lastMessage.get("messages") == null
+                || ((org.json.JSONArray) lastMessage.get("messages")).length() == 0) ? null
+                                                                                     : ((org.json.JSONObject) ((org.json.JSONArray) lastMessage.get("messages")).get(0));
+            roomBean.setLastMessage(lastMessage);
+          }
+        } catch (Exception e) {
+          LOG.warning("Error while building user room bean");
+        }
+      }
+    });
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
@@ -141,10 +158,20 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
 
-    try {
-      sendMessage(sender, message, room, isSystem, options, dbName);
-    } catch (ChatException e) {
-      return Response.content(e.getStatus(), e.getMessage());
+    if (message != null) {
+      try {
+        message = URLDecoder.decode(message, "UTF-8");
+        options = URLDecoder.decode(options, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        // Chat server cannot do anything in this case
+        // Get original value
+      }
+
+      try {
+        chatService.write(null, message, sender, room, isSystem, options, dbName);
+      } catch (ChatException e) {
+        return Response.content(e.getStatus(), e.getMessage());
+      }
     }
 
     return Response.ok("ok").withMimeType("application/json; charset=UTF-8").withHeader("Cache-Control", "no-cache");
@@ -153,7 +180,7 @@ public class ChatServer
   @Resource
   @Route("/read")
   public Response.Content read(String user, String token, String room, String fromTimestamp, String toTimestamp,
-                               String isTextOnly, String dbName) throws IOException {
+                               String isTextOnly, String limit, String dbName) throws IOException {
     if (!tokenService.hasUserWithToken(user, token, dbName))
     {
       return Response.notFound("Petit malin !");
@@ -172,14 +199,27 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
 
-    String data = null;
+    Integer ilimit = 0;
     try {
-      data = chatService.read(user, room, "true".equals(isTextOnly), from, to, dbName);
-    } catch (ChatException e) {
-      return Response.content(e.getStatus(), e.getMessage());
+      if (limit != null && !"".equals(limit)) {
+        ilimit = Integer.parseInt(limit);
+      }
+    } catch (NumberFormatException nfe) {
+      LOG.info("limit is not a valid Integer number");
     }
 
-    notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+    String data = null;
+    try {
+      data = chatService.read(user, room, "true".equals(isTextOnly), from, to, ilimit, dbName);
+      notificationService.setNotificationsAsRead(user, "chat", "room", room, dbName);
+    } catch (Exception e) {
+      if (e instanceof ChatException) {
+        return Response.content(((ChatException)e).getStatus(), e.getMessage());
+      } else {
+        return Response.content(500, e.getMessage());
+      }
+    }
+
     return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
@@ -208,7 +248,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(user, room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, 0, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     String roomType = chatService.getTypeRoomChat(room, dbName);
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -316,7 +356,7 @@ public class ChatServer
     } catch (NumberFormatException nfe) {
       LOG.info("fromTimestamp is not a valid Long number");
     }
-    String data = chatService.read(user, room, false, from, to, dbName);
+    String data = chatService.read(user, room, false, from, to, 0, dbName);
     String typeRoom = chatService.getTypeRoomChat(room, dbName);
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
@@ -535,8 +575,35 @@ public class ChatServer
     } catch(Exception e) {
     }
 
-    return Response.ok("done").withMimeType("application/json").withHeader("Cache-Control", "no-cache")
-            .withCharset(Tools.UTF_8);
+    return getUserDesktopNotificationSettings(user, token, dbName);
+  }
+
+  @Resource
+  @MimeType("text/plain")
+  @Route("/setNotificationSettings")
+  public Response.Content setNotificationSettings(String user, String token, String room, String[] notifConditions, String[] notifManners, String dbName, Long time) throws JSONException {
+    if (!tokenService.hasUserWithToken(user, token, dbName)) {
+      return Response.notFound("Something is wrong.");
+    }
+    
+    if(notifConditions != null) {
+      for (String notifCondition : notifConditions) {
+        try {
+          userService.setPreferredNotification(user, notifCondition,dbName);
+        } catch (Exception e) {
+        }
+      }
+    }
+    if(notifManners != null) {
+      for (String notifManner : notifManners) {
+        try {
+          userService.setNotificationTrigger(user, notifManner, dbName);
+        } catch (Exception e) {
+        }
+      }
+    }
+
+    return getUserDesktopNotificationSettings(user, token, dbName);
   }
 
   @Resource
@@ -547,16 +614,12 @@ public class ChatServer
       return Response.notFound("Something is wrong.");
     }
 
-    JSONObject response = new JSONObject();
     try {
       userService.setNotificationTrigger(user, notifCondition,dbName);
-      response.put("done", true);
     } catch (Exception e) {
-      response.put("done",false);
     }
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
-            .withCharset(Tools.UTF_8);
+    return getUserDesktopNotificationSettings(user, token, dbName);
   }
 
   @Resource
@@ -631,6 +694,7 @@ public class ChatServer
 
     try {
       teamName = URLDecoder.decode(teamName,"UTF-8");
+      teamName = teamName.trim();
     } catch (UnsupportedEncodingException e) {
       LOG.info("Cannot decode message: " + teamName);
     }
@@ -643,6 +707,19 @@ public class ChatServer
       // Room creation
       if (room==null || "".equals(room) || "---".equals(room))
       {
+        List<RoomBean> roomBeans =  chatService.getTeamRoomsByName(teamName, dbName);
+        if (roomBeans != null && !roomBeans.isEmpty()) {
+          for (RoomBean roomBean : roomBeans) {
+            if (user.equals(roomBean.getUser())) {
+              return Response.content(400, "roomAlreadyExists.creator");
+            } else {
+              List<String> existingUsers = userService.getUsersFilterBy(null, roomBean.getRoom(), ChatService.TYPE_ROOM_TEAM, dbName);
+              if (existingUsers != null && existingUsers.contains(user)) {
+                return Response.content(400, "roomAlreadyExists.notCreator");
+              }
+            }
+          }
+        }
         room = chatService.getTeamRoom(teamName, user, dbName);
       }
       // Only creator can edit members or set team name
@@ -651,143 +728,98 @@ public class ChatServer
         return Response.notFound("Petit malin !");
       }
 
-      chatService.setRoomName(room, teamName, dbName);
+      List<String> usersToNotifyForAdd = new JSONArray();
+      List<String> usersToAdd = new JSONArray();
 
       if (users != null && !users.isEmpty()) {
+        List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+
         List<String> usersNew = Arrays.asList(users.split(","));
-        try {
-          List<String> existingUsers = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
-          updateRoomUsers(usersNew, existingUsers, user, token, creator, room, teamName, dbName, RealTimeMessageBean.EventType.ROOM_UPDATED);
-        } catch (Exception ex) {
-          LOG.log(Level.SEVERE, ex.getMessage());
-          return Response.content(400, ex.getMessage());
+
+        usersToAdd.addAll(usersNew);
+        List<String> usersToRemove = new JSONArray();
+
+        for (String u: existingUsers) {
+          if (usersNew.contains(u)) {
+            usersToNotifyForAdd.add(u);
+            usersToAdd.remove(u);
+          } else {
+            usersToRemove.add(u);
+          }
         }
+
+        if (usersToRemove.size() > 0) {
+          userService.removeTeamUsers(room, usersToRemove, dbName);
+
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String u: usersToRemove)
+          {
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(u, dbName));
+            first = false;
+            notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
+          }
+
+          // Send members removal message in the room
+          String removeTeamUserOptions
+              = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
+        }
+
+        chatService.setRoomName(room, teamName, dbName);
+
+        if (usersToAdd.size() > 0) {
+          userService.addTeamUsers(room, usersToAdd, dbName);
+
+          StringBuilder sbUsers = new StringBuilder();
+          boolean first = true;
+          for (String usert: usersToAdd)
+          {
+            if(usert.equals(creator)) {
+              continue;
+            }
+            if (!first) sbUsers.append("; ");
+            sbUsers.append(userService.getUserFullName(usert, dbName));
+            first = false;
+          }
+          String addTeamUserOptions
+              = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
+              "\"fullname\":\"" + userService.getUserFullName(user, dbName) + "\"}";
+          this.send(user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
+        }
+
       }
 
+      RoomBean roomBean = userService.getRoom(user, room, dbName);
+      JSONObject data = roomBean.toJSONObject();
+      data.put("title", teamName);
+      data.put("participants", usersToAdd);
+
+      RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
+          RealTimeMessageBean.EventType.ROOM_UPDATED,
+          room,
+          user,
+          null,
+          data);
+
+      if (!usersToNotifyForAdd.contains(creator)) {
+        usersToNotifyForAdd.add(creator);
+      }
+      realTimeMessageService.sendMessage(updatedRoomMessage, usersToNotifyForAdd);
+
+      jsonObject.putAll(data);
       jsonObject.put("name", teamName);
       jsonObject.put("room", room);
     }
     catch (Exception e)
     {
-      LOG.warning(e.getMessage());
+      LOG.log(Level.WARNING, "Error while saving room " + teamName, e);
       return Response.notFound("No Room yet");
     }
     return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
-  }
-
-  @Resource
-  @Route("/removeRoomUser")
-  public Response.Content removeRoomUser(String user, String token, String roomId, String dbName) {
-    if (!tokenService.hasUserWithToken(user, token, dbName)) {
-      return Response.notFound("Please login !");
-    }
-
-    RoomBean roomBean = chatService.getTeamRoomById(roomId, dbName);
-    if (roomBean == null) {
-      LOG.log(Level.SEVERE, "Can't remove user " + user + " from Room id " + roomId + ". Room not found!");
-      return Response.notFound("Room not found");
-    }
-
-    List<String> existingUsers = userService.getUsersFilterBy(null, roomBean.getRoom(), ChatService.TYPE_ROOM_TEAM, dbName);
-    if (existingUsers.contains(user)) {
-      List<String> newRoomUsers = new ArrayList<>(existingUsers);
-      newRoomUsers.remove(user);
-      try {
-        updateRoomUsers(newRoomUsers, existingUsers, user, token, chatService.getTeamCreator(roomId, dbName)
-                , roomId, roomBean.getFullName(), dbName, RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT);
-        return Response.ok("Remove room user done");
-      } catch (Exception ex) {
-        LOG.log(Level.SEVERE, ex.getMessage());
-        return Response.content(400, ex.getMessage());
-      }
-    } else {
-      LOG.log(Level.WARNING, "Can't remove user " + user + " from Room id " + roomId + ". User already removed");
-      return Response.content(400, "User has already removed");
-    }
-  }
-
-  private void updateRoomUsers(List<String> newRoomUsers, List<String> existingUsers, String currentUser, String token, String creator,
-                                   String room, String teamName, String dbName, RealTimeMessageBean.EventType eventType) throws IOException {
-    if (newRoomUsers != null && !newRoomUsers.isEmpty()) {
-      List<String> usersToAdd = new JSONArray();
-      usersToAdd.addAll(newRoomUsers);
-      List<String> usersToRemove = new JSONArray();
-
-      JSONObject data = new JSONObject();
-      data.put("title", teamName);
-      data.put("members", usersToAdd);
-      RealTimeMessageBean updatedRoomMessage = new RealTimeMessageBean(
-              eventType,
-              room,
-              currentUser,
-              null,
-              data);
-
-      for (String u: existingUsers) {
-        if (newRoomUsers.contains(u)) {
-          usersToAdd.remove(u);
-          realTimeMessageService.sendMessage(updatedRoomMessage, u);
-        } else {
-          usersToRemove.add(u);
-        }
-      }
-
-      if (usersToRemove.contains(creator)) {
-        throw new IllegalArgumentException("Can't remove creator from room");
-      }
-
-      if (usersToRemove.size() > 0) {
-        userService.removeTeamUsers(room, usersToRemove, dbName);
-
-        StringBuilder sbUsers = new StringBuilder();
-        boolean first = true;
-        for (String u: usersToRemove) {
-          if (!first) sbUsers.append("; ");
-          sbUsers.append(userService.getUserFullName(u, dbName));
-          first = false;
-          notificationService.setNotificationsAsRead(u, "chat", "room", room, dbName);
-        }
-
-        String removeTeamUserOptions;
-        String sender;
-        if (usersToRemove.contains(currentUser)) {
-          //User leaving the room
-          removeTeamUserOptions
-                  = "{\"type\":\"type-leave-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(currentUser, dbName) + "\"}";
-          sender = creator;
-        } else {
-          // Send members removal message in the room
-          removeTeamUserOptions
-                  = "{\"type\":\"type-remove-team-user\",\"users\":\"" + sbUsers + "\", " +
-                  "\"fullname\":\"" + userService.getUserFullName(currentUser, dbName) + "\"}";
-          sender = currentUser;
-        }
-
-        this.sendMessage(sender, StringUtils.EMPTY, room, "true", removeTeamUserOptions, dbName);
-      }
-
-      if (usersToAdd.size() > 0) {
-        userService.addTeamUsers(room, usersToAdd, dbName);
-
-        StringBuilder sbUsers = new StringBuilder();
-        boolean first = true;
-        for (String usert: usersToAdd)
-        {
-          if(usert.equals(creator)) {
-            continue;
-          }
-          if (!first) sbUsers.append("; ");
-          sbUsers.append(userService.getUserFullName(usert, dbName));
-          first = false;
-        }
-        String addTeamUserOptions
-                = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
-                "\"fullname\":\"" + userService.getUserFullName(currentUser, dbName) + "\"}";
-        this.send(currentUser, token, StringUtils.EMPTY, room, "true", addTeamUserOptions, dbName);
-      }
-    }
   }
 
   @Resource
@@ -1057,21 +1089,6 @@ public class ChatServer
       Transport.send(message);
     } catch(Exception e){
       LOG.info(e.getMessage());
-    }
-  }
-
-  private void sendMessage(String sender, String message, String room,
-                           String isSystem, String options, String dbName) {
-    if (message != null) {
-      try {
-        message = URLDecoder.decode(message, "UTF-8");
-        options = URLDecoder.decode(options, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        // Chat server cannot do anything in this case
-        // Get original value
-      }
-
-      chatService.write(null, message, sender, room, isSystem, options, dbName);
     }
   }
 }

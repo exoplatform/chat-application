@@ -44,7 +44,7 @@ public interface ChatService
   public static final String BIP = "bip";
 
   public static final String NOTIFY_ME_WHEN_MENTION= "notify-when-mention";
-  public static final String NOTIFY_ME_EVEN_NOT_DISTRUB = "notify-even-not-distrub";
+  public static final String NOTIFY_ME_EVEN_NOT_DISTURB = "notify-even-not-disturb";
 
   public static final String NOTIFY_ME_ON_ROOM_KEY_WORD = "keywords";
   public static final String DO_NOT_NOTIFY_ME_ON_ROOM = "silence";
@@ -81,7 +81,7 @@ public interface ChatService
 
   public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName);
 
-  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName);
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limit, String dbName);
 
   public MessageBean getMessage(String roomId, String messageId, String dbName);
 
@@ -96,6 +96,15 @@ public interface ChatService
   public String getTeamCreator(String room, String dbName);
 
   public void setRoomName(String room, String name, String dbName);
+
+  /**
+   * Get rooms by name
+   * 
+   * @param teamName
+   * @param dbName
+   * @return
+   */
+  public List<RoomBean> getTeamRoomsByName(String teamName, String dbName);
 
   /**
    * Retrieve a Room by its ID

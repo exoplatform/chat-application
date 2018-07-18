@@ -1,0 +1,46 @@
+.chat-emoticon {
+  display: inline-block;
+  position: relative;
+  color: transparent;
+  top: 5px;
+  .square(@emoticonsSize);
+  margin: -@emoticonsSize 5px 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  > span {
+    position: absolute;
+    font-size: 0;
+  }
+
+  &.emoticon-smile {
+    background-image: url('@{imgPath}/Emoticons/smile.png');
+  }
+  &.emoticon-sad {
+    background-image: url('@{imgPath}/Emoticons/sad.png');
+  }
+  &.emoticon-wink {
+    background-image: url('@{imgPath}/Emoticons/wink.png');
+  }
+  &.emoticon-speechless {
+    background-image: url('@{imgPath}/Emoticons/speechless.png');
+  }
+  &.emoticon-surprise {
+    background-image: url('@{imgPath}/Emoticons/surprise.png');
+  }
+  &.emoticon-smile-tongue {
+    background-image: url('@{imgPath}/Emoticons/tongue.png');
+  }
+  &.emoticon-flaugh {
+    background-image: url('@{imgPath}/Emoticons/flaugh.png');
+  }
+  &.emoticon-raise-up {
+    background-image: url('@{imgPath}/Emoticons/like.png');
+  }
+  &.emoticon-raise-down {
+    background-image: url('@{imgPath}/Emoticons/dislike.png');
+  }
+  &.emoticon-cool {
+    background-image: url('@{imgPath}/Emoticons/cool.png');
+  }
+}

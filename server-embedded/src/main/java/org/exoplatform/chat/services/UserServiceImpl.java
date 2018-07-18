@@ -20,6 +20,10 @@
 package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.*;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.user.UserStateModel;
+import org.exoplatform.services.user.UserStateService;
+
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
@@ -94,7 +98,7 @@ public class UserServiceImpl implements UserService {
    * This methode is responsible for setting a notification triggers for a specific user
    * available triggers :
    *  -mention
-   *  -even-on-do-not-distrub
+   *  -even-on-do-not-disturb
    *
    */
   public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
@@ -110,22 +114,6 @@ public class UserServiceImpl implements UserService {
    */
   public void setRoomNotificationTrigger(String user, String room, String notifCondition, String notifConditionType, String dbName, long time) throws Exception {
     userStorage.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
-
-    JSONObject settings = new JSONObject();
-    settings.put("notifCondition", notifCondition);
-    settings.put("notifConditionType", notifConditionType);
-
-    JSONObject data = new JSONObject();
-    data.put("settings", settings);
-
-    // Deliver the saved message to sender's subscribed channel itself.
-    RealTimeMessageBean messageBean = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.ROOM_SETTINGS_UPDATED,
-        room,
-        user,
-        null,
-        data);
-    realTimeMessageService.sendMessage(messageBean, user);
   }
 
   /*
@@ -173,19 +161,6 @@ public class UserServiceImpl implements UserService {
 
   public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
     userStorage.removeTeamUsers(teamRoomId, users, dbName);
-
-    // Send a websocket message of type 'room-member-left' to all the room members
-    RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
-        teamRoomId,
-        null,
-        new Date(),
-        null);
-    realTimeMessageService.sendMessage(leaveRoomMessage, users);
-  }
-
-  private RoomBean getTeam(String teamId, String dbName) {
-    return getTeam(teamId, dbName);
   }
 
   public List<RoomBean> getTeams(String user, String dbName) {
@@ -217,7 +192,14 @@ public class UserServiceImpl implements UserService {
   }
 
   public String setStatus(String user, String status, String dbName) {
-    return userStorage.setStatus(user, status, dbName);
+    String newStoredStatus = userStorage.setStatus(user, status, dbName);
+    UserStateService userStateService = CommonsUtils.getService(UserStateService.class);
+    UserStateModel userState = userStateService.getUserState(user);
+    if (userState != null) {
+      userState.setStatus(status);
+      userStateService.save(userState);
+    }
+    return newStoredStatus;
   }
 
   public void setAsAdmin(String user, boolean isAdmin, String dbName) {

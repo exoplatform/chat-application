@@ -1,0 +1,185 @@
+@messageListGutter: 60px;
+@messageBubbleColor: #f0f8fe;
+@messageBubbleRadius: 2px;
+@messageBubbleCurrentUserColor: #cfe9ff;
+@messageSeachHighlightColor: #ff0;
+@messageAvatarSize: 35px;
+
+.chat-message-list {
+  &::-webkit-scrollbar {
+    width: @scrollSize;
+  }
+  &::-webkit-scrollbar-track {
+    background: @scrollDefaultTrackColor;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: @scrollDefaultThumbColor;
+    border-radius: @scrollThumbRaduis;
+  }
+}
+
+.chat-message-day {
+  .flex-column;
+  .day-separator {
+    height: 30px;
+    padding: 0 @messageListGutter;
+    .flex-center;
+    justify-content: space-around;
+    text-align: center;
+    > span {
+      flex: 0 0 250px;
+    }
+    &:before, &:after {
+      content: "";
+      flex: 1;
+      border-top: @defaultBorder;
+    }
+    + .chat-message-box {
+      margin-top: 0;
+    }
+  }
+  &:last-of-type {
+    margin-bottom: 20px;
+  }
+}
+
+.chat-message-box {
+  display: flex;
+  margin-top: 20px;
+  .chat-sender-avatar, .chat-message-action {
+    flex: 0 0 @messageListGutter;
+  }
+  .sender-name {
+    font-weight: bold;
+  }
+  .chat-message-action {
+    .flex-center;
+    justify-content: center;
+    text-align: right;
+    position: relative;
+    .message-actions {
+      position: absolute;
+      top: -6px;
+      right: 0;
+      text-align: left;
+      &:not(.open) {
+        display: none;
+      }
+      [class^="uiIcon"] {
+        color: @secondaryIconColor;
+      }
+    }
+  }
+  &:hover {
+    .message-actions:not(.open) {
+      display: block;
+    }
+  }
+  .chat-message-bubble {
+    .flex-remaining-width;
+    background: @messageBubbleColor;
+    border: @defaultBorder;
+    border-radius: @messageBubbleRadius; 
+    padding: 12px 7px;
+    position: relative;
+    min-height: 20px;
+    .overflow-wrap;
+
+    .sender-name a {
+      color: inherit;
+    }
+    
+    &:before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      .square(10px);
+      transform: rotate(45deg);
+      background-color: inherit;
+      border-left: inherit;
+      border-bottom: inherit;
+    }
+    .attachmentContainer {
+      background: none;
+      padding: 0;
+    }
+    blockquote {
+      margin: 10px;
+      padding-left: 6px;
+      font-style: italic;
+      color: @quoteTextColor;
+      border-color: @quoteBarColor;
+      .quote-user-name {
+        display: block;
+      }
+      + br {
+        display: none;
+      }
+    }
+    .search-highlight {
+      background: @messageSeachHighlightColor;
+    }
+  }
+  .chat-contact-avatar {
+    display: block;
+    .square(@messageAvatarSize);
+  }
+  &.is-same-contact {
+    margin-top: 3px;
+    .chat-message-bubble:before {
+      display: none;
+    }
+  }
+  &.is-current-user {
+    justify-content: flex-end;
+    padding-left: 50px;
+    .responsive(@tablet,{
+      padding-left: 0;
+    });
+    .chat-message-bubble {
+      background: @messageBubbleCurrentUserColor;
+      border: none;
+      margin-right: 8px;
+      &:before {
+        left: auto;
+        right: -5px;
+        top: calc(~"50%" - 5px);
+      }
+    }
+  }
+  .message-description {
+    position: absolute;
+    right: 3px;
+    bottom: 0;
+    [class^="uiIcon"] {
+      font-size: 15px;
+      color: @grayLight;
+    }
+  }
+  .uiIconNotification {
+    top: -2px;
+  }
+}
+.custom-message-item {
+  margin-top: 5px;
+  > span, [class^="uiIcon"] {
+    color: @grayLight;
+  }
+  [class^="uiIcon"] {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+}
+.message-file-size {
+  margin-left: 10px;
+  color: @grayLight;
+}
+.send-meeting-notes {
+  display: inline;
+}
+#editMessageComposerArea {
+  width: 100%;
+}
+.chat-message-not-sent {
+	color:@grayLight;
+}

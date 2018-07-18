@@ -2,26 +2,39 @@
                   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
                   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatApplication</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatNotificationApplication</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatApplication</portlet-name>
+        <skin-name>Default</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatNotificationApplication</portlet-name>
+        <skin-name>Default</skin-name>
+        <css-path>/css/chat.css</css-path>
+    </portlet-skin>
+
     <portlet>
         <name>ChatApplication</name>
         <module>
-            <script>
-                <path>/js/chat.js</path>
-            </script>
             <depends>
-                <module>jquery</module>
-            </depends>
-            <depends>
-                <module>desktopNotification</module>
-            </depends>
-            <depends>
-                <module>chatRoom</module>
-            </depends>
-            <depends>
-                <module>taffy</module>
-            </depends>
-            <depends>
-                <module>juzu-ajax</module>
+                <module>chatBundle</module>
             </depends>
         </module>
     </portlet>
@@ -29,160 +42,57 @@
     <portlet>
         <name>ChatNotificationApplication</name>
         <module>
-            <script>
-                <path>/js/notif.js</path>
-            </script>
             <depends>
-                <module>jquery</module>
-            </depends>
-            <depends>
-                <module>desktopNotification</module>
-            </depends>
-            <depends>
-                <module>chatRoom</module>
-            </depends>
-            <depends>
-                <module>taffy</module>
-            </depends>
-        </module>
-    </portlet>
-
-    <portlet>
-        <name>ChatStatisticsApplication</name>
-        <module>
-            <script>
-                <path>/js/stats.js</path>
-            </script>
-            <depends>
-                <module>jquery</module>
+                <module>chatBundle</module>
             </depends>
         </module>
     </portlet>
 
     <module>
-        <name>shjs</name>
+        <name>chatBundle</name>
         <script>
-            <adapter>
-                (function() {
-                <include>/js/sh_css.min.js</include>
-                <include>/js/sh_html.min.js</include>
-                <include>/js/sh_java.min.js</include>
-                <include>/js/sh_javascript.min.js</include>
-                <include>/js/sh_main.min.js</include>
-                return sh_highlightDocument;
-                })();
-            </adapter>
-        </script>
-    </module>
-
-    <module>
-        <name>desktopNotification</name>
-        <script>
-            <path>/js/desktopNotification.js</path>
-        </script>
-    </module>
-
-    <module>
-        <name>taffy</name>
-        <script>
-            <adapter>
-                (function() {
-                <include>/js/taffy-min.js</include>
-                return TAFFY;
-                })();
-            </adapter>
-        </script>
-    </module>
-
-    <module>
-        <name>userPopup</name>
-        <script>
-            <path>js/UIUserProfilePopup.js</path>
+            <minify>false</minify>
+            <path>/js/chat.bundle.js</path>
         </script>
         <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>filedrop</name>
-        <script>
-            <path>/js/jquery.filedrop.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>chatRoom</name>
-        <script>
-            <path>/js/chatRoom.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-        </depends>
-        <depends>
-            <module>taffy</module>
-        </depends>
-    </module>
-
-    <module>
-        <name>uiMiniCalendar</name>
-        <script>
-            <path>/js/UIMiniCalendar.js</path>
-        </script>
-        <depends>
-            <module>common</module>
-        </depends>
-        <depends>
-            <module>base</module>
+            <module>vue</module>
         </depends>
         <depends>
             <module>jquery</module>
+            <as>$</as>
         </depends>
         <depends>
-            <module>I18NMessage</module>
+            <module>chatCometD</module>
+            <as>cCometD</as>
+        </depends>
+        <depends>
+            <module>suggester</module>
+        </depends>
+        <depends>
+            <module>iphoneStyleCheckbox</module>
+        </depends>
+        <depends>
+            <module>filedrop</module>
+        </depends>
+        <depends>
+            <module>userPopupPlugin</module>
+        </depends>
+        <depends>
+            <module>fetchPolyfill</module>
+        </depends>
+        <depends>
+            <module>customEventPolyfill</module>
+        </depends>
+        <depends>
+            <module>iePolyfills</module>
         </depends>
     </module>
-    <module>
-        <name>uiChatPopupWindow</name>
-        <script>
-            <path>/js/UIPopupWindow.js</path>
-        </script>
-        <depends>
-            <module>common</module>
-        </depends>
-        <depends>
-            <module>uiPopup</module>
-        </depends>
-        <depends>
-            <module>uiMaskLayer</module>
-        </depends>
-        <depends>
-            <module>base</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
-    <module>
-        <name>bootbox</name>
-        <script>
-            <path>/js/bootbox.js</path>
-        </script>
-        <depends>
-            <module>bts_modal</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-        </depends>
-    </module>
+
     <module>
         <name>chatCometD</name>
         <as>cCometD</as>
         <script>
-            <path>/js/chatCometd3.js</path>
+            <path>/js/lib/chatCometd3.js</path>
         </script>
         <depends>
             <module>jquery</module>

@@ -1,0 +1,86 @@
+.square(@size) {
+  width: @size;
+  height: @size;
+}
+.square-rounded(@size) {
+  width: @size;
+  height: @size;
+  line-height: @size;
+  border-radius: 50%;
+}
+.text-overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.flex-space-evenly {
+  justify-content: space-between;
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+  }
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+}
+.flex-remaining-width {
+  flex: 1;
+  min-width: 0;
+}
+
+.overflow-wrap {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.responsive(@maxWidth; @rules) {
+  @media (max-width: @maxWidth) {
+      @rules();
+  }
+}
+.responsive-reverse(@minWidth; @rules) {
+  @media (min-width: @minWidth) {
+      @rules();
+  }
+}
+
+// cross platform placeholder style
+.placeholder(@rules) {
+  &::-webkit-input-placeholder {
+      @rules();
+  }
+  &:-moz-placeholder {
+      @rules();
+  }
+  &::-moz-placeholder {
+      @rules();
+  }
+  &:-ms-input-placeholder {
+      @rules();
+  }
+}
+
+// Gradients
+#gradient {
+  .vertical(@startColor: #555, @endColor: #333) {
+    background-color: mix(@startColor, @endColor, 60%);
+    background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
+    background-image: linear-gradient(to bottom, @startColor, @endColor); // Standard, IE10
+    background-repeat: repeat-x;
+  }
+}

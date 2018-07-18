@@ -51,6 +51,26 @@ public class TeamTestCase extends AbstractChatTestCase
   }
 
   @Test
+  public void testTeamRoomsByName() throws Exception
+  {
+    log.info("TeamTestCase.testTeamCreation");
+    String user = "benjamin";
+    String user2 = "john";
+
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user, null);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2, null);
+
+    assertNotEquals(room1, room2);
+    assertNotEquals(room1, room3);
+
+    assertEquals(2, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team", null).size());
+    assertEquals(1, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team 2", null).size());
+    assertEquals(0, ServiceBootstrap.getChatService().getTeamRoomsByName("Not existing room", null).size());
+
+  }
+
+  @Test
   public void testTeamRoomDeletion() throws Exception
   {
     log.info("TeamTestCase.testTeamDeletion");

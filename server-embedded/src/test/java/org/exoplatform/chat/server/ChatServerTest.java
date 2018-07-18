@@ -41,7 +41,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0", null);
 
     // Then
     assertNotNull(read);
@@ -63,7 +63,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("james", token, null);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
 
     // Then
     assertNotNull(read);
@@ -88,7 +88,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null, "false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null, "false", "0", null);
 
     // Then
     assertNotNull(read);
@@ -111,7 +111,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     String token = tokenService.getToken("james");
     tokenService.addUser("james", token, null);
 
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
 
     assertNotNull(read);
     assertEquals(403, read.getCode());
@@ -139,7 +139,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("john", token, null);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0", null);
 
     // Then
     assertNotNull(read);
@@ -168,7 +168,7 @@ public class ChatServerTest extends AbstractChatTestCase {
     tokenService.addUser("james", token, null);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
 
     // Then
     assertNotNull(read);
@@ -345,45 +345,4 @@ public class ChatServerTest extends AbstractChatTestCase {
     assertNotNull(isFavoriteJohn);
     assertEquals(404, isFavoriteJohn.getCode());
   }
-
-  @Test
-  public void testRemoveRoomUser() throws Exception {
-    // Given
-    ChatServer chatServer = new ChatServer();
-    ChatService chatService = ServiceBootstrap.getChatService();
-    TokenService tokenService = ServiceBootstrap.getTokenService();
-    List<String> users = new ArrayList<String>();
-    users.add("mary");
-    users.add("john");
-    String roomId = chatService.getRoom(users, null);
-
-    // When
-    Response.Content response = chatServer.removeRoomUser("mary", "", roomId, null);
-    // Then
-    assertNotNull(response);
-    assertEquals(404, response.getCode());
-
-    String tkMary = tokenService.getToken("mary");
-    tokenService.addUser("mary", tkMary, null);
-    String tkJohn = tokenService.getToken("john");
-    tokenService.addUser("john", tkJohn, null);
-
-    // When
-    try {
-      response = chatServer.removeRoomUser("mary", tkMary, roomId, null);
-      fail("Should throw exception, Don't allow remove creator");
-    } catch (Exception ex) {
-    }
-
-    response = chatServer.removeRoomUser("john", tkJohn, "nonExistRoom", null);
-    // Then
-    assertNotNull(response);
-    assertEquals(404, response.getCode());
-
-    response = chatServer.removeRoomUser("john", tkJohn, roomId, null);
-    // Then
-    assertNotNull(response);
-    assertEquals(200, response.getCode());
-  }
-  
 }

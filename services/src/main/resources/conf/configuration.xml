@@ -49,7 +49,7 @@
                 <string>chat-extension</string>
               </value>
               <value>
-                <string>Chat</string>
+                <string>chat</string>
               </value>
             </collection>
           </field>

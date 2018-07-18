@@ -1,0 +1,211 @@
+/* contact list component */
+@selectedContactColor: #578DC9;
+@currentContactMenuColor: #e6eef7;
+@contactFilterColor: #355788;
+@contactFilterPlaceHolderColor: #7a90b1;
+@contactFilterHeight: 36px;
+@contactFilterTextSize: 13px;
+
+.contactListContainer {
+  .flex-column;
+  .contactFilter, .listHeader {
+    .flex-center;
+    flex-shrink: 0;
+  }
+  .contactFilter {
+    .responsive-reverse(@mobile + 1, {
+      height: @contactFilterHeight;
+      background: @contactFilterColor;
+      padding: @defaultPadding;
+      input {
+        font-size: @contactFilterTextSize;
+        background: none;
+        border: none;
+        box-shadow: none;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        .placeholder({
+          color: @contactFilterPlaceHolderColor;
+        });
+      }
+      input, i {
+        color: @leftContainerTextColor;
+      }
+    });
+    input {
+      border: none;
+      box-shadow: none;
+      width: 100%;
+      margin: 0;
+    }
+  }
+  .listHeader {
+    justify-content: space-between;
+    height: @listHeaderHeight;
+    padding: @defaultPadding;
+    border-bottom: 2px solid #7f97ba;
+  }
+  .contactList {
+    padding: 10px 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+  .chat-contact {
+    margin-right: auto;
+  }
+  .room-actions {
+    display: flex;
+  }
+  .add-room-action {
+    .square(@actionIconsSize);
+    text-align: center;
+    .uiIconSimplePlus {
+      color: @leftContainerTextColor;
+      font-size: 12px;
+    }
+  }
+  .chat-contact, .listHeader > * {
+    cursor: pointer;
+  }
+
+  .popupContent {
+    color: @bodyTextColor;
+  }
+
+  .add-room-form {
+    .flex-column;
+    > input {
+      width: auto;
+    }
+  }
+
+  .filter-options {
+    align-self: flex-end;
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 0;
+    > li {
+      > a {
+        position: relative;
+        padding: 10px 20px;
+      }
+      &:first-child {
+        .flex-center;
+        justify-content: space-between;
+        background: @primaryColor;
+        padding: @defaultPadding;
+        
+        &, [class^="uiIcon"]:before {
+          color: @leftContainerTextColor;
+        }
+        .uiIconClose:before {
+          font-size: 16px;
+        }
+        .uiIconFilter {
+          font-size: 14px;
+          margin-right: 5px;
+        }
+      }
+      &:last-child {
+        border-top-width: 3px;
+      }
+    }
+    
+    .options-category {
+      height: 35px;
+      line-height: 35px;
+      background: #e0e2e4;
+    }
+
+    .uiIconTick {
+      font-size: 13px;
+      position: absolute;
+      left: 20%;
+      top: 35%;
+      &.not-filter {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .room-suggest-list {
+    min-height: 40px;
+    max-height: 115px;
+    border: @bigBorder;
+    border-top: none;
+    border-radius: 5px;
+    padding: 12px 10px;
+    margin-top: -15px;
+    overflow-y: auto;
+    .uiMention {
+      margin: 10px 10px 0 0;
+    }
+  }
+  ::-webkit-scrollbar {
+    width: @scrollSize;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: @scrollSecondaryThumbColor;
+    border-radius: @scrollThumbRaduis;
+  }
+}
+
+.contact-list-item {
+  display: flex;
+  align-items: center;
+  padding: 5px @defaultGutter;
+  position: relative;
+  &.selected {
+    background: @selectedContactColor;
+  }
+  &.currentContactMenu {
+    background: @currentContactMenuColor;
+  }
+  .responsive-reverse(@mobile + 1, {
+    &:hover .favorite:before {
+      visibility: visible;
+    }
+  });
+  .favorite {
+    position: static;
+    cursor: pointer;
+  }
+  .unreadMessages, .favorite {
+    .square(@actionIconsSize);
+    margin-left: 10px;
+  }
+  .unreadMessages {
+    background: @primaryColor;
+    text-align: center;
+    line-height: @actionIconsSize;
+    font-size: 12px;
+  }
+  &.hasUnreadMessages {
+    font-weight: bold;
+  }
+  .seeMoreContacts {
+    margin: 3px auto;
+    cursor: pointer;
+    
+    a {
+      color: @leftContainerTextColor;
+    }
+  }
+}
+
+ /* Animations */
+.chat-contact-list-move {
+  transition: transform .6s ease-out;
+}
+.chat-contact-list-leave {
+  transition: opacity 1s;
+}
+.chat-contact-list-leave-active, .chat-contact-list-enter-active {
+  transition: opacity .5s ease-in;
+}
+.chat-contact-list-enter, .chat-contact-list-leave-to {
+  opacity: 0;
+}
+
+/* contact list component */

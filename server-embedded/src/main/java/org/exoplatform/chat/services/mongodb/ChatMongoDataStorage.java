@@ -126,6 +126,34 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
+  @Override
+  public List<RoomBean> getTeamRoomByName(String teamName, String dbName) {
+    if (StringUtils.isBlank(teamName))
+      return null;
+    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    BasicDBObject qRoom = new BasicDBObject();
+    qRoom.put("team", teamName);
+    qRoom.put("type", TYPE_ROOM_TEAM);
+    List<RoomBean> roomBeans = new ArrayList<>();
+    DBCursor roomsCursor = cRooms.find(qRoom);
+    while (roomsCursor.hasNext()) {
+      DBObject dbRoom = roomsCursor.next();
+      RoomBean room = new RoomBean();
+      room.setRoom((String) dbRoom.get("_id"));
+      room.setFullName((String) dbRoom.get("team"));
+      room.setUser((String) dbRoom.get("user"));
+      room.setType((String) dbRoom.get("type"));
+      if (StringUtils.isNotBlank(room.getUser())) {
+        room.setAdmins(new String[]{room.getUser()});
+      }
+      if (dbRoom.containsField("timestamp")) {
+        room.setTimestamp((Long) dbRoom.get("timestamp"));
+      }
+      roomBeans.add(room);
+    }
+    return roomBeans;
+  }
+
   public RoomBean getTeamRoomById(String roomId, String dbName) {
     if (roomId == null || roomId.isEmpty())
       return null;
@@ -141,6 +169,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     room.setFullName((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
     room.setType((String) dbRoom.get("type"));
+    if (StringUtils.isNotBlank(room.getUser())) {
+      room.setAdmins(new String[]{room.getUser()});
+    }
     if (dbRoom.containsField("timestamp")) {
       room.setTimestamp((Long) dbRoom.get("timestamp"));
     }
@@ -211,14 +242,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public String read(String room, String dbName) {
-    return read(room, false, null, null, dbName);
+    return read(room, false, null, null, dbName, 0);
   }
 
   public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName) {
-    return read(room, isTextOnly, fromTimestamp, null, dbName);
+    return read(room, isTextOnly, fromTimestamp, null, dbName, 0);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName) {
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName, int limitToLoad) {
     Calendar calendar = Calendar.getInstance();
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);
@@ -251,7 +282,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     BasicDBObject sort = new BasicDBObject();
     sort.put("timestamp", -1);
-    int limit = (isTextOnly) ? readTotalTxt : readTotalJson;
+    int limit = limitToLoad > 0 ? limitToLoad : (isTextOnly) ? readTotalTxt : readTotalJson;
     DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     StringBuilder sb = new StringBuilder();
     if (!cursor.hasNext()) {
@@ -523,7 +554,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       DBObject doc = cursor.next();
       roomType = doc.get("type");
     }
-    return roomType.toString();
+    return roomType == null ? "" : roomType.toString();
   }
 
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
@@ -554,6 +585,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           roomBean.setType((String) dbo.get("type"));
+          String creator = (String) dbo.get("user");
+          if (StringUtils.isNotBlank(creator)) {
+            roomBean.setAdmins(new String[]{creator});
+          }
           rooms.add(roomBean);
         }
       }
@@ -565,7 +600,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
     List<RoomBean> rooms;
     UserBean userBean = userDataStorage.getUser(user, true, dbName);
-    int unreadOffline = 0, unreadOnline = 0;
+    int unreadOffline = 0, unreadOnline = 0, totalRooms = 0;
 
     if (withUsers) {
       rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
@@ -580,7 +615,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         String targetUser = roomBean.getUser();
         roomBean.setFavorite(userBean.isFavorite(targetUser));
 
-        if (availableUsers.keySet().contains(targetUser)) {
+        if (availableUsers.containsKey(targetUser)) {
           UserBean targetUserBean = availableUsers.remove(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setStatus(targetUserBean.getStatus());
@@ -656,6 +691,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setTimestamp(team.getTimestamp());
       room.setAvailableUser(true);
       room.setType(team.getType());
+      room.setAdmins(team.getAdmins());
 
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
       if (room.getUnreadTotal() > 0)

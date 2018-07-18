@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Chat Application
-Implementation-Version: CHAT_VERSION
-Specification-Vendor: eXo Platform SAS
