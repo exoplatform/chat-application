@@ -26,7 +26,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
@@ -43,11 +43,11 @@ public class ServerBootstrap {
 
   private static final Log LOG = ExoLogger.getLogger(ServerBootstrap.class.getName());
 
-  private static String    serverBase;
+  private static String    serverBase = null;
 
-  private static String    serverURL;
+  private static String    serverURL = null;
 
-  private static String    serverURI;
+  private static String    serverURI = null;
 
   /**
    * Get mongo database name for current tenant if on cloud environment
@@ -210,25 +210,28 @@ public class ServerBootstrap {
   }
 
   public static String getServerURL() {
-    if (serverURL == null) {
-      String chatServerURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-      if (chatServerURL.startsWith("http")) {
-        serverURL = chatServerURL;
-      } else {
-        serverURL = getServerBase() + getServerURI();
-      }
+    if (StringUtils.isBlank(serverURL)) {
+      init();
     }
-    return serverURL;
+    if (StringUtils.isNotBlank(serverURL) && serverURL.startsWith("http")) {
+      return serverURL;
+    } else {
+      serverURL = getServerBase() + getServerURI();
+      return serverURL;
+    }
   }
 
   public static String getServerURI() {
-    if (serverURI == null) {
-      serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    if (StringUtils.isBlank(serverURI)) {
+      init();
     }
     return serverURI;
   }
 
   public static String getServerBase() {
+    if (StringUtils.isBlank(serverBase)) {
+      init();
+    }
     return serverBase;
   }
 
@@ -236,18 +239,23 @@ public class ServerBootstrap {
     if (request == null) {
       throw new IllegalArgumentException();
     }
-    if (StringUtils.isNotBlank(serverBase)) {
-      return;
-    }
-    serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
     if (StringUtils.isBlank(serverBase)) {
       String scheme = request.getScheme();
       String serverName = request.getServerName();
       int serverPort = request.getServerPort();
       serverBase = scheme + "://" + serverName;
-      if (serverPort != 80)
+      if (serverPort != 80) {
         serverBase += ":" + serverPort;
+      }
     }
   }
 
+  public static final void init() {
+    serverURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+    serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+    if (StringUtils.isBlank(serverBase)) {
+      serverBase = PropertyManager.getProperty(PropertyManager.EXO_BASE_URL);
+    }
+  }
 }

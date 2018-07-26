@@ -60,6 +60,7 @@ public class PropertyManager {
   public static final String PROPERTY_SYSTEM_PREFIX = "chat.";
   public static final String EXO_PROPERTY_SYSTEM_PREFIX = "exo.";
   public static final String PROPERTY_SERVICES_IMPLEMENTATION = "servicesImplementation";
+  public static final String EXO_BASE_URL = "exo.base.url";
   public static final String PROPERTY_SERVER_TYPE = "dbServerType";
   public static final String PROPERTY_SERVER_HOST = "dbServerHost";
   public static final String PROPERTY_SERVERS_HOSTS = "dbServerHosts";
