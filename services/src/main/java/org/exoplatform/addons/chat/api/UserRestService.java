@@ -102,19 +102,7 @@ public class UserRestService implements ResourceContainer {
   public Response getCometdToken(@Context HttpServletRequest request) throws Exception {
     init(request);
 
-    ConversationState conversationState = ConversationState.getCurrent();
-    String userId = conversationState.getIdentity().getUserId();
-
-    Boolean standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
-    String token;
-    if (standaloneChatServer) {
-      String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
-      String in = userId + passphrase;
-      token = MessageDigester.getHash(in);
-      ;
-    } else {
-      token = continuationService.getUserToken(userId);
-    }
+    String token = getCometdToken();
 
     return Response.ok(token, MediaType.TEXT_PLAIN).build();
   }
@@ -183,7 +171,7 @@ public class UserRestService implements ResourceContainer {
     }
     boolean online = userStateService.isOnline(currentUsername);
 
-    String cometdToken = continuationService.getUserToken(currentUsername);
+    String cometdToken = getCometdToken();
 
     String isStandaloneString = PropertyManager.getProperty("standaloneChatServer");
     boolean isStandalone = isStandaloneString != null && Boolean.valueOf(isStandaloneString);
@@ -219,4 +207,21 @@ public class UserRestService implements ResourceContainer {
   private void init(HttpServletRequest request) {
     ServerBootstrap.init(request);
   }
+
+  private String getCometdToken() {
+    ConversationState conversationState = ConversationState.getCurrent();
+    String userId = conversationState.getIdentity().getUserId();
+
+    Boolean standaloneChatServer = Boolean.valueOf(PropertyManager.getProperty("standaloneChatServer"));
+    String token;
+    if (standaloneChatServer) {
+      String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
+      String in = userId + passphrase;
+      token = MessageDigester.getHash(in);
+    } else {
+      token = continuationService.getUserToken(userId);
+    }
+    return token;
+  }
+
 }

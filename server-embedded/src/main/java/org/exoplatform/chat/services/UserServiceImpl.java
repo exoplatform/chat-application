@@ -20,9 +20,6 @@
 package org.exoplatform.chat.services;
 
 import org.exoplatform.chat.model.*;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.services.user.UserStateModel;
-import org.exoplatform.services.user.UserStateService;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;
@@ -192,14 +189,7 @@ public class UserServiceImpl implements UserService {
   }
 
   public String setStatus(String user, String status, String dbName) {
-    String newStoredStatus = userStorage.setStatus(user, status, dbName);
-    UserStateService userStateService = CommonsUtils.getService(UserStateService.class);
-    UserStateModel userState = userStateService.getUserState(user);
-    if (userState != null) {
-      userState.setStatus(status);
-      userStateService.save(userState);
-    }
-    return newStoredStatus;
+    return userStorage.setStatus(user, status, dbName);
   }
 
   public void setAsAdmin(String user, boolean isAdmin, String dbName) {

@@ -76,6 +76,13 @@ export function initChatCometdHandshake() {
         success: function (data) {
           cometDSettings.cometdToken = data;
           cometDSettings.cCometD.isConfigured = false;
+
+          const wsConfig = {
+            url: cometDSettings.wsEndpoint,
+            'exoId': cometDSettings.username,
+            'exoToken': cometDSettings.cometdToken
+          };
+          cometDSettings.cCometD.configure(wsConfig);
           initChatCometd();
         },
         error: function () {
