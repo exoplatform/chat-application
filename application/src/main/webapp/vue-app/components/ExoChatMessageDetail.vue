@@ -200,7 +200,6 @@ export default {
   },
   data: function() {
     return {
-      isCurrentUser: eXo.chat.userSettings.username === this.message.user,
       showConfirmModal: false,
       displayActionMobile: false,
       confirmTitle: '',
@@ -211,6 +210,9 @@ export default {
     };
   },
   computed: {
+    isCurrentUser() {
+      return eXo.chat.userSettings.username === this.message.user;
+    },
     messageActions() {
       if (
         eXo &&
