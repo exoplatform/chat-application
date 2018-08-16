@@ -51,10 +51,10 @@ export default {
     }
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username,
+    chatServices.initChatSettings(this.userSettings.username, true,
       userSettings => this.initSettings(userSettings),
       data => {
-        const totalUnreadMsg = Math.abs(data.unreadOffline) + Math.abs(data.unreadOnline) + Math.abs(data.unreadSpaces) + Math.abs(data.unreadTeams);
+        const totalUnreadMsg = Math.abs(data.total);
         if(totalUnreadMsg >= 0) {
           this.totalUnreadMsg = totalUnreadMsg;
         }

@@ -110,7 +110,7 @@ export default {
     refreshMessages() {
       this.messagesList = [];
       this.isRetrievingMessagges = true;
-      chatServices.getNotReadMessages(eXo.chat.userSettings).then(messages => {
+      chatServices.getNotReadMessages(eXo.chat.userSettings, true).then(messages => {
         this.messagesList = messages && messages.notifications ? messages.notifications : [];
         this.isRetrievingMessagges = false;
       }).catch(() => {
@@ -119,7 +119,7 @@ export default {
     },
     messageReceived() {
       if($('#chatApplicationNotification .status-dropdown').hasClass('open')) {
-        chatServices.getNotReadMessages(eXo.chat.userSettings).then(messages => {
+        chatServices.getNotReadMessages(eXo.chat.userSettings, true).then(messages => {
           this.messagesList = messages && messages.notifications ? messages.notifications : [];
         });
       }
