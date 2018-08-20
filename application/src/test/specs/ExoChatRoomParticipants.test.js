@@ -35,6 +35,11 @@ describe('ExoChatRoomParticipants.test.js', () => {
       name: 'userc',
       fullname: 'User C',
       status: 'offline'
+    },
+    {
+      name: 'root',
+      fullname: 'Root Root',
+      status: 'available'
     }
   ];
 

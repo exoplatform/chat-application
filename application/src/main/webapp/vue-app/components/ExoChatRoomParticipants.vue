@@ -13,7 +13,7 @@
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
           {{ $t("exoplatform.chat.participants") }}
-          <span v-show="participants.length > 0" class="nb-participants">({{ participants.length }})</span>
+          <span v-show="participantsCount > 0" class="nb-participants">({{ participantsCount }})</span>
         </div>
         <exo-dropdown-select v-show="!isCollapsed || mq === 'mobile'" position="right">
           <span slot="toggle">{{ filterByStatus[participantFilter] }}</span>
@@ -97,11 +97,15 @@ export default {
     };
   },
   computed: {
+    participantsCount() {
+      // subtract the current user
+      return this.participants.length - 1;
+    },
     filteredParticipant() {
       let listParticipants = [];
       const offline = ['invisible', 'offline'];
       listParticipants = this.participants.filter(participant => {
-        return this.participantFilter === 'All' ||  offline.indexOf(participant.status) < 0;
+        return (this.participantFilter === 'All' ||  offline.indexOf(participant.status) < 0) && participant.name !== eXo.chat.userSettings.username;
       });
       return listParticipants.sort((p1, p2) => {
         if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
@@ -161,6 +165,7 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
+      this.$emit('particpants-loaded', this.participants);
     },
     contactChanged(e) {
       const contact = e.detail;
@@ -170,13 +175,13 @@ export default {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
             this.$emit('particpants-loaded', data.users);
-            this.participants = data.users.reduce((prev, curr) => {
+            this.participants = data.users.map(user => {
               // if user is not online, set its status as offline
-              if(users.indexOf(curr.name) < 0) {
-                curr.status = 'offline';
+              if(users.indexOf(user.name) < 0) {
+                user.status = 'offline';
               }
-              return curr.name === eXo.chat.userSettings.username ? prev: [...prev, curr];
-            }, []);
+              return user;
+            });
           });
         });
       }
