@@ -211,7 +211,7 @@ public class ServerBootstrap {
 
   public static String getServerURL() {
     if (StringUtils.isBlank(serverURL)) {
-      init();
+      serverURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     }
     if (StringUtils.isNotBlank(serverURL) && serverURL.startsWith("http")) {
       return serverURL;
@@ -223,14 +223,17 @@ public class ServerBootstrap {
 
   public static String getServerURI() {
     if (StringUtils.isBlank(serverURI)) {
-      init();
+      serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
     }
     return serverURI;
   }
 
   public static String getServerBase() {
     if (StringUtils.isBlank(serverBase)) {
-      init();
+      serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+      if (StringUtils.isBlank(serverBase)) {
+        serverBase = PropertyManager.getProperty(PropertyManager.EXO_BASE_URL);
+      }
     }
     return serverBase;
   }
@@ -247,15 +250,6 @@ public class ServerBootstrap {
       if (serverPort != 80) {
         serverBase += ":" + serverPort;
       }
-    }
-  }
-
-  public static final void init() {
-    serverURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-    serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
-    serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
-    if (StringUtils.isBlank(serverBase)) {
-      serverBase = PropertyManager.getProperty(PropertyManager.EXO_BASE_URL);
     }
   }
 }
