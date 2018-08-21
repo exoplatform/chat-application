@@ -141,7 +141,7 @@ public class ChatServer
             roomBean.setLastMessage(lastMessage);
           }
         } catch (Exception e) {
-          LOG.warning("Error while building user room bean");
+          LOG.log(Level.WARNING, "Error while building room bean " + roomBean.getRoom() + " for user " + user, e);
         }
       }
     });
