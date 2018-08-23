@@ -115,7 +115,7 @@ export default {
     }
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username,
+    chatServices.initChatSettings(this.userSettings.username, false,
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
 

@@ -16,14 +16,14 @@ export function getUserStatus(userSettings, user) {
     }}).then(resp =>  resp.text());
 }
 
-export function getNotReadMessages(userSettings) {
-  return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=true`, {
+export function getNotReadMessages(userSettings, withDetails) {
+  return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=${withDetails}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
 
-export function initChatSettings(username, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
+export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
@@ -31,8 +31,13 @@ export function initChatSettings(username, userSettingsLoadedCallback, chatRooms
 
   document.addEventListener(chatConstants.EVENT_USER_SETTINGS_LOADED, (e) => {
     const settings = e.detail;
-    // fetch online users then fetch chat rooms
-    getOnlineUsers().then(users => getChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
+    if (isMiniChat) {
+      //mini chat only need fetching notifications
+      getNotReadMessages(settings).then(notifications => chatRoomsLoadedCallback(notifications));
+    } else {
+      // fetch online users then fetch chat rooms
+      getOnlineUsers().then(users => getChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
+    }
 
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
       const selectedContact = e.detail;
