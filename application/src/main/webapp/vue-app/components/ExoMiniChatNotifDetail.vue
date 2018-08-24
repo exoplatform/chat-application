@@ -108,7 +108,8 @@ export default {
         case this.$constants.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
         case this.$constants.MEETING_STOP_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
         case this.$constants.ADD_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
-        case this.$constants.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullnam,1: this.notif.options.users}); break;
+        case this.$constants.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullname,1: this.notif.options.users}); break;
+        case this.$constants.ROOM_MEMBER_LEFT : content = this.$t('exoplatform.chat.team.msg.leaveroom', {0: this.notif.options.fullName}); break;
         case this.$constants.CALL_JOIN_MESSAGE : content = this.$t('exoplatform.chat.meeting.joined'); break;
         case this.$constants.CALL_ON_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
         case this.$constants.CALL_OFF_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
