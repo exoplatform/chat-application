@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import {DEFAULT_ROOM_ACTIONS} from '../extension';
@@ -132,10 +133,10 @@ export default {
     document.addEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
     document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
-    this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
+    this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
   },
   updated() {
-    this.meetingStarted = chatWebStorage.getStoredParam(`meetingStarted-${this.contact.room}`);
+    this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
   },
   destroyed() {
     document.removeEventListener(this.$constants.ACTION_ROOM_START_MEETING, this.startMeeting);
@@ -188,15 +189,15 @@ export default {
     },
     startMeeting() {
       const room = this.contact.room;
-      chatWebStorage.setStoredParam(`meetingStarted-${room}`, new Date().getTime().toString());
+      chatWebStorage.setStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`, new Date().getTime().toString());
       this.meetingStarted = true;
       this.sendMeetingMessage(true);
     },
     stopMeeting() {
       const room = this.contact.room;
-      const fromTimestamp = chatWebStorage.getStoredParam(`meetingStarted-${room}`);
+      const fromTimestamp = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`);
       if (fromTimestamp) {
-        chatWebStorage.setStoredParam(`meetingStarted-${room}`, '');
+        chatWebStorage.setStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`, '');
         this.meetingStarted = false;
         this.sendMeetingMessage(false, fromTimestamp);
       }

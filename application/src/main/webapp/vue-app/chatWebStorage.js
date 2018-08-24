@@ -52,12 +52,12 @@ export function getRoomNotSentMessages(username, room) {
 }
 
 export function getNotSentMessages(username) {
-  let notSentMessages = getStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${username}`);
+  let notSentMessages = getStoredParam(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${username}`);
   if(notSentMessages) {
     notSentMessages = JSON.parse(notSentMessages);
     if(Array.isArray(notSentMessages)) {
       notSentMessages = {};
-      localStorage.removeItem(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${username}`);
+      localStorage.removeItem(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${username}`);
     } else {
       return notSentMessages;
     }
@@ -94,7 +94,7 @@ export function storeNotSentMessage(messageToStore) {
   if (!foundMessage) {
     messageToStore.notSent = true;
     notSentMessages[clientId] = messageToStore;
-    setStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
+    setStoredParam(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
   }
 }
 
@@ -113,15 +113,15 @@ export function deleteFromStore(user, clientId) {
   const notSentMessages = getNotSentMessages(user);
   if (notSentMessages && notSentMessages[clientId]) {
     delete notSentMessages[clientId];
-    setStoredParam(`${chatConstants.STORED_NOT_SENT_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
+    setStoredParam(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
     return true;
   }
   return false;
 }
 
 export function sendFailedMessages() {
-  if(!getStoredParam('messagesSending')) {
-    setStoredParam('messagesSending', 'true', RESEND_MESSAGE_PERIOD / chatConstants.NB_MILLISECONDS_PERD_SECOND);
+  if(!getStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING)) {
+    setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING, 'true', RESEND_MESSAGE_PERIOD / chatConstants.NB_MILLISECONDS_PERD_SECOND);
     try {
       const notSentMessages = getSortedNotSentMessages(eXo.chat.userSettings.username);
       if(notSentMessages && notSentMessages.length) {
@@ -140,9 +140,9 @@ export function sendFailedMessages() {
           }
         });
       }
-      setStoredParam('messagesSending');
+      setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING);
     } catch(e) {
-      setStoredParam('messagesSending');
+      setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING);
     }
   }
 }

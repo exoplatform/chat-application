@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 
 import ExoChatMessageList from './ExoChatMessageList.vue';
@@ -88,6 +89,7 @@ export default {
             if (!this.minimized) {
               document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
             }
+            localStorage.setItem(`${chatConstants.STORED_PARAM_OPENED_MINI_CHAT_ROOM}-${eXo.chat.userSettings.username}`, this.room);
           }
         });
       } else {

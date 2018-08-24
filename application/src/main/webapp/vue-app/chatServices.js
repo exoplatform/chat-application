@@ -42,7 +42,7 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
       const selectedContact = e.detail;
       if (selectedContact && selectedContact.room) {
-        chatWebStorage.setStoredParam('lastSelectedRoom', selectedContact.room);
+        chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM, selectedContact.room);
       }
     });
 

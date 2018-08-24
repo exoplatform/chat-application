@@ -118,10 +118,10 @@ function notify(e) {
   // to avoid concurrency issue in condition checking.
   setTimeout(function () {
     // Check if the message has been notified by other tab
-    if (localStorage.getItem(`lastNotify-${message.room}`) === message.msgId) {
+    if (localStorage.getItem(`${chatConstants.STORED_PARAM_LAST_NOTIFY}-${message.room}`) === message.msgId) {
       return;
     }
-    localStorage.setItem(`lastNotify-${message.room}`, message.msgId);
+    localStorage.setItem(`${chatConstants.STORED_PARAM_LAST_NOTIFY}-${message.room}`, message.msgId);
 
     const notification = {
       roomType: message.roomType,

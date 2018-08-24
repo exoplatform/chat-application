@@ -15,11 +15,12 @@
         <source src="/chat/audio/notif.ogg">
       </audio>
     </div>
-    <exo-chat-room v-if="room" ref="chatRoom" :room="room" @close="room = null"></exo-chat-room>
+    <exo-chat-room v-if="room" ref="chatRoom" :room="room" @close="close()"></exo-chat-room>
   </div>
 </template>
 
 <script>
+import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
@@ -58,6 +59,7 @@ export default {
         if(totalUnreadMsg >= 0) {
           this.totalUnreadMsg = totalUnreadMsg;
         }
+        this.room = localStorage.getItem(`${chatConstants.STORED_PARAM_OPENED_MINI_CHAT_ROOM}-${this.userSettings.username}`);
       }
     );
 
@@ -156,6 +158,10 @@ export default {
     },
     canShowOnSiteNotif() {
       return desktopNotification.canShowOnSiteNotif();
+    },
+    close() {
+      this.room = null;
+      localStorage.removeItem(`${chatConstants.STORED_PARAM_OPENED_MINI_CHAT_ROOM}-${this.userSettings.username}`);
     }
   }
 };

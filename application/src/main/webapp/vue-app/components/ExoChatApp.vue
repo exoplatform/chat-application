@@ -155,7 +155,7 @@ export default {
       this.addRooms(chatRoomsData.rooms);
 
       if (this.mq !== 'mobile') {
-        const selectedRoom = chatWebStorage.getStoredParam(this.$constants.LAST_SELECTED_ROOM_PARAM);
+        const selectedRoom = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_LAST_SELECTED_ROOM);
         if(selectedRoom) {
           this.setSelectedContact(selectedRoom);
         }

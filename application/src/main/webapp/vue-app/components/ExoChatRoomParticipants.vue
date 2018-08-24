@@ -128,7 +128,7 @@ export default {
     document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
-    this.participantFilter = chatWebStorage.getStoredParam(this.$constants.STATUS_FILTER_PARAM, this.$constants.STATUS_FILTER_DEFAULT);
+    this.participantFilter = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_STATUS_FILTER, this.$constants.STATUS_FILTER_DEFAULT);
   },
   destroyed() {
     document.removeEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
@@ -144,7 +144,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     },
     selectParticipantFilter(filter) {
-      chatWebStorage.setStoredParam(this.$constants.STATUS_FILTER_PARAM, filter);
+      chatWebStorage.setStoredParam(this.$constants.STORED_PARAM_STATUS_FILTER, filter);
       this.participantFilter = filter;
     },
     toggleParticipantFilter() {

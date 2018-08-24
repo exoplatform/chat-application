@@ -261,8 +261,8 @@ export default {
     document.addEventListener(this.$constants.ACTION_ROOM_SELECT, this.selectContact);
     document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(this.$constants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
-    this.typeFilter = chatWebStorage.getStoredParam(this.$constants.TYPE_FILTER_PARAM, this.$constants.TYPE_FILTER_DEFAULT);
-    this.sortFilter = chatWebStorage.getStoredParam(this.$constants.SORT_FILTER_PARAM, this.$constants.SORT_FILTER_DEFAULT);
+    this.typeFilter = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_TYPE_FILTER, this.$constants.TYPE_FILTER_DEFAULT);
+    this.sortFilter = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_SORT_FILTER, this.$constants.SORT_FILTER_DEFAULT);
     this.initFilterMobile();
   },
   destroyed() {
@@ -310,11 +310,11 @@ export default {
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
-      chatWebStorage.setStoredParam(this.$constants.SORT_FILTER_PARAM, this.sortFilter);
+      chatWebStorage.setStoredParam(this.$constants.STORED_PARAM_SORT_FILTER, this.sortFilter);
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
-      chatWebStorage.setStoredParam(this.$constants.TYPE_FILTER_PARAM, this.typeFilter);
+      chatWebStorage.setStoredParam(this.$constants.STORED_PARAM_TYPE_FILTER, this.typeFilter);
     },
     initFilterMobile() {
       this.typeFilterMobile = this.typeFilter;
