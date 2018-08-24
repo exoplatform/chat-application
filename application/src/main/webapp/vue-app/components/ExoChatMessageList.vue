@@ -12,9 +12,9 @@
     </div>
     <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" @message-written="messageWritten"></exo-chat-message-composer>
     <exo-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
-      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveMessage"></textarea>
+      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></textarea>
       <div class="uiAction uiActionBorder">
-        <div class="btn btn-primary" @click="saveMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
+        <div class="btn btn-primary" @click="saveEditMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </exo-modal>
@@ -324,7 +324,7 @@ export default {
         }
       });
     },
-    saveMessage(event) {
+    saveEditMessage(event) {
       if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY) {
         if (event && (event.ctrlKey || event.altKey || event.shiftKey)) {
           $(this.$refs.editMessageComposerArea).insertAtCaret('\n');

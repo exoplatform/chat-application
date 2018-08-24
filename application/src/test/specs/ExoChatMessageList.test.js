@@ -176,7 +176,7 @@ describe('ExoChatMessageList.test.js', () => {
 
   it('test save editing message', () => {
     const messageModifiedSpy = jest.spyOn(cmp.vm, 'messageModified');
-    cmp.vm.saveMessage();
+    cmp.vm.saveEditMessage();
     cmp.update();
 
     expect(messageModifiedSpy).toBeCalledWith(cmp.vm.messageToEdit);

@@ -92,11 +92,15 @@ export default {
   created() {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
+    document.addEventListener(this.$constants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
+    document.addEventListener(this.$constants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.addEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
     document.removeEventListener('click', this.closeEmojiPanel);
+    document.removeEventListener(this.$constants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
+    document.removeEventListener(this.$constants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.removeEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   methods: {
@@ -190,6 +194,9 @@ export default {
         this.$refs.messageComposerArea.value = '';
         document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_EDIT_LAST));
       }
+    },
+    putFocusOnComposer() {
+      this.$refs.messageComposerArea.focus();
     },
     resizeTextarea(e) {
       if (this.mq !== 'mobile') {return;}
