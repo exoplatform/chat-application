@@ -70,7 +70,7 @@ function getSortedNotSentMessages(username) {
   if(notSentMessages) {
     const notSentMessagesKeys = Object.keys(notSentMessages);
     const notSentMessagesArray = [];
-    if(notSentMessagesKeys.length > 1) {
+    if(notSentMessagesKeys.length > 0) {
       notSentMessagesKeys.forEach(key => notSentMessagesArray.push(notSentMessages[key]));
       notSentMessagesArray.sort((a, b) => a.timestamp - b.timestamp);
     }
