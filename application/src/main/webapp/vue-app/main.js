@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import exoi18n from '../js/lib/exo-i18n';
 import {addCaretJQueryExtension} from '../js/lib/text-caret';
 import ExoChatApp from './components/ExoChatApp.vue';
 import ExoMiniChatApp from './components/ExoMiniChatApp.vue';
@@ -7,7 +6,8 @@ import {chatConstants} from './chatConstants.js';
 
 import './../css/main.less';
 
-const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : '';
+const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
+const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
 
 Vue.prototype.$constants = chatConstants;
 
@@ -32,7 +32,7 @@ Vue.directive('hold-tap', function (el, binding, vnode) {
   }
 });
 
-exoi18n.loadLanguageAsync(lang).then(i18n => {
+exoi18n.loadLanguageAsync(lang, url).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({
       el: '#chatApplication',
