@@ -14,8 +14,7 @@
         "$": true,
         "cCometD": true,
         "CalDateTimePicker": true,
-        "global": true,
-        "exoi18n": true
+        "global": true
     },
     "parserOptions": {
         "sourceType": "module",

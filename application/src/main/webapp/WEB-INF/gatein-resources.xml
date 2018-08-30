@@ -58,9 +58,6 @@
             <module>vue</module>
         </depends>
         <depends>
-            <module>eXoVueI18n</module>
-        </depends>
-        <depends>
             <module>jquery</module>
             <as>$</as>
         </depends>
