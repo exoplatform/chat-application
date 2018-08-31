@@ -56,7 +56,8 @@ export default {
   },
   computed: {
     appHtml() {
-      return this.app.html(this.$t);
+      const i18nConverter = this.$t.bind(this);
+      return this.app.html(i18nConverter);
     },
     saveLabelKey() {
       return this.app.saveLabelKey ? this.app.saveLabelKey : 'exoplatform.chat.post';
