@@ -128,23 +128,7 @@ public class ChatServer
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
     RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService, dbName);
-    roomsBean.getRooms().forEach((roomBean) -> {
-      if (StringUtils.isNotBlank(roomBean.getRoom())) {
-        try {
-          roomBean.setFavorite(userService.isFavorite(user, roomBean.getRoom(), dbName));
-          String lastMesageString = chatService.read(user, roomBean.getRoom(), false, null, null, 1, dbName);
-          if (StringUtils.isNotBlank(lastMesageString)) {
-            org.json.JSONObject lastMessage = new org.json.JSONObject(lastMesageString);
-            lastMessage = (lastMessage == null || lastMessage.get("messages") == null
-                || ((org.json.JSONArray) lastMessage.get("messages")).length() == 0) ? null
-                                                                                     : ((org.json.JSONObject) ((org.json.JSONArray) lastMessage.get("messages")).get(0));
-            roomBean.setLastMessage(lastMessage);
-          }
-        } catch (Exception e) {
-          LOG.log(Level.WARNING, "Error while building room bean " + roomBean.getRoom() + " for user " + user, e);
-        }
-      }
-    });
+    
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }

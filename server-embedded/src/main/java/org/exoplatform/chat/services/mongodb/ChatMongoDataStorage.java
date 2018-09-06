@@ -613,7 +613,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
       for (RoomBean roomBean : rooms) {
         String targetUser = roomBean.getUser();
-        roomBean.setFavorite(userBean.isFavorite(targetUser));
+        roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
 
         if (availableUsers.containsKey(targetUser)) {
           UserBean targetUserBean = availableUsers.remove(targetUser);
@@ -650,7 +650,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setFullName(availableUser.getFullname());
           roomBean.setStatus(availableUser.getStatus());
           roomBean.setAvailableUser(true);
-          roomBean.setFavorite(userBean.isFavorite(roomBean.getUser()));
           roomBean.setType(ChatService.TYPE_ROOM_USER);
           rooms.add(roomBean);
         }
@@ -674,7 +673,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
       if (room.getUnreadTotal() > 0)
         unreadSpaces += room.getUnreadTotal();
-      room.setFavorite(userBean.isFavorite(room.getUser()));
+      room.setFavorite(userBean.isFavorite(room.getRoom()));
       if (withSpaces) {
         rooms.add(room);
       }
@@ -696,7 +695,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
       if (room.getUnreadTotal() > 0)
         unreadTeams += room.getUnreadTotal();
-      room.setFavorite(userBean.isFavorite(room.getUser()));
+      room.setFavorite(userBean.isFavorite(room.getRoom()));
       if (withSpaces) {
         rooms.add(room);
       }
