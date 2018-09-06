@@ -12,7 +12,7 @@
           </div>
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
-          {{ $t("exoplatform.chat.participants") }}
+          {{ $t("exoplatform.chat.participants.label") }}
           <span v-show="participantsCount > 0" class="nb-participants">({{ participantsCount }})</span>
         </div>
         <exo-dropdown-select v-show="!isCollapsed || mq === 'mobile'" position="right">

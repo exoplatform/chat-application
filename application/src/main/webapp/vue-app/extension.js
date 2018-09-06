@@ -364,7 +364,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'showParticipants',
-  labelKey: 'exoplatform.chat.show.participants',
+  labelKey: 'exoplatform.chat.participants',
   class: 'uiIconViewList',
   enabled: () => {
     return true;
