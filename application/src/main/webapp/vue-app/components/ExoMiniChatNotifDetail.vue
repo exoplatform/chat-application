@@ -87,7 +87,7 @@ export default {
     },
     specificMessageContent() {
       if(this.specificMessageObj.html) {
-        return this.specificMessageObj.html(this.notif, this.$t);
+        return this.specificMessageObj.html(this.notif, this.$t.bind(this));
       }
       return '';
     },

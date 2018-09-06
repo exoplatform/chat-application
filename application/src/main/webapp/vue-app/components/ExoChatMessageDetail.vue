@@ -276,7 +276,7 @@ export default {
     },
     specificMessageContent() {
       if(this.specificMessageObj.html) {
-        return this.specificMessageObj.html(this.message, this.$t);
+        return this.specificMessageObj.html(this.message, this.$t.bind(this));
       }
       return '';
     },
