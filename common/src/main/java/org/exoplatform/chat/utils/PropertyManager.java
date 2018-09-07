@@ -133,6 +133,9 @@ public class PropertyManager {
 
       overridePropertyIfNotSet(PROPERTY_SERVICES_IMPLEMENTATION, PROPERTY_SERVICE_IMPL_MONGO);
       overridePropertyIfNotSet(PROPERTY_SERVER_TYPE, "mongo");
+      overridePropertyIfNotSet(PROPERTY_SERVER_HOST, "");
+      overridePropertyIfNotSet(PROPERTY_SERVERS_HOSTS, "");
+      overridePropertyIfNotSet(PROPERTY_SERVER_PORT, "");
       overridePropertyIfNotSet(PROPERTY_DB_NAME, "chat");
       overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
       overridePropertyIfNotSet(PROPERTY_DB_USER, "");
@@ -186,5 +189,13 @@ public class PropertyManager {
 
   public static void overrideProperty(String key, String value) {
     properties().setProperty(key, value);
+  }
+
+  /**
+   * Add ability to re-initialize PropertyManager
+   * This method is for making unit test
+   */
+  public static void forceReload() {
+    PropertyManager.properties = null;
   }
 }
