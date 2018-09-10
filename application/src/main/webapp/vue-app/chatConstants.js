@@ -100,4 +100,10 @@ export const chatConstants = {
   EVENT_USER_STATUS_CHANGED: 'exo-chat-user-status-changed'
 };
 
+if (!eXo) {
+  eXo = {};
+}
+if (!eXo.chat) {
+  eXo.chat = {};
+}
 window.eXo.chat.constants = chatConstants;
