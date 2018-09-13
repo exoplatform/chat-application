@@ -447,12 +447,52 @@ export const EMOTICONS = [
     class: 'emoticon-cool'
   },
   { 
+    keys: [';(', ':\'('],
+    class: 'emoticon-crying'
+  },
+  { 
+    keys: ['(beer)'],
+    class: 'emoticon-beer'
+  },
+  { 
+    keys: ['(bow)'],
+    class: 'emoticon-bow'
+  },
+  { 
+    keys: ['(bug)'],
+    class: 'emoticon-bug'
+  },
+  { 
+    keys: ['(cake)', '(^)'],
+    class: 'emoticon-cake'
+  },
+  { 
+    keys: ['(cash)'],
+    class: 'emoticon-cash'
+  },
+  { 
+    keys: ['(coffee)'],
+    class: 'emoticon-coffee'
+  },
+  { 
+    keys: ['(star)'],
+    class: 'emoticon-star'
+  },
+  { 
+    keys: ['(heart)', '&lt;3'],
+    class: 'emoticon-heart'
+  },
+  { 
     keys: ['(y)', '(yes)'],
     class: 'emoticon-raise-up'
   },
   { 
     keys: ['(n)', '(no)'],
     class: 'emoticon-raise-down'
+  },
+  { 
+    keys: ['(devil)'],
+    class: 'emoticon-devil'
   }
 ];
 
