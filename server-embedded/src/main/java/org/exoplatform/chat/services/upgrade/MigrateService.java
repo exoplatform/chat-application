@@ -1,4 +1,4 @@
-package org.exoplatform.chat.services;
+package org.exoplatform.chat.services.upgrade;
 
 import java.util.regex.Pattern;
 

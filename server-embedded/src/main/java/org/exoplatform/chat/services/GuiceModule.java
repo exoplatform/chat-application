@@ -1,10 +1,7 @@
 package org.exoplatform.chat.services;
 
 import com.google.inject.AbstractModule;
-import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
-import org.exoplatform.chat.services.mongodb.NotificationMongoDataStorage;
-import org.exoplatform.chat.services.mongodb.TokenMongoService;
-import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
+import org.exoplatform.chat.services.mongodb.*;
 
 public class GuiceModule extends AbstractModule
 {
@@ -20,5 +17,6 @@ public class GuiceModule extends AbstractModule
     bind(UserDataStorage.class).to(UserMongoDataStorage.class);
     bind(UserService.class).to(UserServiceImpl.class);
     bind(RealTimeMessageService.class).to(CometdMessageServiceImpl.class);
+    bind(SettingDataStorage.class).to(SettingMongoDataStorage.class);
   }
 }

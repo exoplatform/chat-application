@@ -20,10 +20,8 @@
 package org.exoplatform.chat.bootstrap;
 
 import org.exoplatform.chat.listener.GuiceManager;
-import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.services.*;
-
-import java.util.List;
+import org.exoplatform.chat.services.upgrade.FavoritesMigrationService;
 
 public class ServiceBootstrap {
   private static UserService userService;
@@ -33,6 +31,7 @@ public class ServiceBootstrap {
   private static ChatDataStorage chatStorage;
   private static NotificationService notificationService;
   private static RealTimeMessageService realTimeMessageService;
+  private static FavoritesMigrationService favoritesMigrationService;
 
   public static void forceNew()
   {
@@ -43,6 +42,7 @@ public class ServiceBootstrap {
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
     realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);;
+    favoritesMigrationService = GuiceManager.getInstance().getInstance(FavoritesMigrationService.class);;
   }
 
   public static UserService getUserService() {
@@ -68,5 +68,9 @@ public class ServiceBootstrap {
 
   public static RealTimeMessageService getRealTimeMessageService() {
     return realTimeMessageService;
+  }
+
+  public static FavoritesMigrationService getFavoritesMigrationService() {
+    return favoritesMigrationService;
   }
 }
