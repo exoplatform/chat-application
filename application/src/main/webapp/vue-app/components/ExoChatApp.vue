@@ -187,12 +187,10 @@ export default {
       document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
     },
     setStatus(status) {
-      if (chatWebSocket && chatWebSocket.isConnected()) {
-        chatWebSocket.setStatus(status, newStatus => {
-          this.userSettings.status = newStatus;
-          this.userSettings.originalStatus = newStatus;
-        });
-      }
+      chatServices.setUserStatus(this.userSettings, status, newStatus => {
+        this.userSettings.status = newStatus;
+        this.userSettings.originalStatus = newStatus;
+      });
     },
     userLoggedout() {
       if (!chatWebSocket.isConnected()) {
