@@ -3,7 +3,8 @@ package org.exoplatform.chat.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.exoplatform.chat.services.MigrateService;
+import org.exoplatform.chat.services.upgrade.FavoritesMigrationService;
+import org.exoplatform.chat.services.upgrade.MigrateService;
  
 public class MigrateServiceListener implements ServletContextListener{
 
@@ -18,5 +19,7 @@ public class MigrateServiceListener implements ServletContextListener{
   public void contextInitialized(ServletContextEvent arg0) {
     migrateService = new MigrateService();
     migrateService.migrate();
+
+    GuiceManager.getInstance().getInstance(FavoritesMigrationService.class).processMigration();
   }
 }

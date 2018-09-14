@@ -57,6 +57,10 @@
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-component-upgrade</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
       <scope>provided</scope>
     </dependency>

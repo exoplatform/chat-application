@@ -53,6 +53,7 @@ public class AbstractChatTestCase
       bind(TokenStorage.class).to(TokenMongoService.class);
       bind(UserDataStorage.class).to(UserMongoDataStorage.class);
       bind(UserService.class).to(UserServiceImpl.class);
+      bind(SettingDataStorage.class).to(SettingMongoDataStorage.class);
       // mock for RealTimeMessageService
       bind(RealTimeMessageService.class).toInstance(new RealTimeMessageService() {
         @Override

@@ -18,13 +18,13 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>org.exoplatform.chat.listener.MigrateServiceListener</listener-class>
-  </listener>
-  <listener>
     <listener-class>org.exoplatform.chat.listener.GuiceManager</listener-class>
   </listener>
   <listener>
     <listener-class>org.exoplatform.chat.listener.ConnectionManager</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.exoplatform.chat.listener.MigrateServiceListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.exoplatform.chat.listener.SchedulerManager</listener-class>
