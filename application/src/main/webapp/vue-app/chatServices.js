@@ -16,6 +16,23 @@ export function getUserStatus(userSettings, user) {
     }}).then(resp =>  resp.text());
 }
 
+export function setUserStatus(userSettings, status, callback) {
+  if (chatWebSocket && chatWebSocket.isConnected()) {
+    chatWebSocket.setStatus(status, () => {
+      fetch(`${chatConstants.USER_STATE_API}${userSettings.username}?status=${status}`, {
+        credentials: 'include',
+        method: 'PUT'
+      }).then(() => {
+        if (typeof callback === 'function') {
+          callback(status);
+        }
+      });
+    }, () => setTimeout(() => setUserStatus(userSettings, status, callback), chatConstants.REATTEMPT_PERIOD));
+  } else {
+    setTimeout(() => setUserStatus(userSettings, status, callback), chatConstants.REATTEMPT_PERIOD);
+  }
+}
+
 export function getNotReadMessages(userSettings, withDetails) {
   return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&dbName=${userSettings.dbName}&withDetails=${withDetails}`, {
     headers: {

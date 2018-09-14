@@ -133,17 +133,10 @@ export default {
       }
     },
     setStatus(status) {
-      const thiss = this;
-      if (chatWebSocket && chatWebSocket.isConnected()) {
-        chatWebSocket.setStatus(status, newStatus => {
-          this.userSettings.status = newStatus;
-          this.status = newStatus;
-        }, () => {
-          setTimeout(() => thiss.setStatus(status), this.$constants.REATTEMPT_PERIOD);
-        });
-      } else {
-        setTimeout(() => thiss.setStatus(status), this.$constants.REATTEMPT_PERIOD);
-      }
+      chatServices.setUserStatus(this.userSettings, status, newStatus => {
+        this.userSettings.status = newStatus;
+        this.status = newStatus;
+      });
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;
