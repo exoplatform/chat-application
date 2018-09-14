@@ -1483,6 +1483,9 @@ function showMiniChatPopup(room, type) {
             jqchat(this).val("");
             miniChats[index].sendMessage(msg, {}, false, function() {
               $miniChat.find(".message-input").val("");
+			  // scroll to the last message
+                var $history = $miniChat.find(".history");
+                $history.scrollTop($history.prop('scrollHeight') - $history.innerHeight());
             });
 
           }
