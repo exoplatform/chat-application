@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.util.Text;
+import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
@@ -95,6 +96,62 @@ public class DocumentService implements ResourceContainer {
         }
       }
     }
+  }
+
+  @POST
+  @Path("upload")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("users")
+  public Response uploadFile(@Context SecurityContext securityContext,
+                             @Context HttpServletRequest httpServletRequest,
+                             @QueryParam("uploadId") String uploadId,
+                             @QueryParam("action") String action) throws Exception {
+    // The upload process duplicates (partially) the one from Gatein (org.exoplatform.web.handler.UploadHandler) since
+    // the upload limit can only be set this way in UploadService
+    if(action == null || action.equals("upload")) {
+      uploadService_.createUploadResource(httpServletRequest);
+      uploadService_.addUploadLimit(uploadId, getUploadLimitInMB());
+    } else if(action.equals("progress")) {
+      if (uploadId == null) {
+        return Response.serverError().build();
+      }
+      UploadResource upResource = uploadService_.getUploadResource(uploadId);
+      if (upResource == null) {
+        return Response.status(Status.NOT_FOUND).build();
+      }
+      return Response.ok(getProgress(upResource)).header("Cache-Control", "no-cache").build();
+    }
+    return Response.ok().header("Cache-Control", "no-cache").build();
+  }
+
+  /**
+   * Return JSON representation of the upload progress for the given upload resource.
+   * @param upResource The upload resource
+   * @return The JSON representation of the upload progress
+   */
+  private String getProgress(UploadResource upResource) {
+    StringBuilder value = new StringBuilder();
+    value.append("{\n  upload : {");
+    if (upResource.getStatus() == UploadResource.FAILED_STATUS) {
+      UploadService.UploadLimit limit = uploadService_.getUploadLimits().get(upResource.getUploadId());
+      value.append("\n    \"").append(upResource.getUploadId()).append("\": {");
+      value.append("\n      \"status\":").append('\"').append("failed").append("\",");
+      value.append("\n      \"size\":").append('\"').append(limit.getLimit()).append("\",");
+      value.append("\n      \"unit\":").append('\"').append(limit.getUnit()).append("\"");
+      value.append("\n    }");
+    } else {
+      double percent = 100;
+      if (upResource.getStatus() == UploadResource.UPLOADING_STATUS) {
+        percent = (upResource.getUploadedSize() * 100) / upResource.getEstimatedSize();
+      }
+      value.append("\n    \"").append(upResource.getUploadId()).append("\": {");
+      value.append("\n      \"percent\":").append('\"').append((int) percent).append("\",");
+      String fileName = EntityEncoder.FULL.encode(upResource.getFileName());
+      value.append("\n      \"fileName\":").append('\"').append(fileName).append("\"");
+      value.append("\n    }");
+      value.append("\n  }\n}");
+    }
+    return value.toString();
   }
 
   @SuppressWarnings("unchecked")

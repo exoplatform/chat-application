@@ -13,7 +13,7 @@ export const chatConstants = {
   PROFILE_SPACE_LINK: '/g/:spaces:',
   CHAT_SERVER_API: '/chatServer/',
   CHAT_PLUGIN_API: '/chat/api/1.0/plugin/',
-  UPLOAD_API: '/portal/upload',
+  UPLOAD_API: '/portal/rest/chat/api/1.0/file/upload',
   FILE_PERSIST_URL: '/portal/rest/chat/api/1.0/file/persist',
   DEFAULT_ROOM_AVATAR: '/chat/img/room-default.jpg',
   MAX_UPLOAD_FILES: 1,
