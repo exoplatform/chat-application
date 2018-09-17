@@ -44,7 +44,7 @@
           <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
         </div>
       </transition-group>
-      <div v-show="isSearchingContact" class="contact-list-item isList">
+      <div v-show="loadingContacts" class="contact-list-item isList">
         <div class="seeMoreContacts">
           {{ $t('exoplatform.chat.loading') }}
         </div>
@@ -117,10 +117,14 @@ export default {
       type: Array,
       default: function() { return [];}
     },
+    contactsLoaded: {
+      type: Boolean,
+      default: function() { return false;}
+    },
     /**
-     * whether some additional contacts are currently loading or not
+     * whether some contacts are currently loading or not
      */
-    isSearchingContact: {
+    loadingContacts: {
       type: Boolean,
       default: function() { return false;}
     },

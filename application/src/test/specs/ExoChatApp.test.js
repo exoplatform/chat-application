@@ -50,12 +50,6 @@ describe('ExoChatApp.test.js', () => {
     expect(app.find('#chat-application').classes()).not.toContain('offline');
   });
 
-  it('chat loading mask should be displayed and hidden when user connect', () => {
-    expect(app.find('.chat-loading-mask').exists()).toBeTruthy();
-    app.trigger(chatConstants.EVENT_CONNECTED);
-    expect(app.find('.chat-loading-mask').exists()).toBeFalsy();
-  });
-
   it('contact label contain user full name', () => {
     expect(app.find('.contactDetail .contactLabel span').text()).toBe('');
     app.vm.initSettings(userSettings);

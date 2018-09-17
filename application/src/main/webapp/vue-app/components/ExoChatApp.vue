@@ -7,7 +7,7 @@
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <exo-chat-contact-list :contacts="contactList" :selected="selectedContact" :is-searching-contact="isSearchingContact" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contats="refreshContacts($event)"></exo-chat-contact-list>
+      <exo-chat-contact-list :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
@@ -39,7 +39,6 @@
         </a>
       </div>
     </exo-modal>
-    <div v-if="!initialised" class="chat-loading-mask"><img src="/chat/img/sync.gif" class="chat-loading"></div>
     <div class="hide">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
@@ -95,11 +94,10 @@ export default {
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root'
       },
-      initialised: false,
       connected: false,
       loggedout: false,
       selectedContact: {},
-      isSearchingContact: false,
+      loadingContacts: true,
       settingModal: false,
       conversationArea: false,
       participantsArea: false,
@@ -152,6 +150,8 @@ export default {
       }
     },
     initChatRooms(chatRoomsData) {
+      this.loadingContacts = false;
+      
       this.addRooms(chatRoomsData.rooms);
 
       if (this.mq !== 'mobile') {
@@ -223,7 +223,6 @@ export default {
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;
-      this.initialised = true;
       this.connected = true;
       if (this.userSettings.originalStatus !== this.userSettings.status) {
         this.setStatus(this.userSettings.originalStatus);
@@ -244,20 +243,20 @@ export default {
       }
     },
     loadMoreContacts(nbPages) {
-      this.isSearchingContact = true;
+      this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          this.isSearchingContact = false;
+          this.loadingContacts = false;
         });
       });
     },
     searchContacts(term) {
-      this.isSearchingContact = true;
+      this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          this.isSearchingContact = false;
+          this.loadingContacts = false;
         });
       });
     },
