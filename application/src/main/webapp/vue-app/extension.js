@@ -237,16 +237,9 @@ export const DEFAULT_COMPOSER_APPS = [
           $dropzoneContainer.find('.bar').html(`${progress}%`);
         },
         uploadFinished: function () {
-          fetch(chatConstants.UPLOAD_API, {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
+          fetch(`${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=progress`, {
             method: 'post',
-            credentials: 'include',
-            body: $.param({
-              uploadId: uploadId,
-              action: 'progress'
-            })
+            credentials: 'include'
           }).then(resp =>  resp.text()).then(data => {
             data = data.replace(' upload :', ' "upload" :');
             data = JSON.parse(data);
