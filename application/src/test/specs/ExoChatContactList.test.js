@@ -6,7 +6,7 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 describe('ExoChatContactList.test.js', () => {
   const cmp = shallow(ExoChatContactList, {
     propsData: {
-      isSearchingContact : false,
+      loadingContacts : false,
       selected: {
         'fullName':'Test User',
         'unreadTotal':0,
