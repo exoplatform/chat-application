@@ -316,7 +316,7 @@ export default {
         .replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"')
         .replace(/<br( *)\/?>/g, '\n')
-        .replace('&#38', '&');
+        .replace(/&#38/g, '&');
       this.showEditMessageModal = true;
       this.$nextTick(() => {
         if(this.$refs.editMessageComposerArea) {
