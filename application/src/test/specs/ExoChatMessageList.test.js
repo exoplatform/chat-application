@@ -120,6 +120,13 @@ describe('ExoChatMessageList.test.js', () => {
     expect(cmp.vm.messagesMap[dates[2]]).toHaveLength(1);
   });
 
+  it('test message with special characters edited', () => {
+    const newMessage = getMessage('Test &#92 &#38 &lt; &gt; &quot; &#92 &#38 &lt; &gt; &quot;', 'testuser1', Date.UTC(2000, 11, 12, 3, 0, 20));
+    cmp.vm.editMessage(newMessage);
+    cmp.update();
+    expect(cmp.vm.messageToEdit.msg).toBe('Test \\ & < > " \\ & < > "');
+  });
+
   it('test message modified', () => {
     const newMessage = getMessage('Test message 4', 'testuser1', Date.UTC(2000, 11, 12, 3, 0, 20));
     cmp.vm.messageWritten(newMessage);
