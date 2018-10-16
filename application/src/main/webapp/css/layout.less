@@ -4,20 +4,20 @@
   display: flex;
   overflow: hidden;
 }
-.uiLeftContainerArea {
+.uiChatLeftContainer {
   .responsive-reverse(@mobile + 1, {
     background: @secondaryColor;
     color: @leftContainerTextColor;
   });
   user-select: none;
 }
-.uiLeftContainerArea, .uiRightContainerArea, .room-participants {
+.uiChatLeftContainer, .uiRightContainerArea, .room-participants {
   .flex-column;
 }
 .uiGlobalRoomsContainer, .uiRightContainerArea {
   .flex-remaining-width;
 }
-.uiLeftContainerArea, .room-participants {
+.uiChatLeftContainer, .room-participants {
   width: @sideBarWidth;
   min-width: @sideBarMinWidth;
   box-sizing: border-box;

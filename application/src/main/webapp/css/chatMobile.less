@@ -1,12 +1,12 @@
 @media (max-width: @mobile) {
-  .uiLeftContainerArea, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea, .chat-side-menu {
+  .uiChatLeftContainer, .uiGlobalRoomsContainer, .uiRoomUsersContainerArea, .chat-side-menu {
     position: fixed;
     top: 0;
     width: 100vw;
     height: 100vh;
     transition: left .5s ease-out;
   }
-  .uiLeftContainerArea {
+  .uiChatLeftContainer {
     left: 0;
     z-index: 1;
   }
@@ -17,7 +17,7 @@
     .uiGlobalRoomsContainer {
       left: 0;
     }
-    .uiLeftContainerArea {
+    .uiChatLeftContainer {
       left: -100%;
     }
   }
@@ -34,7 +34,7 @@
       left: 0;
       transition: left .45s ease-out;
     }
-    .uiLeftContainerArea {
+    .uiChatLeftContainer {
       left: 80%;
     }
     .contactList {

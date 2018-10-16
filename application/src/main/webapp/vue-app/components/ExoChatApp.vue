@@ -1,6 +1,6 @@
 <template>
   <div id="chat-application" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants, 'show-sideMenu': sideMenuArea}">
-    <div class="uiLeftContainerArea">
+    <div class="uiChatLeftContainer">
       <div class="userDetails">
         <exo-chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)">
           <div v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')" v-if="mq !== 'mobile'" class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
