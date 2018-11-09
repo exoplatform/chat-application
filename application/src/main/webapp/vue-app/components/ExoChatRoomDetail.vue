@@ -45,20 +45,9 @@
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
-import {DEFAULT_ROOM_ACTIONS} from '../extension';
-
-import ExoChatContact from './ExoChatContact.vue';
-import ExoChatRoomNotificationModal from './modal/ExoChatRoomNotificationModal.vue';
-import ExoDropdownSelect from './ExoDropdownSelect.vue';
-import ExoModal from './modal/ExoModal.vue';
+import {roomActions} from '../extension';
 
 export default {
-  components: {
-    'exo-chat-contact': ExoChatContact,
-    'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
-    'exo-dropdown-select': ExoDropdownSelect,
-    'exo-modal': ExoModal
-  },
   props: {
     /**
      * fullName: {string} full name of contact
@@ -82,6 +71,7 @@ export default {
   },
   data() {
     return {
+      settingActions: roomActions,
       nbMembers: 0,
       showSearchRoom: false,
       searchText: '',
@@ -96,13 +86,6 @@ export default {
     };
   },
   computed: {
-    settingActions() {
-      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraActions) {
-        return DEFAULT_ROOM_ACTIONS.concat(eXo.chat.room.extraActions);
-      } else {
-        return DEFAULT_ROOM_ACTIONS;
-      }
-    },
     isAdmin() {
       return this.contact.admins && this.contact.admins.indexOf(eXo.chat.userSettings.username) >= 0;
     },

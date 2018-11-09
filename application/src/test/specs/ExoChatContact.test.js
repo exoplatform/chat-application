@@ -21,7 +21,10 @@ describe('ExoChatContact.test.js', () => {
       },
       mocks: {
         $t: () => {},
-        $constants : chatConstants
+        $constants : chatConstants,
+      },
+      stubs: {
+        'exo-dropdown-select': ExoDropdownSelect
       },
       attachToDocument: true
     });
@@ -58,7 +61,7 @@ describe('ExoChatContact.test.js', () => {
   });
 
   it('current user has status choice dropdown', () => {
-    expect(currentUser.contains(ExoDropdownSelect)).toBe(true);
+    expect(currentUser.contains('.status-dropdown')).toBe(true);
   });
 
   it('contactionList has user-donotdisturb css class', () => {

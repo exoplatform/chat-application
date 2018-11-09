@@ -1,4 +1,4 @@
-import { mount } from 'vue-test-utils';
+import { shallow } from 'vue-test-utils';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 import ExoChatRoomFormModal from '../../main/webapp/vue-app/components/modal/ExoChatRoomFormModal';
@@ -19,7 +19,7 @@ global.fetch = jest.fn().mockImplementation(() => {
 });
 
 function getComponent(show, selected) {
-  const comp = mount(ExoChatRoomFormModal, {
+  const comp = shallow(ExoChatRoomFormModal, {
     propsData: {
       show: show,
       selected: selected
@@ -30,6 +30,9 @@ function getComponent(show, selected) {
       },
       $constants : chatConstants,
       mq: 'desktop'
+    },
+    stubs: {
+      'exo-modal': ExoModal
     }
   });
   comp.vm.show = show;
@@ -71,11 +74,11 @@ describe('ExoChatRoomFormModal.test.js', () => {
     expect(cmp.vm.title).toContain('exoplatform.chat.team.edit');
     expect(cmp.vm.fullName).toBe('Test User');
 
-    expect(cmp.findAll(ExoModal)).toHaveLength(2);
-    expect(cmp.find(ExoModal).element.style.display).toBe('');
+    expect(cmp.findAll('.chat-modal')).toHaveLength(2);
+    expect(cmp.find('.chat-modal-mask').element.style.display).toBe('');
     cmp.vm.show = false;
     cmp.update();
-    expect(cmp.find(ExoModal).element.style.display).toBe('none');
+    expect(cmp.find('.chat-modal-mask').element.style.display).toBe('none');
   });
 
   it('test ExoChatRoomFormModal participants', () => {

@@ -25,14 +25,7 @@ import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
 
-import ExoMiniChatNotifList from './ExoMiniChatNotifList.vue';
-import ExoMiniChatRoom from './ExoMiniChatRoom.vue';
-
 export default {
-  components: {
-    'exo-chat-notif-list': ExoMiniChatNotifList,
-    'exo-chat-room': ExoMiniChatRoom
-  },
   data() {
     return {
       status: 'offline',

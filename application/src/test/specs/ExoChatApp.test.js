@@ -1,8 +1,11 @@
-import { mount } from 'vue-test-utils';
+import { shallow } from 'vue-test-utils';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 import ExoChatContactList from '../../main/webapp/vue-app/components/ExoChatContactList';
+import ExoChatContact from '../../main/webapp/vue-app/components/ExoChatContact';
 import ExoChatApp from '../../main/webapp/vue-app/components/ExoChatApp';
+import ExoModal from '../../main/webapp/vue-app/components/modal/ExoModal';
+import ExoChatGlobalNotificationModal from '../../main/webapp/vue-app/components/modal/ExoChatGlobalNotificationModal';
 
 describe('ExoChatApp.test.js', () => {
   let app;
@@ -32,7 +35,13 @@ describe('ExoChatApp.test.js', () => {
   };
 
   beforeEach(() => {
-    app = mount(ExoChatApp, {
+    app = shallow(ExoChatApp, {
+      stubs: {
+        'exo-modal': ExoModal,
+        'exo-chat-contact': ExoChatContact,
+        'exo-chat-contact-list': ExoChatContactList,
+        'exo-chat-global-notification-modal': ExoChatGlobalNotificationModal
+      },
       mocks: {
         $t: () => {},
         $constants : chatConstants
@@ -100,8 +109,9 @@ describe('ExoChatApp.test.js', () => {
   });
 
   it('add show-sideMenu when open side menu event', () => {
-    app.find(ExoChatContactList).vm.$emit('open-side-menu');
-    expect(app.vm.sideMenuArea).toBe(true);
+    expect(app.vm.sideMenuArea).toBe(false);
+    expect(app.find('#chat-application').classes()).not.toContain('show-sideMenu');
+    app.vm.sideMenuArea = true;
     app.update();
     expect(app.find('#chat-application').classes()).toContain('show-sideMenu');
   });

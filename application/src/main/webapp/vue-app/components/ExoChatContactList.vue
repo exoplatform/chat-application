@@ -86,17 +86,9 @@ import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatTime from '../chatTime';
 
-import ExoChatContact from './ExoChatContact.vue';
-import ExoDropdownSelect from './ExoDropdownSelect.vue';
-import ExoChatRoomFormModal from './modal/ExoChatRoomFormModal.vue';
-import {getComposerApplications} from '../extension';
+import {composerApplications} from '../extension';
 
 export default {
-  components: {
-    'exo-chat-contact': ExoChatContact,
-    'exo-chat-room-form-modal': ExoChatRoomFormModal,
-    'exo-dropdown-select': ExoDropdownSelect
-  },
   props: {
     /**
      * List of contacts objects to display in List.
@@ -508,9 +500,8 @@ export default {
           const filteredMessage = this.filterLastMessage(message.msg);
           return contactType === 'u' ? message.msg : `${message.fullname}: ${filteredMessage}`;
         } else {
-          const apps = getComposerApplications();
           let systemMsg = '';
-          apps.forEach(element => {
+          composerApplications.forEach(element => {
             if (message.options.type === element.type) {
               systemMsg = `<span><i class="${element.iconClass || ''}"></i>${this.$t(element.nameKey || element.labelKey || '')}</span>`;
             }

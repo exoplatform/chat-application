@@ -1,10 +1,9 @@
 import Vue from 'vue';
 import {addCaretJQueryExtension} from '../js/lib/text-caret';
-import ExoChatApp from './components/ExoChatApp.vue';
-import ExoMiniChatApp from './components/ExoMiniChatApp.vue';
 import {chatConstants} from './chatConstants.js';
 
 import './../css/main.less';
+import './components/initComponents.js';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
@@ -32,17 +31,27 @@ Vue.directive('hold-tap', function (el, binding, vnode) {
   }
 });
 
+// get overrided components if exists
+if (extensionRegistry) {
+  const components = extensionRegistry.loadComponents('chat');
+  if (components && components.length > 0) {
+    components.forEach(cmp => {
+      Vue.component(cmp.componentName, cmp.componentOptions);
+    });
+  }
+}
+
 exoi18n.loadLanguageAsync(lang, url).then(i18n => {
   if ($('#chatApplication').length) {
     new Vue({
       el: '#chatApplication',
-      render: h => h(ExoChatApp),
+      template: '<exo-chat-app></exo-chat-app>',
       i18n
     });
   } else if ($('#chatApplicationNotification').length) {
     new Vue({
       el: '#chatApplicationNotification',
-      render: h => h(ExoMiniChatApp),
+      template: '<exo-chat-notif-app></exo-chat-notif-app>',
       i18n
     });
   }

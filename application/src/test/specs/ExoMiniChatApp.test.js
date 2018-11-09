@@ -24,6 +24,10 @@ function getComponent() {
     propsData: {
       room: '54654fa654654fa65f6af4654654f4f4f6546'
     },
+    stubs: {
+      'exo-chat-notif-list': ExoMiniChatNotifList,
+      'exo-chat-room': ExoMiniChatRoom
+    },
     mocks: {
       $t: (key, params) => {
         return `${key} params: ${params ? JSON.stringify(params) :''}`;
@@ -38,8 +42,8 @@ describe('ExoMiniChatApp.test.js', () => {
 
   it('test display mini chat sub components', () => {
     const cmp = getComponent();
-    expect(cmp.findAll(ExoMiniChatNotifList)).toHaveLength(1);
-    expect(cmp.findAll(ExoMiniChatRoom)).toHaveLength(0);
+    expect(cmp.findAll('#chatApplicationNotification .dropdown')).toHaveLength(1);
+    expect(cmp.findAll('.mini-chat')).toHaveLength(0);
   });
 
   it('test connection', () => {
@@ -74,8 +78,8 @@ describe('ExoMiniChatApp.test.js', () => {
       type: 'u'
     }});
     cmp.update();
-    expect(cmp.findAll(ExoMiniChatNotifList)).toHaveLength(1);
-    expect(cmp.findAll(ExoMiniChatRoom)).toHaveLength(1);
+    expect(cmp.findAll('#chatApplicationNotification .dropdown')).toHaveLength(1);
+    expect(cmp.findAll('.mini-chat')).toHaveLength(1);
   });
 
   it('test total unread update', () => {

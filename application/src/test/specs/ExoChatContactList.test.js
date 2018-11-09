@@ -111,11 +111,14 @@ describe('ExoChatContactList.test.js', () => {
       $t: () => {},
       $constants : chatConstants,
       mq: 'desktop'
+    },
+    stubs: {
+      'exo-chat-contact': ExoChatContact
     }
   });
 
   it('4 displayed contacts', () => {
-    expect(cmp.findAll(ExoChatContact)).toHaveLength(4);
+    expect(cmp.findAll('.contact-list-room-item')).toHaveLength(4);
   });
 
   it('2 displayed user', () => {
@@ -141,7 +144,7 @@ describe('ExoChatContactList.test.js', () => {
   it('Search term should display only exact entries', () => {
     cmp.setData({searchTerm : 'Test User'});
     try {
-      expect(cmp.findAll(ExoChatContact)).toHaveLength(2);
+      expect(cmp.findAll('.contact-list-room-item')).toHaveLength(2);
     } finally {
       cmp.setData({searchTerm : ''});
     }
@@ -197,7 +200,7 @@ describe('ExoChatContactList.test.js', () => {
 
   it('Selected contact to be "Test User"', () => {
     expect(cmp.findAll('.contact-list-room-item.selected')).toHaveLength(1);
-    expect(cmp.find('.contact-list-room-item.selected').find(ExoChatContact).props().userName).toBe('testuser');
+    expect(cmp.find('.contact-list-room-item.selected .contactLabel span').text()).toBe('Test User');
   });
 
   it('Room "Team Room" has unread total', () => {

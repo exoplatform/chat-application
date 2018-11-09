@@ -27,7 +27,8 @@ function getMessage(msg, username, timestamp) {
     room:'eb74205830cf97546269bbdc5d439b29ddd1735b',
     fullname: username,
     user: username,
-    timestamp: timestamp
+    timestamp: timestamp,
+    options: {}
   };
 }
 
@@ -42,6 +43,9 @@ function getMessageListDetail() {
       },
       $constants : chatConstants,
       mq: 'desktop'
+    },
+    stubs: {
+      'exo-chat-message-detail': ExoChatMessageDetail
     }
   });
   return component;
@@ -50,21 +54,31 @@ function getMessageListDetail() {
 describe('ExoChatMessageList.test.js', () => {
   const cmp = getMessageListDetail();
 
+  const dates = [
+    new Date(Date.UTC(2000, 11, 10)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 11)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 12)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 13)).toLocaleDateString(eXo.env.portal.language),
+    new Date(Date.UTC(2000, 11, 14)).toLocaleDateString(eXo.env.portal.language)
+  ];
+
+  const messages = [
+    getMessage('Test message 1', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
+    getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
+    getMessage('Test message 3', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 0)),
+    getMessage('Test message 4', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 2)),
+    getMessage('Test message 5', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 4)),
+    getMessage('Test message 6', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 5)),
+    getMessage('Test message 7', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 6)),
+    getMessage('Test message 8', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 7))
+  ];
+
   it('test no messages container', () => {
     expect(cmp.html()).toContain('exoplatform.chat.no.messages');
   });
 
   cmp.setData({
-    messages: [
-      getMessage('Test message 1', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
-      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 10, 3, 0, 0)),
-      getMessage('Test message 3', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 0)),
-      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 2)),
-      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 4)),
-      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 5)),
-      getMessage('Test message 2', 'testuser1', Date.UTC(2000, 11, 11, 3, 0, 6)),
-      getMessage('Test message 2', 'testuser2', Date.UTC(2000, 11, 11, 3, 0, 7))
-    ],
+    messages: messages,
     contact: {
       'fullName':'Test User',
       'unreadTotal':0,
@@ -79,37 +93,31 @@ describe('ExoChatMessageList.test.js', () => {
   });
   cmp.update();
 
-  const dates = [
-    new Date(Date.UTC(2000, 11, 10)).toLocaleDateString(eXo.env.portal.language),
-    new Date(Date.UTC(2000, 11, 11)).toLocaleDateString(eXo.env.portal.language),
-    new Date(Date.UTC(2000, 11, 12)).toLocaleDateString(eXo.env.portal.language),
-    new Date(Date.UTC(2000, 11, 13)).toLocaleDateString(eXo.env.portal.language),
-    new Date(Date.UTC(2000, 11, 14)).toLocaleDateString(eXo.env.portal.language)
-  ];
   it('message list test', () => {
     expect(cmp.vm.messagesMap).not.toBeUndefined();
-    expect(cmp.findAll(ExoChatMessageDetail)).toHaveLength(8);
+    expect(cmp.findAll('.chat-message-box')).toHaveLength(8);
     expect(Object.keys(cmp.vm.messagesMap)).toEqual([dates[0], dates[1]]);
     expect(cmp.findAll('.day-separator')).toHaveLength(2);
     expect(cmp.vm.messagesMap[dates[0]]).toHaveLength(2);
     expect(cmp.vm.messagesMap[dates[1]]).toHaveLength(6);
-    expect(cmp.findAll(ExoChatMessageDetail).at(0).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(1).vm.hideTime).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(2).vm.hideTime).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(3).vm.hideTime).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(4).vm.hideTime).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(5).vm.hideTime).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(6).vm.hideTime).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(7).vm.hideTime).toBeTruthy();
+    
+    expect(cmp.vm.isHideTime(0, messages)).toBeFalsy();
+    expect(cmp.vm.isHideTime(1, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(2, messages)).toBeFalsy();
+    expect(cmp.vm.isHideTime(3, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(4, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(5, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(6, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(7, messages)).toBeTruthy();
 
-    expect(cmp.findAll(ExoChatMessageDetail).at(0).vm.hideAvatar).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(1).vm.hideAvatar).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(2).vm.hideAvatar).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(3).vm.hideAvatar).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(4).vm.hideAvatar).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(5).vm.hideAvatar).toBeFalsy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(6).vm.hideAvatar).toBeTruthy();
-    expect(cmp.findAll(ExoChatMessageDetail).at(7).vm.hideAvatar).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(0, messages)).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(1, messages)).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(2, messages)).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(3, messages)).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(4, messages)).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(5, messages)).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(6, messages)).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(7, messages)).toBeFalsy();
   });
 
   it('test new message added', () => {

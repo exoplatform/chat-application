@@ -24,6 +24,7 @@
 <script>
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
+import {extraMessageNotifs} from '../extension';
 
 export default {
   props: {
@@ -75,24 +76,19 @@ export default {
       return '';
     },
     isSpecificMessageType() {
-      return this.notif && this.notif.options && this.notif.options.type
-        && eXo.chat && eXo.chat.message && eXo.chat.message.notifs
-        && eXo.chat.message.notifs[this.notif.options.type];
+      return this.notif && this.notif.options && this.notif.options.type && this.specificMessageObj;
     },
     specificMessageObj() {
-      if (this.isSpecificMessageType) {
-        return eXo.chat.message.notifs[this.notif.options.type];
-      }
-      return {};
+      return extraMessageNotifs.find(elm => elm.type === this.notif.options.type);
     },
     specificMessageContent() {
-      if(this.specificMessageObj.html) {
+      if(this.specificMessageObj && this.specificMessageObj.html) {
         return this.specificMessageObj.html(this.notif, this.$t.bind(this));
       }
       return '';
     },
     specificMessageClass() {
-      return this.specificMessageObj.iconClass;
+      return this.specificMessageObj ? this.specificMessageObj.iconClass : '';
     },
     messageDate() {
       return chatTime.getTimeString(this.notif.timestamp);

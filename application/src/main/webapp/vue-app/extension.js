@@ -1,10 +1,9 @@
 import {chatConstants} from './chatConstants.js';
 
-export const MAX_FILES = 1;
-
-export const DEFAULT_COMPOSER_APPS = [
+const DEFAULT_COMPOSER_APPS = [
   {
     key: 'event',
+    rank: 10,
     type: 'type-event',
     nameKey: 'exoplatform.chat.event',
     labelKey: 'exoplatform.chat.add.event',
@@ -106,6 +105,7 @@ export const DEFAULT_COMPOSER_APPS = [
   },
   {
     key: 'link',
+    rank: 20,
     type: 'type-link',
     nameKey: 'exoplatform.chat.link',
     labelKey: 'exoplatform.chat.share.link',
@@ -144,6 +144,7 @@ export const DEFAULT_COMPOSER_APPS = [
   },
   {
     key: 'file',
+    rank: 30,
     type: 'type-file',
     nameKey: 'exoplatform.chat.file',
     labelKey: 'exoplatform.chat.upload.file',
@@ -293,6 +294,7 @@ export const DEFAULT_COMPOSER_APPS = [
   },
   {
     key: 'question',
+    rank: 40,
     type: 'type-question',
     nameKey: 'exoplatform.chat.question',
     labelKey: 'exoplatform.chat.ask.question',
@@ -308,6 +310,7 @@ export const DEFAULT_COMPOSER_APPS = [
   },
   {
     key: 'raise-hand',
+    rank: 50,
     type: 'type-hand',
     labelKey: 'exoplatform.chat.raise.hand',
     iconClass: 'uiIconChatRaiseHand',
@@ -323,8 +326,9 @@ export const DEFAULT_COMPOSER_APPS = [
 ];
 
 
-export const DEFAULT_ROOM_ACTIONS = [{
+const DEFAULT_ROOM_ACTIONS = [{
   key: 'startMeeting',
+  rank: 10,
   labelKey: 'exoplatform.chat.meeting.start',
   class: 'uiIconChatRecordStart',
   enabled: (comp) => {
@@ -332,6 +336,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 }, {
   key: 'stopMeeting',
+  rank: 20,
   labelKey: 'exoplatform.chat.meeting.stop',
   class: 'uiIconChatRecordStop',
   enabled: (comp) => {
@@ -339,10 +344,12 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'notificationSettings',
+  rank: 30,
   labelKey: 'exoplatform.stats.notifications',
   class: 'uiIconPLFNotifications'
 } , {
   key: 'addToFavorite',
+  rank: 40,
   labelKey: 'exoplatform.chat.add.favorites',
   class: 'uiIconStar',
   enabled: (comp) => {
@@ -350,6 +357,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'removeFromFavorite',
+  rank: 50,
   labelKey: 'exoplatform.chat.remove.favorites',
   class: 'uiIconStar',
   enabled: (comp) => {
@@ -357,6 +365,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'showParticipants',
+  rank: 60,
   labelKey: 'exoplatform.chat.participants',
   class: 'uiIconViewList',
   enabled: () => {
@@ -364,6 +373,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'editRoom',
+  rank: 70,
   labelKey: 'exoplatform.chat.team.edit',
   type: 't',
   class: 'uiIconEditInfo',
@@ -372,6 +382,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'deleteRoom',
+  rank: 80,
   labelKey: 'exoplatform.chat.team.delete',
   type: 't',
   class: 'uiIconDelete',
@@ -389,6 +400,7 @@ export const DEFAULT_ROOM_ACTIONS = [{
   }
 } , {
   key: 'leaveRoom',
+  rank: 90,
   labelKey: 'exoplatform.chat.team.leave',
   type: 't',
   class: 'uiIconExit',
@@ -489,9 +501,10 @@ export const EMOTICONS = [
   }
 ];
 
-export const DEFAULT_MESSAGE_ACTIONS = [
+const DEFAULT_MESSAGE_ACTIONS = [
   {
     key: 'edit',
+    rank: 10,
     labelKey: 'exoplatform.chat.msg.edit',
     enabled: comp => {
       return (
@@ -504,6 +517,7 @@ export const DEFAULT_MESSAGE_ACTIONS = [
   },
   {
     key: 'delete',
+    rank: 20,
     labelKey: 'exoplatform.chat.delete',
     enabled: comp => {
       return (
@@ -525,6 +539,7 @@ export const DEFAULT_MESSAGE_ACTIONS = [
   },
   {
     key: 'quote',
+    rank: 30,
     labelKey: 'exoplatform.chat.quote',
     enabled: comp => {
       return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
@@ -532,6 +547,7 @@ export const DEFAULT_MESSAGE_ACTIONS = [
   },
   {
     key: 'saveNotes',
+    rank: 40,
     labelKey: 'exoplatform.chat.notes',
     enabled: comp => {
       return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
@@ -539,10 +555,22 @@ export const DEFAULT_MESSAGE_ACTIONS = [
   }
 ];
 
-export function getComposerApplications() {
-  if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraApplications) {
-    return DEFAULT_COMPOSER_APPS.concat(eXo.chat.room.extraApplications);
-  } else {
-    return DEFAULT_COMPOSER_APPS;
+function getExtensionsByType(type) {
+  return extensionRegistry.loadExtensions('chat', type);
+}
+
+function registerDefaultExtensions(extensionType, defaultExtensions) {
+  for (const extension of defaultExtensions) {
+    extensionRegistry.registerExtension('chat', extensionType, extension);
   }
 }
+
+registerDefaultExtensions('composer-application', DEFAULT_COMPOSER_APPS);
+registerDefaultExtensions('message-action', DEFAULT_MESSAGE_ACTIONS);
+registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
+
+export const extraMessageTypes = getExtensionsByType('message-type');
+export const extraMessageNotifs = getExtensionsByType('message-notif');
+export const composerApplications = getExtensionsByType('composer-application');
+export const messageActions = getExtensionsByType('message-action');
+export const roomActions = getExtensionsByType('room-action');

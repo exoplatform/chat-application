@@ -2,7 +2,7 @@
   <ul class="dropdown-menu pull-right">
     <li v-if="totalUnreadMsg > 0 && messagesList.length === 0 && isRetrievingMessagges" class="chat-notification-loading">{{ $t('exoplatform.chat.loading') }}</li>
     <li v-if="onsiteNotif && totalUnreadMsg > 0 && !isRetrievingMessagges && messagesList.length > 0" id="chat-notifications-details">
-      <exo-chat-message-detail
+      <exo-chat-notif-detail
         v-for="(messages, room) in messagesFiltered"
         v-if="messages && messages.length"
         :key="room"
@@ -10,7 +10,7 @@
         :room="room"
         class="message"
         @select-room="$emit('select-room', room)">
-      </exo-chat-message-detail>
+      </exo-chat-notif-detail>
     </li>
     <li v-if="onsiteNotif && (isRetrievingMessagges || messagesList.length > 0)" class="divider">&nbsp;</li>
     <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" :class="`user-${key}`" :key="key" @click="$emit('set-status', key)">
@@ -34,12 +34,7 @@
 <script>
 import * as chatServices from '../chatServices';
 
-import ExoMiniChatNotifDetail from './ExoMiniChatNotifDetail.vue';
-
 export default {
-  components: {
-    'exo-chat-message-detail': ExoMiniChatNotifDetail
-  },
   props: {
     totalUnreadMsg: {
       type: Number,

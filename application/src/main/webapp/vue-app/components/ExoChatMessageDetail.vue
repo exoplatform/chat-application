@@ -109,14 +109,14 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <exo-chat-dropdown-select v-if="displayActions && mq !=='mobile'" class="message-actions" position="right">
+      <exo-dropdown-select v-if="displayActions && mq !=='mobile'" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots" @click="setActionsPosition"></i>
         <li slot="menu">
           <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction)">
             {{ $t(messageAction.labelKey) }}
           </a>
         </li>
-      </exo-chat-dropdown-select>
+      </exo-dropdown-select>
       <div v-else-if="displayActions" v-show="displayActionMobile" class="uiPopupWrapper chat-modal-mask" @click="displayActionMobile = false">
         <ul class="mobile-options filter-options">
           <li v-for="messageAction in messageActions" :key="messageAction.key">
@@ -146,17 +146,10 @@
 <script>
 import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
-import {DEFAULT_MESSAGE_ACTIONS, EMOTICONS} from '../extension';
+import {messageActions, EMOTICONS, extraMessageTypes} from '../extension';
 import messageFilter from '../messageFilter.js';
 
-import ExoDropdownSelect from './ExoDropdownSelect.vue';
-import ExoModal from './modal/ExoModal.vue';
-
 export default {
-  components: {
-    'exo-chat-dropdown-select': ExoDropdownSelect,
-    'exo-modal': ExoModal
-  },
   props: {
     miniChat: {
       type: Boolean,
@@ -214,20 +207,7 @@ export default {
       return eXo.chat.userSettings.username === this.message.user;
     },
     messageActions() {
-      if (
-        eXo &&
-        eXo.chat &&
-        eXo.chat.message &&
-        eXo.chat.message.extraActions
-      ) {
-        return DEFAULT_MESSAGE_ACTIONS.concat(
-          eXo.chat.message.extraActions
-        ).filter(menu => !menu.enabled || menu.enabled(this));
-      } else {
-        return DEFAULT_MESSAGE_ACTIONS.filter(
-          menu => !menu.enabled || menu.enabled(this)
-        );
-      }
+      return messageActions.filter(menu => !menu.enabled || menu.enabled(this));
     },
     displayUserInformation() {
       const messageType = this.message.options ? this.message.options.type : null;
@@ -264,24 +244,19 @@ export default {
       return messageFilter(this.messageContent, this.highlight, EMOTICONS);
     },
     isSpecificMessageType() {
-      return this.message && this.message.options && this.message.options.type
-        && eXo.chat && eXo.chat.message && eXo.chat.message.types
-        && eXo.chat.message.types[this.message.options.type];
+      return this.message && this.message.options && this.message.options.type && this.specificMessageObj;
     },
     specificMessageObj() {
-      if (this.isSpecificMessageType) {
-        return eXo.chat.message.types[this.message.options.type];
-      }
-      return {};
+      return extraMessageTypes.find(elm => elm.type === this.message.options.type);
     },
     specificMessageContent() {
-      if(this.specificMessageObj.html) {
+      if(this.specificMessageObj && this.specificMessageObj.html) {
         return this.specificMessageObj.html(this.message, this.$t.bind(this));
       }
       return '';
     },
     specificMessageClass() {
-      return this.specificMessageObj.iconClass;
+      return this.specificMessageObj ? this.specificMessageObj.iconClass : '';
     }
   },
   created() {

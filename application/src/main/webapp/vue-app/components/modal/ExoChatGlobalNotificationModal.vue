@@ -42,13 +42,9 @@
 </template>
 
 <script>
-import ExoModal from './ExoModal.vue';
 import * as chatServices from '../../chatServices';
 
 export default {
-  components: {
-    'exo-modal': ExoModal
-  },
   props: {
     show: {
       type: Boolean,

@@ -34,14 +34,7 @@
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 
-import ExoChatContact from './ExoChatContact.vue';
-import ExoDropdownSelect from './ExoDropdownSelect.vue';
-
 export default {
-  components: {
-    'exo-chat-contact': ExoChatContact,
-    'exo-dropdown-select': ExoDropdownSelect
-  },
   // a directive for user popup plugin
   directives: {
     tiptip(el, binding, vnode) {

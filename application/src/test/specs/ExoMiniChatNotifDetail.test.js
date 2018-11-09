@@ -56,9 +56,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', null);
     expect(cmp.vm.messageClass).toBe('');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).toContain('Test message');
     expect(cmp.html()).toContain('Test User');
     expect(cmp.html()).toContain('Test message');
@@ -69,9 +66,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.QUESTION_MESSAGE);
     expect(cmp.vm.messageClass).toContain('uiIconChatQuestion');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).toContain('Test message');
     expect(cmp.html()).toContain('Test User');
     expect(cmp.html()).toContain('Test message');
@@ -82,9 +76,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.RAISE_HAND);
     expect(cmp.vm.messageClass).toContain('uiIconChatRaiseHand');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).toContain('Test message');
     expect(cmp.html()).toContain('Test User');
     expect(cmp.html()).toContain('Test message');
@@ -95,9 +86,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.FILE_MESSAGE);
     expect(cmp.vm.messageClass).toContain('uiIconChatUpload');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.html()).toContain('Test User');
     expect(cmp.findAll('.timestamp')).toHaveLength(1);
   });
@@ -106,9 +94,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.LINK_MESSAGE, {link: '#linkToURL'});
     expect(cmp.vm.messageClass).toContain('uiIconChatLink');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).not.toContain('Test message');
     expect(cmp.vm.messageContent).toContain('#linkToURL');
     expect(cmp.html()).toContain('Test User');
@@ -121,9 +106,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.NOTES_MESSAGE);
     expect(cmp.vm.messageClass).toContain('uiIconChatMeeting');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).not.toContain('Test message');
     expect(cmp.html()).toContain('Test User');
     expect(cmp.html()).not.toContain('Test message');
@@ -134,9 +116,6 @@ describe('ExoMiniChatNotifDetail.test.js', () => {
     const cmp = getNotif('Test message', 'Test User', chatConstants.EVENT_MESSAGE, {summary: 'event summary'});
     expect(cmp.vm.messageClass).toContain('uiIconChatCreateEvent');
     expect(cmp.vm.isSpecificMessageType).toBeFalsy();
-    expect(cmp.vm.specificMessageObj).toEqual({});
-    expect(cmp.vm.specificMessageContent).toEqual('');
-    expect(cmp.vm.specificMessageClass).toBeUndefined();
     expect(cmp.vm.messageContent).toContain('event summary');
     expect(cmp.vm.messageContent).not.toContain('Test message');
     expect(cmp.html()).toContain('Test User');

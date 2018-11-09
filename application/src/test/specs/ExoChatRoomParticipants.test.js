@@ -86,7 +86,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
   beforeEach(() => {
     roomParticipant = shallow(ExoChatRoomParticipants, {
       stubs: {
-        'chat-contact': ExoChatContact
+        'exo-chat-contact': ExoChatContact
       },
       mocks: {
         $t: () => {},
@@ -143,13 +143,13 @@ describe('ExoChatRoomParticipants.test.js', () => {
   });
 
   it('3 displayed participants with all filter', () => {
-    expect(roomParticipant.findAll(ExoChatContact)).toHaveLength(3);
+    expect(roomParticipant.findAll('.chat-contact')).toHaveLength(3);
   });
 
   it('2 displayed participants with online filter', () => {
     // change filter to online
     roomParticipant.find('.room-participants-filter .actionIcon').trigger('click');
-    expect(roomParticipant.findAll(ExoChatContact)).toHaveLength(2);
+    expect(roomParticipant.findAll('.chat-contact')).toHaveLength(2);
   });
 
   it('when trigger exo-chat-selected-contact-changed event the contact must be changed', () => {

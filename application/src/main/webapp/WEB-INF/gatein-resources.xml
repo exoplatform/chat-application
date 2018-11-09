@@ -89,6 +89,9 @@
         <depends>
             <module>iePolyfills</module>
         </depends>
+        <depends>
+            <module>extensionRegistry</module>
+        </depends> 
     </module>
 
     <module>

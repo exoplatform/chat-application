@@ -32,14 +32,10 @@
 </template>
 
 <script>
-import ExoChatComposerAppsModal from './modal/ExoChatComposerAppsModal.vue';
 import * as chatServices from '../chatServices';
-import {getComposerApplications,EMOTICONS} from '../extension';
+import {composerApplications,EMOTICONS} from '../extension';
 
 export default {
-  components: {
-    'exo-chat-apps-modal': ExoChatComposerAppsModal
-  },
   props: {
     miniChat: {
       type: Boolean,
@@ -73,7 +69,7 @@ export default {
       }
     },
     applications() {
-      return getComposerApplications();
+      return composerApplications;
     }
   },
   updated() {
@@ -81,7 +77,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.messageComposerArea.focus();
 
-        getComposerApplications().forEach(application => {
+        composerApplications.forEach(application => {
           if(application.mount) {
             application.mount($, chatServices);
           }
@@ -140,7 +136,7 @@ export default {
       };
       let found = false;
       if(!this.miniChat) {
-        getComposerApplications().forEach(application => {
+        composerApplications.forEach(application => {
           if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;

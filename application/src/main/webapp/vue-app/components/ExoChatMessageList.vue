@@ -27,16 +27,7 @@ import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
 
-import ExoChatMessageDetail from './ExoChatMessageDetail.vue';
-import ExoChatMessageComposer from './ExoChatMessageComposer.vue';
-import ExoModal from './modal/ExoModal.vue';
-
 export default {
-  components: {
-    'exo-modal': ExoModal,
-    'exo-chat-message-detail': ExoChatMessageDetail,
-    'exo-chat-message-composer': ExoChatMessageComposer
-  },
   props: {
     miniChat: {
       type: Boolean,
@@ -242,7 +233,7 @@ export default {
       if (prevMsg === null || this.mq === 'mobile') {
         return false;
       } else {
-        return !messages[i].timestamp || chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp);
+        return !messages[i].timestamp || chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp) && chatTime.getDayDate(prevMsg.timestamp) === chatTime.getDayDate(messages[i].timestamp);
       }
     },
     isHideAvatar(i, messages) {

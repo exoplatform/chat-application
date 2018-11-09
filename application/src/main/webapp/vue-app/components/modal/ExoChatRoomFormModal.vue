@@ -34,12 +34,8 @@
 
 <script>
 import * as chatServices from '../../chatServices';
-import ExoModal from './ExoModal.vue';
 
 export default {
-  components: {
-    'exo-modal': ExoModal
-  },
   props: {
     selected: {
       type: Object,

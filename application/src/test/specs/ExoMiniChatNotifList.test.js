@@ -40,7 +40,9 @@ function getMessage(msg, username, timestamp, room) {
     categoryId: room,
     fullname: username,
     user: username,
-    timestamp: timestamp
+    timestamp: timestamp,
+    options: {},
+    content: ''
   };
 }
 
@@ -48,6 +50,9 @@ function getComponent() {
   const comp = shallow(ExoMiniChatNotifList, {
     propsData: {
       totalUnreadMsg: 2
+    },
+    stubs: {
+      'exo-chat-notif-detail': ExoMiniChatNotifDetail
     },
     mocks: {
       $t: (key, params) => {
@@ -67,7 +72,7 @@ describe('ExoMiniChatNotifList.test.js', () => {
   it('test displayed messages', () => {
     const cmp = getComponent();
     expect(Object.keys(cmp.vm.messagesFiltered)).toHaveLength(2);
-    expect(cmp.findAll(ExoMiniChatNotifDetail)).toHaveLength(2);
+    expect(cmp.findAll('.chat-notification-detail')).toHaveLength(2);
     expect(Object.keys(cmp.vm.messagesFiltered)).toEqual(['eb74205830cf97546269bbdc5d439b29ddd1735b', 'eb74205830cf97546269bbdc5d439b2fffee735b']);
     expect(cmp.vm.messagesFiltered['eb74205830cf97546269bbdc5d439b29ddd1735b'][0].msg).toBe('Test message 7');
     expect(cmp.vm.messagesFiltered['eb74205830cf97546269bbdc5d439b2fffee735b'][0].msg).toBe('Test message 8');

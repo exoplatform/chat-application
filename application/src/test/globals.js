@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret';
 
+global.extensionRegistry = require('./libs/extensionRegistry.js');
+
 global.$ = $;
 addCaretJQueryExtension($);
 
@@ -44,3 +46,26 @@ global.eXo = {
     }
   }
 };
+
+const extraApplication = {
+  key: 'test',
+  iconClass: 'testIcon',
+  labelKey: 'testLabel'
+};
+
+const extraMessage = {
+  key: 'testAction',
+  labelKey: 'testAction',
+  enabled: () => {return true;}
+};
+
+const extraAction = {
+  key: 'test',
+  labelKey: 'Test',
+  type: 't',
+  class: 'uiIconTest'
+};
+
+extensionRegistry.registerExtension('chat', 'composer-application', extraApplication);
+extensionRegistry.registerExtension('chat', 'message-action', extraMessage);
+extensionRegistry.registerExtension('chat', 'room-action', extraAction);

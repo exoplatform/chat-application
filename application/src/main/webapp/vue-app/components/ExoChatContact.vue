@@ -30,12 +30,8 @@
 
 <script>
 import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
-import ExoDropdownSelect from './ExoDropdownSelect.vue';
 
 export default {
-  components: {
-    'exo-dropdown-select': ExoDropdownSelect
-  },
   props: {
     /** Contact display name */
     name: {

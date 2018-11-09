@@ -54,24 +54,7 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 
-import ExoModal from './modal/ExoModal.vue';
-import ExoChatContact from './ExoChatContact.vue';
-import ExoChatContactList from './ExoChatContactList.vue';
-import ExoChatRoomParticipants from './ExoChatRoomParticipants.vue';
-import ExoChatRoomDetail from './ExoChatRoomDetail.vue';
-import ExoChatMessageList from './ExoChatMessageList.vue';
-import ExoChatGlobalNotificationModal from './modal/ExoChatGlobalNotificationModal.vue';
-
 export default {
-  components: {
-    'exo-modal': ExoModal,
-    'exo-chat-contact': ExoChatContact,
-    'exo-chat-contact-list': ExoChatContactList,
-    'exo-chat-room-participants': ExoChatRoomParticipants,
-    'exo-chat-room-detail': ExoChatRoomDetail,
-    'exo-chat-message-list': ExoChatMessageList,
-    'exo-chat-global-notification-modal': ExoChatGlobalNotificationModal
-  },
   data() {
     return {
       contactList: [],

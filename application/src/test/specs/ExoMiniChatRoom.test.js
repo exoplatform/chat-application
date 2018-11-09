@@ -23,6 +23,9 @@ function getComponent() {
     propsData: {
       room: '54654fa654654fa65f6af4654654f4f4f6546'
     },
+    stubs: {
+      'exo-chat-message-list': ExoChatMessageList
+    },
     mocks: {
       $t: (key, params) => {
         return `${key} params: ${params ? JSON.stringify(params) :''}`;
@@ -37,7 +40,7 @@ describe('ExoMiniChatRoom.test.js', () => {
 
   it('test display chat messages list', () => {
     const cmp = getComponent();
-    expect(cmp.findAll(ExoChatMessageList)).toHaveLength(1);
+    expect(cmp.findAll('.message-list')).toHaveLength(1);
     expect(cmp.findAll('.uiIconMinimize')).toHaveLength(1);
     expect(cmp.findAll('.uiIconMaximize')).toHaveLength(1);
     expect(cmp.findAll('.uiIconChatPopOut')).toHaveLength(1);

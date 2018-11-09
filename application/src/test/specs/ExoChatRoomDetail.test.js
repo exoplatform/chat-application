@@ -1,6 +1,5 @@
 import { shallow } from 'vue-test-utils';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
-import {DEFAULT_ROOM_ACTIONS} from '../../main/webapp/vue-app/extension.js';
 
 import ExoChatContact from '../../main/webapp/vue-app/components/ExoChatContact';
 import ExoChatRoomDetail from '../../main/webapp/vue-app/components/ExoChatRoomDetail';
@@ -48,7 +47,7 @@ describe('ExoChatRoomDetail.test.js', () => {
   };
 
   const confirmMock = jest.fn();
-  const extraAction = {
+  const testAction = {
     key: 'test',
     labelKey: 'Test',
     type: 't',
@@ -65,7 +64,7 @@ describe('ExoChatRoomDetail.test.js', () => {
     }
   };
 
-  eXo.chat.room.extraActions.push(extraAction);
+  const extraActions = extensionRegistry.loadExtensions('chat', 'room-action');
 
   beforeEach(() => {
     roomDetail = shallow(ExoChatRoomDetail, {
@@ -88,12 +87,11 @@ describe('ExoChatRoomDetail.test.js', () => {
 
 
   it('Room detail contain contact', () => {
-    expect(roomDetail.contains(ExoChatContact)).toBe(true);
+    expect(roomDetail.contains('.chat-contact')).toBe(true);
   });
 
   it('contact has is-fav class when room is favorite', () => {
-    const contact = roomDetail.find(ExoChatContact);
-    expect(contact.find('.favorite').classes()).toContain('is-fav');
+    expect(roomDetail.find('.favorite').classes()).toContain('is-fav');
   });
 
   it('open room notification modal', () => {
@@ -160,40 +158,24 @@ describe('ExoChatRoomDetail.test.js', () => {
 
   it('room actions list must contain extra actions', () => {
     const vm = roomDetail.vm;
-    expect(vm.settingActions).toHaveLength(DEFAULT_ROOM_ACTIONS.length + eXo.chat.room.extraActions.length);
+    expect(vm.settingActions).toHaveLength(extraActions.length);
   });
 
   it('click on action list elemnt with comfirmation', () => {
-    const roomDetailActions = shallow(ExoChatRoomDetail, {
-      propsData: {
-        contact : room
-      },
-      computed: {
-        settingActions: () => eXo.chat.room.extraActions
-      },
-      stubs: {
-        'exo-chat-contact': ExoChatContact,
-        'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
-        'exo-modal': ExoModal,
-        'exo-dropdown-select': ExoDropdownSelect
-      },
-      mocks: {
-        $t: () => {},
-        $constants : chatConstants
-      },
-      attachToDocument: true
-    });
-    const vm = roomDetailActions.vm;
-    const action = roomDetailActions.find('.chat-team-button-dropdown .dropdown-menu li');
-    const okButton = roomDetailActions.find('#team-delete-button-ok');
+    const vm = roomDetail.vm;
+    vm.settingActions = [testAction];
+    roomDetail.update();
+    const action = roomDetail.find('.chat-team-button-dropdown .dropdown-menu li');
+    const okButton = roomDetail.find('#team-delete-button-ok');
+  
     expect(vm.settingActions).toHaveLength(1);
     action.trigger('click');
     // comfimation modal should be opned with action texts
     expect(vm.showConfirmModal).toBe(true);
-    expect(vm.confirmTitle).toEqual(extraAction.confirm.title);
-    expect(vm.confirmMessage).toEqual(extraAction.confirm.message);
-    expect(vm.confirmOKMessage).toEqual(extraAction.confirm.okMessage);
-    expect(vm.confirmKOMessage).toEqual(extraAction.confirm.koMessage);
+    expect(vm.confirmTitle).toEqual(testAction.confirm.title);
+    expect(vm.confirmMessage).toEqual(testAction.confirm.message);
+    expect(vm.confirmOKMessage).toEqual(testAction.confirm.okMessage);
+    expect(vm.confirmKOMessage).toEqual(testAction.confirm.koMessage);
     // click on confirm button
     okButton.trigger('click');
     expect(confirmMock).toBeCalled();
@@ -201,13 +183,13 @@ describe('ExoChatRoomDetail.test.js', () => {
 
   it('Room detail contain action menu only for rooms and spaces', () => {
     // action menu should be displayed for rooms
-    expect(roomDetail.contains(ExoDropdownSelect)).toBe(true);
+    expect(roomDetail.contains('.room-settings-dropdown')).toBe(true);
     // action menu should not be displayed for users
     roomDetail.setProps({ contact: user });
-    expect(roomDetail.contains(ExoDropdownSelect)).toBe(false);
+    expect(roomDetail.contains('.room-settings-dropdown')).toBe(false);
     // action menu should be displayed for spaces
     roomDetail.setProps({ contact: space });
-    expect(roomDetail.contains(ExoDropdownSelect)).toBe(true);
+    expect(roomDetail.contains('.room-settings-dropdown')).toBe(true);
   });
   
 });

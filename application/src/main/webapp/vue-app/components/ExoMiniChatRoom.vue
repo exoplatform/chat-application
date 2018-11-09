@@ -28,12 +28,7 @@
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 
-import ExoChatMessageList from './ExoChatMessageList.vue';
-
 export default {
-  components: {
-    'exo-chat-message-list': ExoChatMessageList
-  },
   props: {
     room: {
       type: String,

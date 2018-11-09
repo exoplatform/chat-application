@@ -75,7 +75,7 @@ describe('ExoChatMessageDetail.test.js', () => {
   });
 
   it('not specific message type', () => {
-    expect(cmp.vm.specificMessageContent).toBe('');
+    expect(cmp.vm.isSpecificMessageType).toBeFalsy();
   });
 
   it('show confirm modal when action needs it', () => {

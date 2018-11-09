@@ -83,7 +83,7 @@
         "displayName": "lint",
         "runner": "jest-runner-eslint",
         "testMatch": [
-          "<rootDir>/src/test/**/*.js"
+          "<rootDir>/src/test/specs/**/*.js"
         ]
       }
     ],
