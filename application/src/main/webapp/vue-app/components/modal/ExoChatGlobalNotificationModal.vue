@@ -43,6 +43,7 @@
 
 <script>
 import * as chatServices from '../../chatServices';
+import {chatConstants} from '../../chatConstants';
 
 export default {
   props: {
@@ -75,10 +76,10 @@ export default {
       if(this.show) {
         if (eXo && eXo.chat && eXo.chat.desktopNotificationSettings) {
           const notifSettings = eXo.chat.desktopNotificationSettings;
-          this.$refs.notifyDonotdisturb.checked = this.chatPreferences.notifyDonotdisturb = notifSettings.preferredNotificationTrigger.indexOf(this.$constants.NOT_DISTURB_NOTIF) < 0 ? false : true;
-          this.$refs.notifyOnSite.checked = this.chatPreferences.notifyOnSite = notifSettings.preferredNotification.indexOf(this.$constants.ON_SITE_NOTIF) < 0 ? false : true;
-          this.$refs.notifyDesktop.checked = this.chatPreferences.notifyDesktop = notifSettings.preferredNotification.indexOf(this.$constants.DESKTOP_NOTIF) < 0 ? false : true;
-          this.$refs.notifyBip.checked = this.chatPreferences.notifyBip = notifSettings.preferredNotification.indexOf(this.$constants.BIP_NOTIF) < 0 ? false : true;
+          this.$refs.notifyDonotdisturb.checked = this.chatPreferences.notifyDonotdisturb = notifSettings.preferredNotificationTrigger.indexOf(chatConstants.NOT_DISTURB_NOTIF) < 0 ? false : true;
+          this.$refs.notifyOnSite.checked = this.chatPreferences.notifyOnSite = notifSettings.preferredNotification.indexOf(chatConstants.ON_SITE_NOTIF) < 0 ? false : true;
+          this.$refs.notifyDesktop.checked = this.chatPreferences.notifyDesktop = notifSettings.preferredNotification.indexOf(chatConstants.DESKTOP_NOTIF) < 0 ? false : true;
+          this.$refs.notifyBip.checked = this.chatPreferences.notifyBip = notifSettings.preferredNotification.indexOf(chatConstants.BIP_NOTIF) < 0 ? false : true;
         }
         this.originalChatPreferences = JSON.parse(JSON.stringify(this.chatPreferences));
 
@@ -109,16 +110,16 @@ export default {
       this.chatPreferences.notifyBip = this.$refs.notifyBip.checked;
 
       if (this.originalChatPreferences.notifyDonotdisturb !== this.chatPreferences.notifyDonotdisturb) {
-        preferredNotificationTrigger.push(this.$constants.NOT_DISTURB_NOTIF);
+        preferredNotificationTrigger.push(chatConstants.NOT_DISTURB_NOTIF);
       }
       if (this.originalChatPreferences.notifyDesktop !== this.chatPreferences.notifyDesktop) {
-        preferredNotification.push(this.$constants.DESKTOP_NOTIF);
+        preferredNotification.push(chatConstants.DESKTOP_NOTIF);
       }
       if (this.originalChatPreferences.notifyOnSite !== this.chatPreferences.notifyOnSite) {
-        preferredNotification.push(this.$constants.ON_SITE_NOTIF);
+        preferredNotification.push(chatConstants.ON_SITE_NOTIF);
       }
       if (this.originalChatPreferences.notifyBip !== this.chatPreferences.notifyBip) {
-        preferredNotification.push(this.$constants.BIP_NOTIF);
+        preferredNotification.push(chatConstants.BIP_NOTIF);
       }
 
       if(preferredNotificationTrigger.length || preferredNotification.length) {

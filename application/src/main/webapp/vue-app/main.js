@@ -8,8 +8,6 @@ import './components/initComponents.js';
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
 
-Vue.prototype.$constants = chatConstants;
-
 Vue.directive('exo-tooltip', function (el, binding) {
   const element = $(el);
   const placement = Object.keys(binding.modifiers)[0];

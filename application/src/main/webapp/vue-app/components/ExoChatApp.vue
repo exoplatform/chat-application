@@ -53,6 +53,7 @@
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
+import {chatConstants} from '../chatConstants';
 
 export default {
   data() {
@@ -100,25 +101,25 @@ export default {
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
 
-    document.addEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
-    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
-    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
-    document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
-    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.addEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
-    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
+    document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.addEventListener(chatConstants.EVENT_CONNECTED, this.connectionEstablished);
+    document.addEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
+    document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
-    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
-    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.removeEventListener(this.$constants.EVENT_ROOM_UPDATED, this.roomUpdated);
-    document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
-    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
-    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.removeEventListener(chatConstants.EVENT_CONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
+    document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   methods: {
     initSettings(userSettings) {
@@ -138,7 +139,7 @@ export default {
       this.addRooms(chatRoomsData.rooms);
 
       if (this.mq !== 'mobile') {
-        const selectedRoom = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_LAST_SELECTED_ROOM);
+        const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
         if(selectedRoom) {
           this.setSelectedContact(selectedRoom);
         }
@@ -167,7 +168,7 @@ export default {
         }
       }
       this.selectedContact = selectedContact;
-      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
     },
     setStatus(status) {
       chatServices.setUserStatus(this.userSettings, status, newStatus => {
@@ -268,7 +269,7 @@ export default {
     },
     setContactParticipants(participants) {
       this.selectedContact.participants = participants;
-      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, {'detail' : this.selectedContact}));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, {'detail' : this.selectedContact}));
     },
     reloadPage() {
       window.location.reload();

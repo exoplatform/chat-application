@@ -33,12 +33,12 @@
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
+import {chatConstants} from '../chatConstants';
 
 export default {
   // a directive for user popup plugin
   directives: {
     tiptip(el, binding, vnode) {
-      const chatConstants = vnode.context.$constants;
       $(el).find('.chat-contact-avatar').userPopup({
         restURL: chatConstants.PEOPLE_INFO_API,
         userId: binding.value,
@@ -63,7 +63,7 @@ export default {
         'All': this.$t('exoplatform.chat.contact.all'),
         'Online':  this.$t('exoplatform.chat.online'),
       },
-      participantFilter: this.$constants.STATUS_FILTER_DEFAULT,
+      participantFilter: chatConstants.STATUS_FILTER_DEFAULT,
       /**
        * fullName: {string} full name of contact
        * isActive: {string} if the contact is of type user, this will be equals to "true" when the user is enabled
@@ -117,17 +117,17 @@ export default {
     }
   },
   created() {
-    document.addEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
-    document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
-    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
-    document.addEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
-    this.participantFilter = chatWebStorage.getStoredParam(this.$constants.STORED_PARAM_STATUS_FILTER, this.$constants.STATUS_FILTER_DEFAULT);
+    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
+    document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
+    this.participantFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_STATUS_FILTER, chatConstants.STATUS_FILTER_DEFAULT);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
-    document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
-    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
-    document.removeEventListener(this.$constants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
+    document.removeEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
+    document.removeEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
   },
   methods: {
     showParticipants() {
@@ -137,7 +137,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     },
     selectParticipantFilter(filter) {
-      chatWebStorage.setStoredParam(this.$constants.STORED_PARAM_STATUS_FILTER, filter);
+      chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_STATUS_FILTER, filter);
       this.participantFilter = filter;
     },
     toggleParticipantFilter() {

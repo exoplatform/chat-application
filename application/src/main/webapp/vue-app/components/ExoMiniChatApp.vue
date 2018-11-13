@@ -56,13 +56,13 @@ export default {
       }
     );
 
-    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
-    document.addEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.addEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
-    document.addEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
-    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
+    document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.addEventListener(chatConstants.EVENT_CONNECTED, this.connectionEstablished);
+    document.addEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
 
     if (chatWebSocket.isConnected()) {
       this.connectionEstablished();
@@ -71,13 +71,13 @@ export default {
     }
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
-    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.connectionEstablished);
-    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.connectionEstablished);
-    document.removeEventListener(this.$constants.EVENT_LOGGED_OUT, this.userLoggedout);
-    document.removeEventListener(this.$constants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
-    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
+    document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.removeEventListener(chatConstants.EVENT_CONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoomInMiniChat);
   },
   methods: {
     initSettings(userSettings) {

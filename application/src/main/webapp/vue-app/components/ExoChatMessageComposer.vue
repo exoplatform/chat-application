@@ -34,6 +34,7 @@
 <script>
 import * as chatServices from '../chatServices';
 import {composerApplications,EMOTICONS} from '../extension';
+import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
@@ -88,16 +89,16 @@ export default {
   created() {
     document.addEventListener('keyup', this.closeApps);
     document.addEventListener('click', this.closeEmojiPanel);
-    document.addEventListener(this.$constants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
-    document.addEventListener(this.$constants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
-    document.addEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
+    document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
+    document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
+    document.addEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
     document.removeEventListener('click', this.closeEmojiPanel);
-    document.removeEventListener(this.$constants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
-    document.removeEventListener(this.$constants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
-    document.removeEventListener(this.$constants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
+    document.removeEventListener(chatConstants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
+    document.removeEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
+    document.removeEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   methods: {
     closeApps(e) {
@@ -117,7 +118,7 @@ export default {
       this.closeEmojiPanel();
     },
     preventDefault(event) {
-      if (event.keyCode === this.$constants.ENTER_CODE_KEY) {
+      if (event.keyCode === chatConstants.ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
       }
@@ -154,7 +155,7 @@ export default {
       this.$refs.messageComposerArea.value = '';
     },
     sendMessageWithKey(event) {
-      if (event && event.keyCode === this.$constants.ENTER_CODE_KEY) {
+      if (event && event.keyCode === chatConstants.ENTER_CODE_KEY) {
         if (event.ctrlKey || event.altKey || event.shiftKey) {
           $(this.$refs.messageComposerArea).insertAtCaret('\n');
         } else {
@@ -188,7 +189,7 @@ export default {
 
       if (!newMessage || !newMessage.trim().length) {
         this.$refs.messageComposerArea.value = '';
-        document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_EDIT_LAST));
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_EDIT_LAST));
       }
     },
     putFocusOnComposer() {

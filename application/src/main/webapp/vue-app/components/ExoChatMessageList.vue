@@ -26,6 +26,7 @@ import * as chatWebSocket from '../chatWebSocket';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatServices from '../chatServices';
 import * as chatTime from '../chatTime';
+import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
@@ -92,38 +93,38 @@ export default {
     this.scrollToEnd();
   },
   created() {
-    document.addEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageDeleted);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_READ, this.messageSent);
-    document.addEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
-    document.addEventListener(this.$constants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
-    document.addEventListener(this.$constants.ACTION_MESSAGE_SEARCH, this.searchMessage);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_DELETED, this.messageDeleted);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_READ, this.messageSent);
+    document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.addEventListener(chatConstants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
+    document.addEventListener(chatConstants.ACTION_MESSAGE_SEARCH, this.searchMessage);
 
     $(window).focus(this.chatFocused);
     $(window).blur(this.chatFocused);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageDeleted);
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_READ, this.messageSent);
-    document.removeEventListener(this.$constants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
-    document.removeEventListener(this.$constants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
-    document.removeEventListener(this.$constants.ACTION_MESSAGE_SEARCH, this.searchMessage);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_DELETED, this.messageDeleted);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_READ, this.messageSent);
+    document.removeEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
+    document.removeEventListener(chatConstants.ACTION_MESSAGE_EDIT_LAST, this.editLastMessage);
+    document.removeEventListener(chatConstants.ACTION_MESSAGE_SEARCH, this.searchMessage);
   },
   methods: {
     messageWritten(message) {
       chatWebStorage.storeNotSentMessage(message);
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
-      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     messageModified(message) {
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
       message.room = this.contact.room;
-      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     messageReceived(e) {
       const messageObj = e.detail;
@@ -172,7 +173,7 @@ export default {
     },
     isScrollPositionAtEnd() {
       if(this.chatMessageListContainer && this.chatMessageListContainer.length) {
-        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < this.$constants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < chatConstants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
       }
@@ -198,12 +199,12 @@ export default {
       } else {
         toTimestamp = this.messages[0].timestamp;
       }
-      const limit = this.$constants.MESSAGES_PER_PAGE;
+      const limit = chatConstants.MESSAGES_PER_PAGE;
       this.newMessagesLoading = true;
       return chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
           // Mark room messages as read
-          document.dispatchEvent(new CustomEvent(this.$constants.ACTION_ROOM_SET_READ, {detail: this.contact.room}));
+          document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SET_READ, {detail: this.contact.room}));
 
           // Scroll to bottom once messages list updated
           this.scrollToBottom = !avoidScrollingDown;
@@ -289,7 +290,7 @@ export default {
       let index = this.messages.length -1;
       while(!lastMessage && index >= 0) {
         const message = this.messages[index];
-        if(!message.isDeleted && message.type !== this.$constants.DELETED_MESSAGE && !message.isSystem && message.user === eXo.chat.userSettings.username) {
+        if(!message.isDeleted && message.type !== chatConstants.DELETED_MESSAGE && !message.isSystem && message.user === eXo.chat.userSettings.username) {
           lastMessage = message;
         }
         index--;
@@ -316,7 +317,7 @@ export default {
       });
     },
     saveEditMessage(event) {
-      if (!event || event.keyCode === this.$constants.ENTER_CODE_KEY) {
+      if (!event || event.keyCode === chatConstants.ENTER_CODE_KEY) {
         if (event && (event.ctrlKey || event.altKey || event.shiftKey)) {
           $(this.$refs.editMessageComposerArea).insertAtCaret('\n');
         } else {
@@ -333,7 +334,7 @@ export default {
       this.searchKeyword = e.detail.trim();
     },
     preventDefault(event) {
-      if (event.keyCode === this.$constants.ENTER_CODE_KEY) {
+      if (event.keyCode === chatConstants.ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
       }

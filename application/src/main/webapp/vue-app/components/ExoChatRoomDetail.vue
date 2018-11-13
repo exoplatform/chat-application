@@ -98,7 +98,7 @@ export default {
   },
   watch: {
     searchText(value) {
-      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEARCH, {detail: value}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEARCH, {detail: value}));
     },
     contact(newContact) {
       if(!newContact) {
@@ -110,24 +110,24 @@ export default {
     }
   },
   created() {
-    document.addEventListener(this.$constants.ACTION_ROOM_START_MEETING, this.startMeeting);
-    document.addEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
-    document.addEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
-    document.addEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
-    document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
-    document.addEventListener(this.$constants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
+    document.addEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
+    document.addEventListener(chatConstants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
+    document.addEventListener(chatConstants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
+    document.addEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
+    document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
+    document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
     this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
   },
   updated() {
     this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.ACTION_ROOM_START_MEETING, this.startMeeting);
-    document.removeEventListener(this.$constants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
-    document.removeEventListener(this.$constants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
-    document.removeEventListener(this.$constants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
-    document.removeEventListener(this.$constants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
-    document.removeEventListener(this.$constants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
+    document.removeEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
+    document.removeEventListener(chatConstants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
+    document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
+    document.removeEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
+    document.removeEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
+    document.removeEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
   },
   methods: {
     addToFavorite(e) {
@@ -201,7 +201,7 @@ export default {
           fromTimestamp: fromTimestamp
         }
       };
-      document.dispatchEvent(new CustomEvent(this.$constants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
     },
     displayItem(settingAction) {
       return (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
@@ -216,7 +216,7 @@ export default {
       this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
     },
     backToContactList() {
-      document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
       this.$emit('back-to-contact-list');
     }
   }

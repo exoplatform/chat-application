@@ -30,6 +30,7 @@
 
 <script>
 import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
@@ -114,7 +115,7 @@ export default {
       } else if (this.type === 's') {
         return getSpaceAvatar(this.name);
       } else {
-        return this.$constants.DEFAULT_ROOM_AVATAR;
+        return chatConstants.DEFAULT_ROOM_AVATAR;
       }
     },
     escapedName() {
@@ -122,14 +123,14 @@ export default {
     }
   },
   created() {
-    document.addEventListener(this.$constants.EVENT_DISCONNECTED, this.setOffline);
-    document.addEventListener(this.$constants.EVENT_CONNECTED, this.setOnline);
-    document.addEventListener(this.$constants.EVENT_RECONNECTED, this.setOnline);
+    document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
+    document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
+    document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_DISCONNECTED, this.setOffline);
-    document.removeEventListener(this.$constants.EVENT_CONNECTED, this.setOnline);
-    document.removeEventListener(this.$constants.EVENT_RECONNECTED, this.setOnline);
+    document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
+    document.removeEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
+    document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
   },
   methods: {
     setStatus(status) {

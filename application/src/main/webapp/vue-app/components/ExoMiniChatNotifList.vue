@@ -33,6 +33,7 @@
 
 <script>
 import * as chatServices from '../chatServices';
+import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
@@ -92,14 +93,14 @@ export default {
     }
   },
   created() {
-    document.addEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageReceived);
-    document.addEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_DELETED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_UPDATED, this.messageReceived);
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_DELETED, this.messageReceived);
-    document.removeEventListener(this.$constants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_DELETED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.messageReceived);
   },
   methods: {
     refreshMessages() {

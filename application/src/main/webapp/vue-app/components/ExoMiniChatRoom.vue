@@ -52,11 +52,11 @@ export default {
     }
   },
   created() {
-    document.addEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     this.refreshSelectedRoom();
   },
   destroyed() {
-    document.removeEventListener(this.$constants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
   },
   methods: {
     messageReceived(e) {
@@ -82,7 +82,7 @@ export default {
             this.selectedContact = contact;
             eXo.chat.selectedContact = contact;
             if (!this.minimized) {
-              document.dispatchEvent(new CustomEvent(this.$constants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
+              document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: this.selectedContact}));
             }
             localStorage.setItem(`${chatConstants.STORED_PARAM_OPENED_MINI_CHAT_ROOM}-${eXo.chat.userSettings.username}`, this.room);
           }
