@@ -51,11 +51,7 @@ let config = {
   },
   plugins: [
     new ExtractTextWebpackPlugin('css/[name].css')
-  ],
-  externals: {
-    vue: 'Vue',
-    jquery: 'jQuery'
-  }
+  ]
 };
 
 module.exports = config;

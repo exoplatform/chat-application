@@ -1,5 +1,3 @@
-import Vue from 'vue';
-
 import ExoChatApp from './ExoChatApp.vue';
 import ExoChatContact from './ExoChatContact.vue';
 import ExoChatContactList from './ExoChatContactList.vue';

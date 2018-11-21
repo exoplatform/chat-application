@@ -10,7 +10,8 @@ const exoServerPath = "../../../exo-servers/platform-5.1.x-improve-chat-ux-SNAPS
 let config = merge(webpackCommonConfig, {
   output: {
     path: path.resolve(__dirname, exoServerPath + 'webapps/chat/'),
-    filename: 'js/[name].bundle.js'
+    filename: 'js/[name].bundle.js',
+    libraryTarget: 'amd'
   },
   devServer: {
     contentBase: path.resolve("./src/main/webapp"),
