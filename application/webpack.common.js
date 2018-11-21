@@ -6,6 +6,10 @@ let config = {
   entry: {
     chat: './src/main/webapp/vue-app/main.js'
   },
+  output: {
+    filename: 'js/[name].bundle.js',
+    libraryTarget: 'amd'
+  },
   module: {
     rules: [
       {
