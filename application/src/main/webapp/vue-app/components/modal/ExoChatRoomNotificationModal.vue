@@ -67,14 +67,11 @@ export default {
   },
   watch: {
     room() {
-      if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
-        this.selectedOption = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].notifCond;
-        this.keywords = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].keywords;
-      } else {
-        this.selectedOption = 'normal';
-        this.keywords = '';
-      }
+      this.getPreferredNotification();
     }
+  },
+  created() {
+    this.getPreferredNotification();
   },
   methods: {
     closeModal() {
@@ -86,6 +83,15 @@ export default {
         chatServices.loadNotificationSettings(settings);
       });
       this.closeModal();
+    },
+    getPreferredNotification() {
+      if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
+        this.selectedOption = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].notifCond;
+        this.keywords = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].keywords;
+      } else {
+        this.selectedOption = 'normal';
+        this.keywords = '';
+      }
     }
   }
 };
