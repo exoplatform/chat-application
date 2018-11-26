@@ -3,23 +3,6 @@
   .dropdown-menu .uiIconStatus {
     font-size: 14px;
   }
-  .uiNotifChatIcon {
-    display: inline-block;
-    width: 24px;
-    vertical-align: middle;
-    position: relative;
-    top: 0;
-    cursor: pointer;
-    font-size: 14px;
-
-    &:before { // Changing the background image to font-icon
-      content: "\e601";
-      font-size: @sizeIcon24x24;
-    }
-    span { // reset the font for the number of notifications
-      font-family: @defaultFontFamily;
-    }
-  }
   .uiIconBannerChat:before {
     color: @secondaryIconColor;
     font-size: 15px;
@@ -214,6 +197,25 @@
     content: "\e754";
   }
 }
+
+.uiNotifChatIcon {
+  display: inline-block;
+  width: 24px;
+  vertical-align: middle;
+  position: relative;
+  top: 0;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:before { // Changing the background image to font-icon
+    content: "\e601";
+    font-size: @sizeIcon24x24;
+  }
+  span { // reset the font for the number of notifications
+    font-family: @defaultFontFamily;
+  }
+}
+
 .uiIconBannerChat:before {
   content: "\e9c4";
 }

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import {addCaretJQueryExtension} from '../js/lib/text-caret';
 import {chatConstants} from './chatConstants.js';
 
@@ -39,21 +38,23 @@ if (extensionRegistry) {
   }
 }
 
-exoi18n.loadLanguageAsync(lang, url).then(i18n => {
-  if ($('#chatApplication').length) {
-    new Vue({
-      el: '#chatApplication',
-      template: '<exo-chat-app></exo-chat-app>',
-      i18n
-    });
-  } else if ($('#chatApplicationNotification').length) {
-    new Vue({
-      el: '#chatApplicationNotification',
-      template: '<exo-chat-notif-app></exo-chat-notif-app>',
-      i18n
-    });
-  }
-});
+export function init() {
+  exoi18n.loadLanguageAsync(lang, url).then(i18n => {
+    if ($('#chatApplication').length) {
+      new Vue({
+        el: '#chatApplication',
+        template: '<exo-chat-app></exo-chat-app>',
+        i18n
+      });
+    } else if ($('#chatNotification').length) {
+      new Vue({
+        el: '#chatNotification',
+        template: '<exo-chat-notif-app></exo-chat-notif-app>',
+        i18n
+      });
+    }
+  });
+}
 
 // A global data
 Vue.mixin({
