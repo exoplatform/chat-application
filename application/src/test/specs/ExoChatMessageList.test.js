@@ -101,23 +101,23 @@ describe('ExoChatMessageList.test.js', () => {
     expect(cmp.vm.messagesMap[dates[0]]).toHaveLength(2);
     expect(cmp.vm.messagesMap[dates[1]]).toHaveLength(6);
     
-    expect(cmp.vm.isHideTime(0, messages)).toBeFalsy();
-    expect(cmp.vm.isHideTime(1, messages)).toBeTruthy();
-    expect(cmp.vm.isHideTime(2, messages)).toBeFalsy();
-    expect(cmp.vm.isHideTime(3, messages)).toBeTruthy();
-    expect(cmp.vm.isHideTime(4, messages)).toBeTruthy();
-    expect(cmp.vm.isHideTime(5, messages)).toBeTruthy();
-    expect(cmp.vm.isHideTime(6, messages)).toBeTruthy();
-    expect(cmp.vm.isHideTime(7, messages)).toBeTruthy();
+    expect(cmp.vm.isHideTime(null, messages[0])).toBeFalsy();
+    expect(cmp.vm.isHideTime(messages[0], messages[1])).toBeTruthy();
+    expect(cmp.vm.isHideTime(messages[1], messages[2])).toBeFalsy();
+    expect(cmp.vm.isHideTime(messages[2], messages[3])).toBeTruthy();
+    expect(cmp.vm.isHideTime(messages[3], messages[4])).toBeTruthy();
+    expect(cmp.vm.isHideTime(messages[4], messages[5])).toBeTruthy();
+    expect(cmp.vm.isHideTime(messages[5], messages[6])).toBeTruthy();
+    expect(cmp.vm.isHideTime(messages[6], messages[7])).toBeTruthy();
 
-    expect(cmp.vm.isHideAvatar(0, messages)).toBeFalsy();
-    expect(cmp.vm.isHideAvatar(1, messages)).toBeTruthy();
-    expect(cmp.vm.isHideAvatar(2, messages)).toBeFalsy();
-    expect(cmp.vm.isHideAvatar(3, messages)).toBeFalsy();
-    expect(cmp.vm.isHideAvatar(4, messages)).toBeTruthy();
-    expect(cmp.vm.isHideAvatar(5, messages)).toBeFalsy();
-    expect(cmp.vm.isHideAvatar(6, messages)).toBeTruthy();
-    expect(cmp.vm.isHideAvatar(7, messages)).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(null, messages[0])).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(messages[0], messages[1])).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(messages[1], messages[2])).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(messages[2], messages[3])).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(messages[3], messages[4])).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(messages[4], messages[5])).toBeFalsy();
+    expect(cmp.vm.isHideAvatar(messages[5], messages[6])).toBeTruthy();
+    expect(cmp.vm.isHideAvatar(messages[6], messages[7])).toBeFalsy();
   });
 
   it('test new message added', () => {
@@ -186,7 +186,13 @@ describe('ExoChatMessageList.test.js', () => {
 
     expect(editMessageSpy).toBeCalledWith(newMessage);
     expect(cmp.vm.showEditMessageModal).toBeTruthy();
-    expect(cmp.vm.messageToEdit).toEqual(newMessage);
+    expect(cmp.vm.messageToEdit.clientId).toEqual(newMessage.clientId);
+    expect(cmp.vm.messageToEdit.fullname).toEqual(newMessage.fullname);
+    expect(cmp.vm.messageToEdit.msg).toEqual(newMessage.msg);
+    expect(cmp.vm.messageToEdit.msgId).toEqual(newMessage.msgId);
+    expect(cmp.vm.messageToEdit.room).toEqual(newMessage.room);
+    expect(cmp.vm.messageToEdit.timestamp).toEqual(newMessage.timestamp);
+    expect(cmp.vm.messageToEdit.user).toEqual(newMessage.user);
   });
 
   it('test save editing message', () => {

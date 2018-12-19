@@ -515,10 +515,10 @@ export default {
     getLastMessageTime(contact) {
       const timestamp = contact.lastMessage && contact.lastMessage.timestamp ? contact.lastMessage.timestamp : contact.timestamp;
       if (timestamp) {
-        if (chatTime.getDayDate(timestamp) === chatTime.getDayDate(new Date())) {
+        if (chatTime.isSameDay(timestamp, new Date().getTime())) {
           return chatTime.getTimeString(timestamp);
         } else {
-          return chatTime.getDayDate(timestamp);
+          return chatTime.getDayDateString(timestamp);
         }
       }
       return '';

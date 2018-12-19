@@ -1,10 +1,32 @@
-export function getDayDate(timestampServer) {
-  const date = new Date(timestampServer);
+export function getDayDate(timestamp) {
+  const date = new Date(timestamp);
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  return date.toLocaleDateString(eXo.env.portal.language);
+  return date;
+}
+
+export function getDayDateString(timestamp) {
+  return getDayDate(timestamp).toLocaleDateString(eXo.env.portal.language);
+}
+
+export function getMinuteDate(timestamp) {
+  let date = new Date();
+  if (timestamp) {
+    date = new Date(timestamp);
+  }
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  return date;
+}
+
+export function isSameDay(timestamp1, timestamp2) {
+  return getDayDate(timestamp1).getTime() === getDayDate(timestamp2).getTime();
+}
+
+export function isSameMinute(timestamp1, timestamp2) {
+  return getMinuteDate(timestamp1).getTime() === getMinuteDate(timestamp2).getTime();
 }
 
 export function getTimeString(timestampServer, displayDate) {

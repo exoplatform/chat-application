@@ -6,7 +6,7 @@
       </div>
       <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
         <div class="day-separator"><span>{{ dayDate }}</span></div>
-        <exo-chat-message-detail v-for="(messageObj, i) in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="isHideTime(i, subMessages)" :hide-avatar="isHideAvatar(i, subMessages)" :mini-chat="miniChat" @edit-message="editMessage"></exo-chat-message-detail>
+        <exo-chat-message-detail v-for="messageObj in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="messageObj.hideTime" :hide-avatar="messageObj.hideAvatar" :mini-chat="miniChat" @edit-message="editMessage"></exo-chat-message-detail>
       </div>
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
@@ -54,16 +54,22 @@ export default {
   },
   computed: {
     messagesMap() {
-      const days = this.messages.map((message) => chatTime.getDayDate(message.timestamp).toString() ).reduce(function(result, current){
-        return current && current.length && result.indexOf(current) === -1 ? result.concat(current) : result;
-      }, []);
       const messagesMap = {};
-      days.forEach(element => {
-        const subMessages = this.messages.filter(message => chatTime.getDayDate(message.timestamp) === element);
-        if(subMessages && subMessages.length) {
-          messagesMap[element] = subMessages;
+      let previousMessage = null;
+      this.messages.forEach(message => {
+        const messageDay = chatTime.getDayDateString(message.timestamp);
+        if(!messagesMap[messageDay]) {
+          messagesMap[messageDay] = [];
         }
+
+        message.hideTime = this.isHideTime(previousMessage, message);
+        message.hideAvatar = this.isHideAvatar(previousMessage, message);
+
+        messagesMap[messageDay].push(message);
+        previousMessage = message;
       });
+
+
       return messagesMap;
     },
     hasMoreMessages() {
@@ -229,20 +235,20 @@ export default {
     getPrevMessage(i, messages) {
       return i <= 0 && messages.length >= i ? null : messages[i-1];
     },
-    isHideTime(i, messages) {
-      const prevMsg = this.getPrevMessage(i, messages);
-      if (prevMsg === null || this.mq === 'mobile') {
+    isHideTime(previousMessage, message) {
+      if (previousMessage === null || this.mq === 'mobile') {
         return false;
       } else {
-        return !messages[i].timestamp || chatTime.getTimeString(prevMsg.timestamp) === chatTime.getTimeString(messages[i].timestamp) && chatTime.getDayDate(prevMsg.timestamp) === chatTime.getDayDate(messages[i].timestamp);
+        return !message.timestamp || chatTime.isSameMinute(previousMessage.timestamp, message.timestamp);
       }
     },
-    isHideAvatar(i, messages) {
-      const prevMsg = this.getPrevMessage(i, messages);
-      if (prevMsg === null) {
+    isHideAvatar(previousMessage, message) {
+      if (previousMessage === null) {
         return false;
       } else {
-        return prevMsg.user === messages[i].user && prevMsg.timestamp && messages[i].timestamp && chatTime.getDayDate(prevMsg.timestamp) ===  chatTime.getDayDate(messages[i].timestamp);
+        return previousMessage.user === message.user
+                && previousMessage.timestamp && message.timestamp
+                && chatTime.isSameDay(previousMessage.timestamp, message.timestamp);
       }
     },
     addOrUpdateMessageToList(message) {
