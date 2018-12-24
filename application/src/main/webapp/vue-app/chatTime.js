@@ -8,7 +8,11 @@ export function getDayDate(timestamp) {
 }
 
 export function getDayDateString(timestamp) {
-  return getDayDate(timestamp).toLocaleDateString(eXo.env.portal.language);
+  return getDayDate(timestamp).toLocaleDateString(getLocale());
+}
+
+function getLocale() {
+  return eXo ? eXo.env ? eXo.env.portal ? eXo.env.portal.language ? eXo.env.portal.language.replace('_', '-') : 'en' : 'en' : 'en' : 'en';
 }
 
 export function getMinuteDate(timestamp) {
