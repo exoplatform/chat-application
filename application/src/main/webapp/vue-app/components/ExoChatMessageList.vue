@@ -1,6 +1,6 @@
 <template>
   <div class="uiRightContainerArea message-list">
-    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" ref="messagesListContainer" :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
       <div v-show="newMessagesLoading" class="center">
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>
@@ -74,9 +74,6 @@ export default {
     },
     hasMoreMessages() {
       return this.totalMessagesToLoad <= this.messages.length;
-    },
-    chatMessageListContainer() {
-      return $('.chat-message-list');
     }
   },
   watch: {
@@ -171,21 +168,23 @@ export default {
     scrollToEnd: function(e) {
       // If triggered using an event or explicitly asked to scroll to bottom
       if (e || this.scrollToBottom) {
-        this.chatMessageListContainer.scrollTop(this.chatMessageListContainer.prop('scrollHeight'));
+        const messagesListContainer = $(this.$refs.messagesListContainer);
+        messagesListContainer.scrollTop(messagesListContainer.prop('scrollHeight'));
         if (!e) {
           this.scrollToBottom = false;
         }
       }
     },
     isScrollPositionAtEnd() {
-      if(this.chatMessageListContainer && this.chatMessageListContainer.length) {
-        return this.chatMessageListContainer[0].scrollHeight - this.chatMessageListContainer.scrollTop() - this.chatMessageListContainer.height() < chatConstants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
+      const messagesListContainer = $(this.$refs.messagesListContainer);
+      if(messagesListContainer && messagesListContainer.length) {
+        return messagesListContainer[0].scrollHeight - messagesListContainer.scrollTop() - messagesListContainer.height() < chatConstants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
       }
     },
     loadMoreMessages() {
-      if (this.newMessagesLoading || this.chatMessageListContainer.scrollTop() > 0 || !this.hasMoreMessages) {
+      if (this.newMessagesLoading || $(this.$refs.messagesListContainer).scrollTop() > 0 || !this.hasMoreMessages) {
         return;
       }
       this.retrieveRoomMessages(true);
