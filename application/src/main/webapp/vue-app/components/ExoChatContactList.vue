@@ -2,8 +2,8 @@
   <div class="contactListContainer">
     <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
       <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
-      <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text">
-      <div v-if="mq === 'mobile'" class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
+      <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text" @keyup.esc="closeContactSearch" >
+      <div v-show="searchTerm !== ''" class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
     </div>
     <div class="listHeader">
       <div v-if="mq === 'mobile'" class="hamburger-menu" @click="$emit('open-side-menu')"><i class="uiIconMenu"></i></div>
