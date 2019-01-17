@@ -1,6 +1,6 @@
 <template>
   <div class="uiRightContainerArea message-list">
-    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" ref="messagesListContainer" :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}" class="chat-message-list" @wheel="loadMoreMessages" @scroll="loadMoreMessages">
+    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" ref="messagesListContainer" :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}" class="chat-message-list" @wheel="loadMoreMessages();checkResetUnreadMessage()" @scroll="loadMoreMessages();checkResetUnreadMessage()">
       <div v-show="newMessagesLoading" class="center">
         <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
       </div>
@@ -342,6 +342,11 @@ export default {
       if (event.keyCode === chatConstants.ENTER_CODE_KEY) {
         event.stopPropagation();
         event.preventDefault();
+      }
+    },
+    checkResetUnreadMessage() {
+      if(this.isScrollPositionAtEnd()) {
+        this.contact.unreadTotal = 0;
       }
     }
   }

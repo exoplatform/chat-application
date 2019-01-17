@@ -17,10 +17,11 @@
         </a>
       </div>
       <div class="title-left">
-        <span :class="{'hidden': !selectedContact.unreadTotal}" class="notify-info badgeDefault badgePrimary mini">{{ selectedContact.unreadTotal }}</span> <span class="fullname">{{ selectedContact.fullName }}</span>
+        <span class="fullname">{{ selectedContact.fullName }}</span>
+        <span :class="{'hidden': !selectedContact.unreadTotal}" class="notify-info badgeDefault badgePrimary mini">{{ selectedContact.unreadTotal }}</span> 
       </div>
     </div>
-    <exo-chat-message-list :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
+    <exo-chat-message-list ref="exoChatMessageList" :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
   </div>
 </template>
 
@@ -66,7 +67,7 @@ export default {
       const message = e.detail;
       const user = message.data ? message.data.user : message.sender;
       const room = message.room;
-      if (this.selectedContact && (this.selectedContact.room === room || this.selectedContact.user === user ) && this.minimized) {
+      if ((this.minimized || !this.$refs.exoChatMessageList.isScrollPositionAtEnd()) && this.selectedContact && (this.selectedContact.room === room || this.selectedContact.user === user)) {
         this.selectedContact.unreadTotal ++;
       }
     },
