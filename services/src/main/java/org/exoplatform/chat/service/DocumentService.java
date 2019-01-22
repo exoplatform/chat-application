@@ -236,7 +236,7 @@ public class DocumentService implements ResourceContainer {
     try {
       Node homeNode;
       if (isPrivateContext) {
-        Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, remoteUser);
+        Node userNode = nodeHierarchyCreator_.getUserNode(sessionProviderService_.getSystemSessionProvider(null), remoteUser);
         homeNode = userNode.getNode("Private");
       } else {
         ManageableRepository currentRepository = repositoryService_.getCurrentRepository();
