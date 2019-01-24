@@ -230,7 +230,7 @@ public class DocumentService implements ResourceContainer {
 
     boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
 
-    SessionProvider sessionProvider = sessionProviderService_.getSessionProvider(null);
+    SessionProvider sessionProvider = sessionProviderService_.getSystemSessionProvider(null);
 
     Node node = null;
     try {
