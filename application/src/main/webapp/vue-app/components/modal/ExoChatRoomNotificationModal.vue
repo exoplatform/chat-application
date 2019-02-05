@@ -1,5 +1,5 @@
 <template>
-  <exo-modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
+  <exo-modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal('false')">
     <div class="chat-room-config">
       <span class="uiRadio">
         <input v-model="selectedOption" type="radio" value="normal">
@@ -22,7 +22,7 @@
     </div>
     <div class="uiAction uiActionBorder">
       <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.user.popup.confirm') }}</div>
-      <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
+      <div class="btn" @click="closeModal('false')">{{ $t('exoplatform.chat.cancel') }}</div>
     </div>
   </exo-modal>
 </template>
@@ -74,7 +74,10 @@ export default {
     this.getPreferredNotification();
   },
   methods: {
-    closeModal() {
+    closeModal(isSaved) {
+      if(isSaved ==='false'){
+        this.getPreferredNotification();
+      }
       // Emit the click event of close icon
       this.$emit('modal-closed');
     },
@@ -82,7 +85,7 @@ export default {
       chatServices.setRoomNotificationTrigger(eXo.chat.userSettings, this.room, this.selectedOption, this.selectedOption === 'keywords' ? this.keywords : '', new Date().getTime().toString()).then(settings => {
         chatServices.loadNotificationSettings(settings);
       });
-      this.closeModal();
+      this.closeModal(true);
     },
     getPreferredNotification() {
       if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
