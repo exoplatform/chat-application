@@ -324,7 +324,10 @@ export default {
     saveEditMessage(event) {
       if (!event || event.keyCode === chatConstants.ENTER_CODE_KEY) {
         if (event && (event.ctrlKey || event.altKey || event.shiftKey)) {
-          $(this.$refs.editMessageComposerArea).insertAtCaret('\n');
+          const composerArea = $(this.$refs.editMessageComposerArea);
+          composerArea.insertAtCaret('\n');
+          // make sure the vue model is updated after update via jquery
+          this.messageToEdit.msg = composerArea.val();
         } else {
           this.messageToEdit.msg = this.messageToEdit.msg.trim();
           this.messageModified(this.messageToEdit);
