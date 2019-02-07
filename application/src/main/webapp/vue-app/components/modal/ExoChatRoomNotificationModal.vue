@@ -66,8 +66,10 @@ export default {
     }
   },
   watch: {
-    room() {
-      this.getPreferredNotification();
+    show(){
+      if(this.show){
+        this.getPreferredNotification();
+      }
     }
   },
   created() {
