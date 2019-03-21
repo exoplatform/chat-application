@@ -163,11 +163,10 @@ function showDesktopNotif(path, msg) {
   } else {
     const isFirefox = typeof InstallTrigger !== 'undefined';
     const isLinux = navigator.platform.indexOf('Linux') >= 0;
-
     const clickHandler = function (notif) {
       notif.onclick = function () {
         document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {'detail' : msg.room}));
-        window.focus();
+        window.open('/portal/intranet/chat','chatWindow').focus();
         notif.close();
       };
     };
