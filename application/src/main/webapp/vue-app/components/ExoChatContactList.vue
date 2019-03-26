@@ -201,7 +201,7 @@ export default {
         );
       }
       if (this.searchTerm && this.searchTerm.trim().length) {
-        sortedContacts = sortedContacts.filter(contact => contact.fullName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) >= 0);
+        sortedContacts = sortedContacts.filter(contact => this.stripVowelAccent(contact.fullName.toLowerCase()).indexOf(this.stripVowelAccent(this.searchTerm.toLowerCase())) >= 0);
       }
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
@@ -222,7 +222,7 @@ export default {
       if(this.searchTerm.trim().length) {
         return false;
       }
-      // All Rooms and spaces are loaded with the first call, only users are paginated 
+      // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
         return this.usersCount >= this.totalEntriesToLoad;
@@ -280,6 +280,23 @@ export default {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
   },
   methods: {
+
+    stripVowelAccent(s) {
+      let r=s.toLowerCase();
+      r = r.replace(new RegExp(/[àáâãäå]/g),'a');
+      r = r.replace(new RegExp(/æ/g),'ae');
+      r = r.replace(new RegExp(/ç/g),'c');
+      r = r.replace(new RegExp(/[èéêë]/g),'e');
+      r = r.replace(new RegExp(/[ìíîï]/g),'i');
+      r = r.replace(new RegExp(/ñ/g),'n');
+      r = r.replace(new RegExp(/[òóôõö]/g),'o');
+      r = r.replace(new RegExp(/œ/g),'oe');
+      r = r.replace(new RegExp(/[ùúûü]/g),'u');
+      r = r.replace(new RegExp(/[ýÿ]/g),'y');
+      return r;
+    },
+
+
     selectContact(contact) {
       if(!contact) {
         contact = {};
