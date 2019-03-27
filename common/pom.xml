@@ -8,6 +8,9 @@
   </parent>
   <artifactId>chat-common</artifactId>
   <name>eXo Add-on:: Chat Client Server Common</name>
+  <properties>
+    <exo.test.coverage.ratio>0.09</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

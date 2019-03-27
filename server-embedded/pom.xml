@@ -9,6 +9,9 @@
   <artifactId>chat-server-embedded</artifactId>
   <packaging>war</packaging>
   <name>eXo Add-on:: Chat Server Embedded</name>
+  <properties>
+    <exo.test.coverage.ratio>0.32</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.mongodb</groupId>
