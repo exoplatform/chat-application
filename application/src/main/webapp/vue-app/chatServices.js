@@ -7,7 +7,7 @@ import {initTiptip} from './tiptip';
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
 const DEFAULT_HTTP_PORT = 80;
-const REATTEMPT_INIT_PERIOD = 1000;
+const REATTEMPT_INIT_PERIOD = 2000;
 
 export function getUserStatus(userSettings, user) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getStatus?user=${userSettings.username}&targetUser=${user}&dbName=${userSettings.dbName}`, {
