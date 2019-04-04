@@ -167,7 +167,8 @@ function showDesktopNotif(path, msg) {
     const clickHandler = function (notif) {
       notif.onclick = function () {
         document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {'detail' : msg.room}));
-        window.focus();
+        const chatWindowUrl = `${chatConstants.PORTAL}/${chatConstants.PORTAL_NAME}/chat`;
+        window.open(chatWindowUrl,'_chat').focus();
         notif.close();
       };
     };
