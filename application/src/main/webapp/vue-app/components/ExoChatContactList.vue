@@ -201,7 +201,7 @@ export default {
         );
       }
       if (this.searchTerm && this.searchTerm.trim().length) {
-        sortedContacts = sortedContacts.filter(contact => contact.fullName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) >= 0);
+        sortedContacts = sortedContacts.filter(contact => this.normalizeText(contact.fullName.toLowerCase()).indexOf(this.normalizeText(this.searchTerm.toLowerCase())) >= 0);
       }
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
@@ -222,7 +222,7 @@ export default {
       if(this.searchTerm.trim().length) {
         return false;
       }
-      // All Rooms and spaces are loaded with the first call, only users are paginated 
+      // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
         return this.usersCount >= this.totalEntriesToLoad;
@@ -280,6 +280,10 @@ export default {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
   },
   methods: {
+
+    normalizeText(s) {
+      return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    },
     selectContact(contact) {
       if(!contact) {
         contact = {};
