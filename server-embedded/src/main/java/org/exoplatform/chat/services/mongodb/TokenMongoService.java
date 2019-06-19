@@ -122,6 +122,7 @@ public class TokenMongoService implements TokenStorage
     } else {
       query.put("isDemoUser", user.startsWith(ANONIM_USER));
     }
+    query.put("user", new BasicDBObject("$in", limitedFilter));
     if (limit < 0) limit = 0;
 
     DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
@@ -131,7 +132,7 @@ public class TokenMongoService implements TokenStorage
       DBObject doc = cursor.next();
       String target = doc.get("user").toString();
       // Exclude current user and offline users
-      if (!user.equals(target) && limitedFilter.contains(target)) {
+      if (!user.equals(target)) {
         UserBean userBean = new UserBean();
         userBean.setName(target);
         if (doc.get("fullname") != null) {
