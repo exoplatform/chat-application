@@ -278,7 +278,6 @@ const DEFAULT_COMPOSER_APPS = [
               options.type = 'type-file';
               const message = {
                 msg: options.name,
-                isSystem: true,
                 room : thiss.contact.room,
                 clientId: new Date().getTime().toString(),
                 user: eXo.chat.userSettings.username,
@@ -507,12 +506,13 @@ const DEFAULT_MESSAGE_ACTIONS = [
     rank: 10,
     labelKey: 'exoplatform.chat.msg.edit',
     enabled: comp => {
-      return (
-        !comp.message.isSystem &&
-        !comp.message.isDeleted &&
-        !comp.message.notSent &&
-        comp.isCurrentUser
-      );
+      const editable = !comp.message.isDeleted && !comp.message.notSent && comp.isCurrentUser;
+      if (comp.message.options) {
+        return (
+          !(comp.message.options.type ==='type-file') && editable
+        );
+      }
+      return editable && !comp.message.isSystem;
     }
   },
   {
@@ -520,12 +520,7 @@ const DEFAULT_MESSAGE_ACTIONS = [
     rank: 20,
     labelKey: 'exoplatform.chat.delete',
     enabled: comp => {
-      return (
-        !comp.message.isSystem &&
-        !comp.message.isDeleted &&
-        !comp.message.notSent &&
-        comp.isCurrentUser
-      );
+      return  !comp.message.isDeleted && !comp.message.notSent && comp.isCurrentUser && !comp.message.isSystem;
     },
     confirm: {
       title: 'exoplatform.chat.popup.delete.title',
@@ -542,7 +537,13 @@ const DEFAULT_MESSAGE_ACTIONS = [
     rank: 30,
     labelKey: 'exoplatform.chat.quote',
     enabled: comp => {
-      return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+      const quote =  !comp.message.isDeleted && !comp.message.notSent;
+      if (comp.message.options) {
+        return (
+          !(comp.message.options.type ==='type-file') && quote
+        );
+      }
+      return quote && !comp.message.isSystem ;
     }
   },
   {
@@ -550,7 +551,13 @@ const DEFAULT_MESSAGE_ACTIONS = [
     rank: 40,
     labelKey: 'exoplatform.chat.notes',
     enabled: comp => {
-      return !comp.message.isSystem && !comp.message.isDeleted && !comp.message.notSent;
+      const saveNotes =  !comp.message.isDeleted && !comp.message.notSent;
+      if (comp.message.options) {
+        return (
+          !(comp.message.options.type ==='type-file') && saveNotes
+        );
+      }
+      return saveNotes && !comp.message.isSystem ;
     }
   }
 ];
