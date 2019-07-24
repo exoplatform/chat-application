@@ -9,29 +9,6 @@
       <div v-if="message.type === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
       </div>
-      <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
-      <div v-else-if="message.options.type === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
-        <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
-      </div>
-      <div v-else-if="message.options.type === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
-      </div>
-      <div v-else-if="message.options.type === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
-        <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
-      </div>
-      <div v-else-if="message.options.type === chatConstants.EVENT_MESSAGE" class="message-content">
-        <b>{{ message.options.summary }}</b>
-        <div class="custom-message-item">
-          <i class="uiIconChatClock"></i>
-          <span>{{ $t('exoplatform.chat.from') }} </span>
-          <b>{{ message.options.startDate }} {{ message.options.startAllDay ? this.$t('exoplatform.chat.all.day') : message.options.startTime }}</b>
-          <span> {{ $t('exoplatform.chat.to') }} </span>
-          <b>{{ message.options.endDate }} {{ message.options.endAllDay ? this.$t('exoplatform.chat.all.day') : message.options.endTime }}</b>
-        </div>
-        <div v-if="message.options.location" class="custom-message-item">
-          <i class="uiIconChatCheckin"></i>
-          {{ message.options.location }}
-        </div>
-      </div>
       <div v-else-if="message.options.type === chatConstants.FILE_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
@@ -57,6 +34,29 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
+      <div v-else-if="message.options.type === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
+        <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
+      </div>
+      <div v-else-if="message.options.type === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
+      </div>
+      <div v-else-if="message.options.type === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
+        <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
+      </div>
+      <div v-else-if="message.options.type === chatConstants.EVENT_MESSAGE" class="message-content">
+        <b>{{ message.options.summary }}</b>
+        <div class="custom-message-item">
+          <i class="uiIconChatClock"></i>
+          <span>{{ $t('exoplatform.chat.from') }} </span>
+          <b>{{ message.options.startDate }} {{ message.options.startAllDay ? this.$t('exoplatform.chat.all.day') : message.options.startTime }}</b>
+          <span> {{ $t('exoplatform.chat.to') }} </span>
+          <b>{{ message.options.endDate }} {{ message.options.endAllDay ? this.$t('exoplatform.chat.all.day') : message.options.endTime }}</b>
+        </div>
+        <div v-if="message.options.location" class="custom-message-item">
+          <i class="uiIconChatCheckin"></i>
+          {{ message.options.location }}
         </div>
       </div>
       <div v-else-if="message.options.type === chatConstants.LINK_MESSAGE" class="message-content">
