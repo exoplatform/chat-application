@@ -9,7 +9,7 @@
       <div v-if="message.type === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
       </div>
-      <div v-else-if="message.options.type === chatConstants.FILE_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.FILE_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
@@ -37,15 +37,15 @@
         </div>
       </div>
       <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
-      <div v-else-if="message.options.type === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
+      <div v-else-if="message.options && message.options.type === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
       </div>
-      <div v-else-if="message.options.type === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === chatConstants.EVENT_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
@@ -59,19 +59,19 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-else-if="message.options.type === chatConstants.LINK_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.LINK_MESSAGE" class="message-content">
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
-      <div v-else-if="(message.options.type === chatConstants.RAISE_HAND || message.options.type === chatConstants.QUESTION_MESSAGE)" class="message-content">
+      <div v-else-if="(message.options && message.options.type === chatConstants.RAISE_HAND || message.options && message.options.type === chatConstants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
-      <div v-else-if="message.options.type === chatConstants.MEETING_START_MESSAGE" class="message-content">
+      <div v-else-if="message.options && message.options.type === chatConstants.MEETING_START_MESSAGE" class="message-content">
         <b>{{ $t('exoplatform.chat.meeting.started') }}</b>
         <div>
           <em class="muted">{{ $t('exoplatform.chat.meeting.started.message') }}</em>
         </div>
       </div>
-      <div v-else-if="(message.options.type === chatConstants.NOTES_MESSAGE || message.options.type === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
+      <div v-else-if="(message.options && message.options.type === chatConstants.NOTES_MESSAGE || message.options && message.options.type === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
         <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
         <br />
         <div class="custom-message-item">
