@@ -6,10 +6,10 @@
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
       <div v-if="displayUserInformation" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
 
-      <div v-if="message.type === chatConstants.DELETED_MESSAGE" class="message-content">
+      <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
       </div>
-      <div v-else-if="message.options.type === chatConstants.FILE_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.FILE_MESSAGE" class="message-content">
         <b>
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
@@ -37,15 +37,15 @@
         </div>
       </div>
       <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
-      <div v-else-if="message.options.type === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
+      <div v-else-if="messageOptionsType === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
       </div>
-      <div v-else-if="message.options.type === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="message.options.type === chatConstants.EVENT_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
         <div class="custom-message-item">
           <i class="uiIconChatClock"></i>
@@ -59,19 +59,19 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-else-if="message.options.type === chatConstants.LINK_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.LINK_MESSAGE" class="message-content">
         <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
       </div>
-      <div v-else-if="(message.options.type === chatConstants.RAISE_HAND || message.options.type === chatConstants.QUESTION_MESSAGE)" class="message-content">
+      <div v-else-if="(messageOptionsType === chatConstants.RAISE_HAND || messageOptionsType === chatConstants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
-      <div v-else-if="message.options.type === chatConstants.MEETING_START_MESSAGE" class="message-content">
+      <div v-else-if="messageOptionsType === chatConstants.MEETING_START_MESSAGE" class="message-content">
         <b>{{ $t('exoplatform.chat.meeting.started') }}</b>
         <div>
           <em class="muted">{{ $t('exoplatform.chat.meeting.started.message') }}</em>
         </div>
       </div>
-      <div v-else-if="(message.options.type === chatConstants.NOTES_MESSAGE || message.options.type === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
+      <div v-else-if="(messageOptionsType === chatConstants.NOTES_MESSAGE || messageOptionsType === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
         <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
         <br />
         <div class="custom-message-item">
@@ -97,12 +97,12 @@
       </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
-        <i v-else-if="message.options && message.options.type === chatConstants.RAISE_HAND" class="uiIconChatRaiseHand"></i>
-        <i v-else-if="message.options && message.options.type === chatConstants.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
-        <i v-else-if="message.options && message.options.type === chatConstants.LINK_MESSAGE" class="uiIconChatLink"></i>
-        <i v-else-if="message.options && message.options.type === chatConstants.FILE_MESSAGE" class="uiIconChatUpload"></i>
-        <i v-else-if="message.options && message.options.type === chatConstants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
-        <i v-else-if="message.options && (message.options.type === chatConstants.MEETING_START_MESSAGE || message.options.type === chatConstants.MEETING_STOP_MESSAGE || message.options.type === chatConstants.NOTES_MESSAGE)" class="uiIconChatMeeting"></i>
+        <i v-else-if="message.options && messageOptionsType === chatConstants.RAISE_HAND" class="uiIconChatRaiseHand"></i>
+        <i v-else-if="message.options && messageOptionsType === chatConstants.QUESTION_MESSAGE" class="uiIconChatQuestion"></i>
+        <i v-else-if="message.options && messageOptionsType === chatConstants.LINK_MESSAGE" class="uiIconChatLink"></i>
+        <i v-else-if="message.options && messageOptionsType === chatConstants.FILE_MESSAGE" class="uiIconChatUpload"></i>
+        <i v-else-if="message.options && messageOptionsType === chatConstants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
+        <i v-else-if="message.options && (messageOptionsType === chatConstants.MEETING_START_MESSAGE || messageOptionsType === chatConstants.MEETING_STOP_MESSAGE || messageOptionsType === chatConstants.NOTES_MESSAGE)" class="uiIconChatMeeting"></i>
         <i v-else-if="isSpecificMessageType && specificMessageClass" :class="specificMessageClass"></i>
 
         <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
@@ -208,15 +208,20 @@ export default {
     isCurrentUser() {
       return eXo.chat.userSettings.username === this.message.user;
     },
+    messageType() {
+      return this.message && this.message.type;
+    },
+    messageOptionsType() {
+      return this.message && this.message.options && this.message.options.type;
+    },
     messageActions() {
       return messageActions.filter(menu => !menu.enabled || menu.enabled(this));
     },
     displayUserInformation() {
-      const messageType = this.message.options ? this.message.options.type : null;
-      return messageType !== chatConstants.ROOM_MEMBER_LEFT && messageType !== chatConstants.REMOVE_TEAM_MESSAGE && messageType !== chatConstants.ADD_TEAM_MESSAGE && !this.hideAvatar && !this.isCurrentUser;
+      return this.messageOptionsType !== chatConstants.ROOM_MEMBER_LEFT && this.messageOptionsType !== chatConstants.REMOVE_TEAM_MESSAGE && this.messageOptionsType !== chatConstants.ADD_TEAM_MESSAGE && !this.hideAvatar && !this.isCurrentUser;
     },
     displayActions() {
-      return !this.miniChat && this.message.type !== chatConstants.DELETED_MESSAGE && this.messageActions && this.messageActions.length;
+      return !this.miniChat && this.messageType !== chatConstants.DELETED_MESSAGE && this.messageActions && this.messageActions.length;
     },
     messageId() {
       return this.message.clientId ? this.message.clientId : this.message.msgId;
@@ -228,10 +233,7 @@ export default {
       return chatServices.getUserAvatar(this.message.user);
     },
     isEditedMessage() {
-      return this.message.type &&
-        this.message.type === chatConstants.EDITED_MESSAGE
-        ? true
-        : false;
+      return this.messageType === chatConstants.EDITED_MESSAGE;
     },
     roomAddOrDeleteI18NParams() {
       return {
@@ -246,10 +248,10 @@ export default {
       return messageFilter(this.messageContent, this.highlight, EMOTICONS);
     },
     isSpecificMessageType() {
-      return this.message && this.message.options && this.message.options.type && this.specificMessageObj;
+      return this.specificMessageObj;
     },
     specificMessageObj() {
-      return extraMessageTypes.find(elm => elm.type === this.message.options.type);
+      return this.messageOptionsType && extraMessageTypes && extraMessageTypes.find(elm => elm.type === this.messageOptionsType);
     },
     specificMessageContent() {
       if(this.specificMessageObj && this.specificMessageObj.html) {
