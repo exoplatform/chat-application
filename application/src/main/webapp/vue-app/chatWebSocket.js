@@ -70,25 +70,7 @@ export function initChatCometdHandshake() {
     if (handshake.successful) {
       initChatCometd();
     } else if (cometDSettings.connected === false) {
-      // Reload the page when re-handshake denied.
-      $.ajax({
-        url: '/portal/rest/chat/api/1.0/user/cometdToken',
-        success: function (data) {
-          cometDSettings.cometdToken = data;
-          cometDSettings.cCometD.isConfigured = false;
-
-          const wsConfig = {
-            url: cometDSettings.wsEndpoint,
-            'exoId': cometDSettings.username,
-            'exoToken': cometDSettings.cometdToken
-          };
-          cometDSettings.cCometD.configure(wsConfig);
-          initChatCometd();
-        },
-        error: function () {
-          window.location.reload(true);
-        }
-      });
+      renewToken();
     }
   });
 }
@@ -260,6 +242,29 @@ export function setRoomMessagesAsRead(room, callback) {
       }
     });
   }
+}
+
+function renewToken() {
+  $.ajax({
+    url: '/portal/rest/chat/api/1.0/user/cometdToken',
+    success: function (data) {
+      cometDSettings.cometdToken = data;
+      cometDSettings.cCometD.isConfigured = false;
+
+      const wsConfig = {
+        url: cometDSettings.wsEndpoint,
+        'exoId': cometDSettings.username,
+        'exoToken': cometDSettings.cometdToken
+      };
+      cometDSettings.cCometD.configure(wsConfig);
+      initChatCometd();
+    },
+    error: () => {
+      window.setTimeout(() => {
+        renewToken();
+      }, chatConstants.COMETD_TOKEN_ATTEMPT_DELAY);
+    }
+  });
 }
 
 document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
