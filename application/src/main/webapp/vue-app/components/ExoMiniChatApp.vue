@@ -44,7 +44,12 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
+    // Avoid instantiating mini-chat when not displayed
+    if (!$('#chatApplicationNotification').is(':visible')) {
+      return;
+    }
+
     chatServices.initChatSettings(this.userSettings.username, true,
       userSettings => this.initSettings(userSettings),
       data => {

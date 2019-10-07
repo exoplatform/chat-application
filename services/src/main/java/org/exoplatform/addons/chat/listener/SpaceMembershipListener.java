@@ -39,23 +39,13 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
   @Override
   public void spaceCreated(SpaceLifeCycleEvent event) {
     Space space = event.getSpace();
-    String[] members = space.getMembers();
-    if (members != null) {
-      for (String username : members) {
-        saveSpaces(username);
-      }
-    }
+    refreshSpaceChatRoom(space);
   }
 
   @Override
   public void spaceRemoved(SpaceLifeCycleEvent event) {
     Space space = event.getSpace();
-    String[] members = space.getMembers();
-    if (members != null) {
-      for (String username : members) {
-        saveSpaces(username);
-      }
-    }
+    refreshSpaceChatRoom(space);
   }
 
   @Override
@@ -76,7 +66,8 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
 
   @Override
   public void spaceRenamed(SpaceLifeCycleEvent event) {
-    saveSpaces(event.getTarget());
+    Space space = event.getSpace();
+    refreshSpaceChatRoom(space);
   }
 
   @Override
@@ -93,6 +84,15 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
 
   @Override
   public void addPendingUser(SpaceLifeCycleEvent event) {
+  }
+
+  private void refreshSpaceChatRoom(Space space) {
+    String[] members = space.getMembers();
+    if (members != null) {
+      for (String username : members) {
+        saveSpaces(username);
+      }
+    }
   }
 
   private void saveSpaces(String username) {

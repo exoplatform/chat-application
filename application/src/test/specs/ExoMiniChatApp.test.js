@@ -5,6 +5,23 @@ import ExoMiniChatApp from '../../main/webapp/vue-app/components/ExoMiniChatApp'
 import ExoMiniChatNotifList from '../../main/webapp/vue-app/components/ExoMiniChatNotifList';
 import ExoMiniChatRoom from '../../main/webapp/vue-app/components/ExoMiniChatRoom';
 
+beforeAll(() => {
+  $.fn.originalJQueryIs = $.fn.is;
+  $.fn.is = (function() {
+    return function(selector) {
+      if (selector === ':visible') {
+        return true;
+      } else {
+        return this.originalJQueryIs(selector);
+      }
+    };
+  }());
+});
+
+afterAll(() => {
+  $.fn.is = $.fn.originalJQueryIs;
+});
+
 global.fetch = jest.fn().mockImplementation(() => {
   const p = new Promise((resolve) => {
     resolve({

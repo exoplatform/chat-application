@@ -11,6 +11,12 @@
             <set-method>addListener</set-method>
             <type>org.exoplatform.addons.chat.listener.UpdateUserStatusListener</type>
         </component-plugin>
+        <component-plugin>
+            <name>exo.core.security.ConversationRegistry.register</name>
+            <set-method>addListener</set-method>
+            <type>org.exoplatform.addons.chat.listener.UserLoginListener</type>
+            <description>Listener to update spaces of user on login</description>
+        </component-plugin>
     </external-component-plugins>
     <external-component-plugins>
         <target-component>org.exoplatform.services.organization.OrganizationService</target-component>

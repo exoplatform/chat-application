@@ -165,8 +165,6 @@ public class UserRestService implements ResourceContainer {
           ServerBootstrap.addUserFullNameAndEmail(currentUsername, userFullName, user.getEmail(), dbName);
         }
       }
-      // Set user's Spaces in the DB
-      ServerBootstrap.saveSpaces(currentUsername, dbName);
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
     }
     boolean online = userStateService.isOnline(currentUsername);
