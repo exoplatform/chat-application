@@ -355,10 +355,16 @@ export function saveWiki(userSettings, targetFullName, content) {
 }
 
 export function saveEvent(userSettings, data, target) {
-  const users = target.participants ? target.participants.map(user => user.name) : [];
-  data.space = target.fullName;
-  data.users = target.type === 's' ? '' : users.join(',');
 
+  if (target.type === 's') {
+    data.users = '';
+  }
+  else if (target.type === 'u') {
+    data.users = [data.fromUser,target.user].join(',');
+  } else {
+    const users = target.participants ? target.participants.map(user => user.name) : [];
+    data.users = users.join(',');
+  }
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_CALENDAR_API}saveEvent`, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
