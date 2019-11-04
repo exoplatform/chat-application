@@ -27,13 +27,13 @@ import java.util.List;
 
 public interface ChatDataStorage
 {
-  public void write(String message, String user, String room, String isSystem, String dbName);
+  public void write(String message, String user, String room, String isSystem);
 
-  public void write(String message, String user, String room, String isSystem, String options, String dbName);
+  public void write(String message, String user, String room, String isSystem, String options);
 
-  public String save(String message, String user, String room, String isSystem, String options, String dbName);
+  public String save(String message, String user, String room, String isSystem, String options);
 
-  public void delete(String room, String user, String messageId, String dbName);
+  public void delete(String room, String user, String messageId);
 
   /**
    * Delete a Team Room by its corresponding ID.<br>
@@ -46,54 +46,51 @@ public interface ChatDataStorage
    *
    * @param roomId the team room ID to delete
    * @param user   the owner of the team room
-   * @param dbName the database to use for the query
    */
-  public void deleteTeamRoom(String roomId, String user, String dbName);
+  public void deleteTeamRoom(String roomId, String user);
 
-  public void edit(String room, String user, String messageId, String message, String dbName);
+  public void edit(String room, String user, String messageId, String message);
 
-  public String read(String room, String dbName);
+  public String read(String room);
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp);
 
   /**
-   * Read messages from room from a dedicated timestamp to another usin dbName with limit.
+   * Read messages from room from a dedicated timestamp to another with limit.
    * 
    * @param room
    * @param isTextOnly
    * @param fromTimestamp
    * @param toTimestamp
-   * @param dbName
    * @param limitToLoad
    * @return
    */
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName, int limitToLoad);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limitToLoad);
 
-  public MessageBean getMessage(String roomId, String messageId, String dbName);
+  public MessageBean getMessage(String roomId, String messageId);
 
-  public String getSpaceRoom(String space, String dbName);
+  public String getSpaceRoom(String space);
 
-  public String getSpaceRoomByName(String name, String dbName);
+  public String getSpaceRoomByName(String name);
 
-  public String getTeamRoom(String team, String user, String dbName);
+  public String getTeamRoom(String team, String user);
 
-  public String getExternalRoom(String identifier, String dbName);
+  public String getExternalRoom(String identifier);
 
-  public String getTeamCreator(String room, String dbName);
+  public String getTeamCreator(String room);
 
-  public void setRoomName(String room, String name, String dbName);
+  public void setRoomName(String room, String name);
 
   /**
    * Retrieve a Room by its ID
    * @param roomId the ID of the room
-   * @param dbName the database to use for the query
    * @return the room or null if the room doesn't exists
    */
-  public RoomBean getTeamRoomById(String roomId, String dbName);
+  public RoomBean getTeamRoomById(String roomId);
 
-  public String getRoom(List<String> users, String dbName);
+  public String getRoom(List<String> users);
   
-  public String getTypeRoomChat(String roomId, String dbName);
+  public String getTypeRoomChat(String roomId);
 
   /**
    * @param user
@@ -101,25 +98,23 @@ public interface ChatDataStorage
    * @param isAdmin
    * @param notificationService
    * @param tokenService
-   * @param dbName
    *
    * @return All existing personal rooms of given <code>user</code>
    */
-  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName);
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService);
 
-  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName);
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService);
 
-  public int getNumberOfRooms(String dbName);
+  public int getNumberOfRooms();
 
-  public int getNumberOfMessages(String dbName);
+  public int getNumberOfMessages();
 
   /**
    * Return rooms by name
    * 
    * @param teamName
-   * @param dbName
    * @return
    */
-  public List<RoomBean> getTeamRoomByName(String teamName, String dbName);
+  public List<RoomBean> getTeamRoomByName(String teamName);
 
 }

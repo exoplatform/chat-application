@@ -8,7 +8,6 @@ export function initSettings(settings) {
   cometDSettings.token = settings.token;
   cometDSettings.username = settings.username;
   cometDSettings.sessionId = settings.sessionId;
-  cometDSettings.dbName = settings.dbName;
   cometDSettings.spaceId = settings.spaceId;
   cometDSettings.fullname = settings.fullName;
   cometDSettings.cometdToken = settings.cometdToken;
@@ -100,7 +99,6 @@ export function setStatus(status, callback, errorCallback) {
       'event': 'user-status-changed',
       'sender': cometDSettings.username,
       'room': cometDSettings.username,
-      'dbName': cometDSettings.dbName,
       'token': cometDSettings.token,
       'data': {
         'status': status
@@ -130,7 +128,6 @@ export function leaveRoom(room, callback) {
     'clientId': new Date().getTime().toString(),
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
-    'dbName': cometDSettings.dbName,
     'room': room,
     'options' : {
       'fullName': cometDSettings.fullname
@@ -150,7 +147,6 @@ export function deleteRoom(room, callback) {
     'event': 'room-deleted',
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
-    'dbName': cometDSettings.dbName,
     'room': room
   });
   cometDSettings.cCometD.publish('/service/chat', content, function(publishAck) {
@@ -183,7 +179,6 @@ export function sendMessage(messageObj, callback) {
     'room': messageObj.room,
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
-    'dbName': cometDSettings.dbName,
     'data': data
   };
 
@@ -210,7 +205,6 @@ export function deleteMessage(messageObj, callback) {
     'event': 'message-deleted',
     'sender': cometDSettings.username,
     'token': cometDSettings.token,
-    'dbName': cometDSettings.dbName,
     'room': messageObj.room,
     'data': {
       'msgId': messageObj.msgId
@@ -228,7 +222,6 @@ export function setRoomMessagesAsRead(room, callback) {
   const data = JSON.stringify({
     'event': 'message-read',
     'sender': cometDSettings.username,
-    'dbName': cometDSettings.dbName,
     'token': cometDSettings.token,
     'room': room
   });

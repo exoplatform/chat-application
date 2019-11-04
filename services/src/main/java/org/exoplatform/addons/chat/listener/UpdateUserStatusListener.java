@@ -38,7 +38,6 @@ public class UpdateUserStatusListener extends Listener<PortalContainer, HttpSess
       // Send logout message to all sessions of the given user in case of a
       // logout, not in platform stop.
       String token = ServerBootstrap.getToken(userId);
-      String dbName = ServerBootstrap.getDBName();
 
       ConversationRegistry conversationRegistry = portalContainer.getComponentInstanceOfType(ConversationRegistry.class);
       List<StateKey> stateKeys = conversationRegistry.getStateKeys(userId);
@@ -49,7 +48,7 @@ public class UpdateUserStatusListener extends Listener<PortalContainer, HttpSess
       StateKey httpStateKey = new HttpSessionStateKey(httpSession);
       String sessionId = httpSession.getId();
       boolean isSingleSession = stateKeys.stream().filter(stateKey -> !stateKey.equals(httpStateKey)).count() == 0;
-      ServerBootstrap.logout(userId, token, sessionId, dbName, isSingleSession);
+      ServerBootstrap.logout(userId, token, sessionId, isSingleSession);
       if (isSingleSession) {
         UserStateService userStateService = portalContainer.getComponentInstanceOfType(UserStateService.class);
         UserStateModel userStateModel = userStateService.getUserState(userId);

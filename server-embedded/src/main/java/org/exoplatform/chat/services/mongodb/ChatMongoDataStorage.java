@@ -62,25 +62,21 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     readTotalTxt = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_TXT));
   }
 
-  private DB db(String dbName) {
-    if (StringUtils.isEmpty(dbName)) {
-      return ConnectionManager.getInstance().getDB();
-    } else {
-      return ConnectionManager.getInstance().getDB(dbName);
-    }
+  private DB db() {
+    return ConnectionManager.getInstance().getDB();
   }
 
-  public void write(String message, String user, String room, String isSystem, String dbName) {
-    write(message, user, room, isSystem, null, dbName);
+  public void write(String message, String user, String room, String isSystem) {
+    write(message, user, room, isSystem, null);
   }
 
-  public void write(String message, String user, String room, String isSystem, String options, String dbName) {
-    save(message, user, room, isSystem, options, dbName);
+  public void write(String message, String user, String room, String isSystem, String options) {
+    save(message, user, room, isSystem, options);
   }
 
-  public String save(String message, String user, String room, String isSystem, String options, String dbName) {
-    String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+  public String save(String message, String user, String room, String isSystem, String options) {
+    String roomType = getTypeRoomChat(room);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
@@ -104,14 +100,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
     coll.insert(doc);
 
-    this.updateRoomTimestamp(room, dbName);
+    this.updateRoomTimestamp(room);
 
     return doc.get("_id").toString();
   }
 
-  public void delete(String room, String user, String messageId, String dbName) {
-    String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+  public void delete(String room, String user, String messageId) {
+    String roomType = getTypeRoomChat(room);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", new ObjectId(messageId));
     query.put("user", user);
@@ -127,10 +123,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   @Override
-  public List<RoomBean> getTeamRoomByName(String teamName, String dbName) {
+  public List<RoomBean> getTeamRoomByName(String teamName) {
     if (StringUtils.isBlank(teamName))
       return null;
-    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject qRoom = new BasicDBObject();
     qRoom.put("team", teamName);
     qRoom.put("type", TYPE_ROOM_TEAM);
@@ -154,10 +150,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return roomBeans;
   }
 
-  public RoomBean getTeamRoomById(String roomId, String dbName) {
+  public RoomBean getTeamRoomById(String roomId) {
     if (roomId == null || roomId.isEmpty())
       return null;
-    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject qRoom = new BasicDBObject();
     qRoom.put("_id", roomId);
     qRoom.put("type", TYPE_ROOM_TEAM);
@@ -178,8 +174,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public void deleteTeamRoom(String roomId, String user, String dbName) {
-    RoomBean room = getTeamRoomById(roomId, dbName);
+  public void deleteTeamRoom(String roomId, String user) {
+    RoomBean room = getTeamRoomById(roomId);
     if (room == null) {
       LOG.warning("No room with id [" + roomId + "] available to delete");
       return;
@@ -196,28 +192,28 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
 
     // Delete all message of the Team Chat Room
-    DBCollection cMessages = db(dbName).getCollection(M_ROOM_PREFIX + TYPE_ROOM_TEAM);
+    DBCollection cMessages = db().getCollection(M_ROOM_PREFIX + TYPE_ROOM_TEAM);
     BasicDBObject qMessages = new BasicDBObject();
     qMessages.put("roomId", roomId);
     cMessages.remove(qMessages, WriteConcern.ACKNOWLEDGED);
     LOG.info("Messages of room [" + roomId + "] deleted");
 
     // Remove the Team Chat Room from all the users
-    List<String> users = userDataStorage.getUsersFilterBy(null, roomId, TYPE_ROOM_TEAM, dbName);
-    userDataStorage.removeTeamUsers(roomId, users, dbName);
+    List<String> users = userDataStorage.getUsersFilterBy(null, roomId, TYPE_ROOM_TEAM);
+    userDataStorage.removeTeamUsers(roomId, users);
     LOG.info("All users removed from the team room [" + roomId + "]");
 
     // Delete the Team Chat Room
-    DBCollection cRooms = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject qRoom = new BasicDBObject();
     qRoom.put("_id", roomId);
     cRooms.remove(qRoom, WriteConcern.ACKNOWLEDGED);
     LOG.info("Team room [" + roomId + "] deleted");
   }
 
-  public void edit(String room, String user, String messageId, String message, String dbName) {
-    String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+  public void edit(String room, String user, String messageId, String message) {
+    String roomType = getTypeRoomChat(room);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
     message = message.replaceAll("&", "&#38");
@@ -241,22 +237,22 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
-  public String read(String room, String dbName) {
-    return read(room, false, null, null, dbName, 0);
+  public String read(String room) {
+    return read(room, false, null, null, 0);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, String dbName) {
-    return read(room, isTextOnly, fromTimestamp, null, dbName, 0);
+  public String read(String room, boolean isTextOnly, Long fromTimestamp) {
+    return read(room, isTextOnly, fromTimestamp, null, 0);
   }
 
-  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, String dbName, int limitToLoad) {
+  public String read(String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limitToLoad) {
     Calendar calendar = Calendar.getInstance();
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
 
-    String roomType = getTypeRoomChat(room, dbName);
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+    String roomType = getTypeRoomChat(room);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     BasicDBObject query = new BasicDBObject();
     query.put("roomId", room);
@@ -312,7 +308,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         String user = dbo.get("user").toString();
         UserBean userBean = users.get(user);
         if (userBean == null) {
-          userBean = userDataStorage.getUser(user, dbName);
+          userBean = userDataStorage.getUser(user);
           users.put(user, userBean);
         }
         String fullName = userBean.getFullname();
@@ -358,11 +354,11 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return sb.toString();
   }
 
-  public MessageBean getMessage(String roomId, String messageId, String dbName) {
+  public MessageBean getMessage(String roomId, String messageId) {
 
-    String roomType = getTypeRoomChat(roomId, dbName);
+    String roomType = getTypeRoomChat(roomId);
 
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + roomType);
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     BasicDBObject query = new BasicDBObject();
     query.put("roomId", roomId);
@@ -376,8 +372,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
-  private void updateRoomTimestamp(String room, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+  private void updateRoomTimestamp(String room) {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -391,8 +387,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   }
 
-  private void ensureIndexInRoom(String type, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_ROOM_PREFIX + type);
+  private void ensureIndexInRoom(String type) {
+    DBCollection coll = db().getCollection(M_ROOM_PREFIX + type);
     BasicDBObject doc = new BasicDBObject();
     doc.put("timestamp", System.currentTimeMillis());
     coll.insert(doc);
@@ -400,9 +396,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     coll.remove(doc);
   }
 
-  public String getSpaceRoom(String space, String dbName) {
+  public String getSpaceRoom(String space) {
     String room = ChatUtils.getRoomId(space);
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -413,7 +409,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("space", space);
         basicDBObject.put("type", TYPE_ROOM_SPACE);
         coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_SPACE, dbName);
+        ensureIndexInRoom(TYPE_ROOM_SPACE);
       } catch (MongoException me) {
         LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
@@ -422,9 +418,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public String getSpaceRoomByName(String name, String dbName) {
+  public String getSpaceRoomByName(String name) {
     String room = null;
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("shortName", name);
@@ -438,9 +434,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public String getTeamRoom(String team, String user, String dbName) {
+  public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -453,7 +449,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("type", TYPE_ROOM_TEAM);
         basicDBObject.put("timestamp", System.currentTimeMillis());
         coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_TEAM, dbName);
+        ensureIndexInRoom(TYPE_ROOM_TEAM);
       } catch (MongoException me) {
         LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
@@ -462,9 +458,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public String getExternalRoom(String identifier, String dbName) {
+  public String getExternalRoom(String identifier) {
     String room = ChatUtils.getExternalRoomId(identifier);
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -475,7 +471,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("identifier", identifier);
         basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
         coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_EXTERNAL, dbName);
+        ensureIndexInRoom(TYPE_ROOM_EXTERNAL);
       } catch (MongoException me) {
         LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
@@ -484,11 +480,11 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public String getTeamCreator(String room, String dbName) {
+  public String getTeamCreator(String room) {
     if (room.indexOf(ChatService.TEAM_PREFIX) == 0) {
       room = room.substring(ChatService.TEAM_PREFIX.length());
     }
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     String creator = "";
     BasicDBObject basicDBObject = new BasicDBObject();
@@ -507,8 +503,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return creator;
   }
 
-  public void setRoomName(String room, String name, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+  public void setRoomName(String room, String name) {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -521,10 +517,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
-  public String getRoom(List<String> users, String dbName) {
+  public String getRoom(List<String> users) {
     Collections.sort(users);
     String room = ChatUtils.getRoomId(users);
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
@@ -535,7 +531,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("users", users);
         basicDBObject.put("type", TYPE_ROOM_USER);
         coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_USER, dbName);
+        ensureIndexInRoom(TYPE_ROOM_USER);
       } catch (MongoException me) {
         LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
       }
@@ -544,8 +540,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return room;
   }
 
-  public String getTypeRoomChat(String roomId, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+  public String getTypeRoomChat(String roomId) {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -557,10 +553,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return roomType == null ? "" : roomType.toString();
   }
 
-  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
     String roomId = null;
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("users", user);
@@ -581,7 +577,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser)))) {
           RoomBean roomBean = new RoomBean();
           roomBean.setRoom(roomId);
-          roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId, dbName));
+          roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           roomBean.setType((String) dbo.get("type"));
@@ -597,18 +593,18 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return rooms;
   }
 
-  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName) {
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService) {
     List<RoomBean> rooms;
-    UserBean userBean = userDataStorage.getUser(user, true, dbName);
+    UserBean userBean = userDataStorage.getUser(user, true);
     int unreadOffline = 0, unreadOnline = 0, totalRooms = 0;
 
     if (withUsers) {
-      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
+      rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
       if (isAdmin) {
-        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService, dbName));
+        rooms.addAll(this.getExistingRooms(UserService.SUPPORT_USER, withPublic, isAdmin, notificationService, tokenService));
       }
 
-      Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, onlineUsers, dbName, withUsers, withPublic, isAdmin, limit);
+      Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy(user, onlineUsers, withUsers, withPublic, isAdmin, limit);
       List<RoomBean> roomsOffline = new ArrayList<>();
 
       for (RoomBean roomBean : rooms) {
@@ -623,7 +619,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           if (roomBean.getUnreadTotal() > 0)
             unreadOnline += roomBean.getUnreadTotal();
         } else {
-          UserBean targetUserBean = userDataStorage.getUser(targetUser, dbName);
+          UserBean targetUserBean = userDataStorage.getUser(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setAvailableUser(false);
 
@@ -659,7 +655,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
 
     int unreadSpaces = 0;
-    List<SpaceBean> spaces = userDataStorage.getSpaces(user, dbName);
+    List<SpaceBean> spaces = userDataStorage.getSpaces(user);
     for (SpaceBean space : spaces) {
       RoomBean room = new RoomBean();
       room.setUser(SPACE_PREFIX + space.getRoom());
@@ -670,7 +666,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setAvailableUser(true);
       room.setType(ChatService.TYPE_ROOM_SPACE);
 
-      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom(), dbName), dbName));
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom())));
       if (room.getUnreadTotal() > 0)
         unreadSpaces += room.getUnreadTotal();
       room.setFavorite(userBean.isFavorite(room.getRoom()));
@@ -680,7 +676,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
 
     int unreadTeams = 0;
-    List<RoomBean> teams = userDataStorage.getTeams(user, dbName);
+    List<RoomBean> teams = userDataStorage.getTeams(user);
     for (RoomBean team : teams) {
       RoomBean room = new RoomBean();
       room.setUser(TEAM_PREFIX + team.getRoom());
@@ -692,7 +688,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setType(team.getType());
       room.setAdmins(team.getAdmins());
 
-      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom(), dbName));
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
       if (room.getUnreadTotal() > 0)
         unreadTeams += room.getUnreadTotal();
       room.setFavorite(userBean.isFavorite(room.getRoom()));
@@ -740,18 +736,18 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     return true;
   }
 
-  public int getNumberOfRooms(String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+  public int getNumberOfRooms() {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
-  public int getNumberOfMessages(String dbName) {
+  public int getNumberOfMessages() {
     int nb = 0;
     String[] roomTypes = {TYPE_ROOM_USER, TYPE_ROOM_SPACE, TYPE_ROOM_TEAM, TYPE_ROOM_EXTERNAL};
     for (String type : roomTypes) {
-      DBCollection collr = db(dbName).getCollection(M_ROOM_PREFIX + type);
+      DBCollection collr = db().getCollection(M_ROOM_PREFIX + type);
       BasicDBObject queryr = new BasicDBObject();
       DBCursor cursorr = collr.find(queryr);
       nb += cursorr.count();

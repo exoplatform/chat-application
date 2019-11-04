@@ -258,7 +258,6 @@ const DEFAULT_COMPOSER_APPS = [
               credentials: 'include',
               body: $.param({
                 uploadId: uploadId,
-                dbName: eXo.chat.userSettings.dbName,
                 token: eXo.chat.userSettings.token,
                 targetRoom: thiss.contact.user,
                 targetFullname: thiss.contact.fullName

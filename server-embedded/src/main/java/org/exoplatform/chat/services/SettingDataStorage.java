@@ -23,7 +23,7 @@ package org.exoplatform.chat.services;
  * Setting data storage
  */
 public interface SettingDataStorage {
-  String getSetting(String name, String dbName);
+  String getSetting(String name);
 
-  void setSetting(String name, String value, String dbName);
+  void setSetting(String name, String value);
 }

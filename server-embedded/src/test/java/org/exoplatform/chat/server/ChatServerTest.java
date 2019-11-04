@@ -35,13 +35,13 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String token = tokenService.getToken("john");
-    tokenService.addUser("john", token, null);
+    tokenService.addUser("john", token);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0");
 
     // Then
     assertNotNull(read);
@@ -57,13 +57,13 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String token = tokenService.getToken("james");
-    tokenService.addUser("james", token, null);
+    tokenService.addUser("james", token);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0");
 
     // Then
     assertNotNull(read);
@@ -80,15 +80,15 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("john");
     users.add("mary");
-    String roomId = chatService.getTeamRoom("myteam", "john", null);
+    String roomId = chatService.getTeamRoom("myteam", "john");
 
-    userService.addTeamUsers(roomId, users, null);
+    userService.addTeamUsers(roomId, users);
 
     String token = tokenService.getToken("john");
-    tokenService.addUser("john", token, null);
+    tokenService.addUser("john", token);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null, "false", "0", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null, "false", "0");
 
     // Then
     assertNotNull(read);
@@ -104,14 +104,14 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("john");
     users.add("mary");
-    String roomId = chatService.getTeamRoom("myteam", "john", null);
+    String roomId = chatService.getTeamRoom("myteam", "john");
 
-    userService.addTeamUsers(roomId, users, null);
+    userService.addTeamUsers(roomId, users);
 
     String token = tokenService.getToken("james");
-    tokenService.addUser("james", token, null);
+    tokenService.addUser("james", token);
 
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0");
 
     assertNotNull(read);
     assertEquals(403, read.getCode());
@@ -130,16 +130,16 @@ public class ChatServerTest extends AbstractChatTestCase {
     mySpace.setGroupId("/spaces/myspace");
     mySpace.setDisplayName("My Space");
     mySpace.setRoom("myspace");
-    userService.setSpaces("john", Collections.singletonList(mySpace), null);
-    userService.setSpaces("mary", Collections.singletonList(mySpace), null);
+    userService.setSpaces("john", Collections.singletonList(mySpace));
+    userService.setSpaces("mary", Collections.singletonList(mySpace));
 
-    String roomId = chatService.getSpaceRoom("myspace", null);
+    String roomId = chatService.getSpaceRoom("myspace");
 
     String token = tokenService.getToken("john");
-    tokenService.addUser("john", token, null);
+    tokenService.addUser("john", token);
 
     // When
-    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0", null);
+    Response.Content read = chatServer.read("john", token, roomId, "1", null,"false", "0");
 
     // Then
     assertNotNull(read);
@@ -159,16 +159,16 @@ public class ChatServerTest extends AbstractChatTestCase {
     mySpace.setGroupId("/spaces/myspace");
     mySpace.setDisplayName("My Space");
     mySpace.setRoom("myspace");
-    userService.setSpaces("john", Collections.singletonList(mySpace), null);
-    userService.setSpaces("mary", Collections.singletonList(mySpace), null);
+    userService.setSpaces("john", Collections.singletonList(mySpace));
+    userService.setSpaces("mary", Collections.singletonList(mySpace));
 
-    String roomId = chatService.getSpaceRoom("myspace", null);
+    String roomId = chatService.getSpaceRoom("myspace");
 
     String token = tokenService.getToken("james");
-    tokenService.addUser("james", token, null);
+    tokenService.addUser("james", token);
 
     // When
-    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0", null);
+    Response.Content read = chatServer.read("james", token, roomId, "1", null,"false", "0");
 
     // Then
     assertNotNull(read);
@@ -185,26 +185,26 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String token = tokenService.getToken("john");
-    tokenService.addUser("john", token, null);
+    tokenService.addUser("john", token);
 
-    chatService.write("my message", "john", roomId, "false", null);
+    chatService.write("my message", "john", roomId, "false");
 
-    String jsonMessages = chatService.read("mary", roomId, null);
+    String jsonMessages = chatService.read("mary", roomId);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
     String messageId = (String) message.get("id");
 
     // When
-    Response.Content edit = chatServer.edit("john", token, roomId, messageId, "my new message", null);
+    Response.Content edit = chatServer.edit("john", token, roomId, messageId, "my new message");
 
     // Then
     assertNotNull(edit);
     assertEquals(200, edit.getCode());
-    MessageBean messageBean = chatService.getMessage(roomId, messageId, null);
+    MessageBean messageBean = chatService.getMessage(roomId, messageId);
     assertNotNull(messageBean);
     assertEquals("my new message", messageBean.getMessage());
   }
@@ -219,28 +219,28 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String tokenJohn = tokenService.getToken("john");
-    tokenService.addUser("john", tokenJohn, null);
+    tokenService.addUser("john", tokenJohn);
     String tokenJames = tokenService.getToken("james");
-    tokenService.addUser("james", tokenJames, null);
+    tokenService.addUser("james", tokenJames);
 
-    chatService.write("my message", "john", roomId, "false", null);
+    chatService.write("my message", "john", roomId, "false");
 
-    String jsonMessages = chatService.read("mary", roomId, null);
+    String jsonMessages = chatService.read("mary", roomId);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
     String messageId = (String) message.get("id");
 
     // When
-    Response.Content edit = chatServer.edit("james", tokenJames, roomId, messageId, "my new message", null);
+    Response.Content edit = chatServer.edit("james", tokenJames, roomId, messageId, "my new message");
 
     // Then
     assertNotNull(edit);
     assertEquals(404, edit.getCode());
-    MessageBean messageBean = chatService.getMessage(roomId, messageId, null);
+    MessageBean messageBean = chatService.getMessage(roomId, messageId);
     assertNotNull(messageBean);
     assertEquals("my message", messageBean.getMessage());
   }
@@ -255,26 +255,26 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String token = tokenService.getToken("john");
-    tokenService.addUser("john", token, null);
+    tokenService.addUser("john", token);
 
-    chatService.write("my message", "john", roomId, "false", null);
+    chatService.write("my message", "john", roomId, "false");
 
-    String jsonMessages = chatService.read("mary", roomId, null);
+    String jsonMessages = chatService.read("mary", roomId);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
     String messageId = (String) message.get("id");
 
     // When
-    Response.Content delete = chatServer.delete("john", token, roomId, messageId, null);
+    Response.Content delete = chatServer.delete("john", token, roomId, messageId);
 
     // Then
     assertNotNull(delete);
     assertEquals(200, delete.getCode());
-    MessageBean messageBean = chatService.getMessage(roomId, messageId, null);
+    MessageBean messageBean = chatService.getMessage(roomId, messageId);
     assertNotNull(messageBean);
     assertEquals(ChatService.TYPE_DELETED, messageBean.getMessage());
   }
@@ -289,28 +289,28 @@ public class ChatServerTest extends AbstractChatTestCase {
     List<String> users = new ArrayList<String>();
     users.add("mary");
     users.add("john");
-    String roomId = chatService.getRoom(users, null);
+    String roomId = chatService.getRoom(users);
 
     String tokenJohn = tokenService.getToken("john");
-    tokenService.addUser("john", tokenJohn, null);
+    tokenService.addUser("john", tokenJohn);
     String tokenJames = tokenService.getToken("james");
-    tokenService.addUser("james", tokenJames, null);
+    tokenService.addUser("james", tokenJames);
 
-    chatService.write("my message", "john", roomId, "false", null);
+    chatService.write("my message", "john", roomId, "false");
 
-    String jsonMessages = chatService.read("mary", roomId, null);
+    String jsonMessages = chatService.read("mary", roomId);
     JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonMessages);
     JSONArray messages = (JSONArray) jsonObject.get("messages");
     JSONObject message = (JSONObject) messages.get(0);
     String messageId = (String) message.get("id");
 
     // When
-    Response.Content delete = chatServer.delete("james", tokenJames, roomId, messageId, null);
+    Response.Content delete = chatServer.delete("james", tokenJames, roomId, messageId);
 
     // Then
     assertNotNull(delete);
     assertEquals(404, delete.getCode());
-    MessageBean messageBean = chatService.getMessage(roomId, messageId, null);
+    MessageBean messageBean = chatService.getMessage(roomId, messageId);
     assertNotNull(messageBean);
     assertEquals("my message", messageBean.getMessage());
   }
@@ -325,19 +325,19 @@ public class ChatServerTest extends AbstractChatTestCase {
     String benjamin = "benjamin";
     String john = "john";
     
-    userService.addUserFullName(benjamin, "Benjamin Paillereau", null);
-    userService.addUserFullName(john, "John Smith", null);
-    userService.toggleFavorite(benjamin, john, null);
+    userService.addUserFullName(benjamin, "Benjamin Paillereau");
+    userService.addUserFullName(john, "John Smith");
+    userService.toggleFavorite(benjamin, john);
 
     String tokenBen = tokenService.getToken(benjamin);
-    tokenService.addUser(benjamin, tokenBen, null);
+    tokenService.addUser(benjamin, tokenBen);
     
     String tokenJohn = tokenService.getToken(john);
-    tokenService.addUser(john, tokenJohn, null);
+    tokenService.addUser(john, tokenJohn);
   
     // When
-    Response.Content isFavoriteBen = chatServer.isFavorite(benjamin, tokenBen, john, null);
-    Response.Content isFavoriteJohn = chatServer.isFavorite(benjamin, tokenJohn, john, null);
+    Response.Content isFavoriteBen = chatServer.isFavorite(benjamin, tokenBen, john);
+    Response.Content isFavoriteJohn = chatServer.isFavorite(benjamin, tokenJohn, john);
     // Then
     assertNotNull(isFavoriteBen);
     assertEquals(200, isFavoriteBen.getCode());

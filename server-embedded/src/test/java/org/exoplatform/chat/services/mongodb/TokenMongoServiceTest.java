@@ -45,29 +45,29 @@ public class TokenMongoServiceTest extends AbstractChatTestCase {
     tokenService = ServiceBootstrap.getTokenService();
 
     // When
-    userService.addUserFullName("john", "jhon", null);
+    userService.addUserFullName("john", "jhon");
 
     List<String> onlineUsers = new ArrayList<String>();
 
     for (int i = 1; i <= 35; i++) {
       String userId = "john" + i;
-      userService.addUserFullName(userId, userId, null);
-      userService.setStatus(userId, UserService.STATUS_AVAILABLE, null);
+      userService.addUserFullName(userId, userId);
+      userService.setStatus(userId, UserService.STATUS_AVAILABLE);
 
       String tokenId = tokenService.getToken(userId);
-      tokenService.addUser(userId, tokenId, null);
+      tokenService.addUser(userId, tokenId);
 
       onlineUsers.add(userId);
 
       List<String> users = new ArrayList<String>();
       users.add("john");
       users.add(userId);
-      String roomId = chatService.getRoom(users, null);
-      chatService.write("foo", userId, roomId, "false", null);
+      String roomId = chatService.getRoom(users);
+      chatService.write("foo", userId, roomId, "false");
     }
 
     // Then
-    Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy("john", onlineUsers, null, true, true, false, 30);
+    Map<String, UserBean> availableUsers = tokenService.getActiveUsersFilterBy("john", onlineUsers, true, true, false, 30);
     assertEquals("should be 30",30, availableUsers.size());
   }
 }

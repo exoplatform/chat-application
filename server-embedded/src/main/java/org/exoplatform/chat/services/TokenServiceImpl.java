@@ -51,27 +51,22 @@ public class TokenServiceImpl implements TokenService
 
   public boolean hasUserWithToken(String user, String token)
   {
-    return hasUserWithToken(user, token, null);
+    return storage.hasUserWithToken(user, token);
   }
 
-  public boolean hasUserWithToken(String user, String token, String dbName)
+  public void addUser(String user, String token)
   {
-    return storage.hasUserWithToken(user, token, dbName);
+    storage.addUser(user, token);
   }
 
-  public void addUser(String user, String token, String dbName)
+  public void removeUserToken(String user, String token)
   {
-    storage.addUser(user, token, dbName);
+    storage.removeUserToken(user, token);
   }
 
-  public void removeUserToken(String user, String token, String dbName)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
-    storage.removeUserToken(user, token, dbName);
-  }
-
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
-  {
-    return storage.getActiveUsersFilterBy(user, limitUsers, dbName, withUsers, withPublic, isAdmin, limit);
+    return storage.getActiveUsersFilterBy(user, limitUsers, withUsers, withPublic, isAdmin, limit);
   }
 
   public boolean isDemoUser(String user)

@@ -39,13 +39,9 @@ import java.util.List;
 @Singleton
 public class NotificationMongoDataStorage implements NotificationDataStorage
 {
-  private DB db(String dbName)
+  private DB db()
   {
-    if (StringUtils.isEmpty(dbName)) {
-      return ConnectionManager.getInstance().getDB();
-    } else {
-      return ConnectionManager.getInstance().getDB(dbName);
-    }
+    return ConnectionManager.getInstance().getDB();
   }
 
   public static void cleanupNotifications()
@@ -63,18 +59,18 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
   }
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
-                              String content, String link, String dbName) {
-    addNotification(receiver, sender, type, category, categoryId, content, link, null, dbName);
+                              String content, String link) {
+    addNotification(receiver, sender, type, category, categoryId, content, link, null);
   }
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
-                              String content, String link, String options, String dbName) {
+                              String content, String link, String options) {
     // Do not set notification for some message type to avoid duplication with manual meeting (type-meeting-start, type-meeting-stop)
     if (options != null && (options.contains("call-on") || options.contains("call-off") || options.contains("call-proceed"))) {
       return;
     }
 
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject doc = new BasicDBObject();
 
     content = StringUtils.chomp(content);
@@ -107,23 +103,23 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
     coll.insert(doc);
   }
 
-  public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName)
+  public void setNotificationsAsRead(String user, String type, String category, String categoryId)
   {
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = buildQuery(user, type, category, categoryId);
     coll.remove(query);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String dbName) {
-    return getUnreadNotifications(user, userService, null, null, null, dbName);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService) {
+    return getUnreadNotifications(user, userService, null, null, null);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId, String dbName) {
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId) {
     List<NotificationBean> notifications = new ArrayList<NotificationBean>();
 
-    DBCursor cursor = find(user, type, category, categoryId, dbName);
+    DBCursor cursor = find(user, type, category, categoryId);
 
     while (cursor.hasNext())
     {
@@ -133,7 +129,7 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
       notificationBean.setUser(user);
       if (doc.containsField("from")) {
         notificationBean.setFrom(doc.get("from").toString());
-        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom(), dbName).getFullname());
+        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom()).getFullname());
       }
       notificationBean.setCategory(doc.get("category").toString());
       notificationBean.setCategoryId(doc.get("categoryId").toString());
@@ -143,7 +139,7 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
       {
         notificationBean.setOptions(doc.get("options").toString());
       }
-      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId(), dbName);
+      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
       notificationBean.setRoomType(roomBean.getType());
       if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
         notificationBean.setRoomDisplayName(roomBean.getFullName());
@@ -156,37 +152,37 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
     return notifications;
   }
 
-  public int getUnreadNotificationsTotal(String user, String dbName)
+  public int getUnreadNotificationsTotal(String user)
   {
-    return getUnreadNotificationsTotal(user, null, null, null, dbName);
+    return getUnreadNotificationsTotal(user, null, null, null);
   }
 
 
-  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName)
+  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
   {
-    DBCursor cursor = find(user, type, category, categoryId, dbName);
+    DBCursor cursor = find(user, type, category, categoryId);
     int total = cursor.size();
     return total;
   }
 
-  public int getNumberOfNotifications(String dbName)
+  public int getNumberOfNotifications()
   {
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
-  public int getNumberOfUnreadNotifications(String dbName)
+  public int getNumberOfUnreadNotifications()
   {
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();
   }
 
-  private DBCursor find(String user, String type, String category, String categoryId, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_NOTIFICATIONS);
+  private DBCursor find(String user, String type, String category, String categoryId) {
+    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
     BasicDBObject query = buildQuery(user, type, category, categoryId);
     return coll.find(query);
   }

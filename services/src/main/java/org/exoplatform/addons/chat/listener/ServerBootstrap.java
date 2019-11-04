@@ -49,53 +49,34 @@ public class ServerBootstrap {
 
   private static String    serverURI = null;
 
-  /**
-   * Get mongo database name for current tenant if on cloud environment
-   */
-  public static String getDBName() {
-    String dbName = "";
-    String prefixDB = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME);
-    ConversationState currentState = ConversationState.getCurrent();
-    if (currentState != null) {
-      dbName = (String) currentState.getAttribute("currentTenant");
-    }
-    if (StringUtils.isEmpty(dbName)) {
-      dbName = prefixDB;
-    } else {
-      StringBuilder sb = new StringBuilder().append(prefixDB).append("_").append(dbName);
-      dbName = sb.toString();
-    }
-    return dbName;
+  public static String getStatus(String username, String token, String targetUser) {
+    return callServer("getStatus", "user=" + username + "&targetUser=" + targetUser + "&token=" + token);
   }
 
-  public static String getStatus(String username, String token, String targetUser, String dbName) {
-    return callServer("getStatus", "user=" + username + "&targetUser=" + targetUser + "&token=" + token + "&dbName=" + dbName);
+  public static String getUsers(String username, String token, String room) {
+    return callServer("users", "user=" + username + "&room=" + room + "&token=" + token);
   }
 
-  public static String getUsers(String username, String token, String room, String dbName) {
-    return callServer("users", "user=" + username + "&dbName=" + dbName + "&room=" + room + "&token=" + token);
+  public static String getUserFullName(String username) {
+    return callServer("getUserFullName", "username=" + username);
   }
 
-  public static String getUserFullName(String username, String dbName) {
-    return callServer("getUserFullName", "username=" + username + "&dbName=" + dbName);
+  public static void addUser(String username, String token) {
+    postServer("addUser", "username=" + username + "&token=" + token);
   }
 
-  public static void addUser(String username, String token, String dbName) {
-    postServer("addUser", "username=" + username + "&token=" + token + "&dbName=" + dbName);
+  public static void logout(String username, String token, String sessionId, boolean uniqueSession) {
+    postServer("logout", "username=" + username + "&token=" + token + "&sessionId=" + sessionId + "&uniqueSession=" + uniqueSession);
   }
 
-  public static void logout(String username, String token, String sessionId, String dbName, boolean uniqueSession) {
-    postServer("logout", "username=" + username + "&token=" + token + "&sessionId=" + sessionId + "&dbName=" + dbName + "&uniqueSession=" + uniqueSession);
+  public static void setAsAdmin(String username, boolean isAdmin) {
+    postServer("setAsAdmin", "username=" + username + "&isAdmin=" + isAdmin);
   }
 
-  public static void setAsAdmin(String username, boolean isAdmin, String dbName) {
-    postServer("setAsAdmin", "username=" + username + "&isAdmin=" + isAdmin + "&dbName=" + dbName);
-  }
-
-  public static void addUserFullNameAndEmail(String username, String fullname, String email, String dbName) {
+  public static void addUserFullNameAndEmail(String username, String fullname, String email) {
     try {
       postServer("addUserFullNameAndEmail",
-                 "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email + "&dbName=" + dbName);
+                 "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email);
     } catch (IOException e) {
       LOG.error("Error while updating user information for user {} [ {} ]", username, email, e);
     }
@@ -108,7 +89,7 @@ public class ServerBootstrap {
     return token;
   }
 
-  public static void saveSpaces(String username, String dbName) {
+  public static void saveSpaces(String username) {
     try {
       SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
       ListAccess<Space> spacesListAccess = spaceService.getAccessibleSpacesWithListAccess(username);
@@ -122,13 +103,13 @@ public class ServerBootstrap {
         spaceBean.setShortName(space.getShortName());
         beans.add(spaceBean);
       }
-      setSpaces(username, new SpaceBeans(beans), dbName);
+      setSpaces(username, new SpaceBeans(beans));
     } catch (Exception e) {
       LOG.warn("Error while initializing spaces of User '" + username + "'", e);
     }
   }
 
-  public static void setSpaces(String username, SpaceBeans beans, String dbName) {
+  public static void setSpaces(String username, SpaceBeans beans) {
     String params = "username=" + username;
     String serSpaces = "";
     try {
@@ -138,7 +119,6 @@ public class ServerBootstrap {
       LOG.error("Error encoding spaces", e);
     }
     params += "&spaces=" + serSpaces;
-    params += "&dbName=" + dbName;
     postServer("setSpaces", params);
   }
 

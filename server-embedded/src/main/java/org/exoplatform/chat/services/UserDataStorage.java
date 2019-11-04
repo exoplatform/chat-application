@@ -26,9 +26,9 @@ public interface UserDataStorage {
   public static final String ROOM_NOTIF_TRIGGER_WHEN_KEY_WORD = "keywords";
   public static final String NOTIFICATIONS_SETTINGS = "notificationsSettings";
 
-  void addFavorite(String user, String targetUser, String dbName);
+  void addFavorite(String user, String targetUser);
 
-  void removeFavorite(String user, String targetUser, String dbName);
+  void removeFavorite(String user, String targetUser);
 
   /*
     * This methode is responsible for setting a notification channel for a specific user
@@ -37,7 +37,7 @@ public interface UserDataStorage {
     *  -desktop
     *  -bip
     */
-  void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
+  void setPreferredNotification(String user, String notifManner) throws Exception;
 
   /*
     * This methode is responsible for setting a notification triggers for a specific user
@@ -46,7 +46,7 @@ public interface UserDataStorage {
     *  -even-on-do-not-disturb
     *
     */
-  void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;
+  void setNotificationTrigger(String user, String notifCond) throws Exception;
 
   /*
     * This methode is responsible for setting a notification triggers for a specific user in a specific room
@@ -55,50 +55,50 @@ public interface UserDataStorage {
     *  -key-words
     *
     */
-  void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, String dbName, long time) throws Exception;
+  void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, long time) throws Exception;
 
   /*
     * This methode is responsible for getting all desktop settings in a single object
     */
-  NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException;
+  NotificationSettingsBean getUserDesktopNotificationSettings(String user) throws JSONException;
 
-  boolean isFavorite(String user, String targetUser, String dbName);
+  boolean isFavorite(String user, String targetUser);
 
-  void addUserFullName(String user, String fullname, String dbName);
+  void addUserFullName(String user, String fullname);
 
-  void addUserEmail(String user, String email, String dbName);
+  void addUserEmail(String user, String email);
 
-  void setSpaces(String user, List<SpaceBean> spaces, String dbName);
+  void setSpaces(String user, List<SpaceBean> spaces);
 
-  void addTeamRoom(String user, String teamRoomId, String dbName);
+  void addTeamRoom(String user, String teamRoomId);
 
-  void removeTeamUsers(String teamRoomId, List<String> users, String dbName);
+  void removeTeamUsers(String teamRoomId, List<String> users);
 
-  List<RoomBean> getTeams(String user, String dbName);
+  List<RoomBean> getTeams(String user);
 
-  RoomBean getRoom(String user, String roomId, String dbName);
+  RoomBean getRoom(String user, String roomId);
 
-  List<SpaceBean> getSpaces(String user, String dbName);
+  List<SpaceBean> getSpaces(String user);
 
-  List<UserBean> getUsers(String roomId, String filter, int limit, String dbName);
+  List<UserBean> getUsers(String roomId, String filter, int limit);
 
-  List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
+  List<UserBean> getUsersInRoomChatOneToOne(String roomId);
 
-  String setStatus(String user, String status, String dbName);
+  String setStatus(String user, String status);
 
-  void setAsAdmin(String user, boolean isAdmin, String dbName);
+  void setAsAdmin(String user, boolean isAdmin);
 
-  boolean isAdmin(String user, String dbName);
+  boolean isAdmin(String user);
 
-  String getStatus(String user, String dbName);
+  String getStatus(String user);
 
-  String getUserFullName(String user, String dbName);
+  String getUserFullName(String user);
 
-  UserBean getUser(String user, String dbName);
+  UserBean getUser(String user);
 
-  UserBean getUser(String user, boolean withFavorites, String dbName);
+  UserBean getUser(String user, boolean withFavorites);
 
-  List<String> getUsersFilterBy(String user, String room, String type, String dbName);
+  List<String> getUsersFilterBy(String user, String room, String type);
 
-  int getNumberOfUsers(String dbName);
+  int getNumberOfUsers();
 }
