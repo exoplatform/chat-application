@@ -63,7 +63,6 @@ export default {
       /**
        * chatPage: {String}
        * cometdToken: {String}
-       * dbName: {String}
        * fullName: {String}
        * isOnline: {Boolean}
        * maxUploadSize: {Number}

@@ -47,58 +47,58 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
   private NotificationDataStorage storage;
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
-                              String content, String link, String dbName) {
-    storage.addNotification(receiver, sender, type, category, categoryId, content, link, null, dbName);
+                              String content, String link) {
+    storage.addNotification(receiver, sender, type, category, categoryId, content, link, null);
   }
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
-                              String content, String link, String options, String dbName) {
-    storage.addNotification(receiver, sender, type, category, categoryId, content, link, options, dbName);
+                              String content, String link, String options) {
+    storage.addNotification(receiver, sender, type, category, categoryId, content, link, options);
 
-    sendNotification(receiver, dbName);
+    sendNotification(receiver);
   }
 
-  public void setNotificationsAsRead(String user, String type, String category, String categoryId, String dbName)
+  public void setNotificationsAsRead(String user, String type, String category, String categoryId)
   {
-    storage.setNotificationsAsRead(user, type, category, categoryId, dbName);
+    storage.setNotificationsAsRead(user, type, category, categoryId);
 
-    sendNotification(user, dbName);
+    sendNotification(user);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String dbName) {
-    return getUnreadNotifications(user, userService, null, null, null, dbName);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService) {
+    return getUnreadNotifications(user, userService, null, null, null);
   }
 
   @Override
-  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId, String dbName) {
-    return storage.getUnreadNotifications(user, userService, type, category, categoryId, dbName);
+  public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId) {
+    return storage.getUnreadNotifications(user, userService, type, category, categoryId);
   }
 
-  public int getUnreadNotificationsTotal(String user, String dbName)
+  public int getUnreadNotificationsTotal(String user)
   {
-    return getUnreadNotificationsTotal(user, null, null, null, dbName);
+    return getUnreadNotificationsTotal(user, null, null, null);
   }
 
 
-  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId, String dbName)
+  public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
   {
-    return storage.getUnreadNotificationsTotal(user, type, category, categoryId, dbName);
+    return storage.getUnreadNotificationsTotal(user, type, category, categoryId);
   }
 
-  public int getNumberOfNotifications(String dbName)
+  public int getNumberOfNotifications()
   {
-    return storage.getNumberOfNotifications(dbName);
+    return storage.getNumberOfNotifications();
   }
 
-  public int getNumberOfUnreadNotifications(String dbName)
+  public int getNumberOfUnreadNotifications()
   {
-    return storage.getNumberOfUnreadNotifications(dbName);
+    return storage.getNumberOfUnreadNotifications();
   }
 
-  private void sendNotification(String receiver, String dbName) {
+  private void sendNotification(String receiver) {
     Map<String, Object> data = new HashMap<>();
-    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver, dbName));
+    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver));
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(

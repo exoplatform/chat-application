@@ -52,23 +52,23 @@ public class ChatServiceImpl implements ChatService
   @Inject
   private RealTimeMessageService realTimeMessageService;
 
-  public void write(String message, String user, String room, String isSystem, String dbName)
+  public void write(String message, String user, String room, String isSystem)
   {
-    write(null, message, user, room, isSystem, null, dbName);
+    write(null, message, user, room, isSystem, null);
   }
 
   @SuppressWarnings("unchecked")
-  public void write(String clientId, String message, String sender, String room, String isSystem, String options, String dbName)
+  public void write(String clientId, String message, String sender, String room, String isSystem, String options)
   {
-    if (!isMemberOfRoom(sender, room, dbName)) {
+    if (!isMemberOfRoom(sender, room)) {
       throw new ChatException(403, "Petit malin !");
     }
 
     if (isSystem == null) isSystem = "false";
 
-    String msgId = chatStorage.save(message, sender, room, isSystem, options, dbName);
+    String msgId = chatStorage.save(message, sender, room, isSystem, options);
 
-    RoomBean roomBean = userService.getRoom(sender, room, dbName);
+    RoomBean roomBean = userService.getRoom(sender, room);
     String roomType = roomBean.getType();
     if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType))
     {
@@ -77,11 +77,11 @@ public class ChatServiceImpl implements ChatService
         usersToBeNotified = new ArrayList<>();//Collections.singletonList(sender);
         usersToBeNotified.add(roomBean.getUser());
       } else {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType);
       }
 
-      MessageBean msg = chatStorage.getMessage(room, msgId, dbName);
-      UserBean user = userService.getUser(sender, dbName);
+      MessageBean msg = chatStorage.getMessage(room, msgId);
+      UserBean user = userService.getUser(sender);
       msg.setFullName(user.getFullname());
 
       JSONObject data = msg.toJSONObject();
@@ -117,34 +117,34 @@ public class ChatServiceImpl implements ChatService
       for (String receiver: usersToBeNotified) {
         if (!StringUtils.equals(receiver, sender)) {
           notificationService.addNotification(receiver, sender, "chat", "room", room, content,
-                                              intranetPage + "?room=" + room, options, dbName);
+                                              intranetPage + "?room=" + room, options);
         }
       }
-      notificationService.setNotificationsAsRead(sender, "chat", "room", room, dbName);
+      notificationService.setNotificationsAsRead(sender, "chat", "room", room);
     }
   }
 
-  public String save(String message, String user, String room, String isSystem, String options, String dbName) {
-    return chatStorage.save(message, user, room, isSystem, options, dbName);
+  public String save(String message, String user, String room, String isSystem, String options) {
+    return chatStorage.save(message, user, room, isSystem, options);
   }
 
-  public void delete(String room, String sender, String messageId, String dbName)
+  public void delete(String room, String sender, String messageId)
   {
-    chatStorage.delete(room, sender, messageId, dbName);
+    chatStorage.delete(room, sender, messageId);
 
-    String roomType = getTypeRoomChat(room, dbName);
+    String roomType = getTypeRoomChat(room);
 
     if (!roomType.equals("e")) {
       Set<String> usersToBeNotified = new HashSet<>();
       if (roomType.equals("s")) {
-        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE, dbName));
+        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_SPACE));
       } else if (roomType.equals("t")) {
-        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM, dbName));
+        usersToBeNotified = new HashSet<>(userService.getUsersFilterBy(sender, room, ChatService.TYPE_ROOM_TEAM));
       } else {
-        UserBean userBean = userService.getUser(room, dbName);
+        UserBean userBean = userService.getUser(room);
         String username = userBean.getName();
         if (username == null) {
-          List<UserBean> users = userService.getUsersInRoomChatOneToOne(room, dbName);
+          List<UserBean> users = userService.getUsersInRoomChatOneToOne(room);
           for (UserBean targetUserBean : users) {
             usersToBeNotified.add(targetUserBean.getName());
           }
@@ -152,7 +152,7 @@ public class ChatServiceImpl implements ChatService
       }
       usersToBeNotified.add(sender);
 
-      MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
+      MessageBean msg = chatStorage.getMessage(room, messageId);
 
       // Deliver the saved message to sender's subscribed channel itself.
       RealTimeMessageBean messageBean = new RealTimeMessageBean(
@@ -165,19 +165,19 @@ public class ChatServiceImpl implements ChatService
     }
   }
 
-  public RoomBean getTeamRoomById(String roomId, String dbName) {
-    return chatStorage.getTeamRoomById(roomId, dbName);
+  public RoomBean getTeamRoomById(String roomId) {
+    return chatStorage.getTeamRoomById(roomId);
   }
 
   @Override
-  public List<RoomBean> getTeamRoomsByName(String teamName, String dbName) {
-    return chatStorage.getTeamRoomByName(teamName, dbName);
+  public List<RoomBean> getTeamRoomsByName(String teamName) {
+    return chatStorage.getTeamRoomByName(teamName);
   }
 
-  public void deleteTeamRoom(String room, String user, String dbName) {
-    List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM, dbName);
+  public void deleteTeamRoom(String room, String user) {
+    List<String> usersToBeNotified = userService.getUsersFilterBy(user, room, ChatService.TYPE_ROOM_TEAM);
 
-    chatStorage.deleteTeamRoom(room, user, dbName);
+    chatStorage.deleteTeamRoom(room, user);
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
@@ -190,11 +190,11 @@ public class ChatServiceImpl implements ChatService
     realTimeMessageService.sendMessage(messageBean, usersToBeNotified);
   }
 
-  public void edit(String room, String sender, String messageId, String message, String dbName)
+  public void edit(String room, String sender, String messageId, String message)
   {
-    chatStorage.edit(room, sender, messageId, message, dbName);
+    chatStorage.edit(room, sender, messageId, message);
 
-    RoomBean roomBean = userService.getRoom(sender, room, dbName);
+    RoomBean roomBean = userService.getRoom(sender, room);
     String roomType = roomBean.getType();
 
     if (!ChatService.TYPE_ROOM_EXTERNAL.equals(roomType)) {
@@ -202,11 +202,11 @@ public class ChatServiceImpl implements ChatService
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         usersToBeNotified.add(roomBean.getUser());
       } else {
-        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType, dbName);
+        usersToBeNotified = userService.getUsersFilterBy(sender, room, roomType);
       }
 
-      MessageBean msg = chatStorage.getMessage(room, messageId, dbName);
-      UserBean user = userService.getUser(sender, dbName);
+      MessageBean msg = chatStorage.getMessage(room, messageId);
+      UserBean user = userService.getUser(sender);
       msg.setFullName(user.getFullname());
 
       // Deliver the saved message to sender's subscribed channel itself.
@@ -221,56 +221,56 @@ public class ChatServiceImpl implements ChatService
     }
   }
 
-  public String read(String user, String room, String dbName)
+  public String read(String user, String room)
   {
-    return read(user, room, false, null, null, 0, dbName);
+    return read(user, room, false, null, null, 0);
   }
 
   @Override
-  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, String dbName)
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp)
   {
-    return read(user, room, isTextOnly, fromTimestamp, null, 0, dbName);
+    return read(user, room, isTextOnly, fromTimestamp, null, 0);
   }
 
   @Override
-  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limit, String dbName) {
+  public String read(String user, String room, boolean isTextOnly, Long fromTimestamp, Long toTimestamp, int limit) {
     // Only members of the room can view the messages
-    if (!isMemberOfRoom(user, room, dbName)) {
+    if (!isMemberOfRoom(user, room)) {
       throw new ChatException(403, "Petit malin !");
     }
 
-    return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, dbName, limit);
+    return chatStorage.read(room, isTextOnly, fromTimestamp, toTimestamp, limit);
   }
 
-  public MessageBean getMessage(String roomId, String messageId, String dbName) {
-    return chatStorage.getMessage(roomId, messageId, dbName);
+  public MessageBean getMessage(String roomId, String messageId) {
+    return chatStorage.getMessage(roomId, messageId);
   }
 
-  public String getSpaceRoom(String space, String dbName)
+  public String getSpaceRoom(String space)
   {
-    return chatStorage.getSpaceRoom(space, dbName);
+    return chatStorage.getSpaceRoom(space);
   }
 
-  public String getSpaceRoomByName(String name, String dbName) {
-    return chatStorage.getSpaceRoomByName(name, dbName);
+  public String getSpaceRoomByName(String name) {
+    return chatStorage.getSpaceRoomByName(name);
   }
 
-  public String getTeamRoom(String team, String user, String dbName) {
-    return chatStorage.getTeamRoom(team, user, dbName);
+  public String getTeamRoom(String team, String user) {
+    return chatStorage.getTeamRoom(team, user);
   }
 
-  public String getExternalRoom(String identifier, String dbName) {
-    return chatStorage.getExternalRoom(identifier, dbName);
+  public String getExternalRoom(String identifier) {
+    return chatStorage.getExternalRoom(identifier);
   }
 
-  public String getTeamCreator(String room, String dbName) {
-    return chatStorage.getTeamCreator(room, dbName);
+  public String getTeamCreator(String room) {
+    return chatStorage.getTeamCreator(room);
   }
 
-  public void setRoomName(String room, String name, String dbName) {
-    chatStorage.setRoomName(room, name, dbName);
+  public void setRoomName(String room, String name) {
+    chatStorage.setRoomName(room, name);
 
-    List<String> users = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM, dbName);
+    List<String> users = userService.getUsersFilterBy(null, room, ChatService.TYPE_ROOM_TEAM);
     JSONObject data = new JSONObject();
     data.put("title", name);
     JSONArray array = new JSONArray();
@@ -287,37 +287,37 @@ public class ChatServiceImpl implements ChatService
     }
   }
 
-  public String getRoom(List<String> users, String dbName)
+  public String getRoom(List<String> users)
   {
-    return chatStorage.getRoom(users, dbName);
+    return chatStorage.getRoom(users);
   }
 
-  public String getTypeRoomChat(String roomId, String dbName){
-    return chatStorage.getTypeRoomChat(roomId, dbName);
+  public String getTypeRoomChat(String roomId){
+    return chatStorage.getTypeRoomChat(roomId);
   }
 
-  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName)
+  public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService)
   {
-    return chatStorage.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService, dbName);
+    return chatStorage.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
   }
 
-  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, TokenService tokenService, String dbName) {
-    return getRooms(user, new ArrayList<>(), filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, tokenService, dbName);
+  public RoomsBean getRooms(String user, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, NotificationService notificationService, TokenService tokenService) {
+    return getRooms(user, new ArrayList<>(), filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, 0, notificationService, tokenService);
   }
 
-  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService, String dbName)
+  public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService)
   {
-    return chatStorage.getRooms(user, onlineUsers, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, tokenService, dbName);
+    return chatStorage.getRooms(user, onlineUsers, filter, withUsers, withSpaces, withPublic, withOffline, isAdmin, limit, notificationService, tokenService);
   }
 
-  public int getNumberOfRooms(String dbName)
+  public int getNumberOfRooms()
   {
-    return chatStorage.getNumberOfRooms(dbName);
+    return chatStorage.getNumberOfRooms();
   }
 
-  public int getNumberOfMessages(String dbName)
+  public int getNumberOfMessages()
   {
-    return chatStorage.getNumberOfMessages(dbName);
+    return chatStorage.getNumberOfMessages();
   }
 
 
@@ -325,23 +325,22 @@ public class ChatServiceImpl implements ChatService
    * Check if an user is member of a room
    * @param username Username of the user
    * @param roomId Id of the room
-   * @param dbName Databse name
    * @return true if the user is member of the room
    */
-  private boolean isMemberOfRoom(String username, String roomId, String dbName) {
+  private boolean isMemberOfRoom(String username, String roomId) {
     List<String> roomMembers;
-    RoomBean room = userService.getRoom(username, roomId, dbName);
+    RoomBean room = userService.getRoom(username, roomId);
     if(room == null) {
       LOG.warning("Cannot check if user " + username + " is member of room " + roomId + " since the room does not exist.");
       return false;
     }
     if (room.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
-      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, dbName);
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM);
     } else if(room.getType().equals(ChatService.TYPE_ROOM_SPACE)) {
-      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE, dbName);
+      roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE);
     } else {
       roomMembers = new ArrayList<>();
-      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId, dbName);
+      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId);
       if(userBeans != null) {
         for (UserBean userBean : userBeans) {
           roomMembers.add(userBean.getName());

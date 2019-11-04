@@ -44,17 +44,17 @@ public class UserServiceImpl implements UserService {
   @Inject
   private RealTimeMessageService realTimeMessageService;
 
-  public void toggleFavorite(String user, String targetUser, String dbName) {
-    if (isFavorite(user, targetUser, dbName)) {
-      removeFavorite(user, targetUser, dbName);
+  public void toggleFavorite(String user, String targetUser) {
+    if (isFavorite(user, targetUser)) {
+      removeFavorite(user, targetUser);
     } else {
-      addFavorite(user, targetUser, dbName);
+      addFavorite(user, targetUser);
     }
   }
 
   @Override
-  public void addFavorite(String user, String room, String dbname) {
-    userStorage.addFavorite(user, room, dbname);
+  public void addFavorite(String user, String room) {
+    userStorage.addFavorite(user, room);
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
@@ -67,8 +67,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void removeFavorite(String user, String room, String dbName) {
-    userStorage.removeFavorite(user, room, dbName);
+  public void removeFavorite(String user, String room) {
+    userStorage.removeFavorite(user, room);
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
@@ -87,8 +87,8 @@ public class UserServiceImpl implements UserService {
    *  -desktop
    *  -bip
    */
-  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception {
-    userStorage.setPreferredNotification(user, notifManner, dbName);
+  public void setPreferredNotification(String user, String notifManner) throws Exception {
+    userStorage.setPreferredNotification(user, notifManner);
   }
 
   /**
@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService {
    *  -even-on-do-not-disturb
    *
    */
-  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
-    userStorage.setNotificationTrigger(user, notifCond, dbName);
+  public void setNotificationTrigger(String user, String notifCond) throws Exception {
+    userStorage.setNotificationTrigger(user, notifCond);
   }
 
   /**
@@ -109,38 +109,38 @@ public class UserServiceImpl implements UserService {
    *  -key-words
    *
    */
-  public void setRoomNotificationTrigger(String user, String room, String notifCondition, String notifConditionType, String dbName, long time) throws Exception {
-    userStorage.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, dbName, time);
+  public void setRoomNotificationTrigger(String user, String room, String notifCondition, String notifConditionType, long time) throws Exception {
+    userStorage.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, time);
   }
 
   /*
   * This method is responsible for getting all desktop settings in a single object
   */
-  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
-    return userStorage.getUserDesktopNotificationSettings(user, dbName);
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user) throws JSONException {
+    return userStorage.getUserDesktopNotificationSettings(user);
   }
 
-  public boolean isFavorite(String user, String targetUser, String dbName) {
-    return userStorage.isFavorite(user, targetUser, dbName);
+  public boolean isFavorite(String user, String targetUser) {
+    return userStorage.isFavorite(user, targetUser);
   }
 
-  public void addUserFullName(String user, String fullname, String dbName) {
-    userStorage.addUserFullName(user, fullname, dbName);
+  public void addUserFullName(String user, String fullname) {
+    userStorage.addUserFullName(user, fullname);
   }
 
-  public void addUserEmail(String user, String email, String dbName) {
-    userStorage.addUserEmail(user, email, dbName);
+  public void addUserEmail(String user, String email) {
+    userStorage.addUserEmail(user, email);
   }
 
-  public void setSpaces(String user, List<SpaceBean> spaces, String dbName) {
-    userStorage.setSpaces(user, spaces, dbName);
+  public void setSpaces(String user, List<SpaceBean> spaces) {
+    userStorage.setSpaces(user, spaces);
   }
 
-  public void addTeamRoom(String user, String teamRoomId, String dbName) {
-    userStorage.addTeamRoom(user, teamRoomId, dbName);
+  public void addTeamRoom(String user, String teamRoomId) {
+    userStorage.addTeamRoom(user, teamRoomId);
 
     // Send a websocket message of type 'room-member-joined' to the new room member
-    JSONObject data = getRoom(user, teamRoomId, dbName).toJSONObject();
+    JSONObject data = getRoom(user, teamRoomId).toJSONObject();
     RealTimeMessageBean joinRoomMessage = new RealTimeMessageBean(
         RealTimeMessageBean.EventType.ROOM_MEMBER_JOIN,
         teamRoomId,
@@ -150,79 +150,79 @@ public class UserServiceImpl implements UserService {
     realTimeMessageService.sendMessage(joinRoomMessage, user);
   }
 
-  public void addTeamUsers(String teamRoomId, List<String> users, String dbName) {
+  public void addTeamUsers(String teamRoomId, List<String> users) {
     for (String user:users) {
-      this.addTeamRoom(user, teamRoomId, dbName);
+      this.addTeamRoom(user, teamRoomId);
     }
   }
 
-  public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
-    userStorage.removeTeamUsers(teamRoomId, users, dbName);
+  public void removeTeamUsers(String teamRoomId, List<String> users) {
+    userStorage.removeTeamUsers(teamRoomId, users);
   }
 
-  public List<RoomBean> getTeams(String user, String dbName) {
-    return userStorage.getTeams(user, dbName);
+  public List<RoomBean> getTeams(String user) {
+    return userStorage.getTeams(user);
   }
 
-  public RoomBean getRoom(String user, String roomId, String dbName) {
-    return userStorage.getRoom(user, roomId, dbName);
+  public RoomBean getRoom(String user, String roomId) {
+    return userStorage.getRoom(user, roomId);
   }
 
-  public List<SpaceBean> getSpaces(String user, String dbName) {
-    return userStorage.getSpaces(user, dbName);
+  public List<SpaceBean> getSpaces(String user) {
+    return userStorage.getSpaces(user);
   }
 
-  public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName) {
-    return userStorage.getUsersInRoomChatOneToOne(roomId, dbName);
+  public List<UserBean> getUsersInRoomChatOneToOne(String roomId) {
+    return userStorage.getUsersInRoomChatOneToOne(roomId);
   }
 
-  public List<UserBean> getUsers(String roomId, String dbName) {
-    return userStorage.getUsers(roomId, null, 0, dbName);
+  public List<UserBean> getUsers(String roomId) {
+    return userStorage.getUsers(roomId, null, 0);
   }
 
-  public List<UserBean> getUsers(String filter, boolean fullBean, String dbName) {
-    return userStorage.getUsers(null, filter, 0, dbName);
+  public List<UserBean> getUsers(String filter, boolean fullBean) {
+    return userStorage.getUsers(null, filter, 0);
   }
 
-  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName) {
-    return userStorage.getUsers(roomId, filter, limit, dbName);
+  public List<UserBean> getUsers(String roomId, String filter, int limit) {
+    return userStorage.getUsers(roomId, filter, limit);
   }
 
-  public String setStatus(String user, String status, String dbName) {
-    return userStorage.setStatus(user, status, dbName);
+  public String setStatus(String user, String status) {
+    return userStorage.setStatus(user, status);
   }
 
-  public void setAsAdmin(String user, boolean isAdmin, String dbName) {
-    userStorage.setAsAdmin(user, isAdmin, dbName);
+  public void setAsAdmin(String user, boolean isAdmin) {
+    userStorage.setAsAdmin(user, isAdmin);
   }
 
-  public boolean isAdmin(String user, String dbName) {
-    return userStorage.isAdmin(user, dbName);
+  public boolean isAdmin(String user) {
+    return userStorage.isAdmin(user);
   }
 
-  public String getStatus(String user, String dbName) {
-    return userStorage.getStatus(user, dbName);
+  public String getStatus(String user) {
+    return userStorage.getStatus(user);
   }
 
-  public String getUserFullName(String user, String dbName)
+  public String getUserFullName(String user)
   {
-    return userStorage.getUserFullName(user, dbName);
+    return userStorage.getUserFullName(user);
   }
 
-  public UserBean getUser(String user, String dbName)
+  public UserBean getUser(String user)
   {
-    return getUser(user, false, dbName);
+    return getUser(user, false);
   }
 
-  public UserBean getUser(String user, boolean withFavorites, String dbName) {
-    return userStorage.getUser(user, withFavorites, dbName);
+  public UserBean getUser(String user, boolean withFavorites) {
+    return userStorage.getUser(user, withFavorites);
   }
 
-  public List<String> getUsersFilterBy(String user, String room, String type, String dbName) {
-    return userStorage.getUsersFilterBy(user, room, type, dbName);
+  public List<String> getUsersFilterBy(String user, String room, String type) {
+    return userStorage.getUsersFilterBy(user, room, type);
   }
 
-  public int getNumberOfUsers(String dbName) {
-    return userStorage.getNumberOfUsers(dbName);
+  public int getNumberOfUsers() {
+    return userStorage.getNumberOfUsers();
   }
 }

@@ -26,11 +26,11 @@ import java.util.Map;
 
 public interface TokenStorage
 {
-  boolean hasUserWithToken(String user, String token, String dbName);
+  boolean hasUserWithToken(String user, String token);
 
-  void addUser(String user, String token, String dbName);
+  void addUser(String user, String token);
 
-  void removeUserToken(String user, String token, String dbName);
+  void removeUserToken(String user, String token);
 
-  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
+  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 }

@@ -97,7 +97,7 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
 
   private void saveSpaces(String username) {
     if (StringUtils.isNotBlank(username)) {
-      ServerBootstrap.saveSpaces(username, ServerBootstrap.getDBName());
+      ServerBootstrap.saveSpaces(username);
     }
   }
 }

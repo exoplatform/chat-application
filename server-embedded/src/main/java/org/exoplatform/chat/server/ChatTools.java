@@ -67,14 +67,14 @@ public class ChatTools
 
   @Resource
   @Route("/addUser")
-  public Response.Content addUser(String username, String token, String passphrase, String dbName)
+  public Response.Content addUser(String username, String token, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    tokenService.addUser(username, token, dbName);
+    tokenService.addUser(username, token);
 
     return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
@@ -82,7 +82,7 @@ public class ChatTools
   @SuppressWarnings("unchecked")
   @Resource
   @Route("/logout")
-  public Response.Content logout(String username, String token, String sessionId, String passphrase, String dbName, String uniqueSession)
+  public Response.Content logout(String username, String token, String sessionId, String passphrase, String uniqueSession)
   {
     if (!checkPassphrase(passphrase)) {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
@@ -116,30 +116,30 @@ public class ChatTools
 
   @Resource
   @Route("/setAsAdmin")
-  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase, String dbName)
+  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    userService.setAsAdmin(username, "true".equals(isAdmin), dbName);
+    userService.setAsAdmin(username, "true".equals(isAdmin));
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/addUserFullNameAndEmail")
-  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase, String dbName)
+  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
     try {
-      userService.addUserEmail(username, email, dbName);
+      userService.addUserEmail(username, email);
       fullname = (String)ChatUtils.fromString(fullname);
-      userService.addUserFullName(username, fullname, dbName);
+      userService.addUserFullName(username, fullname);
     } catch (Exception e) {
       LOG.info("fullname wasn't serialized : " + e.getMessage());
     }
@@ -149,7 +149,7 @@ public class ChatTools
 
   @Resource
   @Route("/setSpaces")
-  public Response.Content setSpaces(String username, String spaces, String passphrase, String dbName)
+  public Response.Content setSpaces(String username, String spaces, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -158,7 +158,7 @@ public class ChatTools
 
     try {
       SpaceBeans spaceBeans = (SpaceBeans)ChatUtils.fromString(spaces);
-      userService.setSpaces(username, spaceBeans.getSpaces(), dbName);
+      userService.setSpaces(username, spaceBeans.getSpaces());
     } catch (IOException e) {
       LOG.warning(e.getMessage());
     } catch (ClassNotFoundException e) {
@@ -170,21 +170,21 @@ public class ChatTools
 
   @Resource
   @Route("/getUserFullName")
-  public Response.Content getUserFullName(String username, String passphrase, String dbName)
+  public Response.Content getUserFullName(String username, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
       return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
     }
 
-    String fullname = userService.getUserFullName(username, dbName);
+    String fullname = userService.getUserFullName(username);
 
     return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
   @Route("/updateUnreadTestMessages")
-  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase, String dbName)
+  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase)
   {
     if (!checkPassphrase(passphrase))
     {
@@ -205,9 +205,9 @@ public class ChatTools
       return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
 
     if (!room.equals("ALL"))
-      notificationService.setNotificationsAsRead(username, "chat", "room", room, dbName);
+      notificationService.setNotificationsAsRead(username, "chat", "room", room);
     else
-      notificationService.setNotificationsAsRead(username, null, null, null, dbName);
+      notificationService.setNotificationsAsRead(username, null, null, null);
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }

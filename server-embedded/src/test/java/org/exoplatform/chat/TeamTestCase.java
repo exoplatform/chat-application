@@ -22,12 +22,12 @@ public class TeamTestCase extends AbstractChatTestCase
   {
     ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
     ConnectionManager.getInstance().getDB().getCollection(ChatMongoDataStorage.M_ROOMS_COLLECTION).drop();
-    ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau", null);
-    ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com", null);
-    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
-    ServiceBootstrap.getUserService().addUserEmail("john", "john@exoplatform.com", null);
-    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams", null);
-    ServiceBootstrap.getUserService().addUserEmail("mary", "mary@exoplatform.com", null);
+    ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com");
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
+    ServiceBootstrap.getUserService().addUserEmail("john", "john@exoplatform.com");
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
+    ServiceBootstrap.getUserService().addUserEmail("mary", "mary@exoplatform.com");
   }
 
   @Test
@@ -37,16 +37,16 @@ public class TeamTestCase extends AbstractChatTestCase
     String user = "benjamin";
     String user2 = "john";
 
-    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
-    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user, null);
-    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2, null);
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2);
 
     assertNotEquals(room1, room2);
     assertNotEquals(room1, room3);
 
-    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1, null));
-    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room2, null));
-    assertEquals(user2, ServiceBootstrap.getChatService().getTeamCreator(room3, null));
+    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1));
+    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room2));
+    assertEquals(user2, ServiceBootstrap.getChatService().getTeamCreator(room3));
 
   }
 
@@ -57,16 +57,16 @@ public class TeamTestCase extends AbstractChatTestCase
     String user = "benjamin";
     String user2 = "john";
 
-    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
-    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user, null);
-    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2, null);
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2);
 
     assertNotEquals(room1, room2);
     assertNotEquals(room1, room3);
 
-    assertEquals(2, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team", null).size());
-    assertEquals(1, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team 2", null).size());
-    assertEquals(0, ServiceBootstrap.getChatService().getTeamRoomsByName("Not existing room", null).size());
+    assertEquals(2, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team").size());
+    assertEquals(1, ServiceBootstrap.getChatService().getTeamRoomsByName("My VIP Team 2").size());
+    assertEquals(0, ServiceBootstrap.getChatService().getTeamRoomsByName("Not existing room").size());
 
   }
 
@@ -78,17 +78,17 @@ public class TeamTestCase extends AbstractChatTestCase
     String teamName = "My Team to Delete";
 
     // create a team room
-    String roomId = ServiceBootstrap.getChatService().getTeamRoom(teamName, user, null);
-    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    String roomId = ServiceBootstrap.getChatService().getTeamRoom(teamName, user);
+    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId);
     assertNotNull("The room should exist", room);
 
     // delete the Team Room
-    ServiceBootstrap.getChatService().deleteTeamRoom(roomId, user, null);
+    ServiceBootstrap.getChatService().deleteTeamRoom(roomId, user);
 
-    List<String> members = ServiceBootstrap.getUserService().getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM, null);
+    List<String> members = ServiceBootstrap.getUserService().getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_TEAM);
     assertTrue("No user should be member of the deleted Team Room", members.isEmpty());
 
-    RoomBean roomDelete = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    RoomBean roomDelete = ServiceBootstrap.getChatService().getTeamRoomById(roomId);
     assertNull("The room should have been deleted", roomDelete);
 
   }
@@ -102,15 +102,15 @@ public class TeamTestCase extends AbstractChatTestCase
     String roomTeamName = "RoomTeam";
 
     // create a team room
-    String roomTeamId = ServiceBootstrap.getChatService().getTeamRoom(roomTeamName, user, null);
-    RoomBean roomTeam = ServiceBootstrap.getChatService().getTeamRoomById(roomTeamId, null);
+    String roomTeamId = ServiceBootstrap.getChatService().getTeamRoom(roomTeamName, user);
+    RoomBean roomTeam = ServiceBootstrap.getChatService().getTeamRoomById(roomTeamId);
     assertNotNull("The room should exists", roomTeam);
     assertEquals("The room name is not good", roomTeamName, roomTeam.getFullName());
     assertEquals("The room owner is not good", user, roomTeam.getUser());
 
     // create a space room
-    String roomId = ServiceBootstrap.getChatService().getSpaceRoom(roomSpaceName, null);
-    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null); // nothing should be loaded
+    String roomId = ServiceBootstrap.getChatService().getSpaceRoom(roomSpaceName);
+    RoomBean room = ServiceBootstrap.getChatService().getTeamRoomById(roomId); // nothing should be loaded
     assertNull("The team room should not exist", room);
   }
 
@@ -120,7 +120,7 @@ public class TeamTestCase extends AbstractChatTestCase
     log.info("TeamTestCase.testTeamRoomLoadByIdNonExisting");
     String roomId = "non-existing-id";
 
-    RoomBean nullTeamRoom = ServiceBootstrap.getChatService().getTeamRoomById(roomId, null);
+    RoomBean nullTeamRoom = ServiceBootstrap.getChatService().getTeamRoomById(roomId);
     assertNull("The returned room should be null", nullTeamRoom);
   }
 
@@ -131,17 +131,17 @@ public class TeamTestCase extends AbstractChatTestCase
     String user = "benjamin";
     String user2 = "john";
 
-    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
-    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My Other Team", user, null);
-    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My Last Team", user, null);
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My Other Team", user);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My Last Team", user);
 
-    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1, null));
+    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1));
 
-    ServiceBootstrap.getUserService().addTeamRoom(user, room1, null);
-    ServiceBootstrap.getUserService().addTeamRoom(user, room2, null);
-    ServiceBootstrap.getUserService().addTeamRoom(user, room3, null);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room1);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room2);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room3);
 
-    List<RoomBean> teams = ServiceBootstrap.getUserService().getTeams(user, null);
+    List<RoomBean> teams = ServiceBootstrap.getUserService().getTeams(user);
     assertEquals(3, teams.size());
 
     List<String> users = new ArrayList<String>();
@@ -150,19 +150,19 @@ public class TeamTestCase extends AbstractChatTestCase
     List<String> usersRemove = new ArrayList<String>();
     usersRemove.add("john");
 
-    List<RoomBean> teamsJohn = ServiceBootstrap.getUserService().getTeams("john", null);
+    List<RoomBean> teamsJohn = ServiceBootstrap.getUserService().getTeams("john");
     assertEquals(0, teamsJohn.size());
 
-    ServiceBootstrap.getUserService().addTeamUsers(room1, users, null);
-    ServiceBootstrap.getUserService().addTeamUsers(room2, users, null);
-    teamsJohn = ServiceBootstrap.getUserService().getTeams("john", null);
+    ServiceBootstrap.getUserService().addTeamUsers(room1, users);
+    ServiceBootstrap.getUserService().addTeamUsers(room2, users);
+    teamsJohn = ServiceBootstrap.getUserService().getTeams("john");
     assertEquals(2, teamsJohn.size());
 
-    ServiceBootstrap.getUserService().removeTeamUsers(room1, usersRemove, null);
-    teamsJohn = ServiceBootstrap.getUserService().getTeams("john", null);
+    ServiceBootstrap.getUserService().removeTeamUsers(room1, usersRemove);
+    teamsJohn = ServiceBootstrap.getUserService().getTeams("john");
     assertEquals(1, teamsJohn.size());
 
-    List<RoomBean> teamsMary = ServiceBootstrap.getUserService().getTeams("mary", null);
+    List<RoomBean> teamsMary = ServiceBootstrap.getUserService().getTeams("mary");
     assertEquals(2, teamsMary.size());
 
 
@@ -175,23 +175,23 @@ public class TeamTestCase extends AbstractChatTestCase
     log.info("TeamTestCase.testTeamUserFilter");
     String user = "benjamin";
 
-    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
-    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My Other Team", user, null);
-    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My Last Team", user, null);
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My Other Team", user);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My Last Team", user);
 
-    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1, null));
+    assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room1));
 
-    ServiceBootstrap.getUserService().addTeamRoom(user, room1, null);
-    ServiceBootstrap.getUserService().addTeamRoom(user, room2, null);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room1);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room2);
 
     List<String> users = new ArrayList<String>();
     users.add("john");
-    ServiceBootstrap.getUserService().addTeamUsers(room1, users, null);
+    ServiceBootstrap.getUserService().addTeamUsers(room1, users);
 
-    List<String> users1 = ServiceBootstrap.getUserService().getUsersFilterBy(user, room1, ChatService.TYPE_ROOM_TEAM, null);
+    List<String> users1 = ServiceBootstrap.getUserService().getUsersFilterBy(user, room1, ChatService.TYPE_ROOM_TEAM);
     assertEquals(1, users1.size());
 
-    List<String> users2 = ServiceBootstrap.getUserService().getUsersFilterBy(user, room2, ChatService.TYPE_ROOM_TEAM, null);
+    List<String> users2 = ServiceBootstrap.getUserService().getUsersFilterBy(user, room2, ChatService.TYPE_ROOM_TEAM);
     assertEquals(0, users2.size());
   }
 
@@ -201,21 +201,21 @@ public class TeamTestCase extends AbstractChatTestCase
     log.info("TeamTestCase.testTeamRoomName");
     String user = "benjamin";
 
-    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user, null);
-    ServiceBootstrap.getUserService().addTeamRoom(user, room1, null);
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room1);
 
     RoomsBean rooms = ServiceBootstrap.getChatService().getRooms(user, "", true, true, true, true, true,
-            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService(), null);
+            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService());
 
     assertEquals(1, rooms.getRooms().size());
 
     RoomBean room = rooms.getRooms().get(0);
     assertEquals("My VIP Team", room.getFullName());
 
-    ServiceBootstrap.getChatService().setRoomName(room1, "VIP Team", null);
+    ServiceBootstrap.getChatService().setRoomName(room1, "VIP Team");
 
     rooms = ServiceBootstrap.getChatService().getRooms(user, "", true, true, true, true, true,
-            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService(), null);
+            ServiceBootstrap.getNotificationService(), ServiceBootstrap.getTokenService());
 
     assertEquals(1, rooms.getRooms().size());
 

@@ -38,84 +38,84 @@ public class UserTestCase extends AbstractChatTestCase
   {
     log.info("UserTestCase.testToken");
     String token = ServiceBootstrap.getTokenService().getToken(username);
-    boolean hasToken = ServiceBootstrap.getTokenService().hasUserWithToken(username, token, null);
+    boolean hasToken = ServiceBootstrap.getTokenService().hasUserWithToken(username, token);
     assertFalse(hasToken);
 
-    ServiceBootstrap.getTokenService().addUser(username, token, null);
-    assertTrue(ServiceBootstrap.getTokenService().hasUserWithToken(username, token, null));
+    ServiceBootstrap.getTokenService().addUser(username, token);
+    assertTrue(ServiceBootstrap.getTokenService().hasUserWithToken(username, token));
   }
 
   @Test
   public void testUserCreation() throws Exception
   {
     log.info("UserTestCase.testUserCreation");
-    String fullname = ServiceBootstrap.getUserService().getUserFullName(username, null);
+    String fullname = ServiceBootstrap.getUserService().getUserFullName(username);
     assertNull(fullname);
 
-    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau", null);
-    ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com", null);
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com");
 
-    UserBean user = ServiceBootstrap.getUserService().getUser(username, null);
+    UserBean user = ServiceBootstrap.getUserService().getUser(username);
 
     assertEquals("Benjamin Paillereau", user.getFullname());
     assertEquals("bpaillereau@exoplatform.com", user.getEmail());
 
-    ServiceBootstrap.getUserService().setAsAdmin(username, false, null);
+    ServiceBootstrap.getUserService().setAsAdmin(username, false);
 
-    assertFalse(ServiceBootstrap.getUserService().isAdmin(username, null));
+    assertFalse(ServiceBootstrap.getUserService().isAdmin(username));
 
-    assertEquals(1, ServiceBootstrap.getUserService().getNumberOfUsers(null));
+    assertEquals(1, ServiceBootstrap.getUserService().getNumberOfUsers());
 
     String token = ServiceBootstrap.getTokenService().getToken("john");
-    ServiceBootstrap.getTokenService().addUser("john", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
+    ServiceBootstrap.getTokenService().addUser("john", token);
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
 
     token = ServiceBootstrap.getTokenService().getToken("mary");
-    ServiceBootstrap.getTokenService().addUser("mary", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams", null);
+    ServiceBootstrap.getTokenService().addUser("mary", token);
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
 
     token = ServiceBootstrap.getTokenService().getToken("james");
-    ServiceBootstrap.getTokenService().addUser("james", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("james", "James Potter", null);
+    ServiceBootstrap.getTokenService().addUser("james", token);
+    ServiceBootstrap.getUserService().addUserFullName("james", "James Potter");
 
-    assertEquals(4, ServiceBootstrap.getUserService().getNumberOfUsers(null));
+    assertEquals(4, ServiceBootstrap.getUserService().getNumberOfUsers());
   }
 
   @Test
   public void testGetUsers() throws Exception
   {
     log.info("UserTestCase.testGetUsers");
-    String fullname = ServiceBootstrap.getUserService().getUserFullName(username, null);
+    String fullname = ServiceBootstrap.getUserService().getUserFullName(username);
     assertNull(fullname);
 
-    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau", null);
-    ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com", null);
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com");
 
     String token = ServiceBootstrap.getTokenService().getToken("john");
-    ServiceBootstrap.getTokenService().addUser("john", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
+    ServiceBootstrap.getTokenService().addUser("john", token);
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
 
     token = ServiceBootstrap.getTokenService().getToken("mary");
-    ServiceBootstrap.getTokenService().addUser("mary", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams", null);
+    ServiceBootstrap.getTokenService().addUser("mary", token);
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
 
     token = ServiceBootstrap.getTokenService().getToken("james");
-    ServiceBootstrap.getTokenService().addUser("james", token, null);
-    ServiceBootstrap.getUserService().addUserFullName("james", "James Potter", null);
+    ServiceBootstrap.getTokenService().addUser("james", token);
+    ServiceBootstrap.getUserService().addUserFullName("james", "James Potter");
 
-    int nbUsers = ServiceBootstrap.getUserService().getUsers("", false, null).size();
+    int nbUsers = ServiceBootstrap.getUserService().getUsers("", false).size();
     assertEquals(4, nbUsers);
 
-    int nbJ = ServiceBootstrap.getUserService().getUsers("j", false, null).size();
+    int nbJ = ServiceBootstrap.getUserService().getUsers("j", false).size();
     assertEquals(3, nbJ);
 
-    int nbJame = ServiceBootstrap.getUserService().getUsers("jame", false, null).size();
+    int nbJame = ServiceBootstrap.getUserService().getUsers("jame", false).size();
     assertEquals(1, nbJame);
 
-    int nbBePa = ServiceBootstrap.getUserService().getUsers("be pa", false, null).size();
+    int nbBePa = ServiceBootstrap.getUserService().getUsers("be pa", false).size();
     assertEquals(1, nbBePa);
 
-    int nbBePaUC = ServiceBootstrap.getUserService().getUsers("BE PA", false, null).size();
+    int nbBePaUC = ServiceBootstrap.getUserService().getUsers("BE PA", false).size();
     assertEquals(1, nbBePaUC);
 
   }
@@ -124,7 +124,7 @@ public class UserTestCase extends AbstractChatTestCase
   public void testDemoUser() throws Exception
   {
     log.info("UserTestCase.testDemoUser");
-    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau", null);
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
 
     assertFalse(ServiceBootstrap.getTokenService().isDemoUser(username));
 
@@ -134,27 +134,27 @@ public class UserTestCase extends AbstractChatTestCase
   public void testFavorites() throws Exception
   {
     log.info("UserTestCase.testFavorites");
-    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau", null);
-    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith", null);
-    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams", null);
+    ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
+    ServiceBootstrap.getUserService().addUserFullName("john", "John Smith");
+    ServiceBootstrap.getUserService().addUserFullName("mary", "Mary Williams");
 
-    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john", null));
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john"));
 
-    ServiceBootstrap.getUserService().toggleFavorite(username, "john", null);
-    assertTrue(ServiceBootstrap.getUserService().isFavorite(username, "john", null));
-    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary", null));
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    assertTrue(ServiceBootstrap.getUserService().isFavorite(username, "john"));
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary"));
 
-    ServiceBootstrap.getUserService().toggleFavorite(username, "john", null);
-    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john", null));
-    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary", null));
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "john"));
+    assertFalse(ServiceBootstrap.getUserService().isFavorite(username, "mary"));
 
-    ServiceBootstrap.getUserService().toggleFavorite(username, "john", null);
-    ServiceBootstrap.getUserService().toggleFavorite(username, "mary", null);
+    ServiceBootstrap.getUserService().toggleFavorite(username, "john");
+    ServiceBootstrap.getUserService().toggleFavorite(username, "mary");
 
-    UserBean user = ServiceBootstrap.getUserService().getUser(username, null);
+    UserBean user = ServiceBootstrap.getUserService().getUser(username);
     assertNull(user.getFavorites());
 
-    user = ServiceBootstrap.getUserService().getUser(username, true, null);
+    user = ServiceBootstrap.getUserService().getUser(username, true);
     assertEquals(2, user.getFavorites().size());
 
   }
@@ -164,21 +164,21 @@ public class UserTestCase extends AbstractChatTestCase
   {
     log.info("UserTestCase.testStatus");
     UserService userService = ServiceBootstrap.getUserService();
-    userService.addUserFullName(username, "Benjamin Paillereau", null);
-    userService.addUserFullName("john", "John Smith", null);
+    userService.addUserFullName(username, "Benjamin Paillereau");
+    userService.addUserFullName("john", "John Smith");
 
-    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus(username, null));
+    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus(username));
 
-    userService.setStatus(username, UserService.STATUS_DONOTDISTURB, null);
-    assertEquals(UserService.STATUS_DONOTDISTURB, userService.getStatus(username, null));
+    userService.setStatus(username, UserService.STATUS_DONOTDISTURB);
+    assertEquals(UserService.STATUS_DONOTDISTURB, userService.getStatus(username));
 
-    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus("john", null));
+    assertEquals(UserService.STATUS_AVAILABLE, userService.getStatus("john"));
 
-    userService.setStatus(username, UserService.STATUS_AWAY, null);
-    assertEquals(UserService.STATUS_AWAY, userService.getStatus(username, null));
+    userService.setStatus(username, UserService.STATUS_AWAY);
+    assertEquals(UserService.STATUS_AWAY, userService.getStatus(username));
 
-    userService.setStatus(username, UserService.STATUS_INVISIBLE, null);
-    assertEquals(UserService.STATUS_INVISIBLE, userService.getStatus(username, null));
+    userService.setStatus(username, UserService.STATUS_INVISIBLE);
+    assertEquals(UserService.STATUS_INVISIBLE, userService.getStatus(username));
 
   }
 
@@ -187,14 +187,14 @@ public class UserTestCase extends AbstractChatTestCase
   {
     log.info("UserTestCase.testAdmin");
     UserService userService = ServiceBootstrap.getUserService();
-    userService.addUserFullName(username, "Benjamin Paillereau", null);
-    userService.addUserFullName("john", "John Smith", null);
+    userService.addUserFullName(username, "Benjamin Paillereau");
+    userService.addUserFullName("john", "John Smith");
 
-    assertFalse(userService.isAdmin(username, null));
+    assertFalse(userService.isAdmin(username));
 
-    userService.setAsAdmin(username, true, null);
+    userService.setAsAdmin(username, true);
 
-    assertTrue(userService.isAdmin(username, null));
+    assertTrue(userService.isAdmin(username));
 
   }
 }

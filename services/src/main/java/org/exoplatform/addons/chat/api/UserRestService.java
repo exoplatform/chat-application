@@ -149,20 +149,19 @@ public class UserRestService implements ResourceContainer {
     String currentUsername = sc.getUserPrincipal().getName();
 
     String token = ServerBootstrap.getToken(currentUsername);
-    String dbName = ServerBootstrap.getDBName();
-    String userFullName = ServerBootstrap.getUserFullName(currentUsername, dbName);
+    String userFullName = ServerBootstrap.getUserFullName(currentUsername);
 
     Boolean isUserInitialized = (Boolean) request.getSession().getAttribute(CHAT_USER_INITIALIZATION_ATTR);
     if (isUserInitialized == null || !isUserInitialized) {
       // Add User in the DB
-      ServerBootstrap.addUser(currentUsername, token, dbName);
+      ServerBootstrap.addUser(currentUsername, token);
 
       if (StringUtils.isBlank(userFullName)) {
         // Set user's Full Name in the DB
         User user = organizationService.getUserHandler().findUserByName(currentUsername);
         if (user != null) {
           userFullName = user.getDisplayName();
-          ServerBootstrap.addUserFullNameAndEmail(currentUsername, userFullName, user.getEmail(), dbName);
+          ServerBootstrap.addUserFullNameAndEmail(currentUsername, userFullName, user.getEmail());
         }
       }
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
@@ -181,7 +180,7 @@ public class UserRestService implements ResourceContainer {
     } else {
       chatCometDServerUrl = "/cometd/cometd";
     }
-    String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername, dbName);
+    String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername);
 
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);
@@ -190,7 +189,6 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("status", userStatus);
     userSettings.put("isOnline", online);
     userSettings.put("cometdToken", cometdToken);
-    userSettings.put("dbName", dbName);
     userSettings.put("sessionId", request.getSession().getId());
     userSettings.put("serverURL", ServerBootstrap.getServerURL());
     userSettings.put("standalone", isStandalone);

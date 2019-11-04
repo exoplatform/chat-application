@@ -49,19 +49,15 @@ public class UserMongoDataStorage implements UserDataStorage {
 
   public static final String DEFAULT_ENABLED_CHANNELS  = "[ \"desktop\" , \"on-site\" , \"bip\"]";
 
-  private DB db(String dbName)
+  private DB db()
   {
-    if (StringUtils.isEmpty(dbName)) {
-      return ConnectionManager.getInstance().getDB();
-    } else {
-      return ConnectionManager.getInstance().getDB(dbName);
-    }
+    return ConnectionManager.getInstance().getDB();
   }
 
   @Override
-  public void addFavorite(String user, String targetUser, String dbName)
+  public void addFavorite(String user, String targetUser)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -81,9 +77,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void removeFavorite(String user, String targetUser, String dbName)
+  public void removeFavorite(String user, String targetUser)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -103,8 +99,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+  public void setPreferredNotification(String user, String notifManner) throws Exception {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -160,8 +156,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+  public void setNotificationTrigger(String user, String notifCond) throws Exception {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -214,8 +210,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, String dbName, long time) throws Exception {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+  public void setRoomNotificationTrigger(String user, String room, String notifCond, String notifConditionType, long time) throws Exception {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -278,9 +274,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   * This methode is responsible for getting all desktop settings in a single object
   */
   @Override
-  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException {
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user) throws JSONException {
     NotificationSettingsBean settings = new NotificationSettingsBean();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -308,9 +304,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public boolean isFavorite(String user, String targetUser, String dbName)
+  public boolean isFavorite(String user, String targetUser)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -327,9 +323,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void addUserFullName(String user, String fullname, String dbName)
+  public void addUserFullName(String user, String fullname)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -351,9 +347,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void addUserEmail(String user, String email, String dbName)
+  public void addUserEmail(String user, String email)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -375,10 +371,10 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void setSpaces(String user, List<SpaceBean> spaces, String dbName)
+  public void setSpaces(String user, List<SpaceBean> spaces)
   {
     List<String> spaceIds = new ArrayList<String>();
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     for (SpaceBean bean:spaces)
     {
       String room = ChatUtils.getRoomId(bean.getId());
@@ -415,7 +411,7 @@ public class UserMongoDataStorage implements UserDataStorage {
 
 
     }
-    coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -436,10 +432,10 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void addTeamRoom(String user, String teamRoomId, String dbName) {
+  public void addTeamRoom(String user, String teamRoomId) {
     List<String> teamIds = new ArrayList<String>();
     teamIds.add(teamRoomId);
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -470,8 +466,8 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void removeTeamUsers(String teamRoomId, List<String> users, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+  public void removeTeamUsers(String teamRoomId, List<String> users) {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     for (String user:users)
     {
       BasicDBObject query = new BasicDBObject();
@@ -495,10 +491,10 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
   }
 
-  private RoomBean getTeam(String teamId, String dbName)
+  private RoomBean getTeam(String teamId)
   {
     RoomBean roomBean = null;
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", teamId);
     DBCursor cursor = coll.find(query);
@@ -523,9 +519,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public List<RoomBean> getTeams(String user, String dbName) {
+  public List<RoomBean> getTeams(String user) {
     List<RoomBean> rooms = new ArrayList<RoomBean>();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -538,7 +534,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         for (String room:listrooms)
         {
-          rooms.add(getTeam(room, dbName));
+          rooms.add(getTeam(room));
         }
       }
 
@@ -547,9 +543,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public RoomBean getRoom(String user, String roomId, String dbName) {
+  public RoomBean getRoom(String user, String roomId) {
     RoomBean roomBean = null;
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -583,7 +579,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         users.remove(user);
         String targetUser = users.get(0);
         roomBean.setUser(targetUser);
-        roomBean.setFullName(this.getUserFullName(targetUser, dbName));
+        roomBean.setFullName(this.getUserFullName(targetUser));
       }
       else if (ChatService.TYPE_ROOM_EXTERNAL.equals(type))
       {
@@ -595,10 +591,10 @@ public class UserMongoDataStorage implements UserDataStorage {
     return roomBean;
   }
 
-  private SpaceBean getSpace(String roomId, String dbName)
+  private SpaceBean getSpace(String roomId)
   {
     SpaceBean spaceBean = null;
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -621,10 +617,10 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public List<SpaceBean> getSpaces(String user, String dbName)
+  public List<SpaceBean> getSpaces(String user)
   {
     List<SpaceBean> spaces = new ArrayList<SpaceBean>();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -637,7 +633,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         for (String space:listspaces)
         {
-          spaces.add(getSpace(space, dbName));
+          spaces.add(getSpace(space));
         }
       }
 
@@ -646,9 +642,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName) {
+  public List<UserBean> getUsersInRoomChatOneToOne(String roomId) {
     List<UserBean> users = new ArrayList<UserBean>();
-    DBCollection coll = db(dbName).getCollection(M_ROOMS_COLLECTION);
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("_id", roomId);
     DBCursor cursor = coll.find(query);
@@ -657,13 +653,13 @@ public class UserMongoDataStorage implements UserDataStorage {
       Object objectUsers = doc.get("users");
       ArrayList myArrayList = (ArrayList) objectUsers;
       for (int i = 0; i < myArrayList.size(); i++) {
-        users.add(getUser(myArrayList.get(i).toString(), dbName));
+        users.add(getUser(myArrayList.get(i).toString()));
       }
     }
     return users;
   }
 
-  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName) {
+  public List<UserBean> getUsers(String roomId, String filter, int limit) {
     if (roomId == null && filter == null) {
       throw new IllegalArgumentException();
     }
@@ -695,7 +691,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
 
     DBObject query = new BasicDBObject("$and", andList);
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     DBCursor cursor = coll.find(query).limit(limit);
     List<UserBean> users = new ArrayList<>();
     while (cursor.hasNext()) {
@@ -714,9 +710,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public String setStatus(String user, String status, String dbName)
+  public String setStatus(String user, String status)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -738,9 +734,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public void setAsAdmin(String user, boolean isAdmin, String dbName)
+  public void setAsAdmin(String user, boolean isAdmin)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -761,9 +757,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public boolean isAdmin(String user, String dbName)
+  public boolean isAdmin(String user)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -777,10 +773,10 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public String getStatus(String user, String dbName)
+  public String getStatus(String user)
   {
     String status = STATUS_NONE;
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -790,21 +786,21 @@ public class UserMongoDataStorage implements UserDataStorage {
       if (doc.containsField("status"))
         status = doc.get("status").toString();
       else
-        status = setStatus(user, STATUS_AVAILABLE, dbName);
+        status = setStatus(user, STATUS_AVAILABLE);
     }
     else
     {
-      status = setStatus(user, STATUS_AVAILABLE, dbName);
+      status = setStatus(user, STATUS_AVAILABLE);
     }
 
     return status;
   }
 
   @Override
-  public String getUserFullName(String user, String dbName)
+  public String getUserFullName(String user)
   {
     String fullname = null;
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -819,16 +815,16 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public UserBean getUser(String user, String dbName)
+  public UserBean getUser(String user)
   {
-    return getUser(user, false, dbName);
+    return getUser(user, false);
   }
 
   @Override
-  public UserBean getUser(String user, boolean withFavorites, String dbName)
+  public UserBean getUser(String user, boolean withFavorites)
   {
     UserBean userBean = new UserBean();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     DBCursor cursor = coll.find(query);
@@ -854,10 +850,10 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public List<String> getUsersFilterBy(String user, String room, String type, String dbName)
+  public List<String> getUsersFilterBy(String user, String room, String type)
   {
     ArrayList<String> users = new ArrayList<String>();
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     if (ChatService.TYPE_ROOM_SPACE.equals(type))
       query.put("spaces", room);
@@ -876,9 +872,9 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
-  public int getNumberOfUsers(String dbName)
+  public int getNumberOfUsers()
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     DBCursor cursor = coll.find(query);
     return cursor.count();

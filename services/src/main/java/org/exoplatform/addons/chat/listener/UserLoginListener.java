@@ -20,6 +20,6 @@ public class UserLoginListener extends Listener<ConversationRegistry, Conversati
     if (StringUtils.isBlank(userId) || StringUtils.equalsIgnoreCase(userId, IdentityConstants.ANONIM)) {
       return;
     }
-    ServerBootstrap.saveSpaces(userId, ServerBootstrap.getDBName());
+    ServerBootstrap.saveSpaces(userId);
   }
 }

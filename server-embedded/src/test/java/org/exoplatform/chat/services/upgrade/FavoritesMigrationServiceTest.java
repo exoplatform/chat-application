@@ -46,20 +46,20 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
   @Test
   public void testUpgradeWithUsersTeamsAndSpacesRoomsInFavorites() {
     // Given
-    userService.addUserFullName("thomas", "Thomas Delhoménie", null);
-    userService.addUserFullName("john", "John Smith", null);
-    userService.addUserFullName("mary", "Mary Williams", null);
-    userService.addUserFullName("james", "James Doe", null);
+    userService.addUserFullName("thomas", "Thomas Delhoménie");
+    userService.addUserFullName("john", "John Smith");
+    userService.addUserFullName("mary", "Mary Williams");
+    userService.addUserFullName("james", "James Doe");
 
-    String roomThomasJohn = chatService.getRoom(Arrays.asList("thomas", "john"), null);
-    String roomThomasMary = chatService.getRoom(Arrays.asList("thomas", "mary"), null);
-    String roomThomasJames = chatService.getRoom(Arrays.asList("thomas", "james"), null);
-    String roomJohnMary = chatService.getRoom(Arrays.asList("john", "mary"), null);
-    String roomTeam1 = chatService.getTeamRoom("Team 1", "thomas", null);
-    String roomTeam2 = chatService.getTeamRoom("Team 2", "thomas", null);
-    String roomSpace1 = chatService.getSpaceRoom("Space 1", null);
-    String roomSpace2 = chatService.getSpaceRoom("Space 2", null);
-    String roomSpace3 = chatService.getSpaceRoom("Space 3", null);
+    String roomThomasJohn = chatService.getRoom(Arrays.asList("thomas", "john"));
+    String roomThomasMary = chatService.getRoom(Arrays.asList("thomas", "mary"));
+    String roomThomasJames = chatService.getRoom(Arrays.asList("thomas", "james"));
+    String roomJohnMary = chatService.getRoom(Arrays.asList("john", "mary"));
+    String roomTeam1 = chatService.getTeamRoom("Team 1", "thomas");
+    String roomTeam2 = chatService.getTeamRoom("Team 2", "thomas");
+    String roomSpace1 = chatService.getSpaceRoom("Space 1");
+    String roomSpace2 = chatService.getSpaceRoom("Space 2");
+    String roomSpace3 = chatService.getSpaceRoom("Space 3");
 
     setOldFavoritesToUser("thomas",
                           Arrays.asList("john",
@@ -73,7 +73,7 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
     favoritesMigrationService.processMigration();
 
     // Then
-    UserBean thomas = userService.getUser("thomas", true, null);
+    UserBean thomas = userService.getUser("thomas", true);
     assertNotNull(thomas);
     List<String> newThomasFavorites = thomas.getFavorites();
     assertNotNull(newThomasFavorites);
@@ -83,11 +83,11 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
     assertTrue(newThomasFavorites.contains(roomTeam1));
     assertTrue(newThomasFavorites.contains(roomSpace2));
     assertTrue(newThomasFavorites.contains(roomSpace2));
-    UserBean john = userService.getUser("john", true, null);
+    UserBean john = userService.getUser("john", true);
     assertNotNull(john);
     List<String> newJohnFavorites = john.getFavorites();
     assertNull(newJohnFavorites);
-    UserBean mary = userService.getUser("mary", true, null);
+    UserBean mary = userService.getUser("mary", true);
     assertNotNull(mary);
     List<String> newMaryFavorites = mary.getFavorites();
     assertNotNull(newMaryFavorites);
@@ -96,28 +96,28 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
     assertTrue(newThomasFavorites.contains(roomSpace3));
 
     assertEquals(FavoritesMigrationService.FavoritesMigrationStatus.DONE,
-                 favoritesMigrationService.getMigrationStatus(db.getName()));
+                 favoritesMigrationService.getMigrationStatus());
   }
 
   @Test
   public void testDoNotUpgradeWhenMigrationAlreadyDone() {
     // Given
-    ServiceBootstrap.getUserService().addUserFullName("thomas", "Thomas Delhoménie", null);
+    ServiceBootstrap.getUserService().addUserFullName("thomas", "Thomas Delhoménie");
 
-    String roomTeam1 = ServiceBootstrap.getChatService().getTeamRoom("Team 1", "thomas", null);
-    String roomSpace1 = ServiceBootstrap.getChatService().getSpaceRoom("Space 1", null);
+    String roomTeam1 = ServiceBootstrap.getChatService().getTeamRoom("Team 1", "thomas");
+    String roomSpace1 = ServiceBootstrap.getChatService().getSpaceRoom("Space 1");
 
     setOldFavoritesToUser("thomas",
                           Arrays.asList(ChatService.TEAM_PREFIX + roomTeam1,
                                         ChatService.SPACE_PREFIX + roomSpace1));
 
-    ServiceBootstrap.getFavoritesMigrationService().setMigrationStatus(FavoritesMigrationService.FavoritesMigrationStatus.DONE, db.getName());
+    ServiceBootstrap.getFavoritesMigrationService().setMigrationStatus(FavoritesMigrationService.FavoritesMigrationStatus.DONE);
 
     // When
     ServiceBootstrap.getFavoritesMigrationService().processMigration();
 
     // Then
-    UserBean thomas = ServiceBootstrap.getUserService().getUser("thomas", true, null);
+    UserBean thomas = ServiceBootstrap.getUserService().getUser("thomas", true);
     assertNotNull(thomas);
     List<String> newThomasFavorites = thomas.getFavorites();
     assertNotNull(newThomasFavorites);
@@ -127,7 +127,7 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
     assertTrue(newThomasFavorites.contains(ChatService.SPACE_PREFIX + roomSpace1));
 
     assertEquals(FavoritesMigrationService.FavoritesMigrationStatus.DONE,
-            ServiceBootstrap.getFavoritesMigrationService().getMigrationStatus(db.getName()));
+            ServiceBootstrap.getFavoritesMigrationService().getMigrationStatus());
   }
 
   private void setOldFavoritesToUser(String username, List<String> oldFavorites) {
