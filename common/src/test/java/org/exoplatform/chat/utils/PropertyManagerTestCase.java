@@ -32,6 +32,14 @@ public class PropertyManagerTestCase {
   }
 
   @Test
+  public void testoverrideProperty() {
+    System.setProperty(PropertyManager.PROPERTY_DB_PASSWORD, "pass");
+    PropertyManager.overrideProperty(PropertyManager.PROPERTY_DB_PASSWORD, "pass2");
+    String dbPassword = PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD);
+    Assert.assertEquals("pass2", dbPassword);
+    }
+
+  @Test
   public void testDefaultProperties() {
     Assert.assertEquals(PropertyManager.PROPERTY_SERVICE_IMPL_MONGO, PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION));
     Assert.assertEquals("mongo", PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE));

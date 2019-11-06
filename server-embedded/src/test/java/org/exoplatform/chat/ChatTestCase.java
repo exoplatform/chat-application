@@ -337,6 +337,7 @@ public class ChatTestCase extends AbstractChatTestCase
     space.setGroupId("test_space");
     space.setId("test_space");
     space.setShortName("Test Space");
+    space.setPrettyName("test space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
 
@@ -347,6 +348,7 @@ public class ChatTestCase extends AbstractChatTestCase
     space2.setGroupId("test_space_2");
     space2.setId("test_space_2");
     space2.setShortName("Test Space 2");
+    space2.setPrettyName("Test space 2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
 
@@ -438,16 +440,21 @@ public class ChatTestCase extends AbstractChatTestCase
     space.setGroupId("test_space");
     space.setId("test_space");
     space.setShortName("Test Space");
+    space.setPrettyName("Test Space");
+
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
 
     ServiceBootstrap.getUserService().setSpaces("john", spaces);
 
+    // Check the case of a space without pretty name in MongoDB
     SpaceBean space2 = new SpaceBean();
     space2.setDisplayName("Test Space 2");
     space2.setGroupId("test_space_2");
     space2.setId("test_space_2");
     space2.setShortName("Test Space 2");
+    space2.setPrettyName("Test Space 2");
+
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
 
