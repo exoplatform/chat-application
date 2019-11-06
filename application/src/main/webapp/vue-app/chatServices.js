@@ -274,10 +274,7 @@ export function getUserAvatar(user) {
 }
 
 export function getSpaceAvatar(space) {
-  // FIXME very ugly, the technical ID should be used here instead
-  let spaceId = space.toLowerCase().split(' ').join('_');
-  spaceId = encodeSpecialCharacters(spaceId);
-  return `${chatConstants.SOCIAL_SPACE_API}${spaceId}/avatar`;
+  return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
 }
 
 export function getUserProfileLink(user) {
@@ -392,12 +389,6 @@ export function unescapeHtml(html) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"');
-}
-
-export function encodeSpecialCharacters(word) {
-  word = encodeURIComponent(word);
-  const ASCII = 16;
-  return word.replace(/[&<>"']/g, (w) => `%${w.charCodeAt(0).toString(ASCII)}`);
 }
 
 function updateStatusElement($profileMenuStatusBtn, status,  statusTitle) {

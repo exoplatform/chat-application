@@ -27,6 +27,7 @@ import org.json.simple.JSONObject;
 
 public class RoomBean implements Comparable<RoomBean>
 {
+  String prettyName;
   String user = "";
   String fullname = "";
   String room = "";
@@ -38,6 +39,14 @@ public class RoomBean implements Comparable<RoomBean>
   String[] admins = null;
   long timestamp = -1;
   org.json.JSONObject lastMessage;
+
+  public String getPrettyName() {
+    return prettyName;
+  }
+
+  public void setPrettyName(String prettyName) {
+    this.prettyName = prettyName;
+  }
 
   public org.json.JSONObject getLastMessage() {
     return lastMessage;
@@ -147,6 +156,7 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
     obj.put("lastMessage", this.getLastMessage());
+    obj.put("prettyName", this.getPrettyName());
     if (this.getAdmins() != null) {
       try {
         obj.put("admins", new JSONArray(this.getAdmins()));

@@ -665,6 +665,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setTimestamp(space.getTimestamp());
       room.setAvailableUser(true);
       room.setType(ChatService.TYPE_ROOM_SPACE);
+      room.setPrettyName(space.getPrettyName());
 
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom())));
       if (room.getUnreadTotal() > 0)

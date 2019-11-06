@@ -392,6 +392,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         doc.put("displayName", bean.getDisplayName());
         doc.put("groupId", bean.getGroupId());
         doc.put("shortName", bean.getShortName());
+        doc.put("prettyName", bean.getPrettyName());
         doc.put("type", ChatService.TYPE_ROOM_SPACE);
         coll.insert(doc);
       }
@@ -399,12 +400,14 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         DBObject doc = cursor.next();
         String displayName = doc.get("displayName").toString();
-        if (!bean.getDisplayName().equals(displayName))
+        Object prettyName = doc.get("prettyName");
+        if (!bean.getDisplayName().equals(displayName) || prettyName == null || !bean.getPrettyName().equals(prettyName.toString()))
         {
           doc.put("_id", room);
           doc.put("displayName", bean.getDisplayName());
           doc.put("groupId", bean.getGroupId());
           doc.put("shortName", bean.getShortName());
+          doc.put("prettyName", bean.getPrettyName());
           coll.save(doc);
         }
       }
@@ -607,6 +610,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       spaceBean.setDisplayName(doc.get("displayName").toString());
       spaceBean.setGroupId(doc.get("groupId").toString());
       spaceBean.setShortName(doc.get("shortName").toString());
+      spaceBean.setPrettyName(doc.get("prettyName").toString());
       if (doc.containsField("timestamp"))
       {
         spaceBean.setTimestamp(((Long)doc.get("timestamp")).longValue());

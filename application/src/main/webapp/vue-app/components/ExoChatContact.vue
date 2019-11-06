@@ -34,6 +34,11 @@ import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
+    /** Contact pretty name */
+    prettyName: {
+      type: String,
+      default: ''
+    },
     /** Contact display name */
     name: {
       type: String,
@@ -113,7 +118,7 @@ export default {
       if (this.type === 'u') {
         return getUserAvatar(this.userName);
       } else if (this.type === 's') {
-        return getSpaceAvatar(this.name);
+        return getSpaceAvatar(this.prettyName);
       } else {
         return chatConstants.DEFAULT_ROOM_AVATAR;
       }
