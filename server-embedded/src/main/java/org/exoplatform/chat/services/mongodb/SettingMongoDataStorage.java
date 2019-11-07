@@ -44,18 +44,14 @@ public class SettingMongoDataStorage implements SettingDataStorage {
 
   public static final String M_SETTINGS_COLLECTION = "settings";
 
-  private DB db(String dbName)
+  private DB db()
   {
-    if (StringUtils.isEmpty(dbName)) {
-      return ConnectionManager.getInstance().getDB();
-    } else {
-      return ConnectionManager.getInstance().getDB(dbName);
-    }
+    return ConnectionManager.getInstance().getDB();
   }
 
   @Override
-  public String getSetting(String name, String dbName) {
-    DBCollection coll = db(dbName).getCollection(M_SETTINGS_COLLECTION);
+  public String getSetting(String name) {
+    DBCollection coll = db().getCollection(M_SETTINGS_COLLECTION);
 
     BasicDBObject query = new BasicDBObject();
     query.put("name", name);
@@ -68,8 +64,8 @@ public class SettingMongoDataStorage implements SettingDataStorage {
   }
 
   @Override
-  public void setSetting(String name, String value, String dbName) {
-    DBCollection settingsCol = db(dbName).getCollection("settings");
+  public void setSetting(String name, String value) {
+    DBCollection settingsCol = db().getCollection("settings");
 
     BasicDBObject query = new BasicDBObject();
     query.put("name", name);

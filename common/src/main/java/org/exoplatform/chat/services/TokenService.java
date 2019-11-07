@@ -32,13 +32,11 @@ public interface TokenService
 
   boolean hasUserWithToken(String user, String token);
 
-  boolean hasUserWithToken(String user, String token, String dbName);
+  void addUser(String user, String token);
 
-  void addUser(String user, String token, String dbName);
+  void removeUserToken(String user, String token);
 
-  void removeUserToken(String user, String token, String dbName);
-
-  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
+  Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitUsers, boolean withUsers, boolean withPublic, boolean isAdmin, int limit);
 
   boolean isDemoUser(String user);
 

@@ -46,70 +46,69 @@ public interface UserService
   public static final String PREFERRED_NOTIFICATION_TRIGGER = "preferredNotificationTrigger";
 
   /**
-   * @deprecated use {@link #addFavorite(String, String, String)} and {@link #removeFavorite(String, String, String)} instead
+   * @deprecated use {@link #addFavorite(String, String)} and {@link #removeFavorite(String, String)} instead
    *
    * @param user
    * @param targetUser
-   * @param dbName
    */
   @Deprecated
-  public void toggleFavorite(String user, String targetUser, String dbName);
+  public void toggleFavorite(String user, String targetUser);
 
-  public void addFavorite(String user, String room, String dbname);
+  public void addFavorite(String user, String room);
 
-  public void removeFavorite(String user, String room, String dbName);
+  public void removeFavorite(String user, String room);
 
-  public void setPreferredNotification(String user, String notifManner, String dbName) throws Exception;
+  public void setPreferredNotification(String user, String notifManner) throws Exception;
 
-  public void setNotificationTrigger(String user, String notifCond, String dbName) throws Exception;
-  public void setRoomNotificationTrigger(String user, String room,String notifCond,String notifConditionType, String dbName, long time) throws Exception;
+  public void setNotificationTrigger(String user, String notifCond) throws Exception;
+  public void setRoomNotificationTrigger(String user, String room,String notifCond,String notifConditionType, long time) throws Exception;
 
-  public NotificationSettingsBean getUserDesktopNotificationSettings(String user, String dbName) throws JSONException;
+  public NotificationSettingsBean getUserDesktopNotificationSettings(String user) throws JSONException;
 
-  public boolean isFavorite(String user, String targetUser, String dbName);
+  public boolean isFavorite(String user, String targetUser);
 
-  public void addUserFullName(String user, String fullname, String dbName);
+  public void addUserFullName(String user, String fullname);
 
-  public void addUserEmail(String user, String email, String dbName);
+  public void addUserEmail(String user, String email);
 
-  public void setSpaces(String user, List<SpaceBean> spaces, String dbName);
+  public void setSpaces(String user, List<SpaceBean> spaces);
 
-  public void addTeamRoom(String user, String teamRoomId, String dbName);
+  public void addTeamRoom(String user, String teamRoomId);
 
-  public void addTeamUsers(String teamRoomId, List<String> users, String dbName);
+  public void addTeamUsers(String teamRoomId, List<String> users);
 
-  public void removeTeamUsers(String teamRoomId, List<String> users, String dbName);
+  public void removeTeamUsers(String teamRoomId, List<String> users);
 
-  public List<RoomBean> getTeams(String user, String dbName);
+  public List<RoomBean> getTeams(String user);
 
-  public RoomBean getRoom(String user, String roomId, String dbName);
+  public RoomBean getRoom(String user, String roomId);
 
-  public List<SpaceBean> getSpaces(String user, String dbName);
+  public List<SpaceBean> getSpaces(String user);
 
-  public List<UserBean> getUsersInRoomChatOneToOne(String roomId, String dbName);
+  public List<UserBean> getUsersInRoomChatOneToOne(String roomId);
 
-  public List<UserBean> getUsers(String roomId, String dbName);
+  public List<UserBean> getUsers(String roomId);
 
-  public List<UserBean> getUsers(String filter, boolean fullBean, String dbName);
+  public List<UserBean> getUsers(String filter, boolean fullBean);
 
-  public List<UserBean> getUsers(String roomId, String filter, int limit, String dbName);
+  public List<UserBean> getUsers(String roomId, String filter, int limit);
 
-  public String setStatus(String user, String status, String dbName);
+  public String setStatus(String user, String status);
 
-  public void setAsAdmin(String user, boolean isAdmin, String dbName);
+  public void setAsAdmin(String user, boolean isAdmin);
 
-  public boolean isAdmin(String user, String dbName);
+  public boolean isAdmin(String user);
 
-  public String getStatus(String user, String dbName);
+  public String getStatus(String user);
 
-  public String getUserFullName(String user, String dbName);
+  public String getUserFullName(String user);
 
-  public UserBean getUser(String user, String dbName);
+  public UserBean getUser(String user);
 
-  public UserBean getUser(String user, boolean withFavorites, String dbName);
+  public UserBean getUser(String user, boolean withFavorites);
 
-  public List<String> getUsersFilterBy(String user, String room, String type, String dbName);
+  public List<String> getUsersFilterBy(String user, String room, String type);
 
-  public int getNumberOfUsers(String dbName);
+  public int getNumberOfUsers();
 
 }

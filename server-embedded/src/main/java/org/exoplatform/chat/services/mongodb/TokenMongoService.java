@@ -43,13 +43,9 @@ public class TokenMongoService implements TokenStorage
 {
   public static final String M_USERS_COLLECTION = "users";
 
-  private DB db(String dbName)
+  private DB db()
   {
-    if (StringUtils.isEmpty(dbName)) {
-      return ConnectionManager.getInstance().getDB();
-    } else {
-      return ConnectionManager.getInstance().getDB(dbName);
-    }
+    return ConnectionManager.getInstance().getDB();
   }
 
   public String getToken(String user)
@@ -60,9 +56,9 @@ public class TokenMongoService implements TokenStorage
     return token;
   }
 
-  public boolean hasUserWithToken(String user, String token, String dbName)
+  public boolean hasUserWithToken(String user, String token)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -70,11 +66,11 @@ public class TokenMongoService implements TokenStorage
     return (cursor.hasNext());
   }
 
-  public void addUser(String user, String token, String dbName)
+  public void addUser(String user, String token)
   {
-    if (!hasUserWithToken(user, token, dbName))
+    if (!hasUserWithToken(user, token))
     {
-      DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
 
       BasicDBObject query = new BasicDBObject();
       query.put("user", user);
@@ -98,9 +94,9 @@ public class TokenMongoService implements TokenStorage
     }
   }
 
-  public void removeUserToken(String user, String token, String dbName)
+  public void removeUserToken(String user, String token)
   {
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
     query.put("user", user);
     query.put("token", token);
@@ -110,7 +106,7 @@ public class TokenMongoService implements TokenStorage
     coll.update(query, set);
   }
 
-  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, String dbName, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
+  public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
     BasicDBObject query = new BasicDBObject();
     if (isAdmin) {
@@ -125,7 +121,7 @@ public class TokenMongoService implements TokenStorage
     query.put("user", new BasicDBObject("$in", limitedFilter));
     if (limit < 0) limit = 0;
 
-    DBCollection coll = db(dbName).getCollection(M_USERS_COLLECTION);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     DBCursor cursor = coll.find(query).limit(limit);
     HashMap<String, UserBean> users = new HashMap<>();
     while (cursor.hasNext()) {

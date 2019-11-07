@@ -15,8 +15,7 @@ public class UpdateUserEventListener extends UserEventListener {
       return;
     }
     try {
-      String dbName = ServerBootstrap.getDBName();
-      ServerBootstrap.addUserFullNameAndEmail(user.getUserName(), user.getDisplayName(), user.getEmail(), dbName);
+      ServerBootstrap.addUserFullNameAndEmail(user.getUserName(), user.getDisplayName(), user.getEmail());
     } catch (Exception e) {
       LOG.warn("Can not update firstName/lastName to chatServer", e);
     }

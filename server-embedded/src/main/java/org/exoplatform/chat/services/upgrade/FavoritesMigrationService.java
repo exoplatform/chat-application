@@ -68,10 +68,10 @@ public class FavoritesMigrationService {
     MongoBootstrap mongoBootstrap = ConnectionManager.getInstance();
     DB db = mongoBootstrap.getDB();
 
-    FavoritesMigrationStatus migrationStatus = getMigrationStatus(db.getName());
+    FavoritesMigrationStatus migrationStatus = getMigrationStatus();
 
     if(migrationStatus == null) {
-      setMigrationStatus(FavoritesMigrationStatus.RUNNING, db.getName());
+      setMigrationStatus(FavoritesMigrationStatus.RUNNING);
 
       LOG.info("== Chat users favorites migration starting ==");
 
@@ -94,22 +94,22 @@ public class FavoritesMigrationService {
         }
       }
 
-      setMigrationStatus(FavoritesMigrationStatus.DONE, db.getName());
+      setMigrationStatus(FavoritesMigrationStatus.DONE);
 
       LOG.info("== Chat users favorites migration done ==");
     }
   }
 
-  public FavoritesMigrationStatus getMigrationStatus(String dbName) {
-    String status = settingDataStorage.getSetting(SETTING_MIGRATION_STATUS, dbName);
+  public FavoritesMigrationStatus getMigrationStatus() {
+    String status = settingDataStorage.getSetting(SETTING_MIGRATION_STATUS);
     if(status != null) {
       return FavoritesMigrationStatus.valueOf(status);
     }
     return null;
   }
 
-  public void setMigrationStatus(FavoritesMigrationStatus status, String dbName) {
-    settingDataStorage.setSetting(SETTING_MIGRATION_STATUS, status.toString(), dbName);
+  public void setMigrationStatus(FavoritesMigrationStatus status) {
+    settingDataStorage.setSetting(SETTING_MIGRATION_STATUS, status.toString());
   }
 
   /**

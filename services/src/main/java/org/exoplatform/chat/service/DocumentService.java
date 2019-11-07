@@ -164,11 +164,10 @@ public class DocumentService implements ResourceContainer {
                               @FormParam("uploadId") String uploadId,
                               @FormParam("targetRoom") String targetRoom,
                               @FormParam("targetFullname") String targetFullname,
-                              @FormParam("token") String token,
-                              @FormParam("dbName") String dbName) throws Exception {
+                              @FormParam("token") String token) throws Exception {
     String remoteUser = securityContext.getUserPrincipal().getName();
     String room = targetRoom.replace(ChatService.TEAM_PREFIX, "").replace(ChatService.SPACE_PREFIX, "");
-    String users = targetRoom.startsWith(ChatService.TEAM_PREFIX) ? ServerBootstrap.getUsers(remoteUser, token, room, dbName)
+    String users = targetRoom.startsWith(ChatService.TEAM_PREFIX) ? ServerBootstrap.getUsers(remoteUser, token, room)
                                                                   : null;
     List<String> usernames =
                            targetRoom.startsWith(ChatService.TEAM_PREFIX) ? getUsernamesFromJSON(users)
