@@ -26,7 +26,16 @@ public class SpaceBean implements java.io.Serializable
   String displayName;
   String groupId;
   String shortName;
+  String prettyName;
   long timestamp = -1;
+
+  public String getPrettyName() {
+    return prettyName;
+  }
+
+  public void setPrettyName(String prettyName) {
+    this.prettyName = prettyName;
+  }
 
   public String getId() {
     return id;
@@ -85,7 +94,8 @@ public class SpaceBean implements java.io.Serializable
               areEqual(this.room, that.room) &&
               areEqual(this.displayName, that.displayName) &&
               areEqual(this.groupId, that.groupId) &&
-              areEqual(this.shortName, that.shortName);
+              areEqual(this.shortName, that.shortName) &&
+            areEqual(this.prettyName, that.prettyName);
   }
 
   @Override public int hashCode() {
@@ -93,7 +103,8 @@ public class SpaceBean implements java.io.Serializable
             ^ this.room.hashCode()
             ^ this.displayName.hashCode()
             ^ this.groupId.hashCode()
-            ^ this.shortName.hashCode();
+            ^ this.shortName.hashCode()
+            ^ this.prettyName.hashCode();
   }
 
   static public boolean areEqual(Object aThis, Object aThat){

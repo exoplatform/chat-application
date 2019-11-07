@@ -41,6 +41,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setGroupId("test_space");
     space.setId("test_space");
     space.setShortName("Test Space");
+    space.setPrettyName("Test space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
     ServiceBootstrap.getUserService().setSpaces(user, spaces);
@@ -53,6 +54,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     space2.setGroupId("test_space_2");
     space2.setId("test_space_2");
     space2.setShortName("Test Space 2");
+    space2.setPrettyName("Test space2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
     ServiceBootstrap.getUserService().setSpaces(user, spaces);
@@ -86,6 +88,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setId(spaceId);
     space.setRoom(room);
     space.setShortName("Test Space");
+    space.setPrettyName("Test space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
     ServiceBootstrap.getUserService().setSpaces(user, spaces);
@@ -110,6 +113,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     space.setId(spaceId);
     space.setRoom(room);
     space.setShortName("Test Space");
+    space.setPrettyName("Test space");
     space.setTimestamp(System.currentTimeMillis());
     spaces.add(space);
 
@@ -130,6 +134,7 @@ public class SpaceTestCase extends AbstractChatTestCase
     space2.setId(spaceId2);
     space2.setRoom(room2);
     space2.setShortName("Test Space 2");
+    space2.setPrettyName("Test space 2");
     space2.setTimestamp(System.currentTimeMillis());
     spaces.add(space2);
 

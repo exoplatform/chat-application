@@ -101,6 +101,7 @@ public class ServerBootstrap {
         spaceBean.setGroupId(space.getGroupId());
         spaceBean.setId(space.getId());
         spaceBean.setShortName(space.getShortName());
+        spaceBean.setPrettyName(space.getPrettyName());
         beans.add(spaceBean);
       }
       setSpaces(username, new SpaceBeans(beans));
