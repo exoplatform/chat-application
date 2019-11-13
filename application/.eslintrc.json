@@ -34,7 +34,7 @@
         "no-await-in-loop": ["error"],
         "no-caller": ["error"],
         "no-confusing-arrow": ["error"],
-        "no-console": ["warn"],
+        "no-console": ["warn", {"allow": ["debug", "warn", "error"]}],
         "no-empty-function": ["error"],
         "no-eval": ["error"],
         "no-extra-label": ["error"],
