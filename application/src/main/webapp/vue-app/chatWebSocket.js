@@ -252,11 +252,7 @@ function renewToken() {
       cometDSettings.cCometD.configure(wsConfig);
       initChatCometd();
     },
-    error: () => {
-      window.setTimeout(() => {
-        renewToken();
-      }, chatConstants.COMETD_TOKEN_ATTEMPT_DELAY);
-    }
+    error: e => console.error('Error while retrieving cometd token from server', e)
   });
 }
 
