@@ -40,7 +40,7 @@ const DEFAULT_COMPOSER_APPS = [
             </select> \
           </div> \
         </div> \
-        <input name="location" class="large" type="text" placeholder="Location" required> `;
+        <input name="location" class="large" type="text" placeholder="${i18NConverter('exoplatform.chat.location')}" required> `;
     },
     validate(formData) {
       const startDateParts = formData['startDate'].split('/');
