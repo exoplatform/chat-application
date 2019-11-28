@@ -95,6 +95,8 @@ public interface ChatService
   public String getTeamCreator(String room);
 
   public void setRoomName(String room, String name);
+  
+  public void setRoomMeetingStatus(String room, boolean start, String startTime);
 
   /**
    * Get rooms by name

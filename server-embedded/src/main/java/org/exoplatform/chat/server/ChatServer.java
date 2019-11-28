@@ -807,6 +807,18 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/updateRoomMeetingStatus")
+  public Response.Content updateRoomMeetingStatus(String user, String token, String start, String room, String startTime) {
+    if (!tokenService.hasUserWithToken(user, token)) {
+      return Response.notFound("Petit malin !");
+    }
+    
+    chatService.setRoomMeetingStatus(room, Boolean.parseBoolean(start), startTime);
+
+    return Response.ok("Updated.");
+  }
+
+  @Resource
   @MimeType("text/plain")
   @Route("/updateUnreadMessages")
   public Response.Content updateUnreadMessages(String room, String user, String token)

@@ -27,6 +27,8 @@ public class SpaceBean implements java.io.Serializable
   String groupId;
   String shortName;
   String prettyName;
+  boolean meetingStarted = false;
+  String startTime = "";
   long timestamp = -1;
 
   public String getPrettyName() {
@@ -35,6 +37,22 @@ public class SpaceBean implements java.io.Serializable
 
   public void setPrettyName(String prettyName) {
     this.prettyName = prettyName;
+  }
+
+  public boolean isMeetingStarted() {
+    return meetingStarted;
+  }
+
+  public void setMeetingStarted(boolean meetingStarted) {
+    this.meetingStarted = meetingStarted;
+  }
+
+  public String getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(String startTime) {
+    this.startTime = startTime;
   }
 
   public String getId() {

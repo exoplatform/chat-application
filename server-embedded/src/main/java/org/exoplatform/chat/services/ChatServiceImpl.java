@@ -287,6 +287,11 @@ public class ChatServiceImpl implements ChatService
     }
   }
 
+  @Override
+  public void setRoomMeetingStatus(String room, boolean start, String startTime) {
+    chatStorage.setRoomMeetingStatus(room, start, startTime);
+  }
+
   public String getRoom(List<String> users)
   {
     return chatStorage.getRoom(users);
