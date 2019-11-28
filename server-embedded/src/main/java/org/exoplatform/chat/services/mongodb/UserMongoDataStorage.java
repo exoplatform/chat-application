@@ -509,6 +509,12 @@ public class UserMongoDataStorage implements UserDataStorage {
       roomBean.setUser(doc.get("user").toString());
       roomBean.setFullName(doc.get("team").toString());
       roomBean.setType(doc.get("type").toString());
+      if (doc.containsField("meetingStarted")) {
+        roomBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
+      }
+      if (doc.containsField("startTime")) {
+        roomBean.setStartTime((String) doc.get("startTime"));
+      }
       if (doc.containsField("timestamp"))
       {
         roomBean.setTimestamp(((Long) doc.get("timestamp")).longValue());
@@ -568,6 +574,12 @@ public class UserMongoDataStorage implements UserDataStorage {
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
         roomBean.setFullName(doc.get("displayName").toString());
+        if (doc.containsField("meetingStarted")) {
+          roomBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
+        }
+        if (doc.containsField("startTime")) {
+          roomBean.setStartTime((String) doc.get("startTime"));
+        }
       }
       else if (ChatService.TYPE_ROOM_TEAM.equals(type))
       {
@@ -575,6 +587,12 @@ public class UserMongoDataStorage implements UserDataStorage {
         roomBean.setFullName(doc.get("team").toString());
         String creator = (String) doc.get("user");
         roomBean.setAdmins(new String[]{creator});
+        if (doc.containsField("meetingStarted")) {
+          roomBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
+        }
+        if (doc.containsField("startTime")) {
+          roomBean.setStartTime((String) doc.get("startTime"));
+        }
       }
       else if (ChatService.TYPE_ROOM_USER.equals(type))
       {
@@ -611,6 +629,12 @@ public class UserMongoDataStorage implements UserDataStorage {
       spaceBean.setGroupId(doc.get("groupId").toString());
       spaceBean.setShortName(doc.get("shortName").toString());
       spaceBean.setPrettyName(doc.get("prettyName").toString());
+      if (doc.containsField("meetingStarted")) {
+        spaceBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
+      }
+      if (doc.containsField("startTime")) {
+        spaceBean.setStartTime((String) doc.get("startTime"));
+      }
       if (doc.containsField("timestamp"))
       {
         spaceBean.setTimestamp(((Long)doc.get("timestamp")).longValue());

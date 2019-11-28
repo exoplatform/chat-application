@@ -269,6 +269,24 @@ export function saveRoom(userSettings, roomName, users, room) {
   });
 }
 
+export function updateRoomMeetingStatus(userSettings, room, start, startTime) {
+  const data = {
+    user: userSettings.username,
+    room: room,
+    start: start,
+    startTime: startTime
+  };
+
+  return fetch(`${chatConstants.CHAT_SERVER_API}updateRoomMeetingStatus`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`,
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+    method: 'post',
+    body: decodeURI($.param(data))
+  });
+}
+
 export function getUserAvatar(user) {
   return `${chatConstants.SOCIAL_USER_API}${user}/avatar`;
 }
