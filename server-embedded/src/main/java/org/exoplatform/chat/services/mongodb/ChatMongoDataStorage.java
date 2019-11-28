@@ -139,6 +139,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setFullName((String) dbRoom.get("team"));
       room.setUser((String) dbRoom.get("user"));
       room.setType((String) dbRoom.get("type"));
+      if (dbRoom.containsField("meetingStarted")) {
+        room.setMeetingStarted((Boolean) dbRoom.get("meetingStarted"));
+      }
+      if (dbRoom.containsField("startTime")) {
+        room.setStartTime((String) dbRoom.get("startTime"));
+      }
       if (StringUtils.isNotBlank(room.getUser())) {
         room.setAdmins(new String[]{room.getUser()});
       }
@@ -165,6 +171,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     room.setFullName((String) dbRoom.get("team"));
     room.setUser((String) dbRoom.get("user"));
     room.setType((String) dbRoom.get("type"));
+    if (dbRoom.containsField("meetingStarted")) {
+      room.setMeetingStarted((Boolean) dbRoom.get("meetingStarted"));
+    }
+    if (dbRoom.containsField("startTime")) {
+      room.setStartTime((String) dbRoom.get("startTime"));
+    }
     if (StringUtils.isNotBlank(room.getUser())) {
       room.setAdmins(new String[]{room.getUser()});
     }
@@ -408,6 +420,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       try {
         basicDBObject.put("space", space);
         basicDBObject.put("type", TYPE_ROOM_SPACE);
+        basicDBObject.put("meetingStarted", false);
+        basicDBObject.put("startTime", "");
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_SPACE);
       } catch (MongoException me) {
@@ -447,6 +461,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("team", team);
         basicDBObject.put("user", user);
         basicDBObject.put("type", TYPE_ROOM_TEAM);
+        basicDBObject.put("meetingStarted", false);
+        basicDBObject.put("startTime", "");
         basicDBObject.put("timestamp", System.currentTimeMillis());
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_TEAM);
@@ -517,6 +533,22 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
   }
 
+  @Override
+  public void setRoomMeetingStatus(String room, boolean start, String startTime) {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext()) {
+      DBObject dbo = cursor.next();
+      dbo.put("meetingStarted", start);
+      dbo.put("startTime", startTime);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
+    }    
+  }
+
   public String getRoom(List<String> users) {
     Collections.sort(users);
     String room = ChatUtils.getRoomId(users);
@@ -581,6 +613,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           roomBean.setType((String) dbo.get("type"));
+          if (dbo.containsField("meetingStarted")) {
+            roomBean.setMeetingStarted((Boolean) dbo.get("meetingStarted"));
+          }
+          if (dbo.containsField("startTime")) {
+            roomBean.setStartTime((String) dbo.get("startTime"));
+          }
           String creator = (String) dbo.get("user");
           if (StringUtils.isNotBlank(creator)) {
             roomBean.setAdmins(new String[]{creator});
@@ -687,6 +725,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setTimestamp(team.getTimestamp());
       room.setAvailableUser(true);
       room.setType(team.getType());
+      room.setMeetingStarted(team.isMeetingStarted());
+      room.setStartTime(team.getStartTime());
       room.setAdmins(team.getAdmins());
 
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));

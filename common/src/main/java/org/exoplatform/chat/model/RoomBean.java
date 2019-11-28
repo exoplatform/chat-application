@@ -35,6 +35,8 @@ public class RoomBean implements Comparable<RoomBean>
   boolean isAvailableUser = false;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
+  boolean meetingStarted = false;
+  String startTime = "";
   boolean isFavorite = false;
   String[] admins = null;
   long timestamp = -1;
@@ -143,6 +145,22 @@ public class RoomBean implements Comparable<RoomBean>
     return l.compareTo(r);
   }
 
+  public boolean isMeetingStarted() {
+    return meetingStarted;
+  }
+
+  public void setMeetingStarted(boolean meetingStarted) {
+    this.meetingStarted = meetingStarted;
+  }
+
+  public String getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(String startTime) {
+    this.startTime = startTime;
+  }
+
   @SuppressWarnings("unchecked")
   public JSONObject toJSONObject() {
     JSONObject obj = new JSONObject();
@@ -155,6 +173,8 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("isActive", String.valueOf(this.isActive()));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
+    obj.put("meetingStarted", this.isMeetingStarted());
+    obj.put("startTime", this.getStartTime());
     obj.put("lastMessage", this.getLastMessage());
     obj.put("prettyName", this.getPrettyName());
     if (this.getAdmins() != null) {
@@ -170,4 +190,5 @@ public class RoomBean implements Comparable<RoomBean>
   public String toJSON()
   {
     return toJSONObject().toString();
-  }}
+  }
+}

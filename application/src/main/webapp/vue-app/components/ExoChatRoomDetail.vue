@@ -14,9 +14,9 @@
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
-        <exo-dropdown-select v-if="displayMenu" class="room-settings-dropdown chat-team-button-dropdown" position="right">
+        <exo-dropdown-select v-if="displayMenu" class="room-settings-dropdown chat-team-button-dropdown" position="right" @click.native="checkMeetingStatus">
           <i v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')" slot="toggle" class="uiIconVerticalDots"></i>
-          <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click="executeAction(settingAction)">
+          <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click.stop="executeAction(settingAction)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>
               {{ $t(settingAction.labelKey) }}
@@ -44,7 +44,6 @@
 <script>
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
-import * as chatWebStorage from '../chatWebStorage';
 import {roomActions} from '../extension';
 
 export default {
@@ -67,6 +66,12 @@ export default {
       default() {
         return {};
       }
+    },
+    meetingStarted: {
+      type: Boolean,
+      default() {
+        return false;
+      }
     }
   },
   data() {
@@ -75,7 +80,6 @@ export default {
       nbMembers: 0,
       showSearchRoom: false,
       searchText: '',
-      meetingStarted: false,
       openNotificationSettings: false,
       showConfirmModal: false,
       confirmTitle: '',
@@ -106,7 +110,7 @@ export default {
       } else {
         this.nbMembers = newContact.participants ? newContact.participants.length : 0;
       }
-      this.meetingStarted = false;
+      this.meetingStarted = newContact.meetingStarted;
     }
   },
   created() {
@@ -116,10 +120,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
-    this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
-  },
-  updated() {
-    this.meetingStarted = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${this.contact.room}`);
   },
   destroyed() {
     document.removeEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
@@ -169,21 +169,27 @@ export default {
       } else {
         document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}-requested`, {'detail': this.contact}));
       }
+      this.$children[1].$el.classList.remove('open');
+    },
+    checkMeetingStatus() {
+      chatServices.getRoomDetail(eXo.chat.userSettings, this.contact.room).then(contact => {
+        this.meetingStarted = contact.meetingStarted;
+      });
     },
     startMeeting() {
       const room = this.contact.room;
-      chatWebStorage.setStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`, new Date().getTime().toString());
-      this.meetingStarted = true;
+      const now = new Date().getTime().toString();
+      chatServices.updateRoomMeetingStatus(eXo.chat.userSettings, room, true, now);
       this.sendMeetingMessage(true);
     },
     stopMeeting() {
       const room = this.contact.room;
-      const fromTimestamp = chatWebStorage.getStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`);
-      if (fromTimestamp) {
-        chatWebStorage.setStoredParam(`${chatConstants.STORED_PARAM_MEETING_STARTED}-${room}`, '');
-        this.meetingStarted = false;
-        this.sendMeetingMessage(false, fromTimestamp);
-      }
+      let fromTimestamp = '';
+      chatServices.getRoomDetail(eXo.chat.userSettings, this.contact.room).then(contact => {
+        fromTimestamp = contact.startTime;
+      });
+      this.sendMeetingMessage(false, fromTimestamp);
+      chatServices.updateRoomMeetingStatus(eXo.chat.userSettings, room, false, '');
     },
     sendMeetingMessage(startMeeting, fromTimestamp) {
       const msgType = startMeeting ? 'type-meeting-start' : 'type-meeting-stop';

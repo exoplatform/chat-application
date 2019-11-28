@@ -3,6 +3,7 @@ package org.exoplatform.chat;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
@@ -48,6 +49,42 @@ public class TeamTestCase extends AbstractChatTestCase
     assertEquals(user, ServiceBootstrap.getChatService().getTeamCreator(room2));
     assertEquals(user2, ServiceBootstrap.getChatService().getTeamCreator(room3));
 
+  }
+
+  @Test
+  public void testTeamMeetingStatus() throws Exception
+  {
+    log.info("TeamTestCase.testTeamMeetingStatus");
+    String user1 = "mary";
+    String user2 = "john";
+
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team1", user1);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user2);
+    
+    RoomBean roomBean1 = ServiceBootstrap.getChatService().getTeamRoomById(room1);
+    RoomBean roomBean2 = ServiceBootstrap.getChatService().getTeamRoomById(room2);
+
+    assertFalse(roomBean1.isMeetingStarted());
+    assertFalse(roomBean2.isMeetingStarted());
+    assertTrue(roomBean1.getStartTime().isEmpty());
+    assertTrue(roomBean2.getStartTime().isEmpty());
+
+    Date date = new Date();
+    String now = date.toString();
+    date.setHours(0);
+    String now1 = date.toString();
+    
+    ServiceBootstrap.getChatService().setRoomMeetingStatus(room1,true, now);
+    ServiceBootstrap.getChatService().setRoomMeetingStatus(room2,true, now1);
+
+    roomBean1 = ServiceBootstrap.getChatService().getTeamRoomById(room1);
+    roomBean2 = ServiceBootstrap.getChatService().getTeamRoomById(room2);
+    
+    assertTrue(roomBean1.isMeetingStarted());
+    assertTrue(roomBean2.isMeetingStarted());
+    assertEquals(now, roomBean1.getStartTime());
+    assertEquals(now1, roomBean2.getStartTime());
+    
   }
 
   @Test

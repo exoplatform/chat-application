@@ -80,6 +80,8 @@ public interface ChatDataStorage
   public String getTeamCreator(String room);
 
   public void setRoomName(String room, String name);
+  
+  public void setRoomMeetingStatus(String room, boolean start, String startTime);
 
   /**
    * Retrieve a Room by its ID
