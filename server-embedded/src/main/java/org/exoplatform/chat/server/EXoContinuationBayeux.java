@@ -82,7 +82,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
    * Default constructor.
    */
   public EXoContinuationBayeux(TokenService tokenService) {
-    super(null);
+    super();
     this.setSecurityPolicy(new EXoSecurityPolicy(this));
     this.tokenService = tokenService;
     //

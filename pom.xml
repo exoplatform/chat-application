@@ -32,8 +32,11 @@
   <properties>
     <!-- 3rd party libraries versions -->
     <org.exoplatform.gatein.portal.version>6.0.x-SNAPSHOT</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.social.version>6.0.x-SNAPSHOT</org.exoplatform.social.version>
     <org.exoplatform.ecms.version>6.0.x-SNAPSHOT</org.exoplatform.ecms.version>
-    <org.exoplatform.platform.version>6.0.x-SNAPSHOT</org.exoplatform.platform.version>
+    <org.exoplatform.forum.version>6.0.x-SNAPSHOT</org.exoplatform.forum.version>
+    <org.exoplatform.calendar.version>6.0.x-SNAPSHOT</org.exoplatform.calendar.version>
+    <org.exoplatform.wiki.version>6.0.x-SNAPSHOT</org.exoplatform.wiki.version>
     <org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
@@ -184,6 +187,14 @@
         <artifactId>exo.portal.webui.portal</artifactId>
         <version>${org.exoplatform.gatein.portal.version}</version>
       </dependency>
+      <!-- Import versions from social project -->
+      <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social</artifactId>
+        <version>${org.exoplatform.social.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Import versions from ecms project -->
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>
@@ -192,11 +203,19 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions from platform project -->
+      <!-- Import versions from wiki project -->
       <dependency>
-        <groupId>org.exoplatform.platform</groupId>
-        <artifactId>platform</artifactId>
-        <version>${org.exoplatform.platform.version}</version>
+        <groupId>org.exoplatform.wiki</groupId>
+        <artifactId>wiki</artifactId>
+        <version>${org.exoplatform.wiki.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions from ecms project -->
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar</artifactId>
+        <version>${org.exoplatform.calendar.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
