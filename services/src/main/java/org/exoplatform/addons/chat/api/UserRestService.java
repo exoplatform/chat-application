@@ -22,6 +22,7 @@ import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
 import org.exoplatform.chat.service.DocumentService;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -51,9 +52,7 @@ public class UserRestService implements ResourceContainer {
 
   public UserRestService(UserStateService userStateService,
                          ContinuationService continuationService,
-                         OrganizationService organizationService,
-                         DocumentService documentService) {
-    this.documentService = documentService;
+                         OrganizationService organizationService) {
     this.organizationService = organizationService;
     this.continuationService = continuationService;
     this.userStateService = userStateService;
@@ -214,7 +213,9 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("chatPage", chatPage);
     userSettings.put("offlineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
-    userSettings.put("maxUploadSize", documentService.getUploadLimitInMB());
+    if (getDocumentService() != null) {
+      userSettings.put("maxUploadSize", getDocumentService().getUploadLimitInMB());
+    }
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
@@ -239,4 +240,10 @@ public class UserRestService implements ResourceContainer {
     return token;
   }
 
+  public DocumentService getDocumentService() {
+    if (documentService == null) {
+      documentService = CommonsUtils.getService(DocumentService.class);
+    }
+    return documentService;
+  }
 }

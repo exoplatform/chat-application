@@ -20,14 +20,16 @@
 
 -->
 
-<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
-	xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+<configuration 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_3.xsd http://www.exoplatform.org/xml/ns/kernel_1_3.xsd"
+  xmlns="http://www.exoplatform.org/xml/ns/kernel_1_3.xsd">
 
-    <component>
+    <component profiles="wiki">
         <type>org.exoplatform.chat.service.WikiService</type>
     </component>
 
-    <component>
+    <component profiles="ecms">
         <type>org.exoplatform.chat.service.DocumentService</type>
         <init-params>
           <value-param>
@@ -37,7 +39,7 @@
         </init-params>
     </component>
 
-    <component>
+    <component profiles="calendar">
         <type>org.exoplatform.chat.service.CalendarService</type>
     </component>
 
