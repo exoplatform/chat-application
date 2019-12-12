@@ -39,6 +39,10 @@
         <name>apply.default</name>
         <value>true</value>
       </value-param>
+      <values-param>
+        <name>add.profiles</name>
+        <value>chat</value>
+      </values-param>
       <object-param>
         <name>change</name>
         <object type="org.exoplatform.container.definition.PortalContainerDefinitionChange$AddDependenciesAfter">
