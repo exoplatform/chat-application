@@ -33,7 +33,7 @@
     <set-method>registerChangePlugin</set-method>
     <!-- The full qualified name of the PortalContainerDefinitionChangePlugin -->
     <type>org.exoplatform.container.definition.PortalContainerDefinitionChangePlugin</type>
-    <priority>200</priority>
+    <priority>150</priority>
     <init-params>
       <value-param>
         <name>apply.default</name>
@@ -56,10 +56,6 @@
                 <string>chat</string>
               </value>
             </collection>
-          </field>
-          <!-- The name of the target dependency -->
-          <field name="target">
-            <string>acme-intranet</string>
           </field>
         </object>
       </object-param>     
