@@ -1,7 +1,7 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
     <div v-if="!miniChat" class="apps-container">
-      <div v-for="app in applications" :key="app.key" class="apps-item" @click="openAppModal(app)">
+      <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
         <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
         <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
       </div>
@@ -33,7 +33,7 @@
 
 <script>
 import * as chatServices from '../chatServices';
-import {composerApplications,EMOTICONS} from '../extension';
+import {composerApplications, EMOTICONS} from '../extension';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -47,6 +47,12 @@ export default {
       default: function() {
         return {};
       }
+    },
+    userSettings: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data() {
@@ -56,6 +62,7 @@ export default {
         isOpned: false
       },
       appsClosed: true,
+      composerApplications: [],
       showEmojiPanel: false
     };
   },
@@ -69,8 +76,10 @@ export default {
         return [];
       }
     },
-    applications() {
-      return composerApplications;
+  },
+  watch: {
+    userSettings() {
+      this.composerApplications = composerApplications;
     }
   },
   updated() {
@@ -78,7 +87,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.messageComposerArea.focus();
 
-        composerApplications.forEach(application => {
+        this.composerApplications.forEach(application => {
           if(application.mount) {
             application.mount($, chatServices);
           }
@@ -92,6 +101,9 @@ export default {
     document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
+  },
+  mounted() {
+    this.composerApplications = composerApplications;
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
@@ -137,7 +149,7 @@ export default {
       };
       let found = false;
       if(!this.miniChat) {
-        composerApplications.forEach(application => {
+        this.composerApplications.forEach(application => {
           if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;

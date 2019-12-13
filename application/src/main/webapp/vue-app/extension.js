@@ -1,108 +1,256 @@
 import {chatConstants} from './chatConstants.js';
 
-const DEFAULT_COMPOSER_APPS = [
-  {
-    key: 'event',
-    rank: 10,
-    type: 'type-event',
-    nameKey: 'exoplatform.chat.event',
-    labelKey: 'exoplatform.chat.add.event',
-    iconClass: 'uiIconChatCreateEvent',
-    appClass: 'chat-app-event',
-    saveLabelKey: 'exoplatform.chat.post',
-    html(i18NConverter) {
-      const NUMBER_HALF_HOUR_PER_DAY = 48;
-      const NUMBERS_MAX_WITH_ONE_DIGIT = 10;
-      const PAIR = 2;
-      let timeOptions = '';
-      for (let i = 0; i < NUMBER_HALF_HOUR_PER_DAY; i++) {
-        let hours = Math.floor(i / PAIR);
-        hours = hours < NUMBERS_MAX_WITH_ONE_DIGIT ? `0${hours}` : hours;
-        const minutes = i % PAIR === 0 ? '00' : '30';
-        timeOptions += `<option value="${hours}:${minutes}">${hours}:${minutes}</option>`;
-      }
-      return `<input name="summary" placeholder="${i18NConverter('exoplatform.chat.event.title')}" class="large" type="text" required> \
-        <div class="chat-event-date form-horizontal"> \
-          <div class="event-item"> \
-            <span class="action-label">${i18NConverter('exoplatform.chat.from')}</span> \
-            <input name="startDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
-            <select name="startTime" class="selectbox" required> \
-              <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
-              ${timeOptions}
-            </select> \
-          </div> \
-          <div class="event-item"> \
-            <span class="action-label">${i18NConverter('exoplatform.chat.to')}</span> \
-            <input name="endDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
-            <select name="endTime" class="selectbox" required> \
-              <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
-              ${timeOptions}
-            </select> \
-          </div> \
-        </div> \
-        <input name="location" class="large" type="text" placeholder="${i18NConverter('exoplatform.chat.location')}" required> `;
-    },
-    validate(formData) {
-      const startDateParts = formData['startDate'].split('/');
-      const startTime = formData['startTime'];
-      const endDateParts = formData['endDate'].split('/');
-      const endTime = formData['endTime'];
-
-      // To avoid magic-number eslint verification
-      const THIRD_INDEX = 2;
-      const START_YEAR = 1900;
-
-      const startMonth = parseInt(startDateParts[0]) - 1;
-      const startDay = parseInt(startDateParts[1]);
-      const startYear = parseInt(startDateParts[THIRD_INDEX]) - START_YEAR;
-      let startHour = 0;
-      let startMinutes = 0;
-      const endMonth = parseInt(endDateParts[0]) - 1;
-      const endDay = parseInt(endDateParts[1]);
-      const endYear = parseInt(endDateParts[THIRD_INDEX]) - START_YEAR;
-      let endHour = 0;
-      let endMinutes = 0;
-      if (startTime !== 'all-day') {
-        const startTimeParts = startTime.split(':');
-        startHour = parseInt(startTimeParts[0]);
-        startMinutes = parseInt(startTimeParts[1]);
-      }
-      if (endTime === 'all-day') {
-        const MAX_HOURS = 22;
-        const MAX_MINUTES = 59;
-        endHour = MAX_HOURS;
-        endMinutes = MAX_MINUTES;
-      } else {
-        const endTimeParts = endTime.split(':');
-        endHour = parseInt(endTimeParts[0]);
-        endMinutes = parseInt(endTimeParts[1]);
-      }
-
-      if (Date.UTC(endYear, endMonth, endDay, endHour, endMinutes) <= Date.UTC(startYear, startMonth, startDay, startHour, startMinutes)) {
-        return 'compareddate.invalid.message';
-      }
-    },
-    submit(chatServices, message, formData, contact) {
-      if (formData.startTime === 'all-day') {
-        formData.startTime = '00:00';
-        formData.startAllDay = true;
-      }
-
-      if (formData.endTime === 'all-day') {
-        formData.endTime = '23:59';
-        formData.endAllDay = true;
-      }
-
-      return chatServices.saveEvent(eXo.chat.userSettings, formData, contact).then((response)=> {
-        if(!response.ok) {
-          return {errorCode : 'ErrorSaveEvent'};
-        }
-        return {ok : true};
-      }).catch(() => {
-        return {errorCode : 'ErrorSaveEvent'};
-      });
+export const ECMS_EVENT_COMPOSER_APP = [{
+  key: 'file',
+  rank: 30,
+  type: 'type-file',
+  nameKey: 'exoplatform.chat.file',
+  labelKey: 'exoplatform.chat.upload.file',
+  iconClass: 'uiIconChatUpload',
+  hideModalActions: true,
+  contact: null,
+  i18NConverter: null,
+  appClass: 'chat-file-upload DropZone',
+  init(contact) {
+    this.contact = contact;
+  },
+  html(i18NConverter) {
+    this.i18NConverter = i18NConverter;
+    return `<div class="progressBar"> \
+              <div class="progress"> \
+                <div class="bar" style="width: 0.0%;"></div> \
+                <div class="label"> \
+                  <div class="label-inner">${i18NConverter('exoplatform.chat.file.drop')}</div> \
+                </div> \
+              </div> \
+            </div> \
+            <div class="uiActionBorder"> \
+              <a href="#" class="btn btn-primary chat-file-upload" type="button"> \
+                <span>${i18NConverter('exoplatform.chat.file.manually')}</span> \
+                <input id="chat-file-file" type="file" name="userfile" /> \
+              </a> \
+              <input id="chat-file-submit" value="${i18NConverter('exoplatform.chat.file.manually')}" type="submit" style="display:none" /> \
+              <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_APPS_CLOSE}'))">${i18NConverter('exoplatform.chat.cancel')}</a> \
+            </div>`;
+  },
+  htmlAdded($) {
+    this.initUpload($);
+  },
+  showButtons($, show) {
+    if(show) {
+      $('.apps-composer-modal .chat-file-upload .uiActionBorder').show();
+    } else {
+      $('.apps-composer-modal .chat-file-upload .uiActionBorder').hide();
     }
   },
+  setErrorCode($, error, errorOpts) {
+    const $alertContainer = $('.apps-composer-modal .alert-error');
+    if(error && error.length) {
+      $alertContainer.html(this.i18NConverter(`exoplatform.chat.${error}`, errorOpts));
+      $alertContainer.show();
+    } else {
+      $alertContainer.hide();
+      $alertContainer.html('');
+    }
+  },
+  initUpload($) {
+    const MAX_RANDOM_NUMBER = 100000;
+    const uploadId = Math.round(Math.random() * MAX_RANDOM_NUMBER);
+    const $dropzoneContainer = $('#appComposerForm .DropZone');
+    const thiss = this;
+
+    $dropzoneContainer.filedrop({
+      fallback_id: 'chat-file-file',  // an identifier of a standard file input element
+      url: `${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
+      paramname: 'userfile',          // POST parameter name used on serverside to reference file
+      error: function (err) {
+        switch (err) {
+        case 'ErrorBrowserNotSupported':
+        case 'BrowserNotSupported':
+          thiss.setErrorCode($, 'BrowserNotSupported');
+          break;
+        case 'ErrorTooManyFiles':
+        case 'TooManyFiles':
+          thiss.setErrorCode($, 'TooManyFiles');
+          break;
+        case 'ErrorFileTooLarge':
+        case 'FileTooLarge':
+          thiss.setErrorCode($, 'upload.filesize', {0: eXo.chat.userSettings.maxUploadSize});
+          break;
+        case 'ErrorFileTypeNotAllowed':
+        case 'FileTypeNotAllowed':
+          thiss.setErrorCode($, 'FileTypeNotAllowed');
+          break;
+        }
+        thiss.showButtons($, true);
+      },
+      allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+      maxfiles: chatConstants.MAX_UPLOAD_FILES,
+      maxfilesize: eXo.chat.userSettings.maxUploadSize,    // max file size in MBs
+      uploadStarted: function() {
+        thiss.setErrorCode($, '');
+        thiss.showButtons($, false);
+      },
+      progressUpdated: function (i, file, progress) {
+        $dropzoneContainer.find('.bar').width(`${progress}%`);
+        $dropzoneContainer.find('.bar').html(`${progress}%`);
+      },
+      uploadFinished: function () {
+        fetch(`${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=progress`, {
+          method: 'post',
+          credentials: 'include'
+        }).then(resp =>  resp.text()).then(data => {
+          data = data.replace(' upload :', ' "upload" :');
+          data = JSON.parse(data);
+          const UPLOAD_PERCENT_COMPLETE = 100;
+          data = data && data.upload && data.upload[uploadId] ? data.upload[uploadId] : null;
+          if (!data || !data.percent || data.percent !== UPLOAD_PERCENT_COMPLETE && data.percent !== '100') {
+            thiss.setErrorCode($, 'ErrorFileUploadNotComplete');
+            return;
+          }
+          fetch(chatConstants.FILE_PERSIST_URL, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            method: 'post',
+            credentials: 'include',
+            body: $.param({
+              uploadId: uploadId,
+              token: eXo.chat.userSettings.token,
+              targetRoom: thiss.contact.user,
+              targetFullname: thiss.contact.fullName
+            })
+          }).then(resp =>  {
+            if(!resp.ok) {
+              thiss.setErrorCode($, 'ErrorPersistFile');
+              return;
+            } else {
+              return resp.json();
+            }
+          }).then(options => {
+            if(!options) {
+              thiss.setErrorCode($, 'UknownError');
+              return;
+            }
+            options.type = 'type-file';
+            const message = {
+              msg: options.name,
+              room : thiss.contact.room,
+              clientId: new Date().getTime().toString(),
+              user: eXo.chat.userSettings.username,
+              options : options
+            };
+            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_APPS_CLOSE));
+          });
+        });
+      }
+    });
+  }
+}];
+export const CALENDAR_EVENT_COMPOSER_APP = [{
+  key: 'event',
+  rank: 10,
+  type: 'type-event',
+  nameKey: 'exoplatform.chat.event',
+  labelKey: 'exoplatform.chat.add.event',
+  iconClass: 'uiIconChatCreateEvent',
+  appClass: 'chat-app-event',
+  saveLabelKey: 'exoplatform.chat.post',
+  html(i18NConverter) {
+    const NUMBER_HALF_HOUR_PER_DAY = 48;
+    const NUMBERS_MAX_WITH_ONE_DIGIT = 10;
+    const PAIR = 2;
+    let timeOptions = '';
+    for (let i = 0; i < NUMBER_HALF_HOUR_PER_DAY; i++) {
+      let hours = Math.floor(i / PAIR);
+      hours = hours < NUMBERS_MAX_WITH_ONE_DIGIT ? `0${hours}` : hours;
+      const minutes = i % PAIR === 0 ? '00' : '30';
+      timeOptions += `<option value="${hours}:${minutes}">${hours}:${minutes}</option>`;
+    }
+    return `<input name="summary" placeholder="${i18NConverter('exoplatform.chat.event.title')}" class="large" type="text" required> \
+      <div class="chat-event-date form-horizontal"> \
+        <div class="event-item"> \
+          <span class="action-label">${i18NConverter('exoplatform.chat.from')}</span> \
+          <input name="startDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
+          <select name="startTime" class="selectbox" required> \
+            <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
+            ${timeOptions}
+          </select> \
+        </div> \
+        <div class="event-item"> \
+          <span class="action-label">${i18NConverter('exoplatform.chat.to')}</span> \
+          <input name="endDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
+          <select name="endTime" class="selectbox" required> \
+            <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
+            ${timeOptions}
+          </select> \
+        </div> \
+      </div> \
+      <input name="location" class="large" type="text" placeholder="${i18NConverter('exoplatform.chat.location')}" required> `;
+  },
+  validate(formData) {
+    const startDateParts = formData['startDate'].split('/');
+    const startTime = formData['startTime'];
+    const endDateParts = formData['endDate'].split('/');
+    const endTime = formData['endTime'];
+
+    // To avoid magic-number eslint verification
+    const THIRD_INDEX = 2;
+    const START_YEAR = 1900;
+
+    const startMonth = parseInt(startDateParts[0]) - 1;
+    const startDay = parseInt(startDateParts[1]);
+    const startYear = parseInt(startDateParts[THIRD_INDEX]) - START_YEAR;
+    let startHour = 0;
+    let startMinutes = 0;
+    const endMonth = parseInt(endDateParts[0]) - 1;
+    const endDay = parseInt(endDateParts[1]);
+    const endYear = parseInt(endDateParts[THIRD_INDEX]) - START_YEAR;
+    let endHour = 0;
+    let endMinutes = 0;
+    if (startTime !== 'all-day') {
+      const startTimeParts = startTime.split(':');
+      startHour = parseInt(startTimeParts[0]);
+      startMinutes = parseInt(startTimeParts[1]);
+    }
+    if (endTime === 'all-day') {
+      const MAX_HOURS = 22;
+      const MAX_MINUTES = 59;
+      endHour = MAX_HOURS;
+      endMinutes = MAX_MINUTES;
+    } else {
+      const endTimeParts = endTime.split(':');
+      endHour = parseInt(endTimeParts[0]);
+      endMinutes = parseInt(endTimeParts[1]);
+    }
+
+    if (Date.UTC(endYear, endMonth, endDay, endHour, endMinutes) <= Date.UTC(startYear, startMonth, startDay, startHour, startMinutes)) {
+      return 'compareddate.invalid.message';
+    }
+  },
+  submit(chatServices, message, formData, contact) {
+    if (formData.startTime === 'all-day') {
+      formData.startTime = '00:00';
+      formData.startAllDay = true;
+    }
+
+    if (formData.endTime === 'all-day') {
+      formData.endTime = '23:59';
+      formData.endAllDay = true;
+    }
+
+    return chatServices.saveEvent(eXo.chat.userSettings, formData, contact).then((response)=> {
+      if(!response.ok) {
+        return {errorCode : 'ErrorSaveEvent'};
+      }
+      return {ok : true};
+    }).catch(() => {
+      return {errorCode : 'ErrorSaveEvent'};
+    });
+  }
+}];
+export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'link',
     rank: 20,
@@ -143,154 +291,6 @@ const DEFAULT_COMPOSER_APPS = [
     }
   },
   {
-    key: 'file',
-    rank: 30,
-    type: 'type-file',
-    nameKey: 'exoplatform.chat.file',
-    labelKey: 'exoplatform.chat.upload.file',
-    iconClass: 'uiIconChatUpload',
-    hideModalActions: true,
-    contact: null,
-    i18NConverter: null,
-    appClass: 'chat-file-upload DropZone',
-    init(contact) {
-      this.contact = contact;
-    },
-    html(i18NConverter) {
-      this.i18NConverter = i18NConverter;
-      return `<div class="progressBar"> \
-                <div class="progress"> \
-                  <div class="bar" style="width: 0.0%;"></div> \
-                  <div class="label"> \
-                    <div class="label-inner">${i18NConverter('exoplatform.chat.file.drop')}</div> \
-                  </div> \
-                </div> \
-              </div> \
-              <div class="uiActionBorder"> \
-                <a href="#" class="btn btn-primary chat-file-upload" type="button"> \
-                  <span>${i18NConverter('exoplatform.chat.file.manually')}</span> \
-                  <input id="chat-file-file" type="file" name="userfile" /> \
-                </a> \
-                <input id="chat-file-submit" value="${i18NConverter('exoplatform.chat.file.manually')}" type="submit" style="display:none" /> \
-                <a href="#" type="button" class="btn btnClosePopup" onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_APPS_CLOSE}'))">${i18NConverter('exoplatform.chat.cancel')}</a> \
-              </div>`;
-    },
-    htmlAdded($) {
-      this.initUpload($);
-    },
-    showButtons($, show) {
-      if(show) {
-        $('.apps-composer-modal .chat-file-upload .uiActionBorder').show();
-      } else {
-        $('.apps-composer-modal .chat-file-upload .uiActionBorder').hide();
-      }
-    },
-    setErrorCode($, error, errorOpts) {
-      const $alertContainer = $('.apps-composer-modal .alert-error');
-      if(error && error.length) {
-        $alertContainer.html(this.i18NConverter(`exoplatform.chat.${error}`, errorOpts));
-        $alertContainer.show();
-      } else {
-        $alertContainer.hide();
-        $alertContainer.html('');
-      }
-    },
-    initUpload($) {
-      const MAX_RANDOM_NUMBER = 100000;
-      const uploadId = Math.round(Math.random() * MAX_RANDOM_NUMBER);
-      const $dropzoneContainer = $('#appComposerForm .DropZone');
-      const thiss = this;
-
-      $dropzoneContainer.filedrop({
-        fallback_id: 'chat-file-file',  // an identifier of a standard file input element
-        url: `${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=upload`,  // upload handler, handles each file separately, can also be a function taking the file and returning a url
-        paramname: 'userfile',          // POST parameter name used on serverside to reference file
-        error: function (err) {
-          switch (err) {
-          case 'ErrorBrowserNotSupported':
-          case 'BrowserNotSupported':
-            thiss.setErrorCode($, 'BrowserNotSupported');
-            break;
-          case 'ErrorTooManyFiles':
-          case 'TooManyFiles':
-            thiss.setErrorCode($, 'TooManyFiles');
-            break;
-          case 'ErrorFileTooLarge':
-          case 'FileTooLarge':
-            thiss.setErrorCode($, 'upload.filesize', {0: eXo.chat.userSettings.maxUploadSize});
-            break;
-          case 'ErrorFileTypeNotAllowed':
-          case 'FileTypeNotAllowed':
-            thiss.setErrorCode($, 'FileTypeNotAllowed');
-            break;
-          }
-          thiss.showButtons($, true);
-        },
-        allowedfiletypes: [],   // filetypes allowed by Content-Type.  Empty array means no restrictions
-        maxfiles: chatConstants.MAX_UPLOAD_FILES,
-        maxfilesize: eXo.chat.userSettings.maxUploadSize,    // max file size in MBs
-        uploadStarted: function() {
-          thiss.setErrorCode($, '');
-          thiss.showButtons($, false);
-        },
-        progressUpdated: function (i, file, progress) {
-          $dropzoneContainer.find('.bar').width(`${progress}%`);
-          $dropzoneContainer.find('.bar').html(`${progress}%`);
-        },
-        uploadFinished: function () {
-          fetch(`${chatConstants.UPLOAD_API}?uploadId=${uploadId}&action=progress`, {
-            method: 'post',
-            credentials: 'include'
-          }).then(resp =>  resp.text()).then(data => {
-            data = data.replace(' upload :', ' "upload" :');
-            data = JSON.parse(data);
-            const UPLOAD_PERCENT_COMPLETE = 100;
-            data = data && data.upload && data.upload[uploadId] ? data.upload[uploadId] : null;
-            if (!data || !data.percent || data.percent !== UPLOAD_PERCENT_COMPLETE && data.percent !== '100') {
-              thiss.setErrorCode($, 'ErrorFileUploadNotComplete');
-              return;
-            }
-            fetch(chatConstants.FILE_PERSIST_URL, {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-              },
-              method: 'post',
-              credentials: 'include',
-              body: $.param({
-                uploadId: uploadId,
-                token: eXo.chat.userSettings.token,
-                targetRoom: thiss.contact.user,
-                targetFullname: thiss.contact.fullName
-              })
-            }).then(resp =>  {
-              if(!resp.ok) {
-                thiss.setErrorCode($, 'ErrorPersistFile');
-                return;
-              } else {
-                return resp.json();
-              }
-            }).then(options => {
-              if(!options) {
-                thiss.setErrorCode($, 'UknownError');
-                return;
-              }
-              options.type = 'type-file';
-              const message = {
-                msg: options.name,
-                room : thiss.contact.room,
-                clientId: new Date().getTime().toString(),
-                user: eXo.chat.userSettings.username,
-                options : options
-              };
-              document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
-              document.dispatchEvent(new CustomEvent(chatConstants.ACTION_APPS_CLOSE));
-            });
-          });
-        }
-      });
-    }
-  },
-  {
     key: 'question',
     rank: 40,
     type: 'type-question',
@@ -324,7 +324,7 @@ const DEFAULT_COMPOSER_APPS = [
 ];
 
 
-const DEFAULT_ROOM_ACTIONS = [{
+export const DEFAULT_ROOM_ACTIONS = [{
   key: 'startMeeting',
   rank: 10,
   labelKey: 'exoplatform.chat.meeting.start',
@@ -499,7 +499,22 @@ export const EMOTICONS = [
   }
 ];
 
-const DEFAULT_MESSAGE_ACTIONS = [
+export const WIKI_MESSAGE_ACTIONS = [{
+  key: 'saveNotes',
+  rank: 40,
+  labelKey: 'exoplatform.chat.notes',
+  enabled: comp => {
+    const saveNotes =  !comp.message.isDeleted && !comp.message.notSent;
+    if (comp.message.options) {
+      return (
+        !(comp.message.options.type ==='type-file') && saveNotes
+      );
+    }
+    return saveNotes && !comp.message.isSystem ;
+  }
+}];
+
+export const DEFAULT_MESSAGE_ACTIONS = [
   {
     key: 'edit',
     rank: 10,
@@ -544,31 +559,17 @@ const DEFAULT_MESSAGE_ACTIONS = [
       }
       return quote && !comp.message.isSystem ;
     }
-  },
-  {
-    key: 'saveNotes',
-    rank: 40,
-    labelKey: 'exoplatform.chat.notes',
-    enabled: comp => {
-      const saveNotes =  !comp.message.isDeleted && !comp.message.notSent;
-      if (comp.message.options) {
-        return (
-          !(comp.message.options.type ==='type-file') && saveNotes
-        );
-      }
-      return saveNotes && !comp.message.isSystem ;
-    }
   }
 ];
 
-function getExtensionsByType(type) {
-  return extensionRegistry.loadExtensions('chat', type);
-}
-
-function registerDefaultExtensions(extensionType, defaultExtensions) {
+export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
     extensionRegistry.registerExtension('chat', extensionType, extension);
   }
+}
+
+function getExtensionsByType(type) {
+  return extensionRegistry.loadExtensions('chat', type);
 }
 
 registerDefaultExtensions('composer-application', DEFAULT_COMPOSER_APPS);
@@ -577,6 +578,31 @@ registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
 
 export const extraMessageTypes = getExtensionsByType('message-type');
 export const extraMessageNotifs = getExtensionsByType('message-notif');
-export const composerApplications = getExtensionsByType('composer-application');
-export const messageActions = getExtensionsByType('message-action');
 export const roomActions = getExtensionsByType('room-action');
+export let composerApplications = getExtensionsByType('composer-application');
+export let messageActions = getExtensionsByType('message-action');
+
+let additionalExtensionsInstalled = false;
+export function installExtensions(settings) {
+  if (!settings || !settings.fullName) {
+    return;
+  }
+
+  if (additionalExtensionsInstalled) {
+    return;
+  }
+  additionalExtensionsInstalled = true;
+
+  if (settings.canUploadFiles) {
+    registerDefaultExtensions('composer-application', ECMS_EVENT_COMPOSER_APP);
+  }
+  if (settings.canAddEvent) {
+    registerDefaultExtensions('composer-application', CALENDAR_EVENT_COMPOSER_APP);
+  }
+  if (settings.canAddWiki) {
+    registerDefaultExtensions('message-action', WIKI_MESSAGE_ACTIONS);
+  }
+
+  composerApplications = getExtensionsByType('composer-application');
+  messageActions = getExtensionsByType('message-action');
+}

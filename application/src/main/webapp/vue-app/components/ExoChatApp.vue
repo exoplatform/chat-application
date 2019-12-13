@@ -13,7 +13,7 @@
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
       <div class="room-content">
-        <exo-chat-message-list :contact="selectedContact"></exo-chat-message-list>
+        <exo-chat-message-list :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
         <exo-chat-room-participants :contact="selectedContact" @particpants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></exo-chat-room-participants> 
       </div>
     </div>
@@ -55,6 +55,7 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import {chatConstants} from '../chatConstants';
+import {installExtensions} from '../extension';
 
 export default {
   data() {
@@ -66,6 +67,9 @@ export default {
        * fullName: {String}
        * isOnline: {Boolean}
        * maxUploadSize: {Number}
+       * canUploadFiles: {Boolean}
+       * canAddEvent: {Boolean}
+       * canAddWiki: {Boolean}
        * offlineDelay: {Number}
        * serverURL: {String}
        * sessionId: {String}
@@ -126,6 +130,7 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
+      installExtensions(this.userSettings);
       const thiss = this;
       if(this.userSettings.offlineDelay) {
         setInterval(

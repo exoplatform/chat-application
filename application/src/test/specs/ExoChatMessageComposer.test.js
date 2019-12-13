@@ -29,7 +29,7 @@ describe('ExoChatMessageComposer.test.js', () => {
   });
 
   it('composer apps count', () => {
-    expect(cmp.vm.applications).toHaveLength(6);
+    expect(cmp.vm.composerApplications).toHaveLength(4);
   });
 
   it('composer emoticons count', () => {
