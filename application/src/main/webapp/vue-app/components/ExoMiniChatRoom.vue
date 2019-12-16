@@ -21,7 +21,7 @@
         <span :class="{'hidden': !selectedContact.unreadTotal}" class="notify-info badgeDefault badgePrimary mini">{{ selectedContact.unreadTotal }}</span> 
       </div>
     </div>
-    <exo-chat-message-list ref="exoChatMessageList" :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
+    <exo-chat-message-list ref="exoChatMessageList" :user-settings="userSettings" :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
   </div>
 </template>
 
@@ -34,7 +34,11 @@ export default {
     room: {
       type: String,
       default: ''
-    }
+    },
+    userSettings: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
