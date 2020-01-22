@@ -1,16 +1,16 @@
 <template>
   <div class="chat-contact">
     <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
-      <a v-if="!list && type!=='t'" :href="getProfileLink()" class="chat-contact-link"></a>
-      <i v-if="list && type=='u'" class="uiIconStatus"></i>
+      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="getProfileLink()" class="chat-contact-link"></a>
+      <i v-if="list && type=='u' && (isEnabled || isEnabled === null)" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
-      <div class="contactLabel">
+      <div :class="isActive" class="contactLabel">
         <span v-html="escapedName" />
         <slot></slot>
       </div>
       <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
-        <i class="uiIconStatus"></i>
+        <i v-if="isEnabled || isEnabled === null" class="uiIconStatus"></i>
         <span class="user-status">{{ getStatus }}</span>
       </div>
       <exo-dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
@@ -59,6 +59,11 @@ export default {
       type: Boolean,
       default: false
     },
+    /** For contact status: (Disabled or Deleted) */
+    isEnabled: {
+      type: Boolean,
+      default: true
+    },
     /** Contact type
      * u: user
      * t: room
@@ -93,6 +98,7 @@ export default {
       statusMap : {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
+        inactive: this.$t('exoplatform.chat.inactive'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
@@ -108,6 +114,9 @@ export default {
       }
     },
     getStatus() {
+      if (!this.isEnabled) {
+        return this.statusMap.inactive;
+      }
       if (!this.isOnline || this.status === 'invisible' && !this.isCurrentUser) {
         return this.statusMap.offline;
       } else {
@@ -124,7 +133,15 @@ export default {
       }
     },
     escapedName() {
-      return escapeHtml(this.name);
+      const name = escapeHtml(this.name); 
+      if(!this.isEnabled && this.list === true) {
+        return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');
+      } else {
+        return name;
+      }
+    },
+    isActive() {
+      return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
     }
   },
   created() {

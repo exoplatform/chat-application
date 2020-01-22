@@ -12,6 +12,7 @@ describe('ExoChatMessageComposer.test.js', () => {
         'fullName':'Test User',
         'unreadTotal':0,
         'isActive':'true',
+        'isEnabledUser':'true',
         'type':'u',
         'user':'testuser',
         'room':'eb74205830cf97546269bbdc5d439b29ddd1735b',

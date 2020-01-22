@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Named("userStorage")
 @ApplicationScoped
@@ -335,6 +336,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("_id", user);
       doc.put("user", user);
       doc.put("fullname", fullname);
+      doc.put("isEnabled", Boolean.TRUE.toString());
+      doc.put("isDeleted", Boolean.FALSE.toString());
       coll.insert(doc);
     }
     else
@@ -359,6 +362,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("_id", user);
       doc.put("user", user);
       doc.put("email", email);
+      doc.put("isEnabled", Boolean.TRUE.toString());
+      doc.put("isDeleted", Boolean.FALSE.toString());
       coll.insert(doc);
     }
     else
@@ -367,6 +372,36 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("email", email);
       coll.save(doc);
 
+    }
+  }
+
+  @Override
+  public void deleteUser(String user)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      doc.put("isDeleted", Boolean.TRUE.toString());
+      doc.put("isEnabled", Boolean.FALSE.toString());
+      coll.save(doc);
+    }
+  }
+
+  @Override
+  public void setEnabledUser(String user, Boolean isEnabled)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      doc.put("isDeleted", Boolean.FALSE.toString());
+      doc.put("isEnabled", isEnabled);
+      coll.save(doc);
     }
   }
 
@@ -628,7 +663,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       spaceBean.setDisplayName(doc.get("displayName").toString());
       spaceBean.setGroupId(doc.get("groupId").toString());
       spaceBean.setShortName(doc.get("shortName").toString());
-      spaceBean.setPrettyName(doc.get("prettyName").toString());
+      if (doc.containsField("prettyName")) {
+        spaceBean.setPrettyName(doc.get("prettyName").toString());
+      }
       if (doc.containsField("meetingStarted")) {
         spaceBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
       }
@@ -732,8 +769,15 @@ public class UserMongoDataStorage implements UserDataStorage {
       userBean.setEmail((prop != null) ? prop.toString() : "");
       prop = doc.get("status");
       userBean.setStatus((prop != null) ? prop.toString() : "");
+      if (doc.get("isEnabled") != null) {
+        userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+      }
+      if (doc.get("isDeleted") != null) {
+        userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+      }
       users.add(userBean);
     }
+    users = users.stream().filter(UserBean::isEnabledUser).collect(Collectors.toList());
     return users;
   }
 
@@ -866,6 +910,12 @@ public class UserMongoDataStorage implements UserDataStorage {
         userBean.setEmail(doc.get("email").toString());
       if (doc.get("status")!=null)
         userBean.setStatus(doc.get("status").toString());
+      if (doc.get("isEnabled") != null) {
+        userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+      }
+      if (doc.get("isDeleted") != null) {
+        userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+      }
       if (withFavorites)
       {
         if (doc.containsField("favorites")) {

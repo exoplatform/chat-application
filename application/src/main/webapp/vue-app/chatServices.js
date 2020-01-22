@@ -120,6 +120,18 @@ export function getOnlineUsers() {
     .then(resp => resp.text());
 }
 
+export function getUserState(user) {
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getUserState?user=${user}`, {credentials: 'include'})
+    .then(resp => resp.json());
+}
+
+export function updateUser(userSettings, targetUser, isDeleted, isEnabled) {
+  return fetch(`${chatConstants.CHAT_SERVER_API}updateUser?user=${userSettings.username}&targetUser=${targetUser}&isDeleted=${isDeleted}&isEnabled=${isEnabled}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.text());
+}
+
 export function toggleFavorite(room, user, favorite) {
   if ((!room || !room.trim().length) && user && user.trim().length) {
     return getRoomId(eXo.chat.userSettings, user, 'username').then((roomId) => {

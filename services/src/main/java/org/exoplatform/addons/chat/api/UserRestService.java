@@ -12,6 +12,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
@@ -137,6 +141,21 @@ public class UserRestService implements ResourceContainer {
     String users = String.join(",", list);
 
     return Response.ok(users, MediaType.TEXT_PLAIN).build();
+  }
+
+  @GET
+  @Path("/getUserState/")
+  @RolesAllowed("users")
+  public Response getUserState(@Context HttpServletRequest request, @QueryParam("user") String user) throws Exception {
+    init(request);
+
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, user);
+    JSONObject userStatus = new JSONObject();
+    userStatus.put("isDeleted", userIdentity.isDeleted());
+    userStatus.put("isEnabled", userIdentity.isEnable());
+
+    return Response.ok(userStatus, MediaType.APPLICATION_JSON).build();
   }
 
   @SuppressWarnings("unchecked")

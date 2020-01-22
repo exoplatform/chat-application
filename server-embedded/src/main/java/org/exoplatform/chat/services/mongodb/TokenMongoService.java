@@ -89,6 +89,8 @@ public class TokenMongoService implements TokenStorage
         doc.put("user", user);
         doc.put("token", token);
         doc.put("isDemoUser", user.startsWith(ANONIM_USER));
+        doc.put("isEnabled", Boolean.TRUE.toString());
+        doc.put("isDeleted", Boolean.FALSE.toString());
         coll.insert(doc);
       }
     }
@@ -137,7 +139,15 @@ public class TokenMongoService implements TokenStorage
         if (doc.get("status") != null) {
           userBean.setStatus(doc.get("status").toString());
         }
-        users.put(target, userBean);
+        if (doc.get("isEnabled") != null) {
+          userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+        }
+        if (doc.get("isDeleted") != null) {
+          userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+        }
+        if (userBean.isEnabled()) {
+          users.put(target, userBean);
+        }
       }
     }
 

@@ -351,6 +351,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         } else {
           MessageBean msg = toMessageBean(dbo);
           msg.setFullName(fullName);
+          msg.setEnabledUser(userBean.isEnabledUser());
 
           ((JSONArray)data.get("messages")).add(msg.toJSONObject());
         }
@@ -605,10 +606,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       users.remove(user);
       if (users.size() > 0 && !user.equals(users.get(0))) {
         String targetUser = users.get(0);
+        UserBean targetUserBean = userDataStorage.getUser(targetUser);
         boolean isDemoUser = tokenService.isDemoUser(targetUser);
         if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser)))) {
           RoomBean roomBean = new RoomBean();
           roomBean.setRoom(roomId);
+          roomBean.setEnabledUser(targetUserBean.isEnabled());
           roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);

@@ -14,6 +14,7 @@ public class MessageBean {
   private String options;
   private String type;
   private boolean isSystem;
+  private Boolean enabledUser;
 
   public String getId() {
     return id;
@@ -87,6 +88,14 @@ public class MessageBean {
     this.timestamp = timestamp;
   }
 
+  public Boolean isEnabledUser() {
+    return enabledUser;
+  }
+
+  public void setEnabledUser(Boolean enabledUser) {
+    this.enabledUser = enabledUser;
+  }
+
   public JSONObject toJSONObject() {
     JSONObject msg = new JSONObject();
     msg.put("msgId", id);
@@ -110,6 +119,7 @@ public class MessageBean {
     }
     msg.put("type", type);
     msg.put("isSystem", isSystem);
+    msg.put("isEnabledUser", String.valueOf(enabledUser));
 
     return msg;
   }

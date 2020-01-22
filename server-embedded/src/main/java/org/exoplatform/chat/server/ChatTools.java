@@ -36,6 +36,7 @@ import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.SpaceBeans;
+import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.RealTimeMessageService;
@@ -148,6 +149,33 @@ public class ChatTools
   }
 
   @Resource
+  @Route("/deleteUser")
+  public Response.Content deleteUser(String username, String passphrase, String dbName)
+  {
+    if (!checkPassphrase(passphrase)) {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    userService.deleteUser(username);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/setEnabledUser")
+  public Response.Content setEnabledUser(String username, String enabled, String passphrase, String dbName)
+  {
+    if (!checkPassphrase(passphrase)) {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    Boolean isEnabled = StringUtils.equals(enabled, "true");
+    userService.setEnabledUser(username, isEnabled);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
   @Route("/setSpaces")
   public Response.Content setSpaces(String username, String spaces, String passphrase)
   {
@@ -180,6 +208,20 @@ public class ChatTools
     String fullname = userService.getUserFullName(username);
 
     return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
+  @Route("/shouldUpdate")
+  public Response.Content shouldUpdate(String user, String passphrase)
+  {
+    if (!checkPassphrase(passphrase)) {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    UserBean userBean = userService.getUser(user);
+    Boolean shouldUpdate = userBean.isEnabled() == null || userBean.isDeleted() == null ? true : false;
+
+    return Response.ok(shouldUpdate.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource

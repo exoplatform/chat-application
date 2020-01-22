@@ -20,4 +20,29 @@ public class UpdateUserEventListener extends UserEventListener {
       LOG.warn("Can not update firstName/lastName to chatServer", e);
     }
   }
+
+  @Override
+  public void postDelete(User user) throws Exception {
+    if (ConversationState.getCurrent() == null) {
+      return;
+    }
+    try {
+      ServerBootstrap.deleteUser(user.getUserName());
+    } catch (Exception e) {
+      LOG.warn("Can not delete user {} from chatServer", user.getUserName(), e);
+    }
+  }
+
+  @Override
+  public void postSetEnabled(User user) throws Exception {
+    if (ConversationState.getCurrent() == null) {
+      return;
+    }
+    Boolean enabled = user.isEnabled();
+    try {
+      ServerBootstrap.setEnabledUser(user.getUserName(), enabled);
+    } catch (Exception e) {
+      LOG.warn("Can not delete user {} from chatServer", user.getUserName(), e);
+    }
+  }
 }

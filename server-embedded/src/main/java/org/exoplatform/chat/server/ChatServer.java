@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -131,6 +132,23 @@ public class ChatServer
     
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Route("/updateUser")
+  public Response.Content updateUser(String user, String token, String targetUser, String isDeleted, String isEnabled)
+  {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    if (Boolean.valueOf(isDeleted)) {
+      userService.deleteUser(targetUser);
+    } else {
+      userService.setEnabledUser(targetUser, Boolean.valueOf(isEnabled));
+    }
+    
+    return Response.ok("Updated!");
   }
 
   @Resource
@@ -240,16 +258,19 @@ public class ChatServer
     String title = "";
     String roomName = "";
     
-    List<UserBean> users = new ArrayList<UserBean>();
+    List<UserBean> users;
     Locale locale = userContext.getLocale();
     ResourceBundle res = applicationContext.resolveBundle(locale);
 
     if (datao.containsField("messages")) {
       if (ChatService.TYPE_ROOM_USER.equalsIgnoreCase(roomType)) {
-        users = userService.getUsersInRoomChatOneToOne(room);
-        title = res.getString("exoplatform.chat.meetingnotes") + " ["+date+"]";
+        users = userService.getUsersInRoomChatOneToOne(room)
+                           .stream()
+                           .filter(UserBean::isEnabledUser)
+                           .collect(Collectors.toList());
+        title = res.getString("exoplatform.chat.meetingnotes") + " [" + date + "]";
       } else {
-        users = userService.getUsers(room);
+        users = userService.getUsers(room).stream().filter(UserBean::isEnabledUser).collect(Collectors.toList());
         List<SpaceBean> spaces = userService.getSpaces(user);
         for (SpaceBean spaceBean:spaces)
         {
@@ -345,10 +366,13 @@ public class ChatServer
     BasicDBObject datao = (BasicDBObject)JSON.parse(data);
     if (datao.containsField("messages")) {
       if(ChatService.TYPE_ROOM_USER.equalsIgnoreCase(typeRoom)) {
-        users = userService.getUsersInRoomChatOneToOne(room);
+        users = userService.getUsersInRoomChatOneToOne(room)
+                           .stream()
+                           .filter(UserBean::isEnabledUser)
+                           .collect(Collectors.toList());
       }
       else {
-        users = userService.getUsers(room);
+        users = userService.getUsers(room).stream().filter(UserBean::isEnabledUser).collect(Collectors.toList());
         List<SpaceBean> spaces = userService.getSpaces(user);
         for (SpaceBean spaceBean:spaces)
         {

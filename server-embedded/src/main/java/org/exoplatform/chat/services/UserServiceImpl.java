@@ -132,6 +132,14 @@ public class UserServiceImpl implements UserService {
     userStorage.addUserEmail(user, email);
   }
 
+  public void deleteUser(String user) {
+    userStorage.deleteUser(user);
+  }
+
+  public void setEnabledUser(String user, Boolean isEnabled) {
+    userStorage.setEnabledUser(user, isEnabled);
+  }
+
   public void setSpaces(String user, List<SpaceBean> spaces) {
     userStorage.setSpaces(user, spaces);
   }

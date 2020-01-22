@@ -21,5 +21,8 @@ public class UserLoginListener extends Listener<ConversationRegistry, Conversati
       return;
     }
     ServerBootstrap.saveSpaces(userId);
+    if (Boolean.valueOf(ServerBootstrap.shouldUpdate(userId))) {
+      ServerBootstrap.setEnabledUser(userId, true);
+    }
   }
 }

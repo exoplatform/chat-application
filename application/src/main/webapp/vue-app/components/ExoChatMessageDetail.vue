@@ -1,10 +1,12 @@
 <template>
   <div ref="message" :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
     <div class="chat-sender-avatar">
-      <a v-if="displayUserInformation" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
+      <a v-if="displayUserInformation && message.isEnabledUser === 'true'" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
+      <div v-else-if="displayUserInformation && message.isEnabledUser === 'false'" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
-      <div v-if="displayUserInformation" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
+      <div v-if="displayUserInformation && message.isEnabledUser === 'true'" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
+      <div v-else-if="displayUserInformation && message.isEnabledUser === 'false'" class="sender-name">{{ message.fullname }} :</div>
 
       <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -167,7 +169,8 @@ export default {
           options: null,
           timestamp: 0,
           type: null,
-          user: null
+          user: null,
+          isEnabledUser: null
         };
       }
     },

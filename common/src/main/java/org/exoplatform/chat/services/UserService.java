@@ -71,6 +71,16 @@ public interface UserService
 
   public void addUserEmail(String user, String email);
 
+  default public void deleteUser(String user) {
+    // No default implementation to add
+    throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserService");
+  }
+
+  default public void setEnabledUser(String user, Boolean isEnabled) {
+    // No default implementation to add
+    throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserService");
+  }
+
   public void setSpaces(String user, List<SpaceBean> spaces);
 
   public void addTeamRoom(String user, String teamRoomId);

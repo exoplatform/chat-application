@@ -25,6 +25,7 @@ public class UserBean
 {
   private String name, fullname="", email="", status;
   private List<String> favorites;
+  private Boolean enabled, deleted;
 
   public String getName()
   {
@@ -83,16 +84,41 @@ public class UserBean
     return false;
   }
 
+  public Boolean isEnabled()
+  {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled)
+  {
+    this.enabled = enabled;
+  }
+
+  public Boolean isDeleted()
+  {
+    return deleted;
+  }
+
+  public void setDeleted(Boolean deleted) {
+    this.deleted = deleted;
+  }
+  
+  public boolean isEnabledUser() {
+    return this.enabled == null || this.enabled ? true : false;
+  }
+
   public String toJSON()
   {
     StringBuffer sb = new StringBuffer();
 
     sb.append("{");
 
-    sb.append("\"name\": \""+this.getName()+"\",");
-    sb.append("\"email\": \""+this.getEmail()+"\",");
-    sb.append("\"status\": \""+this.getStatus()+"\",");
-    sb.append("\"fullname\": \""+this.getFullname()+"\"");
+    sb.append("\"name\": \"" + this.getName() + "\",");
+    sb.append("\"email\": \"" + this.getEmail() + "\",");
+    sb.append("\"status\": \"" + this.getStatus() + "\",");
+    sb.append("\"fullname\": \"" + this.getFullname() + "\",");
+    sb.append("\"isEnabled\": \"" + this.isEnabled() + "\",");
+    sb.append("\"isDeleted\": \"" + this.isDeleted() + "\"");
 
     sb.append("}");
 

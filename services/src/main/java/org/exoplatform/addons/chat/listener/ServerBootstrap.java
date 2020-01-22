@@ -61,6 +61,10 @@ public class ServerBootstrap {
     return callServer("getUserFullName", "username=" + username);
   }
 
+  public static String shouldUpdate(String user) {
+    return callServer("shouldUpdate", "user=" + user);
+  }
+
   public static void addUser(String username, String token) {
     postServer("addUser", "username=" + username + "&token=" + token);
   }
@@ -80,6 +84,16 @@ public class ServerBootstrap {
     } catch (IOException e) {
       LOG.error("Error while updating user information for user {} [ {} ]", username, email, e);
     }
+  }
+
+  public static void deleteUser(String username) {
+    postServer("deleteUser",
+            "username=" + username);
+  }
+
+  public static void setEnabledUser(String username, Boolean enabled) {
+    postServer("setEnabledUser",
+            "username=" + username + "&enabled=" + enabled);
   }
 
   public static String getToken(String username) {

@@ -68,6 +68,16 @@ public interface UserDataStorage {
 
   void addUserEmail(String user, String email);
 
+  default void deleteUser(String user) {
+    // No default implementation to add
+    throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserDataStorage");
+  }
+
+  default void setEnabledUser(String user, Boolean isEnabled) {
+    // No default implementation to add
+    throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserDataStorage");
+  }
+
   void setSpaces(String user, List<SpaceBean> spaces);
 
   void addTeamRoom(String user, String teamRoomId);

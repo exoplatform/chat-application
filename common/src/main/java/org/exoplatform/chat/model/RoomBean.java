@@ -33,6 +33,7 @@ public class RoomBean implements Comparable<RoomBean>
   String room = "";
   int unreadTotal = 0;
   boolean isAvailableUser = false;
+  Boolean enabledUser;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
   boolean meetingStarted = false;
@@ -88,6 +89,14 @@ public class RoomBean implements Comparable<RoomBean>
 
   public boolean isActive() {
     return (isAvailableUser || (!"".equals(room)));
+  }
+
+  public boolean isEnabledUser() {
+    return enabledUser;
+  }
+
+  public void setEnabledUser(Boolean enabledUser) {
+    this.enabledUser = enabledUser;
   }
 
   public String getFullName() {
@@ -171,6 +180,7 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("timestamp", this.getTimestamp());
     obj.put("unreadTotal", this.getUnreadTotal());
     obj.put("isActive", String.valueOf(this.isActive()));
+    obj.put("isEnabledUser", String.valueOf(this.enabledUser));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
     obj.put("meetingStarted", this.isMeetingStarted());

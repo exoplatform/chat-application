@@ -32,6 +32,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Named("chatService")
 @ApplicationScoped
@@ -144,7 +145,10 @@ public class ChatServiceImpl implements ChatService
         UserBean userBean = userService.getUser(room);
         String username = userBean.getName();
         if (username == null) {
-          List<UserBean> users = userService.getUsersInRoomChatOneToOne(room);
+          List<UserBean> users = userService.getUsersInRoomChatOneToOne(room)
+                                            .stream()
+                                            .filter(user -> user.isEnabled())
+                                            .collect(Collectors.toList());
           for (UserBean targetUserBean : users) {
             usersToBeNotified.add(targetUserBean.getName());
           }
@@ -345,7 +349,10 @@ public class ChatServiceImpl implements ChatService
       roomMembers = userService.getUsersFilterBy(null, roomId, ChatService.TYPE_ROOM_SPACE);
     } else {
       roomMembers = new ArrayList<>();
-      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId);
+      List<UserBean> userBeans = userService.getUsersInRoomChatOneToOne(roomId)
+                                            .stream()
+                                            .filter(UserBean::isEnabledUser)
+                                            .collect(Collectors.toList());
       if(userBeans != null) {
         for (UserBean userBean : userBeans) {
           roomMembers.add(userBean.getName());
