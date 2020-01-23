@@ -227,7 +227,7 @@ public class ServerBootstrap {
     if (StringUtils.isBlank(serverBase)) {
       serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
       if (StringUtils.isBlank(serverBase)) {
-        serverBase = PropertyManager.getProperty(PropertyManager.EXO_BASE_URL);
+        serverBase = System.getProperty(PropertyManager.EXO_BASE_URL);
       }
     }
     return serverBase;
