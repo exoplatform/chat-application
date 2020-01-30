@@ -20,8 +20,9 @@ import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
-import org.exoplatform.chat.service.DocumentService;
+import org.exoplatform.chat.service.*;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -43,6 +44,10 @@ public class UserRestService implements ResourceContainer {
 
   private DocumentService       documentService;
 
+  private WikiService           wikiService;
+
+  private CalendarService       calendarService;
+
   private OrganizationService   organizationService;
 
   private ContinuationService   continuationService;
@@ -51,9 +56,7 @@ public class UserRestService implements ResourceContainer {
 
   public UserRestService(UserStateService userStateService,
                          ContinuationService continuationService,
-                         OrganizationService organizationService,
-                         DocumentService documentService) {
-    this.documentService = documentService;
+                         OrganizationService organizationService) {
     this.organizationService = organizationService;
     this.continuationService = continuationService;
     this.userStateService = userStateService;
@@ -214,7 +217,20 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("chatPage", chatPage);
     userSettings.put("offlineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
-    userSettings.put("maxUploadSize", documentService.getUploadLimitInMB());
+
+    int uploadLimitInMB = 0;
+    boolean canUploadFiles = getDocumentService() != null;
+    if (canUploadFiles) {
+      uploadLimitInMB = getDocumentService().getUploadLimitInMB();
+      userSettings.put("maxUploadSize", uploadLimitInMB);
+    }
+    userSettings.put("canUploadFiles", canUploadFiles);
+
+    boolean canAddEvent = getCalendarService() != null;
+    userSettings.put("canAddEvent", canAddEvent);
+
+    boolean canAddWiki = getWikiService() != null;
+    userSettings.put("canAddWiki", canAddWiki);
 
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
@@ -239,4 +255,24 @@ public class UserRestService implements ResourceContainer {
     return token;
   }
 
+  public DocumentService getDocumentService() {
+    if (documentService == null) {
+      documentService = CommonsUtils.getService(DocumentService.class);
+    }
+    return documentService;
+  }
+
+  public CalendarService getCalendarService() {
+    if (calendarService == null) {
+      calendarService = CommonsUtils.getService(CalendarService.class);
+    }
+    return calendarService;
+  }
+
+  public WikiService getWikiService() {
+    if (wikiService == null) {
+      wikiService = CommonsUtils.getService(WikiService.class);
+    }
+    return wikiService;
+  }
 }

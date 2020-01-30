@@ -35,7 +35,10 @@ function getMessage(msg, username, timestamp) {
 function getMessageListDetail() {
   const component = shallow(ExoChatMessageList, {
     propsData: {
-      miniChat : false
+      miniChat : false,
+      userSettings: {
+        username: 'root'
+      }
     },
     mocks: {
       $t: (key, params) => {

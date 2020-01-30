@@ -43,7 +43,7 @@ describe('ExoChatMessageDetail.test.js', () => {
   const cmp = getMessage();
 
   it('message actions count', () => {
-    expect(cmp.vm.messageActions).toHaveLength(3);
+    expect(cmp.vm.messageActions).toHaveLength(2);
   });
 
   it('could display actions', () => {

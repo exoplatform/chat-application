@@ -15,7 +15,7 @@
         <source src="/chat/audio/notif.ogg">
       </audio>
     </div>
-    <exo-chat-room v-if="room" ref="chatRoom" :room="room" @close="close()"></exo-chat-room>
+    <exo-chat-room v-if="room" ref="chatRoom" :user-settings="userSettings" :room="room" @close="close()"></exo-chat-room>
   </div>
 </template>
 
@@ -30,7 +30,9 @@ export default {
     return {
       status: 'offline',
       room: null,
-      userSettings: {},
+      userSettings: {
+        username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : 'root'
+      },
       totalUnreadMsg: 0,
       connected: false
     };

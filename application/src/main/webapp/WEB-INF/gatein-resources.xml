@@ -78,6 +78,9 @@
             <module>filedrop</module>
         </depends>
         <depends>
+            <module>bts_tooltip</module>
+        </depends>
+        <depends>
             <module>userPopupPlugin</module>
         </depends>
         <depends>

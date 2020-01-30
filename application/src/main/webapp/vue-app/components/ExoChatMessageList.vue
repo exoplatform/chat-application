@@ -10,7 +10,7 @@
       </div>
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
-    <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" @message-written="messageWritten"></exo-chat-message-composer>
+    <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" :user-settings="userSettings" @message-written="messageWritten"></exo-chat-message-composer>
     <exo-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
       <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></textarea>
       <div class="uiAction uiActionBorder">
@@ -37,6 +37,12 @@ export default {
     minimized: {
       type: Boolean,
       default: false
+    },
+    userSettings: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data () {
@@ -154,7 +160,7 @@ export default {
       if (this.contact.room) {
         this.retrieveRoomMessages(); 
       } else if (this.contact.user) {
-        chatServices.getRoomId(eXo.chat.userSettings, this.contact.user, 'username').then((room) => {
+        chatServices.getRoomId(this.userSettings, this.contact.user, 'username').then((room) => {
           if(room) {
             this.contact.room = room;
             this.retrieveRoomMessages(); 
@@ -206,7 +212,7 @@ export default {
       }
       const limit = chatConstants.MESSAGES_PER_PAGE;
       this.newMessagesLoading = true;
-      return chatServices.getRoomMessages(eXo.chat.userSettings, this.contact, toTimestamp, limit).then(data => {
+      return chatServices.getRoomMessages(this.userSettings, this.contact, toTimestamp, limit).then(data => {
         if (this.contact.room === data.room) {
           // Mark room messages as read
           document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SET_READ, {detail: this.contact.room}));
@@ -214,7 +220,7 @@ export default {
           // Scroll to bottom once messages list updated
           this.scrollToBottom = !avoidScrollingDown;
 
-          const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(eXo.chat.userSettings.username, this.contact.room);
+          const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(this.userSettings.username, this.contact.room);
           data.messages.concat(roomNotSentMessages).forEach(message => {
             if (!this.messages.find(displayedMessage => displayedMessage.msgId && displayedMessage.msgId === message.msgId || displayedMessage.clientId && displayedMessage.clientId === message.clientId)) {
               this.messages.unshift(message);
@@ -295,7 +301,7 @@ export default {
       let index = this.messages.length -1;
       while(!lastMessage && index >= 0) {
         const message = this.messages[index];
-        if(!message.isDeleted && message.type !== chatConstants.DELETED_MESSAGE && !message.isSystem && message.user === eXo.chat.userSettings.username) {
+        if(message && !message.isDeleted && message.type !== chatConstants.DELETED_MESSAGE && !message.isSystem && message.user === this.userSettings.username) {
           lastMessage = message;
         }
         index--;

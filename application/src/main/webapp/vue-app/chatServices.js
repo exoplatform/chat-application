@@ -86,6 +86,7 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
     
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_USER_SETTINGS_LOADED, {'detail' : userSettings}));
   } catch(e) {
+    console.error('Error initializing chat settings', e);
     setTimeout(() => initSettings(status, userSettings, userSettingsLoadedCallback), REATTEMPT_INIT_PERIOD);
   }
 }
