@@ -18,7 +18,7 @@
           <i class="uiIconStatus"></i>
           <span class="user-status">{{ getStatus }}</span>
         </div>
-        <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
+        <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </exo-dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
