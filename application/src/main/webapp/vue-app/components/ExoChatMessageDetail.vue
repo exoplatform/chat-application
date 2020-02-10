@@ -6,7 +6,7 @@
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
       <div v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
-      <div v-else-if="displayUserInformation" class="sender-name">{{ message.fullname }} :</div>
+      <div v-else-if="displayUserInformation" :class="statusStyle" class="sender-name">{{ message.fullname }} {{ disabledStatus }}: </div>
 
       <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -264,6 +264,16 @@ export default {
     },
     specificMessageClass() {
       return this.specificMessageObj ? this.specificMessageObj.iconClass : '';
+    },
+    statusStyle: function() {
+      if (this.message.isEnabledUser === 'false' && !this.isCurrentUser) {
+        return 'user-disabled';
+      }
+    },
+    disabledStatus() {
+      if (this.message.isEnabledUser==='false') {
+        return '('.concat('',this.$t('exoplatform.chat.inactive')).concat(')');
+      }
     }
   },
   created() {
