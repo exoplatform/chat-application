@@ -13,10 +13,6 @@
       <type>org.exoplatform.portal.config.NewPortalConfigListener</type>
       <description>this listener init the portal configuration</description>
       <init-params>
-        <value-param>
-          <name>override</name>
-          <value>true</value>
-        </value-param>
         <object-param>
           <name>portal.configuration</name>
           <description>description</description>
@@ -24,7 +20,7 @@
             <field name="predefinedOwner">
               <collection type="java.util.HashSet">
                 <value>
-                  <string>intranet</string>
+                  <string>global</string>
                 </value>
               </collection>
             </field>
@@ -34,10 +30,14 @@
             <field name="templateLocation">
               <string>war:/conf/chat/</string>
             </field>
-            <field name="importMode"><string>merge</string></field>
+            <field name="override">
+              <boolean>${exo.chat.portalConfig.metadata.override:true}</boolean>
+            </field>
+            <field name="importMode">
+              <string>${exo.chat.portalConfig.metadata.importmode:insert}</string>
+            </field>
           </object>
         </object-param>
-
       </init-params>
     </component-plugin>
   </external-component-plugins>

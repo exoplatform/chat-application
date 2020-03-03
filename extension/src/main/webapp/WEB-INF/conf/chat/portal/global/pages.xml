@@ -50,34 +50,4 @@
       </portlet-application>
    </page>
 
-<!--
-   <page>
-      <name>fluid</name>
-      <title>eXo Chat</title>
-      <access-permissions>*:/platform/users</access-permissions>
-      <edit-permission>*:/platform/administrators</edit-permission>
-      <show-max-window>true</show-max-window>
-      <portlet-application>
-         <portlet>
-            <application-ref>chat</application-ref>
-            <portlet-ref>ChatApplication</portlet-ref>
-            <preferences>
-               <preference>
-                  <name>fullscreen</name>
-                  <value>true</value>
-                  <read-only>false</read-only>
-               </preference>
-               <preference>
-                  <name>view</name>
-                  <value>normal</value>
-                  <read-only>false</read-only>
-               </preference>
-            </preferences>
-         </portlet>
-         <access-permissions>Everyone</access-permissions>
-         <show-info-bar>false</show-info-bar>
-      </portlet-application>
-   </page>
--->
-
 </page-set>
