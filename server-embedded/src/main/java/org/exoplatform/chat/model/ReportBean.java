@@ -243,7 +243,7 @@ public class ReportBean {
       for (FileBean file:this.getFiles())
       {
         xwiki.append("[[");
-        xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/rest/private")).append("]]");
+        xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/portal/rest/")).append("]]");
         xwiki.append(" (").append(file.getSize()).append(")\n");
       }
     }
@@ -306,7 +306,7 @@ public class ReportBean {
       if (!messageBean.getUser().equals(prevUser))
       {
         xwiki.append("{{div style='padding: 4px;color: #CCC;margin:0;'}}");
-        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/rest/v1/social/users/"+messageBean.getUser()+"/avatar||width='30' height='30']] {{/span}}");
+        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/portal/rest/v1/social/users/"+messageBean.getUser()+"/avatar||width='30' height='30']] {{/span}}");
         xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullName()).append("{{/span}}");
         xwiki.append("{{span style='font-size: smaller;vertical-align: top;'}}").append(messageBean.getTimestamp()).append("{{/span}}");
         xwiki.append("{{/div}}");
@@ -414,7 +414,7 @@ public class ReportBean {
     for (FileBean file:this.getFiles())
     {
       html.append("<div style='padding: 4px'>");
-      html.append("  <div><a href='"+serverBase+""+file.getUrl().replaceFirst("/rest", "/rest/private")+"'>").append(file.getName()).append("</a></div>");
+      html.append("  <div><a href='"+serverBase+""+file.getUrl().replaceFirst("/rest", "/portal/rest")+"'>").append(file.getName()).append("</a></div>");
       html.append("  <div style='color: #ccc;'>").append(file.getSize()).append("</div>");
       html.append("</div>");
     }

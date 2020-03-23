@@ -166,7 +166,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK, "false");
       overridePropertyIfNotSet(PROPERTY_MAIL_SENDER, "chat@localhost.com");
       
-      overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/rest/state/status/");
+      overridePropertyIfNotSet(PROPERTY_PLF_USER_STATUS_UPDATE_URL, "/portal/rest/state/status/");
 
       overridePropertyIfNotSet(PROPERTY_REQUEST_TIMEOUT, "15000");
     }

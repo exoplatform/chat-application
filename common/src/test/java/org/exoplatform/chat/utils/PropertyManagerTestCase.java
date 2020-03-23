@@ -76,7 +76,7 @@ public class PropertyManagerTestCase {
     Assert.assertEquals("false", PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SOCKET_FACTORY_FALLBACK));
     Assert.assertEquals("eXo Platform", PropertyManager.getProperty(PropertyManager.PROPERTY_MAIL_SENDER));
 
-    Assert.assertEquals("/rest/state/status/", PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL));
+    Assert.assertEquals("/portal/rest/state/status/", PropertyManager.getProperty(PropertyManager.PROPERTY_PLF_USER_STATUS_UPDATE_URL));
     Assert.assertEquals("15000", PropertyManager.getProperty(PropertyManager.PROPERTY_REQUEST_TIMEOUT));
     Assert.assertNull(PropertyManager.getProperty("No key"));
     Assert.assertEquals("640ab2bae07bedc4c163f679a746f7ab7fb5d1fa", MessageDigester.getHash("Test"));

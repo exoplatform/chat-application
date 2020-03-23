@@ -50,7 +50,7 @@ public interface ChatService
   public static final String DO_NOT_NOTIFY_ME_ON_ROOM = "silence";
   public static final String NOTIFY_ME_ON_ROOM_NORMAL = "normal";
 
-  public static final String USER_AVATAR_URL= "/rest/v1/social/users/{}/avatar";
+  public static final String USER_AVATAR_URL= "/portal/rest/v1/social/users/{}/avatar";
 
   public void write(String message, String user, String room, String isSystem);
 

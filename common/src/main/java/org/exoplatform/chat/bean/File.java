@@ -55,11 +55,11 @@ public class File implements Comparable<File> {
   }
 
   public String getRestPath() {
-    return "/rest/jcr/repository/collaboration"+path;
+    return "/portal/rest/jcr/repository/collaboration" + path;
   }
 
   public String getDownloadLink() {
-    return "/rest/private/contents/download/collaboration" + path;
+    return "/portal/rest/private/contents/download/collaboration" + path;
   }
 
   public String getPath() {
