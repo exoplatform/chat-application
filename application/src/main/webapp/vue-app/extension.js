@@ -562,6 +562,29 @@ export const DEFAULT_MESSAGE_ACTIONS = [
   }
 ];
 
+export function registerExternalExtensions(chatTitle) {
+  const profileExtensionAction = {
+    title: chatTitle,
+    icon: 'uiIconBannerChat',
+    order: 10,
+    enabled: () => true,
+    click: (profile) => {
+      const chatType = profile.groupId ? 'space-id' : 'username';
+      const chatRoomName = profile.prettyName ? profile.id : profile.username;
+
+      document.dispatchEvent(
+        new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, { detail: {
+          name: chatRoomName,
+          type: chatType,
+        }}));
+    },
+  };
+
+  extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
+
+  document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
+}
+
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
     extensionRegistry.registerExtension('chat', extensionType, extension);

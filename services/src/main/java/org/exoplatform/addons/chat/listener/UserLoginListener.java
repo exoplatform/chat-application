@@ -12,7 +12,7 @@ import org.exoplatform.services.security.*;
 public class UserLoginListener extends Listener<ConversationRegistry, ConversationState> {
   @Override
   public void onEvent(Event<ConversationRegistry, ConversationState> event) throws Exception {
-    ConversationState conversationState = ConversationState.getCurrent();
+    ConversationState conversationState = event.getData();
 
     String userId = conversationState == null
         || conversationState.getIdentity() == null ? null : conversationState.getIdentity().getUserId();

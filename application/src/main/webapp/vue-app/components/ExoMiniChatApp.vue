@@ -24,6 +24,7 @@ import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
+import {registerExternalExtensions} from '../extension';
 
 export default {
   data() {
@@ -76,6 +77,8 @@ export default {
     } else {
       this.changeUserStatusToOffline();
     }
+
+    registerExternalExtensions(this.$t('exoplatform.chat'));
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
