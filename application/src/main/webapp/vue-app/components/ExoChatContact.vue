@@ -15,15 +15,17 @@
       </div>
       <exo-dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
         <div slot="toggle" :class="statusStyle">
-          <i class="uiIconStatus"></i>
-          <span class="user-status">{{ getStatus }}</span>
+          <div class="statusMargin">
+            <i class="uiIconStatus"></i>
+          </div>
+          <span v-if="!chatDrawerContact" class="user-status">{{ getStatus }}</span>
         </div>
         <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </exo-dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
-      <div v-if="mq === 'mobile' && list && lastMessage" class="last-message" v-html="lastMessage"></div>
+      <div v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact" :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' " v-html="lastMessage"></div>
     </div>
   </div>
 </template>
@@ -90,6 +92,10 @@ export default {
     lastMessage: {
       type: String,
       default: ''
+    },
+    chatDrawerContact: {
+      type: Boolean,
+      default: false
     }
   },
   data : function() {

@@ -7,12 +7,6 @@ import ExoChatMessageList from './ExoChatMessageList.vue';
 import ExoChatMessageDetail from './ExoChatMessageDetail.vue';
 import ExoChatMessageComposer from './ExoChatMessageComposer.vue';
 
-
-import ExoMiniChatApp from './ExoMiniChatApp.vue';
-import ExoMiniChatNotifList from './ExoMiniChatNotifList.vue';
-import ExoMiniChatRoom from './ExoMiniChatRoom.vue';
-import ExoMiniChatNotifDetail from './ExoMiniChatNotifDetail.vue';
-
 import ExoChatGlobalNotificationModal from './modal/ExoChatGlobalNotificationModal.vue';
 import ExoChatComposerAppsModal from './modal/ExoChatComposerAppsModal.vue';
 import ExoChatRoomNotificationModal from './modal/ExoChatRoomNotificationModal.vue';
@@ -20,11 +14,10 @@ import ExoChatRoomFormModal from './modal/ExoChatRoomFormModal.vue';
 
 import ExoDropdownSelect from './ExoDropdownSelect.vue';
 import ExoModal from './modal/ExoModal.vue';
-
+import ExoChatDrawer from './modal/ExoChatDrawer.vue';
 
 const components = {
   'exo-chat-app': ExoChatApp,
-  'exo-chat-notif-app': ExoMiniChatApp,
   'exo-modal': ExoModal,
   'exo-chat-contact': ExoChatContact,
   'exo-chat-contact-list': ExoChatContactList,
@@ -38,9 +31,7 @@ const components = {
   'exo-chat-message-detail': ExoChatMessageDetail,
   'exo-chat-message-composer': ExoChatMessageComposer,
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
-  'exo-chat-notif-list': ExoMiniChatNotifList,
-  'exo-chat-room': ExoMiniChatRoom,
-  'exo-chat-notif-detail': ExoMiniChatNotifDetail
+  'exo-chat-drawer':ExoChatDrawer
 };
 
 for(const key in components) {

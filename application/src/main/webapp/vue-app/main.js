@@ -49,7 +49,7 @@ export function init() {
     } else if ($('#chatNotification').length) {
       new Vue({
         el: '#chatNotification',
-        template: '<exo-chat-notif-app></exo-chat-notif-app>',
+        template: '<exo-chat-drawer></exo-chat-drawer>',
         i18n
       });
     }

@@ -1,34 +1,36 @@
 <template>
   <div class="contactListContainer">
-    <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
-      <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
-      <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text" @keyup.esc="closeContactSearch" >
-      <div v-show="searchTerm !== ''" class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
-    </div>
-    <div class="listHeader">
-      <div v-if="mq === 'mobile'" class="hamburger-menu" @click="$emit('open-side-menu')"><i class="uiIconMenu"></i></div>
-      <exo-dropdown-select v-if="mq !== 'mobile'">
-        <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
-        <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
-        <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
-        <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
-        <li slot="menu" @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
-      </exo-dropdown-select>
-      <exo-dropdown-select v-if="mq !== 'mobile'">
-        <span slot="toggle">{{ filterByType[typeFilter] }}</span>
-        <i slot="toggle" class="uiIconArrowDownMini"></i>
-        <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
-      </exo-dropdown-select>
-      <div class="room-actions">
-        <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
-          <i class="uiIconFilter"></i>
-        </div>
-        <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
-          <i class="uiIconSimplePlus"></i>
-        </div>
-        <div v-if="mq === 'mobile'" @click="selectContactSearch">
-          <i class="uiIconSearch"></i>
+    <div v-if="!drawerStatus">
+      <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
+        <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
+        <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text" @keyup.esc="closeContactSearch" >
+        <div v-show="searchTerm !== ''" class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
+      </div>
+      <div class="listHeader">
+        <div v-if="mq === 'mobile'" class="hamburger-menu" @click="$emit('open-side-menu')"><i class="uiIconMenu"></i></div>
+        <exo-dropdown-select v-if="mq !== 'mobile'">
+          <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
+          <i slot="toggle" class="uiIconArrowDownMini"></i>
+          <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
+          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
+          <li slot="menu" @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
+        </exo-dropdown-select>
+        <exo-dropdown-select v-if="mq !== 'mobile'">
+          <span slot="toggle">{{ filterByType[typeFilter] }}</span>
+          <i slot="toggle" class="uiIconArrowDownMini"></i>
+          <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+        </exo-dropdown-select>
+        <div class="room-actions">
+          <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
+            <i class="uiIconFilter"></i>
+          </div>
+          <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
+            <i class="uiIconSimplePlus"></i>
+          </div>
+          <div v-if="mq === 'mobile'" @click="selectContactSearch">
+            <i class="uiIconSearch"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -37,10 +39,10 @@
         <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contactTooltip(contact)" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
           <exo-chat-contact :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-            <div v-if="mq === 'mobile'" class="last-message-time">{{ getLastMessageTime(contact) }}</div>
+            <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']" >{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
           <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
-          <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
+          <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" v-if="!drawerStatus" class="uiIconNotification"></i>
           <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
         </div>
       </transition-group>
@@ -106,6 +108,10 @@ export default {
      *   user: {string} contact id, if user , username else team-{CONTACT_ID} or space-{CONTACT_ID}
      * }
      */
+    drawerStatus: {
+      type: Boolean,
+      default: false
+    },
     contacts: {
       type: Array,
       default: function() { return [];}
@@ -141,6 +147,10 @@ export default {
       default: function() {
         return {};
       }
+    },
+    searchWord:{
+      type: String,
+      default: ''
     }
   },
   data : function() {
@@ -193,7 +203,8 @@ export default {
     },
     filteredContacts: function() {
       let sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
-      if(this.typeFilter !== 'All') {
+      // this code used to search in whole Chat app, because the search uses a criteria (typeFilter)
+      if(this.typeFilter !== 'All' && !this.drawerStatus) {
         sortedContacts = sortedContacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'
           || this.typeFilter === 'Rooms' && contact.type === 't'
@@ -203,6 +214,10 @@ export default {
       }
       if (this.searchTerm && this.searchTerm.trim().length) {
         sortedContacts = sortedContacts.filter(contact => this.normalizeText(contact.fullName.toLowerCase()).indexOf(this.normalizeText(this.searchTerm.toLowerCase())) >= 0);
+      }
+      // for the drawer chat, the search doesn't use a criteria (search filter) so it searches in all contacts
+      if (this.searchWord && this.searchWord.trim().length) {
+        sortedContacts = sortedContacts.filter(contact => this.normalizeText(contact.fullName.toLowerCase()).indexOf(this.normalizeText(this.searchWord.toLowerCase())) >= 0);
       }
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
@@ -532,6 +547,8 @@ export default {
       if (timestamp) {
         if (chatTime.isSameDay(timestamp, new Date().getTime())) {
           return chatTime.getTimeString(timestamp);
+        } else if (timestamp === -1){
+          return '';
         } else {
           return chatTime.getDayDateString(timestamp);
         }
@@ -574,7 +591,7 @@ export default {
         return chatServices.getSpaceProfileLink(this.contactMenu.fullName);
       }
       return '#';
-    }
+    },
   }
 };
 </script>

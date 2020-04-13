@@ -101,6 +101,7 @@ export default {
     }
   },
   created() {
+    this.showHidePlatformAdminToolbar();
     chatServices.initChatSettings(this.userSettings.username, false,
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
@@ -291,12 +292,15 @@ export default {
       if (tiptip) {
         tiptip.style.display = 'none';
       }
+    },
+    showHidePlatformAdminToolbar(){
+      if (location.pathname==='/portal/'.concat(eXo.env.portal.portalName).concat('/chat')) {
+        return $('#PlatformAdminToolbarContainer').css('display', 'none') && $('#UITopBarContainerParent').css('display', 'none');
+      }else {
+        return $('#PlatformAdminToolbarContainer').css('display', 'block') && $('#UITopBarContainerParent').css('display', 'block');
+      }
     }
   }
 };
 </script>
-<style>
-#PlatformAdminToolbarContainer {
-  display: none;
-}
-</style>
+
