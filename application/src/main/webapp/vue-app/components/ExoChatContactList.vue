@@ -322,7 +322,7 @@ export default {
     },
     contactChanged(e) {
       const selectedContact = e.detail;
-      if (selectedContact.room) {
+      if (selectedContact && selectedContact.room) {
         chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
       }
     },
@@ -380,13 +380,13 @@ export default {
     messageReceived(event) {
       const message = event.detail;
       const room = message.room;
-      
+
       if(!room) {
         return;
       }
 
       const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
-      
+
       if(foundContact) {
         if (!foundContact.lastMessage) {
           foundContact.lastMessage = {};

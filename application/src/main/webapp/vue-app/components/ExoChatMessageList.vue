@@ -157,15 +157,17 @@ export default {
       this.newMessagesLoading = false;
 
       this.contact = e.detail;
-      if (this.contact.room) {
-        this.retrieveRoomMessages(); 
-      } else if (this.contact.user) {
-        chatServices.getRoomId(this.userSettings, this.contact.user, 'username').then((room) => {
-          if(room) {
-            this.contact.room = room;
-            this.retrieveRoomMessages(); 
-          }
-        });
+      if (this.contact) {
+        if (this.contact.room) {
+          this.retrieveRoomMessages();
+        } else if (this.contact.user) {
+          chatServices.getRoomId(this.userSettings, this.contact.user, 'username').then((room) => {
+            if (room) {
+              this.contact.room = room;
+              this.retrieveRoomMessages();
+            }
+          });
+        }
       }
     },
     setScrollToBottom: function() {

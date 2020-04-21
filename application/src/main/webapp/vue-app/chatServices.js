@@ -93,9 +93,7 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
 
 export function updateTotalUnread(totalUnreadMsg) {
   if (totalUnreadMsg && totalUnreadMsg > 0) {
-    document.title = `Chat (${totalUnreadMsg})`;
-  } else {
-    document.title = 'Chat';
+    document.title = eXo.env.portal.selectedNodeUri.concat(`(${totalUnreadMsg})`);
   }
 }
 

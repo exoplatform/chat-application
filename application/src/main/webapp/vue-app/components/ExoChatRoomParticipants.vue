@@ -164,7 +164,7 @@ export default {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
-      if (contact.type && contact.type !== 'u') {
+      if (contact !== null && contact.type && contact.type !== 'u') {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
             this.$emit('particpants-loaded', data.users);

@@ -83,16 +83,18 @@ export default {
     }
   },
   updated() {
-    if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null')) { // set autofocus only for enabled contact on desktop
-      this.$nextTick(() => {
-        this.$refs.messageComposerArea.focus();
+    if (this.contact) {
+      if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null')) { // set autofocus only for enabled contact on desktop
+        this.$nextTick(() => {
+          this.$refs.messageComposerArea.focus();
 
-        this.composerApplications.forEach(application => {
-          if(application.mount) {
-            application.mount($, chatServices);
-          }
+          this.composerApplications.forEach(application => {
+            if (application.mount) {
+              application.mount($, chatServices);
+            }
+          });
         });
-      });
+      }
     }
   },
   created() {

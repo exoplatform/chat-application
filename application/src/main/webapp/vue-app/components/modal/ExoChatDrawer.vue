@@ -4,7 +4,7 @@
     </a>
     <div :class="showChatDrawer ? 'open' : '' " class="drawer">
       <div class="header">
-        <span v-show="!listOfContact" >
+        <span v-if="!listOfContact" >
           <img :src="contactAvatar" class="chatAvatar" />
           <span :class="statusStyle" class="user-status">
             <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
@@ -25,7 +25,7 @@
         </span>
       </div>
       <div :class="showChatDrawer ? 'contentDrawer ' : '' " class="content">
-        <exo-chat-contact-list v-show="listOfContact" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+        <exo-chat-contact-list v-show="listOfContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
         <exo-chat-message-list v-show="!listOfContact" :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
       </div>
     </div>
@@ -41,6 +41,7 @@ import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
 import {getUserAvatar} from '../../chatServices';
 import {getSpaceAvatar} from '../../chatServices';
+import * as desktopNotification from '../../desktopNotification';
 export default {
   name: 'ExoChatDrawer',
   data () {
@@ -49,7 +50,7 @@ export default {
       contactList: [],
       showSearch:false,
       loadingContacts: true,
-      selectedContact: {},
+      selectedContact: [],
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
@@ -57,17 +58,20 @@ export default {
       listOfContact: false,
       fullNameOfUser:'',
       isOnline : true,
-      searchTerm:''
+      searchTerm:'',
+      totalUnreadMsg:0
     };
   },
   computed:{
     contactAvatar() {
-      if (this.selectedContact.type === 'u') {
-        return getUserAvatar(this.selectedContact.user);
-      } else if (this.selectedContact.type === 's') {
-        return getSpaceAvatar(this.selectedContact.prettyName);
-      } else {
-        return chatConstants.DEFAULT_ROOM_AVATAR;
+      if(this.showChatDrawer && typeof this.selectedContact !== 'undefined') {
+        if (this.selectedContact.type === 'u') {
+          return getUserAvatar(this.selectedContact.user);
+        } else if (this.selectedContact.type === 's') {
+          return getSpaceAvatar(this.selectedContact.prettyName);
+        } else {
+          return chatConstants.DEFAULT_ROOM_AVATAR;
+        }
       }
     },
     statusStyle: function() {
@@ -77,8 +81,8 @@ export default {
         } else {
           return `user-${this.userSettings.status}`;
         }
-      } else {
-        if (!this.isOnline || this.selectedContact.status === 'invisible') {
+      } else if(typeof this.selectedContact !== 'undefined'){
+        if (!this.isOnline||  this.selectedContact.status === 'invisible') {
           return 'user-offline';
         } else {
           return `user-${this.selectedContact.status}`;
@@ -104,7 +108,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   methods:{
@@ -127,12 +130,13 @@ export default {
     userLoggedout() {
       if (!chatWebSocket.isConnected()) {
         this.changeUserStatusToOffline();
-        this.loggedout = true;
       }
     },
     totalUnreadMessagesUpdated(e) {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      chatServices.updateTotalUnread(totalUnreadMsg);
+      if (!this.showChatDrawer) {
+        chatServices.updateTotalUnread(totalUnreadMsg);
+      }
     },
     userStatusChanged(e) {
       const contactChanged = e.detail;
@@ -143,7 +147,6 @@ export default {
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;
-      this.connected = true;
       if (this.userSettings.originalStatus !== this.userSettings.status) {
         this.setStatus(this.userSettings.originalStatus);
       } else if (this.userSettings && this.userSettings.originalStatus) {
@@ -162,6 +165,7 @@ export default {
       }
     },
     addRooms(rooms) {
+      this.contactList = [];
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
               && contact.fullName.trim().length > 0
@@ -188,7 +192,7 @@ export default {
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
-      if (this.mq !== 'mobile') {
+      if (this.mq !== 'mobile' && !this.showChatDrawer) {
         const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
         if(selectedRoom) {
           this.setSelectedContact(selectedRoom);
@@ -196,7 +200,9 @@ export default {
       }
 
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
-      chatServices.updateTotalUnread(totalUnreadMsg);
+      if (!this.showChatDrawer) {
+        chatServices.updateTotalUnread(totalUnreadMsg);
+      }
     },
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
@@ -208,9 +214,6 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      if(this.mq === 'mobile') {
-        this.conversationArea = true;
-      }
       if(!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -258,7 +261,6 @@ export default {
         this.userSettings.originalStatus = this.userSettings.status;
       }
       eXo.chat.isOnline = false;
-      this.connected = false;
     },
     reloadPage() {
       window.location.reload();
@@ -284,6 +286,9 @@ export default {
       this.listOfContact = false;
       this.showSearch = false;
       this.$nextTick(() => this.$refs.contactSearch.focus());
+    },
+    canShowOnSiteNotif() {
+      return desktopNotification.canShowOnSiteNotif();
     },
     backChat(){
       this.listOfContact=true;
