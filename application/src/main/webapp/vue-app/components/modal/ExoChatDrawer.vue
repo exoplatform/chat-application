@@ -1,6 +1,7 @@
 <template>
   <div id="drawerId" class="miniChatDrawer">
     <a class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
+      <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
     </a>
     <div :class="showChatDrawer ? 'open' : '' " class="drawer">
       <div class="header">
@@ -100,7 +101,13 @@ export default {
   created() {
     chatServices.initChatSettings(this.userSettings.username, false,
       userSettings => this.initSettings(userSettings),
-      chatRoomsData => this.initChatRooms(chatRoomsData));
+      chatRoomsData => {
+        this.initChatRooms(chatRoomsData);
+        const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline));
+        if(totalUnreadMsg >= 0) {
+          this.totalUnreadMsg = this.totalUnreadMessagesUpdated;
+        }
+      });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -134,8 +141,8 @@ export default {
     },
     totalUnreadMessagesUpdated(e) {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      if (!this.showChatDrawer) {
-        chatServices.updateTotalUnread(totalUnreadMsg);
+      if(totalUnreadMsg >= 0) {
+        this.totalUnreadMsg = totalUnreadMsg;
       }
     },
     userStatusChanged(e) {
