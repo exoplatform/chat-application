@@ -25,7 +25,7 @@
           <a v-show = "!showSearch" class="uiIconSearchLight" @click="showSearch = !showSearch"></a>
         </span>
       </div>
-      <div :class="showChatDrawer ? 'contentDrawer ' : '' " class="content">
+      <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList' " class="content">
         <exo-chat-contact-list v-show="listOfContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
         <exo-chat-message-list v-show="!listOfContact" :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
       </div>

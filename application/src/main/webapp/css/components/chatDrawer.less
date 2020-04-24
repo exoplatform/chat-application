@@ -9,9 +9,87 @@
     left: 15px;
     top: -5px;
   }
+  .contentDrawerOfList {
+    overflow: hidden;
+    bottom: 0;
+    padding: 0;
+    #message-scroll {
+      overflow-y:auto;
+      height: 100%;
+    }
+    .chat-message-composer{
+      position: fixed;
+      width: 33%;
+      bottom: 0px;
+    }
+    #chats {
+      margin-bottom: 99px;
+      background-color:@contactDefaultColor;
+    }
+    .uiIconNotification{
+      display: none;
+    }
+    .chat-message-action .dropdown.message-actions {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+    .chat-no-conversation {
+      height: 215px;
+    }
+    .contactListContainer .contactList {
+      padding: 0px 0;
+    }
+    .contactListContainer {
+      display: unset;
+    }
+    .uiRightContainerArea.message-list {
+      margin-top: 5px;
+    }
+    .roomDrawerDetails {
+      align-items: center;
+      user-select: none;
+      position: fixed;
+      width: 33%;
+      background-color: @contactDefaultColor;
+      z-index: 1;
+      top:50px;
+      .uiIconSimplePlus {
+        float: right;
+        margin-right: 10px;
+        margin-bottom: 2px;
+        font-size: 15px;
+      }
+    }
+    .room-actions-container {
+      margin-left: -16px;
+      z-index: 10;
+    }
+    .room-action-menu .dropdown.room-settings-dropdown {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+    .room-detail, .userDetails {
+      height: unset;
+    }
+    .apps-container {
+      display: flex;
+      flex-wrap: wrap;
+      height: 200px;
+      margin-top: -80px;
+    }
+    .apps-item {
+      width: 33%;
+    }
+  }
   .contentDrawer {
     bottom: 0;
     padding: 0;
+    #message-scroll {
+      overflow-y:auto;
+      height: 100%;
+    }
     .contact-list-item {
       height:70px;
       background: @contactDefaultColor;
@@ -23,6 +101,9 @@
         color: #0c0c0c;
         background-color: #f5f5f5;
       }
+    }
+    .contact-list-item .seeMoreContacts a {
+      color: #4d5466;
     }
     .isList .chat-contact-avatar {
       width: 40px;
@@ -39,15 +120,6 @@
       font-size: 12px;
       color: @subTitleColor;
     }
-    .chat-message-composer{
-      position: fixed;
-      width: 33%;
-      bottom: 0px;
-    }
-    #chats {
-      margin-bottom: 99px;
-      background-color:@contactDefaultColor;
-    }
     .uiIconNotification{
       display: none;
     }
@@ -55,50 +127,12 @@
       margin-top: 25px;
       margin-left: -3px;
     }
-    .chat-message-action .dropdown.message-actions {
-      border: none;
-      background: transparent;
-      box-shadow: none;
-    }
-    .chat-no-conversation {
-      height: 215px;
-    }
     .contactListContainer .contactList {
       padding: 0px 0;
     }
    .contactListContainer {
      display: unset;
    }
-   .uiRightContainerArea.message-list {
-      margin-top: 5px;
-   }
-  .roomDrawerDetails {
-      align-items: center;
-      user-select: none;
-      position: fixed;
-      width: 33%;
-      background-color: @contactDefaultColor;
-      z-index: 1;
-      top:50px;
-    .uiIconSimplePlus {
-      float: right;
-      margin-right: 10px;
-      margin-bottom: 2px;
-      font-size: 15px;
-    }
-    }
-    .room-actions-container {
-      margin-left: -16px;
-      z-index: 10;
-    }
-    .room-action-menu .dropdown.room-settings-dropdown {
-      border: none;
-      background: transparent;
-      box-shadow: none;
-    }
-    .room-detail, .userDetails {
-      height: unset;
-    }
    .apps-container {
      display: flex;
      flex-wrap: wrap;
@@ -288,6 +322,15 @@
       box-sizing: border-box;
       padding: 10px;
       overflow-x: hidden;
+    }
+  }
+}
+@media (max-width: @tablet) {
+  .miniChatDrawer {
+    .contentDrawer {
+      .chat-message-composer {
+        width: 100% !important;
+      }
     }
   }
 }
