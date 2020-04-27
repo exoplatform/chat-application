@@ -19,6 +19,9 @@
             <i class="uiIconStatus"></i>
           </div>
           <span v-if="!chatDrawerContact" class="user-status">{{ getStatus }}</span>
+          <div v-if="chatDrawerContact" class="chat-status-toggle">
+            <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" class="chat-contact-link"></a>
+          </div>
         </div>
         <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </exo-dropdown-select>
