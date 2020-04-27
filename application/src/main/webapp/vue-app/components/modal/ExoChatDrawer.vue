@@ -1,7 +1,9 @@
 <template>
   <div id="drawerId" class="miniChatDrawer">
-    <a class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
-      <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+    <a :class="statusClass" class="dropdown-toggle">
+      <div class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
+        <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+      </div>
     </a>
     <div :class="showChatDrawer ? 'open' : '' " class="drawer">
       <div class="header">
@@ -64,6 +66,13 @@ export default {
     };
   },
   computed:{
+    statusClass() {
+      if (this.userSettings.status === 'invisible') {
+        return 'user-offline';
+      } else {
+        return `user-${this.userSettings.status}`;
+      }
+    },
     contactAvatar() {
       if(this.showChatDrawer && typeof this.selectedContact !== 'undefined') {
         if (this.selectedContact.type === 'u') {
