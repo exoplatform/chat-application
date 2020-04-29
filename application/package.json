@@ -34,7 +34,7 @@
     "jest-localstorage-mock": "^2.2.0",
     "jest-runner-eslint": "^0.5.0",
     "jest-vue-preprocessor": "^1.4.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "url-parse": "^1.4.3",
