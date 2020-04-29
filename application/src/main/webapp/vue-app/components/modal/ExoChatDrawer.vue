@@ -25,7 +25,7 @@
         <span v-show="showChatDrawer && listOfContact">
           <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text" @keyup.esc="closeContactSearch">
           <a v-show = "!showSearch" class="uiIconSearchLight" @click="showSearch = !showSearch"></a>
-          <a v-show = "showSearch" class="closeBtnSearch" @click="showSearch = !showSearch">×</a>
+          <a v-show = "showSearch" class="closeBtnSearch" @click="closeContactSearch">×</a>
         </span>
       </div>
       <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList' " class="content">

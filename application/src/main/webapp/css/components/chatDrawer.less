@@ -4,6 +4,12 @@
 @subTitleColor:#a8b3c5;
 @unreadMessage:#8B0000;
 .miniChatDrawer{
+  .drawer.open {
+    width: 420px;
+  }
+  .drawer .content{
+    margin-top:6px;
+  }
   span.notif-total.badgeDefault.badgePrimary.mini {
     position: absolute;
     left: 15px;
@@ -19,7 +25,7 @@
     }
     .chat-message-composer{
       position: fixed;
-      width: 33%;
+      width: 420px;
       bottom: 0px;
     }
     #chats {
@@ -157,17 +163,16 @@
    }
    .unreadMessages {
      .square-rounded(16px);
-     margin-bottom: 5px;
      background-color: @unreadMessage;
-     margin-top: 25px;
      color: #fff;
    }
  }
  .header {
+   height:56px;
    .searchDrawer{
      position: fixed;
      margin-top:-11px;
-     width: 395px;
+     width: 360px;
    }
    .uiIconStatus {
      position: static;
@@ -184,7 +189,6 @@
      color: #4d5466;
      line-height: 1.5;
      margin-left: 65px;
-     margin-top: -3px;
    }
    ul.dropdown-menu {
      font-size: 12px;
@@ -257,7 +261,7 @@
      float: right;
      font-size: 28px;
      line-height: 20px;
-     margin-right: 160px;
+     margin-right: 8px;
      &:hover {
        cursor: pointer;
      }
@@ -280,13 +284,17 @@
 }
 @media (max-width: @mobile) {
  .drawer.open{
-   width: 100%;
+   width: 100%!important;
+   .content {
+     position: relative!important;
+     height: 100%;
+   }
  }
+  #chat-users {
+    margin-top: 55px;
+  }
  .chat-message-day .day-separator + .chat-message-box {
    margin-top: 30px;
- }
- .contactList .contact-list-item {
-   top: 30px;
  }
  .miniChatDrawer {
    .header {
@@ -294,7 +302,7 @@
      z-index: 1;
      width: 100vw;
      .searchDrawer {
-       width: 88vw;
+       width: 66vw;
      }
    }
    .contentDrawer{
@@ -302,11 +310,15 @@
        width: 100vw;
      }
    }
+   .contactList .contact-list-item:after {
+     border-bottom: none;
+   }
    .contactList .contact-list-item{
-     border-bottom:none;
+     border-bottom:1px solid @contactSelected;
    }
    .chat-message-composer .composer-box{
-     width: 100vw;
+     width: 100vw!important;
+     border-top: 1px solid @contactSelected;
    }
    .chat-message-composer .apps-container {
      flex-wrap: wrap;
