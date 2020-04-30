@@ -8,7 +8,7 @@
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <exo-chat-contact-list :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+      <exo-chat-contact-list v-if="ap" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>

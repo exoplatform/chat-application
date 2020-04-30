@@ -1,5 +1,5 @@
 <template>
-  <div id="drawerId" class="miniChatDrawer">
+  <div v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
     <a :class="statusClass" class="dropdown-toggle">
       <div class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
         <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
@@ -113,7 +113,7 @@ export default {
       userSettings => this.initSettings(userSettings),
       chatRoomsData => {
         this.initChatRooms(chatRoomsData);
-        const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline));
+        const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
         if(totalUnreadMsg >= 0) {
           this.totalUnreadMsg = this.totalUnreadMessagesUpdated;
         }
@@ -125,7 +125,7 @@ export default {
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
-    document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openDrawer);
+    document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   methods:{
     openDrawer() {
@@ -287,6 +287,7 @@ export default {
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
+          this.showChatDrawer = true;
           this.setSelectedContact(rommId);
         });
       }

@@ -60,12 +60,18 @@ export function init() {
 Vue.mixin({
   data: function() {
     return {
-      mq: ''
+      mq: '',
+      ap: false
     };
   },
   created() {
     this.handleMediaQuery();
     window.addEventListener('resize', this.handleMediaQuery);
+    if (location.pathname==='/portal/'.concat(eXo.env.portal.portalName).concat('/chat')) {
+      this.ap = true;
+    } else {
+      this.ap = false;
+    }
   },
   methods: {
     handleMediaQuery() {
