@@ -2,7 +2,7 @@
   <div v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
     <a :class="statusClass" class="dropdown-toggle">
       <div class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
-        <span :class="totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
       </div>
     </a>
     <div :class="showChatDrawer ? 'open' : '' " class="drawer">
@@ -34,6 +34,13 @@
       </div>
     </div>
     <div v-show="showChatDrawer" class="drawer-backdrop" @click="closeChatDrawer()"></div>
+    <div class="hide">
+      <audio id="chat-audio-notif" controls>
+        <source src="/chat/audio/notif.wav">
+        <source src="/chat/audio/notif.mp3">
+        <source src="/chat/audio/notif.ogg">
+      </audio>
+    </div>
   </div>
 </template>
 
