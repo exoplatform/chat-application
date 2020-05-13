@@ -318,10 +318,11 @@ export default {
         });
       }
       eXo.chat.selectedContact = contact;
+      this.contactChanged(contact);
       this.$emit('contact-selected', contact);
     },
     contactChanged(e) {
-      const selectedContact = e.detail;
+      const selectedContact = e;
       if (selectedContact && selectedContact.room) {
         chatWebSocket.setRoomMessagesAsRead(selectedContact.room);
       }

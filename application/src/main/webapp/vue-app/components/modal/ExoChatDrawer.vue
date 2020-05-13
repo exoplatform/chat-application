@@ -47,7 +47,6 @@
 <script>
 import * as chatServices from '../../chatServices';
 import {installExtensions} from '../../extension';
-import * as chatWebStorage from '../../chatWebStorage';
 import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
 import {getUserAvatar} from '../../chatServices';
@@ -57,7 +56,6 @@ export default {
   name: 'ExoChatDrawer',
   data () {
     return {
-      showStatusUser : false,
       contactList: [],
       showSearch:false,
       loadingContacts: true,
@@ -122,7 +120,7 @@ export default {
         this.initChatRooms(chatRoomsData);
         const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
         if(totalUnreadMsg >= 0) {
-          this.totalUnreadMsg = this.totalUnreadMessagesUpdated;
+          this.totalUnreadMsg = totalUnreadMsg;
         }
       });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -134,16 +132,28 @@ export default {
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
+  destroyed() {
+    document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
+    document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
+    document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
+    document.removeEventListener(chatConstants.EVENT_CONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.connectionEstablished);
+    document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
+    document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+  },
   methods:{
     openDrawer() {
       document.body.style.overflow = 'hidden';
       this.showChatDrawer = true;
       this.listOfContact = true;
+      this.selectedContact = [];
     },
     closeChatDrawer() {
       document.body.style.overflow = 'scroll';
       this.showSearch = false;
       this.showChatDrawer = false;
+      this.selectedContact = [];
     },
     setStatus(status) {
       chatServices.setUserStatus(this.userSettings, status, newStatus => {
@@ -216,17 +226,8 @@ export default {
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
-      if (this.mq !== 'mobile' && !this.showChatDrawer) {
-        const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
-        if(selectedRoom) {
-          this.setSelectedContact(selectedRoom);
-        }
-      }
-
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
-      if (!this.showChatDrawer) {
-        chatServices.updateTotalUnread(totalUnreadMsg);
-      }
+      chatServices.updateTotalUnread(totalUnreadMsg);
     },
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
@@ -317,6 +318,7 @@ export default {
     },
     backChat(){
       this.listOfContact=true;
+      this.selectedContact = [];
     }
   }
 };

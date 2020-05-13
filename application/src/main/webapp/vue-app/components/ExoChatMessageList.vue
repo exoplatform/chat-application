@@ -82,22 +82,6 @@ export default {
       return this.totalMessagesToLoad <= this.messages.length;
     }
   },
-  watch: {
-    windowFocused(newValue) {
-      if (newValue && this.contact && this.contact.room) {
-        chatWebSocket.setRoomMessagesAsRead(this.contact.room);
-      }
-    },
-    minimized(value) {
-      if(this.contact && this.contact.room) {
-        if(!value) {
-          chatWebSocket.setRoomMessagesAsRead(this.contact.room);
-          this.scrollToBottom = true;
-          this.scrollToEnd();
-        }
-      }
-    }
-  },
   updated() {
     this.scrollToEnd();
   },
