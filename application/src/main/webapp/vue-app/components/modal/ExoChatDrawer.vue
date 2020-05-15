@@ -11,7 +11,7 @@
           <img :src="contactAvatar" class="chatAvatar" />
           <span :class="statusStyle" class="user-status">
             <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
-            <span v-html="getName"></span>
+            <span :title="getName" class="selectedContactName">{{ escapedName(getName) }}</span>
           </span>
         </span>
         <span v-show="listOfContact && !showSearch" class="chatTitle">Chat</span>
@@ -19,7 +19,7 @@
           <exo-chat-contact :chat-drawer-contact="showChatDrawer" :user-name="userSettings.username" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)"></exo-chat-contact>
         </span>
         <a v-show="!listOfContact" class="icon-Back" @click="backChat()"></a>
-        <a v-show="!showSearch" class="closeBtnDrawer" href="javascript:void(0)" @click="closeChatDrawer()">×</a>
+        <a v-show="!showSearch" class="closeBtnDrawer" href="javascript:void(0)" @click="closeChatDrawer()"></a>
         <a v-exo-tooltip="$t('exoplatform.chat.open.chat')" v-show="!showSearch" data-placement="bottom" class="icon-android-open" href="/portal/dw/chat" target="_chat"></a>
         <a v-show="!listOfContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" data-placement="bottom" class="icon-ios-videocam" ></a>
         <span v-show="showChatDrawer && listOfContact">
@@ -52,6 +52,7 @@ import * as chatWebSocket from '../../chatWebSocket';
 import {getUserAvatar} from '../../chatServices';
 import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
+import {escapeHtml} from '../../chatServices';
 export default {
   name: 'ExoChatDrawer',
   data () {
@@ -289,6 +290,12 @@ export default {
     },
     reloadPage() {
       window.location.reload();
+    },
+    escapedName(text) {
+      if (typeof text !== 'undefined') {
+        const name = escapeHtml(text);
+        return name;
+      }
     },
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
