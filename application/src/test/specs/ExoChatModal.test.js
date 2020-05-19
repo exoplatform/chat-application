@@ -1,7 +1,7 @@
 import { shallow } from 'vue-test-utils';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
-import ExoModal from '../../main/webapp/vue-app/components/modal/ExoModal';
+import ExoChatModal from '../../main/webapp/vue-app/components/modal/ExoChatModal';
 
 global.fetch = jest.fn().mockImplementation(() => {
   const p = new Promise((resolve) => {
@@ -18,7 +18,7 @@ global.fetch = jest.fn().mockImplementation(() => {
 });
 
 function getComponent() {
-  return shallow(ExoModal, {
+  return shallow(ExoChatModal, {
     propsData: {
       displayClose: true,
       title: 'Modal title',
@@ -34,7 +34,7 @@ function getComponent() {
   });
 }
 
-describe('ExoModal.test.js', () => {
+describe('ExoChatModal.test.js', () => {
 
   it('test displayed DOM', () => {
     const cmp = getComponent();

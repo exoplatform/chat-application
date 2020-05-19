@@ -1,5 +1,5 @@
 <template>
-  <exo-modal v-show="show" id="chatPreferences" :title="$t('exoplatform.chat.settings.button.tip')" modal-class="chatPreferences" @modal-closed="closeModal">
+  <exo-chat-modal v-show="show" id="chatPreferences" :title="$t('exoplatform.chat.settings.button.tip')" modal-class="chatPreferences" @modal-closed="closeModal">
     <section>
       <h4>{{ $t('exoplatform.chat.desktopNotif.global.notifications') }}</h4>
       <div class="notification-item">
@@ -38,7 +38,7 @@
       <div class="btn btn-primary" @click="saveNotificationSettings"> {{ $t('exoplatform.chat.user.popup.confirm') }} </div>
       <div class="btn" @click="closeModal"> {{ $t('exoplatform.chat.cancel') }} </div>
     </div>
-  </exo-modal>
+  </exo-chat-modal>
 </template>
 
 <script>

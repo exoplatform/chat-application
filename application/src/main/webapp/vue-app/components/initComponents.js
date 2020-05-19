@@ -13,12 +13,12 @@ import ExoChatRoomNotificationModal from './modal/ExoChatRoomNotificationModal.v
 import ExoChatRoomFormModal from './modal/ExoChatRoomFormModal.vue';
 
 import ExoDropdownSelect from './ExoDropdownSelect.vue';
-import ExoModal from './modal/ExoModal.vue';
+import ExoChatModal from './modal/ExoChatModal.vue';
 import ExoChatDrawer from './modal/ExoChatDrawer.vue';
 
 const components = {
   'exo-chat-app': ExoChatApp,
-  'exo-modal': ExoModal,
+  'exo-chat-modal': ExoChatModal,
   'exo-chat-contact': ExoChatContact,
   'exo-chat-contact-list': ExoChatContactList,
   'exo-chat-room-participants': ExoChatRoomParticipants,

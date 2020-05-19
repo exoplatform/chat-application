@@ -1,6 +1,6 @@
 <template>
   <div>
-    <exo-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
+    <exo-chat-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
       <meta charset="utf-8">
   
       <div class="add-room-form">
@@ -20,15 +20,15 @@
         <button :disabled="disableSave" class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</button>
         <button class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</button>
       </div>
-    </exo-modal>
-    <exo-modal v-show="showErrorModal" :title="errorModalTitle" :display-close="true" @modal-closed="showErrorModal = false">
+    </exo-chat-modal>
+    <exo-chat-modal v-show="showErrorModal" :title="errorModalTitle" :display-close="true" @modal-closed="showErrorModal = false">
       <ul class="singleMessage popupMessage resizable">
         <li><span class="errorIcon">{{ errorModalMessage }}</span></li>
       </ul>
       <div class="uiAction uiActionBorder">
         <button class="btn btn-primary" @click="showErrorModal = false">{{ $t('exoplatform.chat.close') }}</button>
       </div>
-    </exo-modal>
+    </exo-chat-modal>
   </div>
 </template>
 

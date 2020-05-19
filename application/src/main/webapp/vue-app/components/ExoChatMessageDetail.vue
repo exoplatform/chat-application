@@ -130,7 +130,7 @@
       </div>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
-    <exo-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
+    <exo-chat-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
           <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage))">
@@ -141,7 +141,7 @@
         <a id="team-delete-button-ok" href="#" class="btn btn-primary" @click="confirmAction(message);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
         <a id="team-delete-button-cancel" href="#" class="btn" @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
       </div>
-    </exo-modal>
+    </exo-chat-modal>
   </div>
 </template>
 

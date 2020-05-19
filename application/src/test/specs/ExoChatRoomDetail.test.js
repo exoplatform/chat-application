@@ -5,7 +5,7 @@ import ExoChatContact from '../../main/webapp/vue-app/components/ExoChatContact'
 import ExoChatRoomDetail from '../../main/webapp/vue-app/components/ExoChatRoomDetail';
 import ExoDropdownSelect from '../../main/webapp/vue-app/components/ExoDropdownSelect';
 import ExoChatRoomNotificationModal from '../../main/webapp/vue-app/components/modal/ExoChatRoomNotificationModal';
-import ExoModal from '../../main/webapp/vue-app/components/modal/ExoModal';
+import ExoChatModal from '../../main/webapp/vue-app/components/modal/ExoChatModal';
 
 describe('ExoChatRoomDetail.test.js', () => {
   let roomDetail;
@@ -74,7 +74,7 @@ describe('ExoChatRoomDetail.test.js', () => {
       stubs: {
         'exo-chat-contact': ExoChatContact,
         'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
-        'exo-modal': ExoModal,
+        'exo-chat-modal': ExoChatModal,
         'exo-dropdown-select': ExoDropdownSelect
       },
       mocks: {

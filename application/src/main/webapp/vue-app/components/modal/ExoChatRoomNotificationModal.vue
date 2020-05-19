@@ -1,5 +1,5 @@
 <template>
-  <exo-modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
+  <exo-chat-modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
     <div class="chat-room-config">
       <span class="uiRadio">
         <input v-model="selectedOption" type="radio" value="normal">
@@ -24,7 +24,7 @@
       <div class="btn btn-primary" @click="saveSettings">{{ $t('exoplatform.chat.user.popup.confirm') }}</div>
       <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
     </div>
-  </exo-modal>
+  </exo-chat-modal>
 </template>
 
 <script>

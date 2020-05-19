@@ -1,5 +1,5 @@
 <template>
-  <exo-modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
+  <exo-chat-modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
     <div v-show="errorCode" class="alert alert-error">{{ errorMessage() }}</div>
 
     <form id="appComposerForm" ref="appComposerForm" onsubmit="return false;" action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
@@ -14,7 +14,7 @@
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </form>
-  </exo-modal>
+  </exo-chat-modal>
 </template>
 
 <script>

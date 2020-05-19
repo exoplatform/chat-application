@@ -2,7 +2,7 @@ import { shallow } from 'vue-test-utils';
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 import ExoChatRoomFormModal from '../../main/webapp/vue-app/components/modal/ExoChatRoomFormModal';
-import ExoModal from '../../main/webapp/vue-app/components/modal/ExoModal';
+import ExoChatModal from '../../main/webapp/vue-app/components/modal/ExoChatModal';
 
 global.fetch = jest.fn().mockImplementation(() => {
   const p = new Promise((resolve) => {
@@ -32,7 +32,7 @@ function getComponent(show, selected) {
       mq: 'desktop'
     },
     stubs: {
-      'exo-modal': ExoModal
+      'exo-chat-modal': ExoChatModal
     }
   });
   comp.vm.show = show;

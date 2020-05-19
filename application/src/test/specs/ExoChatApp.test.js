@@ -4,7 +4,7 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 import ExoChatContactList from '../../main/webapp/vue-app/components/ExoChatContactList';
 import ExoChatContact from '../../main/webapp/vue-app/components/ExoChatContact';
 import ExoChatApp from '../../main/webapp/vue-app/components/ExoChatApp';
-import ExoModal from '../../main/webapp/vue-app/components/modal/ExoModal';
+import ExoChatModal from '../../main/webapp/vue-app/components/modal/ExoChatModal';
 import ExoChatGlobalNotificationModal from '../../main/webapp/vue-app/components/modal/ExoChatGlobalNotificationModal';
 
 describe('ExoChatApp.test.js', () => {
@@ -37,7 +37,7 @@ describe('ExoChatApp.test.js', () => {
   beforeEach(() => {
     app = shallow(ExoChatApp, {
       stubs: {
-        'exo-modal': ExoModal,
+        'exo-chat-modal': ExoChatModal,
         'exo-chat-contact': ExoChatContact,
         'exo-chat-contact-list': ExoChatContactList,
         'exo-chat-global-notification-modal': ExoChatGlobalNotificationModal

@@ -11,13 +11,13 @@
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
     <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" :user-settings="userSettings" @message-written="messageWritten"></exo-chat-message-composer>
-    <exo-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
+    <exo-chat-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
       <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></textarea>
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveEditMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
-    </exo-modal>
+    </exo-chat-modal>
   </div>
 </template>
 

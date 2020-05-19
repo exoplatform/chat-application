@@ -26,7 +26,7 @@
       </div>
     </div>
     <exo-chat-room-notification-modal :room="contact.room" :room-name="contact.fullName" :show="openNotificationSettings" @modal-closed="closeNotificationSettingsModal"></exo-chat-room-notification-modal>
-    <exo-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
+    <exo-chat-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
           <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
@@ -37,7 +37,7 @@
         <a id="team-delete-button-ok" href="#" class="btn btn-primary" @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
         <a id="team-delete-button-cancel" href="#" class="btn" @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
       </div>
-    </exo-modal>
+    </exo-chat-modal>
   </div>
 </template>
 
