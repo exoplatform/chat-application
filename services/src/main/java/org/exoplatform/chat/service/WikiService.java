@@ -12,7 +12,6 @@ import javax.ws.rs.core.*;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.xwiki.rendering.syntax.Syntax;
 
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -117,8 +116,8 @@ public class WikiService implements ResourceContainer {
         if (ppage == null) {
           ppage = new Page();
           ppage.setTitle(parentTitle);
-          ppage.setContent("= " + parentTitle + " =\n");
-          ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
+          ppage.setContent("<h1>" + parentTitle + "</h1>\n");
+          ppage.setSyntax("xhtml/1.0");
           Wiki wiki = wikiService_.getWikiByTypeAndOwner(wikiType, wikiOwner);
           if (wiki == null) {
             wiki = wikiService_.createWiki(wikiType, wikiOwner);
@@ -152,7 +151,7 @@ public class WikiService implements ResourceContainer {
         Page page = new Page();
         page.setTitle(title);
         page.setContent(content);
-        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        page.setSyntax("xhtml/1.0");
         setPermissionForReportAsWiki(users, page, ppage);
         page.setOwner(creator);
         page.setAuthor(creator);
