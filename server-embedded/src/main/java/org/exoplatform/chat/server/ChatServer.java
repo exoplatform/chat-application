@@ -345,7 +345,7 @@ public class ChatServer
 
     Long from = null;
     Long to = null;
-    String xwiki = "";
+    String wikiPageContent = "";
     String roomName = "";
     List<UserBean> users = new ArrayList<UserBean>();
     JSONObject jsonObject = new JSONObject();
@@ -397,7 +397,7 @@ public class ChatServer
 
       reportBean.fill((BasicDBList) datao.get("messages"), users);
       ArrayList<String> usersInGroup = new ArrayList<String>();
-      xwiki = reportBean.getAsXWiki(serverBase, portalURI);
+      wikiPageContent = reportBean.getWikiPageContent(serverBase, portalURI);
       try {
         for (UserBean userBean : users) {
           if (!"".equals(userBean.getName())) {
@@ -405,7 +405,7 @@ public class ChatServer
           }
         }
         jsonObject.put("users", usersInGroup);
-        jsonObject.put("xwiki", xwiki);
+        jsonObject.put("wikiPageContent", wikiPageContent);
         jsonObject.put("typeRoom", typeRoom);
       } catch (Exception e) {
         LOG.warning(e.getMessage());

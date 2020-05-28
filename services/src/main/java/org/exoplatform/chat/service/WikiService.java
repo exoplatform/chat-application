@@ -52,7 +52,7 @@ public class WikiService implements ResourceContainer {
     String group = null, title = null, path = "";
     JSONObject jsonObject = (JSONObject) JSONValue.parse(content);
     String typeRoom = (String) jsonObject.get("typeRoom");
-    String xwiki = (String) jsonObject.get("xwiki");
+    String wikiPageContent = (String) jsonObject.get("wikiPageContent");
     ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
     if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
       Space spaceBean = spaceService.getSpaceByDisplayName(targetFullname);
@@ -61,11 +61,11 @@ public class WikiService implements ResourceContainer {
         if (group.startsWith("/"))
           group = group.substring(1);
         title = "Meeting " + sdf.format(new Date());
-        path = createSpacePage(currentUser, title, xwiki, group, users);
+        path = createSpacePage(currentUser, title, wikiPageContent, group, users);
       }
     } else {
       title = targetFullname + " Meeting " + sdf.format(new Date());
-      path = createIntranetPage(currentUser, title, xwiki, users);
+      path = createIntranetPage(currentUser, title, wikiPageContent, users);
     }
 
     CacheControl cacheControl = new CacheControl();
