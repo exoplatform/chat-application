@@ -11,7 +11,7 @@
           <img :src="contactAvatar" class="chatAvatar" />
           <span :class="statusStyle" class="user-status">
             <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
-            <span :title="getName" class="selectedContactName">{{ escapedName(getName) }}</span>
+            <span :title="getName" class="selectedContactName">{{ getName }}</span>
           </span>
         </span>
         <span v-show="listOfContact && !showSearch" class="chatTitle">Chat</span>
@@ -52,7 +52,6 @@ import * as chatWebSocket from '../../chatWebSocket';
 import {getUserAvatar} from '../../chatServices';
 import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
-import {escapeHtml} from '../../chatServices';
 export default {
   name: 'ExoChatDrawer',
   data () {
@@ -290,12 +289,6 @@ export default {
     },
     reloadPage() {
       window.location.reload();
-    },
-    escapedName(text) {
-      if (typeof text !== 'undefined') {
-        const name = escapeHtml(text);
-        return name;
-      }
     },
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
