@@ -31,7 +31,7 @@
           <v-icon v-show = "showSearch && listOfContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
           <v-icon v-show = "!showSearch && listOfContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
           <v-icon v-show="!listOfContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
-          <v-icon v-show="!showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
+          <v-icon v-show="mq !=='mobile' && !showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
         </template>
         <template slot="content">
           <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList'">
