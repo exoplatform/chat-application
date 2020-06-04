@@ -5,7 +5,7 @@
   
       <div class="add-room-form">
         <label>{{ $t('exoplatform.chat.team.name') }}</label>
-        <input v-model="fullName" type="text">
+        <input v-model="fullName" class="add-room-name" type="text">
         <label>{{ $t('exoplatform.chat.team.people') }}</label>
         <input id="add-room-suggestor" type="text">
         <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">

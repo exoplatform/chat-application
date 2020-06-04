@@ -114,7 +114,7 @@
       <exo-dropdown-select v-if="displayActions && mq !=='mobile'" class="message-actions" position="right">
         <i slot="toggle" class="uiIconDots" @click="setActionsPosition"></i>
         <li slot="menu">
-          <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" href="#" @click="executeAction(messageAction)">
+          <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" class="actions-link" href="#" @click="executeAction(messageAction)">
             {{ $t(messageAction.labelKey) }}
           </a>
         </li>

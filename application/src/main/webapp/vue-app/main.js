@@ -8,6 +8,12 @@ import './components/initComponents.js';
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
 
+Vue.use(Vuetify);
+const vuetify = new Vuetify({
+  dark: true,
+  iconfont: '',
+});
+
 Vue.directive('exo-tooltip', function (el, binding) {
   const element = $(el);
   const placement = Object.keys(binding.modifiers)[0];
@@ -47,13 +53,15 @@ export function init() {
       new Vue({
         el: '#chatApplication',
         template: '<exo-chat-app></exo-chat-app>',
-        i18n
+        i18n,
+        vuetify
       });
     } else if ($('#chatNotification').length) {
       new Vue({
         el: '#chatNotification',
         template: '<exo-chat-drawer></exo-chat-drawer>',
-        i18n
+        i18n,
+        vuetify
       });
     }
   });

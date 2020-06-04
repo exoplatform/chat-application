@@ -1,39 +1,46 @@
 <template>
-  <div v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
-    <a :class="statusClass" class="dropdown-toggle">
-      <div class="uiIconStatus uiNotifChatIcon" @click="openDrawer">
+  <div class="VuetifyApp">
+    <v-app v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
+      <a :class="statusClass" class="dropdown-toggle">
+        <v-icon class="my-auto uiIconStatus uiNotifChatIcon" @click="openDrawer"></v-icon>
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
-      </div>
-    </a>
-    <div :class="showChatDrawer ? 'open' : '' " class="drawer">
-      <div class="header">
-        <span v-if="!listOfContact" >
-          <img :src="contactAvatar" class="chatAvatar" />
-          <span :class="statusStyle" class="user-status">
-            <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
-            <span :title="getName" class="selectedContactName">{{ getName }}</span>
-          </span>
-        </span>
-        <span v-show="listOfContact && !showSearch" class="chatTitle">Chat</span>
-        <span v-show="listOfContact && !showSearch">
-          <exo-chat-contact :chat-drawer-contact="showChatDrawer" :user-name="userSettings.username" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)"></exo-chat-contact>
-        </span>
-        <a v-show="!listOfContact" class="icon-Back" @click="backChat()"></a>
-        <a v-show="!showSearch" class="closeBtnDrawer" href="javascript:void(0)" @click="closeChatDrawer()"></a>
-        <a v-exo-tooltip="$t('exoplatform.chat.open.chat')" v-show="!showSearch" data-placement="bottom" class="icon-android-open" href="/portal/dw/chat" target="_chat"></a>
-        <a v-show="!listOfContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" data-placement="bottom" class="icon-ios-videocam" ></a>
-        <span v-show="showChatDrawer && listOfContact">
-          <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text" @keyup.esc="closeContactSearch">
-          <a v-show = "!showSearch" class="uiIconSearchLight" @click="showSearch = !showSearch"></a>
-          <a v-show = "showSearch" class="closeBtnSearch" @click="closeContactSearch">×</a>
-        </span>
-      </div>
-      <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList' " class="content">
-        <exo-chat-contact-list v-show="listOfContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
-        <exo-chat-message-list v-show="!listOfContact" :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
-      </div>
-    </div>
-    <div v-show="showChatDrawer" class="drawer-backdrop" @click="closeChatDrawer()"></div>
+      </a>
+      <exo-drawer ref="chatDrawer"
+                  class="chatDrawer"
+                  body-class="hide-scroll decrease-z-index-more"
+                  right>
+        <template v-if="!showSearch" slot="title">
+          <div class="leftHeaderDrawer">
+            <span v-if="listOfContact && !showSearch" class="chatContactDrawer">
+              <exo-chat-contact :chat-drawer-contact="showChatDrawer" :user-name="userSettings.username" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)"></exo-chat-contact>
+            </span>
+            <v-icon v-show="!listOfContact" class="my-auto backButton" @click="backChat()">mdi-keyboard-backspace</v-icon>
+            <span v-if="!listOfContact" >
+              <img :src="contactAvatar" class="chatAvatar" alt="avatar of discussion"/>
+              <span :class="statusStyle" class="user-status">
+                <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
+                <span :title="getName">{{ getName }}</span>
+              </span>
+            </span>
+          </div>
+        </template>
+        <template v-if="showChatDrawer && listOfContact" slot="title">
+          <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text">
+        </template>
+        <template slot="titleIcons">
+          <v-icon v-show = "showSearch && listOfContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
+          <v-icon v-show = "!showSearch && listOfContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
+          <v-icon v-show="!listOfContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
+          <v-icon v-show="!showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
+        </template>
+        <template slot="content">
+          <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList'">
+            <exo-chat-contact-list v-show="listOfContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+            <exo-chat-message-list v-show="!listOfContact" :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
+          </div>
+        </template>
+      </exo-drawer>
+    </v-app>
     <div class="hide">
       <audio id="chat-audio-notif" controls>
         <source src="/chat/audio/notif.wav">
@@ -144,16 +151,13 @@ export default {
   },
   methods:{
     openDrawer() {
-      document.body.style.overflow = 'hidden';
+      this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
       this.listOfContact = true;
       this.selectedContact = [];
     },
-    closeChatDrawer() {
-      document.body.style.overflow = 'scroll';
-      this.showSearch = false;
-      this.showChatDrawer = false;
-      this.selectedContact = [];
+    navigateTo() {
+      window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
     },
     setStatus(status) {
       chatServices.setUserStatus(this.userSettings, status, newStatus => {
@@ -239,6 +243,7 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
+      $('.mdi-close').removeClass('hideCloseButton');
       if(!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -297,6 +302,7 @@ export default {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
           this.showChatDrawer = true;
           this.setSelectedContact(rommId);
+          this.$refs.chatDrawer.open();
         });
       }
       const tiptip = document.getElementById('tiptip_holder');
@@ -304,7 +310,12 @@ export default {
         tiptip.style.display = 'none';
       }
     },
+    openContactSearch() {
+      $('.mdi-close').addClass('hideCloseButton');
+      this.showSearch = true;
+    },
     closeContactSearch() {
+      $('.mdi-close').removeClass('hideCloseButton');
       this.showSearch = false;
       this.searchTerm = '';
     },

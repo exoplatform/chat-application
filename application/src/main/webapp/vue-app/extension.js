@@ -172,7 +172,7 @@ export const CALENDAR_EVENT_COMPOSER_APP = [{
       <div class="chat-event-date form-horizontal"> \
         <div class="event-item"> \
           <span class="action-label">${i18NConverter('exoplatform.chat.from')}</span> \
-          <input name="startDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
+          <input name="startDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" class="startDate" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
           <select name="startTime" class="selectbox" required> \
             <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
             ${timeOptions}
@@ -180,7 +180,7 @@ export const CALENDAR_EVENT_COMPOSER_APP = [{
         </div> \
         <div class="event-item"> \
           <span class="action-label">${i18NConverter('exoplatform.chat.to')}</span> \
-          <input name="endDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
+          <input name="endDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" class="endDate" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
           <select name="endTime" class="selectbox" required> \
             <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
             ${timeOptions}

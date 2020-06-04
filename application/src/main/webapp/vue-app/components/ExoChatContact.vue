@@ -18,12 +18,13 @@
           <div class="statusMargin">
             <i class="uiIconStatus"></i>
           </div>
-          <span v-if="!chatDrawerContact" class="user-status">{{ getStatus }}</span>
+          <div v-if="!ap" class="chat-title">Chat</div>
+          <span v-if="ap" class="user-status">{{ getStatus }}</span>
           <div v-if="chatDrawerContact" class="chat-status-toggle">
             <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" class="chat-contact-link"></a>
           </div>
         </div>
-        <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
+        <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#" class="status-link"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
       </exo-dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
@@ -174,9 +175,9 @@ export default {
       this.isOnline = false;
     },
     getProfileLink() {
-      if (this.type === 'u') {
+      if (this.app && this.type === 'u') {
         return getUserProfileLink(this.userName);
-      } else if (this.type === 's') {
+      } else if (this.app && this.type === 's') {
         return getSpaceProfileLink(this.name);
       }
       return '#';

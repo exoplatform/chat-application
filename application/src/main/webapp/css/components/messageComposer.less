@@ -7,8 +7,38 @@
     .chat-loading-mask {
       position: absolute;
     }
+    span.action-label {
+      width: 13%;
+    }
     input.large {
-      width: 100%;
+      font-size: 15px;
+      min-height: 40px;
+      padding: 0 10px;
+      width: 96%;
+      border: Solid 2px @borderColor;
+      border-radius: 5px;
+      max-height: 115px;
+      text-overflow: ellipsis;
+    }
+    input.large:required:focus {
+      border-color: @requiredInputColor;
+    }
+    input.startDate {
+      border: Solid 2px @borderColor;
+      border-radius: 5px;
+    }
+    input.endDate {
+      border: Solid 2px @borderColor;
+      border-radius: 5px;
+    }
+    input.startDate:required:focus {
+      border-color: @requiredInputColor;
+    }
+    input.endDate:required:focus {
+      border-color: @requiredInputColor;
+    }
+    select.selectbox {
+      border: Solid 2px @borderColor;
     }
     .uiAction {
       margin-top: 0;
@@ -154,7 +184,7 @@
   .chat-event-date {
     display: table;
     .event-item {
-      display: table-row;
+      display: flex;
       > * {
         display: table-cell;
         padding-right: 10px;
@@ -172,7 +202,8 @@
       margin-bottom: 10px;
     }
     .selectbox {
-      width: 130px;
+      width: 92px;
+      -webkit-appearance: auto;
       margin-left: 15px;
     }
   }
@@ -180,6 +211,10 @@
 
 #appComposerForm .selectize-input {
   margin-bottom: 5px;
+}
+
+.selectize-input {
+  width: 96%;
 }
 
 .chat-file-upload {
@@ -204,7 +239,7 @@
     vertical-align: top;
     text-align: right;
   }
-  
+
   .btn {
     vertical-align: top;
     margin: 5px 0;

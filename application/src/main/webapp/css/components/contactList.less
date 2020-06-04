@@ -79,7 +79,22 @@
   .add-room-form {
     .flex-column;
     > input {
+      font-size: 15px;
+      min-height: 40px;
+      padding: 0 10px;
       width: auto;
+      border: Solid 2px @borderColor;
+      border-radius: 5px;
+      max-height: 115px;
+      text-overflow: ellipsis;
+    }
+  }
+
+  button.btn {
+    border: 1px solid @borderColor !important;
+    box-shadow: none;
+    &:hover {
+      background-color: @borderColor;
     }
   }
 

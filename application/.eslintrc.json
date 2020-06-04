@@ -12,6 +12,7 @@
     "globals": {
         "Vue": true,
         "eXo": true,
+        "Vuetify": true,
         "$": true,
         "cCometD": true,
         "CalDateTimePicker": true,

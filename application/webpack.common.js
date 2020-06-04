@@ -53,6 +53,10 @@ let config = {
       }
     ]
   },
+  externals: {
+    vue: 'Vue',
+    vuetify: 'Vuetify',
+  },
   plugins: [
     new ExtractTextWebpackPlugin('css/[name].css')
   ]
