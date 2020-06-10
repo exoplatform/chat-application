@@ -122,7 +122,7 @@
         position: fixed;
         width: 70%;
         top: 2px;
-        border: Solid 2px var(--allPagesGreyColor,#e1e8ee);
+        border: Solid 2px @borderColor;
         border-radius: 5px;
         box-shadow: none;
         max-height: 115px;
@@ -410,5 +410,5 @@ input#taskDueDate:focus {
   border-color: @focusInputColor;
 }
 input.add-room-name:focus {
-  border-color: #a6bad6;
+  border-color: @focusInputColor;
 }

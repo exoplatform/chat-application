@@ -179,7 +179,12 @@
   display: inline;
 }
 #editMessageComposerArea {
-  width: 100%;
+  width: 96%;
+  border: Solid 2px @borderColor;
+  box-shadow: none;
+  &:focus {
+    border-color: @focusInputColor;
+  }
 }
 .chat-message-not-sent {
 	color:@grayLight;
