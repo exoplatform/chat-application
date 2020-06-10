@@ -12,7 +12,6 @@ import javax.ws.rs.core.*;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.xwiki.rendering.syntax.Syntax;
 
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -53,7 +52,7 @@ public class WikiService implements ResourceContainer {
     String group = null, title = null, path = "";
     JSONObject jsonObject = (JSONObject) JSONValue.parse(content);
     String typeRoom = (String) jsonObject.get("typeRoom");
-    String xwiki = (String) jsonObject.get("xwiki");
+    String wikiPageContent = (String) jsonObject.get("wikiPageContent");
     ArrayList<String> users = (ArrayList<String>) jsonObject.get("users");
     if (ChatService.TYPE_ROOM_SPACE.equalsIgnoreCase(typeRoom)) {
       Space spaceBean = spaceService.getSpaceByDisplayName(targetFullname);
@@ -62,11 +61,11 @@ public class WikiService implements ResourceContainer {
         if (group.startsWith("/"))
           group = group.substring(1);
         title = "Meeting " + sdf.format(new Date());
-        path = createSpacePage(currentUser, title, xwiki, group, users);
+        path = createSpacePage(currentUser, title, wikiPageContent, group, users);
       }
     } else {
       title = targetFullname + " Meeting " + sdf.format(new Date());
-      path = createIntranetPage(currentUser, title, xwiki, users);
+      path = createIntranetPage(currentUser, title, wikiPageContent, users);
     }
 
     CacheControl cacheControl = new CacheControl();
@@ -117,8 +116,8 @@ public class WikiService implements ResourceContainer {
         if (ppage == null) {
           ppage = new Page();
           ppage.setTitle(parentTitle);
-          ppage.setContent("= " + parentTitle + " =\n");
-          ppage.setSyntax(Syntax.XWIKI_2_0.toIdString());
+          ppage.setContent("<h1>" + parentTitle + "</h1>\n");
+          ppage.setSyntax("xhtml/1.0");
           Wiki wiki = wikiService_.getWikiByTypeAndOwner(wikiType, wikiOwner);
           if (wiki == null) {
             wiki = wikiService_.createWiki(wikiType, wikiOwner);
@@ -152,7 +151,7 @@ public class WikiService implements ResourceContainer {
         Page page = new Page();
         page.setTitle(title);
         page.setContent(content);
-        page.setSyntax(Syntax.XWIKI_2_0.toIdString());
+        page.setSyntax("xhtml/1.0");
         setPermissionForReportAsWiki(users, page, ppage);
         page.setOwner(creator);
         page.setAuthor(creator);

@@ -120,7 +120,14 @@ public class ReportBean {
           if ("type-link".equals(type))
           {
             addLink(options.get("link").toString());
-            msg = "[ "+ res.getString("exoplatform.chat.meetingnotes.link")+": "+ options.get("link").toString()+" ]";
+            msg = new StringBuilder().append("[ ")
+                    .append(res.getString("exoplatform.chat.meetingnotes.link"))
+                    .append(": <a href=\"")
+                    .append(options.get("link").toString())
+                    .append("\">")
+                    .append(options.get("link").toString())
+                    .append("</a> ]")
+                    .toString();
           }
           else if ("type-question".equals(type))
           {
@@ -206,21 +213,19 @@ public class ReportBean {
     }
   }
 
-  public String getAsXWiki(String serverBase, String portalURI)
+  public String getWikiPageContent(String serverBase, String portalURI)
   {
     serverBase = serverBase == null ? "" : serverBase;
-    StringBuilder xwiki = new StringBuilder();
-
-    xwiki.append("\n{{section}}\n{{column}}\n");
+    StringBuilder wikiPageContent = new StringBuilder();
 
     /**
      * Questions
      */
     if (questions.size()>0) {
-      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.questions")+" ====\n");
+      wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.questions")+"</h2>\n");
       for (String question:this.getQuestions())
       {
-        xwiki.append(question).append("\n");
+        wikiPageContent.append(question).append("<br>");
       }
     }
 
@@ -228,10 +233,10 @@ public class ReportBean {
      * Links
      */
     if (links.size()>0) {
-      xwiki.append("\n===== "+ res.getString("exoplatform.chat.meetingnotes.links")+" ====\n");
+      wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.links")+"</h2>\n");
       for (String link:this.getLinks())
       {
-        xwiki.append("[[").append(link).append("]]").append("\n");
+        wikiPageContent.append("<a href=\"").append(link).append("\">").append(link).append("</a><br>");
       }
     }
 
@@ -239,12 +244,16 @@ public class ReportBean {
      * Files
      */
     if (files.size()>0) {
-      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.files")+" ====\n");
+      wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.files")+"</h2>\n");
       for (FileBean file:this.getFiles())
       {
-        xwiki.append("[[");
-        xwiki.append(file.getName()).append(">>").append(file.getUrl().replaceFirst("/rest", serverBase+"/portal/rest/")).append("]]");
-        xwiki.append(" (").append(file.getSize()).append(")\n");
+        wikiPageContent.append("<a href=\"")
+                .append(file.getUrl().replaceFirst("/rest", serverBase+"/portal/rest/")).append("\">")
+                .append(file.getName())
+                .append("</a> ")
+                .append(" (")
+                .append(file.getSize())
+                .append(")<br>");
       }
     }
 
@@ -252,84 +261,90 @@ public class ReportBean {
      * Tasks
      */
     if (tasks.size()>0) {
-      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.tasks")+" ====\n");
-      xwiki.append("|= "+ res.getString("exoplatform.chat.meetingnotes.tasks.task")+
-        " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.assignee")+
-        " |= "+ res.getString("exoplatform.chat.meetingnotes.tasks.due")+"\n");
+      wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.tasks")+"</h2>\n");
+      wikiPageContent.append("<figure class=\"table\"><table><thead><tr>")
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.tasks.task"))
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.tasks.assignee"))
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.tasks.due"))
+              .append("</tr></thead><tbody>");
 
       for (TaskBean task:this.getTasks())
       {
-        xwiki.append("| ").append(task.getTask())
-          .append(" | ").append(task.getAssignee())
-          .append(" | ").append(task.getDueDate()).append(" \n");
+        wikiPageContent.append("<tr><td>").append(task.getTask()).append("</td>")
+                .append("<td>").append(task.getAssignee()).append("</td>")
+                .append("<td>").append(task.getDueDate()).append("</td></tr>\n");
       }
+
+      wikiPageContent.append("</tbody></table>");
     }
 
     /**
      * Events
      */
     if (events.size()>0) {
-      xwiki.append("\n==== "+ res.getString("exoplatform.chat.meetingnotes.events")+" ====\n");
-      xwiki.append("|= "+ res.getString("exoplatform.chat.meetingnotes.events.event")+
-        " |= "+ res.getString("exoplatform.chat.meetingnotes.events.start")+
-        " |= "+ res.getString("exoplatform.chat.meetingnotes.events.end")+"\n");
+      wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.events")+"</h2>\n");
+      wikiPageContent.append("<figure class=\"table\"><table><thead><tr>")
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.events.event"))
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.events.start"))
+              .append("<th>").append(res.getString("exoplatform.chat.meetingnotes.events.end"))
+              .append("</tr></thead><tbody>");
+
       for (EventBean event:this.getEvents())
       {
-        xwiki.append("| ").append(event.getSummary())
-          .append(" | ").append(event.getStartDate()).append(" ").append(event.getStartTime())
-          .append(" | ").append(event.getEndDate()).append(" ").append(event.getEndTime()).append(" \n");
+        wikiPageContent.append("<tr><td>").append(event.getSummary()).append("</td>")
+              .append("<td>").append(event.getStartDate()).append(" ").append(event.getStartTime()).append("</td>")
+              .append("<td>").append(event.getEndDate()).append(" ").append(event.getEndTime()).append("</td></tr>\n");
       }
+
+      wikiPageContent.append("</tbody></table>");
     }
 
-    xwiki.append("\n{{/column}}\n");
     /**
      * Attendees
      */
-    xwiki.append("\n{{column}}\n==== "+ res.getString("exoplatform.chat.meetingnotes.attendees")+" ====\n{{panel}}\n");
+    wikiPageContent.append("\n<h2>"+ res.getString("exoplatform.chat.meetingnotes.attendees")+"</h2>\n");
     for (UserBean userBean:this.getAttendees()) {
       if ("available".equals(userBean.getStatus()))
-        xwiki.append("(/) ");
+        wikiPageContent.append("<img src=\"/rest/wiki/emoticons/accept.gif\"/> ");
       else
-        xwiki.append("(x)");
-      xwiki.append(" [[").append(userBean.getFullname()).append(">>" + serverBase + portalURI + "/profile/").append(userBean.getName()).append("]]\n");
+        wikiPageContent.append("<img src=\"/rest/wiki/emoticons/cancel.gif\"/> ");
+      wikiPageContent.append(" <a href=\"").append(serverBase + portalURI + "/profile/").append(userBean.getName()).append("\">").append(userBean.getFullname()).append("</a><br>");
     }
-    xwiki.append("\n{{/panel}}\n{{/column}}\n{{/section}}\n");
 
     /**
      * Discussions
      */
-    xwiki.append("\n=== "+ res.getString("exoplatform.chat.meetingnotes.discussions")+" ===\n\n");
+    wikiPageContent.append("\n<h1>"+ res.getString("exoplatform.chat.meetingnotes.discussions")+"</h1>\n\n");
     String prevUser = "";
     for (MessageBean messageBean:this.getMessages())
     {
-      xwiki.append("{{span style='padding: 4px; border-bottom: 1px dotted #DDD; width: 500px;display: block;'}}");
+      wikiPageContent.append("<span style='padding: 4px; border-bottom: 1px dotted #DDD; width: 500px;display: block;'>");
       if (!messageBean.getUser().equals(prevUser))
       {
-        xwiki.append("{{div style='padding: 4px;color: #CCC;margin:0;'}}");
-        xwiki.append("{{span style='float: left; display: inline-block;padding-right: 10px;'}} [[image:"+serverBase+"/portal/rest/v1/social/users/"+messageBean.getUser()+"/avatar||width='30' height='30']] {{/span}}");
-        xwiki.append("{{span style='width: 400px;display: inline-block;vertical-align: top;'}}").append(messageBean.getFullName()).append("{{/span}}");
-        xwiki.append("{{span style='font-size: smaller;vertical-align: top;'}}").append(messageBean.getTimestamp()).append("{{/span}}");
-        xwiki.append("{{/div}}");
+        wikiPageContent.append("<div style='padding: 4px;color: #CCC;margin:0;'>");
+        wikiPageContent.append("<span style='float: left; display: inline-block;padding-right: 10px;'> <img src=\"" + serverBase + "/portal/rest/v1/social/users/" + messageBean.getUser() + "/avatar\" style=\"width:30px;height:30px;\"/></span>");
+        wikiPageContent.append("<span style='width: 400px;display: inline-block;vertical-align: top;'>").append(messageBean.getFullName()).append("</span>");
+        wikiPageContent.append("<span style='font-size: smaller;vertical-align: top;'>").append(messageBean.getTimestamp()).append("</span>");
+        wikiPageContent.append("</div>");
       }
       prevUser = messageBean.getUser();
       String message = messageBean.getMessage();
-      message = message.replaceAll("~", "~~");
       message = message.replaceAll("&#38", "&");
-      message = message.replaceAll("&lt;", "~<");
-      message = message.replaceAll("&gt;", "~>");
+      message = message.replaceAll("&lt;", "<");
+      message = message.replaceAll("&gt;", ">");
       message = message.replaceAll("&quot;","\"");
       message = message.replaceAll("<br/>","\n");
       message = message.replaceAll("&#92","\\\\");
-      message = message.replaceAll("=","~=");
-      message = message.replaceAll("\\}","~}");
-      message = message.replaceAll("\\{","~{");
+      message = message.replaceAll("=","=");
+      message = message.replaceAll("\\}","}");
+      message = message.replaceAll("\\{","{");
       message = message.replaceAll("  ","\t");
-      xwiki.append("{{div style='padding: 0 4px; margin:0 0 0 40px;vertical-align: top;'}}").append(message).append("{{/div}}");
-      xwiki.append("{{/span}}");
+      wikiPageContent.append("<div style='padding: 0 4px; margin:0 0 0 40px;vertical-align: top;'>").append(message).append("</div>");
+      wikiPageContent.append("</span>");
     }
 
 
-    return xwiki.toString();
+    return wikiPageContent.toString();
   }
 
   public String getAsHtml(String title, String serverBase, Locale locale)
