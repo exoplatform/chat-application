@@ -34,6 +34,14 @@ export default {
       type: Boolean,
       default: false
     },
+    isOpenedContact: {
+      type: Boolean,
+      default: false
+    },
+    isOpenedContactApps: {
+      type: Boolean,
+      default: false
+    },
     minimized: {
       type: Boolean,
       default: false
@@ -247,7 +255,11 @@ export default {
         return;
       }
 
-      if (this.windowFocused && !this.minimized) {
+      if (!this.ap && !this.isOpenedContact) {
+        chatWebSocket.setRoomMessagesAsRead(this.contact.room);
+      }
+
+      if (this.ap && !this.isOpenedContactApps) {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       }
 

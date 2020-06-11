@@ -8,14 +8,15 @@
       <exo-drawer ref="chatDrawer"
                   class="chatDrawer"
                   body-class="hide-scroll decrease-z-index-more"
-                  right>
+                  right
+                  @closed="resetSelectedContact">
         <template v-if="!showSearch" slot="title">
           <div class="leftHeaderDrawer">
-            <span v-if="listOfContact && !showSearch" class="chatContactDrawer">
+            <span v-if="!selectedContact && !showSearch" class="chatContactDrawer">
               <exo-chat-contact :chat-drawer-contact="showChatDrawer" :user-name="userSettings.username" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)"></exo-chat-contact>
             </span>
-            <v-icon v-show="!listOfContact" class="my-auto backButton" @click="backChat()">mdi-keyboard-backspace</v-icon>
-            <span v-if="!listOfContact" >
+            <v-icon v-show="selectedContact" class="my-auto backButton" @click="backChat()">mdi-keyboard-backspace</v-icon>
+            <span v-if="selectedContact" >
               <img :src="contactAvatar" class="chatAvatar" alt="avatar of discussion"/>
               <span :class="statusStyle" class="user-status">
                 <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
@@ -24,19 +25,19 @@
             </span>
           </div>
         </template>
-        <template v-if="showChatDrawer && listOfContact" slot="title">
+        <template v-if="showChatDrawer && !selectedContact" slot="title">
           <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text">
         </template>
         <template slot="titleIcons">
-          <v-icon v-show = "showSearch && listOfContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
-          <v-icon v-show = "!showSearch && listOfContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
-          <v-icon v-show="!listOfContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
+          <v-icon v-show = "showSearch && !selectedContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
+          <v-icon v-show = "!showSearch && !selectedContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
+          <v-icon v-show="selectedContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
           <v-icon v-show="mq !=='mobile' && !showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
         </template>
         <template slot="content">
-          <div :class="listOfContact ? 'contentDrawer ' : 'contentDrawerOfList'">
-            <exo-chat-contact-list v-show="listOfContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
-            <exo-chat-message-list v-show="!listOfContact" :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
+          <div :class="!selectedContact ? 'contentDrawer ' : 'contentDrawerOfList'">
+            <exo-chat-contact-list v-show="!selectedContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+            <exo-chat-message-list v-show="selectedContact" :contact="selectedContact" :user-settings="userSettings" :is-opened-contact="!selectedContact"></exo-chat-message-list>
           </div>
         </template>
       </exo-drawer>
@@ -71,7 +72,6 @@ export default {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
       showChatDrawer:false,
-      listOfContact: false,
       fullNameOfUser:'',
       isOnline : true,
       searchTerm:'',
@@ -87,7 +87,7 @@ export default {
       }
     },
     contactAvatar() {
-      if(this.showChatDrawer && typeof this.selectedContact !== 'undefined') {
+      if(this.selectedContact){
         if (this.selectedContact.type === 'u') {
           return getUserAvatar(this.selectedContact.user);
         } else if (this.selectedContact.type === 's') {
@@ -98,7 +98,7 @@ export default {
       }
     },
     statusStyle: function() {
-      if (this.listOfContact) {
+      if (!this.selectedContact) {
         if (!this.isOnline || this.userSettings.status === 'invisible') {
           return 'user-offline';
         } else {
@@ -113,7 +113,7 @@ export default {
       }
     },
     getName(){
-      if (this.listOfContact) {
+      if (!this.selectedContact) {
         return this.userSettings.username;
       } else {
         return this.selectedContact.fullName;
@@ -153,11 +153,15 @@ export default {
     openDrawer() {
       this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
-      this.listOfContact = true;
-      this.selectedContact = [];
+      this.selectedContact = null;
     },
     navigateTo() {
       window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
+    },
+    resetSelectedContact() {
+      this.showChatDrawer = false;
+      this.showSearch = false;
+      this.selectedContact = null;
     },
     setStatus(status) {
       chatServices.setUserStatus(this.userSettings, status, newStatus => {
@@ -243,7 +247,7 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      $('.mdi-close').removeClass('hideCloseButton');
+      
       if(!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -261,7 +265,6 @@ export default {
       }
       this.selectedContact = selectedContact;
       document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
-      this.listOfContact = false;
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
@@ -300,7 +303,6 @@ export default {
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          this.showChatDrawer = true;
           this.setSelectedContact(rommId);
           this.$refs.chatDrawer.open();
         });
@@ -311,16 +313,13 @@ export default {
       }
     },
     openContactSearch() {
-      $('.mdi-close').addClass('hideCloseButton');
       this.showSearch = true;
     },
     closeContactSearch() {
-      $('.mdi-close').removeClass('hideCloseButton');
       this.showSearch = false;
       this.searchTerm = '';
     },
     selectContactSearch() {
-      this.listOfContact = false;
       this.showSearch = false;
       this.$nextTick(() => this.$refs.contactSearch.focus());
     },
@@ -328,8 +327,7 @@ export default {
       return desktopNotification.canShowOnSiteNotif();
     },
     backChat(){
-      this.listOfContact=true;
-      this.selectedContact = [];
+      this.selectedContact = null;
     }
   }
 };

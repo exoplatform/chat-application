@@ -13,7 +13,7 @@
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
       <div class="room-content">
-        <exo-chat-message-list :contact="selectedContact" :user-settings="userSettings"></exo-chat-message-list>
+        <exo-chat-message-list :contact="selectedContact" :user-settings="userSettings" :is-opened-contact-apps="contactOpened"></exo-chat-message-list>
         <exo-chat-room-participants :contact="selectedContact" @particpants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></exo-chat-room-participants> 
       </div>
     </div>
@@ -84,6 +84,7 @@ export default {
       },
       connected: false,
       loggedout: false,
+      contactOpened: true,
       selectedContact: {},
       loadingContacts: true,
       settingModal: false,
@@ -174,6 +175,7 @@ export default {
         }
       }
       this.selectedContact = selectedContact;
+      this.contactOpened = false;
       document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
     },
     setStatus(status) {
