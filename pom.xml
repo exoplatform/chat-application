@@ -30,9 +30,9 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>5.3.2-spaces-groups-binding-SNAPSHOT</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.ecms.version>5.3.2-spaces-groups-binding-SNAPSHOT</org.exoplatform.ecms.version>
-    <org.exoplatform.platform.version>5.3.2-spaces-groups-binding-SNAPSHOT</org.exoplatform.platform.version>
+    <org.exoplatform.gatein.portal.version>5.3.2-spaces-groups-binding-02</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.ecms.version>5.3.2-spaces-groups-binding-02</org.exoplatform.ecms.version>
+    <org.exoplatform.platform.version>5.3.2-spaces-groups-binding-02</org.exoplatform.platform.version>
     <org.juzu.version>1.2.0</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
