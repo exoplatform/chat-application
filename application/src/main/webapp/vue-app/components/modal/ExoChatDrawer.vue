@@ -272,7 +272,7 @@ export default {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
-            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
+            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
             if(contactToChange) {
               this.setSelectedContact(contactToChange);
             }
@@ -303,7 +303,13 @@ export default {
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          this.setSelectedContact(rommId);
+          const selectedContact = this.contactList.find(contact => contact.room === rommId || contact.user === rommId);
+          if ( !selectedContact ) {
+            this.refreshContacts(false);
+            this.selectedContact = rommId;
+          } else {
+            this.setSelectedContact(rommId);
+          }
           this.$refs.chatDrawer.open();
         });
       }
