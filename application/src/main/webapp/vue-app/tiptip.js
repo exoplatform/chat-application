@@ -10,12 +10,11 @@ export function initTiptip() {
       if(!type) {
         type = 'username';
       }
-      divUIAction.append(`<a title="Chat"  \
-        class="btn chatPopupOverlay chatPopup" \
-        type="button" \
-        onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))"> \
-          <i class="uiIconBannerChat uiIconLightGray"></i> \
-          Chat \
+      divUIAction.append(`<a title="Chat"
+        class="chatPopupOverlay chatPopup"
+        type="button"
+        onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))">
+          <i class="uiIconBannerChat uiIconLightGray"></i>
       </a>`);
     }
   });
