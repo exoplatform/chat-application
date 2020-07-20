@@ -7,7 +7,7 @@
       </a>
       <exo-drawer ref="chatDrawer"
                   class="chatDrawer"
-                  body-class="hide-scroll"
+                  body-classes="hide-scroll"
                   right
                   @closed="resetSelectedContact">
         <template v-if="!showSearch" slot="title">
