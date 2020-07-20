@@ -35,7 +35,6 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
@@ -80,7 +79,7 @@ public class ServerBootstrap {
   public static void addUserFullNameAndEmail(String username, String fullname, String email) {
     try {
       postServer("addUserFullNameAndEmail",
-                 "username=" + username + "&fullname=" + ChatUtils.toString(fullname) + "&email=" + email);
+              "username=" + username + "&fullname=" + URLEncoder.encode(ChatUtils.toString(fullname), "UTF-8") + "&email=" + email);
     } catch (IOException e) {
       LOG.error("Error while updating user information for user {} [ {} ]", username, email, e);
     }
