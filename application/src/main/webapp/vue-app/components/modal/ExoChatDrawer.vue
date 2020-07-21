@@ -247,7 +247,6 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      
       if(!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -264,7 +263,10 @@ export default {
         }
       }
       this.selectedContact = selectedContact;
-      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
+      chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
+        this.selectedContact.participants = data.users;
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
+      });
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
