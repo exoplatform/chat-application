@@ -21,6 +21,7 @@ package org.exoplatform.chat.server;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -141,7 +142,7 @@ public class ChatTools
       fullname = (String)ChatUtils.fromString(fullname);
       userService.addUserFullName(username, fullname);
     } catch (Exception e) {
-      LOG.info("fullname wasn't serialized : " + e.getMessage());
+      LOG.log(Level.SEVERE, "The fullName with value " + fullname +  " of the user " + username + " couldn't be serialized : " + e.getMessage(), e);
     }
 
     return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
