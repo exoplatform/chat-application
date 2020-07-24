@@ -1,0 +1,5 @@
+              2020-07-24 eXo Support <support@exoplatform.org> 
+
+   # 2.2.3 Patches changelog: 
+
+
