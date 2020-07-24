@@ -284,13 +284,14 @@ public class DocumentService implements ResourceContainer {
         if (node.canAddMixin("exo:privilegeable")) {
           node.addMixin("exo:privilegeable");
         }
-        for (String user : usernames) {
-          ((NodeImpl) node).setPermission(user, new String[] { PermissionType.READ });
-        }
         // Add permission
         Map<String, String[]> permissionsMap = new HashMap<String, String[]>();
         permissionsMap.put(remoteUser, PermissionType.ALL);
         ((NodeImpl) node).setPermissions(permissionsMap);
+
+        for (String user : usernames) {
+          ((NodeImpl) node).setPermission(user, new String[] { PermissionType.READ });
+        }
 
         node.save();
       }
