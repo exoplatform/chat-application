@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.util.Text;
+
+import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -282,9 +284,15 @@ public class DocumentService implements ResourceContainer {
         if (node.canAddMixin("exo:privilegeable")) {
           node.addMixin("exo:privilegeable");
         }
+        // Add permission
+        Map<String, String[]> permissionsMap = new HashMap<String, String[]>();
+        permissionsMap.put(remoteUser, PermissionType.ALL);
+        ((NodeImpl) node).setPermissions(permissionsMap);
+
         for (String user : usernames) {
           ((NodeImpl) node).setPermission(user, new String[] { PermissionType.READ });
         }
+
         node.save();
       }
       activityService_.setCreating(node, false);
