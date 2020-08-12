@@ -52,6 +52,7 @@
 
 <script>
 import * as chatServices from '../chatServices';
+import * as tiptip from '../tiptip';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import {chatConstants} from '../chatConstants';
@@ -103,6 +104,7 @@ export default {
   },
   created() {
     this.showHidePlatformAdminToolbar();
+    tiptip.initTiptip();
     chatServices.initChatSettings(this.userSettings.username, false,
       userSettings => this.initSettings(userSettings),
       chatRoomsData => this.initChatRooms(chatRoomsData));
