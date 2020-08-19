@@ -288,15 +288,24 @@ export default {
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
-      if(roomName && roomName.trim().length) {
-        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          this.setSelectedContact(rommId);
-        });
-      }
-      const tiptip = document.getElementById('tiptip_holder');
-      if (tiptip) {
-        tiptip.style.display = 'none';
-      }
+      
+      // make sure to re-init chat rooms before selecting a room that may be under creation.
+      chatServices.initChatSettings(this.userSettings.username, false,
+        userSettings => this.initSettings(userSettings),
+        chatRoomsData => this.initChatRooms(chatRoomsData));
+      
+      const timeOutLoading = 500;
+      window.setTimeout(() => {
+        if(roomName && roomName.trim().length) {
+          chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId => {
+            this.setSelectedContact(roomId);
+          });
+        }
+        const tiptip = document.getElementById('tiptip_holder');
+        if (tiptip) {
+          tiptip.style.display = 'none';
+        }
+      }, timeOutLoading);
     },
     showHidePlatformAdminToolbar(){
       if (location.pathname==='/portal/'.concat(eXo.env.portal.portalName).concat('/chat')) {
