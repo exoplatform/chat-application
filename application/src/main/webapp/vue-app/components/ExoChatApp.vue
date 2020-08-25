@@ -175,10 +175,10 @@ export default {
         } else {
           this.contactList.splice(indexOfRoom, 1, selectedContact);
         }
+        this.selectedContact = selectedContact;
+        this.contactOpened = false;
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
       }
-      this.selectedContact = selectedContact;
-      this.contactOpened = false;
-      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
     },
     setStatus(status) {
       chatServices.setUserStatus(this.userSettings, status, newStatus => {
@@ -289,8 +289,19 @@ export default {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
-        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          this.setSelectedContact(rommId);
+        chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId => {
+          // if selected room is not present in already loaded rooms then refresh the contact list
+          if (!this.contactList.some(contact => contact.room === roomId || contact.user === roomId)) {
+            chatServices.getOnlineUsers().then(users => {
+              chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
+                this.addRooms(chatRoomsData.rooms);
+              }).then(() => {
+                this.setSelectedContact(roomId);
+              });
+            });
+          } else {
+            this.setSelectedContact(roomId);
+          }
         });
       }
       const tiptip = document.getElementById('tiptip_holder');
