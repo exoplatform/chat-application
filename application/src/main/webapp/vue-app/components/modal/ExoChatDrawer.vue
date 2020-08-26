@@ -312,7 +312,9 @@ export default {
           } else {
             this.setSelectedContact(rommId);
           }
-          this.$refs.chatDrawer.open();
+          if (this.$refs.chatDrawer) {
+            this.$refs.chatDrawer.open();
+          }
         });
       }
       const tiptip = document.getElementById('tiptip_holder');
