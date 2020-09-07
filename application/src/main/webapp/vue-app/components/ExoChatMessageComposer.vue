@@ -19,7 +19,7 @@
           <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" @paste="onPaste" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
         <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -217,7 +217,17 @@ export default {
       elem.style.height = INITIAL_HEIGHT;
       elem.style.height = `${elem.scrollHeight + BORDER_SIZE}px`;
       elem.scrollTop = elem.scrollHeight;
-    }
+    },
+    onPaste(e) {
+      //paste images
+      const clipboardData = e.clipboardData || window.clipboardData;
+      const html = clipboardData.getData('text/html') || '';
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const img = parsed.querySelector('img');
+      const url = img !== null ? img.src : '';
+      this.$refs.messageComposerArea.value = url;
+      this.sendMessage();
+    },
   }
 };
 </script>
