@@ -394,7 +394,11 @@ export default {
         }
         foundContact.lastMessage = message.data;
         foundContact.timestamp = message.ts;
-        if (this.selected.room !== foundContact.room || this.mq === 'mobile') {
+        if (this.selected){
+          if (this.selected.room !== foundContact.room || this.mq === 'mobile') {
+            foundContact.unreadTotal ++;
+          }
+        }else {
           foundContact.unreadTotal ++;
         }
       } else {
