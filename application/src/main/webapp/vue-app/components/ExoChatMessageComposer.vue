@@ -224,9 +224,11 @@ export default {
       const html = clipboardData.getData('text/html') || '';
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const img = parsed.querySelector('img');
-      const url = img !== null ? img.src : '';
-      this.$refs.messageComposerArea.value = url;
-      this.sendMessage();
+      if (img !== null) {
+        const url = img.src;
+        this.$refs.messageComposerArea.value = url;
+        this.sendMessage();
+      }
     },
   }
 };
