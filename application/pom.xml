@@ -5,7 +5,7 @@
     <parent>
         <artifactId>chat-application</artifactId>
         <groupId>org.exoplatform.addons.chat</groupId>
-        <version>3.1.x-SNAPSHOT</version>
+        <version>3.1.x-jitsi-SNAPSHOT</version>
     </parent>
     <artifactId>application</artifactId>
     <packaging>war</packaging>
