@@ -10,6 +10,20 @@
         <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
+        <div class="room-action-component">
+          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key"
+               :class="`${action.appClass}Action`">
+            <div v-if="action.component">
+              <component v-dynamic-events="action.component.events"
+                         v-bind="action.component.props ? action.component.props : {}"
+                         :is="action.component.name" :ref="action.key"></component>
+            </div>
+            <div v-else-if="action.element" v-html="action.element.outerHTML">
+            </div>
+            <div v-else-if="action.html" v-html="action.html">
+            </div>
+          </div>
+        </div>
         <div v-if="contact.type ==='u' && contact.isEnabledUser === 'true'" class="callButtonContainerWrapper pull-left"></div>
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
@@ -45,6 +59,7 @@
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import {roomActions} from '../extension';
+import {getRoomActionComponents} from '../extension.js';
 
 export default {
   props: {
@@ -90,7 +105,8 @@ export default {
       confirmMessage: '',
       confirmOKMessage: '',
       confirmKOMessage: '',
-      confirmAction(){return;}
+      confirmAction(){return;},
+      roomActionComponents: ''
     };
   },
   computed: {
@@ -124,6 +140,10 @@ export default {
     document.addEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
+    this.refreshRoomActionComponents();
+
+    // To refresh room action components when a new action component is ready to be used
+    document.addEventListener('chat-room-action-components-updated', this.refreshRoomActionComponents);
   },
   destroyed() {
     document.removeEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
@@ -228,6 +248,17 @@ export default {
     backToContactList() {
       document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
       this.$emit('back-to-contact-list');
+    },
+    refreshRoomActionComponents() {
+      this.roomActionComponents = getRoomActionComponents();
+      this.initRoomActionComponents();
+    },
+    initRoomActionComponents() {
+      for (const action of this.roomActionComponents) {
+        if (action.init) {
+          action.init(eXo.chat);
+        }
+      }
     }
   }
 };

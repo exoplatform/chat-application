@@ -605,6 +605,10 @@ export const roomActions = getExtensionsByType('room-action');
 export let composerApplications = getExtensionsByType('composer-application');
 export let messageActions = getExtensionsByType('message-action');
 
+export function getRoomActionComponents() {
+  return getExtensionsByType('room-action-component');
+}
+
 let additionalExtensionsInstalled = false;
 export function installExtensions(settings) {
   if (!settings || !settings.fullName) {
