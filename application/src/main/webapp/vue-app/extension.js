@@ -609,6 +609,10 @@ export function getRoomActionComponents() {
   return getExtensionsByType('room-action-component');
 }
 
+export function getMiniChatTitleActionComponents() {
+  return getExtensionsByType('mini-chat-title-action-component');
+}
+
 let additionalExtensionsInstalled = false;
 export function installExtensions(settings) {
   if (!settings || !settings.fullName) {

@@ -177,7 +177,10 @@ export default {
         }
         this.selectedContact = selectedContact;
         this.contactOpened = false;
-        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
+        chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
+          this.selectedContact.participants = data.users;
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
+        });
       }
     },
     setStatus(status) {

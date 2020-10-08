@@ -29,6 +29,21 @@
           <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text">
         </template>
         <template slot="titleIcons">
+          <div v-show="selectedContact && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)"
+               class="title-action-component">
+            <div v-for="action in titleActionComponents" v-if="action.enabled" :key="action.key"
+                 :class="`${action.appClass}Action`">
+              <div v-if="action.component">
+                <component v-dynamic-events="action.component.events"
+                           v-bind="action.component.props ? action.component.props : {}"
+                           :is="action.component.name" :ref="action.key"></component>
+              </div>
+              <div v-else-if="action.element" v-html="action.element.outerHTML">
+              </div>
+              <div v-else-if="action.html" v-html="action.html">
+              </div>
+            </div>
+          </div>
           <v-icon v-show = "showSearch && !selectedContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
           <v-icon v-show = "!showSearch && !selectedContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
           <v-icon v-show="selectedContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
@@ -60,6 +75,7 @@ import * as chatWebSocket from '../../chatWebSocket';
 import {getUserAvatar} from '../../chatServices';
 import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
+import {getMiniChatTitleActionComponents} from '../../extension';
 export default {
   name: 'ExoChatDrawer',
   data () {
@@ -75,7 +91,8 @@ export default {
       fullNameOfUser:'',
       isOnline : true,
       searchTerm:'',
-      totalUnreadMsg:0
+      totalUnreadMsg:0,
+      titleActionComponents: ''
     };
   },
   computed:{
@@ -138,6 +155,10 @@ export default {
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    this.refreshTitleActionComponents();
+
+    // To refresh mini chat title action components when a new action component is ready to be used
+    document.addEventListener('mini-chat-title-action-components-updated', this.refreshTitleActionComponents);
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -338,6 +359,18 @@ export default {
     },
     backChat(){
       this.selectedContact = null;
+    },
+    refreshTitleActionComponents() {
+      this.titleActionComponents = getMiniChatTitleActionComponents();
+      // TO DO Fix init (mini chat creates earlier than chat and we don't have correct eXo.chat)
+      //this.initTitleActionComponents();
+    },
+    initTitleActionComponents() {
+      for (const action of this.titleActionComponents) {
+        if (action.init) {
+          action.init(eXo.chat);
+        }
+      }
     }
   }
 };

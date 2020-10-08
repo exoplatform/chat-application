@@ -24,7 +24,7 @@
             </div>
           </div>
         </div>
-        <div v-if="contact.type ==='u' && contact.isEnabledUser === 'true'" class="callButtonContainerWrapper pull-left"></div>
+        <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="callButtonContainerWrapper pull-left"></div>
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
