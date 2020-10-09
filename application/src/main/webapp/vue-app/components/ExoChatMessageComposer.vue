@@ -65,6 +65,7 @@ export default {
       composerApplications: [],
       showEmojiPanel: false,
       participants: [],
+      mentionedUsers: []
     };
   },
   computed: {
@@ -288,11 +289,14 @@ export default {
       message = message.replace(/\s\s+/g, ' ');
       for (let i = 0; i < this.participants.length; i++) {
         if (message.includes(`@${this.participants[i].fullname}`) ){
+          this.mentionedUsers.push(this.participants[i].name);
           const profil = chatServices.getUserProfileLink(this.participants[i].name);
           const html = `<a href='${profil}' target='_blank'>@${this.participants[i].fullname}</a>`;
           message = message.replace(`@${this.participants[i].fullname}`, html);
         }
       }
+      chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
+      this.mentionedUsers = [];
       return message;
     }
   }
