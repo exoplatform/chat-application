@@ -117,6 +117,28 @@ export function getOnlineUsers() {
     .then(resp => resp.text());
 }
 
+export function sendMentionNotification(roomId, roomName, mentionedUsers) {
+  const sender = eXo.chat.userSettings.username;
+  const senderFullName = eXo.chat.userSettings.fullName;
+  const MentionModel = {
+    roomId,
+    roomName,
+    mentionedUsers,
+    sender,
+    senderFullName
+  };
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}mentionNotifications`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'POST',
+    body: JSON.stringify(MentionModel)
+  }).then((data) => {
+    return data.json();
+  });
+}
+
 export function getUserState(user) {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getUserState?user=${user}`, {credentials: 'include'})
     .then(resp => resp.json());

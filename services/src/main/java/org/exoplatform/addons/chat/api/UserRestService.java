@@ -11,7 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.addons.chat.model.MentionModel;
+import org.exoplatform.commons.api.notification.NotificationContext;
+import org.exoplatform.commons.api.notification.model.PluginKey;
+import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -22,13 +27,14 @@ import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.addons.chat.utils.MessageDigester;
 import org.exoplatform.chat.service.*;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.user.UserStateService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+
+import static org.exoplatform.addons.chat.utils.NotificationUtils.*;
 
 @Path("/chat/api/1.0/user/")
 public class UserRestService implements ResourceContainer {
@@ -132,6 +138,20 @@ public class UserRestService implements ResourceContainer {
     } else {
       return Response.serverError().status(400).build();
     }
+  }
+
+  @POST
+  @Path("/mentionNotifications")
+  @RolesAllowed("users")
+  @SuppressWarnings("unchecked")
+  public Response sendNotificationToMentionUsers(@Context HttpServletRequest request, @ApiParam(value = "MentionModel", required = true) MentionModel mentionModel  ) throws Exception {
+    init(request);
+
+    NotificationContext ctx = NotificationContextImpl.cloneInstance();
+    ctx.append(MENTION_MODEL, mentionModel);
+    ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(CHAT_MENTION_NOTIFICATION_PLUGIN))).execute(ctx);
+
+    return Response.ok(mentionModel.getMentionedUsers(), MediaType.TEXT_PLAIN).build();
   }
 
   @GET
