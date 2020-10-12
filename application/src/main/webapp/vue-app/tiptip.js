@@ -5,19 +5,21 @@ export function initTiptip() {
   eXo.social = eXo.social ? eXo.social : {};
   eXo.social.tiptip = eXo.social.tiptip ? eXo.social.tiptip : {};
   eXo.social.tiptip.extraActions = eXo.social.tiptip.extraActions ? eXo.social.tiptip.extraActions : [];
-  eXo.social.tiptip.extraActions.push({
-    appendContentTo(divUIAction, ownerId, type) {
-      if(!type) {
-        type = 'username';
+  if (eXo.social.tiptip  && eXo.social.tiptip.extraActions.length  === 0) {
+    eXo.social.tiptip.extraActions.push({
+      appendContentTo(divUIAction, ownerId, type) {
+        if(!type) {
+          type = 'username';
+        }
+        divUIAction.append(`<a title="Chat"
+          class="chatPopupOverlay chatPopup"
+          type="button"
+          onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))">
+            <i class="uiIconBannerChat uiIconLightGray"></i>
+        </a>`);
       }
-      divUIAction.append(`<a title="Chat"
-        class="chatPopupOverlay chatPopup"
-        type="button"
-        onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${ownerId}', type: '${type}'}}))">
-          <i class="uiIconBannerChat uiIconLightGray"></i>
-      </a>`);
-    }
-  });
+    });
+  }
   if ($('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').length && eXo && eXo.env && eXo.env.portal && eXo.env.portal.spaceGroup) {
     $('.spaceMenuNav .spaceMenuNavHeader .spaceMenuApps').append(`<li>
         <a onclick="document.dispatchEvent(new CustomEvent('${chatConstants.ACTION_ROOM_OPEN_CHAT}', {detail: {name: '${eXo.env.portal.spaceGroup}', type: 'space-name'}}))" \
