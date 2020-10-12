@@ -8,7 +8,7 @@
          String profileUrl = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + USER + "</a>";
          String chatRoom = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + ROOM_NAME + "</a>";
         %>
-        <div class="contentSmall" data-link="" data-room-id="$ROOM_ID" target="_blank">
+        <div class="contentSmall" data-link="$CHAT_URL" target="_blank">
           <div class="status"><%=_ctx.appRes("UINotification.chat.MentionPlugin", profileUrl, chatRoom)%></div>
           <div class="lastUpdatedTime">$LAST_UPDATED_TIME</div>
         </div>
