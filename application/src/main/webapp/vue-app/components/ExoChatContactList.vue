@@ -277,6 +277,14 @@ export default {
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
     this.initFilterMobile();
+    this.$nextTick(() => {
+      const RoomId = new URL(location.href).searchParams.get('roomId');
+      if (RoomId) {
+        const contact = this.findContact(RoomId);
+        this.selectContact(contact);
+      }
+    });
+
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);

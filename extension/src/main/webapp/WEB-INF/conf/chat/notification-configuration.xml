@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_3.xsd http://www.exoplatform.org/xml/ns/kernel_1_3.xsd"
+               xmlns="http://www.exoplatform.org/xml/ns/kernel_1_3.xsd">
+    <external-component-plugins>
+        <target-component>org.exoplatform.commons.api.notification.service.setting.PluginSettingService</target-component>
+        <component-plugin>
+            <name>notification.groups</name>
+            <set-method>registerGroupConfig</set-method>
+            <type>org.exoplatform.commons.api.notification.plugin.GroupProviderPlugin</type>
+            <description>Chat group</description>
+            <init-params>
+                <object-param>
+                    <name>group.chat</name>
+                    <description>The information of group chat</description>
+                    <object type="org.exoplatform.commons.api.notification.plugin.config.GroupConfig">
+                        <field name="id">
+                            <string>chat</string>
+                        </field>
+                        <field name="resourceBundleKey">
+                            <string>UINotification.label.group.Chat</string>
+                        </field>
+                        <field name="order">
+                            <string>400</string>
+                        </field>
+                    </object>
+                </object-param>
+            </init-params>
+        </component-plugin>
+    </external-component-plugins>
+
+    <external-component-plugins>
+        <target-component>org.exoplatform.commons.api.notification.service.setting.PluginContainer</target-component>
+
+        <component-plugin>
+            <name>notification.plugins</name>
+            <set-method>addPlugin</set-method>
+            <type>org.exoplatform.addons.chat.notification.plugin.ChatNotificationPlugin</type>
+            <init-params>
+                <value-param>
+                    <name>notification.id</name>
+                    <value>ChatMentionNotificationPlugin</value>
+                </value-param>
+                <object-param>
+                    <name>template.ChatMentionNotificationPlugin</name>
+                    <description>The template of ChatMentionNotificationPlugin</description>
+                    <object type="org.exoplatform.commons.api.notification.plugin.config.PluginConfig">
+                        <field name="pluginId">
+                            <string>ChatMentionNotificationPlugin</string>
+                        </field>
+                        <field name="resourceBundleKey">
+                            <string>UINotification.label.ChatMentionNotificationPlugin</string>
+                        </field>
+                        <field name="order">
+                            <string>11</string>
+                        </field>
+                        <field name="defaultConfig">
+                            <collection type="java.util.ArrayList">
+                                <value>
+                                    <string>Instantly</string>
+                                </value>
+                            </collection>
+                        </field>
+                        <field name="groupId">
+                            <string>chat</string>
+                        </field>
+                        <field name="bundlePath">
+                            <string>locale.portlet.chat.Resource</string>
+                        </field>
+                    </object>
+                </object-param>
+            </init-params>
+        </component-plugin>
+    </external-component-plugins>
+
+    <external-component-plugins>
+        <target-component>org.exoplatform.commons.api.notification.channel.ChannelManager</target-component>
+        <component-plugin>
+            <name>web.channel.chat.template</name>
+            <set-method>registerTemplateProvider</set-method>
+            <type>org.exoplatform.addons.chat.notification.provider.WebTemplateProvider</type>
+            <init-params>
+                <value-param>
+                    <name>channel-id</name>
+                    <value>WEB_CHANNEL</value>
+                </value-param>
+            </init-params>
+        </component-plugin>
+    </external-component-plugins>
+</configuration>
