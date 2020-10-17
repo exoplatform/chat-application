@@ -46,6 +46,8 @@ public class ServerBootstrap {
 
   private static String    serverURL = null;
 
+  private static String    serviceURL = null;
+
   private static String    serverURI = null;
 
   public static String getStatus(String username, String token, String targetUser) {
@@ -137,7 +139,7 @@ public class ServerBootstrap {
   }
 
   private static String callServer(String serviceUri, String params) {
-    String serverURLBase = getServerURL() + "/" + serviceUri;
+    String serverURLBase = getServiceURL() + "/" + serviceUri;
     String serviceUrl = serverURLBase + "?passphrase=" + PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&"
         + params;
     String body = null;
@@ -161,7 +163,7 @@ public class ServerBootstrap {
   }
 
   private static String postServer(String serviceUri, String params) {
-    String serviceUrl = getServerURL() + "/" + serviceUri;
+    String serviceUrl = getServiceURL() + "/" + serviceUri;
     String allParams = "passphrase=" + PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE) + "&" + params;
     String body = null;
     OutputStreamWriter writer = null;
@@ -205,7 +207,7 @@ public class ServerBootstrap {
 
   public static String getServerURL() {
     if (StringUtils.isBlank(serverURL)) {
-      serverURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+      serverURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_FRONT_END_SERVER_URL);
     }
     if (StringUtils.isNotBlank(serverURL) && serverURL.startsWith("http")) {
       return serverURL;
@@ -215,9 +217,20 @@ public class ServerBootstrap {
     }
   }
 
+  public static String getServiceURL() {
+    if (serviceURL != null) {
+      return serviceURL;
+    }
+    serviceURL = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_BACKEND_END_SERVER_URL);
+    if (StringUtils.isBlank(serviceURL)) {
+      serviceURL = getServerURL();
+    }
+    return serviceURL;
+  }
+
   public static String getServerURI() {
     if (StringUtils.isBlank(serverURI)) {
-      serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL);
+      serverURI = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_FRONT_END_SERVER_URL);
     }
     return serverURI;
   }
