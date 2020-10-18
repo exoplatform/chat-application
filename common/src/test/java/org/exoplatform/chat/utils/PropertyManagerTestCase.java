@@ -51,7 +51,7 @@ public class PropertyManagerTestCase {
     Assert.assertEquals("", PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER));
     Assert.assertEquals("", PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD));
     Assert.assertEquals("", PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE));
-    Assert.assertEquals("/chatServer", PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_URL));
+    Assert.assertEquals("/chatServer", PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_FRONT_END_SERVER_URL));
     Assert.assertEquals("/portal/intranet/chat", PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE));
     Assert.assertEquals("60000", PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION));
     Assert.assertEquals("chat", PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE));

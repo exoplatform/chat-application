@@ -70,7 +70,8 @@ public class PropertyManager {
   public static final String PROPERTY_DB_USER = "dbUser";
   public static final String PROPERTY_DB_PASSWORD = "dbPassword";
   public static final String PROPERTY_CHAT_SERVER_BASE = "chatServerBase";
-  public static final String PROPERTY_CHAT_SERVER_URL = "chatServerUrl";
+  public static final String PROPERTY_CHAT_FRONT_END_SERVER_URL = "chatServerUrl";
+  public static final String PROPERTY_CHAT_BACKEND_END_SERVER_URL = "chatServiceUrl";
   public static final String PROPERTY_CHAT_PORTAL_PAGE = "chatPortalPage";
   public static final String PROPERTY_INTERVAL_SESSION = "chatIntervalSession";
   public static final String PROPERTY_PASSPHRASE = "chatPassPhrase";
@@ -141,7 +142,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_DB_USER, "");
       overridePropertyIfNotSet(PROPERTY_DB_PASSWORD, "");
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "");
-      overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_URL, "/chatServer");
+      overridePropertyIfNotSet(PROPERTY_CHAT_FRONT_END_SERVER_URL, "/chatServer");
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
