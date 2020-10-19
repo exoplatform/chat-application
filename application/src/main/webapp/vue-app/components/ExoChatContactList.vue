@@ -277,13 +277,6 @@ export default {
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
     this.initFilterMobile();
-    this.$nextTick(() => {
-      const RoomId = new URL(location.href).searchParams.get('roomId');
-      if (RoomId) {
-        const contact = this.findContact(RoomId);
-        this.selectContact(contact);
-      }
-    });
 
   },
   destroyed() {
@@ -515,6 +508,12 @@ export default {
     findContact(value, field) {
       if (!field)  {
         field = 'room';
+      }
+      const RoomId = new URL(location.href).searchParams.get('roomId');
+      if (RoomId) {
+        window.history.replaceState(null, null, window.location.pathname);
+        const contact = this.findContact(RoomId);
+        this.selectContact(contact);
       }
       return this.contacts.find(contact => contact[field] === value);
     },
