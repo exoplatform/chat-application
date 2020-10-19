@@ -9,7 +9,7 @@
          String chatRoom = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + ROOM_NAME + "</a>";
         %>
         <div class="contentSmall" data-link="$CHAT_URL" target="_blank">
-          <div class="status"><%=_ctx.appRes("UINotification.chat.MentionPlugin", profileUrl, chatRoom)%></div>
+          <div class="status"><%=_ctx.appRes("exoplatform.chat.MentionPlugin", profileUrl, chatRoom)%></div>
           <div class="lastUpdatedTime">$LAST_UPDATED_TIME</div>
         </div>
     </div>
