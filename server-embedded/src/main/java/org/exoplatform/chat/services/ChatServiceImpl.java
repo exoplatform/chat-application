@@ -32,8 +32,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Named("chatService")
@@ -42,8 +40,6 @@ import java.util.stream.Collectors;
 public class ChatServiceImpl implements ChatService
 {
   private static final Logger LOG = Logger.getLogger("ChatService");
-
-  private static final Pattern TAG_HREF_REGEX = Pattern.compile("<a\\s+[^>]*href=(['\"])(.*?)\\1[^>]*>", Pattern.DOTALL);
 
   @Inject
   private ChatDataStorage chatStorage;
@@ -72,25 +68,6 @@ public class ChatServiceImpl implements ChatService
     if (isSystem == null) isSystem = "false";
 
     String msgId = chatStorage.save(message, sender, room, isSystem, options);
-    List<UserBean> participants = userService.getUsers(room);
-    List<String> mentionedUsers = new ArrayList<>();
-    if (message.indexOf("@") > -1) {
-      List<String> userNames = new ArrayList<>();
-      final Matcher matcher = TAG_HREF_REGEX.matcher(message);
-      while (matcher.find()) {
-        String href = matcher.group(2);
-        userNames.add(href.substring(href.lastIndexOf("/") + 1));
-      }
-      if (userNames.size() > 0) {
-        for (String username : userNames) {
-          UserBean userBean = participants.stream()
-                  .filter(user -> username.equals(user.getName()))
-                  .findAny()
-                  .orElse(null);
-          mentionedUsers.add(userBean.getName());
-        }
-      }
-    }
 
     RoomBean roomBean = userService.getRoom(sender, room);
     String roomType = roomBean.getType();
@@ -108,23 +85,6 @@ public class ChatServiceImpl implements ChatService
       UserBean user = userService.getUser(sender);
       msg.setFullName(user.getFullname());
 
-      if (mentionedUsers.size() > 0) {
-        JSONObject type = new JSONObject();
-        type.put("type" ,"type-mention");
-        JSONObject mentionData = msg.toJSONObject();
-        mentionData.put("clientId", clientId);
-        mentionData.put("roomType", roomType);
-        mentionData.put("room", room);
-        mentionData.put("options", type);
-        mentionData.put("roomDisplayName", roomBean.getFullName());
-        RealTimeMessageBean mentionMessage = new RealTimeMessageBean(
-                RealTimeMessageBean.EventType.MESSAGE_SENT,
-                room,
-                user.getName(),
-                new Date(),
-                mentionData);
-        realTimeMessageService.sendMessage(mentionMessage, mentionedUsers);
-      }
       JSONObject data = msg.toJSONObject();
       data.put("clientId", clientId);
       data.put("roomType", roomType);

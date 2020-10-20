@@ -19,7 +19,7 @@
           <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
         </div>
         <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <div v-else id="messageComposerArea" ref="messageComposerArea" contenteditable="true" name="messageComposerArea" @paste="onPaste" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></div>
+        <textarea v-else id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" @paste="onPaste" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></textarea>
         <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
@@ -63,9 +63,7 @@ export default {
       },
       appsClosed: true,
       composerApplications: [],
-      showEmojiPanel: false,
-      participants: [],
-      mentionedUsers: []
+      showEmojiPanel: false
     };
   },
   computed: {
@@ -89,10 +87,10 @@ export default {
       if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null')) { // set autofocus only for enabled contact on desktop
         this.$nextTick(() => {
           this.$refs.messageComposerArea.focus();
+
           this.composerApplications.forEach(application => {
             if (application.mount) {
               application.mount($, chatServices);
-              this.initSuggester();
             }
           });
         });
@@ -117,55 +115,6 @@ export default {
     document.removeEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
   },
   methods: {
-    initSuggester() {
-      const $messageSuggestor = $('#messageComposerArea');
-      const component = this;
-      const suggesterData = {
-        type: 'mix',
-        create: false,
-        createOnBlur: false,
-        highlight: false,
-        openOnFocus: false,
-        sourceProviders: ['exo:chatuser'],
-        valueField: 'name',
-        labelField: 'fullname',
-        searchField: ['fullname', 'name'],
-        closeAfterSelect: true,
-        dropdownParent: 'body',
-        hideSelected: true,
-        renderMenuItem: function (item) {
-          const avatar = chatServices.getUserAvatar(item.name);
-          const defaultAvatar = '/chat/img/room-default.jpg';
-          return `<img src="${avatar}" onerror="this.src='${defaultAvatar}'" width="20px" height="20px">
-                      ${chatServices.escapeHtml(item.fullname)}<span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>`;
-        },
-        /* eslint-disable no-template-curly-in-string */
-        renderItem: '<div class="uiMention">' +
-                '@${fullname}' +
-                '      <span class="remove"><i class="uiIconClose"></i></span>' +
-                '      </div>',
-        providers: {
-          'exo:chatuser': function (query, callback) {
-            if (!query || !query.trim().length) {
-              return callback();
-            }
-            chatServices.getUsersToMention(eXo.chat.userSettings, component.contact, query).then(function (data) {
-              if (data && data.users) {
-                for (let i = 0; i < data.users.length; i++) {
-                  const index = component.participants.findIndex(user => user.name === data.users[i].name);
-                  if (index === -1){
-                    component.participants.push(data.users[i]);
-                  }
-                }
-                callback(data.users.filter(user => user.name !== eXo.chat.userSettings.username));
-              }
-            });
-          }
-        },
-      };
-      //init suggester
-      $messageSuggestor.suggester(suggesterData);
-    },
     closeApps(e) {
       const ESC_KEY = 27;
       if (e.keyCode === ESC_KEY) {
@@ -189,10 +138,7 @@ export default {
       }
     },
     sendMessage() {
-      let newMessage = this.$refs.messageComposerArea.innerHTML;
-      if (newMessage.indexOf('@') > -1) {
-        newMessage = this.checkMention(newMessage);
-      }
+      const newMessage = this.$refs.messageComposerArea.value;
       if(!newMessage || !newMessage.trim()) {
         return;
       }
@@ -220,7 +166,7 @@ export default {
       if (!found) {
         this.$emit('message-written', message);
       }
-      this.$refs.messageComposerArea.innerHTML = '';
+      this.$refs.messageComposerArea.value = '';
     },
     sendMessageWithKey(event) {
       if (event && event.keyCode === chatConstants.ENTER_CODE_KEY) {
@@ -253,10 +199,10 @@ export default {
       this.appsModal.isOpned = true;
     },
     editLastMessage() {
-      const newMessage = this.$refs.messageComposerArea.innerHTML;
+      const newMessage = this.$refs.messageComposerArea.value;
 
       if (!newMessage || !newMessage.trim().length) {
-        this.$refs.messageComposerArea.innerHTML = '';
+        this.$refs.messageComposerArea.value = '';
         document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_EDIT_LAST));
       }
     },
@@ -280,25 +226,10 @@ export default {
       const img = parsed.querySelector('img');
       if (img !== null) {
         const url = img.src;
-        this.$refs.messageComposerArea.innerHTML = url;
+        this.$refs.messageComposerArea.value = url;
         this.sendMessage();
       }
     },
-    checkMention(message) {
-      message = $('<div />').html(message).text();
-      message = message.replace(/\s\s+/g, ' ');
-      for (let i = 0; i < this.participants.length; i++) {
-        if (message.includes(`@${this.participants[i].fullname}`) ){
-          this.mentionedUsers.push(this.participants[i].name);
-          const profil = chatServices.getUserProfileLink(this.participants[i].name);
-          const html = `<a href='${profil}' target='_blank'>@${this.participants[i].fullname}</a>`;
-          message = message.replace(`@${this.participants[i].fullname}`, html);
-        }
-      }
-      chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
-      this.mentionedUsers = [];
-      return message;
-    }
   }
 };
 </script>

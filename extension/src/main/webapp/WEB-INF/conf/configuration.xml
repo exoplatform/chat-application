@@ -9,6 +9,5 @@
   <import>war:/conf/chat/container-configuration.xml</import>
   <import>war:/conf/chat/listener-configuration.xml</import>
   <import>war:/conf/chat/social-configuration.xml</import>
-  <import>war:/conf/chat/notification-configuration.xml</import>
 
 </configuration>

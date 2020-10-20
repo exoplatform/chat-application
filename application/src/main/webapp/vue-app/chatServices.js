@@ -119,28 +119,6 @@ export function getOnlineUsers() {
     .then(resp => resp.text());
 }
 
-export function sendMentionNotification(roomId, roomName, mentionedUsers) {
-  const sender = eXo.chat.userSettings.username;
-  const senderFullName = eXo.chat.userSettings.fullName;
-  const MentionModel = {
-    roomId,
-    roomName,
-    mentionedUsers,
-    sender,
-    senderFullName
-  };
-  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}mentionNotifications`, {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    method: 'POST',
-    body: JSON.stringify(MentionModel)
-  }).then((data) => {
-    return data.json();
-  });
-}
-
 export function getUserState(user) {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getUserState?user=${user}`, {credentials: 'include'})
     .then(resp => resp.json());
@@ -185,13 +163,6 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
 
 export function getRoomParticipants(userSettings, room) {
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}`, {
-    headers: {
-      'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
-}
-
-export function getUsersToMention(userSettings, room, filter) {
-  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&filter=${filter}&limit=10`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
