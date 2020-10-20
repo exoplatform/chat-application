@@ -12,7 +12,7 @@
     "watch": "webpack --config webpack.dev.js --progress --colors --watch -d",
     "test": "jest",
     "test-coverage": "jest --coverage",
-    "lint": "eslint --fix ./src/main/webapp/js/lib/*.js ./src/main/webapp/vue-app/components/*.vue",
+    "lint": "eslint --fix ./src/main/webapp/js/lib/*.js ./src/main/webapp/vue-app/components/*.vue src/main/webapp/vue-app/components/modal/*.vue",
     "build": "webpack --config webpack.prod.js --mode production"
   },
   "author": "eXo",

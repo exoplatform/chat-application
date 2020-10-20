@@ -12,7 +12,7 @@
     </div>
     <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" :user-settings="userSettings" @message-written="messageWritten"></exo-chat-message-composer>
     <exo-chat-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
-      <textarea id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></textarea>
+      <exo-content-editable id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></exo-content-editable>
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveEditMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
@@ -321,7 +321,9 @@ export default {
       this.showEditMessageModal = true;
       this.$nextTick(() => {
         if(this.$refs.editMessageComposerArea) {
-          this.$refs.editMessageComposerArea.focus();
+          this.$refs.editMessageComposerArea.$el.focus();
+          document.execCommand('selectAll', false, null);
+          document.getSelection().collapseToEnd();
         }
       });
     },
@@ -334,6 +336,7 @@ export default {
           this.messageToEdit.msg = composerArea.val();
         } else {
           this.messageToEdit.msg = this.messageToEdit.msg.trim();
+          this.messageToEdit.msg = this.messageToEdit.msg.replace(/^(\s+<br( \/)?>)*|(<br( \/)?>\s)*$/gm, '');
           this.messageModified(this.messageToEdit);
           this.showEditMessageModal = false;
         }
