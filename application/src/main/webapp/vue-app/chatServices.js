@@ -168,13 +168,6 @@ export function getRoomParticipants(userSettings, room) {
     }}).then(resp =>  resp.json());
 }
 
-export function getUsersToMention(userSettings, room, filter) {
-  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&filter=${filter}&limit=10`, {
-    headers: {
-      'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
-}
-
 export function getRoomId(userSettings, targetUser, fieldName) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getRoom?targetUser=${targetUser}&user=${userSettings.username}&type=${fieldName}`, {
     headers: {

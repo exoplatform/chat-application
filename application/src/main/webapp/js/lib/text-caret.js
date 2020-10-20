@@ -2,25 +2,7 @@ export function addCaretJQueryExtension($) {
   $.fn.extend({
     insertAtCaret(newValue) {
       this.each(( i, element ) => {
-        if (document.getSelection) {
-          const selection = document.getSelection();
-          const range = selection.getRangeAt(0);
-
-          const el = document.createElement('div');
-          el.innerHTML = newValue;
-          const frag = document.createDocumentFragment();
-          let node;
-          let lastNode;
-          /* eslint-disable no-extra-parens */
-          while ((node = el.firstChild)) {
-            lastNode = frag.appendChild(node);
-          }
-          range.insertNode(frag);
-          if (lastNode) {
-            range.setStartAfter(lastNode);
-            range.collapse(false);
-          }
-        } else if (document.selection) {
+        if (document.selection) {
           element.focus();
           const sel = document.selection.createRange();
           sel.text = newValue;
@@ -35,7 +17,7 @@ export function addCaretJQueryExtension($) {
           element.selectionEnd = startPos + newValue.length;
           element.scrollTop = scrollTop;
         } else {
-          element.innerHTML += newValue;
+          element.value += newValue;
           element.focus();
         }
       });

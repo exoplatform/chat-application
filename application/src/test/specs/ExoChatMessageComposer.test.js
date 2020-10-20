@@ -50,28 +50,27 @@ describe('ExoChatMessageComposer.test.js', () => {
 
   it('select emoji', () => {
     cmp.vm.selectEmoji({keys: [':)', ':-)'],class: 'emoticon-smile'});
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe(' :) ');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe(' :) ');
   });
 
   it('send message', () => {
     cmp.vm.sendMessage();
     expect(cmp.emitted('message-written')).toHaveLength(1);
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
   it('send empty message', () => {
-    cmp.vm.$refs.messageComposerArea.innerHTML = '';
+    cmp.vm.$refs.messageComposerArea.value = '';
 
     cmp.vm.sendMessage();
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('');
+    expect(cmp.emitted('message-written')).toHaveLength(1);
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
   });
 
-  /*document.getSelection found in text-caret.js cannot be called in Jest test*/
-
-  /*it('send message with key', () => {
+  it('send message with key', () => {
     expect(cmp.emitted('message-written')).toHaveLength(1);
 
-    cmp.vm.$refs.messageComposerArea.innerHTML = 'test message';
+    cmp.vm.$refs.messageComposerArea.value = 'test message';
 
     cmp.vm.sendMessageWithKey({
       keyCode : 13,
@@ -79,7 +78,7 @@ describe('ExoChatMessageComposer.test.js', () => {
       ctrlKey : false,
       altKey : false
     });
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('\ntest message');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('\ntest message');
     expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
@@ -88,7 +87,7 @@ describe('ExoChatMessageComposer.test.js', () => {
       ctrlKey : true,
       altKey : false
     });
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('\n\ntest message');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\ntest message');
     expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
@@ -97,7 +96,7 @@ describe('ExoChatMessageComposer.test.js', () => {
       ctrlKey : false,
       altKey : true
     });
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('\n\n\ntest message');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('\n\n\ntest message');
     expect(cmp.emitted('message-written')).toHaveLength(1);
 
     cmp.vm.sendMessageWithKey({
@@ -106,7 +105,7 @@ describe('ExoChatMessageComposer.test.js', () => {
       ctrlKey : false,
       altKey : false
     });
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('');
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('');
     expect(cmp.emitted('message-written')).toHaveLength(2);
   });
 
@@ -115,12 +114,12 @@ describe('ExoChatMessageComposer.test.js', () => {
       message: 'Test message',
       fullname: 'Test User'
     }});
-    expect(cmp.vm.$refs.messageComposerArea.innerHTML).toBe('[quote=Test User] Test message [/quote]');
-  });*/
+    expect(cmp.vm.$refs.messageComposerArea.value).toBe('[quote=Test User] Test message [/quote]');
+  });
 
   it('edit last message', () => {
     let editLastEventCalled = false;
-    cmp.vm.$refs.messageComposerArea.innerHTML = '';
+    cmp.vm.$refs.messageComposerArea.value = '';
     document.addEventListener(chatConstants.ACTION_MESSAGE_EDIT_LAST, () => {editLastEventCalled = true;});
     cmp.vm.editLastMessage();
     expect(editLastEventCalled).toBeTruthy();

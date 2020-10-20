@@ -81,9 +81,6 @@ function highlightMessage(msgObject) {
       case 'type-meeting-stop':
         highlightedMsg = 'End Meeting';
         break;
-      case 'type-mention':
-        highlightedMsg = `You have been mentioned in ${msgObject.roomDisplayName}`;
-        break;
       default: {
         composerApplications.forEach((application) => {
           if (application.type === msgObject.options.type && application.notificationContent) {
@@ -94,7 +91,7 @@ function highlightMessage(msgObject) {
       }
     }
   }
-  highlightedMsg = $('<div />').html(highlightedMsg).text();
+
   return highlightedMsg;
 }
 
@@ -201,7 +198,6 @@ function showDesktopNotif(path, msg) {
       });
       clickHandler(notification);
     }
-    document.getElementById(msg.msgId).scrollIntoView();
   }
 }
 

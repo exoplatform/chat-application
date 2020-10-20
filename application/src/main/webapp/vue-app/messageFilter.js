@@ -6,7 +6,6 @@ export default function(msg, highlight, emojis) {
   const lines = msg.split(/<br\s*\/?>/);
 
   lines.forEach( (line, index) => {
-    line = $('<div />').html(line).text();
     const words = line.split(' ');
     words.forEach(w => {
       // check link
