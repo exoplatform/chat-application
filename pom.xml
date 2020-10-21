@@ -31,11 +31,21 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
+<<<<<<< HEAD
     <org.exoplatform.gatein.portal.version>6.2.x-maintenance-SNAPSHOT</org.exoplatform.gatein.portal.version>
     <org.exoplatform.social.version>6.2.x-maintenance-SNAPSHOT</org.exoplatform.social.version>
     <addon.exo.ecms.version>6.2.x-maintenance-SNAPSHOT</addon.exo.ecms.version>
     <addon.exo.wiki.version>6.2.x-maintenance-SNAPSHOT</addon.exo.wiki.version>
   	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
+=======
+    <org.exoplatform.gatein.portal.version>6.1.x-maintenance-SNAPSHOT</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.social.version>6.1.x-maintenance-SNAPSHOT</org.exoplatform.social.version>
+    <addon.exo.ecms.version>6.1.x-maintenance-SNAPSHOT</addon.exo.ecms.version>
+    <addon.exo.forum.version>6.1.x-maintenance-SNAPSHOT</addon.exo.forum.version>
+    <addon.exo.calendar.version>6.1.x-maintenance-SNAPSHOT</addon.exo.calendar.version>
+    <addon.exo.wiki.version>6.1.x-maintenance-SNAPSHOT</addon.exo.wiki.version>
+	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
+>>>>>>> 530e6748... TASK-35704: Create FB maintenance and update projects versions/dependencies
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>

@@ -4,7 +4,11 @@
   <parent>
     <groupId>org.exoplatform.addons.chat</groupId>
     <artifactId>packaging</artifactId>
+<<<<<<< HEAD
     <version>3.2.x-maintenance-SNAPSHOT</version>
+=======
+    <version>3.1.x-maintenance-SNAPSHOT</version>
+>>>>>>> 530e6748... TASK-35704: Create FB maintenance and update projects versions/dependencies
   </parent>
   <artifactId>chat-standalone-client-packaging</artifactId>
   <packaging>pom</packaging>
