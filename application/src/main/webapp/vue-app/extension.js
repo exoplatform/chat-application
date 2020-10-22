@@ -602,16 +602,10 @@ registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
 export const extraMessageTypes = getExtensionsByType('message-type');
 export const extraMessageNotifs = getExtensionsByType('message-notif');
 export const roomActions = getExtensionsByType('room-action');
+export const roomActionComponents = getExtensionsByType('room-action-component');
+export const miniChatTitleActionComponents = getExtensionsByType('mini-chat-title-action-component');
 export let composerApplications = getExtensionsByType('composer-application');
 export let messageActions = getExtensionsByType('message-action');
-
-export function getRoomActionComponents() {
-  return getExtensionsByType('room-action-component');
-}
-
-export function getMiniChatTitleActionComponents() {
-  return getExtensionsByType('mini-chat-title-action-component');
-}
 
 let additionalExtensionsInstalled = false;
 export function installExtensions(settings) {

@@ -10,17 +10,16 @@
         <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
-        <div class="room-action-component">
-          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key"
-               :class="`${action.appClass}Action`">
-            <div v-if="action.component">
+        <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="room-action-components">
+          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key" :class="action.appClass">
+            <div v-if="action.component" :ref="action.key">
               <component v-dynamic-events="action.component.events"
                          v-bind="action.component.props ? action.component.props : {}"
-                         :is="action.component.name" :ref="action.key"></component>
+                         :is="action.component.name"></component>
             </div>
-            <div v-else-if="action.element" v-html="action.element.outerHTML">
+            <div v-else-if="action.element" :ref="action.key" v-html="action.element.outerHTML">
             </div>
-            <div v-else-if="action.html" v-html="action.html">
+            <div v-else-if="action.html" :ref="action.key" v-html="action.html">
             </div>
           </div>
         </div>
@@ -59,7 +58,7 @@
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 import {roomActions} from '../extension';
-import {getRoomActionComponents} from '../extension.js';
+import {roomActionComponents} from '../extension';
 
 export default {
   props: {
@@ -106,7 +105,7 @@ export default {
       confirmOKMessage: '',
       confirmKOMessage: '',
       confirmAction(){return;},
-      roomActionComponents: ''
+      roomActionComponents: roomActionComponents
     };
   },
   computed: {
@@ -140,10 +139,9 @@ export default {
     document.addEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
-    this.refreshRoomActionComponents();
-
-    // To refresh room action components when a new action component is ready to be used
-    document.addEventListener('chat-room-action-components-updated', this.refreshRoomActionComponents);
+  },
+  mounted() {
+    this.initRoomActionComponents();
   },
   destroyed() {
     document.removeEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
@@ -249,14 +247,11 @@ export default {
       document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
       this.$emit('back-to-contact-list');
     },
-    refreshRoomActionComponents() {
-      this.roomActionComponents = getRoomActionComponents();
-      this.initRoomActionComponents();
-    },
     initRoomActionComponents() {
       for (const action of this.roomActionComponents) {
-        if (action.init) {
-          action.init(eXo.chat);
+        if (action.init && action.enabled) {
+          const container = this.$refs[action.key];
+          action.init(container, eXo.chat);
         }
       }
     }
