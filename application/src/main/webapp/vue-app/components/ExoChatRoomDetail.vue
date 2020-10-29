@@ -11,7 +11,8 @@
       </div>
       <div class="room-action-menu">
         <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="room-action-components">
-          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key" :class="action.appClass">
+          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key"
+               :class="`${action.appClass} ${action.typeClass}`">
             <div v-if="action.component" :ref="action.key">
               <component v-dynamic-events="action.component.events"
                          v-bind="action.component.props ? action.component.props : {}"
@@ -23,7 +24,6 @@
             </div>
           </div>
         </div>
-        <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="callButtonContainerWrapper pull-left"></div>
         <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
@@ -250,7 +250,10 @@ export default {
     initRoomActionComponents() {
       for (const action of this.roomActionComponents) {
         if (action.init && action.enabled) {
-          const container = this.$refs[action.key];
+          let container = this.$refs[action.key];
+          if(container && container.length > 0) {
+            container = container[0];
+          }
           action.init(container, eXo.chat);
         }
       }

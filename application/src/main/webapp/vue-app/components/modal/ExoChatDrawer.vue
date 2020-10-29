@@ -32,7 +32,7 @@
           <div v-show="selectedContact && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)"
                class="title-action-component">
             <div v-for="action in titleActionComponents" v-if="action.enabled" :key="action.key"
-                 :class="`${action.appClass}Action`">
+                 :class="`${action.appClass} ${action.typeClass}`">
               <div v-if="action.component" :ref="action.key">
                 <component v-dynamic-events="action.component.events"
                            v-bind="action.component.props ? action.component.props : {}"
@@ -362,7 +362,10 @@ export default {
     initTitleActionComponents() {
       for (const action of this.titleActionComponents) {
         if (action.init && action.enabled) {
-          const container = this.$refs[action.key];
+          let container = this.$refs[action.key];
+          if(container && container.length > 0) {
+            container = container[0];
+          }
           action.init(container, eXo.chat);
         }
       }
