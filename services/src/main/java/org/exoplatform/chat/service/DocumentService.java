@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
@@ -189,10 +190,10 @@ public class DocumentService implements ResourceContainer {
     String nodePathWithWorkspace = workspace + node.getPath();
     String baseDavPath = "/jcr/" + repository + "/" + nodePathWithWorkspace;
     String publicURL = RestUtils.getBaseRestUrl() + baseDavPath;
-    String thumbnailURL = "/" + CommonsUtils.getRestContextName() + "/thumbnailImage/large/" + repository + "/"
+    String thumbnailURL = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/thumbnailImage/large/" + repository + "/"
         + nodePathWithWorkspace;
-    String restPath = "/" + CommonsUtils.getRestContextName() + baseDavPath;
-    String downloadLink = "/" + CommonsUtils.getRestContextName() + "/contents/download/" + nodePathWithWorkspace;
+    String restPath = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + baseDavPath;
+    String downloadLink = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/contents/download/" + nodePathWithWorkspace;
 
     String filename = getFileName(uploadResource);
 

@@ -215,8 +215,15 @@ export default {
           this.scrollToBottom = !avoidScrollingDown;
 
           const roomNotSentMessages = chatWebStorage.getRoomNotSentMessages(this.userSettings.username, this.contact.room);
-          data.messages.concat(roomNotSentMessages).forEach(message => {
+          const regexRest = new RegExp('^/rest/');
+          data.messages.concat(roomNotSentMessages).forEach((message) => {
             if (!this.messages.find(displayedMessage => displayedMessage.msgId && displayedMessage.msgId === message.msgId || displayedMessage.clientId && displayedMessage.clientId === message.clientId)) {
+              if(message.options && message.options.type && message.options.type === chatConstants.FILE_MESSAGE) {
+                message.options.restPath = message.options.restPath.replace(regexRest, '/portal/rest/');
+                message.options.thumbnailUrl = message.options.thumbnailUrl.replace(regexRest, '/portal/rest/');
+                message.options.thumbnailURL = message.options.thumbnailURL.replace(regexRest, '/portal/rest/');
+                message.options.downloadLink = message.options.downloadLink.replace(regexRest, '/portal/rest/');
+              }
               this.messages.unshift(message);
             }
           });
@@ -226,7 +233,7 @@ export default {
           this.totalMessagesToLoad += limit;
         }
         this.newMessagesLoading = false;
-      }).catch(() => this.newMessagesLoading = false);
+      }).catch((error) => {this.newMessagesLoading = false; console.error(error);});
     },
     findMessage(field, value) {
       return this.messages.find(message => {return message[field] === value;});
