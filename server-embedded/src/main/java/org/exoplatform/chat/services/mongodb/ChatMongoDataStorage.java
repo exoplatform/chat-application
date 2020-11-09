@@ -743,7 +743,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
-    if (filter != null) {
+    if (StringUtils.isNotBlank(filter)) {
       for (RoomBean roomBean : rooms) {
         String targetUser = roomBean.getFullName();
         if (filter(targetUser, filter))

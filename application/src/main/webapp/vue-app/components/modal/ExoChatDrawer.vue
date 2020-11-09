@@ -138,15 +138,9 @@ export default {
     }
   },
   created() {
-    chatServices.initChatSettings(this.userSettings.username, false,
-      userSettings => this.initSettings(userSettings),
-      chatRoomsData => {
-        this.initChatRooms(chatRoomsData);
-        const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
-        if(totalUnreadMsg >= 0) {
-          this.totalUnreadMsg = totalUnreadMsg;
-        }
-      });
+    chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
+      this.initSettings(userSettings);
+    });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -171,6 +165,15 @@ export default {
   },
   methods:{
     openDrawer() {
+      chatServices.initChatSettings(this.userSettings.username, false,
+        userSettings => this.initSettings(userSettings),
+        chatRoomsData => {
+          this.initChatRooms(chatRoomsData);
+          const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
+          if(totalUnreadMsg >= 0) {
+            this.totalUnreadMsg = totalUnreadMsg;
+          }
+        });
       this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
       this.selectedContact = null;
