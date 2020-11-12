@@ -32,21 +32,21 @@
           <div v-show="selectedContact && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)"
                class="title-action-component">
             <div v-for="action in titleActionComponents" v-if="action.enabled" :key="action.key"
-                 :class="`${action.appClass} ${action.typeClass}`">
-              <div v-if="action.component" :ref="action.key">
+                 :class="`${action.appClass} ${action.typeClass}`" :ref="action.key">
+              <div v-if="action.component">
                 <component v-dynamic-events="action.component.events"
                            v-bind="action.component.props ? action.component.props : {}"
                            :is="action.component.name"></component>
               </div>
-              <div v-else-if="action.element" :ref="action.key" v-html="action.element.outerHTML">
+              <div v-else-if="action.element" v-html="action.element.outerHTML">
               </div>
-              <div v-else-if="action.html" :ref="action.key" v-html="action.html">
+              <div v-else-if="action.html" v-html="action.html">
               </div>
+              {{ initTitleActionComponent(action) }}
             </div>
           </div>
           <v-icon v-show = "showSearch && !selectedContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
           <v-icon v-show = "!showSearch && !selectedContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
-          <v-icon v-show="selectedContact && selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="my-auto">mdi-video</v-icon>
           <v-icon v-show="mq !=='mobile' && !showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
         </template>
         <template slot="content">
@@ -149,9 +149,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
-  },
-  mounted() {
-    this.initTitleActionComponents();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -362,11 +359,12 @@ export default {
     backChat(){
       this.selectedContact = null;
     },
-    initTitleActionComponents() {
-      for (const action of this.titleActionComponents) {
-        if (action.init && action.enabled) {
-          let container = this.$refs[action.key];
-          if(container && container.length > 0) {
+    initTitleActionComponent(action) {
+      if (action.init && !action.isInited && action.enabled) {
+        let container = this.$refs[action.key];
+        if (container) {
+          action.isInited = true;
+          if (container && container.length > 0) {
             container = container[0];
           }
           action.init(container, eXo.chat);
