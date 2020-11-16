@@ -1,9 +1,11 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
-    <div v-if="!miniChat" class="apps-container">
-      <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
-        <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
-        <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
+    <div v-if="!miniChat">
+      <div v-show="!appsClosed" class="apps-container">
+        <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
+          <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
+          <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
+        </div>
       </div>
     </div>
     <div class="composer-container">
@@ -203,8 +205,10 @@ export default {
         timestamp: Date.now(),
         user: eXo.chat.userSettings.username
       };
+      newMessage = newMessage.replace(/<img src="data:image\/.*;base64[^>]*>/g,'');
       let found = false;
       if(!this.miniChat) {
+        // shortcuts for specific applications actions
         this.composerApplications.forEach(application => {
           if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
