@@ -25,7 +25,7 @@
    <page>
       <name>chat</name>
       <title>chat</title>
-      <access-permissions>*:/platform/users</access-permissions>
+      <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
       <edit-permission>*:/platform/administrators</edit-permission>
       <show-max-window>true</show-max-window>
       <portlet-application>
