@@ -78,6 +78,9 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
 }
 
 export function initSettings(username, userSettings, userSettingsLoadedCallback) {
+  if (!eXo) { eXo = {}; }
+  if (!eXo.chat) { eXo.chat = {}; }
+  if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
   try {
     eXo.chat.userSettings = userSettings;
     chatWebSocket.initSettings(userSettings);

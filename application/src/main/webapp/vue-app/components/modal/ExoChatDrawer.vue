@@ -243,6 +243,9 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
+      chatServices.initSettings(userSettings.userName, userSettings, userSettings => {
+        chatServices.getNotReadMessages(userSettings).then(data => this.totalUnreadMsg = data.total);
+      });
       installExtensions(this.userSettings);
       const thiss = this;
       if(this.userSettings.offlineDelay) {
