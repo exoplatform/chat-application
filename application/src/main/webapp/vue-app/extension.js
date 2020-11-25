@@ -1,4 +1,5 @@
 import {chatConstants} from './chatConstants.js';
+import {initTiptip} from './tiptip.js';
 
 export const ECMS_EVENT_COMPOSER_APP = [{
   key: 'file',
@@ -594,6 +595,8 @@ export function registerDefaultExtensions(extensionType, defaultExtensions) {
 function getExtensionsByType(type) {
   return extensionRegistry.loadExtensions('chat', type);
 }
+
+initTiptip();
 
 registerDefaultExtensions('composer-application', DEFAULT_COMPOSER_APPS);
 registerDefaultExtensions('message-action', DEFAULT_MESSAGE_ACTIONS);

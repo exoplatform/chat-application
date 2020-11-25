@@ -76,6 +76,7 @@ import {getUserAvatar} from '../../chatServices';
 import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
+
 export default {
   name: 'ExoChatDrawer',
   data () {
@@ -162,6 +163,7 @@ export default {
   },
   methods:{
     openDrawer() {
+      this.$refs.chatDrawer.startLoading();
       chatServices.initChatSettings(this.userSettings.username, false,
         userSettings => this.initSettings(userSettings),
         chatRoomsData => {
@@ -170,10 +172,14 @@ export default {
           if(totalUnreadMsg >= 0) {
             this.totalUnreadMsg = totalUnreadMsg;
           }
+          this.$nextTick(this.$refs.chatDrawer.endLoading);
         });
       this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
       this.selectedContact = null;
+
+      // In case of error, force stop loading
+      window.setTimeout(this.$refs.chatDrawer.endLoading, chatConstants.LOADING_ANIMATION_DURATION);
     },
     navigateTo() {
       window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
@@ -327,6 +333,7 @@ export default {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
+        this.$refs.chatDrawer.startLoading();
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
           const selectedContact = this.contactList.find(contact => contact.room === rommId || contact.user === rommId);
           if ( !selectedContact ) {
@@ -338,7 +345,7 @@ export default {
           if (this.$refs.chatDrawer) {
             this.$refs.chatDrawer.open();
           }
-        });
+        }).finally(this.$refs.chatDrawer.endLoading);
       }
       const tiptip = document.getElementById('tiptip_holder');
       if (tiptip) {
