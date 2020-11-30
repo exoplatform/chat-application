@@ -781,6 +781,44 @@ public class UserMongoDataStorage implements UserDataStorage {
     return users;
   }
 
+  public Long getUsersCount(String roomId, String filter) {
+    if (roomId == null && filter == null) {
+      throw new IllegalArgumentException();
+    }
+
+    List<BasicDBObject> andList = new ArrayList<>();
+    if (roomId != null && !"".equals(roomId)) {
+      // removing "space-" and "team-" prefix
+      if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+      } else if (roomId.indexOf(ChatService.TEAM_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
+      }
+
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("spaces", roomId));
+      orList.add(new BasicDBObject("teams", roomId));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    if (filter != null) {
+      filter = filter.replaceAll(" ", ".*");
+      Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("user", regex));
+      orList.add(new BasicDBObject("fullname", regex));
+      orList.add(new BasicDBObject("isEnabled", "true"));
+      orList.add(new BasicDBObject("isDeleted", "false"));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    DBObject query = new BasicDBObject("$and", andList);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    return coll.find(query).getCollection().count();
+  }
+
   @Override
   public String setStatus(String user, String status)
   {

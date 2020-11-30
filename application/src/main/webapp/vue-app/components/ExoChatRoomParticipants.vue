@@ -1,6 +1,6 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && contact.type != 'u'" class="uiRoomUsersContainerArea">
-    <div :class="{collapsed: isCollapsed && mq !== 'mobile'}" class="room-participants">
+    <div ref="roomParticipants" :class="{collapsed: isCollapsed && mq !== 'mobile'}" class="room-participants">
       <div v-exo-tooltip.left.body="tooltipCollapse" v-if="mq !=='mobile'" class="room-users-collapse-btn" @click="toggleCollapsed">
         <i class="uiIcon"></i>
       </div>
@@ -21,9 +21,13 @@
           <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#"><i :class="{'not-filter': participantFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         </exo-dropdown-select>
       </div>
-      <div class="room-participants-list isList">
+      <div ref="roomParticipantsList" class="room-participants-list isList">
         <div v-for="contact in filteredParticipant" :key="contact.name" class="contact-list-item">
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
+        </div>
+        <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
+          {{ $t("exoplatform.chat.participants.label") }}
+          <span v-show="totalUsers > 0" class="nb-participants">({{ totalUsers }})</span>
         </div>
       </div>
     </div>
@@ -86,7 +90,11 @@ export default {
        * email: {string} email of user
        * }
        */
-      participants: []
+      participants: [],
+      totalUsers: {
+        type: Number,
+        default: 0
+      },
     };
   },
   computed: {
@@ -117,9 +125,9 @@ export default {
     }
   },
   created() {
-    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_STATUS_FILTER, chatConstants.STATUS_FILTER_DEFAULT);
   },
@@ -164,10 +172,12 @@ export default {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
+      const limitToLoad = 80;
       if (contact !== null && contact.type && contact.type !== 'u') {
         chatServices.getOnlineUsers().then(users => {
-          chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
+          chatServices.getRoomParticipants(eXo.chat.userSettings, contact, limitToLoad).then( data => {
             this.$emit('particpants-loaded', data.users);
+            this.totalUsers = data.totalSize;
             this.participants = data.users.map(user => {
               // if user attributes deleted/enabled are null update the user.
               if(user.isEnabled === 'null') {
@@ -185,6 +195,15 @@ export default {
             });
           });
         });
+        if(this.$refs.roomParticipants) {
+          const header = 50;
+          const participantsHeight = this.$refs.roomParticipants.clientHeight;
+          console.log(`participants list height is ${participantsHeight} `);
+          const elementHeight = 36;
+          const viewableParticipants = (participantsHeight - header) / elementHeight;
+          console.log(`there are ${viewableParticipants} viewable users`);
+          this.displayedParticipants = this.totalUsers - (viewableParticipants + 1);
+        }
       }
     },
     contactStatusChanged(e) {
