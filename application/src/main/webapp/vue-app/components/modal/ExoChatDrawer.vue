@@ -1,10 +1,10 @@
 <template>
   <div class="VuetifyApp">
     <v-app v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
-      <a :class="statusClass" class="dropdown-toggle">
-        <v-icon class="my-auto uiIconStatus uiNotifChatIcon" @click="openDrawer"></v-icon>
+      <v-btn :class="statusClass" class="dropdown-toggle" icon @click="openDrawer">
+        <v-icon class="my-auto uiIconStatus uiNotifChatIcon"></v-icon>
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
-      </a>
+      </v-btn>
       <exo-drawer ref="chatDrawer"
                   class="chatDrawer"
                   body-classes="hide-scroll"
