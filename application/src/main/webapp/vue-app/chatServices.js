@@ -2,7 +2,6 @@ import {chatConstants} from './chatConstants.js';
 import * as chatWebStorage from './chatWebStorage';
 import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
-import {initTiptip} from './tiptip';
 
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
@@ -44,7 +43,6 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
-  initTiptip();
 
   document.addEventListener(chatConstants.EVENT_USER_SETTINGS_LOADED, (e) => {
     const settings = e.detail;
