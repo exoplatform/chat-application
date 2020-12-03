@@ -95,7 +95,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
       attachToDocument: true
     });
 
-    roomParticipant.setData({contact: room, participants: participants});
+    roomParticipant.setData({contact: room, participants: participants, participantsCount: participants.length -1});
   });
 
   it('room participants should be displayed only for teams and spaces', () => {

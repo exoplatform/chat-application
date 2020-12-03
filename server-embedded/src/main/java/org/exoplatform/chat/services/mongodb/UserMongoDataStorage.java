@@ -808,11 +808,12 @@ public class UserMongoDataStorage implements UserDataStorage {
       ArrayList<BasicDBObject> orList = new ArrayList<>();
       orList.add(new BasicDBObject("user", regex));
       orList.add(new BasicDBObject("fullname", regex));
-      orList.add(new BasicDBObject("isEnabled", "true"));
-      orList.add(new BasicDBObject("isDeleted", "false"));
 
       andList.add(new BasicDBObject("$or", orList));
     }
+    andList.add(new BasicDBObject("isEnabled", "true"));
+    andList.add(new BasicDBObject("isDeleted", "false"));
+
 
     DBObject query = new BasicDBObject("$and", andList);
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);

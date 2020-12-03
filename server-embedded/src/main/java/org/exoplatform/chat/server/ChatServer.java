@@ -1002,11 +1002,8 @@ public class ChatServer
 
     List<UserBean> users = userService.getUsers(room, filter, limit_);
 
-    long totalSize = userService.getUsersCount(room, filter);
-
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    usersBean.setSize(totalSize);
     return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
