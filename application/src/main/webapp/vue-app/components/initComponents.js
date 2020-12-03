@@ -1,3 +1,6 @@
+import {registerExternalComponents} from '../extension';
+import * as spaceChatSetting from '../external-components/spaceChatSetting';
+
 import ExoChatApp from './ExoChatApp.vue';
 import ExoChatContact from './ExoChatContact.vue';
 import ExoChatContactList from './ExoChatContactList.vue';
@@ -35,6 +38,11 @@ const components = {
   'exo-content-editable': ExoContentEditable,
   'exo-chat-drawer':ExoChatDrawer
 };
+
+// external components
+
+
+registerExternalComponents('space-chat-setting', spaceChatSetting.template, spaceChatSetting.props, spaceChatSetting.data, spaceChatSetting.created, spaceChatSetting.methods);
 
 for(const key in components) {
   Vue.component(key, components[key]);
