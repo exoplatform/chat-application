@@ -184,6 +184,7 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
     }}).then(resp =>  resp.json());
 }
 
+<<<<<<< HEAD
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
   if(!limit && isNaN(limit)) {
     limit = DEFAULT_USER_LIMIT;
@@ -194,6 +195,13 @@ export function getRoomParticipants(userSettings, room, onlineUsers, limit, onli
     onlineUsers = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&onlineUsers=${onlineUsers}&limit=${limit}&onlineOnly=${onlineUsersOnly}`, {
+=======
+export function getRoomParticipants(userSettings, room, limit) {
+  if(!limit) {
+    limit = 0;
+  }
+  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&limit=${limit}`, {
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());

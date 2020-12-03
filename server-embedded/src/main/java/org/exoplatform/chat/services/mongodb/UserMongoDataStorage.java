@@ -881,12 +881,18 @@ public class UserMongoDataStorage implements UserDataStorage {
 
       andList.add(new BasicDBObject("$or", orList));
     }
+<<<<<<< HEAD
     andList.add(new BasicDBObject("isDeleted", "false"));
     List<BasicDBObject> orList = new ArrayList<>();
     orList.add(new BasicDBObject("isEnabled", "true"));
     //some entries were added with boolean values
     orList.add(new BasicDBObject("isEnabled", true));
     andList.add(new BasicDBObject("$or", orList));
+=======
+    andList.add(new BasicDBObject("isEnabled", "true"));
+    andList.add(new BasicDBObject("isDeleted", "false"));
+
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
 
     DBObject query = new BasicDBObject("$and", andList);
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);

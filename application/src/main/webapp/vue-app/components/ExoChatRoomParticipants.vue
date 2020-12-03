@@ -22,7 +22,11 @@
         </exo-dropdown-select>
       </div>
       <div ref="roomParticipantsList" class="room-participants-list isList">
+<<<<<<< HEAD
         <div v-for="contact in participants" :key="contact.name" class="contact-list-item">
+=======
+        <div v-for="contact in filteredParticipant" :key="contact.name" class="contact-list-item">
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
@@ -92,7 +96,14 @@ export default {
        */
       participants: [],
       participantsCount: 0,
+<<<<<<< HEAD
       displayedParticipantsCount: 0
+=======
+      displayedParticipantsCount: {
+        type: Number,
+        default: 0
+      }
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
     };
   },
   computed: {
@@ -156,12 +167,17 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
+<<<<<<< HEAD
       this.loadRoomParticipants(this.contact, this.onlineUsersOnly);
+=======
+      this.loadRoomParticipants(this.contact.room);
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
     },
     contactChanged(e) {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
+<<<<<<< HEAD
       this.calculateDisplayedContacts();
       if (contact !== null && contact.type && contact.type !== 'u') {
         this.loadRoomParticipants(contact, this.onlineUsersOnly);
@@ -184,6 +200,27 @@ export default {
         //Get users count and remove the current user
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
         chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount, onlineUsersOnly).then( data => {
+=======
+      const limitToLoad = 20;
+      if(this.$refs.roomParticipants) {
+        const headerHeight = 70;
+        const moreParticipantsTextHeight = 20;
+        const participantsHeight = this.$refs.roomParticipants.clientHeight;
+        const participantItemHeight = 36;
+        const viewableParticipants = (participantsHeight - headerHeight - moreParticipantsTextHeight) / participantItemHeight;
+        this.displayedParticipantsCount = Math.round(viewableParticipants);
+      }
+      this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
+      if (contact !== null && contact.type && contact.type !== 'u') {
+        this.loadRoomParticipants(contact);
+      }
+    },
+    loadRoomParticipants(contact) {
+      chatServices.getOnlineUsers().then(users => {
+        //Get users count and remove the current user
+        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
+        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
           this.$emit('participants-loaded', this.participantsCount);
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
@@ -199,6 +236,7 @@ export default {
               user.status = 'offline';
             }
             return user;
+<<<<<<< HEAD
           });
           const offline = ['invisible', 'offline'];
           this.displayedParticipantsCount = this.participants.length;
@@ -206,6 +244,8 @@ export default {
             if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
               return 1;
             }
+=======
+>>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
           });
         });
       });
