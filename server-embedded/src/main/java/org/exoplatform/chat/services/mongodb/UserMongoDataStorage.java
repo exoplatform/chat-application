@@ -730,7 +730,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
 
     List<BasicDBObject> andList = new ArrayList<>();
-    if (roomId != null && !"".equals(roomId)) {
+    if (StringUtils.isNotBlank(roomId)) {
       // removing "space-" and "team-" prefix
       if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
         roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
@@ -787,7 +787,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
 
     List<BasicDBObject> andList = new ArrayList<>();
-    if (roomId != null && !"".equals(roomId)) {
+    if (StringUtils.isNotBlank(roomId)) {
       // removing "space-" and "team-" prefix
       if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
         roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
