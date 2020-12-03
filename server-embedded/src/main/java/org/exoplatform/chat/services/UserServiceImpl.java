@@ -233,4 +233,9 @@ public class UserServiceImpl implements UserService {
   public int getNumberOfUsers() {
     return userStorage.getNumberOfUsers();
   }
+
+  @Override
+  public long getUsersCount(String room, String filter) {
+    return userStorage.getUsersCount(room, filter);
+  }
 }
