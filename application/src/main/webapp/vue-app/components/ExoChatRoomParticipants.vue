@@ -1,6 +1,6 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && contact.type != 'u'" class="uiRoomUsersContainerArea">
-    <div :class="{collapsed: isCollapsed && mq !== 'mobile'}" class="room-participants">
+    <div ref="roomParticipants" :class="{collapsed: isCollapsed && mq !== 'mobile'}" class="room-participants">
       <div v-exo-tooltip.left.body="tooltipCollapse" v-if="mq !=='mobile'" class="room-users-collapse-btn" @click="toggleCollapsed">
         <i class="uiIcon"></i>
       </div>
@@ -21,9 +21,12 @@
           <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#"><i :class="{'not-filter': participantFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         </exo-dropdown-select>
       </div>
-      <div class="room-participants-list isList">
+      <div ref="roomParticipantsList" class="room-participants-list isList">
         <div v-for="contact in filteredParticipant" :key="contact.name" class="contact-list-item">
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
+        </div>
+        <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
+          <span v-show="hiddenParticipantsCount > 0" class="nb-participants">++ {{ hiddenParticipantsCount }} {{ $t("exoplatform.chat.participants.more.label") }}</span>
         </div>
       </div>
     </div>
@@ -87,13 +90,17 @@ export default {
        * email: {string} email of user
        * }
        */
-      participants: []
+      participants: [],
+      participantsCount: 0,
+      displayedParticipantsCount: {
+        type: Number,
+        default: 0
+      }
     };
   },
   computed: {
-    participantsCount() {
-      // subtract the current user
-      return this.participants.length - 1;
+    hiddenParticipantsCount() {
+      return this.participantsCount - this.displayedParticipantsCount;
     },
     filteredParticipant() {
       let listParticipants = [];
@@ -118,9 +125,9 @@ export default {
     }
   },
   created() {
-    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
+    document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, this.showParticipants);
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
     this.participantFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_STATUS_FILTER, chatConstants.STATUS_FILTER_DEFAULT);
   },
@@ -159,34 +166,49 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
-      this.$emit('particpants-loaded', this.participants);
+      this.loadRoomParticipants(this.contact.room);
     },
     contactChanged(e) {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
+      const limitToLoad = 20;
+      if(this.$refs.roomParticipants) {
+        const headerHeight = 70;
+        const moreParticipantsTextHeight = 20;
+        const participantsHeight = this.$refs.roomParticipants.clientHeight;
+        const participantItemHeight = 36;
+        const viewableParticipants = (participantsHeight - headerHeight - moreParticipantsTextHeight) / participantItemHeight;
+        this.displayedParticipantsCount = Math.round(viewableParticipants);
+      }
+      this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
       if (contact !== null && contact.type && contact.type !== 'u') {
-        chatServices.getOnlineUsers().then(users => {
-          chatServices.getRoomParticipants(eXo.chat.userSettings, contact).then( data => {
-            this.$emit('particpants-loaded', data.users);
-            this.participants = data.users.map(user => {
-              // if user attributes deleted/enabled are null update the user.
-              if(user.isEnabled === 'null') {
-                chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
-                  user.isEnabled = userState.isEnabled;
-                  user.isDeleted = userState.isDeleted;
-                });
-              }
-              // if user is not online, set its status as offline
-              if(users.indexOf(user.name) < 0) {
-                user.status = 'offline';
-              }
-              return user;
-            });
+        this.loadRoomParticipants(contact);
+      }
+    },
+    loadRoomParticipants(contact) {
+      chatServices.getOnlineUsers().then(users => {
+        //Get users count and remove the current user
+        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
+        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
+          this.$emit('participants-loaded', this.participantsCount);
+          this.participants = data.users.map(user => {
+            // if user attributes deleted/enabled are null update the user.
+            if(user.isEnabled === 'null') {
+              chatServices.getUserState(user.name).then(userState => {
+                chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                user.isEnabled = userState.isEnabled;
+                user.isDeleted = userState.isDeleted;
+              });
+            }
+            // if user is not online, set its status as offline
+            if(users.indexOf(user.name) < 0) {
+              user.status = 'offline';
+            }
+            return user;
           });
         });
-      }
+      });
     },
     contactStatusChanged(e) {
       const contact = e.detail;
