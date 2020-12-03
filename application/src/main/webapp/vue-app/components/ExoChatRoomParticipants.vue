@@ -174,17 +174,14 @@ export default {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
-      const limitToLoad = 80;
+      const limitToLoad = 20;
       if(this.$refs.roomParticipants) {
-        const header = 70;
+        const headerHeight = 70;
         const moreParticipantsTextHeight = 20;
         const participantsHeight = this.$refs.roomParticipants.clientHeight;
-        console.log(`participants list height is ${participantsHeight} `);
-        const elementHeight = 36;
-        const viewableParticipants = (participantsHeight - header - moreParticipantsTextHeight) / elementHeight;
-        console.log(`there are ${viewableParticipants} viewable users`);
+        const participantItemHeight = 36;
+        const viewableParticipants = (participantsHeight - headerHeight - moreParticipantsTextHeight) / participantItemHeight;
         this.displayedParticipantsCount = Math.round(viewableParticipants);
-        console.log(`there are ${this.displayedParticipantsCount} viewable users`);
       }
       this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
       if (contact !== null && contact.type && contact.type !== 'u') {
