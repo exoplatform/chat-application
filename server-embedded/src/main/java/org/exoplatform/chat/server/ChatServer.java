@@ -1012,6 +1012,24 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/usersCount")
+  public Response.Content getUsersCount(String user, String token, String room, String filter)
+  {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"usersCount\": ").append(userService.getUsersCount(room, filter));
+    data.append("}");
+
+    return Response.ok(data).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+  }
+
+  @Resource
   @Route("/statistics")
   public Response.Content getStatistics()
   {

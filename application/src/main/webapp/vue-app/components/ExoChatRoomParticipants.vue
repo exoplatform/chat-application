@@ -26,8 +26,7 @@
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
-          {{ $t("exoplatform.chat.participants.label") }}
-          <span v-show="totalUsers > 0" class="nb-participants">({{ totalUsers }})</span>
+          <span v-show="hiddenParticipantsCount > 0" class="nb-participants">++ {{ hiddenParticipantsCount }} {{ $t("exoplatform.chat.participants.more.label") }}</span>
         </div>
       </div>
     </div>
@@ -91,16 +90,19 @@ export default {
        * }
        */
       participants: [],
-      totalUsers: {
+      participantsCount: {
         type: Number,
         default: 0
       },
+      displayedParticipantsCount: {
+        type: Number,
+        default: 0
+      }
     };
   },
   computed: {
-    participantsCount() {
-      // subtract the current user
-      return this.participants.length - 1;
+    hiddenParticipantsCount() {
+      return this.participantsCount - this.displayedParticipantsCount;
     },
     filteredParticipant() {
       let listParticipants = [];
@@ -166,18 +168,30 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
-      this.$emit('particpants-loaded', this.participants);
+      this.$emit('participants-loaded', this.participantsCount);
     },
     contactChanged(e) {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
       const limitToLoad = 80;
+      if(this.$refs.roomParticipants) {
+        const header = 70;
+        const moreParticipantsTextHeight = 20;
+        const participantsHeight = this.$refs.roomParticipants.clientHeight;
+        console.log(`participants list height is ${participantsHeight} `);
+        const elementHeight = 36;
+        const viewableParticipants = (participantsHeight - header - moreParticipantsTextHeight) / elementHeight;
+        console.log(`there are ${viewableParticipants} viewable users`);
+        this.displayedParticipantsCount = Math.round(viewableParticipants);
+        console.log(`there are ${this.displayedParticipantsCount} viewable users`);
+      }
+      this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
       if (contact !== null && contact.type && contact.type !== 'u') {
         chatServices.getOnlineUsers().then(users => {
-          chatServices.getRoomParticipants(eXo.chat.userSettings, contact, limitToLoad).then( data => {
-            this.$emit('particpants-loaded', data.users);
-            this.totalUsers = data.totalSize;
+          chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount);
+          chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
+            this.$emit('participants-loaded', this.participantsCount);
             this.participants = data.users.map(user => {
               // if user attributes deleted/enabled are null update the user.
               if(user.isEnabled === 'null') {
@@ -195,15 +209,6 @@ export default {
             });
           });
         });
-        if(this.$refs.roomParticipants) {
-          const header = 50;
-          const participantsHeight = this.$refs.roomParticipants.clientHeight;
-          console.log(`participants list height is ${participantsHeight} `);
-          const elementHeight = 36;
-          const viewableParticipants = (participantsHeight - header) / elementHeight;
-          console.log(`there are ${viewableParticipants} viewable users`);
-          this.displayedParticipants = this.totalUsers - (viewableParticipants + 1);
-        }
       }
     },
     contactStatusChanged(e) {

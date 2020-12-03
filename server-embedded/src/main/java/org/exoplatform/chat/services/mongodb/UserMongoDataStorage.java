@@ -816,7 +816,7 @@ public class UserMongoDataStorage implements UserDataStorage {
 
     DBObject query = new BasicDBObject("$and", andList);
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    return coll.find(query).getCollection().count();
+    return (long) coll.find(query).count();
   }
 
   @Override

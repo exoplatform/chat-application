@@ -196,6 +196,13 @@ export function getRoomParticipants(userSettings, room, limit) {
     }}).then(resp =>  resp.json());
 }
 
+export function getRoomParticipantsCount(userSettings, room) {
+  return fetch(`${chatConstants.CHAT_SERVER_API}usersCount?user=${userSettings.username}&room=${room.room}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
+
 export function getUsersToMention(userSettings, room, filter) {
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&filter=${filter}&limit=10`, {
     headers: {
