@@ -429,6 +429,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         doc.put("shortName", bean.getShortName());
         doc.put("prettyName", bean.getPrettyName());
         doc.put("type", ChatService.TYPE_ROOM_SPACE);
+        doc.put("isEnabled", true);
         coll.insert(doc);
       }
       else
@@ -436,6 +437,10 @@ public class UserMongoDataStorage implements UserDataStorage {
         DBObject doc = cursor.next();
         String displayName = doc.get("displayName").toString();
         Object prettyName = doc.get("prettyName");
+        if (doc.get("isEnabled") == null) {
+          doc.put("isEnabled", true);
+          coll.save(doc);
+        }
         if (!bean.getDisplayName().equals(displayName) || prettyName == null || !bean.getPrettyName().equals(prettyName.toString()))
         {
           doc.put("_id", room);
@@ -546,6 +551,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       roomBean.setUser(doc.get("user").toString());
       roomBean.setFullName(doc.get("team").toString());
       roomBean.setType(doc.get("type").toString());
+      if (doc.containsField("isEnabled")) {
+        roomBean.setEnabledRoom((StringUtils.equals(doc.get("isEnabled").toString(), "true")));
+      }
       if (doc.containsField("meetingStarted")) {
         roomBean.setMeetingStarted((Boolean) doc.get("meetingStarted"));
       }
@@ -607,6 +615,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       }
       String type = doc.get("type").toString();
       roomBean.setType(type);
+      if (doc.containsField("isEnabled")) {
+        roomBean.setEnabledRoom((StringUtils.equals(doc.get("isEnabled").toString(), "true")));
+      }
       if (ChatService.TYPE_ROOM_SPACE.equals(type))
       {
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
