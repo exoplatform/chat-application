@@ -90,10 +90,7 @@ export default {
        * }
        */
       participants: [],
-      participantsCount: {
-        type: Number,
-        default: 0
-      },
+      participantsCount: 0,
       displayedParticipantsCount: {
         type: Number,
         default: 0
@@ -168,7 +165,7 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
-      this.$emit('participants-loaded', this.participantsCount);
+      this.loadRoomParticipants(this.contact.room);
     },
     contactChanged(e) {
       const contact = e.detail;
@@ -185,28 +182,31 @@ export default {
       }
       this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
       if (contact !== null && contact.type && contact.type !== 'u') {
-        chatServices.getOnlineUsers().then(users => {
-          chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount);
-          chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
-            this.$emit('participants-loaded', this.participantsCount);
-            this.participants = data.users.map(user => {
-              // if user attributes deleted/enabled are null update the user.
-              if(user.isEnabled === 'null') {
-                chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
-                  user.isEnabled = userState.isEnabled;
-                  user.isDeleted = userState.isDeleted;
-                });
-              }
-              // if user is not online, set its status as offline
-              if(users.indexOf(user.name) < 0) {
-                user.status = 'offline';
-              }
-              return user;
-            });
+        this.loadRoomParticipants(contact);
+      }
+    },
+    loadRoomParticipants(contact) {
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount);
+        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
+          this.$emit('participants-loaded', this.participantsCount);
+          this.participants = data.users.map(user => {
+            // if user attributes deleted/enabled are null update the user.
+            if(user.isEnabled === 'null') {
+              chatServices.getUserState(user.name).then(userState => {
+                chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                user.isEnabled = userState.isEnabled;
+                user.isDeleted = userState.isDeleted;
+              });
+            }
+            // if user is not online, set its status as offline
+            if(users.indexOf(user.name) < 0) {
+              user.status = 'offline';
+            }
+            return user;
           });
         });
-      }
+      });
     },
     contactStatusChanged(e) {
       const contact = e.detail;
