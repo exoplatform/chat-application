@@ -127,7 +127,7 @@ export default {
       if(!newContact) {
         this.nbMembers = 0;
       } else {
-        this.nbMembers = newContact.participants ? newContact.participants.length : 0;
+        this.nbMembers = newContact.participantsCount ? newContact.participantsCount.length : 0;
       }
       this.meetingStarted = newContact.meetingStarted;
     }
@@ -241,7 +241,7 @@ export default {
       return chatServices.escapeHtml(html);
     },
     participantsLoaded() {
-      this.nbMembers = this.contact && this.contact.participants && this.contact.type !== 'u' ? this.contact.participants.length : 0;
+      this.nbMembers = this.contact && this.contact.participantsCount && this.contact.type !== 'u' ? this.contact.participantsCount : 0;
     },
     backToContactList() {
       document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {detail: {}}));
