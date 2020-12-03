@@ -730,7 +730,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
 
     List<BasicDBObject> andList = new ArrayList<>();
-    if (roomId != null && !"".equals(roomId)) {
+    if (StringUtils.isNotBlank(roomId)) {
       // removing "space-" and "team-" prefix
       if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
         roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
@@ -779,6 +779,45 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
     users = users.stream().filter(UserBean::isEnabledUser).collect(Collectors.toList());
     return users;
+  }
+
+  public Long getUsersCount(String roomId, String filter) {
+    if (roomId == null && filter == null) {
+      throw new IllegalArgumentException();
+    }
+
+    List<BasicDBObject> andList = new ArrayList<>();
+    if (StringUtils.isNotBlank(roomId)) {
+      // removing "space-" and "team-" prefix
+      if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+      } else if (roomId.indexOf(ChatService.TEAM_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
+      }
+
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("spaces", roomId));
+      orList.add(new BasicDBObject("teams", roomId));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    if (filter != null) {
+      filter = filter.replaceAll(" ", ".*");
+      Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("user", regex));
+      orList.add(new BasicDBObject("fullname", regex));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+    andList.add(new BasicDBObject("isEnabled", "true"));
+    andList.add(new BasicDBObject("isDeleted", "false"));
+
+
+    DBObject query = new BasicDBObject("$and", andList);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    return (long) coll.find(query).count();
   }
 
   @Override
