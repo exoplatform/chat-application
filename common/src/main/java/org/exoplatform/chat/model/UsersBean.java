@@ -7,7 +7,6 @@ import java.util.List;
 public class UsersBean {
 
   List<UserBean> users;
-
   public List<UserBean> getUsers() {
     return users;
   }
@@ -34,7 +33,7 @@ public class UsersBean {
     }
     sb.append("],");
     sb.append("\"md5\": \"").append(MessageDigester.getHash(sb.toString())).append("\",");
-    sb.append("\"timestamp\": \""+System.currentTimeMillis()+"\"");
+    sb.append("\"timestamp\": \"").append(System.currentTimeMillis()).append("\"");
     sb.append("}");
 
 

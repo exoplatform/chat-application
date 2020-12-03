@@ -345,4 +345,31 @@ public class ChatServerTest extends AbstractChatTestCase {
     assertNotNull(isFavoriteJohn);
     assertEquals(404, isFavoriteJohn.getCode());
   }
+
+  @Test
+  public void testGetUsersCount() {
+    ChatServer chatServer = new ChatServer();
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+
+    SpaceBean mySpace = new SpaceBean();
+    mySpace.setId("myspace");
+    mySpace.setGroupId("/spaces/myspace");
+    mySpace.setDisplayName("My Space");
+    mySpace.setRoom("myspace");
+    userService.setSpaces("john", Collections.singletonList(mySpace));
+    userService.setSpaces("mary", Collections.singletonList(mySpace));
+    userService.setSpaces("ali", Collections.singletonList(mySpace));
+    userService.setSpaces("shahin", Collections.singletonList(mySpace));
+
+    String roomId = chatService.getSpaceRoom("myspace");
+
+    String token = tokenService.getToken("john");
+    tokenService.addUser("john", token);
+    Response.Content usersCount = chatServer.getUsersCount("john", token, roomId, "");
+    assertNotNull(usersCount);
+    assertEquals(200, usersCount.getCode());
+    assertTrue("Users count should be 4",  usersCount.toString().contains("4"));
+  }
 }
