@@ -816,6 +816,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     roomsBean.setUnreadOnline(unreadOnline);
     roomsBean.setUnreadSpaces(unreadSpaces);
     roomsBean.setUnreadTeams(unreadTeams);
+    roomsBean.setRoomsCount(finalRooms.size());
 
     return roomsBean;
 
@@ -834,7 +835,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    */
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService) {
     List<RoomBean> rooms = new ArrayList<>();;
-    int unreadOffline = 0, unreadOnline = 0, totalRooms = 0, unreadSpaces = 0, unreadTeams = 0;
+    int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0, roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
 
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
@@ -866,6 +867,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       DBObject roomsQuery = new BasicDBObject("$and", andList);
       andList.add(new BasicDBObject("$or", orList));
 
+      roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
       DBCursor roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
               .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
       while(roomsCursor.hasNext()) {
@@ -909,6 +911,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     roomsBean.setUnreadOnline(unreadOnline);
     roomsBean.setUnreadSpaces(unreadSpaces);
     roomsBean.setUnreadTeams(unreadTeams);
+    roomsBean.setRoomsCount(roomsCount);
 
     return roomsBean;
   }
