@@ -271,7 +271,7 @@ export default {
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.loadingContacts = false;
         });

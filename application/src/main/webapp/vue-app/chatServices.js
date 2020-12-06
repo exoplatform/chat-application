@@ -4,7 +4,6 @@ import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
 
 const DEFAULT_OFFSET = 0;
-const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
@@ -52,7 +51,7 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
       getNotReadMessages(settings).then(notifications => chatRoomsLoadedCallback(notifications));
     } else {
       // fetch online users then fetch chat rooms
-      getOnlineUsers().then(users => getChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
+      getOnlineUsers().then(users => getUserChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
     }
 
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
@@ -174,7 +173,7 @@ export function toggleFavorite(room, user, favorite) {
 
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   if(!limit) {
-    limit = DEFAULT_USERS_ROOMS_TO_LOAD;
+    limit = chatConstants.ROOMS_PER_PAGE;
   }
   if(!filter) {
     filter = '';
@@ -186,7 +185,7 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
 }
 export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limit) {
   if(!limit) {
-    limit = DEFAULT_USERS_ROOMS_TO_LOAD;
+    limit = chatConstants.ROOMS_PER_PAGE;
   }
   if(!offset) {
     offset = DEFAULT_OFFSET;
@@ -194,7 +193,7 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
   if(!filter) {
     filter = '';
   }
-  return fetch(`${chatConstants.CHAT_SERVER_API}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
