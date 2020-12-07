@@ -236,7 +236,6 @@ export default {
       }
     },
     addRooms(rooms) {
-      this.contactList = [];
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
               && contact.fullName.trim().length > 0
