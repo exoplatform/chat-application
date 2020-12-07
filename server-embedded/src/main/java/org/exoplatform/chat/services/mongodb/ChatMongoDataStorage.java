@@ -933,19 +933,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setUser(TEAM_PREFIX + roomId);
         roomBean.setStatus(UserService.STATUS_TEAM);
         roomBean.setAvailableUser(true);
-        roomBean.setRoom(room.get("_id").toString());
         roomBean.setUser(room.get("user").toString());
         roomBean.setFullName(room.get("team").toString());
-        roomBean.setType(room.get("type").toString());
-        if (room.containsField("meetingStarted")) {
-          roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));
-        }
-        if (room.containsField("startTime")) {
-          roomBean.setStartTime((String) room.get("startTime"));
-        }
-        if (room.containsField("timestamp")) {
-          roomBean.setTimestamp((Long) room.get("timestamp"));
-        }
+        roomBean.setType(TYPE_ROOM_TEAM);
         if (StringUtils.isNotBlank(roomBean.getUser())) {
           roomBean.setAdmins(new String[]{room.get("user").toString()});
         }
@@ -957,42 +947,41 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         if(users.size() > 0) {
           String targetUser = users.get(0);
           UserBean targetUserBean = userDataStorage.getUser(targetUser);
+          roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
-          if (onlineUsers.contains(targetUser)) {
-            roomBean.setFullName(targetUserBean.getFullname());
-            roomBean.setStatus(targetUserBean.getStatus());
-            roomBean.setAvailableUser(true);
-          } else {
-            roomBean.setFullName(targetUserBean.getFullname());
-            roomBean.setAvailableUser(false);
-          }
+          roomBean.setEnabledUser(targetUserBean.isEnabledUser());
+          roomBean.setAvailableUser(onlineUsers.contains(targetUser));
+          roomBean.setUser(targetUser);
+          roomBean.setType(TYPE_ROOM_USER);
         }
         break;
       }
       case "s": {
         roomBean.setUser(SPACE_PREFIX + roomId);
-        roomBean.setRoom(roomId);
         roomBean.setFullName(room.get("displayName").toString());
         roomBean.setStatus(UserService.STATUS_SPACE);
-        if (room.containsField("timestamp")) {
-          roomBean.setTimestamp((Long) room.get("timestamp"));
-        }
+        roomBean.setType(TYPE_ROOM_SPACE);
         roomBean.setAvailableUser(true);
         roomBean.setType(ChatService.TYPE_ROOM_SPACE);
         if (room.containsField("prettyName")) {
           roomBean.setPrettyName(room.get("prettyName").toString());
         }
-        if (room.containsField("meetingStarted")) {
-          roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));
-        }
-        if (room.containsField("startTime")) {
-          roomBean.setStartTime((String) room.get("startTime"));
-        }
 
-        roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", "room", getSpaceRoom(SPACE_PREFIX + roomId)));
         roomBean.setFavorite(userBean.isFavorite(roomId));
         break;
       }
+    }
+    roomBean.setRoom(roomId);
+    roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", "room", roomId));
+
+    if (room.containsField("meetingStarted")) {
+      roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));
+    }
+    if (room.containsField("startTime")) {
+      roomBean.setStartTime((String) room.get("startTime"));
+    }
+    if (room.containsField("timestamp")) {
+      roomBean.setTimestamp((Long) room.get("timestamp"));
     }
     return roomBean;
   }
