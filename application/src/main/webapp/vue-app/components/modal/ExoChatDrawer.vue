@@ -51,7 +51,7 @@
         </template>
         <template slot="content">
           <div :class="!selectedContact ? 'contentDrawer ' : 'contentDrawerOfList'">
-            <exo-chat-contact-list v-show="!selectedContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+            <exo-chat-contact-list v-show="!selectedContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :contacts-size="contactsSize" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
             <exo-chat-message-list v-show="selectedContact" :contact="selectedContact" :user-settings="userSettings" :is-opened-contact="!selectedContact"></exo-chat-message-list>
           </div>
         </template>
@@ -85,6 +85,7 @@ export default {
       showSearch:false,
       loadingContacts: true,
       selectedContact: [],
+      contactsSize: 0,
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
@@ -265,6 +266,7 @@ export default {
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
+      this.contactsSize = chatRoomsData.roomsCount;
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
@@ -273,6 +275,7 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -304,6 +307,7 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
             if(contactToChange) {
@@ -318,6 +322,7 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
