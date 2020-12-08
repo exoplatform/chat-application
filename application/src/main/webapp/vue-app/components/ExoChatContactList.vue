@@ -261,6 +261,15 @@ export default {
   watch: {
     searchTerm(value) {
       this.$emit('search-contact', value);
+    },
+    searchWord(newValue) {
+      if(newValue) {
+        chatServices.getOnlineUsers().then(users => {
+          chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
+            this.contacts = chatRoomsData.rooms;
+          });
+        });
+      }
     }
   },
   created() {
