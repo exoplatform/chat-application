@@ -189,7 +189,7 @@ export default {
     },
     resetSelectedContact() {
       this.showChatDrawer = false;
-      this.showSearch = false;
+      this.closeContactSearch();
       this.selectedContact = null;
     },
     setStatus(status) {
