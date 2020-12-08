@@ -304,7 +304,7 @@ export default {
     },
     refreshContacts(keepSelectedContact) {
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.contactsSize = chatRoomsData.roomsCount;
           if (!keepSelectedContact && this.selectedContact) {

@@ -328,7 +328,6 @@ export default {
       this.showEditMessageModal = true;
       this.$nextTick(() => {
         if(this.$refs.editMessageComposerArea) {
-          this.$refs.editMessageComposerArea.$el.focus();
           document.execCommand('selectAll', false, null);
           document.getSelection().collapseToEnd();
         }
