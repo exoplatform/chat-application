@@ -143,16 +143,18 @@ export default {
       }
       chatServices.getChatUsers(eXo.chat.userSettings, query).then(data => {
         if(data && data.users) {
-          data.users.forEach(user => {
-            if(user.isEnabled === 'null') {
-              chatServices.getUserState(user.name).then(userState => {
-                chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
-                user.isEnabled = userState.isEnabled;
-                user.isDeleted = userState.isDeleted;
-              });
-            }
+          chatServices.getRoomParticipantsToSuggest(data.users).then(users => {
+            users.forEach(user => {
+              if(user.isEnabled === 'null') {
+                chatServices.getUserState(user.name).then(userState => {
+                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                  user.isEnabled = userState.isEnabled;
+                  user.isDeleted = userState.isDeleted;
+                });
+              }
+            });
+            callback(users.filter(user => user.name !== eXo.chat.userSettings.username));
           });
-          callback(data.users.filter(user => user.name !== eXo.chat.userSettings.username));
         }
       });
     },

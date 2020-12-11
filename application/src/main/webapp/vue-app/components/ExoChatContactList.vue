@@ -21,7 +21,7 @@
           <i slot="toggle" class="uiIconArrowDownMini"></i>
           <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         </exo-dropdown-select>
-        <div class="room-actions">
+        <div v-if="!external" class="room-actions">
           <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
             <i class="uiIconFilter"></i>
           </div>
@@ -172,6 +172,7 @@ export default {
       typeFilterMobile: null,
       allAsReadFilterMobile: false,
       contactSearchMobile: false,
+      external: false,
       createRoomModal: false,
       searchTerm: '',
       newRoom: {
@@ -277,7 +278,11 @@ export default {
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
     this.initFilterMobile();
-
+    chatServices.getUserInfo().then(
+      (data) => {
+        this.external = data && data.external === 'true';
+      }
+    );
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);

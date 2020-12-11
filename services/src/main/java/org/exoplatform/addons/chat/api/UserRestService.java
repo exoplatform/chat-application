@@ -2,8 +2,7 @@ package org.exoplatform.addons.chat.api;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -11,9 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.addons.chat.model.MentionModel;
+import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
@@ -21,6 +24,8 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.manager.RelationshipManager;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
@@ -33,6 +38,8 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.user.UserStateService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import static org.exoplatform.addons.chat.utils.NotificationUtils.*;
 
@@ -56,14 +63,22 @@ public class UserRestService implements ResourceContainer {
 
   private OrganizationService   organizationService;
 
+  private RelationshipManager   relationshipManager;
+
+  private IdentityManager   identityManager;
+
   private ContinuationService   continuationService;
 
   private UserStateService      userStateService;
 
   public UserRestService(UserStateService userStateService,
+                         RelationshipManager relationshipManager,
+                         IdentityManager identityManager,
                          ContinuationService continuationService,
                          OrganizationService organizationService) {
     this.organizationService = organizationService;
+    this.identityManager = identityManager;
+    this.relationshipManager = relationshipManager;
     this.continuationService = continuationService;
     this.userStateService = userStateService;
   }
@@ -164,6 +179,37 @@ public class UserRestService implements ResourceContainer {
     String users = String.join(",", list);
 
     return Response.ok(users, MediaType.TEXT_PLAIN).build();
+  }
+
+  @POST
+  @Path("getRoomParticipantsToSuggest")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Get room participants to suggest",
+      httpMethod = "POST",
+      response = Response.class,
+      notes = "This returns the list of room participants as non externals or current user connections")
+  @ApiResponses(value = {
+      @ApiResponse (code = 200, message = "Request fulfilled"),
+      @ApiResponse (code = 404, message = "Resource not found")})
+  public Response getRoomParticipantsToSuggest(@Context UriInfo uriInfo,
+                                               @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
+    String authenticatedUser;
+    try {
+      authenticatedUser = ConversationState.getCurrent().getIdentity().getUserId();
+    } catch (Exception e) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    Identity authenticatedUserIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, authenticatedUser);
+    List<Identity> currentUserConnections = Arrays.asList(relationshipManager.getConnections(authenticatedUserIdentity).load(0, 0));
+
+    List<UserBean> roomParticipantsToSuggest = new ArrayList<>();
+    for(UserBean userBean : userList){
+      Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
+      if(currentUserConnections.contains(userIdentity) || (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty("external") == null || userIdentity.getProfile().getProperty("external").equals("false")))){        roomParticipantsToSuggest.add(userBean);
+      }
+    }
+    return Response.ok(roomParticipantsToSuggest, MediaType.APPLICATION_JSON).build();
   }
 
   @GET
