@@ -103,6 +103,8 @@ public interface UserService
 
   public List<UserBean> getUsers(String roomId, String filter, int limit);
 
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit);
+
   public String setStatus(String user, String status);
 
   public void setAsAdmin(String user, boolean isAdmin);
