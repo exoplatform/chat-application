@@ -26,7 +26,7 @@
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
-          <span v-show="hiddenParticipantsCount > 0" class="nb-participants">++ {{ hiddenParticipantsCount }} {{ displayedParticipantsCount }} {{ $t("exoplatform.chat.participants.more.label") }}</span>
+          <span v-show="hiddenParticipantsCount > 0" class="nb-participants">++ {{ hiddenParticipantsCount }} {{ $t("exoplatform.chat.participants.more.label") }}</span>
         </div>
       </div>
     </div>
