@@ -466,7 +466,14 @@ export function registerExternalExtensions(chatTitle) {
     title: chatTitle,
     icon: 'uiIconBannerChat',
     order: 10,
-    enabled: () => true,
+    enabled: (profile) => {
+      // check if the space's chat is enabled
+      if (profile.hasOwnProperty('isChatEnabled')) {
+        return profile.isChatEnabled;
+      }
+      // if it's a user profile
+      return true;
+    },
     click: (profile) => {
       const chatType = profile.groupId ? 'space-id' : 'username';
       const chatRoomName = profile.prettyName ? profile.id : profile.username;

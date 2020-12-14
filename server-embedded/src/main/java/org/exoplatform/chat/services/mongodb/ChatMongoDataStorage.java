@@ -37,6 +37,7 @@ import javax.inject.Singleton;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.exoplatform.chat.services.ChatService.*;
 
@@ -465,6 +466,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         basicDBObject.put("meetingStarted", false);
         basicDBObject.put("startTime", "");
         basicDBObject.put("timestamp", System.currentTimeMillis());
+        basicDBObject.put("isEnabled", true);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_TEAM);
       } catch (MongoException me) {
@@ -487,6 +489,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       try {
         basicDBObject.put("identifier", identifier);
         basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
+        basicDBObject.put("isEnabled", true);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_EXTERNAL);
       } catch (MongoException me) {
@@ -535,6 +538,47 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   @Override
+  public boolean isRoomEnabled(String room) {
+    boolean isEnabled = true;
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext()) {
+      try {
+        DBObject doc = cursor.next();
+        if (doc.get("isEnabled") != null) {
+          isEnabled = (StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+        } else {
+          doc.put("isEnabled", true);
+          coll.save(doc, WriteConcern.UNACKNOWLEDGED);
+        }
+      } catch (MongoException me) {
+        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+      }
+    }
+
+    return isEnabled;
+  }
+
+  @Override
+  public void setRoomEnabled(String room, boolean enabled) {
+    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+
+    BasicDBObject basicDBObject = new BasicDBObject();
+    basicDBObject.put("_id", room);
+
+    DBCursor cursor = coll.find(basicDBObject);
+    if (cursor.hasNext()) {
+      DBObject dbo = cursor.next();
+      dbo.put("isEnabled", enabled);
+      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
+    }
+  }
+
+  @Override
   public void setRoomMeetingStatus(String room, boolean start, String startTime) {
     DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
 
@@ -563,6 +607,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       try {
         basicDBObject.put("users", users);
         basicDBObject.put("type", TYPE_ROOM_USER);
+        basicDBObject.put("isEnabled", true);
         coll.insert(basicDBObject);
         ensureIndexInRoom(TYPE_ROOM_USER);
       } catch (MongoException me) {
@@ -616,6 +661,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
           roomBean.setType((String) dbo.get("type"));
+          if (dbo.containsField("isEnabled")) {
+            roomBean.setEnabledRoom((StringUtils.equals(dbo.get("isEnabled").toString(), "true")));
+          }
           if (dbo.containsField("meetingStarted")) {
             roomBean.setMeetingStarted((Boolean) dbo.get("meetingStarted"));
           }
@@ -708,7 +756,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setType(ChatService.TYPE_ROOM_SPACE);
       room.setPrettyName(space.getPrettyName());
 
-      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", getSpaceRoom(SPACE_PREFIX + space.getRoom())));
+      String spaceRoomId = getSpaceRoom(SPACE_PREFIX + space.getRoom());
+      room.setEnabledRoom(isRoomEnabled(spaceRoomId));
+
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", spaceRoomId));
       if (room.getUnreadTotal() > 0)
         unreadSpaces += room.getUnreadTotal();
       room.setFavorite(userBean.isFavorite(room.getRoom()));
@@ -729,8 +780,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setAvailableUser(true);
       room.setType(team.getType());
       room.setMeetingStarted(team.isMeetingStarted());
+      room.setEnabledRoom(team.isEnabledRoom());
       room.setStartTime(team.getStartTime());
       room.setAdmins(team.getAdmins());
+      room.setEnabledRoom(team.isEnabledRoom());
 
       room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
       if (room.getUnreadTotal() > 0)
@@ -752,6 +805,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     } else {
       finalRooms = rooms;
     }
+    //get rid of disabled rooms
+    finalRooms = finalRooms.stream().filter(roomBean -> roomBean.isEnabledRoom()).collect(Collectors.toList());
 
     RoomsBean roomsBean = new RoomsBean();
     roomsBean.setRooms(finalRooms);

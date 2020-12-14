@@ -843,6 +843,33 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/isRoomEnabled")
+  public Response.Content isRoomEnabled(String user, String token, String spaceId) {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    String room = ChatUtils.getRoomId(spaceId);
+    Boolean isEnabled = chatService.isRoomEnabled(room);
+
+    return Response.ok(isEnabled.toString());
+  }
+
+  @Resource
+  @Route("/updateRoomEnabled")
+  public Response.Content setRoomEnabled(String user, String token, String spaceId, Boolean enabled) {
+    if (!tokenService.hasUserWithToken(user, token)) {
+      return Response.notFound("Petit malin !");
+    }
+
+    String room = ChatUtils.getRoomId(spaceId);
+    chatService.setRoomEnabled(room, enabled);
+
+    return Response.ok("Updated.");
+  }
+
+  @Resource
   @MimeType("text/plain")
   @Route("/updateUnreadMessages")
   public Response.Content updateUnreadMessages(String room, String user, String token)
