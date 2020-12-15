@@ -92,6 +92,8 @@ public interface UserDataStorage {
 
   List<UserBean> getUsers(String roomId, String filter, int limit);
 
+  List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit);
+
   Long getUsersCount(String roomId, String filter);
 
   List<UserBean> getUsersInRoomChatOneToOne(String roomId);

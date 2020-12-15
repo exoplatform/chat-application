@@ -196,6 +196,10 @@ public class UserServiceImpl implements UserService {
     return userStorage.getUsers(roomId, filter, limit);
   }
 
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit) {
+    return userStorage.getUsers(roomId, onlineUsers, filter, limit);
+  }
+
   public String setStatus(String user, String status) {
     return userStorage.setStatus(user, status);
   }

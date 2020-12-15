@@ -184,11 +184,14 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
     }}).then(resp =>  resp.json());
 }
 
-export function getRoomParticipants(userSettings, room, limit) {
+export function getRoomParticipants(userSettings, room, onlineUsers, limit) {
   if(!limit) {
     limit = 0;
   }
-  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&limit=${limit}`, {
+  if(!onlineUsers) {
+    onlineUsers = '';
+  }
+  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&onlineUsers=${onlineUsers}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
