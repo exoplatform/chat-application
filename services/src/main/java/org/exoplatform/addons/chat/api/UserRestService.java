@@ -59,8 +59,6 @@ public class UserRestService implements ResourceContainer {
 
   private WikiService           wikiService;
 
-  private CalendarService       calendarService;
-
   private OrganizationService   organizationService;
 
   private RelationshipManager   relationshipManager;
@@ -292,9 +290,6 @@ public class UserRestService implements ResourceContainer {
     }
     userSettings.put("canUploadFiles", canUploadFiles);
 
-    boolean canAddEvent = getCalendarService() != null;
-    userSettings.put("canAddEvent", canAddEvent);
-
     boolean canAddWiki = getWikiService() != null;
     userSettings.put("canAddWiki", canAddWiki);
 
@@ -326,13 +321,6 @@ public class UserRestService implements ResourceContainer {
       documentService = CommonsUtils.getService(DocumentService.class);
     }
     return documentService;
-  }
-
-  public CalendarService getCalendarService() {
-    if (calendarService == null) {
-      calendarService = CommonsUtils.getService(CalendarService.class);
-    }
-    return calendarService;
   }
 
   public WikiService getWikiService() {
