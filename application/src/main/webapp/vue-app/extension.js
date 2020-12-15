@@ -149,108 +149,6 @@ export const ECMS_EVENT_COMPOSER_APP = [{
     });
   }
 }];
-export const CALENDAR_EVENT_COMPOSER_APP = [{
-  key: 'event',
-  rank: 10,
-  type: 'type-event',
-  nameKey: 'exoplatform.chat.event',
-  labelKey: 'exoplatform.chat.add.event',
-  iconClass: 'uiIconChatCreateEvent',
-  appClass: 'chat-app-event',
-  saveLabelKey: 'exoplatform.chat.post',
-  html(i18NConverter) {
-    const NUMBER_HALF_HOUR_PER_DAY = 48;
-    const NUMBERS_MAX_WITH_ONE_DIGIT = 10;
-    const PAIR = 2;
-    let timeOptions = '';
-    for (let i = 0; i < NUMBER_HALF_HOUR_PER_DAY; i++) {
-      let hours = Math.floor(i / PAIR);
-      hours = hours < NUMBERS_MAX_WITH_ONE_DIGIT ? `0${hours}` : hours;
-      const minutes = i % PAIR === 0 ? '00' : '30';
-      timeOptions += `<option value="${hours}:${minutes}">${hours}:${minutes}</option>`;
-    }
-    return `<input name="summary" placeholder="${i18NConverter('exoplatform.chat.event.title')}" class="large" type="text" required> \
-      <div class="chat-event-date form-horizontal"> \
-        <div class="event-item"> \
-          <span class="action-label">${i18NConverter('exoplatform.chat.from')}</span> \
-          <input name="startDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" class="startDate" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
-          <select name="startTime" class="selectbox" required> \
-            <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
-            ${timeOptions}
-          </select> \
-        </div> \
-        <div class="event-item"> \
-          <span class="action-label">${i18NConverter('exoplatform.chat.to')}</span> \
-          <input name="endDate" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" class="endDate" type="text" required onfocus="require(['SHARED/CalDateTimePicker'], (CalDateTimePicker) => CalDateTimePicker.init(event.target, false));"> \
-          <select name="endTime" class="selectbox" required> \
-            <option value="all-day">${i18NConverter('exoplatform.chat.all.day')}</option>
-            ${timeOptions}
-          </select> \
-        </div> \
-      </div> \
-      <input name="location" class="large" type="text" placeholder="${i18NConverter('exoplatform.chat.location')}" required> `;
-  },
-  validate(formData) {
-    const startDateParts = formData['startDate'].split('/');
-    const startTime = formData['startTime'];
-    const endDateParts = formData['endDate'].split('/');
-    const endTime = formData['endTime'];
-
-    // To avoid magic-number eslint verification
-    const THIRD_INDEX = 2;
-    const START_YEAR = 1900;
-
-    const startMonth = parseInt(startDateParts[0]) - 1;
-    const startDay = parseInt(startDateParts[1]);
-    const startYear = parseInt(startDateParts[THIRD_INDEX]) - START_YEAR;
-    let startHour = 0;
-    let startMinutes = 0;
-    const endMonth = parseInt(endDateParts[0]) - 1;
-    const endDay = parseInt(endDateParts[1]);
-    const endYear = parseInt(endDateParts[THIRD_INDEX]) - START_YEAR;
-    let endHour = 0;
-    let endMinutes = 0;
-    if (startTime !== 'all-day') {
-      const startTimeParts = startTime.split(':');
-      startHour = parseInt(startTimeParts[0]);
-      startMinutes = parseInt(startTimeParts[1]);
-    }
-    if (endTime === 'all-day') {
-      const MAX_HOURS = 22;
-      const MAX_MINUTES = 59;
-      endHour = MAX_HOURS;
-      endMinutes = MAX_MINUTES;
-    } else {
-      const endTimeParts = endTime.split(':');
-      endHour = parseInt(endTimeParts[0]);
-      endMinutes = parseInt(endTimeParts[1]);
-    }
-
-    if (Date.UTC(endYear, endMonth, endDay, endHour, endMinutes) <= Date.UTC(startYear, startMonth, startDay, startHour, startMinutes)) {
-      return 'compareddate.invalid.message';
-    }
-  },
-  submit(chatServices, message, formData, contact) {
-    if (formData.startTime === 'all-day') {
-      formData.startTime = '00:00';
-      formData.startAllDay = true;
-    }
-
-    if (formData.endTime === 'all-day') {
-      formData.endTime = '23:59';
-      formData.endAllDay = true;
-    }
-
-    return chatServices.saveEvent(eXo.chat.userSettings, formData, contact).then((response)=> {
-      if(!response.ok) {
-        return {errorCode : 'ErrorSaveEvent'};
-      }
-      return {ok : true};
-    }).catch(() => {
-      return {errorCode : 'ErrorSaveEvent'};
-    });
-  }
-}];
 export const DEFAULT_COMPOSER_APPS = [
   {
     key: 'link',
@@ -623,9 +521,6 @@ export function installExtensions(settings) {
 
   if (settings.canUploadFiles) {
     registerDefaultExtensions('composer-application', ECMS_EVENT_COMPOSER_APP);
-  }
-  if (settings.canAddEvent) {
-    registerDefaultExtensions('composer-application', CALENDAR_EVENT_COMPOSER_APP);
   }
   if (settings.canAddWiki) {
     registerDefaultExtensions('message-action', WIKI_MESSAGE_ACTIONS);

@@ -437,27 +437,6 @@ export function saveWiki(userSettings, targetFullName, content) {
   }).then(resp =>  resp.json());
 }
 
-export function saveEvent(userSettings, data, target) {
-
-  if (target.type === 's') {
-    data.users = '';
-  }
-  else if (target.type === 'u') {
-    data.users = [data.fromUser,target.user].join(',');
-  } else {
-    const users = target.participants ? target.participants.map(user => user.name) : [];
-    data.users = users.join(',');
-  }
-  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_CALENDAR_API}saveEvent`, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    },
-    credentials: 'include',
-    method: 'post',
-    body: decodeURI($.param(data))
-  });
-}
-
 export function getBaseURL() {
   const port = !window.location.port || window.location.port === DEFAULT_HTTP_PORT ? '':`:${  window.location.port}`;
   return `${window.location.protocol  }//${  window.location.hostname  }${port}`;
