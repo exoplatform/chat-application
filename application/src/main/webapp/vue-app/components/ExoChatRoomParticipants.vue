@@ -189,8 +189,8 @@ export default {
     loadRoomParticipants(contact) {
       chatServices.getOnlineUsers().then(users => {
         //Get users count and remove the current user
-        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
-        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, this.displayedParticipantsCount).then( data => {
+        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount);
+        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount).then( data => {
           this.$emit('participants-loaded', this.participantsCount);
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
