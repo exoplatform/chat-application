@@ -34,8 +34,7 @@ export default {
     };
   },
   created() {
-    //check if chat is enabled
-    console.log('*** Retrieve is enabled');
+    //check if space's chat is enabled
     chatServices.getUserSettings()
       .then(userSettings => {
         this.userSettings = userSettings;
@@ -47,7 +46,6 @@ export default {
   },
   methods: {
     enableDisableChat() {
-      console.log('*** enableDisableChat ***');
       chatServices.updateRoomEnabled(this.userSettings, this.spaceId, this.spaceChatEnabled);
     },
   }
