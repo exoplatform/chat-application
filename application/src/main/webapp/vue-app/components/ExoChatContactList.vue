@@ -41,7 +41,8 @@
             <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
             <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']" >{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
-          <div v-if="contact.unreadTotal > 0" class="unreadMessages">{{ contact.unreadTotal }}</div>
+          <div v-if="contact.unreadTotal > 0 && contact.unreadTotal <= 99" class="unreadMessages">{{ contact.unreadTotal }}</div>
+          <div v-if="contact.unreadTotal > 99" class="unreadMessages maxUnread">+99</div>
           <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" v-if="!drawerStatus" class="uiIconNotification"></i>
           <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
         </div>
@@ -109,6 +110,12 @@ export default {
      *   user: {string} contact id, if user , username else team-{CONTACT_ID} or space-{CONTACT_ID}
      * }
      */
+    unreadMessages: {
+      type: Array,
+      default: function () {
+        return [{}];
+      }
+    },
     drawerStatus: {
       type: Boolean,
       default: false
@@ -350,6 +357,7 @@ export default {
     },
     markAllAsRead() {
       chatWebSocket.setRoomMessagesAsRead();
+      this.unreadMessages.shift();
     },
     toggleFavorite(contact) {
       chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
@@ -399,11 +407,26 @@ export default {
         this.$forceUpdate();
       }
     },
+    removeObjectIfExists(array, room) {
+      const index = array.findIndex((e) => e.room === room);
+      if (index > -1) {
+        array.splice(index, 1);
+      }
+    },
+    pushObjectIfNotExists(array, object) {
+      const index = array.findIndex((e) => e.msgId === object.msgId);
+      if (index === -1) {
+        array.push(object);
+        return true;
+      } else {
+        array[index] = object;
+        return false;
+      }
+    },
     messageReceived(event) {
       const message = event.detail;
       const room = message.room;
-
-      if(!room) {
+      if (!room) {
         return;
       }
 
@@ -417,7 +440,10 @@ export default {
         foundContact.timestamp = message.ts;
         if (this.selected){
           if (this.selected.room !== foundContact.room || this.mq === 'mobile') {
-            foundContact.unreadTotal ++;
+            const msgId = message.msgId && typeof message.msgId !== 'undefined' ? message.msgId : message.data.msgId;
+            if (this.pushObjectIfNotExists(this.unreadMessages, {'msgId': msgId, 'room': room})) {
+              foundContact.unreadTotal++;
+            }
           }
         }else {
           foundContact.unreadTotal ++;
@@ -497,9 +523,10 @@ export default {
       const message = e.detail;
       if (message && message.room) {
         const contactToUpdate = this.findContact(message.room);
-        if(contactToUpdate) {
+        if (contactToUpdate) {
           contactToUpdate.unreadTotal = 0;
           contactToUpdate.hasNotSentMessages = false;
+          this.removeObjectIfExists(this.unreadMessages, message.room);
         }
       } else {
         this.contacts.forEach(contact => {

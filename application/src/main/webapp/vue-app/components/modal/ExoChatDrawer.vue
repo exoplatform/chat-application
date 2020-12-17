@@ -3,7 +3,8 @@
     <v-app v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
       <v-btn :class="statusClass" class="dropdown-toggle" icon @click="openDrawer">
         <v-icon class="my-auto uiIconStatus uiNotifChatIcon"></v-icon>
-        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
       </v-btn>
       <exo-drawer ref="chatDrawer"
                   class="chatDrawer"
