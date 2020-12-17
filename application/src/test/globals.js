@@ -1,8 +1,6 @@
 import $ from 'jquery';
 import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret';
 
-global.extensionRegistry = require('./libs/extensionRegistry.js');
-
 global.$ = $;
 addCaretJQueryExtension($);
 
