@@ -6,6 +6,12 @@ import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 describe('ExoChatContactList.test.js', () => {
   const cmp = shallow(ExoChatContactList, {
     propsData: {
+      unreadMessages: [
+        {
+          'msgId':'5b1a7a4067c9a30c23b52654',
+          'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f'
+        }
+      ],
       loadingContacts : false,
       selected: {
         'fullName':'Test User',
@@ -323,7 +329,7 @@ describe('ExoChatContactList.test.js', () => {
     expect(contact.unreadTotal).toBe(2);
 
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_READ, {detail: {
-      room:'be95776cd7c3950f190f0e21ea1e4848fec3874f'
+      room:'be95776cd7c3950f190f0e21ea1e4848fec3874f',
     }}));
 
     contact = cmp.vm.findContact('be95776cd7c3950f190f0e21ea1e4848fec3874f');
@@ -334,17 +340,19 @@ describe('ExoChatContactList.test.js', () => {
     let contact = cmp.vm.findContact('be95776cd7c3950f190f0e21ea1e4848fec3874f');
     expect(contact.unreadTotal).toBe(0);
 
-    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_RECEIVED, {detail: {
-      'msg':'Test Message for user',
-      'isSystem':false,
-      'options':{},
-      'msgId':'5b1a7a4067c9a30c23b52654',
-      'fullname':'Test User',
-      'type':null,
-      'user':'testuser',
-      'timestamp':1528461888213,
-      'room': 'be95776cd7c3950f190f0e21ea1e4848fec3874f'
-    }}));
+    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_RECEIVED, {
+      detail: {
+        data: {
+          'msg':'Test',
+          'msgId': '5b1a7a4067c9a30c23b52654',
+          'room': 'be95776cd7c3950f190f0e21ea1e4848fec3874f'
+        },
+        'event': 'message-sent',
+        'sender': 'root',
+        'timestamp': 1528461888213,
+        'room': 'be95776cd7c3950f190f0e21ea1e4848fec3874f'
+      },
+    }));
 
     contact = cmp.vm.findContact('be95776cd7c3950f190f0e21ea1e4848fec3874f');
     expect(contact.unreadTotal).toBe(1);
