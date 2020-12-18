@@ -16,7 +16,6 @@ import ExoDropdownSelect from './ExoDropdownSelect.vue';
 import ExoChatModal from './modal/ExoChatModal.vue';
 import ExoChatDrawer from './modal/ExoChatDrawer.vue';
 import ExoContentEditable from './modal/ExoContentEditable.vue';
-import SpaceChatSetting from './../components/external/SpaceChatSetting.vue';
 
 const components = {
   'exo-chat-app': ExoChatApp,
@@ -35,7 +34,6 @@ const components = {
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
   'exo-content-editable': ExoContentEditable,
   'exo-chat-drawer':ExoChatDrawer,
-  'space-chat-setting': SpaceChatSetting,
 };
 
 for(const key in components) {

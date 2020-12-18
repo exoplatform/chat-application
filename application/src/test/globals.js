@@ -63,7 +63,3 @@ const extraAction = {
   type: 't',
   class: 'uiIconTest'
 };
-
-extensionRegistry.registerExtension('chat', 'composer-application', extraApplication);
-extensionRegistry.registerExtension('chat', 'message-action', extraMessage);
-extensionRegistry.registerExtension('chat', 'room-action', extraAction);

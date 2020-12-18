@@ -496,6 +496,65 @@ export function registerExternalExtensions(chatTitle) {
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
 }
 
+export function registerExternalComponents(componentName) {
+  const externalComponentOptions = {
+    name: componentName,
+    componentImpl: {
+      template: `
+        <v-card id="FromChat" class="border-radius" flat>
+          <v-list>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="title text-color">
+                  {{ $t('SpaceSettings.Chat') }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ 'Enable space chat' }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="spaceChatEnabled" @change="enableDisableChat"></v-switch>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      `,
+      props: {
+        spaceId: {
+          type: String,
+          default: ''
+        }
+      },
+      data() {
+        return {
+          spaceChatEnabled: false,
+        };
+      },
+      created() {
+        //check if space's chat is enabled
+        chatServices.getUserSettings()
+          .then(userSettings => {
+            this.userSettings = userSettings;
+            chatServices.isRoomEnabled(this.userSettings, this.spaceId)
+              .then(value => {
+                this.spaceChatEnabled = value === 'true';
+              });
+          });
+      },
+      methods: {
+        enableDisableChat() {
+          chatServices.updateRoomEnabled(this.userSettings, this.spaceId, this.spaceChatEnabled);
+        },
+      }
+      
+    }
+  };
+
+  extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
+
+  document.dispatchEvent(new CustomEvent('chat-external-updated', { detail: externalComponentOptions}));
+}
+
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
     extensionRegistry.registerExtension('chat', extensionType, extension);
