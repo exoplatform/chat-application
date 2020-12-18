@@ -508,10 +508,10 @@ export function registerExternalComponents(componentName) {
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="title text-color">
-                  {{ $t('SpaceSettings.Chat') }}
+                  {{ $t('exoplatform.chat.app.title') }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ 'Enable space chat' }}
+                  {{ $t('exoplatform.chat.spaceSettings.external.component.description') }}
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>

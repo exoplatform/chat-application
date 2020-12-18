@@ -556,7 +556,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           coll.save(doc, WriteConcern.UNACKNOWLEDGED);
         }
       } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        LOG.severe(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
