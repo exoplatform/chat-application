@@ -491,7 +491,9 @@ export function registerExternalExtensions(chatTitle) {
     },
   };
 
-  extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
+  if (extensionRegistry) {
+    extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
+  }
 
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
 }
@@ -550,19 +552,23 @@ export function registerExternalComponents(componentName) {
     }
   };
 
-  extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
+  if (extensionRegistry) {
+    extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
+  }
 
   document.dispatchEvent(new CustomEvent('chat-external-updated', { detail: externalComponentOptions}));
 }
 
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
-    extensionRegistry.registerExtension('chat', extensionType, extension);
+    if (extensionRegistry) {
+      extensionRegistry.registerExtension('chat', extensionType, extension);
+    }
   }
 }
 
 function getExtensionsByType(type) {
-  return extensionRegistry.loadExtensions('chat', type);
+  return extensionRegistry ? extensionRegistry.loadExtensions('chat', type) : [];
 }
 
 initTiptip();

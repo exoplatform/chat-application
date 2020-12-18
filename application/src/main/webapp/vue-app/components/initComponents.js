@@ -33,7 +33,7 @@ const components = {
   'exo-chat-message-composer': ExoChatMessageComposer,
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
   'exo-content-editable': ExoContentEditable,
-  'exo-chat-drawer':ExoChatDrawer,
+  'exo-chat-drawer':ExoChatDrawer
 };
 
 for(const key in components) {

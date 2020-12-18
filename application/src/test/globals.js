@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret';
 
+global.extensionRegistry = require('./libs/extensionRegistry.js');
+
 global.$ = $;
 addCaretJQueryExtension($);
 
@@ -63,3 +65,7 @@ const extraAction = {
   type: 't',
   class: 'uiIconTest'
 };
+
+extensionRegistry.registerExtension('chat', 'composer-application', extraApplication);
+extensionRegistry.registerExtension('chat', 'message-action', extraMessage);
+extensionRegistry.registerExtension('chat', 'room-action', extraAction);
