@@ -1002,7 +1002,10 @@ public class ChatServer
 
     List<String> onlineUserList = StringUtils.isNotBlank(onlineUsers) ? Arrays.asList(onlineUsers.split(",")) : null;
     List<UserBean> users = userService.getUsers(room, onlineUserList, filter, limit_);
-
+    if(StringUtils.isNotBlank(user)) {
+      UserBean currentUser = userService.getUser(user);
+      users.remove(currentUser);
+    }
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
     return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
