@@ -727,7 +727,7 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   public List<UserBean> getUsers(String roomId, String filter, int limit) {
-    return getUsers(roomId, null, filter, limit);
+    return getUsers(roomId, null, filter, limit, false);
   }
 
   /**
@@ -738,7 +738,7 @@ public class UserMongoDataStorage implements UserDataStorage {
    * @param limit the limit of users to load
    * @return
    */
-  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit) {
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers) {
     if (roomId == null && filter == null) {
       throw new IllegalArgumentException();
     }
@@ -799,36 +799,39 @@ public class UserMongoDataStorage implements UserDataStorage {
         users.add(userBean);
       }
     }
-    int usersLeft = users != null ? limit - users.size() : -1;
     users = users == null ? new ArrayList<>() : users;
 
-    if(usersLeft > 0 || (limit >= 0 && users.isEmpty())) {
-      usersLeft = usersLeft > 0 ? usersLeft : limit;
-      BasicDBObject escapeOnlineUsers;
-      if(onlineUsers != null && !onlineUsers.isEmpty()) {
-        escapeOnlineUsers = new BasicDBObject("user", new BasicDBObject("$nin", onlineUsers));
-        andList.add(escapeOnlineUsers);
-      }
-      DBObject query = new BasicDBObject("$and", andList);
-      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-      DBCursor cursor = coll.find(query).limit(usersLeft);
-      while (cursor.hasNext()) {
-        DBObject doc = cursor.next();
-        UserBean userBean = new UserBean();
-        userBean.setName(doc.get("user").toString());
-        Object prop = doc.get("fullname");
-        userBean.setFullname((prop != null) ? prop.toString() : "");
-        prop = doc.get("email");
-        userBean.setEmail((prop != null) ? prop.toString() : "");
-        prop = doc.get("status");
-        userBean.setStatus((prop != null) ? prop.toString() : "");
-        if (doc.get("isEnabled") != null) {
-          userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+    if(!onlyOnlineUsers) {
+      int usersLeft = limit - users.size();
+
+      if (usersLeft >= 0 || (limit >= 0 && users.isEmpty())) {
+        usersLeft = usersLeft > 0 ? usersLeft : limit;
+        BasicDBObject escapeOnlineUsers;
+        if (onlineUsers != null && !onlineUsers.isEmpty()) {
+          escapeOnlineUsers = new BasicDBObject("user", new BasicDBObject("$nin", onlineUsers));
+          andList.add(escapeOnlineUsers);
         }
-        if (doc.get("isDeleted") != null) {
-          userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+        DBObject query = new BasicDBObject("$and", andList);
+        DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+        DBCursor cursor = coll.find(query).limit(usersLeft);
+        while (cursor.hasNext()) {
+          DBObject doc = cursor.next();
+          UserBean userBean = new UserBean();
+          userBean.setName(doc.get("user").toString());
+          Object prop = doc.get("fullname");
+          userBean.setFullname((prop != null) ? prop.toString() : "");
+          prop = doc.get("email");
+          userBean.setEmail((prop != null) ? prop.toString() : "");
+          prop = doc.get("status");
+          userBean.setStatus((prop != null) ? prop.toString() : "");
+          if (doc.get("isEnabled") != null) {
+            userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+          }
+          if (doc.get("isDeleted") != null) {
+            userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+          }
+          users.add(userBean);
         }
-        users.add(userBean);
       }
     }
 
