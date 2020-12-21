@@ -147,9 +147,11 @@ export default {
             users.forEach(user => {
               if(user.isEnabled === 'null') {
                 chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
+                  chatServices.setExternal(eXo.chat.userSettings, user.name , userState.isExternal);
                   user.isEnabled = userState.isEnabled;
                   user.isDeleted = userState.isDeleted;
+                  user.isExternal = userState.isExternal;
                 });
               }
             });

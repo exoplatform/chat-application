@@ -70,6 +70,11 @@ export default {
       type: Boolean,
       default: true
     },
+    /** For contact status: (Disabled or Deleted) */
+    isExternal: {
+      type: Boolean,
+      default: false
+    },
     /** Contact type
      * u: user
      * t: room
@@ -111,6 +116,7 @@ export default {
         inactive: this.$t('exoplatform.chat.inactive'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
+        external: this.$t('exoplatform.chat.external'),
         offline: this.$t('exoplatform.chat.button.offline')
       }
     };
@@ -143,7 +149,10 @@ export default {
       }
     },
     escapedName() {
-      const name = escapeHtml(this.name); 
+      let name = escapeHtml(this.name);
+      if(this.isExternal) {
+        name = name.concat(' ').concat('(').concat(this.statusMap.external).concat(')');
+      }
       if(!this.isEnabled && this.list === true) {
         return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');
       } else {

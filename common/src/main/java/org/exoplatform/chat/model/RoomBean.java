@@ -38,6 +38,7 @@ public class RoomBean implements Comparable<RoomBean>
   String type = null;
   boolean meetingStarted = false;
   String startTime = "";
+  String external = "";
   boolean isFavorite = false;
   String[] admins = null;
   long timestamp = -1;
@@ -97,6 +98,16 @@ public class RoomBean implements Comparable<RoomBean>
 
   public void setEnabledUser(Boolean enabledUser) {
     this.enabledUser = enabledUser;
+  }
+
+  public String isExternal()
+  {
+    return external;
+  }
+
+  public void setExternal(String external)
+  {
+    this.external = external;
   }
 
   public String getFullName() {
@@ -176,6 +187,7 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("fullName", this.getFullName());
     obj.put("room", this.getRoom());
     obj.put("status", this.getStatus());
+    obj.put("isExternal", this.isExternal());
     obj.put("user", this.getUser());
     obj.put("timestamp", this.getTimestamp());
     obj.put("unreadTotal", this.getUnreadTotal());

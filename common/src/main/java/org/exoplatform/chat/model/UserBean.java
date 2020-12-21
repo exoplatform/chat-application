@@ -23,7 +23,7 @@ import java.util.List;
 
 public class UserBean
 {
-  private String name, fullname="", email="", status;
+  private String name, fullname="", email="", status, external;
   private List<String> favorites;
   private Boolean enabled, deleted;
 
@@ -65,6 +65,16 @@ public class UserBean
   public void setStatus(String status)
   {
     this.status = status;
+  }
+
+  public String isExternal()
+  {
+    return external;
+  }
+
+  public void setExternal(String external)
+  {
+    this.external = external;
   }
 
   public List<String> getFavorites() {
@@ -119,6 +129,7 @@ public class UserBean
     sb.append("\"fullname\": \"" + this.getFullname() + "\",");
     sb.append("\"isEnabled\": \"" + this.isEnabled() + "\",");
     sb.append("\"isDeleted\": \"" + this.isDeleted() + "\"");
+    sb.append("\"isExternal\": \"" + this.isExternal() + "\"");
 
     sb.append("}");
 

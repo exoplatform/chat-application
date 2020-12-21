@@ -177,6 +177,19 @@ public class ChatTools
   }
 
   @Resource
+  @Route("/setExternalUser")
+  public Response.Content setExternalUser(String username, String external, String passphrase, String dbName)
+  {
+    if (!checkPassphrase(passphrase)) {
+      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+    }
+
+    userService.setExternalUser(username, external);
+
+    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+  }
+
+  @Resource
   @Route("/setSpaces")
   public Response.Content setSpaces(String username, String spaces, String passphrase)
   {

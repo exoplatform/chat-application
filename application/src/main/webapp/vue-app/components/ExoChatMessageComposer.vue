@@ -1,5 +1,5 @@
 <template>
-  <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
+  <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null') && contact.isExternalUser === 'true'" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
     <div v-if="!miniChat">
       <div v-show="!appsClosed" class="apps-container">
         <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
@@ -88,7 +88,7 @@ export default {
   },
   updated() {
     if (this.contact) {
-      if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null')) { // set autofocus only for enabled contact on desktop
+      if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null') && this.contact.isExternalUser === 'true') { // set autofocus only for enabled contact on desktop
         this.$nextTick(() => {
           this.$refs.messageComposerArea.focus();
           this.composerApplications.forEach(application => {

@@ -37,7 +37,7 @@
     <div id="chat-users" class="contactList isList">
       <transition-group name="chat-contact-list">
         <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contactTooltip(contact)" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
-          <exo-chat-contact :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
+          <exo-chat-contact :is-external="contact.isExternalUser === 'true'" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
             <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']" >{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
@@ -318,9 +318,12 @@ export default {
       }
       if(contact.type && contact.type === 'u' && contact.isEnabledUser === 'null') {
         chatServices.getUserState(contact.user).then(userState => {
-          chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled);
+          chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled, userState.isExternal);
+          chatServices.setExternal(eXo.chat.userSettings, contact.user, userState.isExternal);
           this.selected.isEnabledUser = !userState.isDeleted && userState.isEnabled ? 'true' : 'false';
+          this.selected.isExternalUser = userState.isExternal === 'true' ? 'true' : 'false';
           contact.isEnabledUser = this.selected.isEnabledUser;
+          contact.isExternalUser = this.selected.isExternalUser;
         });
       }
       eXo.chat.selectedContact = contact;

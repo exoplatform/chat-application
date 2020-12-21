@@ -147,8 +147,15 @@ export function getUserState(user) {
     .then(resp => resp.json());
 }
 
-export function updateUser(userSettings, targetUser, isDeleted, isEnabled) {
-  return fetch(`${chatConstants.CHAT_SERVER_API}updateUser?user=${userSettings.username}&targetUser=${targetUser}&isDeleted=${isDeleted}&isEnabled=${isEnabled}`, {
+export function updateUser(userSettings, targetUser, isDeleted, isEnabled, isExternal) {
+  return fetch(`${chatConstants.CHAT_SERVER_API}updateUser?user=${userSettings.username}&targetUser=${targetUser}&isDeleted=${isDeleted}&isEnabled=${isEnabled}&isExternal=${isExternal}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.text());
+}
+
+export function setExternal(userSettings, targetUser, isExternal) {
+  return fetch(`${chatConstants.CHAT_SERVER_API}isExternal?user=${userSettings.username}&targetUser=${targetUser}&isExternal=${isExternal}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.text());

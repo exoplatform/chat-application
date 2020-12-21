@@ -338,6 +338,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("fullname", fullname);
       doc.put("isEnabled", Boolean.TRUE.toString());
       doc.put("isDeleted", Boolean.FALSE.toString());
+      doc.put("isExternal", Boolean.FALSE.toString());
       coll.insert(doc);
     }
     else
@@ -364,6 +365,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("email", email);
       doc.put("isEnabled", Boolean.TRUE.toString());
       doc.put("isDeleted", Boolean.FALSE.toString());
+      doc.put("isExternal", Boolean.FALSE.toString());
       coll.insert(doc);
     }
     else
@@ -401,6 +403,20 @@ public class UserMongoDataStorage implements UserDataStorage {
       DBObject doc = cursor.next();
       doc.put("isDeleted", Boolean.FALSE.toString());
       doc.put("isEnabled", isEnabled);
+      coll.save(doc);
+    }
+  }
+
+  @Override
+  public void setExternalUser(String user, String isExternal)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      doc.put("isExternal", isExternal);
       coll.save(doc);
     }
   }
@@ -769,6 +785,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       userBean.setEmail((prop != null) ? prop.toString() : "");
       prop = doc.get("status");
       userBean.setStatus((prop != null) ? prop.toString() : "");
+      if (doc.get("isExternal") != null) {
+        userBean.setExternal(doc.get("isExternal").toString());
+      }
       if (doc.get("isEnabled") != null) {
         userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
       }
@@ -915,6 +934,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       }
       if (doc.get("isDeleted") != null) {
         userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+      }
+      if (doc.get("isExternal") != null) {
+        userBean.setExternal(doc.get("isExternal").toString());
       }
       if (withFavorites)
       {
