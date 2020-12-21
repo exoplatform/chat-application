@@ -185,8 +185,8 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
 }
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
-  if(!limit) {
-    limit = 0;
+  if(!limit && isNaN(limit)) {
+    limit = DEFAULT_USER_LIMIT;
   }
   onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true ? true : false;
 

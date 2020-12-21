@@ -802,9 +802,9 @@ public class UserMongoDataStorage implements UserDataStorage {
     users = users == null ? new ArrayList<>() : users;
 
     if(!onlyOnlineUsers) {
-      int usersLeft = limit - users.size();
+      int usersLeft = limit > 0 ? limit - users.size() : -1;
 
-      if (usersLeft >= 0 || (limit >= 0 && users.isEmpty())) {
+      if (usersLeft > 0 || (limit >= 0 && users.isEmpty())) {
         usersLeft = usersLeft > 0 ? usersLeft : limit;
         BasicDBObject escapeOnlineUsers;
         if (onlineUsers != null && !onlineUsers.isEmpty()) {
