@@ -188,7 +188,7 @@ export function getRoomParticipants(userSettings, room, onlineUsers, limit, onli
   if(!limit && isNaN(limit)) {
     limit = DEFAULT_USER_LIMIT;
   }
-  onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true ? true : false;
+  onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true;
 
   if(!onlineUsers) {
     onlineUsers = '';
