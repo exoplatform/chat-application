@@ -22,7 +22,7 @@
         </exo-dropdown-select>
       </div>
       <div ref="roomParticipantsList" class="room-participants-list isList">
-        <div v-for="contact in filteredParticipant" :key="contact.name" class="contact-list-item">
+        <div v-for="contact in participants" :key="contact.name" class="contact-list-item">
           <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
@@ -92,27 +92,15 @@ export default {
        */
       participants: [],
       participantsCount: 0,
-      displayedParticipantsCount: {
-        type: Number,
-        default: 0
-      }
+      displayedParticipantsCount: 0
     };
   },
   computed: {
     hiddenParticipantsCount() {
       return this.participantsCount - this.displayedParticipantsCount;
     },
-    filteredParticipant() {
-      let listParticipants = [];
-      const offline = ['invisible', 'offline'];
-      listParticipants = this.participants.filter(participant => {
-        return (this.participantFilter === 'All' ||  offline.indexOf(participant.status) < 0) && participant.name !== eXo.chat.userSettings.username;
-      });
-      return listParticipants.sort((p1, p2) => {
-        if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
-          return 1;
-        }
-      });
+    onlineUsersOnly() {
+      return this.participantFilter !== 'All';
     },
     participantFilterClass() {
       return this.participantFilter === 'All';
@@ -147,6 +135,8 @@ export default {
     selectParticipantFilter(filter) {
       chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_STATUS_FILTER, filter);
       this.participantFilter = filter;
+      this.calculateDisplayedContacts();
+      this.loadRoomParticipants(this.contact, this.onlineUsersOnly);
     },
     toggleParticipantFilter() {
       if (this.participantFilter === 'All') {
@@ -166,12 +156,18 @@ export default {
       if (roomIndex >= 0) {
         this.participants.splice(roomIndex, 1);
       }
-      this.loadRoomParticipants(this.contact.room);
+      this.loadRoomParticipants(this.contact, this.onlineUsersOnly);
     },
     contactChanged(e) {
       const contact = e.detail;
       this.contact = contact;
       this.participants = [];
+      this.calculateDisplayedContacts();
+      if (contact !== null && contact.type && contact.type !== 'u') {
+        this.loadRoomParticipants(contact, this.onlineUsersOnly);
+      }
+    },
+    calculateDisplayedContacts() {
       const limitToLoad = 20;
       if(this.$refs.roomParticipants) {
         const headerHeight = 70;
@@ -182,15 +178,12 @@ export default {
         this.displayedParticipantsCount = Math.round(viewableParticipants);
       }
       this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
-      if (contact !== null && contact.type && contact.type !== 'u') {
-        this.loadRoomParticipants(contact);
-      }
     },
-    loadRoomParticipants(contact) {
+    loadRoomParticipants(contact, onlineUsersOnly) {
       chatServices.getOnlineUsers().then(users => {
         //Get users count and remove the current user
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
-        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount).then( data => {
+        chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount, onlineUsersOnly).then( data => {
           this.$emit('participants-loaded', this.participantsCount);
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
@@ -206,6 +199,13 @@ export default {
               user.status = 'offline';
             }
             return user;
+          });
+          const offline = ['invisible', 'offline'];
+          this.displayedParticipantsCount = this.participants.length;
+          return this.participants.sort((p1, p2) => {
+            if (p1.status === 'away' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'available' || p1.status === 'donotdisturb' && p2.status === 'away' || offline.indexOf(p1.status) > -1 && offline.indexOf(p2.status) < 0) {
+              return 1;
+            }
           });
         });
       });

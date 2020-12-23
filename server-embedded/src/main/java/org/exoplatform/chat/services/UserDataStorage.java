@@ -92,7 +92,7 @@ public interface UserDataStorage {
 
   List<UserBean> getUsers(String roomId, String filter, int limit);
 
-  List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit);
+  List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers);
 
   Long getUsersCount(String roomId, String filter);
 
