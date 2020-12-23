@@ -35,6 +35,7 @@ public class RoomBean implements Comparable<RoomBean>
   int unreadTotal = 0;
   boolean isAvailableUser = false;
   Boolean enabledUser;
+  boolean enabledRoom = true;
   String status = UserService.STATUS_INVISIBLE;
   String type = null;
   boolean meetingStarted = false;
@@ -182,6 +183,14 @@ public class RoomBean implements Comparable<RoomBean>
     this.startTime = startTime;
   }
 
+  public boolean isEnabledRoom() {
+    return enabledRoom;
+  }
+
+  public void setEnabledRoom(boolean enabledRoom) {
+    this.enabledRoom = enabledRoom;
+  }
+
   @SuppressWarnings("unchecked")
   public JSONObject toJSONObject() {
     JSONObject obj = new JSONObject();
@@ -194,6 +203,7 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("isActive", String.valueOf(this.isActive()));
     obj.put("isEnabledUser", String.valueOf(this.enabledUser));
     obj.put("isExternal", String.valueOf(this.isExternal));
+    obj.put("isEnabledRoom", String.valueOf(this.enabledRoom));
     obj.put("isFavorite", this.isFavorite());
     obj.put("type", this.getType());
     obj.put("meetingStarted", this.isMeetingStarted());
