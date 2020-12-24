@@ -23,7 +23,7 @@
       </div>
       <div class="room-participants-list isList">
         <div v-for="contact in filteredParticipant" :key="contact.name" class="contact-list-item">
-          <exo-chat-contact v-tiptip="contact.name" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
+          <exo-chat-contact v-tiptip="contact.name" :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
         </div>
       </div>
     </div>
@@ -173,9 +173,10 @@ export default {
               // if user attributes deleted/enabled are null update the user.
               if(user.isEnabled === 'null') {
                 chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
                   user.isEnabled = userState.isEnabled;
                   user.isDeleted = userState.isDeleted;
+                  user.isExternal = userState.isExternal;
                 });
               }
               // if user is not online, set its status as offline

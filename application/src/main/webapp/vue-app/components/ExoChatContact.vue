@@ -70,6 +70,10 @@ export default {
       type: Boolean,
       default: true
     },
+    isExternal: {
+      type: Boolean,
+      default: false
+    },
     /** Contact type
      * u: user
      * t: room
@@ -109,6 +113,7 @@ export default {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
         inactive: this.$t('exoplatform.chat.inactive'),
+        external: this.$t('exoplatform.chat.external'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
@@ -143,7 +148,10 @@ export default {
       }
     },
     escapedName() {
-      const name = escapeHtml(this.name); 
+      let name = escapeHtml(this.name);
+      if(this.isExternal) {
+        name = name.concat(' ').concat('(').concat(this.statusMap.external).concat(')');
+      }
       if(!this.isEnabled && this.list === true) {
         return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');
       } else {

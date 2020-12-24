@@ -655,6 +655,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         if (availableUsers.containsKey(targetUser)) {
           UserBean targetUserBean = availableUsers.remove(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setExternal(targetUserBean.isExternal());
           roomBean.setStatus(targetUserBean.getStatus());
           roomBean.setAvailableUser(true);
           if (roomBean.getUnreadTotal() > 0)
@@ -662,6 +663,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         } else {
           UserBean targetUserBean = userDataStorage.getUser(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setExternal(targetUserBean.isExternal());
           roomBean.setAvailableUser(false);
 
           if (!withOffline) {
@@ -685,6 +687,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           RoomBean roomBean = new RoomBean();
           roomBean.setUser(availableUser.getName());
           roomBean.setFullName(availableUser.getFullname());
+          roomBean.setExternal(availableUser.isExternal());
           roomBean.setStatus(availableUser.getStatus());
           roomBean.setAvailableUser(true);
           roomBean.setType(ChatService.TYPE_ROOM_USER);
@@ -724,6 +727,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setUser(TEAM_PREFIX + team.getRoom());
       room.setRoom(team.getRoom());
       room.setFullName(team.getFullName());
+      room.setExternal(team.isExternal());
       room.setStatus(UserService.STATUS_TEAM);
       room.setTimestamp(team.getTimestamp());
       room.setAvailableUser(true);

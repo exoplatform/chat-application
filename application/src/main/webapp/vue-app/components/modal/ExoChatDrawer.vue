@@ -93,6 +93,7 @@ export default {
       isOnline : true,
       searchTerm:'',
       totalUnreadMsg:0,
+      external: this.$t('exoplatform.chat.external'),
       titleActionComponents: miniChatTitleActionComponents
     };
   },
@@ -134,7 +135,8 @@ export default {
       if (!this.selectedContact) {
         return this.userSettings.username;
       } else {
-        return this.selectedContact.fullName;
+        const fullName = this.selectedContact.fullName;
+        return this.selectedContact.isExternal === 'true' ? fullName.concat(' ').concat('(').concat(this.external).concat(')') : fullName;
       }
     }
   },

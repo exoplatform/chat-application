@@ -21,7 +21,7 @@
           <i slot="toggle" class="uiIconArrowDownMini"></i>
           <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
         </exo-dropdown-select>
-        <div v-if="!external" class="room-actions">
+        <div v-if="!externalUser" class="room-actions">
           <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
             <i class="uiIconFilter"></i>
           </div>
@@ -37,7 +37,7 @@
     <div id="chat-users" class="contactList isList">
       <transition-group name="chat-contact-list">
         <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contactTooltip(contact)" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
-          <exo-chat-contact :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
+          <exo-chat-contact :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
             <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']" >{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
@@ -172,7 +172,7 @@ export default {
       typeFilterMobile: null,
       allAsReadFilterMobile: false,
       contactSearchMobile: false,
-      external: false,
+      externalUser: false,
       createRoomModal: false,
       searchTerm: '',
       newRoom: {
@@ -183,7 +183,8 @@ export default {
       contactMenu: null,
       contactMenuClosed: true,
       filterMenuClosed: true,
-      inactive: this.$t('exoplatform.chat.inactive')
+      inactive: this.$t('exoplatform.chat.inactive'),
+      external: this.$t('exoplatform.chat.external')
     };
   },
   computed: {
@@ -280,7 +281,7 @@ export default {
     this.initFilterMobile();
     chatServices.getUserInfo().then(
       (data) => {
-        this.external = data && data.external === 'true';
+        this.externalUser = data && data.external === 'true';
       }
     );
   },
@@ -316,11 +317,12 @@ export default {
       if(!contact && !contact.room && contact.user) {
         contact = contact.user;
       }
-      if(contact.type && contact.type === 'u' && contact.isEnabledUser === 'null') {
+      if(contact.type && contact.type === 'u' && contact.isEnabledUser === 'null'&& contact.isExternal === '') {
         chatServices.getUserState(contact.user).then(userState => {
-          chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled);
+          chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled, userState.isExternal);
           this.selected.isEnabledUser = !userState.isDeleted && userState.isEnabled ? 'true' : 'false';
           contact.isEnabledUser = this.selected.isEnabledUser;
+          contact.isExternal = userState.isExternal;
         });
       }
       eXo.chat.selectedContact = contact;
@@ -540,7 +542,11 @@ export default {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
     },
     contactTooltip(contact) {
-      return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? contact.fullName : contact.fullName.concat(' ').concat('(').concat(this.inactive).concat(')');
+      let fullName = contact.fullName;
+      if(contact.isExternal === 'true') {
+        fullName = fullName.concat(' ').concat('(').concat(this.external).concat(')');
+      }
+      return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? fullName : contact.fullName.concat(' ').concat('(').concat(this.inactive).concat(')');
     },
     getLastMessage(message, contactType) {
       if (message) {

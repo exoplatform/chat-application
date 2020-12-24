@@ -97,6 +97,11 @@ public class ServerBootstrap {
             "username=" + username + "&enabled=" + enabled);
   }
 
+  public static void setExternalUser(String username, String external) {
+    postServer("setExternalUser",
+               "username=" + username + "&external=" + external);
+  }
+
   public static String getToken(String username) {
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
     String in = username + passphrase;

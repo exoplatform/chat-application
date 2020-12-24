@@ -136,18 +136,33 @@ public class ChatServer
 
   @Resource
   @Route("/updateUser")
-  public Response.Content updateUser(String user, String token, String targetUser, String isDeleted, String isEnabled)
+  public Response.Content updateUser(String user, String token, String targetUser, String isDeleted, String isEnabled, String isExternal)
   {
     if (!tokenService.hasUserWithToken(user, token))
     {
       return Response.notFound("Petit malin !");
     }
+    userService.setExternalUser(targetUser, isExternal);
     if (Boolean.valueOf(isDeleted)) {
       userService.deleteUser(targetUser);
     } else {
       userService.setEnabledUser(targetUser, Boolean.valueOf(isEnabled));
     }
     
+    return Response.ok("Updated!");
+  }
+
+  @Resource
+  @Route("/setExternal")
+  public Response.Content setExternal(String user, String targetUser, String token, String isExternal)
+  {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    userService.setExternalUser(targetUser, isExternal);
+
     return Response.ok("Updated!");
   }
 
