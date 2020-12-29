@@ -1,0 +1,1 @@
+<%=_ctx.appRes("exoplatform.chat.MentionPlugin", USER, ROOM_NAME)%>

@@ -85,5 +85,16 @@
                 </value-param>
             </init-params>
         </component-plugin>
+        <component-plugin>
+            <name>push.channel.chat.template</name>
+            <set-method>registerTemplateProvider</set-method>
+            <type>org.exoplatform.addons.chat.notification.provider.PushTemplateProvider</type>
+            <init-params>
+                <value-param>
+                    <name>channel-id</name>
+                    <value>PUSH_CHANNEL</value>
+                </value-param>
+            </init-params>
+        </component-plugin>
     </external-component-plugins>
 </configuration>
