@@ -35,10 +35,18 @@ describe('ExoChatRoomParticipants.test.js', () => {
       name: 'userc',
       fullname: 'User C',
       status: 'offline'
+    }
+  ];
+
+  const onlineParticipants = [
+    {
+      name: 'usera',
+      fullname: 'User A',
+      status: 'available'
     },
     {
-      name: 'root',
-      fullname: 'Root Root',
+      name: 'userb',
+      fullname: 'User B',
       status: 'available'
     }
   ];
@@ -95,7 +103,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
       attachToDocument: true
     });
 
-    roomParticipant.setData({contact: room, participants: participants});
+    roomParticipant.setData({contact: room, participants: participants, participantsCount: participants.length});
   });
 
   it('room participants should be displayed only for teams and spaces', () => {
@@ -120,7 +128,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
     expect(roomParticipant.find('.room-participants').classes()).toContain('collapsed');
   });
 
-  it('room participants should be extended when exo-chat-setting-showParticipants-requested event triggred', () => {
+  it('room participants should be extended when exo-chat-setting-showParticipants-requested event triggered', () => {
     roomParticipant.trigger(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS);
     expect(roomParticipant.find('.room-participants').classes()).not.toContain('collapsed');
   });
@@ -147,7 +155,8 @@ describe('ExoChatRoomParticipants.test.js', () => {
   });
 
   it('2 displayed participants with online filter', () => {
-    // change filter to online
+    // change filter to online, participants and participantsCount should be changed
+    roomParticipant.setData({participants: onlineParticipants, participantsCount: onlineParticipants.length});
     roomParticipant.find('.room-participants-filter .actionIcon').trigger('click');
     expect(roomParticipant.findAll('.chat-contact')).toHaveLength(2);
   });

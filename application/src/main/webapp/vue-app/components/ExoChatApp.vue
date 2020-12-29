@@ -14,7 +14,7 @@
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
       <div class="room-content">
         <exo-chat-message-list :contact="selectedContact" :user-settings="userSettings" :is-opened-contact-apps="contactOpened"></exo-chat-message-list>
-        <exo-chat-room-participants :contact="selectedContact" @particpants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></exo-chat-room-participants> 
+        <exo-chat-room-participants :contact="selectedContact" @participants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></exo-chat-room-participants>
       </div>
     </div>
     <div v-if="mq==='mobile'" class="chat-side-menu">
@@ -175,8 +175,8 @@ export default {
         }
         this.selectedContact = selectedContact;
         this.contactOpened = false;
-        chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
-          this.selectedContact.participants = data.users;
+        chatServices.getRoomParticipantsCount(eXo.chat.userSettings, selectedContact).then( data => {
+          this.selectedContact.participantsCount = data.usersCount;
           document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
         });
       }
