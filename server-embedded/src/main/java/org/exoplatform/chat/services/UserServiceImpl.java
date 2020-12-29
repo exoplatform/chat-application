@@ -196,6 +196,10 @@ public class UserServiceImpl implements UserService {
     return userStorage.getUsers(roomId, filter, limit);
   }
 
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers) {
+    return userStorage.getUsers(roomId, onlineUsers, filter, limit, onlyOnlineUsers);
+  }
+
   public String setStatus(String user, String status) {
     return userStorage.setStatus(user, status);
   }
@@ -232,5 +236,10 @@ public class UserServiceImpl implements UserService {
 
   public int getNumberOfUsers() {
     return userStorage.getNumberOfUsers();
+  }
+
+  @Override
+  public long getUsersCount(String room, String filter) {
+    return userStorage.getUsersCount(room, filter);
   }
 }
