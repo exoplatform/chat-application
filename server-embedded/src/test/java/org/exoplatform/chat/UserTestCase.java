@@ -194,6 +194,7 @@ public class UserTestCase extends AbstractChatTestCase
 
     ServiceBootstrap.getUserService().addUserFullName(username, "Benjamin Paillereau");
     ServiceBootstrap.getUserService().addUserEmail(username, "bpaillereau@exoplatform.com");
+    ServiceBootstrap.getUserService().setEnabledUser(username, true);
 
     String token = ServiceBootstrap.getTokenService().getToken("test1");
     ServiceBootstrap.getTokenService().addUser("test1", token);
@@ -217,6 +218,9 @@ public class UserTestCase extends AbstractChatTestCase
     List<UserBean> userBeans = ServiceBootstrap.getUserService().getUsers(null, "te", 20);
     assertEquals(4, userBeans.size());
 
+    long usersCount = ServiceBootstrap.getUserService().getUsersCount(null, "te");
+    assertEquals(4, usersCount);
+
     ServiceBootstrap.getUserService().deleteUser("test3");
     userBeans = ServiceBootstrap.getUserService().getUsers(null, "te", 20);
 
@@ -226,7 +230,9 @@ public class UserTestCase extends AbstractChatTestCase
     // Make sure that the list of returned users doesn't contain user "test3" who
     // has been deleted.
     assertEquals(3, userNames.size());
-    assertTrue(!userNames.contains("test3"));
+    usersCount = ServiceBootstrap.getUserService().getUsersCount(null, "te");
+    assertEquals(3, usersCount);
+    assertFalse(userNames.contains("test3"));
 
     ServiceBootstrap.getUserService().setEnabledUser("test4", false);
     userBeans = ServiceBootstrap.getUserService().getUsers(null, "te", 20);
@@ -236,7 +242,9 @@ public class UserTestCase extends AbstractChatTestCase
     // Make sure that the list of returned users doesn't contain user "test4" who
     // has been disabled.
     assertEquals(2, userNames.size());
-    assertTrue(!userNames.contains("test4"));
+    usersCount = ServiceBootstrap.getUserService().getUsersCount(null, "te");
+    assertEquals(2, usersCount);
+    assertFalse(userNames.contains("test4"));
   }
 
   @Test
