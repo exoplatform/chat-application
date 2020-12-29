@@ -103,6 +103,8 @@ public interface UserService
 
   public List<UserBean> getUsers(String roomId, String filter, int limit);
 
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers);
+
   public String setStatus(String user, String status);
 
   public void setAsAdmin(String user, boolean isAdmin);
@@ -121,4 +123,5 @@ public interface UserService
 
   public int getNumberOfUsers();
 
+  public long getUsersCount(String room, String filter);
 }
