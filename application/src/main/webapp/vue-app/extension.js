@@ -555,8 +555,6 @@ export function registerExternalComponents(componentName) {
   if (extensionRegistry) {
     extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
   }
-
-  document.dispatchEvent(new CustomEvent('chat-external-updated', { detail: externalComponentOptions}));
 }
 
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
