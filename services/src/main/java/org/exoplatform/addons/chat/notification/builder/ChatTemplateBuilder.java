@@ -49,12 +49,12 @@ public class ChatTemplateBuilder extends AbstractTemplateBuilder {
         RequestLifeCycle.begin(container);
         try {
             TemplateContext templateContext = buildTemplateParameters(templateProvider, notification);
-
+            String subject = TemplateUtils.processSubject(templateContext);
             String body = TemplateUtils.processGroovy(templateContext);
             //binding the exception throws by processing template
             ctx.setException(templateContext.getException());
             MessageInfo messageInfo = new MessageInfo();
-            return messageInfo.body(body).end();
+            return messageInfo.subject(subject).body(body).end();
         } catch (Throwable e) {
             ctx.setException(e);
             logException(notification, e);
