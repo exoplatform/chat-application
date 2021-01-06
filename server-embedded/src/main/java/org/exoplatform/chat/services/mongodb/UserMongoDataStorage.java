@@ -1,4 +1,4 @@
-  /*
+/*
  * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -400,7 +400,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     if (cursor.hasNext()) {
       DBObject doc = cursor.next();
       doc.put("isDeleted", Boolean.FALSE.toString());
-      doc.put("isEnabled", isEnabled);
+      doc.put("isEnabled", isEnabled.toString());
       coll.save(doc);
     }
   }
@@ -479,6 +479,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.put("_id", user);
       doc.put("user", user);
       doc.put("spaces", spaceIds);
+      doc.put("isEnabled", Boolean.toString(true));
+      doc.put("isDeleted", Boolean.toString(false));
       coll.insert(doc);
     }
   }
@@ -739,12 +741,24 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   public List<UserBean> getUsers(String roomId, String filter, int limit) {
+    return getUsers(roomId, null, filter, limit, false);
+  }
+
+  /**
+   *
+   * @param roomId room ID
+   * @param onlineUsers list of online users
+   * @param filter text to filter users by fullname or username
+   * @param limit the limit of users to load
+   * @return
+   */
+  public List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers) {
     if (roomId == null && filter == null) {
       throw new IllegalArgumentException();
     }
 
     List<BasicDBObject> andList = new ArrayList<>();
-    if (roomId != null && !"".equals(roomId)) {
+    if (StringUtils.isNotBlank(roomId)) {
       // removing "space-" and "team-" prefix
       if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
         roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
@@ -769,33 +783,120 @@ public class UserMongoDataStorage implements UserDataStorage {
       andList.add(new BasicDBObject("$or", orList));
     }
 
-    DBObject query = new BasicDBObject("$and", andList);
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    DBCursor cursor = coll.find(query).limit(limit);
-    List<UserBean> users = new ArrayList<>();
-    while (cursor.hasNext()) {
-      DBObject doc = cursor.next();
-      UserBean userBean = new UserBean();
-      userBean.setName(doc.get("user").toString());
-      Object prop = doc.get("fullname");
-      userBean.setFullname((prop != null) ? prop.toString() : "");
-      prop = doc.get("email");
-      userBean.setEmail((prop != null) ? prop.toString() : "");
-      prop = doc.get("status");
-      userBean.setStatus((prop != null) ? prop.toString() : "");
-      if (doc.get("isEnabled") != null) {
-        userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+    List<UserBean> users = null;
+
+    // Load online users
+    if(onlineUsers != null && !onlineUsers.isEmpty()) {
+      BasicDBObject fetchOnlineUsers = new BasicDBObject("user", new BasicDBObject("$in", onlineUsers));
+      List<BasicDBObject> clonedAndList = new ArrayList<>(andList);
+      clonedAndList.add(fetchOnlineUsers);
+      DBObject query = new BasicDBObject("$and", clonedAndList);
+      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+      DBCursor cursor = coll.find(query).limit(limit);
+      users = new ArrayList<>();
+      while (cursor.hasNext()) {
+        DBObject doc = cursor.next();
+        UserBean userBean = new UserBean();
+        userBean.setName(doc.get("user").toString());
+        Object prop = doc.get("fullname");
+        userBean.setFullname((prop != null) ? prop.toString() : "");
+        prop = doc.get("email");
+        userBean.setEmail((prop != null) ? prop.toString() : "");
+        prop = doc.get("status");
+        userBean.setStatus((prop != null) ? prop.toString() : "");
+        if (doc.get("isEnabled") != null) {
+          userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+        }
+        if (doc.get("isDeleted") != null) {
+          userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+        }
+        users.add(userBean);
       }
-      if (doc.get("isDeleted") != null) {
-        userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
-      }
-      if (doc.get("isExternal") != null) {
-        userBean.setExternal(doc.get("isExternal").toString());
-      }
-      users.add(userBean);
     }
+    
+    users = users == null ? new ArrayList<>() : users;
+
+    if(!onlyOnlineUsers) {
+      int usersLeft = limit > 0 ? limit - users.size() : -1;
+
+      if (usersLeft > 0 || (limit >= 0 && users.isEmpty())) {
+        usersLeft = usersLeft > 0 ? usersLeft : limit;
+        BasicDBObject escapeOnlineUsers;
+        if (onlineUsers != null && !onlineUsers.isEmpty()) {
+          escapeOnlineUsers = new BasicDBObject("user", new BasicDBObject("$nin", onlineUsers));
+          andList.add(escapeOnlineUsers);
+        }
+        DBObject query = new BasicDBObject("$and", andList);
+        DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+        DBCursor cursor = coll.find(query).limit(usersLeft);
+        while (cursor.hasNext()) {
+          DBObject doc = cursor.next();
+          UserBean userBean = new UserBean();
+          userBean.setName(doc.get("user").toString());
+          Object prop = doc.get("fullname");
+          userBean.setFullname((prop != null) ? prop.toString() : "");
+          prop = doc.get("email");
+          userBean.setEmail((prop != null) ? prop.toString() : "");
+          prop = doc.get("status");
+          userBean.setStatus((prop != null) ? prop.toString() : "");
+          if (doc.get("isEnabled") != null) {
+            userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
+          }
+          if (doc.get("isDeleted") != null) {
+            userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+          }
+          if (doc.get("isExternal") != null) {
+            userBean.setExternal(doc.get("isExternal").toString());
+          }
+          users.add(userBean);
+        }
+      }
+    }
+
     users = users.stream().filter(UserBean::isEnabledUser).collect(Collectors.toList());
     return users;
+  }
+
+  public Long getUsersCount(String roomId, String filter) {
+    if (roomId == null && filter == null) {
+      throw new IllegalArgumentException();
+    }
+
+    List<BasicDBObject> andList = new ArrayList<>();
+    if (StringUtils.isNotBlank(roomId)) {
+      // removing "space-" and "team-" prefix
+      if (roomId.indexOf(ChatService.SPACE_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.SPACE_PREFIX.length());
+      } else if (roomId.indexOf(ChatService.TEAM_PREFIX) == 0) {
+        roomId = roomId.substring(ChatService.TEAM_PREFIX.length());
+      }
+
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("spaces", roomId));
+      orList.add(new BasicDBObject("teams", roomId));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+
+    if (filter != null) {
+      filter = filter.replaceAll(" ", ".*");
+      Pattern regex = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+      ArrayList<BasicDBObject> orList = new ArrayList<>();
+      orList.add(new BasicDBObject("user", regex));
+      orList.add(new BasicDBObject("fullname", regex));
+
+      andList.add(new BasicDBObject("$or", orList));
+    }
+    andList.add(new BasicDBObject("isDeleted", "false"));
+    List<BasicDBObject> orList = new ArrayList<>();
+    orList.add(new BasicDBObject("isEnabled", "true"));
+    //some entries were added with boolean values
+    orList.add(new BasicDBObject("isEnabled", true));
+    andList.add(new BasicDBObject("$or", orList));
+
+    DBObject query = new BasicDBObject("$and", andList);
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    return (long) coll.find(query).count();
   }
 
   @Override

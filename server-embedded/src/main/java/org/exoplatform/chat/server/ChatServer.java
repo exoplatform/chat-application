@@ -999,27 +999,50 @@ public class ChatServer
 
   @Resource
   @Route("/users")
-  public Response.Content getUsers(String user, String token, String room, String filter, String limit)
+  public Response.Content getUsers(String user, String token, String onlineUsers, String room, String filter, String limit, String onlineOnly)
   {
     if (!tokenService.hasUserWithToken(user, token))
     {
       return Response.notFound("Petit malin !");
     }
 
+    boolean showOnlyOnlineUsers = StringUtils.isNotBlank(onlineOnly) && "true".equals(onlineOnly);
     int limit_ = 0;
     try {
       if (limit != null) {
-        limit_ = Integer.valueOf(limit);
+        limit_ = Integer.parseInt(limit);
       }
     } catch (NumberFormatException e) {
       return Response.status(400).content("The 'limit' parameter value is invalid");
     }
 
-    List<UserBean> users = userService.getUsers(room, filter, limit_);
-
+    List<String> onlineUserList = StringUtils.isNotBlank(onlineUsers) ? Arrays.asList(onlineUsers.split(",")) : null;
+    List<UserBean> users = userService.getUsers(room, onlineUserList, filter, limit_, showOnlyOnlineUsers);
+    if(StringUtils.isNotBlank(user)) {
+      UserBean currentUser = userService.getUser(user);
+      users.remove(currentUser);
+    }
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
     return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+  }
+
+  @Resource
+  @Route("/usersCount")
+  public Response.Content getUsersCount(String user, String token, String room, String filter)
+  {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+
+    StringBuffer data = new StringBuffer();
+    data.append("{");
+    data.append(" \"usersCount\": ").append(userService.getUsersCount(room, filter));
+    data.append("}");
+
+    return Response.ok(data).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 

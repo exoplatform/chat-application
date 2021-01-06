@@ -20,6 +20,7 @@
 package org.exoplatform.chat.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class UserBean
 {
@@ -136,4 +137,16 @@ public class UserBean
     return sb.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UserBean userBean = (UserBean) o;
+    return name.equals(userBean.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, fullname, email, status, favorites, enabled, deleted);
+  }
 }
