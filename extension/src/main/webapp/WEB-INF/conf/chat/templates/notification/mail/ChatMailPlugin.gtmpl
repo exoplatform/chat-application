@@ -1,0 +1,116 @@
+<table border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="#ffffff" align="center"
+       style="background-color: #ffffff; font-size: 13px;color:#333333;line-height: 18px;font-family: HelveticaNeue, Helvetica, Arial, sans-serif;"
+       xmlns="http://www.w3.org/1999/html">
+    <tr>
+        <td align="center"  valign="middle" >
+            <table  cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="border:1px solid #d8d8d8;">
+                <tr>
+                    <td  height="45" valign="middle" style="margin:0;height:45px;font-weight:bold;vertical-align:middle;;background-color: #efefef;font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;color:#2f5e92;font-size:18px;text-align:center">
+                        <a href="#" style="text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif; font-size: 18px;">
+                            <%
+                            def title = _ctx.appRes("Notification.subject.ChatMentionNotificationPlugin");
+                            String profileUrl = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + USER + "</a>";
+                            String chatRoom = "<a class=\"user-name text-bold\" href=\"" + CHAT_URL + "\">" + ROOM_NAME + "</a>";
+                            %>
+                            $title
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr><!--end header area-->
+    <tr>
+        <td bgcolor="#ffffff" style="background-color: #ffffff;">
+            <table cellpadding="0" cellspacing="0" width="100%"  bgcolor="#ffffff" style="background-color: #ffffff; border-left:1px solid #d8d8d8;border-right:1px solid #d8d8d8;">
+                <tr>
+                    <td bgcolor="#ffffff" style="background-color: #ffffff;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="92%" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 13px;color:#333333;line-height: 18px;">
+                            <tr>
+                                <td align="left" bgcolor="#ffffff" style="background-color: #ffffff;padding: 20px 0 10px;">
+                                    <p style="margin: 0 0 10px; color: #333333; font-size: 13px; line-height: 18px;">
+                                        <%=_ctx.appRes("Notification.ChatMentionNotificationPlugin.label.SayHello")%>
+                                    </p>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 13px;color:#333333;line-height: 18px;"><tbody><tr><td align="left" style="padding: 0;"><table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="width: 100%; background-color: #ffffff; font-size: 13px; color:#333333;line-height: 18px;">
+                                        <tr>
+                                            <td align="left" bgcolor="#ffffff" width="90%" align="top" style="width: 90%; background-color: #ffffff; padding: 0 0; vertical-align: top;">
+                                                <p style="margin: 0 0 10px; color: #333333; font-size: 13px; line-height: 18px;">
+                                                </p>
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f9f9f9" align="center" style="margin:0 0 10px; width: 100%; background-color: #f9f9f9; font-size: 13px; color:#333333;line-height: 18px;">
+                                                    <tr>
+                                                        <td align="left" valign="top" bgcolor="#f9f9f9" style="vertical-align: top; background-color: #f9f9f9; padding: 10px 15px;">
+                                                            <p style="margin: 0 0 10px; color: #333333; font-size: 13px; line-height: 18px;">
+                                                                <a href="#" style="text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif">
+                                                                </a>
+                                                            </p>
+                                                            <p style="margin: 0; color: #333333; font-size: 13px; line-height: 18px;">
+                                                                <%=_ctx.appRes("exoplatform.chat.MentionPlugin", profileUrl, chatRoom)%>
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+
+                                                        <td align="left" valign="top" bgcolor="#ffffff" style="vertical-align: top; background-color: #ffffff; padding: 10px 0 0">
+                                                            <p style="margin: 0">
+                                                                <!-- <a target="_blank" style="
+                                                                display: inline-block;
+                                                                text-decoration: none;
+                                                                font-size: 11px;
+                                                                font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;
+                                                                color: #ffffff;
+
+                                                                background-color: #567ab6;
+                                                                background-image: -moz-linear-gradient(top, #638acd, #426393);
+                                                                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#638acd), to(#426393));
+                                                                background-image: -webkit-linear-gradient(top, #638acd, #426393);
+                                                                background-image: -o-linear-gradient(top, #638acd, #426393);
+                                                                background-image: linear-gradient(to bottom, #638acd, #426393);
+                                                                background-repeat: repeat-x;
+                                                                border-radius: 4px;
+                                                                -moz-border-radius: 4px;
+                                                                padding: 5px 8px;
+                                                                line-height: 100%;
+                                                                text-align: center;
+                                                                border: 1px solid #224886;
+                                                                font-weight: bold;
+                                                                -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+                                                                -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+                                                                box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+                                                                vertical-align: middle;
+                                                                " href="http://www.exoplatform.com/company/en/home" title="Reply">Reply</a> -->
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    </td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    <br>
+                                    <p style="margin: 0 0 10px; color: #999999; font-size: 13px; line-height: 18px;">
+                                        <%=_ctx.appRes("Notification.ChatMentionNotificationPlugin.label.footer", "" + FOOTER_LINK)%>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr><!--end content area-->
+    <tr>
+        <td bgcolor="#456693" align="center"  style="border:1px solid #456693;">
+            <table border="0" cellpadding="0" cellspacing="0" width="92%"  style="font-size: 13px;line-height: 18px;font-family:HelveticaNeue,verdana,arial,tahoma">
+                <tr>
+                    <td align="left" valign="top" style="font-family: HelveticaNeue, Helvetica, Arial, sans-serif,serif;color:#ffffff;font-size:13px;" >
+                        <h3 style="text-align: center; margin: 0; padding: 10px 0;">
+                        </h3>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr><!--end footer area-->
+</table>
