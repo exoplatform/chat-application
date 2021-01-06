@@ -352,6 +352,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           MessageBean msg = toMessageBean(dbo);
           msg.setFullName(fullName);
           msg.setEnabledUser(userBean.isEnabledUser());
+          msg.setExternal(userBean.isExternal());
 
           ((JSONArray)data.get("messages")).add(msg.toJSONObject());
         }
@@ -612,6 +613,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           RoomBean roomBean = new RoomBean();
           roomBean.setRoom(roomId);
           roomBean.setEnabledUser(targetUserBean.isEnabled());
+          roomBean.setExternal(targetUserBean.isExternal());
           roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
           roomBean.setUser(users.get(0));
           roomBean.setTimestamp(timestamp);
