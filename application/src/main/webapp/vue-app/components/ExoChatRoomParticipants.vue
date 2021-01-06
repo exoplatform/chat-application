@@ -189,10 +189,10 @@ export default {
             // if user attributes deleted/enabled are null update the user.
             if(user.isEnabled === 'null') {
               chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
-                  user.isEnabled = userState.isEnabled;
-                  user.isDeleted = userState.isDeleted;
-                  user.isExternal = userState.isExternal;
+                chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
+                user.isEnabled = userState.isEnabled;
+                user.isDeleted = userState.isDeleted;
+                user.isExternal = userState.isExternal;
               });
             }
             // if user is not online, set its status as offline
