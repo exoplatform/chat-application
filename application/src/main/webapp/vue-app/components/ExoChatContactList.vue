@@ -546,7 +546,7 @@ export default {
       if(contact.isExternal === 'true') {
         fullName = `${fullName} (${this.external})`;
       }
-      return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? fullName : contact.fullName.concat(' ').concat('(').concat(this.inactive).concat(')');
+      return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? fullName : `${fullName} (${this.inactive})`;
     },
     getLastMessage(message, contactType) {
       if (message) {
