@@ -216,7 +216,7 @@ export default {
       return this.message && this.message.type;
     },
     attendeeFullname() {
-      return this.message && this.message.isExternal === 'true' ? this.message.fullname.concat(' ').concat('(').concat(this.external).concat(')') : this.message.fullname ;
+      return this.message && this.message.isExternal === 'true' ? `${this.message.fullname} (${this.external})` : this.message.fullname ;
     },
     messageOptionsType() {
       return this.message && this.message.options && this.message.options.type;

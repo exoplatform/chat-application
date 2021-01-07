@@ -544,7 +544,7 @@ export default {
     contactTooltip(contact) {
       let fullName = contact.fullName;
       if(contact.isExternal === 'true') {
-        fullName = fullName.concat(' ').concat('(').concat(this.external).concat(')');
+        fullName = `${fullName} (${this.external})`;
       }
       return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? fullName : contact.fullName.concat(' ').concat('(').concat(this.inactive).concat(')');
     },

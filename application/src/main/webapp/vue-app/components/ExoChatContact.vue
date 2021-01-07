@@ -150,7 +150,7 @@ export default {
     escapedName() {
       let name = escapeHtml(this.name);
       if(this.isExternal) {
-        name = name.concat(' ').concat('(').concat(this.statusMap.external).concat(')');
+        name = `${name} (${this.statusMap.external})`;
       }
       if(!this.isEnabled && this.list === true) {
         return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');

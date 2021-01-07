@@ -135,8 +135,7 @@ export default {
       if (!this.selectedContact) {
         return this.userSettings.username;
       } else {
-        const fullName = this.selectedContact.fullName;
-        return this.selectedContact.isExternal === 'true' ? fullName.concat(' ').concat('(').concat(this.external).concat(')') : fullName;
+        return this.selectedContact.isExternal === 'true' ? `${this.selectedContact.fullName} (${this.external})` : this.selectedContact.fullName;
       }
     }
   },
