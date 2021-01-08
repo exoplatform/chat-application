@@ -123,4 +123,9 @@ public interface ChatDataStorage
    */
   public List<RoomBean> getTeamRoomByName(String teamName);
 
-}
+  /**
+   * Get all the rooms of the with pagination
+   * @return RoomsBean the list of rooms in a single Object
+   */
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService);
+  }

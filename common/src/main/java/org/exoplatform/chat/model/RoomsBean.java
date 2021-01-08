@@ -11,6 +11,7 @@ public class RoomsBean {
   int unreadOnline = 0;
   int unreadSpaces = 0;
   int unreadTeams = 0;
+  int roomsCount = 0;
 
   public List<RoomBean> getRooms() {
     return rooms;
@@ -52,14 +53,23 @@ public class RoomsBean {
     this.unreadTeams = unreadTeams;
   }
 
+  public int getRoomsCount() {
+    return roomsCount;
+  }
+
+  public void setRoomsCount(int roomsCount) {
+    this.roomsCount = roomsCount;
+  }
+
   public String roomsToJSON()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("{");
-    sb.append("\"unreadOffline\": \""+unreadOffline+"\",");
-    sb.append("\"unreadOnline\": \""+unreadOnline+"\",");
-    sb.append("\"unreadSpaces\": \""+unreadSpaces+"\",");
-    sb.append("\"unreadTeams\": \""+unreadTeams+"\",");
+    sb.append("\"unreadOffline\": \"").append(unreadOffline).append("\",");
+    sb.append("\"unreadOnline\": \"").append(unreadOnline).append("\",");
+    sb.append("\"unreadSpaces\": \"").append(unreadSpaces).append("\",");
+    sb.append("\"unreadTeams\": \"").append(unreadTeams).append("\",");
+    sb.append("\"roomsCount\": \"").append(roomsCount).append("\",");
     sb.append("\"rooms\": [");
     boolean first=true;
     for (RoomBean roomBean:this.getRooms()) {
@@ -74,7 +84,7 @@ public class RoomsBean {
     }
     sb.append("],");
     sb.append("\"md5\": \"").append(MessageDigester.getHash(sb.toString())).append("\",");
-    sb.append("\"timestamp\": \""+System.currentTimeMillis()+"\"");
+    sb.append("\"timestamp\": \"").append(System.currentTimeMillis()).append("\"");
     sb.append("}");
 
 

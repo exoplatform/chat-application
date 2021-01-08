@@ -82,6 +82,7 @@
   </div>
 </template>
 
+
 <script>
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
@@ -115,6 +116,10 @@ export default {
     contacts: {
       type: Array,
       default: function() { return [];}
+    },
+    contactsSize: {
+      type: Number,
+      default: 0
     },
     contactsLoaded: {
       type: Boolean,
@@ -179,7 +184,6 @@ export default {
         name: '',
         participants: []
       },
-      totalEntriesToLoad: chatConstants.CONTACTS_PER_PAGE,
       contactMenu: null,
       contactMenuClosed: true,
       filterMenuClosed: true,
@@ -234,7 +238,7 @@ export default {
           return b.timestamp - a.timestamp;
         });
       }
-      return sortedContacts.slice(0, this.totalEntriesToLoad);
+      return sortedContacts.slice(0, this.contacts.length);
     },
     hasMoreContacts() {
       if(this.searchTerm.trim().length) {
@@ -243,21 +247,30 @@ export default {
       // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
-        return this.usersCount >= this.totalEntriesToLoad;
+        return this.usersCount >= this.contacts.length;
       case 'Rooms':
-        return this.roomsCount > this.totalEntriesToLoad;
+        return this.roomsCount > this.contacts.length;
       case 'Spaces':
-        return this.spacesCount > this.totalEntriesToLoad;
+        return this.spacesCount > this.contacts.length;
       case 'Favorites':
-        return this.favoritesCount > this.totalEntriesToLoad;
+        return this.favoritesCount > this.contacts.length;
       default:
-        return this.contacts.length > this.totalEntriesToLoad || this.usersCount >= this.totalEntriesToLoad;
+        return this.contactsSize > this.contacts.length;
       }
     }
   },
   watch: {
     searchTerm(value) {
       this.$emit('search-contact', value);
+    },
+    searchWord(newValue) {
+      if(newValue) {
+        chatServices.getOnlineUsers().then(users => {
+          chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
+            this.contacts = chatRoomsData.rooms;
+          });
+        });
+      }
     }
   },
   created() {
@@ -535,7 +548,7 @@ export default {
       return foundContact;
     },
     loadMore() {
-      this.totalEntriesToLoad += chatConstants.CONTACTS_PER_PAGE;
+      this.totalEntriesToLoad = this.contacts.length;
       this.$emit('load-more-contacts', this.totalEntriesToLoad);
     },
     favoriteTooltip(contact) {
