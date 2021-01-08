@@ -25,6 +25,7 @@ export const chatConstants = {
   STORED_PARAM_SORT_FILTER: 'exo-chat-sortFilter',
   SORT_FILTER_DEFAULT: 'Recent',
   CONTACTS_PER_PAGE: 20,
+  ROOMS_PER_PAGE: 20,
   ADD_TEAM_MESSAGE: 'type-add-team-user',
   REMOVE_TEAM_MESSAGE: 'type-remove-team-user',
   EVENT_MESSAGE: 'type-event',
