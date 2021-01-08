@@ -110,6 +110,41 @@ public class ChatServer
   }
 
   @Resource
+  @Route("/userRooms")
+  public Response.Content getUserRooms(String user, String onlineUsers, String token, String filter, String offset, String limit)
+  {
+    if (!tokenService.hasUserWithToken(user, token))
+    {
+      return Response.notFound("Petit malin !");
+    }
+    int limitValue = 20;
+    try {
+      if (limit != null && !"".equals(limit)) {
+        limitValue = Integer.parseInt(limit);
+      }
+    } catch (NumberFormatException nfe) {
+      LOG.info("limit is not a valid Integer number");
+    }
+
+    int offsetValue = 0;
+    try {
+      if (StringUtils.isNotBlank(offset)) {
+        offsetValue = Integer.parseInt(offset);
+      }
+    } catch (NumberFormatException nfe) {
+      LOG.info("offset is not a valid Integer number");
+    }
+
+    List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
+
+    RoomsBean roomsBean = chatService.getUserRooms(user, limitUsers, filter, offsetValue, limitValue,
+            notificationService, tokenService);
+
+
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+  }
+@Resource
   @Route("/whoIsOnline")
   public Response.Content whoIsOnline(String user, String onlineUsers, String token, String filter, String limit)
   {
@@ -117,7 +152,7 @@ public class ChatServer
     {
       return Response.notFound("Petit malin !");
     }
-    Integer ilimit = 0;
+    int ilimit = 20;
     try {
       if (limit != null && !"".equals(limit)) {
         ilimit = Integer.parseInt(limit);
@@ -129,7 +164,7 @@ public class ChatServer
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
     RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService);
-    
+
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }

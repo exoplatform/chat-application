@@ -3,6 +3,7 @@ import * as chatWebStorage from './chatWebStorage';
 import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
 
+const DEFAULT_OFFSET = 0;
 const DEFAULT_USERS_ROOMS_TO_LOAD = 30;
 const DEFAULT_USER_LIMIT = 20;
 const DEFAULT_HTTP_PORT = 80;
@@ -183,8 +184,22 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
+export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limit) {
+  if(!limit) {
+    limit = DEFAULT_USERS_ROOMS_TO_LOAD;
+  }
+  if(!offset) {
+    offset = DEFAULT_OFFSET;
+  }
+  if(!filter) {
+    filter = '';
+  }
+  return fetch(`${chatConstants.CHAT_SERVER_API}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
 
-<<<<<<< HEAD
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
   if(!limit && isNaN(limit)) {
     limit = DEFAULT_USER_LIMIT;
@@ -195,13 +210,6 @@ export function getRoomParticipants(userSettings, room, onlineUsers, limit, onli
     onlineUsers = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&onlineUsers=${onlineUsers}&limit=${limit}&onlineOnly=${onlineUsersOnly}`, {
-=======
-export function getRoomParticipants(userSettings, room, limit) {
-  if(!limit) {
-    limit = 0;
-  }
-  return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&limit=${limit}`, {
->>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());

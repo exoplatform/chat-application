@@ -92,11 +92,8 @@ public interface UserDataStorage {
 
   List<UserBean> getUsers(String roomId, String filter, int limit);
 
-<<<<<<< HEAD
   List<UserBean> getUsers(String roomId, List<String> onlineUsers, String filter, int limit, boolean onlyOnlineUsers);
 
-=======
->>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
   Long getUsersCount(String roomId, String filter);
 
   List<UserBean> getUsersInRoomChatOneToOne(String roomId);

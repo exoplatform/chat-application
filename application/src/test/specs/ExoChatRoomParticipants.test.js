@@ -103,11 +103,7 @@ describe('ExoChatRoomParticipants.test.js', () => {
       attachToDocument: true
     });
 
-<<<<<<< HEAD
     roomParticipant.setData({contact: room, participants: participants, participantsCount: participants.length});
-=======
-    roomParticipant.setData({contact: room, participants: participants, participantsCount: participants.length -1});
->>>>>>> 4c3bd43b... 36886 : Improve loading users in Particpants panel (#386)
   });
 
   it('room participants should be displayed only for teams and spaces', () => {

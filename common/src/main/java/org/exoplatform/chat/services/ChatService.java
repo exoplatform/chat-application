@@ -127,6 +127,8 @@ public interface ChatService
 
   public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService);
 
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService);
+
   public int getNumberOfRooms();
 
   public int getNumberOfMessages();
