@@ -907,7 +907,6 @@ public class UserMongoDataStorage implements UserDataStorage {
     //some entries were added with boolean values
     orList.add(new BasicDBObject("isEnabled", true));
     andList.add(new BasicDBObject("$or", orList));
-
     DBObject query = new BasicDBObject("$and", andList);
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
     return (long) coll.find(query).count();
