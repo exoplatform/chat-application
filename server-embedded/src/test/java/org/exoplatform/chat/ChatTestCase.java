@@ -299,6 +299,85 @@ public class ChatTestCase extends AbstractChatTestCase
 
   }
 
+
+  @Test
+  public void testGetUserRooms() throws Exception {
+    String user = "benjamin";
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    NotificationService notificationService = ServiceBootstrap.getNotificationService();
+    List<String> users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("john");
+    String roomId1 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("mary");
+    String roomId2 = chatService.getRoom(users);
+
+    users = new ArrayList<String>();
+    users.add("benjamin");
+    users.add("james");
+    String roomId3 = chatService.getRoom(users);
+
+    List<SpaceBean> spaces = ServiceBootstrap.getUserService().getSpaces("benjamin");
+    SpaceBean space = new SpaceBean();
+    space.setDisplayName("Test Space");
+    space.setGroupId("test_space");
+    space.setId("test_space");
+    space.setShortName("Test Space");
+    space.setPrettyName("test space");
+    space.setTimestamp(System.currentTimeMillis());
+    spaces.add(space);
+
+    ServiceBootstrap.getUserService().setSpaces("john", spaces);
+
+    SpaceBean space2 = new SpaceBean();
+    space2.setDisplayName("Test Space 2");
+    space2.setGroupId("test_space_2");
+    space2.setId("test_space_2");
+    space2.setShortName("Test Space 2");
+    space2.setPrettyName("Test space 2");
+    space2.setTimestamp(System.currentTimeMillis());
+    spaces.add(space2);
+
+    ServiceBootstrap.getUserService().setSpaces(user, spaces);
+
+    String room1 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team", user);
+    String room2 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 1", user);
+    String room3 = ServiceBootstrap.getChatService().getTeamRoom("My VIP Team 2", user);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room1);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room2);
+    ServiceBootstrap.getUserService().addTeamRoom(user, room3);
+
+    RoomsBean roomsBean = ServiceBootstrap.getChatDataStorage().getUserRooms("benjamin", new ArrayList<>(),null, 0,20, notificationService, tokenService);
+    assertEquals("Should have 8 rooms", 8, roomsBean.getRooms().size());
+    int teamsRooms=0, spacesRooms =0, usersRooms =0;
+    for (RoomBean room : roomsBean.getRooms()) {
+      if("t".equals(room.getType())) {
+        teamsRooms ++;
+      } else if ("s".equals(room.getType())) {
+        spacesRooms ++;
+      } else {
+        usersRooms ++;
+      }
+    }
+
+    // Check we load all rooms with different types
+    assertEquals(spacesRooms, 2);
+    assertEquals(teamsRooms, 3);
+    assertEquals(usersRooms, 3);
+
+    // Check Pagination
+    roomsBean = ServiceBootstrap.getChatDataStorage().getUserRooms("benjamin", new ArrayList<>(),null, 0,3, notificationService, tokenService);
+    assertEquals(3, roomsBean.getRooms().size());
+    roomsBean = ServiceBootstrap.getChatDataStorage().getUserRooms("benjamin", new ArrayList<>(),null, 3,3, notificationService, tokenService);
+    assertEquals(3, roomsBean.getRooms().size());
+    roomsBean = ServiceBootstrap.getChatDataStorage().getUserRooms("benjamin", new ArrayList<>(),null, 6,3, notificationService, tokenService);
+    assertEquals(2, roomsBean.getRooms().size());
+  }
   @Test
   public void testGetRooms() throws Exception
   {
