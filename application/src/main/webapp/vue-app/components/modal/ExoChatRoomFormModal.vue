@@ -132,7 +132,7 @@ export default {
         if(this.otherParticiants && this.otherParticiants.length) {
           this.otherParticiants.forEach(participant => {
             $roomFormSuggestor[0].selectize.addOption(participant);
-            $roomFormSuggestor[0].selectize.addItem(participant.name);
+            $roomFormSuggestor[0].selectize.addItem(participant.isExternal === 'true' ? `${participant.name} (this.$t('exoplatform.chat.external'))` : participant.name);
           });
         }
       }

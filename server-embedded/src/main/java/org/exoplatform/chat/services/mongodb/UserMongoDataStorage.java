@@ -810,6 +810,9 @@ public class UserMongoDataStorage implements UserDataStorage {
         if (doc.get("isDeleted") != null) {
           userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
         }
+        if (doc.get("isExternal") != null) {
+          userBean.setExternal(doc.get("isExternal").toString());
+        }
         users.add(userBean);
       }
     }

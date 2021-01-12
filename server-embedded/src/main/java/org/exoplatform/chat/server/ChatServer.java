@@ -66,6 +66,11 @@ import juzu.impl.common.Tools;
 import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.localization.LocaleContextInfoUtils;
+import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.resources.LocalePolicy;
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -779,7 +784,9 @@ public class ChatServer
           for (String u: usersToRemove)
           {
             if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(u));
+            UserBean userBean = userService.getUser(u);
+            String fullName = userBean.isExternal() != null && userBean.isExternal().equals("true") ? userService.getUserFullName(u) + " (" + getResourceBundleLabel(new Locale(getCurrentUserLanguage(user)), "external.label.tag") + ")" : userService.getUserFullName(u);
+            sbUsers.append(fullName);
             first = false;
             notificationService.setNotificationsAsRead(u, "chat", "room", room);
           }
@@ -804,7 +811,9 @@ public class ChatServer
               continue;
             }
             if (!first) sbUsers.append("; ");
-            sbUsers.append(userService.getUserFullName(usert));
+            UserBean userBean = userService.getUser(usert);
+            String fullName = userBean.isExternal() != null && userBean.isExternal().equals("true") ? userService.getUserFullName(usert) + " (" + getResourceBundleLabel(new Locale(getCurrentUserLanguage(user)), "external.label.tag") + ")" : userService.getUserFullName(usert);
+            sbUsers.append(fullName);
             first = false;
           }
           String addTeamUserOptions
@@ -1148,5 +1157,31 @@ public class ChatServer
     } catch(Exception e){
       LOG.info(e.getMessage());
     }
+  }
+
+  /**
+   * Get the ressource bundle label.
+   *
+   * @return the ressource bundle label
+   */
+  public static String getResourceBundleLabel(Locale locale, String label) {
+    ResourceBundleService resourceBundleService =  ExoContainerContext.getService(ResourceBundleService.class);
+    return resourceBundleService.getResourceBundle(resourceBundleService.getSharedResourceBundleNames(), locale).getString(label);
+  }
+
+  /**
+   * Gets platform language of current user. In case of any errors return null.
+   *
+   * @return the platform language
+   */
+  public static String getCurrentUserLanguage(String userId) {
+    LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo(userId);
+    LocalePolicy localePolicy = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocalePolicy.class);
+    String lang = Locale.getDefault().getLanguage();
+    if(localePolicy != null) {
+      Locale locale = localePolicy.determineLocale(localeCtx);
+      lang = locale.toString();
+    }
+    return lang;
   }
 }
