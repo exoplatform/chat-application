@@ -21,6 +21,7 @@ import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
@@ -190,6 +191,7 @@ public class UserRestService implements ResourceContainer {
       @ApiResponse (code = 200, message = "Request fulfilled"),
       @ApiResponse (code = 404, message = "Resource not found")})
   public Response getRoomParticipantsToSuggest(@Context UriInfo uriInfo,
+                                               @Context HttpServletRequest request,
                                                @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
     String authenticatedUser;
     try {
@@ -204,7 +206,11 @@ public class UserRestService implements ResourceContainer {
     List<UserBean> roomParticipantsToSuggest = new ArrayList<>();
     for(UserBean userBean : userList){
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
-      if(currentUserConnections.contains(userIdentity) || (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty("external") == null || userIdentity.getProfile().getProperty("external").equals("false")))){        roomParticipantsToSuggest.add(userBean);
+      if(currentUserConnections.contains(userIdentity) || (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty("external") == null || userIdentity.getProfile().getProperty("external").equals("false")))){
+        if(userIdentity.getProfile().getProperty("external") != null && userIdentity.getProfile().getProperty("external").equals("true")){
+          userBean.setFullname(userBean.getFullname() + " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")");
+        }
+        roomParticipantsToSuggest.add(userBean);
       }
     }
     return Response.ok(roomParticipantsToSuggest, MediaType.APPLICATION_JSON).build();
@@ -216,11 +222,11 @@ public class UserRestService implements ResourceContainer {
   public Response getUserState(@Context HttpServletRequest request, @QueryParam("user") String user) throws Exception {
     init(request);
 
-    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, user);
     JSONObject userStatus = new JSONObject();
     userStatus.put("isDeleted", userIdentity.isDeleted());
     userStatus.put("isEnabled", userIdentity.isEnable());
+    userStatus.put("isExternal", userIdentity.getProfile() != null && userIdentity.getProfile().getProperty("external").equals("true") ? "true" : "false");
 
     return Response.ok(userStatus, MediaType.APPLICATION_JSON).build();
   }
@@ -236,6 +242,8 @@ public class UserRestService implements ResourceContainer {
 
     String token = ServerBootstrap.getToken(currentUsername);
     String userFullName = ServerBootstrap.getUserFullName(currentUsername);
+    Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUsername);
+    boolean isExternal = userIdentity.getProfile() != null && userIdentity.getProfile().getProperty("external") != null && userIdentity.getProfile().getProperty("external").equals("true");
 
     Boolean isUserInitialized = (Boolean) request.getSession().getAttribute(CHAT_USER_INITIALIZATION_ATTR);
     if (isUserInitialized == null || !isUserInitialized) {
@@ -251,6 +259,9 @@ public class UserRestService implements ResourceContainer {
         }
       }
       request.getSession().setAttribute(CHAT_USER_INITIALIZATION_ATTR, true);
+    }
+    if(isExternal){
+      userFullName += " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")";
     }
     boolean online = userStateService.isOnline(currentUsername);
 
@@ -328,5 +339,10 @@ public class UserRestService implements ResourceContainer {
       wikiService = CommonsUtils.getService(WikiService.class);
     }
     return wikiService;
+  }
+
+  private String getResourceBundleLabel(Locale locale, String label) {
+    ResourceBundleService resourceBundleService =  CommonsUtils.getService(ResourceBundleService.class);
+    return resourceBundleService.getResourceBundle(resourceBundleService.getSharedResourceBundleNames(), locale).getString(label);
   }
 }

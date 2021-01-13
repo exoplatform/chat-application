@@ -7,6 +7,7 @@
     <div class="contactDetail">
       <div :class="isActive" class="contactLabel">
         <span v-html="escapedName" />
+        <span v-if="isExternal" class="externalTagClass">{{ externalTag }}</span>
         <slot></slot>
       </div>
       <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
@@ -70,6 +71,10 @@ export default {
       type: Boolean,
       default: true
     },
+    isExternal: {
+      type: Boolean,
+      default: false
+    },
     /** Contact type
      * u: user
      * t: room
@@ -109,6 +114,7 @@ export default {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
         inactive: this.$t('exoplatform.chat.inactive'),
+        external: this.$t('exoplatform.chat.external'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
@@ -143,12 +149,15 @@ export default {
       }
     },
     escapedName() {
-      const name = escapeHtml(this.name); 
+      const name = escapeHtml(this.name);
       if(!this.isEnabled && this.list === true) {
         return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');
       } else {
         return name;
       }
+    },
+    externalTag() {
+      return  `(${this.statusMap.external})`;
     },
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';

@@ -153,13 +153,15 @@ export default {
             }
             chatServices.getUsersToMention(eXo.chat.userSettings, component.contact, query).then(function (data) {
               if (data && data.users) {
-                for (let i = 0; i < data.users.length; i++) {
-                  const index = component.participants.findIndex(user => user.name === data.users[i].name);
-                  if (index === -1){
-                    component.participants.push(data.users[i]);
+                chatServices.getRoomParticipantsToSuggest(data.users).then(users => {
+                  for (let i = 0; i < users.length; i++) {
+                    const index = component.participants.findIndex(user => user.name === users[i].name);
+                    if (index === -1){
+                      component.participants.push(users[i]);
+                    }
                   }
-                }
-                callback(data.users.filter(user => user.name !== eXo.chat.userSettings.username));
+                  callback(users.filter(user => user.name !== eXo.chat.userSettings.username));
+                });
               }
             });
           }

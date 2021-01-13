@@ -78,6 +78,11 @@ public interface UserDataStorage {
     throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserDataStorage");
   }
 
+  default void setExternalUser(String user, String external) {
+    // No default implementation to add
+    throw new UnsupportedOperationException("This operation is not supported using current implementation of service UserDataStorage");
+  }
+
   void setSpaces(String user, List<SpaceBean> spaces);
 
   void addTeamRoom(String user, String teamRoomId);

@@ -132,7 +132,7 @@ export default {
         if(this.otherParticiants && this.otherParticiants.length) {
           this.otherParticiants.forEach(participant => {
             $roomFormSuggestor[0].selectize.addOption(participant);
-            $roomFormSuggestor[0].selectize.addItem(participant.name);
+            $roomFormSuggestor[0].selectize.addItem(participant.isExternal === 'true' ? `${participant.name} (this.$t('exoplatform.chat.external'))` : participant.name);
           });
         }
       }
@@ -147,9 +147,10 @@ export default {
             users.forEach(user => {
               if(user.isEnabled === 'null') {
                 chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled);
+                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
                   user.isEnabled = userState.isEnabled;
                   user.isDeleted = userState.isDeleted;
+                  user.isExternal = userState.isExternal;
                 });
               }
             });

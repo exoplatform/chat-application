@@ -107,6 +107,9 @@ public class ChatServiceImpl implements ChatService
       MessageBean msg = chatStorage.getMessage(room, msgId);
       UserBean user = userService.getUser(sender);
       msg.setFullName(user.getFullname());
+      if(user.isExternal() != null && user.isExternal().equals("true") ){
+        msg.setExternal(user.isExternal());
+      }
 
       if (mentionedUsers.size() > 0) {
         JSONObject type = new JSONObject();

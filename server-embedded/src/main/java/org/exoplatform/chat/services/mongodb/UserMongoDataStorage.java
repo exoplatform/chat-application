@@ -406,6 +406,20 @@ public class UserMongoDataStorage implements UserDataStorage {
   }
 
   @Override
+  public void setExternalUser(String user, String isExternal)
+  {
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      DBObject doc = cursor.next();
+      doc.put("isExternal", isExternal);
+      coll.save(doc);
+    }
+  }
+
+  @Override
   public void setSpaces(String user, List<SpaceBean> spaces)
   {
     List<String> spaceIds = new ArrayList<String>();
@@ -796,6 +810,9 @@ public class UserMongoDataStorage implements UserDataStorage {
         if (doc.get("isDeleted") != null) {
           userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
         }
+        if (doc.get("isExternal") != null) {
+          userBean.setExternal(doc.get("isExternal").toString());
+        }
         users.add(userBean);
       }
     }
@@ -830,6 +847,9 @@ public class UserMongoDataStorage implements UserDataStorage {
           }
           if (doc.get("isDeleted") != null) {
             userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+          }
+          if (doc.get("isExternal") != null) {
+            userBean.setExternal(doc.get("isExternal").toString());
           }
           users.add(userBean);
         }
@@ -1016,6 +1036,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       }
       if (doc.get("isDeleted") != null) {
         userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
+      }
+      if (doc.get("isExternal") != null) {
+        userBean.setExternal(doc.get("isExternal").toString());
       }
       if (withFavorites)
       {

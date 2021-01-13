@@ -5,8 +5,8 @@
       <div v-else-if="displayUserInformation" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
-      <div v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')" class="sender-name"><a :href="getProfileLink(message.user)">{{ message.fullname }}</a> :</div>
-      <div v-else-if="displayUserInformation" :class="statusStyle" class="sender-name">{{ message.fullname }} {{ disabledStatus }}: </div>
+      <div v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')" class="sender-name"><a :href="getProfileLink(message.user)">{{ attendeeFullname }}</a> :</div>
+      <div v-else-if="displayUserInformation" :class="statusStyle" class="sender-name">{{ attendeeFullname }} {{ disabledStatus }}: </div>
 
       <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -200,6 +200,7 @@ export default {
       chatConstants: chatConstants,
       showConfirmModal: false,
       displayActionMobile: false,
+      external: this.$t('exoplatform.chat.external'),
       confirmTitle: '',
       confirmMessage: '',
       confirmOKMessage: '',
@@ -213,6 +214,9 @@ export default {
     },
     messageType() {
       return this.message && this.message.type;
+    },
+    attendeeFullname() {
+      return this.message && this.message.isExternal === 'true' ? `${this.message.fullname} (${this.external})` : this.message.fullname ;
     },
     messageOptionsType() {
       return this.message && this.message.options && this.message.options.type;

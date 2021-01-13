@@ -15,6 +15,7 @@ public class MessageBean {
   private String type;
   private boolean isSystem;
   private Boolean enabledUser;
+  private String isExternal;
 
   public String getId() {
     return id;
@@ -72,6 +73,16 @@ public class MessageBean {
     this.fullName = fullname;
   }
 
+  public String isExternal()
+  {
+    return isExternal;
+  }
+
+  public void setExternal(String isExternal)
+  {
+    this.isExternal = isExternal;
+  }
+
   public String getMessage() {
     return message;
   }
@@ -120,6 +131,7 @@ public class MessageBean {
     msg.put("type", type);
     msg.put("isSystem", isSystem);
     msg.put("isEnabledUser", String.valueOf(enabledUser));
+    msg.put("isExternal", String.valueOf(isExternal));
 
     return msg;
   }

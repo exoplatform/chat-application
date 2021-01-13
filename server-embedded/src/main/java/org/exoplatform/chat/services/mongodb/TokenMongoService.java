@@ -145,6 +145,9 @@ public class TokenMongoService implements TokenStorage
         if (doc.get("isDeleted") != null) {
           userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
         }
+        if (doc.get("isExternal") != null) {
+          userBean.setExternal(doc.get("isExternal").toString());
+        }
         if (userBean.isEnabled()) {
           users.put(target, userBean);
         }

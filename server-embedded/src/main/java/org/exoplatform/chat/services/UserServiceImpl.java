@@ -140,6 +140,10 @@ public class UserServiceImpl implements UserService {
     userStorage.setEnabledUser(user, isEnabled);
   }
 
+  public void setExternalUser(String user, String isExternal) {
+    userStorage.setExternalUser(user, isExternal);
+  }
+
   public void setSpaces(String user, List<SpaceBean> spaces) {
     userStorage.setSpaces(user, spaces);
   }
