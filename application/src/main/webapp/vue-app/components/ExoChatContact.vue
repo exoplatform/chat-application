@@ -114,7 +114,6 @@ export default {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
         inactive: this.$t('exoplatform.chat.inactive'),
-        external: this.$t('exoplatform.chat.external'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
@@ -157,7 +156,7 @@ export default {
       }
     },
     externalTag() {
-      return  `(${this.statusMap.external})`;
+      return  `(${this.$t('exoplatform.chat.external')})`;
     },
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
