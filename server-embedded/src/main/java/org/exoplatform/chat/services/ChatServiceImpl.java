@@ -51,7 +51,6 @@ public class ChatServiceImpl implements ChatService
 
   private static final String  STATUS_AVAILABLE                = "available";
 
-
   @Inject
   private ChatDataStorage chatStorage;
 
