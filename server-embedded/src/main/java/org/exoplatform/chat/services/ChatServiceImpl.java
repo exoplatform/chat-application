@@ -23,6 +23,8 @@ import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.utils.PropertyManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.listener.ListenerService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -44,6 +46,11 @@ public class ChatServiceImpl implements ChatService
   private static final Logger LOG = Logger.getLogger("ChatService");
 
   private static final Pattern TAG_HREF_REGEX = Pattern.compile("<a\\s+[^>]*href=(['\"])(.*?)\\1[^>]*>", Pattern.DOTALL);
+
+  public static final  String  SENT_MESSAGE_EVENT              = "exo.chat.sent.message";
+
+  private static final String  STATUS_AVAILABLE                = "available";
+
 
   @Inject
   private ChatDataStorage chatStorage;
@@ -70,7 +77,7 @@ public class ChatServiceImpl implements ChatService
     }
 
     if (isSystem == null) isSystem = "false";
-
+    HashMap<String,String> messageInfo = new HashMap<>();
     String msgId = chatStorage.save(message, sender, room, isSystem, options);
     List<UserBean> participants = userService.getUsers(room);
     List<String> mentionedUsers = new ArrayList<>();
@@ -114,6 +121,7 @@ public class ChatServiceImpl implements ChatService
       if (mentionedUsers.size() > 0) {
         JSONObject type = new JSONObject();
         type.put("type" ,"type-mention");
+        messageInfo.put("options", type.toString());
         JSONObject mentionData = msg.toJSONObject();
         mentionData.put("clientId", clientId);
         mentionData.put("roomType", roomType);
@@ -166,6 +174,28 @@ public class ChatServiceImpl implements ChatService
       }
       notificationService.setNotificationsAsRead(sender, "chat", "room", room);
     }
+    messageInfo.put("room",room);
+    messageInfo.put("nameRoom",roomBean.getFullName());
+    if (!"{}".equals(options)){
+      messageInfo.put("options",options);
+    }
+    List<UserBean> listParticipants;
+    if (TYPE_ROOM_USER.equals(roomBean.getType())){
+      listParticipants = userService.getUsersInRoomChatOneToOne(room);
+    }else {
+      listParticipants = participants;
+    }
+    long numberOfUsersAvailable = listParticipants.stream().filter(u -> STATUS_AVAILABLE.equals(u.getStatus())).count();
+    messageInfo.put("numberOfActiveParticipants", String.valueOf(numberOfUsersAvailable));
+    messageInfo.put("numberOfChatParticipants", String.valueOf(listParticipants.size()));
+    try {
+      getListenerService().broadcast(SENT_MESSAGE_EVENT, roomBean.getType(), messageInfo);
+    }catch (Exception e){
+      LOG.info("Cannot broadcast send Message event");
+    }
+  }
+  private ListenerService getListenerService() {
+     return ExoContainerContext.getService(ListenerService.class);
   }
 
   public String save(String message, String user, String room, String isSystem, String options) {
