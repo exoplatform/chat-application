@@ -399,12 +399,9 @@ export function getSpaceProfileLink(space) {
 }
 
 export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) {
-  const serverBase = getBaseURL();
-
   const data = {
     user: userSettings.username,
     room: room,
-    serverBase: serverBase,
     fromTimestamp: fromTimestamp,
     toTimestamp: toTimestamp
   };
@@ -420,12 +417,10 @@ export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp)
 }
 
 export function getMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) {
-  const serverBase = getBaseURL();
   const data = {
     user: userSettings.username,
     room: room,
     portalURI: `${eXo.env.portal.context}/${eXo.env.portal.portalName}`,
-    serverBase: serverBase,
     fromTimestamp: fromTimestamp,
     toTimestamp: toTimestamp
   };

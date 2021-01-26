@@ -10,10 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.chat.services.ChatService;
 
 public class ChatUtils {
+
+  private static String serverBase = null;
 
   public static String getRoomId(String roomName, String user)
   {
@@ -85,6 +88,22 @@ public class ChatUtils {
     oos.writeObject( o );
     oos.close();
     return new String( Base64.encodeBase64( baos.toByteArray() ) );
+  }
+
+  public static String getServerBase() {
+    if (StringUtils.isBlank(serverBase)) {
+      serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
+      if (StringUtils.isBlank(serverBase)) {
+        serverBase = System.getProperty(PropertyManager.EXO_BASE_URL);
+      }
+    }
+    return serverBase;
+  }
+
+  public static void initServerBase(String serverBaseURL) {
+    if (StringUtils.isBlank(serverBase) && StringUtils.isNotBlank(serverBaseURL)) {
+      serverBase = serverBaseURL;
+    }
   }
 
 }
