@@ -42,8 +42,6 @@ public class ServerBootstrap {
 
   private static final Log LOG = ExoLogger.getLogger(ServerBootstrap.class.getName());
 
-  private static String    serverBase = null;
-
   private static String    serverURL = null;
 
   private static String    serviceURL = null;
@@ -217,7 +215,7 @@ public class ServerBootstrap {
     if (StringUtils.isNotBlank(serverURL) && serverURL.startsWith("http")) {
       return serverURL;
     } else {
-      serverURL = getServerBase() + getServerURI();
+      serverURL = ChatUtils.getServerBase() + getServerURI();
       return serverURL;
     }
   }
@@ -240,28 +238,19 @@ public class ServerBootstrap {
     return serverURI;
   }
 
-  public static String getServerBase() {
-    if (StringUtils.isBlank(serverBase)) {
-      serverBase = PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_SERVER_BASE);
-      if (StringUtils.isBlank(serverBase)) {
-        serverBase = System.getProperty(PropertyManager.EXO_BASE_URL);
-      }
-    }
-    return serverBase;
-  }
-
   public static void init(HttpServletRequest request) {
     if (request == null) {
       throw new IllegalArgumentException();
     }
-    if (StringUtils.isBlank(serverBase)) {
+    if (StringUtils.isBlank(ChatUtils.getServerBase())) {
       String scheme = request.getScheme();
       String serverName = request.getServerName();
       int serverPort = request.getServerPort();
-      serverBase = scheme + "://" + serverName;
+      String serverBase = scheme + "://" + serverName;
       if (serverPort != 80) {
         serverBase += ":" + serverPort;
       }
+      ChatUtils.initServerBase(serverBase);
     }
   }
 }

@@ -249,7 +249,7 @@ public class ChatServer
   @Resource
   @Route("/sendMeetingNotes")
   public Response.Content sendMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                           String toTimestamp, String serverBase, ApplicationContext applicationContext, UserContext userContext) throws IOException {
+                                           String toTimestamp, ApplicationContext applicationContext, UserContext userContext) throws IOException {
     if (!tokenService.hasUserWithToken(user, token))
     {
       return Response.notFound("Petit malin !");
@@ -327,6 +327,7 @@ public class ChatServer
           senderMail = userBean.getEmail();
         }
       }
+      String serverBase = ChatUtils.getServerBase();
       String html = reportBean.getAsHtml(title, serverBase, locale);
 
       // inline images
@@ -357,7 +358,7 @@ public class ChatServer
   @Resource
   @Route("/getMeetingNotes")
   public Response.Content getMeetingNotes(String user, String token, String room, String fromTimestamp,
-                                          String toTimestamp, String serverBase, String portalURI, ApplicationContext applicationContext, UserContext userContext) throws IOException {
+                                          String toTimestamp, String portalURI, ApplicationContext applicationContext, UserContext userContext) throws IOException {
     if (!tokenService.hasUserWithToken(user, token))
     {
       return Response.notFound("Petit malin !");
@@ -417,6 +418,7 @@ public class ChatServer
 
       reportBean.fill((BasicDBList) datao.get("messages"), users);
       ArrayList<String> usersInGroup = new ArrayList<String>();
+      String serverBase = ChatUtils.getServerBase();
       wikiPageContent = reportBean.getWikiPageContent(serverBase, portalURI);
       try {
         for (UserBean userBean : users) {
