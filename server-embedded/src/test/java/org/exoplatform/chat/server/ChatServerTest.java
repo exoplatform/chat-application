@@ -372,4 +372,57 @@ public class ChatServerTest extends AbstractChatTestCase {
     assertEquals(200, usersCount.getCode());
     assertTrue("Users count should be 4",  usersCount.toString().contains("4"));
   }
-}
+  
+  
+  @Test
+  public void testDeleteRoomWhenCreator() throws Exception {
+    // Given
+    ChatServer chatServer = new ChatServer();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    
+    String john = "john";
+    
+    userService.addUserFullName(john, "John Smith");
+    
+    String tokenJohn = tokenService.getToken(john);
+    tokenService.addUser(john, tokenJohn);
+  
+    String roomId = chatService.getTeamRoom("myteam", "john");
+  
+  
+    // When
+    Response.Content deleteTeamRoom = chatServer.deleteTeamRoom(john, tokenJohn, roomId);
+    // Then
+    assertNotNull(deleteTeamRoom);
+    assertEquals(200, deleteTeamRoom.getCode());
+    
+  }
+  
+  @Test
+  public void testDeleteRoomWhenNotCreator() throws Exception {
+    // Given
+    ChatServer chatServer = new ChatServer();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    
+    String john = "john";
+    
+    userService.addUserFullName(john, "John Smith");
+    
+    String tokenJohn = tokenService.getToken(john);
+    tokenService.addUser(john, tokenJohn);
+    
+    String roomId = chatService.getTeamRoom("myteam", "mary");
+    
+    
+    // When
+    Response.Content deleteTeamRoom = chatServer.deleteTeamRoom(john, tokenJohn, roomId);
+    // Then
+    assertNotNull(deleteTeamRoom);
+    assertEquals(404, deleteTeamRoom.getCode());
+    
+  }
+  
