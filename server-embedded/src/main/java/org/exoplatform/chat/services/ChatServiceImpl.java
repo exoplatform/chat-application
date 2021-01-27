@@ -379,7 +379,7 @@ public class ChatServiceImpl implements ChatService
    * @param roomId Id of the room
    * @return true if the user is member of the room
    */
-  private boolean isMemberOfRoom(String username, String roomId) {
+  public boolean isMemberOfRoom(String username, String roomId) {
     List<String> roomMembers;
     RoomBean room = userService.getRoom(username, roomId);
     if(room == null) {

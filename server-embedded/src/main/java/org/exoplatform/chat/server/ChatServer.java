@@ -475,7 +475,12 @@ public class ChatServer
       return Response.notFound("Petit malin !");
     }
     try {
-      chatService.deleteTeamRoom(room, user);
+      String creator = chatService.getTeamCreator(room);
+      if (!creator.equals(user)) {
+        return Response.notFound("");
+      } else {
+        chatService.deleteTeamRoom(room, user);
+      }
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Impossible to delete Team Room [" + room + "] : " + e.getMessage(), e);
       return Response.content(500, "Oups!");

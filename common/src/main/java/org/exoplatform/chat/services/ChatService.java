@@ -97,13 +97,16 @@ public interface ChatService
   public void setRoomName(String room, String name);
   
   public void setRoomMeetingStatus(String room, boolean start, String startTime);
-
-  /**
-   * Get rooms by name
-   * 
-   * @param teamName
-   * @return
-   */
+  
+  public boolean isMemberOfRoom(String username, String roomId);
+    
+    
+    /**
+     * Get rooms by name
+     *
+     * @param teamName
+     * @return
+     */
   public List<RoomBean> getTeamRoomsByName(String teamName);
 
   /**
