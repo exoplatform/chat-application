@@ -183,7 +183,6 @@ export default {
         //Get users count and remove the current user
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
         chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount, onlineUsersOnly).then( data => {
-          this.$emit('participants-loaded', this.participants);
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
             if(user.isEnabled === 'null') {
@@ -200,6 +199,7 @@ export default {
             }
             return user;
           });
+          this.$emit('participants-loaded', this.participants);
           const offline = ['invisible', 'offline'];
           this.displayedParticipantsCount = this.participants.length;
           return this.participants.sort((p1, p2) => {
