@@ -426,3 +426,55 @@ public class ChatServerTest extends AbstractChatTestCase {
     
   }
   
+  @Test
+  public void testUpdateRoomMeetingWhenMember() throws Exception {
+    // Given
+    ChatServer chatServer = new ChatServer();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    
+    String john = "john";
+    
+    userService.addUserFullName(john, "John Smith");
+    
+    String tokenJohn = tokenService.getToken(john);
+    tokenService.addUser(john, tokenJohn);
+    
+    String roomId = chatService.getTeamRoom("myteam", "john");
+    
+    
+    // When
+    Response.Content updateRoomMeetingStatus = chatServer.updateRoomMeetingStatus(john, tokenJohn, "true", roomId, "123456789");
+    // Then
+    assertNotNull(updateRoomMeetingStatus);
+    assertEquals(200, updateRoomMeetingStatus.getCode());
+    
+  }
+  
+  @Test
+  public void testUpdateRoomMeetingWhenNotMember() throws Exception {
+    // Given
+    ChatServer chatServer = new ChatServer();
+    TokenService tokenService = ServiceBootstrap.getTokenService();
+    ChatService chatService = ServiceBootstrap.getChatService();
+    UserService userService = ServiceBootstrap.getUserService();
+    
+    String john = "john";
+    
+    userService.addUserFullName(john, "John Smith");
+    
+    String tokenJohn = tokenService.getToken(john);
+    tokenService.addUser(john, tokenJohn);
+    
+    String roomId = chatService.getTeamRoom("myteam", "mary");
+    
+    
+    // When
+    Response.Content updateRoomMeetingStatus = chatServer.updateRoomMeetingStatus(john, tokenJohn, "true", roomId, "123456789");
+    // Then
+    assertNotNull(updateRoomMeetingStatus);
+    assertEquals(404, updateRoomMeetingStatus.getCode());
+    
+  }
+}
