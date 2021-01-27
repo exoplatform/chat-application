@@ -867,10 +867,14 @@ public class ChatServer
     if (!tokenService.hasUserWithToken(user, token)) {
       return Response.notFound("Petit malin !");
     }
-    
-    chatService.setRoomMeetingStatus(room, Boolean.parseBoolean(start), startTime);
-
-    return Response.ok("Updated.");
+  
+    //only member of a room can updateRoomMeetingStatus
+    if (chatService.isMemberOfRoom(user,room)) {
+      chatService.setRoomMeetingStatus(room, Boolean.parseBoolean(start), startTime);
+      return Response.ok("Updated.");
+    } else {
+      return Response.notFound("");
+    }
   }
 
   @Resource
