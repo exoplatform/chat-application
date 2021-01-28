@@ -514,7 +514,7 @@ export function registerExternalComponents(componentName, template, props, data,
   };
 
   if (extensionRegistry) {
-    extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
+    extensionRegistry.registerComponent('external-space', 'settings', externalComponentOptions);
   }
 }
 
