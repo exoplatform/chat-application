@@ -116,8 +116,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_SHOW_PARTICIPANTS, () => this.participantsArea = true);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
-
-    document.dispatchEvent(new CustomEvent('chat-external-updated'));
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
