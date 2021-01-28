@@ -825,6 +825,170 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   }
 
+  /**
+   * This will load all user rooms with pagination
+   * @param user the user for whom roomw will be loaded
+   * @param onlineUsers list of online users
+   * @param filter the filter used to filter rooms
+   * @param offset the current offset
+   * @param limit the limit of rooms
+   * @param notificationService service storing rooms notifications
+   * @param tokenService service storing tokens
+   * @return RoomsBean containing all rooms with unread messages
+   */
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService) {
+    List<RoomBean> rooms = new ArrayList<>();;
+    int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0, roomsCount = 0;
+    UserBean userBean = userDataStorage.getUser(user, true);
+
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext()) {
+      List<String> roomsIds = new ArrayList<>();
+      List<BasicDBObject> andList = new ArrayList<>();
+      List<BasicDBObject> orList = new ArrayList<>();
+      DBObject doc = cursor.next();
+      BasicDBList spaces = (BasicDBList)doc.get("spaces");
+      BasicDBList teams = (BasicDBList)doc.get("teams");
+      if(spaces != null) {
+        for (Object room : spaces) {
+          roomsIds.add((String) room);
+        }
+      }
+      if(teams != null) {
+        for (Object room : teams) {
+          roomsIds.add((String) room);
+        }
+      }
+      // Add spaces and teams rooms
+      orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
+      // Add user to user rooms
+      orList.add(new BasicDBObject("users", user));
+
+      DBObject roomsQuery = new BasicDBObject("$and", andList);
+      andList.add(new BasicDBObject("isEnabled", true));
+      andList.add(new BasicDBObject("$or", orList));
+
+      roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
+      DBCursor roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+              .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
+      while(roomsCursor.hasNext()) {
+        DBObject room = roomsCursor.next();
+        RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
+        if (roomBean.getUnreadTotal() > 0) {
+          switch(roomBean.getType()) {
+            case "u" :
+              if (roomBean.isActive()) {
+                unreadOnline += roomBean.getUnreadTotal();
+              } else {
+                unreadOffline += roomBean.getUnreadTotal();
+              }
+              break;
+            case "s" :
+              unreadSpaces += roomBean.getUnreadTotal();
+              break;
+            case "t" :
+              unreadTeams += roomBean.getUnreadTotal();
+              break;
+          }
+        }
+        rooms.add(roomBean);
+      }
+    }
+
+    List<RoomBean> finalRooms = new ArrayList<RoomBean>();
+    if (StringUtils.isNotBlank(filter)) {
+      for (RoomBean roomBean : rooms) {
+        String targetUser = roomBean.getFullName();
+        if (filter(targetUser, filter))
+          finalRooms.add(roomBean);
+      }
+    } else {
+      finalRooms = rooms;
+    }
+
+    RoomsBean roomsBean = new RoomsBean();
+    roomsBean.setRooms(finalRooms);
+    roomsBean.setUnreadOffline(unreadOffline);
+    roomsBean.setUnreadOnline(unreadOnline);
+    roomsBean.setUnreadSpaces(unreadSpaces);
+    roomsBean.setUnreadTeams(unreadTeams);
+    roomsBean.setRoomsCount(roomsCount);
+
+    return roomsBean;
+  }
+
+  /**
+   * This function creates a RoomBean directly from a room stored in MongoDB
+   * @param userBean
+   * @param onlineUsers
+   * @param room
+   * @param notificationService
+   * @return a RoomBean representing the loaded room from Database
+   */
+  private RoomBean convertToBean(UserBean userBean, List<String> onlineUsers, DBObject room, NotificationService notificationService) {
+    String type = room.get("type").toString();
+    String roomId = room.get("_id").toString();
+    RoomBean roomBean = new RoomBean();
+    switch (type) {
+      case "t": {
+        roomBean.setUser(TEAM_PREFIX + roomId);
+        roomBean.setStatus(UserService.STATUS_TEAM);
+        roomBean.setAvailableUser(true);
+        roomBean.setFullName(room.get("team").toString());
+        roomBean.setType(TYPE_ROOM_TEAM);
+        if (StringUtils.isNotBlank(roomBean.getUser())) {
+          roomBean.setAdmins(new String[]{room.get("user").toString()});
+        }
+        break;
+      }
+      case "u": {
+        List<String> users = ((List<String>)room.get("users"));
+        users.remove(userBean.getName());
+        if(users.size() > 0) {
+          String targetUser = users.get(0);
+          UserBean targetUserBean = userDataStorage.getUser(targetUser);
+          roomBean.setFullName(targetUserBean.getFullname());
+          roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
+          roomBean.setEnabledUser(targetUserBean.isEnabledUser());
+          roomBean.setAvailableUser(onlineUsers.contains(targetUser));
+          roomBean.setUser(targetUser);
+          roomBean.setType(TYPE_ROOM_USER);
+        }
+        break;
+      }
+      case "s": {
+        roomBean.setUser(SPACE_PREFIX + roomId);
+        roomBean.setFullName(room.get("displayName").toString());
+        roomBean.setStatus(UserService.STATUS_SPACE);
+        roomBean.setType(TYPE_ROOM_SPACE);
+        roomBean.setAvailableUser(true);
+        roomBean.setType(ChatService.TYPE_ROOM_SPACE);
+        if (room.containsField("prettyName")) {
+          roomBean.setPrettyName(room.get("prettyName").toString());
+        }
+
+        roomBean.setFavorite(userBean.isFavorite(roomId));
+        break;
+      }
+    }
+    roomBean.setRoom(roomId);
+    roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", "room", roomId));
+
+    if (room.containsField("meetingStarted")) {
+      roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));
+    }
+    if (room.containsField("startTime")) {
+      roomBean.setStartTime((String) room.get("startTime"));
+    }
+    if (room.containsField("timestamp")) {
+      roomBean.setTimestamp((Long) room.get("timestamp"));
+    }
+    return roomBean;
+  }
+
   private boolean filter(String user, String filter) {
     if (user == null || filter == null || "".equals(filter)) return true;
 
