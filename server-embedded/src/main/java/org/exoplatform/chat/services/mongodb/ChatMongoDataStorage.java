@@ -871,6 +871,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       orList.add(new BasicDBObject("users", user));
 
       DBObject roomsQuery = new BasicDBObject("$and", andList);
+      andList.add(new BasicDBObject("isEnabled", true));
       andList.add(new BasicDBObject("$or", orList));
 
       roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();

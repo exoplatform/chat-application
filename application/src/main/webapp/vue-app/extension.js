@@ -553,7 +553,7 @@ export function registerExternalComponents(componentName) {
   };
 
   if (extensionRegistry) {
-    extensionRegistry.registerComponent('SpaceSettings-external-component', 'space-chat-setting', externalComponentOptions);
+    extensionRegistry.registerComponent('external-space', 'settings', externalComponentOptions);
   }
 }
 
