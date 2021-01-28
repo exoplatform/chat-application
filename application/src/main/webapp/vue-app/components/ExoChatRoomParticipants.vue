@@ -168,8 +168,8 @@ export default {
       }
     },
     calculateDisplayedContacts() {
-      const limitToLoad = 20;
-      if(this.$refs.roomParticipants) {
+      this.displayedParticipantsCount = 50;
+      if(this.$refs.roomParticipants && this.contact.type && this.contact.type !== 't') {
         const headerHeight = 70;
         const moreParticipantsTextHeight = 20;
         const participantsHeight = this.$refs.roomParticipants.clientHeight;
@@ -177,14 +177,13 @@ export default {
         const viewableParticipants = (participantsHeight - headerHeight - moreParticipantsTextHeight) / participantItemHeight;
         this.displayedParticipantsCount = Math.round(viewableParticipants);
       }
-      this.displayedParticipantsCount = this.displayedParticipantsCount ? this.displayedParticipantsCount : limitToLoad;
     },
     loadRoomParticipants(contact, onlineUsersOnly) {
       chatServices.getOnlineUsers().then(users => {
         //Get users count and remove the current user
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, contact).then( data => this.participantsCount = data.usersCount - 1);
         chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount, onlineUsersOnly).then( data => {
-          this.$emit('participants-loaded', this.participantsCount);
+          this.$emit('participants-loaded', this.participants);
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
             if(user.isEnabled === 'null') {
