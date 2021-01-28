@@ -180,8 +180,8 @@ export default {
         });
         chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
           this.selectedContact.participants = data.users;
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
         });
-        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : selectedContact}));
       }
     },
     setStatus(status) {
