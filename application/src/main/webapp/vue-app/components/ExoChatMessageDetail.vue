@@ -38,14 +38,14 @@
           </div>
         </div>
       </div>
-      <div v-else-if="!message.isSystem" class="message-content" v-html="messageFiltered"></div>
+      <div v-sanitized-html="messageFiltered" v-else-if="!message.isSystem" class="message-content"></div>
       <div v-else-if="messageOptionsType === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
-        <span v-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
+        <span v-sanitized-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-else-if="messageOptionsType === chatConstants.ROOM_MEMBER_LEFT" class="message-content" v-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))">
+      <div v-sanitized-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))" v-else-if="messageOptionsType === chatConstants.ROOM_MEMBER_LEFT" class="message-content">
       </div>
       <div v-else-if="messageOptionsType === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
-        <span v-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
+        <span v-sanitized-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
       </div>
       <div v-else-if="messageOptionsType === chatConstants.EVENT_MESSAGE" class="message-content">
         <b>{{ message.options.summary }}</b>
@@ -61,8 +61,7 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-else-if="messageOptionsType === chatConstants.LINK_MESSAGE" class="message-content">
-        <a :href="message.options.link" target="_blank">{{ message.options.link }}</a>
+      <div v-autolinker="message.options.link" v-else-if="messageOptionsType === chatConstants.LINK_MESSAGE" class="message-content">
       </div>
       <div v-else-if="(messageOptionsType === chatConstants.RAISE_HAND || messageOptionsType === chatConstants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
@@ -95,7 +94,7 @@
           <a href="#" target="_blank">{{ $t('exoplatform.chat.open.wiki') }}</a>.
         </div>
       </div>
-      <div v-else-if="isSpecificMessageType" class="message-content" v-html="specificMessageContent">
+      <div v-sanitized-html="specificMessageContent" v-else-if="isSpecificMessageType" class="message-content">
       </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
@@ -133,7 +132,7 @@
     <exo-chat-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
-          <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage))">
+          <span v-sanitized-html="unescapeHTML($t(confirmMessage))" id="team-delete-window-chat-name" class="confirmationIcon">
           </span>
         </p>
       </div>

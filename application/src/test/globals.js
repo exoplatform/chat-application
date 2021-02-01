@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import Vue from 'vue';
 import {addCaretJQueryExtension} from '../main/webapp/js/lib/text-caret';
 
 global.extensionRegistry = require('./libs/extensionRegistry.js');
@@ -10,6 +11,9 @@ $.fn.extend({
   //mock userPopup extension
   userPopup() {}
 });
+
+Vue.directive('sanitized-html', (el, binding) => el.innerHTML = binding.value);
+Vue.directive('autolinker', (el, binding) => el.innerHTML = binding.value);
 
 global.eXo = {
   env: {

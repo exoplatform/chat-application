@@ -6,7 +6,7 @@
     </div>
     <div class="contactDetail">
       <div :class="isActive" class="contactLabel">
-        <span v-html="escapedName" />
+        <span v-sanitized-html="escapedName" />
         <span v-if="isExternal" class="externalTagClass">{{ externalTag }}</span>
         <slot></slot>
       </div>
@@ -30,7 +30,7 @@
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
-      <div v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact" :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' " v-html="lastMessage"></div>
+      <div v-sanitized-html="lastMessage" v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact" :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' "></div>
     </div>
   </div>
 </template>

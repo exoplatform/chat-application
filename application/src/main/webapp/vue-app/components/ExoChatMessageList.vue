@@ -12,7 +12,16 @@
     </div>
     <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" :user-settings="userSettings" @message-written="messageWritten"></exo-chat-message-composer>
     <exo-chat-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
-      <exo-content-editable id="editMessageComposerArea" ref="editMessageComposerArea" v-model="messageToEdit.msg" name="editMessageComposerArea" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="saveEditMessage"></exo-content-editable>
+      <exo-content-editable
+        v-if="showEditMessageModal"
+        id="editMessageComposerArea"
+        ref="editMessageComposerArea"
+        v-model="messageToEdit.msg"
+        name="editMessageComposerArea"
+        autofocus
+        @keydown.enter="preventDefault"
+        @keypress.enter="preventDefault"
+        @keyup.enter="saveEditMessage" />
       <div class="uiAction uiActionBorder">
         <div class="btn btn-primary" @click="saveEditMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
