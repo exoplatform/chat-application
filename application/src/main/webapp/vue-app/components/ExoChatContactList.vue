@@ -427,6 +427,32 @@ export default {
         }
         foundContact.lastMessage = message.data;
         foundContact.timestamp = message.data.timestamp;
+
+        if (eXo.env.portal.userName === message.sender) {
+          const chatRoomId = foundContact.room;
+          const chatMessageType = message.data.options && message.data.options.type || 'message';
+          const chatRoomType = foundContact.type === 'u' && 'user' || foundContact.type === 's' && 'space' || foundContact.type === 't' && 'team' || null;
+          const chatMessageLength = message.data.msg && message.data.msg.length || 0;
+          const participantsCount = foundContact.type === 'u' ? 1 : foundContact.participantsCount;
+          const activeParticipantsCount = foundContact.type === 'u' ? 1 : foundContact.activeParticipantsCount;
+          const statisticData = {
+            module: 'chat',
+            subModule: 'chat-message',
+            operation: 'sendChatMessage',
+            userName: eXo.env.portal.userName,
+            spacePrettyName: foundContact.prettyName,
+            portalUri: eXo.env.server.portalBaseURL,
+            parameters : {
+              participantsCount,
+              activeParticipantsCount,
+              chatRoomId,
+              chatRoomType,
+              chatMessageType,
+              chatMessageLength,
+            },
+          };
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_STATISTIC, {detail: statisticData}));
+        }
       }
     },
     roomSaved(room) {

@@ -177,6 +177,7 @@ export default {
         this.contactOpened = false;
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, selectedContact).then( data => {
           this.selectedContact.participantsCount = data.usersCount;
+          this.selectedContact.activeParticipantsCount = data.activeUsersCount;
         });
         chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
           this.selectedContact.participants = data.users;

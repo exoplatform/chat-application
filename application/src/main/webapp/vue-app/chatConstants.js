@@ -88,6 +88,7 @@ export const chatConstants = {
   EVENT_MESSAGE_SENT: 'exo-chat-message-sent-ack',
   EVENT_MESSAGE_READ: 'exo-chat-message-read',
   EVENT_MESSAGE_UPDATED: 'exo-chat-message-updated',
+  EVENT_MESSAGE_STATISTIC: 'exo-statistic-message',
   EVENT_GLOBAL_UNREAD_COUNT_UPDATED: 'exo-chat-notification-count-updated',
   EVENT_ROOM_PARTICIPANTS_LOADED: 'exo-chat-participants-loaded',
   EVENT_ROOM_DELETED: 'exo-chat-room-deleted',

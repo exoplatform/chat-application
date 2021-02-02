@@ -1059,7 +1059,8 @@ public class ChatServer
 
     StringBuffer data = new StringBuffer();
     data.append("{");
-    data.append(" \"usersCount\": ").append(userService.getUsersCount(room, filter));
+    data.append(" \"usersCount\": ").append(userService.getUsersCount(room, filter)).append(",");
+    data.append(" \"activeUsersCount\": ").append(userService.getActiveUsersCount(room, filter));
     data.append("}");
 
     return Response.ok(data).withMimeType("application/json").withHeader
