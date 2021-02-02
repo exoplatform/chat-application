@@ -7,7 +7,7 @@
       <div class="content">
         <span class="name text-link" href="#">{{ notif.fromFullName }}</span>
         <i v-if="messageClass && messageClass.length" :class="messageClass"></i>
-        <div class="text" v-html="messageContent" />
+        <div v-sanitized-html="messageContent" class="text"></div>
       </div>
       <div class="gray-box">
         <div class="timestamp time">
