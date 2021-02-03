@@ -860,7 +860,13 @@ public class UserMongoDataStorage implements UserDataStorage {
     return users;
   }
 
+  @Override
   public Long getUsersCount(String roomId, String filter) {
+    return getUsersCount(roomId, filter, false);
+  }
+
+  @Override
+  public Long getUsersCount(String roomId, String filter, boolean activeUsers) {
     if (roomId == null && filter == null) {
       throw new IllegalArgumentException();
     }
@@ -891,6 +897,9 @@ public class UserMongoDataStorage implements UserDataStorage {
       andList.add(new BasicDBObject("$or", orList));
     }
     andList.add(new BasicDBObject("isDeleted", "false"));
+    if (activeUsers) {
+      andList.add(new BasicDBObject("status", STATUS_AVAILABLE));
+    }
     List<BasicDBObject> orList = new ArrayList<>();
     orList.add(new BasicDBObject("isEnabled", "true"));
     //some entries were added with boolean values

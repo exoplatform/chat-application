@@ -129,4 +129,6 @@ public interface UserService
   public int getNumberOfUsers();
 
   public long getUsersCount(String room, String filter);
+
+  long getActiveUsersCount(String room, String filter);
 }

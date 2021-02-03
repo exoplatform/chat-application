@@ -101,6 +101,8 @@ public interface UserDataStorage {
 
   Long getUsersCount(String roomId, String filter);
 
+  Long getUsersCount(String roomId, String filter, boolean activeUsers);
+
   List<UserBean> getUsersInRoomChatOneToOne(String roomId);
 
   String setStatus(String user, String status);
