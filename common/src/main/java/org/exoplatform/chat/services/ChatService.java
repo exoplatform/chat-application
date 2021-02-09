@@ -95,6 +95,10 @@ public interface ChatService
   public String getTeamCreator(String room);
 
   public void setRoomName(String room, String name);
+
+  public boolean isRoomEnabled(String room);
+
+  public void setRoomEnabled(String room, boolean enabled);
   
   public void setRoomMeetingStatus(String room, boolean start, String startTime);
   
