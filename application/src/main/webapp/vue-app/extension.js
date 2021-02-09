@@ -1,5 +1,6 @@
 import {chatConstants} from './chatConstants.js';
 import {initTiptip} from './tiptip.js';
+import * as chatServices from './chatServices.js';
 
 export const ECMS_EVENT_COMPOSER_APP = [{
   key: 'file',
@@ -466,7 +467,18 @@ export function registerExternalExtensions(chatTitle) {
     title: chatTitle,
     icon: 'uiIconBannerChat',
     order: 10,
-    enabled: () => true,
+    enabled: async (profile) => {
+      // check if the space's chat is enabled
+      if (profile.hasOwnProperty('groupId')) {
+        return await chatServices.getUserSettings()
+          .then(userSettings => {
+            return chatServices.isRoomEnabled(userSettings, profile.id)
+              .then(value => value === 'true');
+          }).then(value => value);
+      }
+      // if it's a user profile
+      return true;
+    },
     click: (profile) => {
       const chatType = profile.groupId ? 'space-id' : 'username';
       const chatRoomName = profile.prettyName ? profile.id : profile.username;
@@ -479,19 +491,82 @@ export function registerExternalExtensions(chatTitle) {
     },
   };
 
-  extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
+  if (extensionRegistry) {
+    extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
+  }
 
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
 }
 
+export function registerExternalComponents(componentName) {
+  const externalComponentOptions = {
+    name: componentName,
+    componentImpl: {
+      template: `
+        <v-card id="FromChat" class="border-radius" flat>
+          <v-list>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="title text-color">
+                  {{ $t('exoplatform.chat.app.title') }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ $t('exoplatform.chat.spaceSettings.external.component.description') }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="spaceChatEnabled" @change="enableDisableChat"></v-switch>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      `,
+      props: {
+        spaceId: {
+          type: String,
+          default: ''
+        }
+      },
+      data() {
+        return {
+          spaceChatEnabled: false,
+        };
+      },
+      created() {
+        //check if space's chat is enabled
+        chatServices.getUserSettings()
+          .then(userSettings => {
+            this.userSettings = userSettings;
+            chatServices.isRoomEnabled(this.userSettings, this.spaceId)
+              .then(value => {
+                this.spaceChatEnabled = value === 'true';
+              });
+          });
+      },
+      methods: {
+        enableDisableChat() {
+          chatServices.updateRoomEnabled(this.userSettings, this.spaceId, this.spaceChatEnabled);
+        },
+      }
+      
+    }
+  };
+
+  if (extensionRegistry) {
+    extensionRegistry.registerComponent('external-space', 'settings', externalComponentOptions);
+  }
+}
+
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
-    extensionRegistry.registerExtension('chat', extensionType, extension);
+    if (extensionRegistry) {
+      extensionRegistry.registerExtension('chat', extensionType, extension);
+    }
   }
 }
 
 function getExtensionsByType(type) {
-  return extensionRegistry.loadExtensions('chat', type);
+  return extensionRegistry ? extensionRegistry.loadExtensions('chat', type) : [];
 }
 
 initTiptip();

@@ -332,6 +332,19 @@ public class ChatServiceImpl implements ChatService
   }
 
   @Override
+  public boolean isRoomEnabled(String room) {
+    return chatStorage.isRoomEnabled(room);
+  }
+
+  @Override
+  public void setRoomEnabled(String room, boolean enabled) {
+    chatStorage.setRoomEnabled(room, enabled);
+    // set all room Notifications as read
+    List<UserBean> userBeans = userService.getUsers(room);
+    userBeans.stream().forEach(userBean -> notificationService.setNotificationsAsRead(userBean.getName(), "chat", "room", room));
+  }
+
+  @Override
   public void setRoomMeetingStatus(String room, boolean start, String startTime) {
     chatStorage.setRoomMeetingStatus(room, start, startTime);
   }
