@@ -6,7 +6,6 @@ const apiMocker = require('connect-api-mocker');
 
 // change the server path to your server location path
 const exoServerPath = "/exo-server/";
-
 let config = merge(webpackCommonConfig, {
   output: {
     path: path.resolve(__dirname, exoServerPath + 'webapps/chat/')

@@ -168,10 +168,12 @@ export default {
       if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
         eXo.chat.selectedContact = selectedContact;
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
+        const index = this.contactList.indexOf(selectedContact);
         if(indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         } else {
-          this.contactList.splice(indexOfRoom, 1, selectedContact);
+          this.contactList.splice(indexOfRoom, 0, selectedContact);
+          this.contactList.splice(index+1, 1);
         }
         this.selectedContact = selectedContact;
         this.contactOpened = false;
