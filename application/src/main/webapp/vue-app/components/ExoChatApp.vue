@@ -167,7 +167,7 @@ export default {
       }
       if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
         eXo.chat.selectedContact = selectedContact;
-        const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || selectedContact.type ==='u' && contact.user === selectedContact.user);
+        const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
         if(indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         }
