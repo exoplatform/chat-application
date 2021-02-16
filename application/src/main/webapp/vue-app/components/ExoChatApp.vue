@@ -170,8 +170,6 @@ export default {
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
         if(indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
-        } else {
-          this.contactList.splice(indexOfRoom, 1, selectedContact);
         }
         this.selectedContact = selectedContact;
         this.contactOpened = false;
