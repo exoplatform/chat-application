@@ -94,6 +94,8 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
 export function updateTotalUnread(totalUnreadMsg) {
   if (totalUnreadMsg && totalUnreadMsg > 0) {
     document.title = eXo.env.portal.selectedNodeUri.concat(`(${totalUnreadMsg})`);
+  } else {
+    document.title = eXo.env.portal.selectedNodeUri;
   }
 }
 
