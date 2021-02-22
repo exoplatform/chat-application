@@ -1,0 +1,5 @@
+              2021-02-22 eXo Support <support@exoplatform.org> 
+
+   # 3.0.4 Patches changelog: 
+
+
