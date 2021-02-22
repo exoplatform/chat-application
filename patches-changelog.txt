@@ -11,3 +11,4 @@
 * 2021-02-22: Patch-6.0.4:2, Author: Jihed Chabbeh<jchabbeh@exoplatform.com>
 
   -  https://github.com/exoplatform/chat-application/commit/83cd307efd87665cef24b185dd422249aa2ee5e1
+  -  https://github.com/Meeds-io/commons/commit/436e013a2fe01079fca6fb1f6a4a5a641ac6cb13
