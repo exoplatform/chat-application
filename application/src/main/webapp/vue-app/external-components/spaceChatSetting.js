@@ -6,7 +6,7 @@ export const template = `
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="title text-color">
-                  {{ $t('exoplatform.chat.app.title') }}
+                  {{ $t('exoplatform.chat.spaceSettings.external.component.title') }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
                   {{ $t('exoplatform.chat.spaceSettings.external.component.description') }}
