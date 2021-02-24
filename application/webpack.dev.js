@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('connect-api-mocker');
 
 // change the server path to your server location path
-const exoServerPath = "/home/exo/work/exoRepos/6.2.x/platform-6.2.x-maintenance-SNAPSHOT/";
+const exoServerPath = "/exo-server/";
 
 let config = merge(webpackCommonConfig, {
   output: {
