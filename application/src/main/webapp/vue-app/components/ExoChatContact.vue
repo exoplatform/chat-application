@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceByPrettyName, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -117,7 +117,8 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
-      }
+      },
+      spaceGroupUri: null,
     };
   },
   computed: {
@@ -173,6 +174,15 @@ export default {
     document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
   },
   methods: {
+    getSpaceURI() {
+      const spaceId = this.name.toLowerCase().split(' ').join('_');
+      getSpaceByPrettyName(this.name).then((space) => {
+        if (space && space.identity) {
+          this.spaceGroupUri= space.groupId.replace(/\//g, ':');
+        }
+      });
+      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
+    },
     setStatus(status) {
       this.$emit('status-changed', status);
     },
@@ -183,10 +193,10 @@ export default {
       this.isOnline = false;
     },
     getProfileLink() {
-      if (this.app && this.type === 'u') {
+      if (this.type === 'u') {
         return getUserProfileLink(this.userName);
-      } else if (this.app && this.type === 's') {
-        return getSpaceProfileLink(this.name);
+      } else if (this.type === 's') {
+        return this.getSpaceURI();
       }
       return '#';
     }

@@ -413,6 +413,24 @@ export function getSpaceProfileLink(space) {
   // FIXME very ugly, the technical ID should be used here instead
   const spaceId = space.toLowerCase().split(' ').join('_');
   return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${spaceId}/${spaceId}`;
+
+}
+export function getSpaceByPrettyName(prettyName) {
+  const spaceId = prettyName.toLowerCase().split(' ').join('_');
+  return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${spaceId}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'GET',
+  }).then((resp) => {
+    if(resp && resp.ok) {
+      return resp.json();
+    }
+    else {
+      throw new Error ('Error when loading space');
+    }
+  });
 }
 
 export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) {
