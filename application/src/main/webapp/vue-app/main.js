@@ -1,6 +1,6 @@
 import {addCaretJQueryExtension} from '../js/lib/text-caret';
 import {chatConstants} from './chatConstants.js';
-import {registerExternalExtensions, registerExternalComponents} from './extension.js';
+import {registerExternalExtensions} from './extension.js';
 
 import './../css/main.less';
 import './components/initComponents.js';
@@ -48,7 +48,6 @@ if (extensionRegistry) {
 export function init() {
   exoi18n.loadLanguageAsync(lang, url).then(i18n => {
     registerExternalExtensions(i18n.messages[lang]['exoplatform.chat.open.chat']);
-    registerExternalComponents('space-chat-setting');
 
     if ($('#chatApplication').length) {
       new Vue({
