@@ -1,7 +1,7 @@
 <template>
   <div class="chat-contact">
     <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
-      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="getProfileLink()" class="chat-contact-link"></a>
+      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="contactUrl" class="chat-contact-link"></a>
       <i v-if="list && type=='u' && (isEnabled || isEnabled === null)" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
@@ -118,7 +118,7 @@ export default {
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
       },
-      spaceGroupUri: null,
+      spaceContact: {},
     };
   },
   computed: {
@@ -161,12 +161,27 @@ export default {
     },
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
+    },
+    spaceGroupUri() {
+      return this.spaceContact && this.spaceContact.groupId.replace(/\//g, ':');
+    },
+    contactUrl() {
+      if (this.type === 'u') {
+        return getUserProfileLink(this.userName);
+      } else if (this.type === 's') {
+        const spaceId = this.name.toLowerCase().split(' ').join('_');
+        return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
+      }
+      return '#';
     }
   },
   created() {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
+    if (this.type === 's') {
+      this.getSpace();
+    }
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
@@ -174,15 +189,6 @@ export default {
     document.removeEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
   },
   methods: {
-    getSpaceURI() {
-      const spaceId = this.name.toLowerCase().split(' ').join('_');
-      getSpaceByPrettyName(this.name).then((space) => {
-        if (space && space.identity) {
-          this.spaceGroupUri= space.groupId.replace(/\//g, ':');
-        }
-      });
-      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
-    },
     setStatus(status) {
       this.$emit('status-changed', status);
     },
@@ -193,12 +199,14 @@ export default {
       this.isOnline = false;
     },
     getProfileLink() {
-      if (this.type === 'u') {
-        return getUserProfileLink(this.userName);
-      } else if (this.type === 's') {
-        return this.getSpaceURI();
-      }
-      return '#';
+      console.log('called!!!!!!!!');
+    },
+    getSpace() {
+      return getSpaceByPrettyName(this.name).then((space) => {
+        if (space && space.identity) {
+          this.spaceContact = space;
+        }
+      });
     }
   }
 };
