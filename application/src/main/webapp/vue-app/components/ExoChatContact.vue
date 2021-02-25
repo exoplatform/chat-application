@@ -163,7 +163,7 @@ export default {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
     },
     spaceGroupUri() {
-      return this.spaceContact && this.spaceContact.groupId.replace(/\//g, ':');
+      return this.spaceContact && this.spaceContact.groupId && this.spaceContact.groupId.replace(/\//g, ':');
     },
     contactUrl() {
       if (this.type === 'u') {
