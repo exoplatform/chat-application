@@ -198,9 +198,6 @@ export default {
     setOffline() {
       this.isOnline = false;
     },
-    getProfileLink() {
-      console.log('called!!!!!!!!');
-    },
     getSpace() {
       return getSpaceByPrettyName(this.name).then((space) => {
         if (space && space.identity) {
