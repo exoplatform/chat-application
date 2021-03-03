@@ -6,6 +6,7 @@ export const chatConstants = {
   SOCIAL_SPACE_API: `${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/social/spaces/`,
   PEOPLE_INFO_API: `${eXo.env.portal.context}/${eXo.env.portal.rest}/social/people/getPeopleInfo/{0}.json`,
   USER_STATE_API: `${eXo.env.portal.context}/${eXo.env.portal.rest}/state/status/`,
+  BY_PRETTY_NAME: 'byPrettyName/',
   CHAT_API: '/chat/api/1.0/user/',
   CHAT_WIKI_API: '/chat/api/1.0/wiki/',
   PROFILE_PAGE_NAME: 'profile',
