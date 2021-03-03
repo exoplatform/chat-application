@@ -180,9 +180,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
-    if (this.type === 's') {
-      this.getSpace();
-    }
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
