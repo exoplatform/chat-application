@@ -413,8 +413,8 @@ export function getSpaceProfileLink(space) {
   // FIXME very ugly, the technical ID should be used here instead
   const spaceId = space.toLowerCase().split(' ').join('_');
   return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${spaceId}/${spaceId}`;
-
 }
+
 export function getSpaceByPrettyName(prettyName) {
   const spaceId = prettyName.toLowerCase().split(' ').join('_');
   return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${spaceId}`, {
