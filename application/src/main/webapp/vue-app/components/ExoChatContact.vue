@@ -162,16 +162,13 @@ export default {
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
     },
-    spaceGroupUri() {
-      this.getSpace();
-      return this.spaceContact && this.spaceContact.groupId && this.spaceContact.groupId.replace(/\//g, ':');
-    },
     contactUrl() {
       if (this.type === 'u') {
         return getUserProfileLink(this.userName);
       } else if (this.type === 's') {
         const spaceId = this.name.toLowerCase().split(' ').join('_');
-        return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
+        const spaceGroupUri = this.spaceGroupUri();
+        return `${eXo.env.portal.context}/g/${spaceGroupUri}/${spaceId}`;
       }
       return '#';
     }
@@ -196,13 +193,14 @@ export default {
     setOffline() {
       this.isOnline = false;
     },
-    getSpace() {
-      return getSpaceByPrettyName(this.name).then((space) => {
+    spaceGroupUri() {
+      getSpaceByPrettyName(this.name).then((space) => {
         if (space && space.identity) {
           this.spaceContact = space;
         }
       });
-    }
+      return this.spaceContact && this.spaceContact.groupId && this.spaceContact.groupId.replace(/\//g, ':');
+    },
   }
 };
 </script>
