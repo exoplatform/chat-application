@@ -118,7 +118,7 @@ export default {
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
       },
-      spaceContact: {},
+      spaceGroupUri : '',
     };
   },
   computed: {
@@ -162,15 +162,11 @@ export default {
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
     },
-    spaceGroupUri() {
-      return this.spaceContact && this.spaceContact.groupId && this.spaceContact.groupId.replace(/\//g, ':');
-    },
     contactUrl() {
       if (this.type === 'u') {
         return getUserProfileLink(this.userName);
       } else if (this.type === 's') {
-        const spaceId = this.name.toLowerCase().split(' ').join('_');
-        return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
+        return this.getSpaceURI() ;
       }
       return '#';
     }
@@ -179,9 +175,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
-    if (this.type === 's') {
-      this.getSpace();
-    }
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
@@ -198,12 +191,14 @@ export default {
     setOffline() {
       this.isOnline = false;
     },
-    getSpace() {
-      return getSpaceByPrettyName(this.name).then((space) => {
+    getSpaceURI() {
+      const spaceId = this.name.toLowerCase().split(' ').join('_');
+      getSpaceByPrettyName(this.name).then((space) => {
         if (space && space.identity) {
-          this.spaceContact = space;
+          this.spaceGroupUri= space.groupId.replace(/\//g, ':');
         }
       });
+      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
     }
   }
 };
