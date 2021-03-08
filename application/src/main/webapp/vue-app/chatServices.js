@@ -416,8 +416,7 @@ export function getSpaceProfileLink(space) {
 }
 
 export function getSpaceByPrettyName(prettyName) {
-  const spaceId = prettyName.toLowerCase().split(' ').join('_');
-  return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${spaceId}`, {
+  return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${prettyName}`, {
     headers: {
       'Content-Type': 'application/json'
     },
