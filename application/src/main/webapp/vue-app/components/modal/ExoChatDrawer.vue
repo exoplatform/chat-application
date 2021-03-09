@@ -148,9 +148,9 @@ export default {
   created() {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
-    });
-    chatServices.getNotReadMessages(this.userSettings).then(data => {
-      this.totalUnreadMsg = data.total;
+      chatServices.getNotReadMessages(this.userSettings).then(data => {
+        this.totalUnreadMsg = data.total;
+      });
     });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);

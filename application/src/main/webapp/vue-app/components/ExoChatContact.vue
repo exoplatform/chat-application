@@ -36,13 +36,18 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceByPrettyName, escapeHtml } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
     /** Contact pretty name */
     prettyName: {
+      type: String,
+      default: ''
+    },
+    /** Group ID in case of a space */
+    groupId: {
       type: String,
       default: ''
     },
@@ -117,8 +122,7 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
-      },
-      spaceGroupUri : '',
+      }
     };
   },
   computed: {
@@ -165,8 +169,8 @@ export default {
     contactUrl() {
       if (this.type === 'u') {
         return getUserProfileLink(this.userName);
-      } else if (this.type === 's') {
-        return this.getSpaceURI() ;
+      } else if (this.type === 's' && this.groupId) {
+        return getSpaceProfileLink(this.groupId, this.prettyName);
       }
       return '#';
     }
@@ -190,14 +194,6 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
-    },
-    getSpaceURI() {
-      getSpaceByPrettyName(this.prettyName).then((space) => {
-        if (space && space.identity) {
-          this.spaceGroupUri= space.groupId.replace(/\//g, ':');
-        }
-      });
-      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${this.prettyName}`;
     }
   }
 };

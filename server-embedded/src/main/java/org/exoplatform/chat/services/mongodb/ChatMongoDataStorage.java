@@ -762,6 +762,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setAvailableUser(true);
       room.setType(ChatService.TYPE_ROOM_SPACE);
       room.setPrettyName(space.getPrettyName());
+      room.setGroupId(space.getGroupId());
 
       String spaceRoomId = getSpaceRoom(SPACE_PREFIX + space.getRoom());
       room.setEnabledRoom(isRoomEnabled(spaceRoomId));
@@ -972,6 +973,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setType(TYPE_ROOM_SPACE);
         roomBean.setAvailableUser(true);
         roomBean.setType(ChatService.TYPE_ROOM_SPACE);
+        roomBean.setGroupId(room.get("groupId").toString());
         if (room.containsField("prettyName")) {
           roomBean.setPrettyName(room.get("prettyName").toString());
         }
