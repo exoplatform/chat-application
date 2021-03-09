@@ -192,13 +192,12 @@ export default {
       this.isOnline = false;
     },
     getSpaceURI() {
-      const spaceId = this.name.toLowerCase().split(' ').filter(x => x !== '').join('_').split('-').join('');
-      getSpaceByPrettyName(spaceId).then((space) => {
+      getSpaceByPrettyName(this.prettyName).then((space) => {
         if (space && space.identity) {
           this.spaceGroupUri= space.groupId.replace(/\//g, ':');
         }
       });
-      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${spaceId}`;
+      return `${eXo.env.portal.context}/g/${this.spaceGroupUri}/${this.prettyName}`;
     }
   }
 };
