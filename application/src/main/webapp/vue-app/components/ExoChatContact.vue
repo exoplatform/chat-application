@@ -192,7 +192,7 @@ export default {
       this.isOnline = false;
     },
     getSpaceURI() {
-      const spaceId = this.name.toLowerCase().split(' ').join('_').split('-').join('');
+      const spaceId = this.name.toLowerCase().split(' ').filter(x => x !== '').join('_').split('-').join('');
       getSpaceByPrettyName(spaceId).then((space) => {
         if (space && space.identity) {
           this.spaceGroupUri= space.groupId.replace(/\//g, ':');
