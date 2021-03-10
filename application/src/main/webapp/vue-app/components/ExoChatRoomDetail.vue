@@ -1,7 +1,7 @@
 <template>
   <div id="room-detail" class="room-detail">
     <div v-if="mq == 'mobile'" @click="backToContactList"><i class="uiIconGoBack"></i></div>
-    <exo-chat-contact v-if="!showMeetingDrawer" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
+    <exo-chat-contact v-if="!showMeetingDrawer" :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :group-id="contact.groupId" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
       <div v-exo-tooltip.bottom.body="favoriteTooltip" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
     </exo-chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
