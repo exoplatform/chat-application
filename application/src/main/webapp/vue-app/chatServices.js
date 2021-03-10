@@ -33,6 +33,9 @@ export function setUserStatus(userSettings, status, callback) {
 }
 
 export function getNotReadMessages(userSettings, withDetails) {
+  if(!withDetails) {
+    withDetails = '';
+  }
   return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&withDetails=${withDetails}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
@@ -409,15 +412,12 @@ export function getUserProfileLink(user) {
   return `${chatConstants.PORTAL}/${chatConstants.PORTAL_NAME}/${chatConstants.PROFILE_PAGE_NAME}/${user}`;
 }
 
-export function getSpaceProfileLink(space) {
-  // FIXME very ugly, the technical ID should be used here instead
-  const spaceId = space.toLowerCase().split(' ').join('_');
-  return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${spaceId}/${spaceId}`;
+export function getSpaceProfileLink(groupId,prettyName) {
+  return `${chatConstants.PORTAL}${chatConstants.PROFILE_SPACE_LINK}${groupId.replaceAll('/',':')}/${prettyName}`;
 }
 
 export function getSpaceByPrettyName(prettyName) {
-  const spaceId = prettyName.toLowerCase().split(' ').join('_');
-  return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${spaceId}`, {
+  return fetch(`${chatConstants.SOCIAL_SPACE_API}${chatConstants.BY_PRETTY_NAME}${prettyName}`, {
     headers: {
       'Content-Type': 'application/json'
     },

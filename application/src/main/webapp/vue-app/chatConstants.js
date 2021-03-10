@@ -10,7 +10,7 @@ export const chatConstants = {
   CHAT_API: '/chat/api/1.0/user/',
   CHAT_WIKI_API: '/chat/api/1.0/wiki/',
   PROFILE_PAGE_NAME: 'profile',
-  PROFILE_SPACE_LINK: '/g/:spaces:',
+  PROFILE_SPACE_LINK: '/g/',
   CHAT_SERVER_API: '/chatServer/',
   CHAT_PLUGIN_API: '/chat/api/1.0/plugin/',
   UPLOAD_API: '/portal/rest/chat/api/1.0/file/upload',
