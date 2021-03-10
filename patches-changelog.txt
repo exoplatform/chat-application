@@ -2,4 +2,6 @@
 
    # 3.1.0 Patches changelog: 
 
+* 2021-03-10: Patch-6.1.0:1, Author: Jihed Chabbeh<jchabbeh@exoplatform.com>
 
+  -  https://github.com/exoplatform/chat-application/pull/247
