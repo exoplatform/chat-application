@@ -346,19 +346,11 @@ export default {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
       if(roomName && roomName.trim().length) {
-        this.$refs.chatDrawer.startLoading();
-        chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
-          const selectedContact = this.contactList.find(contact => contact.room === rommId || contact.user === rommId);
-          if ( !selectedContact ) {
-            this.refreshContacts(false);
-            this.selectedContact = rommId;
-          } else {
-            this.setSelectedContact(rommId);
-          }
-          if (this.$refs.chatDrawer) {
-            this.$refs.chatDrawer.open();
-          }
-        }).finally(this.$refs.chatDrawer.endLoading);
+        chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId =>
+          chatServices.getRoomDetail(this.userSettings, roomId).then( room => {
+            this.openDrawer();
+            this.setSelectedContact(room);
+          }));
       }
       const tiptip = document.getElementById('tiptip_holder');
       if (tiptip) {
