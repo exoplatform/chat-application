@@ -18,9 +18,9 @@
         this.eXoSecret = {
           exoId: config.exoId,
           exoToken: config.exoToken
-        }
+        };
       }
-      if (typeof config.autoResubscribe != 'undefined') {
+      if (typeof config.autoResubscribe !== 'undefined') {
         this.autoResubscribe = config.autoResubscribe;
       }
       this.parent.configure.apply(this, arguments);
@@ -41,7 +41,7 @@
 
       //Add eXo token
       if (!subscribeProps) {
-        subscribeProps = {}
+        subscribeProps = {};
       }
       subscribeProps = $.extend({}, this.eXoSecret, subscribeProps);
 
@@ -104,7 +104,7 @@
       this.parent.disconnect.apply(this, arguments);
     };
 
-    var thiz = this;
+    const thiz = this;
     this.addListener('/meta/handshake', function(message) {
       if (message.successful) {
         //start a batch
@@ -129,7 +129,7 @@
 
   }
 
-  var cometD = new ExtCometD($.cometd);
+  const cometD = new ExtCometD($.cometd);
 
   cometD.getInstance = function(name) {
     if (name) {
