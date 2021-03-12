@@ -1,7 +1,7 @@
 <template>
   <div class="chat-contact">
     <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
-      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="getProfileLink()" class="chat-contact-link"></a>
+      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="contactUrl" class="chat-contact-link"></a>
       <i v-if="list && type=='u' && (isEnabled || isEnabled === null)" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
@@ -42,6 +42,11 @@ export default {
   props: {
     /** Contact pretty name */
     prettyName: {
+      type: String,
+      default: ''
+    },
+    /** Group ID in case of a space */
+    groupId: {
       type: String,
       default: ''
     },
@@ -152,6 +157,14 @@ export default {
     },
     isActive() {
       return this.type === 'u' && !this.isEnabled ? 'inactive' : 'active';
+    },
+    contactUrl() {
+      if (this.type === 'u') {
+        return getUserProfileLink(this.userName);
+      } else if (this.type === 's' && this.groupId) {
+        return getSpaceProfileLink(this.groupId, this.prettyName);
+      }
+      return '#';
     }
   },
   created() {
@@ -173,14 +186,6 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
-    },
-    getProfileLink() {
-      if (this.app && this.type === 'u') {
-        return getUserProfileLink(this.userName);
-      } else if (this.app && this.type === 's') {
-        return getSpaceProfileLink(this.name);
-      }
-      return '#';
     }
   }
 };

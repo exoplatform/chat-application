@@ -43,6 +43,7 @@ public class RoomBean implements Comparable<RoomBean>
   String[] admins = null;
   long timestamp = -1;
   org.json.JSONObject lastMessage;
+  String groupId;
 
   public String getPrettyName() {
     return prettyName;
@@ -148,6 +149,14 @@ public class RoomBean implements Comparable<RoomBean>
     this.admins = admins;
   }
 
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
+
   @Override
   public int compareTo(RoomBean roomBean) {
     String l = ((isFavorite) ? "0" : "1") + fullname;
@@ -197,6 +206,9 @@ public class RoomBean implements Comparable<RoomBean>
     obj.put("startTime", this.getStartTime());
     obj.put("lastMessage", this.getLastMessage());
     obj.put("prettyName", this.getPrettyName());
+    if(this.getGroupId() != null && !this.getGroupId().isEmpty()) {
+      obj.put("groupId", this.getGroupId());
+    }
     if (this.getAdmins() != null) {
       try {
         obj.put("admins", new JSONArray(this.getAdmins()));
