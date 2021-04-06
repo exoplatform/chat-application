@@ -22,6 +22,9 @@
       white-space: nowrap;
       font-weight: normal;
     }
+    span.notif-total.badgeDefault.badgePrimary.max {
+      padding: 0px 2px 0px 0px;
+    }
     .chatDrawer {
       .drawerHeader .drawerTitle {
         padding: 0;
@@ -287,11 +290,16 @@
         .apps-item {
           width: 33%;
         }
+        .maxUnread{
+          padding: 0px 4px 0px 0px;
+        }
         .unreadMessages {
-          .square-rounded(16px);
           margin-top: -4px;
           background-color: @unreadMessage;
           color: #fff;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
         }
       }
     }
