@@ -7,7 +7,7 @@ const DEFAULT_OFFSET = 0;
 const DEFAULT_USER_LIMIT = 20;
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
-
+const MAX_UNREAD_NUMBER = 99;
 export function getUserStatus(userSettings, user) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getStatus?user=${userSettings.username}&targetUser=${user}`, {
     headers: {
@@ -96,8 +96,10 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
 }
 
 export function updateTotalUnread(totalUnreadMsg) {
-  if (totalUnreadMsg && totalUnreadMsg > 0) {
+  if (totalUnreadMsg && totalUnreadMsg > 0 && totalUnreadMsg <= MAX_UNREAD_NUMBER) {
     document.title = eXo.env.portal.selectedNodeUri.concat(`(${totalUnreadMsg})`);
+  } else if (totalUnreadMsg > MAX_UNREAD_NUMBER) {
+    document.title = eXo.env.portal.selectedNodeUri.concat('(+99)');
   } else {
     document.title = eXo.env.portal.selectedNodeUri;
   }
