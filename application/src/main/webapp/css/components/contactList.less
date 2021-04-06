@@ -190,14 +190,15 @@
     cursor: pointer;
   }
   .unreadMessages, .favorite {
-    .square(@actionIconsSize);
     margin-left: 10px;
   }
   .unreadMessages {
     background: @primaryColor;
     text-align: center;
     line-height: @actionIconsSize;
-    font-size: 12px;
+    font-size: 11px;
+    padding: 0px 4px 0px 4px;
+    min-width: 20px;
   }
   &.hasUnreadMessages {
     font-weight: bold;
