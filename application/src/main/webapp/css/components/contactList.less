@@ -55,7 +55,8 @@
     overflow-y: auto;
   }
   .chat-contact {
-    margin-right: auto;
+    margin-right: auto ~'; /** orientation=lt */ ';
+    margin-left: auto ~'; /** orientation=rt */ ';
   }
   .room-actions {
     display: flex;
@@ -122,7 +123,8 @@
         }
         .uiIconFilter {
           font-size: 14px;
-          margin-right: 5px;
+          margin-right: 5px ~'; /** orientation=lt */ ';
+          margin-left: 5px ~'; /** orientation=rt */ ';
         }
       }
       &:last-child {
@@ -139,7 +141,8 @@
     .uiIconTick {
       font-size: 13px;
       position: absolute;
-      left: 20%;
+      left: 20% ~'; /** orientation=lt */ ';
+      right: 20% ~'; /** orientation=rt */ ';
       top: 35%;
       &.not-filter {
         visibility: hidden;
@@ -190,14 +193,15 @@
     cursor: pointer;
   }
   .unreadMessages, .favorite {
-    margin-left: 10px;
+    margin-left: 10px ~'; /** orientation=lt */ ';
+    margin-right: 10px ~'; /** orientation=rt */ ';
   }
   .unreadMessages {
     background: @primaryColor;
     text-align: center;
     line-height: @actionIconsSize;
     font-size: 11px;
-    padding: 0px 4px 0px 4px;
+    padding: 0px 4px;
     min-width: 20px;
   }
   &.hasUnreadMessages {

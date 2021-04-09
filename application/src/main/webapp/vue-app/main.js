@@ -9,10 +9,7 @@ const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
 
 Vue.use(Vuetify);
-const vuetify = new Vuetify({
-  dark: true,
-  iconfont: '',
-});
+const vuetify = new Vuetify(eXo.env.portal.vuetifyPreset);
 
 Vue.directive('exo-tooltip', function (el, binding) {
   const element = $(el);

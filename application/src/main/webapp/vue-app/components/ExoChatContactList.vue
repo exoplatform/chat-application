@@ -44,7 +44,7 @@
           <div v-if="contact.unreadTotal > 0 && contact.unreadTotal <= 99" class="unreadMessages">{{ contact.unreadTotal }}</div>
           <div v-if="contact.unreadTotal > 99" class="unreadMessages maxUnread">+99</div>
           <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" v-if="!drawerStatus" class="uiIconNotification"></i>
-          <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+          <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite my-auto pb-1" @click.stop="toggleFavorite(contact)"></div>
         </div>
       </transition-group>
       <div v-show="loadingContacts" class="contact-list-item isList">

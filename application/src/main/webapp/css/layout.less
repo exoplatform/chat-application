@@ -46,7 +46,8 @@
   min-width: 0;
 }
 .uiRoomUsersContainerArea {
-  border-left: @defaultBorder;
+  border-left: @defaultBorder ~'; /** orientation=lt */ ';
+  border-right: @defaultBorder ~'; /** orientation=rt */ ';
   position: relative;
   user-select: none;
 }
@@ -54,7 +55,8 @@
 #chats {
   background-color: @chatBackground;
   flex: 1;
-  padding: 0 10px 0 30px;
+  padding: 0 10px 0 30px ~'; /** orientation=lt */ ';
+  padding: 0 30px 0 10px ~'; /** orientation=rt */ ';
   overflow-y: auto;
 }
 .chat-message-composer {
@@ -68,7 +70,8 @@
 @media (max-width: @tablet) {
   .uiRoomUsersContainerArea {
     position: absolute;
-    right: 0;
+    right: 0 ~'; /** orientation=lt */ ';
+    left: 0 ~'; /** orientation=rt */ ';
     top: 0;
     bottom: 0;
     background: #fff;
@@ -78,6 +81,7 @@
   }
   .room-content {
     position: relative;
-    padding-right: @sideBarCollapsedWidth;
+    padding-right: @sideBarCollapsedWidth ~'; /** orientation=lt */ ';
+    padding-left: @sideBarCollapsedWidth ~'; /** orientation=rt */ ';
   }
 }
