@@ -51,7 +51,7 @@
   }
   .sender-name {
     font-weight: bold;
-    margin: -2px 0 5px 0;
+    margin: -2px 0 5px;
   }
   .chat-message-action {
     .flex-center;
@@ -61,8 +61,9 @@
     .message-actions {
       position: absolute;
       top: -6px;
-      right: 0;
-      text-align: left;
+      right: 0 ~'; /** orientation=lt */ ';
+      left: 0 ~'; /** orientation=rt */ ';
+      text-align: start;
       &:not(.open) {
         display: none;
       }
@@ -93,11 +94,13 @@
     &:before {
       content: "";
       position: absolute;
-      left: -7px;
+      left: -7px ~'; /** orientation=lt */ ';
+      right: -7px ~'; /** orientation=rt */ ';
       .square(10px);
       transform: rotate(45deg);
       background-color: inherit;
-      border-left: inherit;
+      border-left: inherit ~'; /** orientation=lt */ ';
+      border-right: inherit ~'; /** orientation=rt */ ';
       border-bottom: inherit;
     }
     .attachmentContainer {
@@ -106,7 +109,8 @@
     }
     blockquote {
       margin: 10px;
-      padding-left: 6px;
+      padding-left: 6px ~'; /** orientation=lt */ ';
+      padding-right: 6px ~'; /** orientation=rt */ ';
       font-style: italic;
       color: @quoteTextColor;
       border-color: @quoteBarColor;
@@ -133,24 +137,30 @@
   }
   &.is-current-user {
     justify-content: flex-end;
-    padding-left: 50px;
+    padding-left: 50px ~'; /** orientation=lt */ ';
+    padding-right: 50px ~'; /** orientation=rt */ ';
     .responsive(@tablet,{
-      padding-left: 0;
+      padding-left: 0 ~'; /** orientation=lt */ ';
+      padding-right: 0 ~'; /** orientation=rt */ ';
     });
     .chat-message-bubble {
       background: @messageBubbleCurrentUserColor;
       border: none;
-      margin-right: 8px;
+      margin-right: 8px ~'; /** orientation=lt */ ';
+      margin-left: 8px ~'; /** orientation=rt */ ';
       &:before {
-        left: auto;
-        right: -5px;
+        left: auto ~'; /** orientation=lt */ ';
+        right: auto ~'; /** orientation=rt */ ';
+        right: -5px ~'; /** orientation=lt */ ';
+        left: -5px ~'; /** orientation=rt */ ';
         top: calc(~"50%" - 5px);
       }
     }
   }
   .message-description {
     position: absolute;
-    right: 3px;
+    right: 3px ~'; /** orientation=lt */ ';
+    left: 3px ~'; /** orientation=rt */ ';
     bottom: 0;
     [class^="uiIcon"] {
       font-size: 15px;
@@ -168,11 +178,13 @@
   }
   [class^="uiIcon"] {
     font-size: 16px;
-    margin-right: 10px;
+    margin-right: 10px ~'; /** orientation=lt */ ';
+    margin-left: 10px ~'; /** orientation=rt */ ';
   }
 }
 .message-file-size {
-  margin-left: 10px;
+  margin-left: 10px ~'; /** orientation=lt */ ';
+  margin-right: 10px ~'; /** orientation=rt */ ';
   color: @grayLight;
 }
 .send-meeting-notes {
@@ -197,3 +209,4 @@
 .user-disabled {
   color: @grayLight;
 }
+

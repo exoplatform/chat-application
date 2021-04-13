@@ -7,35 +7,44 @@
     transition: left .5s ease-out;
   }
   .uiChatLeftContainer {
-    left: 0;
+    left: 0 ~'; /** orientation=lt */ ';
+    right: 0 ~'; /** orientation=rt */ ';
     z-index: 1;
   }
   .uiGlobalRoomsContainer, .uiRoomUsersContainerArea {
-    left: 100%;
+    left: 100% ~'; /** orientation=lt */ ';
+    right: 100% ~'; /** orientation=rt */ ';
   }
   .show-conversation {
     .uiGlobalRoomsContainer {
-      left: 0;
+      left: 0 ~'; /** orientation=lt */ ';
+      right: 0 ~'; /** orientation=rt */ ';
     }
     .uiChatLeftContainer {
-      left: -100%;
+      left: -100% ~'; /** orientation=lt */ ';
+      right: -100% ~'; /** orientation=rt */ ';
     }
   }
   .show-participants {
     .uiRoomUsersContainerArea {
-      left: 0;
+      left: 0 ~'; /** orientation=lt */ ';
+      right: 0 ~'; /** orientation=rt */ ';
     }
     .uiGlobalRoomsContainer {
-      left: -100%;
+      left: -100% ~'; /** orientation=lt */ ';
+      right: -100% ~'; /** orientation=rt */ ';
     }
   }
   .show-sideMenu {
     .chat-side-menu {
-      left: 0;
-      transition: left .45s ease-out;
+      left: 0 ~'; /** orientation=lt */ ';
+      right: 0 ~'; /** orientation=rt */ ';
+      transition: left .45s ease-out ~'; /** orientation=lt */ ';
+      transition: right .45s ease-out ~'; /** orientation=rt */ ';
     }
     .uiChatLeftContainer {
-      left: 80%;
+      left: 80% ~'; /** orientation=lt */ ';
+      right: 80% ~'; /** orientation=rt */ ';
     }
     .contactList {
       pointer-events: none;
@@ -44,10 +53,12 @@
 
   //side menu
   .chat-side-menu {
-    left: -100%;
+    left: -100% ~'; /** orientation=lt */ ';
+    right: -100% ~'; /** orientation=rt */ ';
     width: 80%;
     box-shadow: @defaultShadow;
-    transition: left .45s linear;
+    transition: left .45s linear ~'; /** orientation=lt */ ';
+    transition: right .45s linear ~'; /** orientation=rt */ ';
     .side-menu-header {
       .flex-center;
       justify-content: center;
@@ -72,7 +83,8 @@
       border: 2px solid #fff;
       .uiIconStatus {
         font-size: 16px;
-        right: 1px;
+        right: 1px ~'; /** orientation=lt */ ';
+        left: 1px ~'; /** orientation=rt */ ';
       }
     }
     .side-menu-list {
@@ -85,7 +97,8 @@
           [class^="uiIcon"] {
             position: static;
             font-size: 16px;
-            margin-right: 10px;
+            margin-right: 10px ~'; /** orientation=lt */ ';
+            margin-left: 10px ~'; /** orientation=rt */ ';
           }
         }
       }
@@ -93,7 +106,8 @@
   }
   #chatPreferences {
     .notification-item {
-      padding-left: 0;
+      padding-left: 0 ~'; /** orientation=lt */ ';
+      padding-right: 0 ~'; /** orientation=rt */ ';
     }
     section + section {
       margin-top: 5px;
@@ -110,7 +124,8 @@
       box-sizing: border-box;
       z-index: 1;
       input {
-        padding-right: 30px;
+        padding-right: 30px ~'; /** orientation=lt */ ';
+        padding-left: 30px ~'; /** orientation=rt */ ';
         border-width: 1px;
         .placeholder({
           color: inherit;
@@ -120,7 +135,8 @@
       .contact-search-close {
         .square(@actionIconsSize);
         line-height: @actionIconsSize;
-        margin-left: -@actionIconsSize;
+        margin-left: -@actionIconsSize ~'; /** orientation=lt */ ';
+        margin-right: -@actionIconsSize ~'; /** orientation=rt */ ';
         .uiIconClose {
           top: 1px;
           &:before {
@@ -137,7 +153,8 @@
       }
       .room-actions {
         > * {
-          margin-left: 8px;
+          margin-left: 8px ~'; /** orientation=lt */ ';
+          margin-right: 8px ~'; /** orientation=rt */ ';
         }
         [class^="uiIcon"] {
           color: @secondaryIconColor;
@@ -154,7 +171,8 @@
   
   .userDetails {
     position: absolute;
-    left: 50%;
+    left: 50% ~'; /** orientation=lt */ ';
+    right: 50% ~'; /** orientation=rt */ ';
     transform: translateX(-50%);
     align-items: center;
     z-index: 1;
@@ -174,7 +192,8 @@
       font-weight: bold;
     }
     .contactDetail {
-      margin-left: 0;
+      margin-left: 0 ~'; /** orientation=lt */ ';
+      margin-right: 0 ~'; /** orientation=rt */ ';
     }
   }
 
@@ -183,7 +202,8 @@
       .square(45px);
       .uiIconStatus {
         bottom: 5px;
-        right: -1px;
+        right: -1px ~'; /** orientation=lt */ ';
+        left: -1px ~'; /** orientation=rt */ ';
         font-size: 12px;
       }
     }
@@ -201,20 +221,25 @@
         [class^="uiIcon"] {
           font-size: inherit;
           color: inherit;
-          margin-right: 5px;
+          margin-right: 5px ~'; /** orientation=lt */ ';
+          margin-left: 5px ~'; /** orientation=rt */ ';
         }
       }
       .last-message-time {
-        margin-left: auto;
+        margin-left: auto ~'; /** orientation=lt */ ';
+        margin-right: auto ~'; /** orientation=rt */ ';
       }
       .favorite {
-        margin-right: 10px;
+        margin-right: 10px ~'; /** orientation=lt */ ';
+        margin-left: 10px ~'; /** orientation=rt */ ';
       }
       &.hasUnreadMessages .last-message-time {
-        margin-right: -27px
+        margin-right: -27px ~'; /** orientation=lt */ ';
+        margin-left: -27px ~'; /** orientation=rt */ ';
       }
       &.has-not-sent-messages .last-message-time {
-        margin-right: -19px
+        margin-right: -19px ~'; /** orientation=lt */ ';
+        margin-left: -19px ~'; /** orientation=rt */ ';
       }
       .unreadMessages, .uiIconNotification {
         align-self: flex-end;
@@ -254,12 +279,14 @@
       order: 1;
     }
     .user-status {
-      margin: 0 7px 0 3px;
+      margin: 0 7px 0 3px ~'; /** orientation=lt */ ';
+      margin: 0 3px 0 7px ~'; /** orientation=rt */ ';
     }
     .room-search {
       position: absolute;
       width: calc(100vw - 40px);
-      right: 0;
+      right: 0 ~'; /** orientation=lt */ ';
+      left: 0 ~'; /** orientation=rt */ ';
       input[type="text"] {
         margin: 0;
         width: 100%;
@@ -283,7 +310,8 @@
   .room-participants {
     width: 100%;
     .uiIconGoBack {
-      margin-right: 15px; 
+      margin-right: 15px ~'; /** orientation=lt */ ';
+      margin-left: 15px ~'; /** orientation=rt */ ';
     }
   }
   .room-content {
@@ -309,10 +337,12 @@
     .chat-message-action {
       position: absolute;
       bottom: 2px;
-      right: 5px;
+      right: 5px ~'; /** orientation=lt */ ';
+      left: 5px ~'; /** orientation=rt */ ';
     }
     .message-description {
-      right: 45px;
+      right: 45px ~'; /** orientation=lt */ ';
+      left: 45px ~'; /** orientation=rt */ ';
       bottom: 2px;
     }
     &.is-current-user {
@@ -342,22 +372,28 @@
       max-height: 80px;
       border: @defaultBorder;
       margin: 0 7px;
-      padding: 9px 40px 9px 10px;
+      padding: 9px 40px 9px 10px ~'; /** orientation=lt */ ';
+      padding: 9px 10px 9px 40px ~'; /** orientation=rt */ ';
     }
     .composer-action {
       flex: 0;
       align-items: flex-end;
       .action-emoji {
         position: absolute;
-        right: 60px;
+        right: 60px ~'; /** orientation=lt */ ';
+        left: 60px ~'; /** orientation=rt */ ';
       }
       .composer-emoji-panel {
-        right: -13px;
-        left: auto;
+        right: -13px ~'; /** orientation=lt */ ';
+        left: auto ~'; /** orientation=lt */ ';
+        left: -13px ~'; /** orientation=rt */ ';
+        right: auto ~'; /** orientation=rt */ ';
         margin-bottom: 5px;
         .arrow {
-          right: 15px;
-          left: auto;
+          right: 15px ~'; /** orientation=lt */ ';
+          left: auto ~'; /** orientation=lt */ ';
+          left: 15px ~'; /** orientation=rt */ ';
+          right: auto ~'; /** orientation=rt */ ';
         }
       }
     }
@@ -382,7 +418,8 @@
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
-      left: auto;
+      left: auto ~'; /** orientation=lt */ ';
+      right: auto ~'; /** orientation=rt */ ';
       top: -160px;
       height: 160px;
     }
@@ -400,7 +437,7 @@
         width: 100%;
       }
       .selectbox {
-        margin: 0 0 10px 0;
+        margin: 0 0 10px;
       }
     }
   }
@@ -428,7 +465,9 @@
     }
   }
   #chatApplicationNotification .dropdown-menu{
-    right: auto;
-    left: -345%;
+    right: auto ~'; /** orientation=lt */ ';
+    left: -345% ~'; /** orientation=lt */ ';
+    left: auto ~'; /** orientation=rt */ ';
+    right: -345% ~'; /** orientation=rt */ ';
   }
 }

@@ -16,7 +16,8 @@
     top: 2px;
     color: @secondaryIconColor;
     &:before {
-      content: "\e903"
+      content: "\e903" ~'; /** orientation=lt */ ';
+      content: "\e901" ~'; /** orientation=rt */ ';
     }
   }
 }
@@ -47,7 +48,8 @@
   }
 }
 .room-participants-title {
-  margin-right: auto;
+  margin-right: auto ~'; /** orientation=lt */ ';
+  margin-left: auto ~'; /** orientation=rt */ ';
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -69,7 +71,8 @@
     }
   }
   .room-users-collapse-btn .uiIcon:before{
-    content: "\e901"
+    content: "\e901" ~'; /** orientation=lt */ ';
+    content: "\e903" ~'; /** orientation=rt */ ';
   }
 }
 /* list participants area */

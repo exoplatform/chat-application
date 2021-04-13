@@ -10,11 +10,13 @@
     .flex-remaining-width;
   }
   .contactDetail {
-    margin-left: 10px;
+    margin-left: 10px ~'; /** orientation=lt */ ';
+    margin-right: 10px ~'; /** orientation=rt */ ';
   }
   .externalTagClass {
     color: #999999;
-    margin-left: 5px;
+    margin-left: 5px ~'; /** orientation=lt */ ';
+    margin-right: 5px ~'; /** orientation=rt */ ';
     font-weight: normal;
   }
   .uiIconStatus {
@@ -41,7 +43,8 @@
   }
   .status-dropdown {
     .dropdown-menu .uiIconStatus {
-      margin: 0 10px 0 -7px;
+      margin: 0 10px 0 -7px ~'; /** orientation=lt */ ';
+      margin: 0 -7px 0 10px ~'; /** orientation=rt */ ';
     }
     .user-status {
       cursor: pointer;
@@ -83,7 +86,8 @@
   }
   .uiIconStatus {
     bottom: 2px;
-    right: -3px;
+    right: -3px ~'; /** orientation=lt */ ';
+    left: -3px ~'; /** orientation=rt */ ';
     top: auto;
   }
   .chat-contact-link {
@@ -105,5 +109,4 @@
     font-weight: bold;
   }
 }
-
 /* chat-contact component */

@@ -1,7 +1,8 @@
 .room-detail {
   background-color: @tertiaryIconColor;
   .favorite {
-    margin-left: 5px;
+    margin-left: 5px ~'; /** orientation=lt */ ';
+    margin-right: 5px ~'; /** orientation=rt */ ';
   }
   .contactLabel.active {
     color: @titleColor;
@@ -52,7 +53,8 @@
 }
 .room-actions-container {
   position: relative;
-  margin-left: auto;
+  margin-left: auto ~'; /** orientation=lt */ ';
+  margin-right: auto ~'; /** orientation=rt */ ';
   z-index: 10;
 
   [class^="uiIcon"]:before {
@@ -67,7 +69,8 @@
   transition: transform .5s linear, opacity 1s ease-out;
 }
 .room-action-menu .room-search-btn {
-  margin-left: 15px;
+  margin-left: 15px ~'; /** orientation=lt */ ';
+  margin-right: 15px ~'; /** orientation=rt */ ';
   cursor: pointer;
 }
 .room-search {
@@ -93,13 +96,16 @@
 }
 
 .chat-room-config {
-  margin-left: 10px;
+  margin-left: 10px ~'; /** orientation=lt */ ';
+  margin-right: 10px ~'; /** orientation=rt */ ';
   .flex-column;
   .notif-description {
-    margin: 0 0 7px 20px;
+    margin: 0 0 7px 20px ~'; /** orientation=lt */ ';
+    margin: 0 20px 7px 0 ~'; /** orientation=rt */ ';
   }
   .notif-keyword {
-    margin: 5px 0 3px 20px;
+    margin: 5px 0 3px 20px ~'; /** orientation=lt */ ';
+    margin: 5px 20px 3px 0 ~'; /** orientation=rt */ ';
   }
 }
 
