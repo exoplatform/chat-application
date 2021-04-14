@@ -55,7 +55,7 @@
     max-height:200px;
   }
   .uiMention {
-    padding: 0px 10px 0px 10px;
+    padding: 0px 10px;
   }
   .composer-container, .composer-box, textarea {
     height: 100%;
@@ -92,14 +92,16 @@
       justify-content: space-around;
       top: auto;
       bottom: 43px;
-      left: -13px;
+      left: -13px ~'; /** orientation=lt */ ';
+      right: -13px ~'; /** orientation=rt */ ';
       width: 180px;
       .chat-emoticon {
         position: static;
         margin: 10px;
       }
       .arrow {
-        left: 25px;
+        left: 25px ~'; /** orientation=lt */ ';
+        right: 25px ~'; /** orientation=rt */ ';
       }
     }
   }
@@ -142,7 +144,8 @@
     .flex-space-evenly;
     position: absolute;
     top: -@appsContainerHeight;
-    left: 30px;
+    left: 30px ~'; /** orientation=lt */ ';
+    right: 30px ~'; /** orientation=rt */ ';
     width: calc(~"100%" - 60px);
     height: @appsContainerHeight;
     padding: 16px @defaultGutter;
@@ -200,14 +203,15 @@
       display: flex;
       > * {
         display: table-cell;
-        padding-right: 10px;
+        padding-right: 10px ~'; /** orientation=lt */ ';
+        padding-left: 10px ~'; /** orientation=rt */ ';
         @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) { // hack for IE11
           display: inline-block;
           min-width: 40px;
         }
       }
       > span {
-        text-align: right;
+        text-align: end;
       }
     }
     input {
@@ -217,16 +221,14 @@
     .selectbox {
       width: 92px;
       -webkit-appearance: auto;
-      margin-left: 15px;
+      margin-left: 15px ~'; /** orientation=lt */ ';
+      margin-right: 15px ~'; /** orientation=rt */ ';
     }
   }
 }
 
 #appComposerForm .selectize-input {
   margin-bottom: 5px;
-}
-
-.selectize-input {
   width: 96%;
 }
 
@@ -237,7 +239,8 @@
   input {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 0 ~'; /** orientation=lt */ ';
+    left: 0 ~'; /** orientation=rt */ ';
     margin: 0;
     padding: 0;
     font-size: 20px;
@@ -247,10 +250,11 @@
   }
   
   .action-label {
-    padding-right: 10px;
+    padding-right: 10px ~'; /** orientation=lt */ ';
+    padding-left: 10px ~'; /** orientation=rt */ ';
     line-height: 28px;
     vertical-align: top;
-    text-align: right;
+    text-align: end;
   }
 
   .btn {
@@ -304,3 +308,4 @@
     }
   }
 }
+

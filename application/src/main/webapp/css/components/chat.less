@@ -8,7 +8,8 @@
   .dropdown-menu {
     min-width: 120px;
     .uiIconTick {
-      margin: 0 10px 0 -10px;
+      margin: 0 10px 0 -10px ~'; /** orientation=lt */ ';
+      margin: 0 -10px 0 10px ~'; /** orientation=rt */ ';
       &.not-filter {
         visibility: hidden;
       }
@@ -97,7 +98,8 @@
     width: 700px;
   }
   section {
-    margin-left: 10px;
+    margin-left: 10px ~'; /** orientation=lt */ ';
+    margin-right: 10px ~'; /** orientation=rt */ ';
   }
   section + section {
     margin-top: 35px;
@@ -105,14 +107,16 @@
 }
 .chat-user-settings {
   display: inline;
-  margin-left: 10px;
+  margin-left: 10px ~'; /** orientation=lt */ ';
+  margin-right: 10px ~'; /** orientation=rt */ ';
   cursor: pointer;
   .uiIconGear {
     color: @leftContainerTextColor;
   }
 }
 .home-button {
-  padding-left: 20px;
+  padding-left: 20px ~'; /** orientation=lt */ ';
+  padding-right: 20px ~'; /** orientation=rt */ ';
   .uiIconHomeInfo, .uiIconHomeInfo:hover {
     color: @leftContainerTextColor;
   }
@@ -127,10 +131,12 @@
 
 .notification-item {
   display: flex;
-  padding-left: 60px;
+  padding-left: 60px ~'; /** orientation=lt */ ';
+  padding-right: 60px ~'; /** orientation=rt */ ';
   .uiSwitchBtn {
     flex-shrink: 0;
-    margin: 3px 15px 0 0;
+    margin: 3px 15px 0 0 ~'; /** orientation=lt */ ';
+    margin: 3px 0 0 15px ~'; /** orientation=rt */ ';
   }
   .notification-description > * {
     display: block;
