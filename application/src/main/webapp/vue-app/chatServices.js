@@ -96,12 +96,13 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
 }
 
 export function updateTotalUnread(totalUnreadMsg) {
+  const pageTitle = document.title.replace(/\(\+?\d{1,2}\)/,'');
   if (totalUnreadMsg && totalUnreadMsg > 0 && totalUnreadMsg <= MAX_UNREAD_NUMBER) {
-    document.title = eXo.env.portal.selectedNodeUri.concat(`(${totalUnreadMsg})`);
+    document.title = pageTitle.concat(`(${totalUnreadMsg})`);
   } else if (totalUnreadMsg > MAX_UNREAD_NUMBER) {
-    document.title = eXo.env.portal.selectedNodeUri.concat('(+99)');
+    document.title = pageTitle.concat('(+99)');
   } else {
-    document.title = eXo.env.portal.selectedNodeUri;
+    document.title = pageTitle;
   }
 }
 
