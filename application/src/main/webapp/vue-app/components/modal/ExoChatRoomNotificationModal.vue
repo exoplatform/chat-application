@@ -29,6 +29,7 @@
 
 <script>
 import * as chatServices from '../../chatServices';
+import * as chatWebSocket from '../../chatWebSocket';
 
 export default {
   props: {
@@ -83,8 +84,8 @@ export default {
     saveSettings() {
       chatServices.setRoomNotificationTrigger(eXo.chat.userSettings, this.room, this.selectedOption, this.selectedOption === 'keywords' ? this.keywords : '', new Date().getTime().toString()).then(settings => {
         chatServices.loadNotificationSettings(settings);
-      });
-      this.closeModal();
+        chatWebSocket.sendSettings(settings);
+      }).then(this.closeModal());
     },
     getPreferredNotification() {
       if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {

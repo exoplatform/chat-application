@@ -45,10 +45,11 @@ public class CometdService {
   /**
    * This method receives all the websocket messages sent to the channel COMETD_CHANNEL_NAME
    * and process them accordingly to their type
+   *
    * @param remoteSession
    * @param message
    */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
     LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[]{COMETD_CHANNEL_NAME, message.getJSON()});
@@ -59,8 +60,7 @@ public class CometdService {
 
       String sender = (String) jsonMessage.get("sender");
       String token = (String) jsonMessage.get("token");
-      if (!tokenService.hasUserWithToken(sender, token))
-      {
+      if (!tokenService.hasUserWithToken(sender, token)) {
         return;
       }
 
@@ -81,7 +81,19 @@ public class CometdService {
         // update data
         userService.setStatus((String) jsonMessage.get("sender"),
                 (String) ((JSONObject) jsonMessage.get("data")).get("status"));
-      } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
+      } else if (eventType.equals(RealTimeMessageBean.EventType.ROOM_SETTINGS_UPDATED)) {
+
+        // forward the settings change to all connected users
+        RealTimeMessageBean realTimeMessageBean = new RealTimeMessageBean(
+                RealTimeMessageBean.EventType.ROOM_SETTINGS_UPDATED,
+                "",
+                (String) jsonMessage.get("sender"),
+                new Date(),
+                (Map) jsonMessage.get("data"));
+        realTimeMessageService.sendMessageToAll(realTimeMessageBean);
+
+      }
+      else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_READ)) {
         String room = (String) jsonMessage.get("room");
 
         String category = "room";
@@ -91,8 +103,7 @@ public class CometdService {
         }
 
         notificationService.setNotificationsAsRead(sender, "chat", category, room);
-        if (userService.isAdmin(sender))
-        {
+        if (userService.isAdmin(sender)) {
           notificationService.setNotificationsAsRead(UserService.SUPPORT_USER, "chat", category, room);
         }
 
@@ -115,18 +126,18 @@ public class CometdService {
         }
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_UPDATED)) {
         String room = jsonMessage.get("room").toString();
-        String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
+        String messageId = ((JSONObject) jsonMessage.get("data")).get("msgId").toString();
         // Only author of the message can edit it
         MessageBean currentMessage = chatService.getMessage(room, messageId);
         if (currentMessage == null || !currentMessage.getUser().equals(sender)) {
           return;
         }
 
-        String msg = ((JSONObject)jsonMessage.get("data")).get("msg").toString();
+        String msg = ((JSONObject) jsonMessage.get("data")).get("msg").toString();
         chatService.edit(room, sender, messageId, msg);
       } else if (eventType.equals(RealTimeMessageBean.EventType.MESSAGE_DELETED)) {
         String room = jsonMessage.get("room").toString();
-        String messageId = ((JSONObject)jsonMessage.get("data")).get("msgId").toString();
+        String messageId = ((JSONObject) jsonMessage.get("data")).get("msgId").toString();
 
         // Only author of the message can delete it
         MessageBean currentMessage = chatService.getMessage(room, messageId);
@@ -164,11 +175,11 @@ public class CometdService {
 
         // Send a websocket message of type 'room-member-left' to all the room members
         RealTimeMessageBean leaveRoomMessage = new RealTimeMessageBean(
-            RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
-            room,
-            sender,
-            new Date(),
-            options);
+                RealTimeMessageBean.EventType.ROOM_MEMBER_LEFT,
+                room,
+                sender,
+                new Date(),
+                options);
         realTimeMessageService.sendMessage(leaveRoomMessage, usersToBeNotified);
         notificationService.setNotificationsAsRead(sender, "chat", "room", room);
       }
@@ -176,5 +187,4 @@ public class CometdService {
       LOG.log(Level.SEVERE, "Error while processing Cometd message : " + e.getMessage(), e);
     }
   }
-
 }

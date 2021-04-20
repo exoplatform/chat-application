@@ -83,8 +83,10 @@ export default {
   data () {
     return {
       contactList: [],
+      notificationSettings: [],
       showSearch:false,
       loadingContacts: true,
+      notifications:null,
       selectedContact: [],
       contactsSize: 0,
       userSettings: {
@@ -149,10 +151,8 @@ export default {
   created() {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
-      chatServices.getNotReadMessages(this.userSettings).then(data => {
-        this.totalUnreadMsg = data.total;
-      });
     });
+
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -161,6 +161,8 @@ export default {
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    document.addEventListener(chatConstants.ACTION_ROOM_SETTING_CHANGED, this.updateSettings);
+
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -171,7 +173,9 @@ export default {
     document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    document.removeEventListener(chatConstants.ACTION_ROOM_SETTING_CHANGED, this.updateSettings);
   },
+
   methods:{
     openDrawer() {
       this.$refs.chatDrawer.startLoading();
@@ -179,10 +183,6 @@ export default {
         userSettings => this.initSettings(userSettings),
         chatRoomsData => {
           this.initChatRooms(chatRoomsData);
-          const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
-          if(totalUnreadMsg >= 0) {
-            this.totalUnreadMsg = totalUnreadMsg;
-          }
           this.$nextTick(this.$refs.chatDrawer.endLoading);
         });
       this.$refs.chatDrawer.open();
@@ -194,6 +194,11 @@ export default {
     },
     navigateTo() {
       window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
+    },
+    updateSettings(e) {
+      if (e && e.detail && e.detail.settings) {
+        this.notificationSettings = e.detail.settings;
+      }
     },
     resetSelectedContact() {
       this.showChatDrawer = false;
@@ -212,9 +217,10 @@ export default {
       }
     },
     totalUnreadMessagesUpdated(e) {
-      const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      if(totalUnreadMsg >= 0) {
-        this.totalUnreadMsg = totalUnreadMsg;
+      const notifications = e.detail ? e.detail.data.notifications : e.notifications;
+      if(notifications.length >= 0) {
+        this.notifications = notifications;
+        this.filterNotifications();
       }
     },
     userStatusChanged(e) {
@@ -232,6 +238,7 @@ export default {
         this.userSettings.status = this.userSettings.originalStatus;
       }
     },
+
     roomUpdated(e) {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
       if (updatedContact && (updatedContact.room || updatedContact.user)) {
@@ -255,12 +262,19 @@ export default {
         });
       }
     },
+
     initSettings(userSettings) {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
       chatServices.initSettings(userSettings.userName, userSettings, userSettings => {
-        chatServices.getNotReadMessages(userSettings).then(data => this.totalUnreadMsg = data.total);
+        chatServices.getUserNotificationSettings(userSettings).then(settings => {
+          this.notificationSettings = settings;
+        }).then (
+          chatServices.getNotReadMessages(userSettings,'true').then(data => {
+            this.notifications = data.notifications;
+            this.filterNotifications();
+          }));
       });
       installExtensions(this.userSettings);
       const thiss = this;
@@ -274,8 +288,13 @@ export default {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
       this.contactsSize = chatRoomsData.roomsCount;
-      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
-      chatServices.updateTotalUnread(totalUnreadMsg);
+    },
+    filterNotifications() {
+      if(this.notifications != null) {
+        const roomsSettings = JSON.parse(this.notificationSettings.userDesktopNotificationSettings.preferredRoomNotificationTrigger);
+        this.notifications = this.notifications.filter(notif => roomsSettings[notif.categoryId].notifCond === 'normal');
+        this.totalUnreadMsg = this.notifications.length;
+      }
     },
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;

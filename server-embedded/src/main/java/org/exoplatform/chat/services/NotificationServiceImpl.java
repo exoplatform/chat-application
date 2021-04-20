@@ -23,11 +23,15 @@ import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -45,6 +49,10 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   @Inject
   private NotificationDataStorage storage;
+  @Inject
+  private UserService userService;
+  @Inject
+  private UserMongoDataStorage userMongoDataStorage;
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
                               String content, String link) {
@@ -98,7 +106,14 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   private void sendNotification(String receiver) {
     Map<String, Object> data = new HashMap<>();
-    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver));
+    List<NotificationBean> Notifications = getUnreadNotifications(receiver,userService);
+    JSONArray JsonNotifications = new JSONArray();
+
+    for ( NotificationBean notificatinBean : Notifications) {
+      JSONObject object = notificatinBean.toJSONObject();
+      JsonNotifications.add(object);
+    }
+    data.put("notifications", JsonNotifications);
 
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(

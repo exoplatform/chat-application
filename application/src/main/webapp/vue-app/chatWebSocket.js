@@ -197,6 +197,33 @@ export function sendMessage(messageObj, callback) {
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail' : data}));
   }
 }
+
+export function sendSettings(settingsObj) {
+  const data = {
+    'settings': settingsObj,
+  };
+
+  const content = {
+    'event': 'room-settings-updated',
+    'sender': cometDSettings.username,
+    'token': cometDSettings.token,
+    'data': data
+  };
+
+  try {
+    cometDSettings.cCometD.publish('/service/chat', JSON.stringify(content), function(publishAck) {
+      if (!publishAck || !publishAck.successful) {
+        document.dispatchEvent(new CustomEvent('settings not updated', {'detail' : data}));
+      }
+      else {
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SETTING_CHANGED,{'detail' : data}));
+      }
+    });
+  } catch (e) {
+    document.dispatchEvent(new CustomEvent('settings not updated', {'detail' : data}));
+  }
+}
+
 export function deleteMessage(messageObj, callback) {
   if (!cometDSettings.cCometD) {
     return;
