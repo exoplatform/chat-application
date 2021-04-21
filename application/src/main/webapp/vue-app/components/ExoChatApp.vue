@@ -252,7 +252,7 @@ export default {
     searchContacts(term) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.loadingContacts = false;
         });
@@ -260,7 +260,7 @@ export default {
     },
     refreshContacts(keepSelectedContact) {
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);

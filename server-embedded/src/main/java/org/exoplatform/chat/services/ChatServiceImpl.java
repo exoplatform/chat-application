@@ -376,7 +376,13 @@ public class ChatServiceImpl implements ChatService
   }
 
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService) {
-    return chatStorage.getUserRooms(user,onlineUsers, filter, offset, limit, notificationService, tokenService);
+    RoomsBean rooms = chatStorage.getUserRooms(user,onlineUsers, filter, offset, limit, notificationService, tokenService);
+    for (RoomBean room : rooms.getRooms()) {
+      if("u".equals(room.getType())) {
+        room.setStatus(userService.getStatus(room.getUser()));
+      }
+    }
+    return rooms;
   }
 
   public int getNumberOfRooms()

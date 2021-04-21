@@ -248,9 +248,6 @@ export default {
       return sortedContacts.slice(0, this.contacts.length);
     },
     hasMoreContacts() {
-      if(this.searchTerm.trim().length) {
-        return false;
-      }
       // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
