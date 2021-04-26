@@ -1,6 +1,5 @@
 import {chatConstants} from './chatConstants.js';
 import {initTiptip} from './tiptip.js';
-import * as chatServices from './chatServices.js';
 
 export const ECMS_EVENT_COMPOSER_APP = [{
   key: 'file',
@@ -464,21 +463,11 @@ export const DEFAULT_MESSAGE_ACTIONS = [
 
 export function registerExternalExtensions(chatTitle) {
   const profileExtensionAction = {
+    id: 'profile-chat',
     title: chatTitle,
     icon: 'uiIconBannerChat',
     order: 10,
-    enabled: async (profile) => {
-      // check if the space's chat is enabled
-      if (profile.hasOwnProperty('groupId')) {
-        return await chatServices.getUserSettings()
-          .then(userSettings => {
-            return chatServices.isRoomEnabled(userSettings, profile.id)
-              .then(value => value === 'true');
-          }).then(value => value);
-      }
-      // if it's a user profile
-      return true;
-    },
+    enabled: () => true,
     click: (profile) => {
       const chatType = profile.groupId ? 'space-id' : 'username';
       const chatRoomName = profile.prettyName ? profile.id : profile.username;
