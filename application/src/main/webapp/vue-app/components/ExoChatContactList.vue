@@ -195,7 +195,8 @@ export default {
       contactMenuClosed: true,
       filterMenuClosed: true,
       inactive: this.$t('exoplatform.chat.inactive'),
-      external: this.$t('exoplatform.chat.external')
+      external: this.$t('exoplatform.chat.external'),
+      nbrePages: 0
     };
   },
   computed: {
@@ -248,19 +249,7 @@ export default {
       return sortedContacts.slice(0, this.contacts.length);
     },
     hasMoreContacts() {
-      // All Rooms and spaces are loaded with the first call, only users are paginated
-      switch (this.typeFilter) {
-      case 'People':
-        return this.usersCount >= this.contacts.length;
-      case 'Rooms':
-        return this.roomsCount > this.contacts.length;
-      case 'Spaces':
-        return this.spacesCount > this.contacts.length;
-      case 'Favorites':
-        return this.favoritesCount > this.contacts.length;
-      default:
-        return this.contactsSize > this.contacts.length;
-      }
+      return this.contactsSize > this.contacts.length;
     }
   },
   watch: {
@@ -272,6 +261,7 @@ export default {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
             this.contacts = chatRoomsData.rooms;
+            this.contactsSize = chatRoomsData.roomsCount;
           });
         });
       }
@@ -598,8 +588,7 @@ export default {
       return foundContact;
     },
     loadMore() {
-      this.totalEntriesToLoad = this.contacts.length;
-      this.$emit('load-more-contacts', this.totalEntriesToLoad);
+      this.$emit('load-more-contacts', ++this.nbrePages);
     },
     favoriteTooltip(contact) {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');

@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 import static org.exoplatform.chat.services.ChatService.*;
+import static org.exoplatform.chat.services.UserDataStorage.STATUS_OFFLINE;
 import static org.exoplatform.chat.services.mongodb.UserMongoDataStorage.M_USERS_COLLECTION;
 
 @Named("chatStorage")
@@ -960,7 +961,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
           roomBean.setEnabledUser(targetUserBean.isEnabledUser());
-          roomBean.setAvailableUser(onlineUsers.contains(targetUser));
+          if(onlineUsers.contains(targetUser)) {
+            roomBean.setAvailableUser(true);
+            roomBean.setStatus(userDataStorage.getStatus(targetUser));
+          } else {
+            roomBean.setAvailableUser(false);
+            roomBean.setStatus(STATUS_OFFLINE);
+          }
           roomBean.setUser(targetUser);
           roomBean.setType(TYPE_ROOM_USER);
         }

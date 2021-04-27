@@ -280,7 +280,7 @@ export default {
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;

@@ -8,7 +8,7 @@
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <exo-chat-contact-list v-if="ap" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+      <exo-chat-contact-list v-if="ap" :contacts="contactList" :contacts-size="contactsSize" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
@@ -61,6 +61,7 @@ export default {
   data() {
     return {
       contactList: [],
+      contactsSize: 0,
       /**
        * chatPage: {String}
        * cometdToken: {String}
@@ -144,6 +145,7 @@ export default {
       this.loadingContacts = false;
       
       this.addRooms(chatRoomsData.rooms);
+      this.contactsSize = chatRoomsData.roomsCount;
 
       if (this.mq !== 'mobile') {
         const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
@@ -227,8 +229,10 @@ export default {
         this.userSettings.status = this.userSettings.originalStatus;
       }
     },
-    addRooms(rooms) {
-      this.contactList = [];
+    addRooms(rooms, append) {
+      if(!append) {
+        this.contactList = [];
+      }
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
         && contact.fullName.trim().length > 0
@@ -243,8 +247,8 @@ export default {
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
+        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, true);
           this.loadingContacts = false;
         });
       });
