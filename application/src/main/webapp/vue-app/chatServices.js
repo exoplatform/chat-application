@@ -3,8 +3,7 @@ import * as chatWebStorage from './chatWebStorage';
 import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
 
-const DEFAULT_OFFSET = 0;
-const DEFAULT_USER_LIMIT = 20;
+
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
 const MAX_UNREAD_NUMBER = 99;
@@ -202,8 +201,8 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
   if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
-  if (!offset) {
-    offset = DEFAULT_OFFSET;
+  if(!offset) {
+    offset = chatConstants.DEFAULT_OFFSET;
   }
   if (!filter) {
     filter = '';
@@ -215,8 +214,8 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
 }
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
-  if (!limit && isNaN(limit)) {
-    limit = DEFAULT_USER_LIMIT;
+  if(!limit && isNaN(limit)) {
+    limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true;
 
@@ -328,8 +327,8 @@ export function loadNotificationSettings(settings) {
 }
 
 export function getChatUsers(userSettings, filter, limit) {
-  if (!limit) {
-    limit = DEFAULT_USER_LIMIT;
+  if(!limit) {
+    limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&filter=${filter}&limit=${limit}`, {
     headers: {
