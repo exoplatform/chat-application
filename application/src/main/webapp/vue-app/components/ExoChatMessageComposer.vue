@@ -1,5 +1,5 @@
 <template>
-  <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
+  <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledRoom === 'true')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
     <div v-if="!miniChat">
       <div v-show="!appsClosed" class="apps-container justify-center">
         <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
