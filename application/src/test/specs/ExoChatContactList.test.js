@@ -4,6 +4,101 @@ import ExoChatContact from '../../main/webapp/vue-app/components/ExoChatContact'
 import {chatConstants} from '../../main/webapp/vue-app/chatConstants.js';
 
 describe('ExoChatContactList.test.js', () => {
+  const fullContacts = [{
+    'lastMessage':{
+      'msg':'Test Message',
+      'isSystem':false,
+      'options':{},
+      'msgId':'5b1a7a4067c9a30c23b5223d',
+      'fullname':'Test User 2',
+      'type':null,
+      'user':'testuser2',
+      'timestamp':1528461888213
+    },
+    'fullName':'Test User 2',
+    'unreadTotal':0,
+    'isActive':'true',
+    'isEnabledUser':'true',
+    'isExternal':'false',
+    'type':'u',
+    'user':'testuser2',
+    'room':'ca5dc389cc131008d504a44e64dc3d06279a93ae',
+    'status':'invisible',
+    'timestamp':1528461888215,
+    'isFavorite':true
+  },
+  {
+    'fullName':'Test User',
+    'unreadTotal':0,
+    'isActive':'true',
+    'isEnabledUser':'true',
+    'isExternal':'false',
+    'type':'u',
+    'user':'testuser',
+    'room':'eb74205830cf97546269bbdc5d439b29ddd1735b',
+    'status':'invisible',
+    'timestamp':1558455913624,
+    'isFavorite':false
+  },
+  {
+    'lastMessage':{
+      'msg':'',
+      'isSystem':true,
+      'options':{
+        'fullname':'Root Root',
+        'type':'type-add-team-user'
+      },
+      'msgId':'5b311b0a4b8734281e6e80c5',
+      'fullname':'Root Root',
+      'type':null,
+      'user':'root',
+      'timestamp':1529944842645
+    },
+    'fullName':'Team Room',
+    'unreadTotal':2,
+    'isActive':'true',
+    'type':'t',
+    'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
+    'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f',
+    'admins':[
+      'root'
+    ],
+    'status':'team',
+    'timestamp':1529944842647,
+    'isFavorite':true
+  },
+  {
+    'lastMessage':{
+      'msg':'',
+      'isSystem':true,
+      'options':{
+        'fullname':'Root Root',
+        'type':'type-add-team-user'
+      },
+      'msgId':'5b311b0a4b8734281e6e90f5',
+      'fullname':'Root Root',
+      'type':null,
+      'user':'root',
+      'timestamp':1529944842505
+    },
+    'fullName':'qdqsdsqdqsdqsdsqdsqd',
+    'unreadTotal':0,
+    'isActive':'true',
+    'type':'s',
+    'user':'space-be95776cd7c3950f190f0e21ea1e4848fed8995',
+    'room':'be95776cd7c3950f190f0e21ea1e4848fed8995',
+    'admins':[
+      'root'
+    ],
+    'status':'team',
+    'timestamp':1529944842515,
+    'isFavorite':true
+  }];
+  const searchContactsList = fullContacts.filter(element => element.fullName.includes('Test User'));
+  const justUsers = fullContacts.filter(element => element.type === 'u');
+  const justRooms = fullContacts.filter(element => element.type === 't');
+  const justSpaces = fullContacts.filter(element => element.type === 's');
+  const justFavorites = fullContacts.filter(element => element.isFavorite);
   const cmp = shallow(ExoChatContactList, {
     propsData: {
       unreadMessages: [
@@ -26,98 +121,7 @@ describe('ExoChatContactList.test.js', () => {
         'timestamp':1528455913624,
         'isFavorite':false
       },
-      contacts: [
-        {
-          'lastMessage':{
-            'msg':'Test Message',
-            'isSystem':false,
-            'options':{},
-            'msgId':'5b1a7a4067c9a30c23b5223d',
-            'fullname':'Test User 2',
-            'type':null,
-            'user':'testuser2',
-            'timestamp':1528461888213
-          },
-          'fullName':'Test User 2',
-          'unreadTotal':0,
-          'isActive':'true',
-          'isEnabledUser':'true',
-          'isExternal':'false',
-          'type':'u',
-          'user':'testuser2',
-          'room':'ca5dc389cc131008d504a44e64dc3d06279a93ae',
-          'status':'invisible',
-          'timestamp':1528461888215,
-          'isFavorite':true
-        },
-        {
-          'fullName':'Test User',
-          'unreadTotal':0,
-          'isActive':'true',
-          'isEnabledUser':'true',
-          'isExternal':'false',
-          'type':'u',
-          'user':'testuser',
-          'room':'eb74205830cf97546269bbdc5d439b29ddd1735b',
-          'status':'invisible',
-          'timestamp':1558455913624,
-          'isFavorite':false
-        },
-        {
-          'lastMessage':{
-            'msg':'',
-            'isSystem':true,
-            'options':{
-              'fullname':'Root Root',
-              'type':'type-add-team-user'
-            },
-            'msgId':'5b311b0a4b8734281e6e80c5',
-            'fullname':'Root Root',
-            'type':null,
-            'user':'root',
-            'timestamp':1529944842645
-          },
-          'fullName':'Team Room',
-          'unreadTotal':2,
-          'isActive':'true',
-          'type':'t',
-          'user':'team-be95776cd7c3950f190f0e21ea1e4848fec3874f',
-          'room':'be95776cd7c3950f190f0e21ea1e4848fec3874f',
-          'admins':[
-            'root'
-          ],
-          'status':'team',
-          'timestamp':1529944842647,
-          'isFavorite':true
-        },
-        {
-          'lastMessage':{
-            'msg':'',
-            'isSystem':true,
-            'options':{
-              'fullname':'Root Root',
-              'type':'type-add-team-user'
-            },
-            'msgId':'5b311b0a4b8734281e6e90f5',
-            'fullname':'Root Root',
-            'type':null,
-            'user':'root',
-            'timestamp':1529944842505
-          },
-          'fullName':'qdqsdsqdqsdqsdsqdsqd',
-          'unreadTotal':0,
-          'isActive':'true',
-          'type':'s',
-          'user':'space-be95776cd7c3950f190f0e21ea1e4848fed8995',
-          'room':'be95776cd7c3950f190f0e21ea1e4848fed8995',
-          'admins':[
-            'root'
-          ],
-          'status':'team',
-          'timestamp':1529944842515,
-          'isFavorite':true
-        }
-      ]
+      contacts: fullContacts
     },
     mocks: {
       $t: () => {},
@@ -132,34 +136,9 @@ describe('ExoChatContactList.test.js', () => {
   it('4 displayed contacts', () => {
     expect(cmp.findAll('.contact-list-room-item')).toHaveLength(4);
   });
-
-  it('2 displayed user', () => {
-    expect(cmp.vm.usersCount).toBe(2);
-  });
-  
-  it('1 displayed team room', () => {
-    expect(cmp.vm.roomsCount).toBe(1);
-  });
-  
-  it('3 displayed favorites', () => {
-    expect(cmp.vm.favoritesCount).toBe(3);
-  });
-
-  it('1 displayed space', () => {
-    expect(cmp.vm.spacesCount).toBe(1);
-  });
   
   it('No more contacts are to load', () => {
     expect(cmp.vm.hasMoreContacts).toBe(false);
-  });
-
-  it('Search term should display only exact entries', () => {
-    cmp.setData({searchTerm : 'Test User'});
-    try {
-      expect(cmp.findAll('.contact-list-room-item')).toHaveLength(2);
-    } finally {
-      cmp.setData({searchTerm : ''});
-    }
   });
 
   it('Test display order', () => {
@@ -178,35 +157,52 @@ describe('ExoChatContactList.test.js', () => {
   });
 
   it('Test display with type filter', () => {
-    cmp.setData({typeFilter : 'All'});
+    cmp.setData({
+      typeFilter : 'All',
+      contacts : fullContacts
+    });
     try {
       expect(cmp.vm.filteredContacts).toHaveLength(4);
     } finally {
-      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
+      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT, contacts: fullContacts});
     }
-    cmp.setData({typeFilter : 'People'});
+    cmp.setData({
+      typeFilter : 'People',
+      contacts: justUsers
+    });
     try {
       expect(cmp.vm.filteredContacts).toHaveLength(2);
     } finally {
-      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
+      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT, contacts : fullContacts});
     }
-    cmp.setData({typeFilter : 'Rooms'});
+    cmp.setData({typeFilter : 'Rooms', contacts: justRooms});
     try {
       expect(cmp.vm.filteredContacts).toHaveLength(1);
     } finally {
-      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
+      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT, contacts : fullContacts});
     }
-    cmp.setData({typeFilter : 'Spaces'});
+    cmp.setData({typeFilter : 'Spaces', contacts: justSpaces});
     try {
       expect(cmp.vm.filteredContacts).toHaveLength(1);
     } finally {
-      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
+      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT, contacts : fullContacts});
     }
-    cmp.setData({typeFilter : 'Favorites'});
+    cmp.setData({typeFilter : 'Favorites', contacts: justFavorites});
     try {
       expect(cmp.vm.filteredContacts).toHaveLength(3);
     } finally {
-      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT});
+      cmp.setData({typeFilter : chatConstants.TYPE_FILTER_DEFAULT, contacts : fullContacts});
+    }
+  });
+
+  it('Search term should display only exact entries', () => {
+    cmp.setData({searchTerm : 'Test User',
+      contacts: searchContactsList
+    });
+    try {
+      expect(cmp.findAll('.contact-list-room-item')).toHaveLength(2);
+    } finally {
+      cmp.setData({searchTerm : '', contacts: fullContacts});
     }
   });
 
@@ -261,7 +257,6 @@ describe('ExoChatContactList.test.js', () => {
       }
     }}));
     expect(cmp.vm.filteredContacts).toHaveLength(6);
-    expect(cmp.vm.roomsCount).toBe(3);
   });
 
   it('Current user deleted room that should be deleted from contact list', () => {
@@ -283,7 +278,6 @@ describe('ExoChatContactList.test.js', () => {
       }
     }}));
     expect(cmp.vm.filteredContacts).toHaveLength(5);
-    expect(cmp.vm.roomsCount).toBe(2);
   });
 
   it('Current user left room that should be deleted from contact list', () => {
@@ -305,23 +299,22 @@ describe('ExoChatContactList.test.js', () => {
       }
     }}));
     expect(cmp.vm.filteredContacts).toHaveLength(4);
-    expect(cmp.vm.roomsCount).toBe(1);
   });
 
   it('current user add/remove favorites', () => {
-    expect(cmp.vm.favoritesCount).toBe(3);
+    expect(cmp.vm.contacts.filter(element => element.isFavorite).length).toBe(3);
 
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_FAVORITE_ADDED, {detail: {
       room: 'eb74205830cf97546269bbdc5d439b29ddd1735b'
     }}));
 
-    expect(cmp.vm.favoritesCount).toBe(4);
+    expect(cmp.vm.contacts.filter(element => element.isFavorite).length).toBe(4);
 
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_FAVORITE_REMOVED, {detail: {
       room:'eb74205830cf97546269bbdc5d439b29ddd1735b'
     }}));
 
-    expect(cmp.vm.favoritesCount).toBe(3);
+    expect(cmp.vm.contacts.filter(element => element.isFavorite).length).toBe(3);
   });
 
   it('Mark room as read', () => {

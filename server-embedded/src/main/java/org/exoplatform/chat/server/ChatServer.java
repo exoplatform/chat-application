@@ -116,7 +116,7 @@ public class ChatServer
 
   @Resource
   @Route("/userRooms")
-  public Response.Content getUserRooms(String user, String onlineUsers, String token, String filter, String offset, String limit)
+  public Response.Content getUserRooms(String user, String onlineUsers, String token, String filter, String offset, String limit, String roomType)
   {
     if (!tokenService.hasUserWithToken(user, token))
     {
@@ -143,7 +143,7 @@ public class ChatServer
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
 
     RoomsBean roomsBean = chatService.getUserRooms(user, limitUsers, filter, offsetValue, limitValue,
-            notificationService, tokenService);
+            notificationService, tokenService, roomType);
 
 
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader

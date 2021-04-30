@@ -8,7 +8,7 @@
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <exo-chat-contact-list v-if="ap" :contacts="contactList" :contacts-size="contactsSize" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+      <exo-chat-contact-list v-if="ap" :contacts="contactList" :contacts-size="contactsSize" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="changeFilter" @search-contact="searchContacts" @change-filter-type="changeFilter" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
       <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
@@ -249,6 +249,7 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms, true);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -258,6 +259,24 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
+          this.loadingContacts = false;
+        });
+      });
+    },
+    changeFilter(term, filter, pageNumber) {
+      let offset = 0;
+      if(filter === 'All') {
+        filter = '';
+      }
+      if(pageNumber) {
+        offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
+      }
+      this.loadingContacts = true;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, pageNumber);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });

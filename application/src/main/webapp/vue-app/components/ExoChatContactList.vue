@@ -175,9 +175,9 @@ export default {
       sortFilterMobile: null,
       filterByType: {
         'All': this.$t('exoplatform.chat.contact.all'),
-        'People': this.$t('exoplatform.chat.people'),
-        'Rooms': this.$t('exoplatform.chat.teams'),
-        'Spaces': this.$t('exoplatform.chat.spaces'),
+        'u': this.$t('exoplatform.chat.people'),
+        't': this.$t('exoplatform.chat.teams'),
+        's': this.$t('exoplatform.chat.spaces'),
         'Favorites': this.$t('exoplatform.chat.favorites')
       },
       typeFilter: chatConstants.TYPE_FILTER_DEFAULT,
@@ -203,36 +203,8 @@ export default {
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
-    usersCount() {
-      return this.contacts.filter(contact => contact.type === 'u').length;
-    },
-    roomsCount() {
-      return this.contacts.filter(contact => contact.type === 't').length;
-    },
-    spacesCount() {
-      return this.contacts.filter(contact => contact.type === 's').length;
-    },
-    favoritesCount() {
-      return this.contacts.filter(contact => contact.isFavorite).length;
-    },
     filteredContacts: function() {
-      let sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
-      // this code used to search in whole Chat app, because the search uses a criteria (typeFilter)
-      if(this.typeFilter !== 'All' && !this.drawerStatus) {
-        sortedContacts = sortedContacts.filter(contact =>
-          this.typeFilter === 'People' && contact.type === 'u'
-          || this.typeFilter === 'Rooms' && contact.type === 't'
-          || this.typeFilter === 'Spaces' && contact.type === 's'
-          || this.typeFilter === 'Favorites' && contact.isFavorite
-        );
-      }
-      if (this.searchTerm && this.searchTerm.trim().length) {
-        sortedContacts = sortedContacts.filter(contact => this.normalizeText(contact.fullName.toLowerCase()).indexOf(this.normalizeText(this.searchTerm.toLowerCase())) >= 0);
-      }
-      // for the drawer chat, the search doesn't use a criteria (search filter) so it searches in all contacts
-      if (this.searchWord && this.searchWord.trim().length) {
-        sortedContacts = sortedContacts.filter(contact => this.normalizeText(contact.fullName.toLowerCase()).indexOf(this.normalizeText(this.searchWord.toLowerCase())) >= 0);
-      }
+      const sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
           const unreadTotal = b.unreadTotal - a.unreadTotal;
@@ -254,12 +226,14 @@ export default {
   },
   watch: {
     searchTerm(value) {
-      this.$emit('search-contact', value);
+      this.searchTerm = value;
+      this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages = 0);
     },
     searchWord(newValue) {
       if(newValue) {
+        this.searchTerm = newValue;
         chatServices.getOnlineUsers().then(users => {
-          chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
+          chatServices.getUserChatRooms(eXo.chat.userSettings, users, this.searchTerm).then(chatRoomsData => {
             this.contacts = chatRoomsData.rooms;
             this.contactsSize = chatRoomsData.roomsCount;
           });
@@ -310,7 +284,6 @@ export default {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
   },
   methods: {
-
     normalizeText(s) {
       return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     },
@@ -356,6 +329,7 @@ export default {
     selectTypeFilter(filter) {
       this.typeFilter = filter;
       chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, this.typeFilter);
+      this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages = 0);
     },
     initFilterMobile() {
       this.typeFilterMobile = this.typeFilter;
@@ -432,7 +406,7 @@ export default {
               foundContact.unreadTotal++;
             }
           }
-        }else {
+        } else {
           foundContact.unreadTotal ++;
         }
       } else {
@@ -588,7 +562,8 @@ export default {
       return foundContact;
     },
     loadMore() {
-      this.$emit('load-more-contacts', ++this.nbrePages);
+      this.nbrePages++;
+      this.$emit('load-more-contacts', this.searchTerm, this.typeFilter, this.nbrePages);
     },
     favoriteTooltip(contact) {
       return contact.isFavorite === true ? this.$t('exoplatform.chat.remove.favorites') : this.$t('exoplatform.chat.add.favorites');
