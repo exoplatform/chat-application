@@ -1,6 +1,9 @@
 <template>
   <div class="dropdown">
-    <div :class="togglerClass" class="dropdown-toggle" data-toggle="dropdown">
+    <div
+      :class="togglerClass"
+      class="dropdown-toggle"
+      data-toggle="dropdown">
       <slot name="toggle"></slot>
     </div>
     <ul :class="positionClass" class="dropdown-menu">

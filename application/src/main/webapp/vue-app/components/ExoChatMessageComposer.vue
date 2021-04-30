@@ -1,8 +1,15 @@
 <template>
-  <div v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledRoom === 'true')" :class="{'is-apps-closed': appsClosed}" class="chat-message-composer">
+  <div
+    v-if="contact && Object.keys(contact).length !== 0 && (contact.isEnabledUser === 'true' || contact.isEnabledRoom === 'true')"
+    :class="{'is-apps-closed': appsClosed}"
+    class="chat-message-composer">
     <div v-if="!miniChat">
       <div v-show="!appsClosed" class="apps-container justify-center">
-        <div v-for="app in composerApplications" :key="app.key" class="apps-item" @click="openAppModal(app)">
+        <div
+          v-for="app in composerApplications"
+          :key="app.key"
+          class="apps-item"
+          @click="openAppModal(app)">
           <div class="apps-item-icon"><i :class="app.iconClass"></i></div>
           <div v-if="mq==='desktop'" class="apps-item-label">{{ $t(app.labelKey) }}</div>
         </div>
@@ -12,24 +19,65 @@
       <div class="composer-box">
         <div v-if="!miniChat" class="composer-action">
           <div class="action-emoji">
-            <i v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')" class="uiIconChatSmile" @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
+            <i
+              v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')"
+              class="uiIconChatSmile"
+              @click.prevent.stop="showEmojiPanel = !showEmojiPanel"></i>
             <div v-show="showEmojiPanel" class="composer-emoji-panel popover top">
               <div class="arrow"></div>
-              <span v-for="emoji in getEmoticons" :key="emoji.keys[0]" :class="emoji.class" class="chat-emoticon" @click="selectEmoji(emoji)"></span>
+              <span
+                v-for="emoji in getEmoticons"
+                :key="emoji.keys[0]"
+                :class="emoji.class"
+                class="chat-emoticon"
+                @click="selectEmoji(emoji)"></span>
             </div>
           </div>
-          <div v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')" class="action-apps" @click="appsClosed = !appsClosed"><i class="uiIconPlusCircled"></i></div>
+          <div
+            v-exo-tooltip.top="$t('exoplatform.chat.collaborative.actions.tip')"
+            class="action-apps"
+            @click="appsClosed = !appsClosed">
+            <i class="uiIconPlusCircled"></i>
+          </div>
         </div>
-        <input v-if="miniChat" id="messageComposerArea" ref="messageComposerArea" name="messageComposerArea" type="text" autofocus @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" />
-        <div v-else id="messageComposerArea" ref="messageComposerArea" contenteditable="true" name="messageComposerArea" @keydown.enter="preventDefault" @keypress.enter="preventDefault" @keyup.enter="sendMessageWithKey" @keyup.up="editLastMessage" @keyup="resizeTextarea($event)"></div>
-        <div v-exo-tooltip.top="$t('exoplatform.chat.send')" v-if="!miniChat" class="composer-action">
+        <input
+          v-if="miniChat"
+          id="messageComposerArea"
+          ref="messageComposerArea"
+          name="messageComposerArea"
+          type="text"
+          autofocus
+          @keydown.enter="preventDefault"
+          @keypress.enter="preventDefault"
+          @keyup.enter="sendMessageWithKey">
+        <div
+          v-else
+          id="messageComposerArea"
+          ref="messageComposerArea"
+          contenteditable="true"
+          name="messageComposerArea"
+          @keydown.enter="preventDefault"
+          @keypress.enter="preventDefault"
+          @keyup.enter="sendMessageWithKey"
+          @keyup.up="editLastMessage"
+          @keyup="resizeTextarea($event)"></div>
+        <div
+          v-exo-tooltip.top="$t('exoplatform.chat.send')"
+          v-if="!miniChat"
+          class="composer-action">
           <div class="action-send" @click="sendMessage">
             <i class="uiIconSend"></i>
           </div>
         </div>
       </div>
     </div>
-    <exo-chat-apps-modal v-if="appsModal.isOpned" :app="appsModal.app" :title="appsModal.title" :contact="contact" :room-id="contact.room" @modal-closed="appsModal.isOpned = false"></exo-chat-apps-modal>
+    <exo-chat-apps-modal
+      v-if="appsModal.isOpned"
+      :app="appsModal.app"
+      :title="appsModal.title"
+      :contact="contact"
+      :room-id="contact.room"
+      @modal-closed="appsModal.isOpned = false" />
   </div>
 </template>
 
@@ -72,9 +120,9 @@ export default {
   },
   computed: {
     getEmoticons() {
-      if(eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraEmoticons) {
+      if (eXo && eXo.chat && eXo.chat.room && eXo.chat.room.extraEmoticons) {
         return EMOTICONS.concat(eXo.chat.room.extraEmoticons);
-      } else if(EMOTICONS) {
+      } else if (EMOTICONS) {
         return EMOTICONS;
       } else {
         return [];
@@ -197,28 +245,28 @@ export default {
       if (newMessage.indexOf('@') > -1) {
         newMessage = this.checkMention(newMessage);
       }
-      if(!newMessage || !newMessage.trim()) {
+      if (!newMessage || !newMessage.trim()) {
         return;
       }
       const message = {
-        message : newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
-        room : this.contact.room,
+        message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
+        room: this.contact.room,
         clientId: new Date().getTime().toString(),
         timestamp: Date.now(),
         user: eXo.chat.userSettings.username
       };
       newMessage = newMessage.replace(/<img src="data:image\/.*;base64[^>]*>/g,'');
       let found = false;
-      if(!this.miniChat) {
+      if (!this.miniChat) {
         // shortcuts for specific applications actions
         this.composerApplications.forEach(application => {
-          if(application.shortcutMatches && application.shortcutMatches(newMessage)) {
+          if (application.shortcutMatches && application.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;
               application.shortcutCallback(chatServices, $, newMessage, this.contact);
-            } else if(application.shortcutTriggeredEvent) {
+            } else if (application.shortcutTriggeredEvent) {
               found = true;
-              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact : this.contact}}));
+              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact: this.contact}}));
             }
           }
         });
@@ -240,11 +288,11 @@ export default {
     quoteMessage(e) {
       const quotedMessage = e.detail;
       const composer = $(this.$refs.messageComposerArea);
-      if(!quotedMessage) {
+      if (!quotedMessage) {
         return;
       }
       let messageToSend = quotedMessage.msg ? quotedMessage.msg : quotedMessage.message;
-      if(!messageToSend) {
+      if (!messageToSend) {
         return;
       }
       messageToSend = messageToSend.replace(/<br\/>/g, '\n');

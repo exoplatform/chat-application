@@ -38,7 +38,7 @@ export const ECMS_EVENT_COMPOSER_APP = [{
     this.initUpload($);
   },
   showButtons($, show) {
-    if(show) {
+    if (show) {
       $('.apps-composer-modal .chat-file-upload .uiActionBorder').show();
     } else {
       $('.apps-composer-modal .chat-file-upload .uiActionBorder').hide();
@@ -46,7 +46,7 @@ export const ECMS_EVENT_COMPOSER_APP = [{
   },
   setErrorCode($, error, errorOpts) {
     const $alertContainer = $('.apps-composer-modal .alert-error');
-    if(error && error.length) {
+    if (error && error.length) {
       $alertContainer.html(this.i18NConverter(`exoplatform.chat.${error}`, errorOpts));
       $alertContainer.show();
     } else {
@@ -122,26 +122,26 @@ export const ECMS_EVENT_COMPOSER_APP = [{
               targetFullname: thiss.contact.fullName
             })
           }).then(resp =>  {
-            if(!resp.ok) {
+            if (!resp.ok) {
               thiss.setErrorCode($, 'ErrorPersistFile');
               return;
             } else {
               return resp.json();
             }
           }).then(options => {
-            if(!options) {
+            if (!options) {
               thiss.setErrorCode($, 'UknownError');
               return;
             }
             options.type = 'type-file';
             const message = {
               msg: options.name,
-              room : thiss.contact.room,
+              room: thiss.contact.room,
               clientId: new Date().getTime().toString(),
               user: eXo.chat.userSettings.username,
-              options : options
+              options: options
             };
-            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': message}));
             document.dispatchEvent(new CustomEvent(chatConstants.ACTION_APPS_CLOSE));
           });
         });
@@ -173,7 +173,7 @@ export const DEFAULT_COMPOSER_APPS = [
         '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
         '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
         '(\\#[-a-z\\d_]*)?$','i'); // fragment locater
-      if(!pattern.test(text)) {
+      if (!pattern.test(text)) {
         return false;
       } 
       return text;
@@ -185,7 +185,7 @@ export const DEFAULT_COMPOSER_APPS = [
         return {ok: true};
       }
       else {
-        return {errorCode : 'link.invalid.message'};
+        return {errorCode: 'link.invalid.message'};
       }
     }
   },

@@ -1,12 +1,28 @@
 <template>
-  <div ref="message" :id="messageId" :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}" class="chat-message-box">
+  <div
+    ref="message"
+    :id="messageId"
+    :class="{'chat-message-not-sent': message.notSent, 'is-same-contact': hideAvatar, 'is-current-user': isCurrentUser}"
+    class="chat-message-box">
     <div class="chat-sender-avatar">
-      <a v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')" :style="`backgroundImage: url(${contactAvatar}`" :href="getProfileLink(message.user)" class="chat-contact-avatar"></a>
-      <div v-else-if="displayUserInformation" :style="`backgroundImage: url(${contactAvatar}`" class="chat-contact-avatar"></div>
+      <a
+        v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')"
+        :style="`backgroundImage: url(${contactAvatar}`"
+        :href="getProfileLink(message.user)"
+        class="chat-contact-avatar"></a>
+      <div
+        v-else-if="displayUserInformation"
+        :style="`backgroundImage: url(${contactAvatar}`"
+        class="chat-contact-avatar"></div>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
       <div v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')" class="sender-name"><a :href="getProfileLink(message.user)">{{ attendeeFullname }}</a> :</div>
-      <div v-else-if="displayUserInformation" :class="statusStyle" class="sender-name">{{ attendeeFullname }} {{ disabledStatus }}: </div>
+      <div
+        v-else-if="displayUserInformation"
+        :class="statusStyle"
+        class="sender-name">
+        {{ attendeeFullname }} {{ disabledStatus }}:
+      </div>
 
       <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
@@ -16,11 +32,17 @@
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
         <span class="message-file-size">{{ message.options.sizeLabel }}</span>
-        <div v-show="message.options.thumbnailURL" :id="`${messageId}-attachmentContainer`" class="attachmentContainer">
+        <div
+          v-show="message.options.thumbnailURL"
+          :id="`${messageId}-attachmentContainer`"
+          class="attachmentContainer">
           <div class="attachmentContentImage">
             <div class="imageAttachmentBox">
               <a class="imgAttach">
-                <img :src="message.options.thumbnailURL" :alt="message.options.title" @error="deleteThumbnail">
+                <img
+                  :src="message.options.thumbnailURL"
+                  :alt="message.options.title"
+                  @error="deleteThumbnail">
               </a>
               <div class="actionAttachImg">
                 <p>
@@ -38,11 +60,17 @@
           </div>
         </div>
       </div>
-      <div v-sanitized-html="messageFiltered" v-else-if="!message.isSystem" class="message-content"></div>
+      <div
+        v-sanitized-html="messageFiltered"
+        v-else-if="!message.isSystem"
+        class="message-content"></div>
       <div v-else-if="messageOptionsType === chatConstants.ADD_TEAM_MESSAGE" class="message-content">
         <span v-sanitized-html="$t('exoplatform.chat.team.msg.adduser', roomAddOrDeleteI18NParams)"></span>
       </div>
-      <div v-sanitized-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))" v-else-if="messageOptionsType === chatConstants.ROOM_MEMBER_LEFT" class="message-content">
+      <div
+        v-sanitized-html="unescapeHTML($t('exoplatform.chat.team.msg.leaveroom', {0: '<b>' + message.options.fullName + '</b>'}))"
+        v-else-if="messageOptionsType === chatConstants.ROOM_MEMBER_LEFT"
+        class="message-content">
       </div>
       <div v-else-if="messageOptionsType === chatConstants.REMOVE_TEAM_MESSAGE" class="message-content">
         <span v-sanitized-html="$t('exoplatform.chat.team.msg.removeuser', roomAddOrDeleteI18NParams)"></span>
@@ -61,7 +89,10 @@
           {{ message.options.location }}
         </div>
       </div>
-      <div v-autolinker="message.options.link" v-else-if="messageOptionsType === chatConstants.LINK_MESSAGE" class="message-content">
+      <div
+        v-autolinker="message.options.link"
+        v-else-if="messageOptionsType === chatConstants.LINK_MESSAGE"
+        class="message-content">
       </div>
       <div v-else-if="(messageOptionsType === chatConstants.RAISE_HAND || messageOptionsType === chatConstants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
@@ -74,7 +105,7 @@
       </div>
       <div v-else-if="(messageOptionsType === chatConstants.NOTES_MESSAGE || messageOptionsType === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
         <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
-        <br />
+        <br>
         <div class="custom-message-item">
           <i class="uiIconChatSendEmail"></i>
           <a class="btn-link send-meeting-notes" @click="sendMeetingNotes">{{ $t('exoplatform.chat.notes') }}</a>
@@ -84,17 +115,33 @@
           <a class="btn-link save-meeting-notes" @click="saveMeetingNotes">{{ $t('exoplatform.chat.save.wiki') }}</a>
         </div>
         <div class="alert alert-success meetingNotesSent" style="display:none;">
-          <button type="button" class="close" style="right: 0;">×</button>
+          <button
+            type="button"
+            class="close"
+            style="right: 0;">
+            ×
+          </button>
           <strong>{{ $t('exoplatform.chat.sent') }}</strong>
           {{ $t('exoplatform.chat.check.mailbox') }}
         </div>
-        <div :id="message.timestamp" class="alert alert-success meetingNotesSaved" style="display:none;">
-          <button type="button" class="close" style="right: 0;">×</button>
+        <div
+          :id="message.timestamp"
+          class="alert alert-success meetingNotesSaved"
+          style="display:none;">
+          <button
+            type="button"
+            class="close"
+            style="right: 0;">
+            ×
+          </button>
           <strong>{{ $t('exoplatform.chat.saved') }}</strong>
           <a href="#" target="_blank">{{ $t('exoplatform.chat.open.wiki') }}</a>.
         </div>
       </div>
-      <div v-sanitized-html="specificMessageContent" v-else-if="isSpecificMessageType" class="message-content">
+      <div
+        v-sanitized-html="specificMessageContent"
+        v-else-if="isSpecificMessageType"
+        class="message-content">
       </div>
       <div class="message-description">
         <i v-if="isEditedMessage" class="uiIconChatEdit"></i>
@@ -110,18 +157,38 @@
       </div>
     </div>
     <div class="chat-message-action">
-      <exo-dropdown-select v-if="displayActions && mq !=='mobile'" class="message-actions" position="right">
-        <i slot="toggle" class="uiIconDots" @click="setActionsPosition"></i>
+      <exo-dropdown-select
+        v-if="displayActions && mq !=='mobile'"
+        class="message-actions"
+        position="right">
+        <i
+          slot="toggle"
+          class="uiIconDots"
+          @click="setActionsPosition"></i>
         <li slot="menu">
-          <a v-for="messageAction in messageActions" :key="message.msgId + messageAction.key" :id="message.msgId + messageAction.key" :class="messageAction.class" class="actions-link" href="#" @click="executeAction(messageAction)">
+          <a
+            v-for="messageAction in messageActions"
+            :key="message.msgId + messageAction.key"
+            :id="message.msgId + messageAction.key"
+            :class="messageAction.class"
+            class="actions-link"
+            href="#"
+            @click="executeAction(messageAction)">
             {{ $t(messageAction.labelKey) }}
           </a>
         </li>
       </exo-dropdown-select>
-      <div v-else-if="displayActions" v-show="displayActionMobile" class="uiPopupWrapper chat-modal-mask" @click="displayActionMobile = false">
+      <div
+        v-else-if="displayActions"
+        v-show="displayActionMobile"
+        class="uiPopupWrapper chat-modal-mask"
+        @click="displayActionMobile = false">
         <ul class="mobile-options filter-options">
           <li v-for="messageAction in messageActions" :key="messageAction.key">
-            <a :class="messageAction.class" href="#" @click.prevent="executeAction(messageAction)">
+            <a
+              :class="messageAction.class"
+              href="#"
+              @click.prevent="executeAction(messageAction)">
               {{ $t(messageAction.labelKey) }}
             </a>
           </li>
@@ -129,16 +196,30 @@
       </div>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
-    <exo-chat-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
+    <exo-chat-modal
+      v-show="showConfirmModal"
+      :title="$t(confirmTitle)"
+      @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
-          <span v-sanitized-html="unescapeHTML($t(confirmMessage))" id="team-delete-window-chat-name" class="confirmationIcon">
+          <span
+            v-sanitized-html="unescapeHTML($t(confirmMessage))"
+            id="team-delete-window-chat-name"
+            class="confirmationIcon">
           </span>
         </p>
       </div>
       <div class="uiAction uiActionBorder">
-        <a id="team-delete-button-ok" href="#" class="btn btn-primary" @click="confirmAction(message);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
-        <a id="team-delete-button-cancel" href="#" class="btn" @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
+        <a
+          id="team-delete-button-ok"
+          href="#"
+          class="btn btn-primary"
+          @click="confirmAction(message);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
+        <a
+          id="team-delete-button-cancel"
+          href="#"
+          class="btn"
+          @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
       </div>
     </exo-chat-modal>
   </div>
@@ -260,7 +341,7 @@ export default {
       return this.messageOptionsType && extraMessageTypes && extraMessageTypes.find(elm => elm.type === this.messageOptionsType);
     },
     specificMessageContent() {
-      if(this.specificMessageObj && this.specificMessageObj.html) {
+      if (this.specificMessageObj && this.specificMessageObj.html) {
         return this.specificMessageObj.html(this.message, this.$t.bind(this));
       }
       return '';
@@ -272,11 +353,13 @@ export default {
       if (this.message.isEnabledUser === 'false' && !this.isCurrentUser) {
         return 'user-disabled';
       }
+      return '';
     },
     disabledStatus() {
       if (this.message.isEnabledUser==='false') {
         return '('.concat('',this.$t('exoplatform.chat.inactive')).concat(')');
       }
+      return '';
     }
   },
   created() {
@@ -309,7 +392,7 @@ export default {
       $(`#${this.messageId}-attachmentContainer`).remove();
     },
     executeAction(messageAction) {
-      if(messageAction.confirm) {
+      if (messageAction.confirm) {
         this.confirmTitle = messageAction.confirm.title;
         this.confirmMessage = messageAction.confirm.message;
         this.confirmOKMessage = messageAction.confirm.okMessage;

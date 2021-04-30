@@ -24,7 +24,7 @@ export function getStoredParam(key, defaultValue) {
 }
 
 export function setStoredParam(key, value, expire) {
-  if(value && value.length) {
+  if (value && value.length) {
     if (expire && expire > -1) {
       expire = expire ? expire : DEFAULT_EXPIRATION_PERIOD;
       localStorage.setItem(`${key}TS`, Math.round(new Date() / chatConstants.NB_MILLISECONDS_PERD_SECOND) + expire);
@@ -40,7 +40,7 @@ export function getRoomNotSentMessages(username, room) {
   const roomNotSentMessages = [];
   if (room && username) {
     const notSentMessages = getSortedNotSentMessages(username);
-    if(notSentMessages && notSentMessages.length) {
+    if (notSentMessages && notSentMessages.length) {
       notSentMessages.forEach(notSenMessage => {
         if (notSenMessage && notSenMessage.room === room) {
           roomNotSentMessages.push(notSenMessage);
@@ -53,9 +53,9 @@ export function getRoomNotSentMessages(username, room) {
 
 export function getNotSentMessages(username) {
   let notSentMessages = getStoredParam(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${username}`);
-  if(notSentMessages) {
+  if (notSentMessages) {
     notSentMessages = JSON.parse(notSentMessages);
-    if(Array.isArray(notSentMessages)) {
+    if (Array.isArray(notSentMessages)) {
       notSentMessages = {};
       localStorage.removeItem(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${username}`);
     } else {
@@ -67,10 +67,10 @@ export function getNotSentMessages(username) {
 
 function getSortedNotSentMessages(username) {
   const notSentMessages = getNotSentMessages(username);
-  if(notSentMessages) {
+  if (notSentMessages) {
     const notSentMessagesKeys = Object.keys(notSentMessages);
     const notSentMessagesArray = [];
-    if(notSentMessagesKeys.length > 1) {
+    if (notSentMessagesKeys.length > 1) {
       notSentMessagesKeys.forEach(key => notSentMessagesArray.push(notSentMessages[key]));
       notSentMessagesArray.sort((a, b) => a.timestamp - b.timestamp);
     }
@@ -80,7 +80,7 @@ function getSortedNotSentMessages(username) {
 }
 
 export function storeNotSentMessage(messageToStore) {
-  if(!messageToStore) {
+  if (!messageToStore) {
     return;
   }
   const user = messageToStore.sender ? messageToStore.sender : messageToStore.data && messageToStore.data.sender ? messageToStore.data.sender : messageToStore.user ? messageToStore.user : messageToStore.data ? messageToStore.data.user : null;
@@ -120,15 +120,15 @@ export function deleteFromStore(user, clientId) {
 }
 
 export function sendFailedMessages() {
-  if(!getStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING)) {
+  if (!getStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING)) {
     setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING, 'true', RESEND_MESSAGE_PERIOD / chatConstants.NB_MILLISECONDS_PERD_SECOND);
     try {
       const notSentMessages = getSortedNotSentMessages(eXo.chat.userSettings.username);
-      if(notSentMessages && notSentMessages.length) {
+      if (notSentMessages && notSentMessages.length) {
         notSentMessages.forEach(messageToResend => {
-          if(messageToResend) {
+          if (messageToResend) {
             if (eXo.chat.isOnline) {
-              if(messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {
+              if (messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {
                 // Give up retrying send message when the user is online
                 // but the message sending always fails
                 storeMessageAsSent(messageToResend);
@@ -136,12 +136,12 @@ export function sendFailedMessages() {
                 messageToResend.attemptCount = messageToResend.attemptCount ? messageToResend.attemptCount + 1 : 1;
               }
             }
-            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : messageToResend}));
+            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': messageToResend}));
           }
         });
       }
       setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING);
-    } catch(e) {
+    } catch (e) {
       setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING);
     }
   }

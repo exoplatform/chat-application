@@ -1,5 +1,5 @@
 export default function(msg, highlight, emojis) {
-  if(!msg || !msg.trim().length) {
+  if (!msg || !msg.trim().length) {
     return msg;
   }
   let message = '';
@@ -24,7 +24,7 @@ export default function(msg, highlight, emojis) {
         const wordCaseSensitive = w.replace(/\.|\?|!/, '');
         const wordCaseInsensitive = wordCaseSensitive.toLowerCase();
         const emoticon = emojis.find(emoticon => emoticon.keys.indexOf(wordCaseInsensitive) >= 0);
-        if(emoticon) {
+        if (emoticon) {
           w = w.replace(wordCaseSensitive, `<span class="chat-emoticon ${emoticon.class}"><span>${wordCaseSensitive}</span></span>`);
         }
       }

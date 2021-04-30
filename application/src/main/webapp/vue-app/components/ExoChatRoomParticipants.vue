@@ -1,13 +1,23 @@
 <template>
   <div v-if="contact && Object.keys(contact).length !== 0 && contact.type != 'u'" class="uiRoomUsersContainerArea">
-    <div ref="roomParticipants" :class="{collapsed: isCollapsed && mq !== 'mobile'}" class="room-participants">
-      <div v-exo-tooltip.left.body="tooltipCollapse" v-if="mq !=='mobile'" class="room-users-collapse-btn" @click="toggleCollapsed">
+    <div
+      ref="roomParticipants"
+      :class="{collapsed: isCollapsed && mq !== 'mobile'}"
+      class="room-participants">
+      <div
+        v-exo-tooltip.left.body="tooltipCollapse"
+        v-if="mq !=='mobile'"
+        class="room-users-collapse-btn"
+        @click="toggleCollapsed">
         <i class="uiIcon"></i>
       </div>
       <div class="room-participants-header no-user-selection">
         <div v-if="mq == 'mobile'" @click="backToConversation"><i class="uiIconGoBack"></i></div>
         <div v-exo-tooltip.left.body="tooltipParticipants" class="room-participants-filter">
-          <div v-show="isCollapsed && mq !== 'mobile'" class="actionIcon" @click="toggleParticipantFilter">
+          <div
+            v-show="isCollapsed && mq !== 'mobile'"
+            class="actionIcon"
+            @click="toggleParticipantFilter">
             <i :class="{'all-participants': participantFilterClass}" class="uiIconChatMember uiIconChatLightGray"></i>
           </div>
         </div>
@@ -18,12 +28,29 @@
         <exo-dropdown-select v-show="!isCollapsed || mq === 'mobile'" position="right">
           <span slot="toggle">{{ filterByStatus[participantFilter] }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
-          <li v-for="(label, filter) in filterByStatus" slot="menu" :key="filter" @click="selectParticipantFilter(filter)"><a href="#"><i :class="{'not-filter': participantFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li
+            v-for="(label, filter) in filterByStatus"
+            slot="menu"
+            :key="filter"
+            @click="selectParticipantFilter(filter)">
+            <a href="#"><i :class="{'not-filter': participantFilter !== filter}" class="uiIconTick"></i>{{ label }}</a>
+          </li>
         </exo-dropdown-select>
       </div>
       <div ref="roomParticipantsList" class="room-participants-list isList">
-        <div v-for="contact in participants" :key="contact.name" class="contact-list-item">
-          <exo-chat-contact v-tiptip="contact.name" :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabled === 'true' || contact.isEnabled === 'null'" :list="true" :user-name="contact.name" :name="contact.fullname" :status="contact.status" type="u"></exo-chat-contact>
+        <div
+          v-for="participant in participants"
+          :key="participant.name"
+          class="contact-list-item">
+          <exo-chat-contact
+            v-tiptip="participant.name"
+            :is-external="participant.isExternal === 'true'"
+            :is-enabled="participant.isEnabled === 'true' || participant.isEnabled === 'null'"
+            :list="true"
+            :user-name="participant.name"
+            :name="participant.fullname"
+            :status="participant.status"
+            type="u" />
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
           <span v-show="hiddenParticipantsCount > 0" class="nb-participants">++ {{ hiddenParticipantsCount }} {{ $t("exoplatform.chat.participants.more.label") }}</span>
@@ -60,12 +87,12 @@ export default {
       });
     }
   },
-  data : function() {
+  data: function() {
     return {
       isCollapsed: true,
       filterByStatus: {
         'All': this.$t('exoplatform.chat.contact.all'),
-        'Online':  this.$t('exoplatform.chat.online'),
+        'Online': this.$t('exoplatform.chat.online'),
       },
       participantFilter: chatConstants.STATUS_FILTER_DEFAULT,
       /**
@@ -169,7 +196,7 @@ export default {
     },
     calculateDisplayedContacts() {
       this.displayedParticipantsCount = 50;
-      if(this.$refs.roomParticipants && this.contact.type && this.contact.type !== 't') {
+      if (this.$refs.roomParticipants && this.contact.type && this.contact.type !== 't') {
         const headerHeight = 70;
         const moreParticipantsTextHeight = 20;
         const participantsHeight = this.$refs.roomParticipants.clientHeight;
@@ -185,7 +212,7 @@ export default {
         chatServices.getRoomParticipants(eXo.chat.userSettings, contact, users, this.displayedParticipantsCount, onlineUsersOnly).then( data => {
           this.participants = data.users.map(user => {
             // if user attributes deleted/enabled are null update the user.
-            if(user.isEnabled === 'null') {
+            if (user.isEnabled === 'null') {
               chatServices.getUserState(user.name).then(userState => {
                 chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
                 user.isEnabled = userState.isEnabled;
@@ -194,7 +221,7 @@ export default {
               });
             }
             // if user is not online, set its status as offline
-            if(users.indexOf(user.name) < 0) {
+            if (users.indexOf(user.name) < 0) {
               user.status = 'offline';
             }
             return user;

@@ -1,7 +1,13 @@
 <template>
-  <a class="chat-notification-detail block-item" href="#" @click="$emit('select-room', room)">
+  <a
+    class="chat-notification-detail block-item"
+    href="#"
+    @click="$emit('select-room', room)">
     <span class="avatarXSmall">
-      <img :src="avatar" onerror="this.src='/chat/img/user-default.jpg'" class="avatar-image">
+      <img
+        :src="avatar"
+        onerror="this.src='/chat/img/user-default.jpg'"
+        class="avatar-image">
     </span>
     <div class="chat-label-status">
       <div class="content">
@@ -55,8 +61,8 @@ export default {
     },
     messageClass() {
       const messageType = this.notif.options ? this.notif.options.type : '';
-      if(messageType) {
-        switch(messageType) {
+      if (messageType) {
+        switch (messageType) {
         case chatConstants.QUESTION_MESSAGE: return 'uiIconChatQuestion uiIconChatLightGray pull-left';
         case chatConstants.RAISE_HAND: return 'uiIconChatRaiseHand uiIconChatLightGray pull-left';
         case chatConstants.FILE_MESSAGE: return 'uiIconChatUpload uiIconChatLightGray pull-left';
@@ -83,7 +89,7 @@ export default {
       return extraMessageNotifs.find(elm => elm.type === this.notif.options.type);
     },
     specificMessageContent() {
-      if(this.specificMessageObj && this.specificMessageObj.html) {
+      if (this.specificMessageObj && this.specificMessageObj.html) {
         return this.specificMessageObj.html(this.notif, this.$t.bind(this));
       }
       return '';
@@ -98,7 +104,7 @@ export default {
       const messageType = this.notif.options.type;
       let content = this.notif.content;
       if (messageType) {
-        switch(messageType) {
+        switch (messageType) {
         case chatConstants.EVENT_MESSAGE : content = this.notif.options.summary; break;
         case chatConstants.LINK_MESSAGE : content = this.notif.options.link; break;
         case chatConstants.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;

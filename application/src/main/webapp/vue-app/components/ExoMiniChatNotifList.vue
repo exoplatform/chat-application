@@ -9,11 +9,15 @@
         :notif="messages[0]"
         :room="room"
         class="message"
-        @select-room="$emit('select-room', room)">
-      </exo-chat-notif-detail>
+        @select-room="$emit('select-room', room)" />
     </li>
     <li v-if="onsiteNotif && (isRetrievingMessagges || messagesList.length > 0)" class="divider">&nbsp;</li>
-    <li v-for="(value, key) in statusMap" v-if="key !== 'offline'" :class="`user-${key}`" :key="key" @click="$emit('set-status', key)">
+    <li
+      v-for="(value, key) in statusMap"
+      v-if="key !== 'offline'"
+      :class="`user-${key}`"
+      :key="key"
+      @click="$emit('set-status', key)">
       <a href="#">
         <span>
           <i class="uiIconStatus"></i>
@@ -23,7 +27,10 @@
     </li>
     <li class="divider">&nbsp;</li>
     <li>
-      <a href="/portal/intranet/chat" class="notif-chat-open-link" target="_chat">
+      <a
+        href="/portal/intranet/chat"
+        class="notif-chat-open-link"
+        target="_chat">
         <i class="uiIconBannerChat"></i>
         <span class="chat-label-status">{{ $t('exoplatform.chat.open.chat') }}</span>
       </a>
@@ -69,7 +76,7 @@ export default {
   },
   computed: {
     messagesFiltered() {
-      if(this.messagesList && this.messagesList.length > 0) {
+      if (this.messagesList && this.messagesList.length > 0) {
         const rooms = this.messagesList.map(message => {
           return message.categoryId ? message.categoryId : '';
         }).reduce((result, current) => {
@@ -79,7 +86,7 @@ export default {
         const messagesMap = {};
         rooms.forEach(room => {
           const subMessages = this.messagesList.filter(message => message.categoryId === room);
-          if(subMessages && subMessages.length) {
+          if (subMessages && subMessages.length) {
             subMessages.sort(function(a, b) {
               return b.timestamp - a.timestamp;
             });
@@ -114,7 +121,7 @@ export default {
       });
     },
     messageReceived() {
-      if($('#chatApplicationNotification .status-dropdown').hasClass('open')) {
+      if ($('#chatApplicationNotification .status-dropdown').hasClass('open')) {
         chatServices.getNotReadMessages(eXo.chat.userSettings, true).then(messages => {
           this.messagesList = messages && messages.notifications ? messages.notifications : [];
         });
