@@ -4,7 +4,6 @@
     <li v-if="onsiteNotif && totalUnreadMsg > 0 && !isRetrievingMessagges && messagesList.length > 0" id="chat-notifications-details">
       <exo-chat-notif-detail
         v-for="(messages, room) in messagesFiltered"
-        v-if="messages && messages.length"
         :key="room"
         :notif="messages[0]"
         :room="room"
@@ -13,8 +12,7 @@
     </li>
     <li v-if="onsiteNotif && (isRetrievingMessagges || messagesList.length > 0)" class="divider">&nbsp;</li>
     <li
-      v-for="(value, key) in statusMap"
-      v-if="key !== 'offline'"
+      v-for="(value, key) in onlineStatusMap"
       :class="`user-${key}`"
       :key="key"
       @click="$emit('set-status', key)">
@@ -28,7 +26,7 @@
     <li class="divider">&nbsp;</li>
     <li>
       <a
-        href="/portal/intranet/chat"
+        :href="chatLink"
         class="notif-chat-open-link"
         target="_chat">
         <i class="uiIconBannerChat"></i>
@@ -71,10 +69,16 @@ export default {
     return {
       messagesList: [],
       isRetrievingMessagges: false,
+      chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       connected: true
     };
   },
   computed: {
+    onlineStatusMap() {
+      const onlineStatusMap = Object.assign({}, this.statusMap);
+      delete onlineStatusMap['offline'];
+      return onlineStatusMap;
+    },
     messagesFiltered() {
       if (this.messagesList && this.messagesList.length > 0) {
         const rooms = this.messagesList.map(message => {

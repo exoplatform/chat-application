@@ -158,6 +158,7 @@ export default {
       searchTerm: '',
       totalUnreadMsg: 0,
       external: this.$t('exoplatform.chat.external'),
+      chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents
     };
   },
@@ -260,7 +261,7 @@ export default {
       window.setTimeout(this.$refs.chatDrawer.endLoading, chatConstants.LOADING_ANIMATION_DURATION);
     },
     navigateTo() {
-      window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
+      window.open(this.chatLink, '_blank');
     },
     resetSelectedContact() {
       this.showChatDrawer = false;

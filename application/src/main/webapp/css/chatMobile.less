@@ -255,7 +255,7 @@
       &:after {
         content: "";
         position: absolute;
-        width: calc(100% - 30px);
+        width: ~"calc(100% - 30px)";
         bottom: 0;
         border-bottom: @defaultBorder;
       }
@@ -284,7 +284,7 @@
     }
     .room-search {
       position: absolute;
-      width: calc(100vw - 40px);
+      width: ~"calc(100vw - 40px)";
       right: 0 ~'; /** orientation=lt */ ';
       left: 0 ~'; /** orientation=rt */ ';
       input[type="text"] {
@@ -315,7 +315,7 @@
     }
   }
   .room-content {
-    height: calc(100% - @headerMobile);
+    height: ~"calc(100% - @headerMobile)";
     padding: 0;
   }
 
@@ -452,7 +452,7 @@
       margin: 0;
     }
     .popupContent {
-      max-height: calc(100vh - 50px);
+      max-height: ~"calc(100vh - 50px)";
       box-sizing: border-box;
       padding: 10px;
       overflow-x: hidden;

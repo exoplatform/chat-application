@@ -280,6 +280,7 @@ export default {
       contactMenu: null,
       contactMenuClosed: true,
       filterMenuClosed: true,
+      contactsToDisplay: [],
       inactive: this.$t('exoplatform.chat.inactive'),
       external: this.$t('exoplatform.chat.external')
     };
@@ -289,19 +290,19 @@ export default {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
     usersCount() {
-      return this.contacts.filter(contact => contact.type === 'u').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 'u').length;
     },
     roomsCount() {
-      return this.contacts.filter(contact => contact.type === 't').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 't').length;
     },
     spacesCount() {
-      return this.contacts.filter(contact => contact.type === 's').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 's').length;
     },
     favoritesCount() {
-      return this.contacts.filter(contact => contact.isFavorite).length;
+      return this.contactsToDisplay.filter(contact => contact.isFavorite).length;
     },
     filteredContacts: function() {
-      let sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
+      let sortedContacts = this.contactsToDisplay.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       // this code used to search in whole Chat app, because the search uses a criteria (typeFilter)
       if (this.typeFilter !== 'All' && !this.drawerStatus) {
         sortedContacts = sortedContacts.filter(contact =>
@@ -331,7 +332,7 @@ export default {
           return b.timestamp - a.timestamp;
         });
       }
-      return sortedContacts.slice(0, this.contacts.length);
+      return sortedContacts.slice(0, this.contactsToDisplay.length);
     },
     hasMoreContacts() {
       if (this.searchTerm.trim().length) {
@@ -340,19 +341,22 @@ export default {
       // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
-        return this.usersCount >= this.contacts.length;
+        return this.usersCount >= this.contactsToDisplay.length;
       case 'Rooms':
-        return this.roomsCount > this.contacts.length;
+        return this.roomsCount > this.contactsToDisplay.length;
       case 'Spaces':
-        return this.spacesCount > this.contacts.length;
+        return this.spacesCount > this.contactsToDisplay.length;
       case 'Favorites':
-        return this.favoritesCount > this.contacts.length;
+        return this.favoritesCount > this.contactsToDisplay.length;
       default:
-        return this.contactsSize > this.contacts.length;
+        return this.contactsSize > this.contactsToDisplay.length;
       }
     }
   },
   watch: {
+    contacts() {
+      this.contactsToDisplay = this.contacts.slice();
+    },
     searchTerm(value) {
       this.$emit('search-contact', value);
     },
@@ -360,7 +364,7 @@ export default {
       if (newValue) {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
-            this.contacts = chatRoomsData.rooms;
+            this.contactsToDisplay = chatRoomsData.rooms;
           });
         });
       }
@@ -384,6 +388,7 @@ export default {
     document.addEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
+    this.contactsToDisplay = this.contacts.slice();
     this.initFilterMobile();
     chatServices.getUserInfo().then(
       (data) => {
@@ -426,6 +431,7 @@ export default {
       if (contact.type && contact.type === 'u' && contact.isEnabledUser === 'null'&& contact.isExternal === '') {
         chatServices.getUserState(contact.user).then(userState => {
           chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled, userState.isExternal);
+          // eslint-disable-next-line vue/no-mutating-props
           this.selected.isEnabledUser = !userState.isDeleted && userState.isEnabled ? 'true' : 'false';
           contact.isEnabledUser = this.selected.isEnabledUser;
           contact.isExternal = userState.isExternal;
@@ -443,6 +449,7 @@ export default {
     },
     markAllAsRead() {
       chatWebSocket.setRoomMessagesAsRead();
+      // eslint-disable-next-line vue/no-mutating-props
       this.unreadMessages.shift();
     },
     toggleFavorite(contact) {
@@ -538,7 +545,7 @@ export default {
         chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
           if (contact && contact.user && contact.user.length && contact.user !== 'undefined') {
             contact.unreadTotal = 1;
-            this.contacts.unshift(contact);
+            this.contactsToDisplay.unshift(contact);
           }
         });
       }
@@ -586,6 +593,7 @@ export default {
     },
     editRoom() {
       chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected).then(data => {
+        // eslint-disable-next-line vue/no-mutating-props
         this.selected.participants = data.users;
         this.newRoom = JSON.parse(JSON.stringify(this.selected));
         this.createRoomModal = true;
@@ -615,7 +623,7 @@ export default {
           this.removeObjectIfExists(this.unreadMessages, message.room);
         }
       } else {
-        this.contacts.forEach(contact => {
+        this.contactsToDisplay.forEach(contact => {
           contact.unreadTotal = 0;
         });
         this.$emit('refresh-contacts', true);
@@ -629,11 +637,11 @@ export default {
         return;
       }
       const roomLeft = message.data && message.data.room ? message.data.room : message.room;
-      const roomIndex = this.contacts.findIndex(contact => contact.room === roomLeft);
+      const roomIndex = this.contactsToDisplay.findIndex(contact => contact.room === roomLeft);
       if (roomIndex >= 0) {
-        this.contacts.splice(roomIndex, 1);
+        this.contactsToDisplay.splice(roomIndex, 1);
         if (this.selected && this.selected.room === roomLeft) {
-          if (!this.contacts || this.contacts.length === 0) {
+          if (!this.contactsToDisplay || this.contactsToDisplay.length === 0) {
             this.selectContact();
           } else {
             if (this.filteredContacts && this.filteredContacts.length) {
@@ -647,7 +655,7 @@ export default {
     },
     joinedToNewRoom(e) {
       if (!this.findContact(e.detail.room)) {
-        this.contacts.push(e.detail.data);
+        this.contactsToDisplay.push(e.detail.data);
       }
     },
     favoriteAdded(event) {
@@ -674,7 +682,7 @@ export default {
         const contact = this.findContact(RoomId);
         this.selectContact(contact);
       }
-      return this.contacts.find(contact => contact[field] === value);
+      return this.contactsToDisplay.find(contact => contact[field] === value);
     },
     findContactByRoomOrUser(room, targetUser) {
       let foundContact = null;
@@ -687,7 +695,7 @@ export default {
       return foundContact;
     },
     loadMore() {
-      this.totalEntriesToLoad = this.contacts.length;
+      this.totalEntriesToLoad = this.contactsToDisplay.length;
       this.$emit('load-more-contacts', this.totalEntriesToLoad);
     },
     favoriteTooltip(contact) {
@@ -751,7 +759,7 @@ export default {
       }
     },
     openContactActions(user) {
-      const contact = this.contacts.find(contact => contact['user'] === user);
+      const contact = this.contactsToDisplay.find(contact => contact['user'] === user);
       this.contactMenuClosed = false;
       this.contactMenu = contact;
     },

@@ -2,7 +2,6 @@ import {addCaretJQueryExtension} from '../js/lib/text-caret';
 import {chatConstants} from './chatConstants.js';
 import {registerExternalExtensions} from './extension.js';
 
-import './../css/main.less';
 import './components/initComponents.js';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
