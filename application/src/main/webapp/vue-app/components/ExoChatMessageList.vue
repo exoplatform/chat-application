@@ -1,17 +1,49 @@
 <template>
   <div id="message-scroll" class="uiRightContainerArea message-list">
-    <div v-if="contact && Object.keys(contact).length !== 0" id="chats" ref="messagesListContainer" :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}" class="chat-message-list" @wheel="loadMoreMessages();checkResetUnreadMessage()" @scroll="loadMoreMessages();checkResetUnreadMessage()">
+    <div
+      v-if="contact && Object.keys(contact).length !== 0"
+      id="chats"
+      ref="messagesListContainer"
+      :class="{'chat-no-conversation muted': (!messages || !messages.length) && !newMessagesLoading}"
+      class="chat-message-list"
+      @wheel="loadMoreMessages();checkResetUnreadMessage()"
+      @scroll="loadMoreMessages();checkResetUnreadMessage()">
       <div v-show="newMessagesLoading" class="center">
-        <img src="/chat/img/sync.gif" width="64px" class="chatLoading">
+        <img
+          src="/chat/img/sync.gif"
+          width="64px"
+          class="chatLoading">
       </div>
-      <div v-for="(subMessages, dayDate) in messagesMap" :key="dayDate" class="chat-message-day">
+      <div
+        v-for="(subMessages, dayDate) in messagesMap"
+        :key="dayDate"
+        class="chat-message-day">
         <div class="day-separator"><span>{{ dayDate }}</span></div>
-        <exo-chat-message-detail v-for="messageObj in subMessages" :key="messageObj.clientId" :highlight="searchKeyword" :room="contact.room" :room-fullname="contact.fullName" :message="messageObj" :hide-time="messageObj.hideTime" :hide-avatar="messageObj.hideAvatar" :mini-chat="miniChat" @edit-message="editMessage"></exo-chat-message-detail>
+        <exo-chat-message-detail
+          v-for="messageObj in subMessages"
+          :key="messageObj.clientId"
+          :highlight="searchKeyword"
+          :room="contact.room"
+          :room-fullname="contact.fullName"
+          :message="messageObj"
+          :hide-time="messageObj.hideTime"
+          :hide-avatar="messageObj.hideAvatar"
+          :mini-chat="miniChat"
+          @edit-message="editMessage" />
       </div>
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
-    <exo-chat-message-composer :contact="contact" :mini-chat="miniChat" :user-settings="userSettings" @message-written="messageWritten"></exo-chat-message-composer>
-    <exo-chat-modal v-if="!miniChat" v-show="showEditMessageModal" :title="$t('exoplatform.chat.msg.edit')" modal-class="edit-message-modal" @modal-closed="closeModal">
+    <exo-chat-message-composer
+      :contact="contact"
+      :mini-chat="miniChat"
+      :user-settings="userSettings"
+      @message-written="messageWritten" />
+    <exo-chat-modal
+      v-if="!miniChat"
+      v-show="showEditMessageModal"
+      :title="$t('exoplatform.chat.msg.edit')"
+      modal-class="edit-message-modal"
+      @modal-closed="closeModal">
       <exo-content-editable
         v-if="showEditMessageModal"
         id="editMessageComposerArea"
@@ -81,7 +113,7 @@ export default {
       let previousMessage = null;
       this.messages.forEach(message => {
         const messageDay = chatTime.getDayDateString(message.timestamp);
-        if(!messagesMap[messageDay]) {
+        if (!messagesMap[messageDay]) {
           messagesMap[messageDay] = [];
         }
 
@@ -128,13 +160,13 @@ export default {
       chatWebStorage.storeNotSentMessage(message);
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
-      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': message}));
     },
     messageModified(message) {
       this.addOrUpdateMessageToList(message);
       this.setScrollToBottom();
       message.room = this.contact.room;
-      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': message}));
     },
     messageReceived(e) {
       const messageObj = e.detail;
@@ -145,7 +177,7 @@ export default {
     messageSent(e) {
       const messageObj = e.detail;
       const message = messageObj.data;
-      if(message) {
+      if (message) {
         this.addOrUpdateMessageToList(message);
       }
     },
@@ -186,7 +218,7 @@ export default {
     },
     isScrollPositionAtEnd() {
       const messagesListContainer = $(this.$refs.messagesListContainer);
-      if(messagesListContainer && messagesListContainer.length) {
+      if (messagesListContainer && messagesListContainer.length) {
         return messagesListContainer[0].scrollHeight - messagesListContainer.scrollTop() - messagesListContainer.height() < chatConstants.MAX_SCROLL_POSITION_FOR_AUTOMATIC_SCROLL;
       } else {
         return false;
@@ -199,7 +231,7 @@ export default {
       this.retrieveRoomMessages(true);
     },
     retrieveRoomMessages(avoidScrollingDown) {
-      if(!this.contact || !this.contact.room || !this.contact.room.trim().length) {
+      if (!this.contact || !this.contact.room || !this.contact.room.trim().length) {
         this.messages = [];
         return;
       }
@@ -207,7 +239,7 @@ export default {
         return;
       }
       let toTimestamp;
-      if(!this.messages || !this.messages.length) {
+      if (!this.messages || !this.messages.length) {
         toTimestamp = '';
         this.totalMessagesToLoad = 0;
       } else {
@@ -227,7 +259,7 @@ export default {
           const regexRest = new RegExp('^/rest/');
           data.messages.concat(roomNotSentMessages).forEach((message) => {
             if (!this.messages.find(displayedMessage => displayedMessage.msgId && displayedMessage.msgId === message.msgId || displayedMessage.clientId && displayedMessage.clientId === message.clientId)) {
-              if(message.options && message.options.type && message.options.type === chatConstants.FILE_MESSAGE) {
+              if (message.options && message.options.type && message.options.type === chatConstants.FILE_MESSAGE) {
                 message.options.restPath = message.options.restPath.replace(regexRest, '/portal/rest/');
                 message.options.thumbnailUrl = message.options.thumbnailUrl.replace(regexRest, '/portal/rest/');
                 message.options.thumbnailURL = message.options.thumbnailURL.replace(regexRest, '/portal/rest/');
@@ -267,7 +299,7 @@ export default {
       }
     },
     addOrUpdateMessageToList(message) {
-      if(!message || !message.room || !this.contact.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
+      if (!message || !message.room || !this.contact.room || message.room !== this.contact.room || !message.clientId && !message.msgId) {
         return;
       }
 
@@ -279,7 +311,7 @@ export default {
         chatWebSocket.setRoomMessagesAsRead(this.contact.room);
       }
 
-      if(this.isScrollPositionAtEnd()) {
+      if (this.isScrollPositionAtEnd()) {
         this.setScrollToBottom();
       }
 
@@ -300,22 +332,22 @@ export default {
       this.addOrUpdateMessageToList(message);
     },
     unifyMessageFormat(messageObj, message) {
-      if(!message.room && messageObj.room) {
+      if (!message.room && messageObj.room) {
         message.room = messageObj.room;
       }
-      if(!message.user && (messageObj.user || messageObj.sender)) {
+      if (!message.user && (messageObj.user || messageObj.sender)) {
         message.user = messageObj.user ? messageObj.user : messageObj.sender;
       }
     },
     editLastMessage() {
-      if(!this.messages || !this.messages.length) {
+      if (!this.messages || !this.messages.length) {
         return;
       }
       let lastMessage = null;
       let index = this.messages.length -1;
-      while(!lastMessage && index >= 0) {
+      while (!lastMessage && index >= 0) {
         const message = this.messages[index];
-        if(message && !message.isDeleted && message.type !== chatConstants.DELETED_MESSAGE && !message.isSystem && message.user === this.userSettings.username) {
+        if (message && !message.isDeleted && message.type !== chatConstants.DELETED_MESSAGE && !message.isSystem && message.user === this.userSettings.username) {
           lastMessage = message;
         }
         index--;
@@ -336,7 +368,7 @@ export default {
         .replace(/&#38/g, '&');
       this.showEditMessageModal = true;
       this.$nextTick(() => {
-        if(this.$refs.editMessageComposerArea) {
+        if (this.$refs.editMessageComposerArea) {
           document.execCommand('selectAll', false, null);
           document.getSelection().collapseToEnd();
         }
@@ -370,7 +402,7 @@ export default {
       }
     },
     checkResetUnreadMessage() {
-      if(this.isScrollPositionAtEnd()) {
+      if (this.isScrollPositionAtEnd()) {
         this.contact.unreadTotal = 0;
       }
     }

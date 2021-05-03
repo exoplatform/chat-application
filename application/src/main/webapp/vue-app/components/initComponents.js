@@ -36,7 +36,7 @@ const components = {
   'exo-chat-message-composer': ExoChatMessageComposer,
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
   'exo-content-editable': ExoContentEditable,
-  'exo-chat-drawer':ExoChatDrawer
+  'exo-chat-drawer': ExoChatDrawer
 };
 
 // external components
@@ -44,6 +44,6 @@ const components = {
 
 registerExternalComponents('space-chat-setting', spaceChatSetting.template, spaceChatSetting.props, spaceChatSetting.data, spaceChatSetting.created, spaceChatSetting.methods);
 
-for(const key in components) {
+for (const key in components) {
   Vue.component(key, components[key]);
 }

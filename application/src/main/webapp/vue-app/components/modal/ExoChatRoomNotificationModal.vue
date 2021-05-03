@@ -1,23 +1,41 @@
 <template>
-  <exo-chat-modal v-show="show" :title="title" modal-class="room-notification-modal" @modal-closed="closeModal">
+  <exo-chat-modal
+    v-show="show"
+    :title="title"
+    modal-class="room-notification-modal"
+    @modal-closed="closeModal">
     <div class="chat-room-config">
       <span class="uiRadio">
-        <input v-model="selectedOption" type="radio" value="normal">
+        <input
+          v-model="selectedOption"
+          type="radio"
+          value="normal">
         <span @click="selectedOption = 'normal'"> {{ $t('exoplatform.chat.desktopNotif.local.normal.label') }}</span>
       </span>
       <em class="notif-description"> {{ $t('exoplatform.chat.desktopNotif.local.normal') }}</em>
 
       <span class="uiRadio">
-        <input v-model="selectedOption" type="radio" value="silence">
+        <input
+          v-model="selectedOption"
+          type="radio"
+          value="silence">
         <span @click="selectedOption = 'silence'"> {{ $t('exoplatform.chat.desktopNotif.local.silence.label') }}</span>
       </span>
       <em class="notif-description">{{ $t('exoplatform.chat.desktopNotif.local.silence') }}</em>
 
       <span class="uiRadio">
-        <input v-model="selectedOption" type="radio" value="keywords">
+        <input
+          v-model="selectedOption"
+          type="radio"
+          value="keywords">
         <span @click="selectedOption = 'keywords'"> {{ $t('exoplatform.chat.desktopNotif.local.alerton.label') }} :</span>
       </span>
-      <input v-model="keywords" :disabled="disableAdvancedFilter" :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')" class="notif-keyword" type="text">
+      <input
+        v-model="keywords"
+        :disabled="disableAdvancedFilter"
+        :placeholder="$t('exoplatform.chat.desktopNotif.local.alerton.placeholder')"
+        class="notif-keyword"
+        type="text">
       <span class="notif-description">{{ $t('exoplatform.chat.desktopNotif.local.alerton') }}</span>
     </div>
     <div class="uiAction uiActionBorder">
@@ -67,7 +85,7 @@ export default {
   },
   watch: {
     show(){
-      if(this.show){
+      if (this.show){
         this.getPreferredNotification();
       }
     }
@@ -87,7 +105,7 @@ export default {
       this.closeModal();
     },
     getPreferredNotification() {
-      if(eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
+      if (eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room]) {
         this.selectedOption = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].notifCond;
         this.keywords = eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[this.room].keywords;
       } else {

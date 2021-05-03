@@ -71,7 +71,7 @@ export function getTimeString(timestampServer, displayDate) {
     sTime += ` ${ampm}`;
   }
 
-  if(displayDate) {
+  if (displayDate) {
     const sNowDate = new Date().toLocaleDateString();
     const sDate = date.toLocaleDateString();
     if (sNowDate !== sDate) {

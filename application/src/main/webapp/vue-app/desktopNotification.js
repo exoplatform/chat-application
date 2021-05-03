@@ -99,10 +99,10 @@ function highlightMessage(msgObject) {
 }
 
 function unifyMessageFormat(messageObj, message) {
-  if(!message.room && messageObj.room) {
+  if (!message.room && messageObj.room) {
     message.room = messageObj.room;
   }
-  if(!message.user && (messageObj.user || messageObj.sender)) {
+  if (!message.user && (messageObj.user || messageObj.sender)) {
     message.user = messageObj.user ? messageObj.user : messageObj.sender;
   }
 }
@@ -169,7 +169,7 @@ function showDesktopNotif(path, msg) {
 
     const clickHandler = function (notif) {
       notif.onclick = function () {
-        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {'detail' : msg.room}));
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_SELECT, {'detail': msg.room}));
         const chatWindowUrl = `${chatConstants.PORTAL}/${chatConstants.PORTAL_NAME}/chat`;
         window.open(chatWindowUrl,'_chat').focus();
         notif.close();

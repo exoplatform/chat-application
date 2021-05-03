@@ -50,17 +50,17 @@
       }
 
       if (this.isDisconnected()) {
-        if(!this.explicitlyDisconnected) {
+        if (!this.explicitlyDisconnected) {
           this.handshake(subscribeProps);
         }
-      } else if(this.getStatus() !== 'handshaking') {
+      } else if (this.getStatus() !== 'handshaking') {
         return this.parent.subscribe.call(this, channel, scope, callback, subscribeProps, subscribeCallback);
       }
     };
 
     this.publish = function(channel, content, publishProps, publishCallback) {
       if (this.isDisconnected()) {
-        if(!this.explicitlyDisconnected) {
+        if (!this.explicitlyDisconnected) {
           if (!publishProps || $.isFunction(publishProps)) {
             publishProps = {};
           }
@@ -69,7 +69,7 @@
           publishProps = $.extend({}, this.eXoSecret, publishProps);
           this.handshake(publishProps);
         }
-      } else if(this.getStatus() === 'handshaking') {
+      } else if (this.getStatus() === 'handshaking') {
         this.eXoPublish.push(arguments);
       } else {
         return this.parent.publish.call(this, channel, content, publishProps, publishCallback);
@@ -78,7 +78,7 @@
 
     this.remoteCall = function(target, content, timeout, callback) {
       if (this.isDisconnected()) {
-        if(!this.explicitlyDisconnected) {
+        if (!this.explicitlyDisconnected) {
           if (!content || $.isFunction(content)) {
             content = {};
           }
@@ -87,7 +87,7 @@
           content = $.extend({}, this.eXoSecret, content);
           this.handshake(content);
         }
-      } else if(this.getStatus() === 'handshaking') {
+      } else if (this.getStatus() === 'handshaking') {
         this.eXoRemoteCalls.push(arguments);
       } else {
         return this.parent.remoteCall.call(this, target, content, timeout, callback);

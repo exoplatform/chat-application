@@ -1,15 +1,26 @@
 <template>
   <div>
-    <exo-chat-modal v-show="show" :title="title" :display-close="true" modal-class="create-room-modal" @modal-closed="closeModal">
+    <exo-chat-modal
+      v-show="show"
+      :title="title"
+      :display-close="true"
+      modal-class="create-room-modal"
+      @modal-closed="closeModal">
       <meta charset="utf-8">
   
       <div class="add-room-form">
         <label>{{ $t('exoplatform.chat.team.name') }}</label>
-        <input v-model="fullName" class="add-room-name" type="text">
+        <input
+          v-model="fullName"
+          class="add-room-name"
+          type="text">
         <label>{{ $t('exoplatform.chat.team.people') }}</label>
         <input id="add-room-suggestor" type="text">
         <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">
-          <div v-for="participant in otherParticiants" :key="participant.name" class="uiMention">
+          <div
+            v-for="participant in otherParticiants"
+            :key="participant.name"
+            class="uiMention">
             {{ participant.fullname }}
             <span @click="removeSuggest(participant)"><i class="uiIconClose"></i></span>
           </div>
@@ -17,11 +28,20 @@
         <span class="team-add-user-label">{{ $t('exoplatform.chat.team.help') }}</span>
       </div>
       <div class="uiAction uiActionBorder">
-        <button :disabled="disableSave" class="btn btn-primary" @click="saveRoom">{{ $t('exoplatform.chat.save') }}</button>
+        <button
+          :disabled="disableSave"
+          class="btn btn-primary"
+          @click="saveRoom">
+          {{ $t('exoplatform.chat.save') }}
+        </button>
         <button class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</button>
       </div>
     </exo-chat-modal>
-    <exo-chat-modal v-show="showErrorModal" :title="errorModalTitle" :display-close="true" @modal-closed="showErrorModal = false">
+    <exo-chat-modal
+      v-show="showErrorModal"
+      :title="errorModalTitle"
+      :display-close="true"
+      @modal-closed="showErrorModal = false">
       <ul class="singleMessage popupMessage resizable">
         <li><span class="errorIcon">{{ errorModalMessage }}</span></li>
       </ul>
@@ -73,7 +93,7 @@ export default {
   },
   watch: {
     show(newValue) {
-      if(this.selected && newValue) {
+      if (this.selected && newValue) {
         this.fullName = this.selected.fullName;
         this.participants = this.selected.participants ? this.selected.participants : [];
         this.initSuggester();
@@ -81,7 +101,7 @@ export default {
     }
   },
   created() {
-    if(this.selected) {
+    if (this.selected) {
       this.fullName = this.selected.fullName;
       this.participants = this.selected.participants ? this.selected.participants : [];
       this.initSuggester();
@@ -90,8 +110,8 @@ export default {
   methods: {
     initSuggester() {
       const $roomFormSuggestor = $('#add-room-suggestor');
-      if($roomFormSuggestor && $roomFormSuggestor.length && $roomFormSuggestor.suggester) {
-        if(!$roomFormSuggestor[0].selectize) {
+      if ($roomFormSuggestor && $roomFormSuggestor.length && $roomFormSuggestor.suggester) {
+        if (!$roomFormSuggestor[0].selectize) {
           const component = this;
           const suggesterData = {
             type: 'tag',
@@ -129,7 +149,7 @@ export default {
           $roomFormSuggestor[0].selectize.renderCache['item'] = {};
         }
 
-        if(this.otherParticiants && this.otherParticiants.length) {
+        if (this.otherParticiants && this.otherParticiants.length) {
           this.otherParticiants.forEach(participant => {
             $roomFormSuggestor[0].selectize.addOption(participant);
             $roomFormSuggestor[0].selectize.addItem(participant.isExternal === 'true' ? `${participant.name} (this.$t('exoplatform.chat.external'))` : participant.name);
@@ -142,10 +162,10 @@ export default {
         return callback(); 
       }
       chatServices.getChatUsers(eXo.chat.userSettings, query).then(data => {
-        if(data && data.users) {
+        if (data && data.users) {
           chatServices.getRoomParticipantsToSuggest(data.users).then(users => {
             users.forEach(user => {
-              if(user.isEnabled === 'null') {
+              if (user.isEnabled === 'null') {
                 chatServices.getUserState(user.name).then(userState => {
                   chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
                   user.isEnabled = userState.isEnabled;
@@ -171,11 +191,11 @@ export default {
       `;
     },
     addSuggestedItem(item) {
-      if($('#add-room-suggestor') && $('#add-room-suggestor').length && $('#add-room-suggestor')[0].selectize) {
+      if ($('#add-room-suggestor') && $('#add-room-suggestor').length && $('#add-room-suggestor')[0].selectize) {
         const selectize = $('#add-room-suggestor')[0].selectize;
         item = selectize.options[item];
       }
-      if(!this.participants.find(participant => participant.name === item.name)) {
+      if (!this.participants.find(participant => participant.name === item.name)) {
         this.participants.push(item);
       }
     },
@@ -183,10 +203,10 @@ export default {
       const $suggesterInput = $('#add-room-suggestor');
       if ($suggesterInput && $suggesterInput.length && $suggesterInput[0].selectize) {
         const selectize = $suggesterInput[0].selectize;
-        if(deletedParticipant && deletedParticipant.name) {
+        if (deletedParticipant && deletedParticipant.name) {
           selectize.removeItem(deletedParticipant.name, true);
           const indexOfItemToRemove = selectize.items.indexOf(deletedParticipant.name);
-          if(indexOfItemToRemove >= 0) {
+          if (indexOfItemToRemove >= 0) {
             selectize.items.splice(indexOfItemToRemove, 1);
           }
         }
@@ -197,14 +217,14 @@ export default {
     saveRoom() {
       if (this.fullName) {
         let users = this.participants.map(user => user.name);
-        if(users.indexOf(eXo.chat.userSettings.username) < 0) {
+        if (users.indexOf(eXo.chat.userSettings.username) < 0) {
           users.unshift(eXo.chat.userSettings.username);
         }
         users = users.join(',');
         chatServices.saveRoom(eXo.chat.userSettings,  this.fullName, users, this.selected.room)
           .then(resp => {
             const HTTP_OK_CODE = 200;
-            if(resp.status === HTTP_OK_CODE) {
+            if (resp.status === HTTP_OK_CODE) {
               return resp.json();
             } else {
               return resp.text();
@@ -214,11 +234,11 @@ export default {
             if (response && response.room) {
               this.$emit('room-saved', response.room);
               this.closeModal();
-            } else if(response === 'roomAlreadyExists.creator') {
+            } else if (response === 'roomAlreadyExists.creator') {
               this.errorModalTitle = this.$t('exoplatform.chat.ErrorRoomCreationTitle');
               this.errorModalMessage = this.$t('exoplatform.chat.CreatorErrorRoomCreationMessage');
               this.showErrorModal = true;
-            } else if(response === 'roomAlreadyExists.notCreator') {
+            } else if (response === 'roomAlreadyExists.notCreator') {
               this.errorModalTitle = this.$t('exoplatform.chat.ErrorRoomCreationTitle');
               this.errorModalMessage = this.$t('exoplatform.chat.NotCreatorErrorRoomCreationMessage');
               this.showErrorModal = true;

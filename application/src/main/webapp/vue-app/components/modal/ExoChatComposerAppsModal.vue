@@ -1,8 +1,18 @@
 <template>
-  <exo-chat-modal :title="title" modal-class="apps-composer-modal" @modal-closed="closeModal">
+  <exo-chat-modal
+    :title="title"
+    modal-class="apps-composer-modal"
+    @modal-closed="closeModal">
     <div v-show="errorCode" class="alert alert-error">{{ errorMessage() }}</div>
 
-    <form id="appComposerForm" ref="appComposerForm" onsubmit="return false;" action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+    <form
+      id="appComposerForm"
+      ref="appComposerForm"
+      onsubmit="return false;"
+      action=""
+      method="post"
+      enctype="multipart/form-data"
+      accept-charset="utf-8">
       <div v-if="sendingMessage" class="chat-loading-mask">
         <img src="/chat/img/sync.gif" class="chat-loading">
       </div>
@@ -10,7 +20,12 @@
       <div :class="app.appClass" v-html="appHtml"></div>
 
       <div v-show="app.hideModalActions !== true" class="uiAction uiActionBorder">
-        <button type="submit" class="btn btn-primary" @click="saveAppModal">{{ $t(saveLabelKey) }}</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          @click="saveAppModal">
+          {{ $t(saveLabelKey) }}
+        </button>
         <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
       </div>
     </form>
@@ -61,14 +76,14 @@ export default {
     }
   },
   mounted() {
-    if(this.app.init) {
+    if (this.app.init) {
       this.app.init(this.contact);
     }
   },
   created() {
     document.addEventListener(chatConstants.ACTION_APPS_CLOSE, this.closeModal);
 
-    if(this.app && this.app.htmlAdded) {
+    if (this.app && this.app.htmlAdded) {
       this.$nextTick(() => this.app.htmlAdded($, chatServices));
     }
   },
@@ -82,14 +97,14 @@ export default {
     },
     saveAppModal() {
       this.errorCode = '';
-      if(!this.$refs.appComposerForm.checkValidity()) {
+      if (!this.$refs.appComposerForm.checkValidity()) {
         return;
       }
       this.sendingMessage = true;
       const formData = $('#appComposerForm').serializeFormJSON();
       const message = {
-        msg : '',
-        room : this.roomId,
+        msg: '',
+        room: this.roomId,
         clientId: new Date().getTime().toString(),
         user: eXo.chat.userSettings.username,
         isSystem: true,
@@ -101,20 +116,20 @@ export default {
 
       if (this.app.validate) {
         this.errorCode = this.app.validate(formData);
-        if(this.errorCode) {
+        if (this.errorCode) {
           this.sendingMessage = false;
           return;
         }
       }
 
       let submitResult;
-      if(this.app.submit) {
+      if (this.app.submit) {
         submitResult = this.app.submit(chatServices, message, formData, this.contact);
       } else {
         submitResult = {ok: true};
       }
-      if(submitResult) {
-        if(submitResult.then) {
+      if (submitResult) {
+        if (submitResult.then) {
           submitResult.then(result => {
             this.processResult(result, message);
           });
@@ -127,12 +142,12 @@ export default {
       }
     },
     processResult(result, message) {
-      if(result.errorCode) {
+      if (result.errorCode) {
         this.errorCode = result.errorCode;
-      } else if(result.ok) {
-        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      } else if (result.ok) {
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': message}));
         this.closeModal();
-      } else if(result.hide) {
+      } else if (result.hide) {
         this.closeModal();
       } else {
         this.errorCode = 'UknownError';
@@ -140,7 +155,7 @@ export default {
       this.sendingMessage = false;
     },
     errorMessage() {
-      if(this.errorCode) {
+      if (this.errorCode) {
         return this.$t(`exoplatform.chat.${this.errorCode}`, this.errorOpts);
       }
     }

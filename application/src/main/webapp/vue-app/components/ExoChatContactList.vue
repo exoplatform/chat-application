@@ -3,29 +3,62 @@
     <div v-if="ap">
       <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
         <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
-        <input ref="contactSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" type="text" @keyup.esc="closeContactSearch" >
-        <div v-show="searchTerm !== ''" class="contact-search-close" @click="closeContactSearch"><i class="uiIconClose"></i></div>
+        <input
+          ref="contactSearch"
+          v-model="searchTerm"
+          :placeholder="$t('exoplatform.chat.contact.search.placeholder')"
+          type="text"
+          @keyup.esc="closeContactSearch">
+        <div
+          v-show="searchTerm !== ''"
+          class="contact-search-close"
+          @click="closeContactSearch">
+          <i class="uiIconClose"></i>
+        </div>
       </div>
       <div class="listHeader">
-        <div v-if="mq === 'mobile'" class="hamburger-menu" @click="$emit('open-side-menu')"><i class="uiIconMenu"></i></div>
+        <div
+          v-if="mq === 'mobile'"
+          class="hamburger-menu"
+          @click="$emit('open-side-menu')">
+          <i class="uiIconMenu"></i>
+        </div>
         <exo-dropdown-select v-if="mq !== 'mobile'">
           <span slot="toggle">{{ sortByDate[sortFilter] }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
           <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</div>
-          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="selectSortFilter(filter)"><a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li
+            v-for="(label, filter) in sortByDate"
+            slot="menu"
+            :key="filter"
+            @click="selectSortFilter(filter)">
+            <a href="#"><i :class="{'not-filter': sortFilter !== filter}" class="uiIconTick"></i>{{ label }}</a>
+          </li>
           <div slot="menu" class="dropdown-category">{{ $t('exoplatform.chat.contact.filter.actions') }}</div>
           <li slot="menu" @click="markAllAsRead"><a href="#"><i class="uiIconTick not-filter"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
         </exo-dropdown-select>
         <exo-dropdown-select v-if="mq !== 'mobile'">
           <span slot="toggle">{{ filterByType[typeFilter] }}</span>
           <i slot="toggle" class="uiIconArrowDownMini"></i>
-          <li v-for="(label, filter) in filterByType" slot="menu" :key="filter" @click="selectTypeFilter(filter)"><a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li
+            v-for="(label, filter) in filterByType"
+            slot="menu"
+            :key="filter"
+            @click="selectTypeFilter(filter)">
+            <a href="#"><i :class="{'not-filter': typeFilter !== filter}" class="uiIconTick"></i>{{ label }}</a>
+          </li>
         </exo-dropdown-select>
         <div v-if="!externalUser" class="room-actions">
-          <div v-if="mq === 'mobile'" class="filter-action" @click="filterMenuClosed = false">
+          <div
+            v-if="mq === 'mobile'"
+            class="filter-action"
+            @click="filterMenuClosed = false">
             <i class="uiIconFilter"></i>
           </div>
-          <div v-exo-tooltip.top="$t('exoplatform.chat.create.team')" class="add-room-action" @click="openCreateRoomModal">
+          <div
+            v-exo-tooltip.top="$t('exoplatform.chat.create.team')"
+            class="add-room-action"
+            @click="openCreateRoomModal">
             <i class="uiIconSimplePlus"></i>
           </div>
           <div v-if="mq === 'mobile'" @click="selectContactSearch">
@@ -36,15 +69,43 @@
     </div>
     <div id="chat-users" class="contactList isList">
       <transition-group name="chat-contact-list">
-        <div v-hold-tap="openContactActions" v-for="contact in filteredContacts" :key="contact.user" :title="contactTooltip(contact)" :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}" class="contact-list-item contact-list-room-item" @click="selectContact(contact)">
-          <exo-chat-contact :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :list="true" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :group-id="contact.groupId" :name="contact.fullName" :status="contact.status" :last-message="getLastMessage(contact.lastMessage, contact.type)">
-            <div v-if="mq === 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite"></div>
-            <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']" >{{ getLastMessageTime(contact) }}</div>
+        <div
+          v-hold-tap="openContactActions"
+          v-for="contact in filteredContacts"
+          :key="contact.user"
+          :title="contactTooltip(contact)"
+          :class="{selected: mq !== 'mobile' && selected && contact && selected.user === contact.user, currentContactMenu: mq === 'mobile' && contactMenu && contactMenu.user === contact.user, hasUnreadMessages: contact.unreadTotal > 0, 'has-not-sent-messages' : contact.hasNotSentMessages}"
+          class="contact-list-item contact-list-room-item"
+          @click="selectContact(contact)">
+          <exo-chat-contact
+            :is-external="contact.isExternal === 'true'"
+            :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'"
+            :list="true"
+            :type="contact.type"
+            :user-name="contact.user"
+            :pretty-name="contact.prettyName"
+            :group-id="contact.groupId"
+            :name="contact.fullName"
+            :status="contact.status"
+            :last-message="getLastMessage(contact.lastMessage, contact.type)">
+            <div
+              v-if="mq === 'mobile'"
+              :class="{'is-fav': contact.isFavorite}"
+              class="uiIcon favorite"></div>
+            <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
           <div v-if="contact.unreadTotal > 0 && contact.unreadTotal <= 99" class="unreadMessages">{{ contact.unreadTotal }}</div>
           <div v-if="contact.unreadTotal > 99" class="unreadMessages maxUnread">+99</div>
-          <i v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')" v-if="!drawerStatus" class="uiIconNotification"></i>
-          <div v-exo-tooltip.top.body="favoriteTooltip(contact)" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite my-auto pb-1" @click.stop="toggleFavorite(contact)"></div>
+          <i
+            v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')"
+            v-if="!drawerStatus"
+            class="uiIconNotification"></i>
+          <div
+            v-exo-tooltip.top.body="favoriteTooltip(contact)"
+            v-if="mq !== 'mobile'"
+            :class="{'is-fav': contact.isFavorite}"
+            class="uiIcon favorite my-auto pb-1"
+            @click.stop="toggleFavorite(contact)"></div>
         </div>
       </transition-group>
       <div v-show="loadingContacts" class="contact-list-item isList">
@@ -52,19 +113,29 @@
           {{ $t('exoplatform.chat.loading') }}
         </div>
       </div>
-      <div v-show="hasMoreContacts" class="contact-list-item isList" @click="loadMore()">
+      <div
+        v-show="hasMoreContacts"
+        class="contact-list-item isList"
+        @click="loadMore()">
         <div class="seeMoreContacts">
           <a href="#"><u>{{ $t('exoplatform.chat.seeMore') }}</u></a>
           <i class="uiIconArrowDownMini"></i>
         </div>
       </div>
-      <div v-if="mq == 'mobile' && contactMenu !== null" v-show="!contactMenuClosed" class="uiPopupWrapper chat-modal-mask" @click.prevent.stop="closeContactActions">
+      <div
+        v-if="mq == 'mobile' && contactMenu !== null"
+        v-show="!contactMenuClosed"
+        class="uiPopupWrapper chat-modal-mask"
+        @click.prevent.stop="closeContactActions">
         <ul class="mobile-options">
           <li><a href="#" @click.prevent="toggleFavorite(contactMenu)">{{ contactMenu.isFavorite === false ? $t('exoplatform.chat.add.favorites') : $t('exoplatform.chat.remove.favorites') }}</a></li>
           <li v-show="contactMenu.type != 't'" @click.stop><a :href="getProfileLink()">{{ $t('exoplatform.chat.contact.profile') }}</a></li>
         </ul>
       </div>
-      <div v-if="mq == 'mobile'" v-show="!filterMenuClosed" class="uiPopupWrapper chat-modal-mask">
+      <div
+        v-if="mq == 'mobile'"
+        v-show="!filterMenuClosed"
+        class="uiPopupWrapper chat-modal-mask">
         <ul class="mobile-options filter-options">
           <li class="options-category">
             <i class="uiIconClose" @click="cancelFilterMobile"></i>
@@ -72,14 +143,29 @@
             <div @click="saveFilterMobile">{{ $t('exoplatform.chat.contact.filter.save') }}</div>
           </li>
           <li class="options-category">{{ $t('exoplatform.chat.contact.filter.sort') }}</li>
-          <li v-for="(label, filter) in sortByDate" slot="menu" :key="filter" @click="sortFilterMobile = filter"><a href="#"><i :class="{'not-filter': sortFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li
+            v-for="(label, filter) in sortByDate"
+            slot="menu"
+            :key="filter"
+            @click="sortFilterMobile = filter">
+            <a href="#"><i :class="{'not-filter': sortFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a>
+          </li>
           <li class="options-category">{{ $t('exoplatform.chat.contact.filter.by') }}</li>
-          <li v-for="(label, filter) in filterByType" :key="filter" @click="typeFilterMobile = filter"><a href="#"><i :class="{'not-filter': typeFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a></li>
+          <li
+            v-for="(label, filter) in filterByType"
+            :key="filter"
+            @click="typeFilterMobile = filter">
+            <a href="#"><i :class="{'not-filter': typeFilterMobile !== filter}" class="uiIconTick"></i>{{ label }}</a>
+          </li>
           <li @click="allAsReadFilterMobile = !allAsReadFilterMobile"><a href="#"><i :class="{'not-filter': !allAsReadFilterMobile}" class="uiIconTick"></i>{{ $t('exoplatform.chat.contact.mark.read') }}</a></li>
         </ul>
       </div>
     </div>
-    <exo-chat-room-form-modal :show="createRoomModal" :selected="newRoom" @room-saved="roomSaved" @modal-closed="closeModal"></exo-chat-room-form-modal>
+    <exo-chat-room-form-modal
+      :show="createRoomModal"
+      :selected="newRoom"
+      @room-saved="roomSaved"
+      @modal-closed="closeModal" />
   </div>
 </template>
 
@@ -160,12 +246,12 @@ export default {
         return {};
       }
     },
-    searchWord:{
+    searchWord: {
       type: String,
       default: ''
     }
   },
-  data : function() {
+  data: function() {
     return {
       sortByDate: {
         'Recent': this.$t('exoplatform.chat.contact.recent'),
@@ -194,6 +280,7 @@ export default {
       contactMenu: null,
       contactMenuClosed: true,
       filterMenuClosed: true,
+      contactsToDisplay: [],
       inactive: this.$t('exoplatform.chat.inactive'),
       external: this.$t('exoplatform.chat.external')
     };
@@ -203,21 +290,21 @@ export default {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
     usersCount() {
-      return this.contacts.filter(contact => contact.type === 'u').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 'u').length;
     },
     roomsCount() {
-      return this.contacts.filter(contact => contact.type === 't').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 't').length;
     },
     spacesCount() {
-      return this.contacts.filter(contact => contact.type === 's').length;
+      return this.contactsToDisplay.filter(contact => contact.type === 's').length;
     },
     favoritesCount() {
-      return this.contacts.filter(contact => contact.isFavorite).length;
+      return this.contactsToDisplay.filter(contact => contact.isFavorite).length;
     },
     filteredContacts: function() {
-      let sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
+      let sortedContacts = this.contactsToDisplay.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       // this code used to search in whole Chat app, because the search uses a criteria (typeFilter)
-      if(this.typeFilter !== 'All' && !this.drawerStatus) {
+      if (this.typeFilter !== 'All' && !this.drawerStatus) {
         sortedContacts = sortedContacts.filter(contact =>
           this.typeFilter === 'People' && contact.type === 'u'
           || this.typeFilter === 'Rooms' && contact.type === 't'
@@ -245,36 +332,39 @@ export default {
           return b.timestamp - a.timestamp;
         });
       }
-      return sortedContacts.slice(0, this.contacts.length);
+      return sortedContacts.slice(0, this.contactsToDisplay.length);
     },
     hasMoreContacts() {
-      if(this.searchTerm.trim().length) {
+      if (this.searchTerm.trim().length) {
         return false;
       }
       // All Rooms and spaces are loaded with the first call, only users are paginated
       switch (this.typeFilter) {
       case 'People':
-        return this.usersCount >= this.contacts.length;
+        return this.usersCount >= this.contactsToDisplay.length;
       case 'Rooms':
-        return this.roomsCount > this.contacts.length;
+        return this.roomsCount > this.contactsToDisplay.length;
       case 'Spaces':
-        return this.spacesCount > this.contacts.length;
+        return this.spacesCount > this.contactsToDisplay.length;
       case 'Favorites':
-        return this.favoritesCount > this.contacts.length;
+        return this.favoritesCount > this.contactsToDisplay.length;
       default:
-        return this.contactsSize > this.contacts.length;
+        return this.contactsSize > this.contactsToDisplay.length;
       }
     }
   },
   watch: {
+    contacts() {
+      this.contactsToDisplay = this.contacts.slice();
+    },
     searchTerm(value) {
       this.$emit('search-contact', value);
     },
     searchWord(newValue) {
-      if(newValue) {
+      if (newValue) {
         chatServices.getOnlineUsers().then(users => {
           chatServices.getChatRooms(eXo.chat.userSettings, users).then(chatRoomsData => {
-            this.contacts = chatRoomsData.rooms;
+            this.contactsToDisplay = chatRoomsData.rooms;
           });
         });
       }
@@ -298,6 +388,7 @@ export default {
     document.addEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
+    this.contactsToDisplay = this.contacts.slice();
     this.initFilterMobile();
     chatServices.getUserInfo().then(
       (data) => {
@@ -328,18 +419,19 @@ export default {
       return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     },
     selectContact(contact) {
-      if(!contact) {
+      if (!contact) {
         contact = {};
       }
-      if(contact.detail) {
+      if (contact.detail) {
         contact = contact.detail;
       }
-      if(!contact && !contact.room && contact.user) {
+      if (!contact && !contact.room && contact.user) {
         contact = contact.user;
       }
-      if(contact.type && contact.type === 'u' && contact.isEnabledUser === 'null'&& contact.isExternal === '') {
+      if (contact.type && contact.type === 'u' && contact.isEnabledUser === 'null'&& contact.isExternal === '') {
         chatServices.getUserState(contact.user).then(userState => {
           chatServices.updateUser(eXo.chat.userSettings, contact.user, userState.isDeleted, userState.isEnabled, userState.isExternal);
+          // eslint-disable-next-line vue/no-mutating-props
           this.selected.isEnabledUser = !userState.isDeleted && userState.isEnabled ? 'true' : 'false';
           contact.isEnabledUser = this.selected.isEnabledUser;
           contact.isExternal = userState.isExternal;
@@ -357,6 +449,7 @@ export default {
     },
     markAllAsRead() {
       chatWebSocket.setRoomMessagesAsRead();
+      // eslint-disable-next-line vue/no-mutating-props
       this.unreadMessages.shift();
     },
     toggleFavorite(contact) {
@@ -432,7 +525,7 @@ export default {
 
       const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
 
-      if(foundContact) {
+      if (foundContact) {
         if (!foundContact.lastMessage) {
           foundContact.lastMessage = {};
         }
@@ -445,14 +538,14 @@ export default {
               foundContact.unreadTotal++;
             }
           }
-        }else {
+        } else {
           foundContact.unreadTotal ++;
         }
       } else {
         chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
-          if(contact && contact.user && contact.user.length && contact.user !== 'undefined') {
+          if (contact && contact.user && contact.user.length && contact.user !== 'undefined') {
             contact.unreadTotal = 1;
-            this.contacts.unshift(contact);
+            this.contactsToDisplay.unshift(contact);
           }
         });
       }
@@ -460,7 +553,7 @@ export default {
     messageSent(event) {
       const message = event.detail;
       const foundContact = this.findContactByRoomOrUser(message.room, message.data ? message.data.user : message.sender);
-      if(foundContact) {
+      if (foundContact) {
         if (!foundContact.lastMessage) {
           foundContact.lastMessage = {};
         }
@@ -481,7 +574,7 @@ export default {
             userName: eXo.env.portal.userName,
             spacePrettyName: foundContact.prettyName,
             portalUri: eXo.env.server.portalBaseURL,
-            parameters : {
+            parameters: {
               participantsCount,
               activeParticipantsCount,
               chatRoomId,
@@ -500,18 +593,19 @@ export default {
     },
     editRoom() {
       chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected).then(data => {
+        // eslint-disable-next-line vue/no-mutating-props
         this.selected.participants = data.users;
         this.newRoom = JSON.parse(JSON.stringify(this.selected));
         this.createRoomModal = true;
       });
     },
     leaveRoom() {
-      if(this.selected && this.selected.type === 't') {
+      if (this.selected && this.selected.type === 't') {
         chatWebSocket.leaveRoom(this.selected.room);
       }
     },
     deleteRoom() {
-      if(this.selected && this.selected.type === 't') {
+      if (this.selected && this.selected.type === 't') {
         chatWebSocket.deleteRoom(this.selected.room);
       }
     },
@@ -529,7 +623,7 @@ export default {
           this.removeObjectIfExists(this.unreadMessages, message.room);
         }
       } else {
-        this.contacts.forEach(contact => {
+        this.contactsToDisplay.forEach(contact => {
           contact.unreadTotal = 0;
         });
         this.$emit('refresh-contacts', true);
@@ -539,18 +633,18 @@ export default {
     leftRoom(e) {
       const message = e.detail ? e.detail: e;
       const sender = message.data && message.data.sender ? message.data.sender : message.sender;
-      if(message.event === 'room-member-left' && sender !== eXo.chat.userSettings.username) {
+      if (message.event === 'room-member-left' && sender !== eXo.chat.userSettings.username) {
         return;
       }
       const roomLeft = message.data && message.data.room ? message.data.room : message.room;
-      const roomIndex = this.contacts.findIndex(contact => contact.room === roomLeft);
+      const roomIndex = this.contactsToDisplay.findIndex(contact => contact.room === roomLeft);
       if (roomIndex >= 0) {
-        this.contacts.splice(roomIndex, 1);
-        if(this.selected && this.selected.room === roomLeft) {
-          if(!this.contacts || this.contacts.length === 0) {
+        this.contactsToDisplay.splice(roomIndex, 1);
+        if (this.selected && this.selected.room === roomLeft) {
+          if (!this.contactsToDisplay || this.contactsToDisplay.length === 0) {
             this.selectContact();
           } else {
-            if(this.filteredContacts && this.filteredContacts.length) {
+            if (this.filteredContacts && this.filteredContacts.length) {
               this.selectContact(this.filteredContacts[0]);
             } else {
               this.selectContact();
@@ -561,20 +655,20 @@ export default {
     },
     joinedToNewRoom(e) {
       if (!this.findContact(e.detail.room)) {
-        this.contacts.push(e.detail.data);
+        this.contactsToDisplay.push(e.detail.data);
       }
     },
     favoriteAdded(event) {
       const room = event.room ? event.room : event.detail && event.detail.room ? event.detail.room : null;
       const contactToUpdate = this.findContact(room);
-      if(contactToUpdate) {
+      if (contactToUpdate) {
         contactToUpdate.isFavorite = true;
       }
     },
     favoriteRemoved(event) {
       const room = event.room ? event.room : event.detail && event.detail.room ? event.detail.room : null;
       const contactToUpdate = this.findContact(room);
-      if(contactToUpdate) {
+      if (contactToUpdate) {
         contactToUpdate.isFavorite = false;
       }
     },
@@ -588,7 +682,7 @@ export default {
         const contact = this.findContact(RoomId);
         this.selectContact(contact);
       }
-      return this.contacts.find(contact => contact[field] === value);
+      return this.contactsToDisplay.find(contact => contact[field] === value);
     },
     findContactByRoomOrUser(room, targetUser) {
       let foundContact = null;
@@ -601,7 +695,7 @@ export default {
       return foundContact;
     },
     loadMore() {
-      this.totalEntriesToLoad = this.contacts.length;
+      this.totalEntriesToLoad = this.contactsToDisplay.length;
       this.$emit('load-more-contacts', this.totalEntriesToLoad);
     },
     favoriteTooltip(contact) {
@@ -609,7 +703,7 @@ export default {
     },
     contactTooltip(contact) {
       let fullName = contact.fullName;
-      if(contact.isExternal === 'true') {
+      if (contact.isExternal === 'true') {
         fullName = `${fullName} (${this.external})`;
       }
       return contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null' ? fullName : `${fullName} (${this.inactive})`;
@@ -665,7 +759,7 @@ export default {
       }
     },
     openContactActions(user) {
-      const contact = this.contacts.find(contact => contact['user'] === user);
+      const contact = this.contactsToDisplay.find(contact => contact['user'] === user);
       this.contactMenuClosed = false;
       this.contactMenu = contact;
     },

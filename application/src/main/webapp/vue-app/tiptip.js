@@ -11,7 +11,7 @@ export function initTiptip() {
     eXo.social.tiptip.extraActions = eXo.social.tiptip.extraActions ? eXo.social.tiptip.extraActions : [];
     eXo.social.tiptip.extraActions.push({
       appendContentTo(divUIAction, ownerId, type) {
-        if(!type) {
+        if (!type) {
           type = 'username';
         }
         divUIAction.append(`<a title="Chat"

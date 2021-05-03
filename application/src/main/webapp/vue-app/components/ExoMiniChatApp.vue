@@ -1,12 +1,21 @@
 <template>
   <div id="chatApplicationNotification" :class="connected ? 'online' : 'offline'">
     <div class="dropdown uiDropdownWithIcon status-dropdown pull-right">
-      <a :class="statusClass" data-toggle="dropdown" class="dropdown-toggle" @click="loadMessages">
+      <a
+        :class="statusClass"
+        data-toggle="dropdown"
+        class="dropdown-toggle"
+        @click="loadMessages">
         <div class="uiIconStatus uiNotifChatIcon">
           <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
         </div>
       </a>
-      <exo-chat-notif-list ref="menuItems" :onsite-notif="canShowOnSiteNotif()" :total-unread-msg="totalUnreadMsg" @set-status="setStatus($event)" @select-room="room = $event"></exo-chat-notif-list>
+      <exo-chat-notif-list
+        ref="menuItems"
+        :onsite-notif="canShowOnSiteNotif()"
+        :total-unread-msg="totalUnreadMsg"
+        @set-status="setStatus($event)"
+        @select-room="room = $event" />
     </div>
     <div style="display: none;">
       <audio id="chat-audio-notif" controls>
@@ -15,7 +24,12 @@
         <source src="/chat/audio/notif.ogg">
       </audio>
     </div>
-    <exo-chat-room v-if="room" ref="chatRoom" :user-settings="userSettings" :room="room" @close="close()"></exo-chat-room>
+    <exo-chat-room
+      v-if="room"
+      ref="chatRoom"
+      :user-settings="userSettings"
+      :room="room"
+      @close="close()" />
   </div>
 </template>
 
@@ -57,7 +71,7 @@ export default {
       userSettings => this.initSettings(userSettings),
       data => {
         const totalUnreadMsg = Math.abs(data.total);
-        if(totalUnreadMsg >= 0) {
+        if (totalUnreadMsg >= 0) {
           this.totalUnreadMsg = totalUnreadMsg;
         }
         this.room = localStorage.getItem(`${chatConstants.STORED_PARAM_OPENED_MINI_CHAT_ROOM}-${this.userSettings.username}`);
@@ -111,7 +125,7 @@ export default {
     openRoomInMiniChat(e) {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
-      if(roomName && roomName.trim().length) {
+      if (roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(rommId => {
           this.room = rommId;
         });
@@ -131,7 +145,7 @@ export default {
     },
     totalUnreadMessagesUpdated(e) {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      if(totalUnreadMsg >= 0) {
+      if (totalUnreadMsg >= 0) {
         this.totalUnreadMsg = totalUnreadMsg;
       }
     },

@@ -3,16 +3,32 @@
     <div class="title clearfix">
       <div class="title-right">
         <div class="callButtonContainerMiniWrapper pull-left"></div>
-        <a v-exo-tooltip="$t('exoplatform.chat.minimize')" class="uiActionWithLabel btn-mini" href="javaScript:void(0);" @click="minimized = true">
+        <a
+          v-exo-tooltip="$t('exoplatform.chat.minimize')"
+          class="uiActionWithLabel btn-mini"
+          href="javaScript:void(0);"
+          @click="minimized = true">
           <i class="uiIconMinimize"></i>
         </a>
-        <a v-exo-tooltip="$t('exoplatform.chat.maximize')" class="uiActionWithLabel btn-maxi" href="javaScript:void(0);" @click="minimized = false">
+        <a
+          v-exo-tooltip="$t('exoplatform.chat.maximize')"
+          class="uiActionWithLabel btn-maxi"
+          href="javaScript:void(0);"
+          @click="minimized = false">
           <i class="uiIconMaximize"></i>
         </a>
-        <a v-exo-tooltip="$t('exoplatform.chat.open.chat')" class="uiActionWithLabel btn-open-chat" href="/portal/intranet/chat" target="_chat">
+        <a
+          v-exo-tooltip="$t('exoplatform.chat.open.chat')"
+          class="uiActionWithLabel btn-open-chat"
+          href="/portal/intranet/chat"
+          target="_chat">
           <i class="uiIconChatPopOut"></i>
         </a>
-        <a v-exo-tooltip="$t('exoplatform.chat.close')" class="uiActionWithLabel btn-close" href="javaScript:void(0);" @click="$emit('close')">
+        <a
+          v-exo-tooltip="$t('exoplatform.chat.close')"
+          class="uiActionWithLabel btn-close"
+          href="javaScript:void(0);"
+          @click="$emit('close')">
           <i class="uiIconClose"></i>
         </a>
       </div>
@@ -21,7 +37,11 @@
         <span :class="{'hidden': !selectedContact.unreadTotal}" class="notify-info badgeDefault badgePrimary mini">{{ selectedContact.unreadTotal }}</span> 
       </div>
     </div>
-    <exo-chat-message-list ref="exoChatMessageList" :user-settings="userSettings" :mini-chat="true" :minimized="minimized"></exo-chat-message-list>
+    <exo-chat-message-list
+      ref="exoChatMessageList"
+      :user-settings="userSettings"
+      :mini-chat="true"
+      :minimized="minimized" />
   </div>
 </template>
 

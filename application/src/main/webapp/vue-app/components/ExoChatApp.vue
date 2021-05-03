@@ -2,24 +2,65 @@
   <div id="chat-application" :class="{'online': connected, 'offline': !connected, 'show-conversation': showMobileConversations, 'show-participants': showMobileParticipants, 'show-sideMenu': sideMenuArea}">
     <div class="uiChatLeftContainer">
       <div class="userDetails">
-        <exo-chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)">
-          <div v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')" v-if="mq !== 'mobile'" class="chat-user-settings" @click="openSettingModal"><i class="uiIconGear"></i></div>
-          <div v-exo-tooltip.right="$t('exoplatform.chat.home')" v-if="mq !== 'mobile'" class="home-button"> <a href="/"><i class="uiIconHomeInfo"></i></a></div>
+        <exo-chat-contact
+          :user-name="userSettings.username"
+          :name="userSettings.fullName"
+          :status="userSettings.status"
+          :is-current-user="true"
+          type="u"
+          @status-changed="setStatus($event)">
+          <div
+            v-exo-tooltip.right="$t('exoplatform.chat.settings.button.tip')"
+            v-if="mq !== 'mobile'"
+            class="chat-user-settings"
+            @click="openSettingModal">
+            <i class="uiIconGear"></i>
+          </div>
+          <div
+            v-exo-tooltip.right="$t('exoplatform.chat.home')"
+            v-if="mq !== 'mobile'"
+            class="home-button">
+            <a href="/"><i class="uiIconHomeInfo"></i></a>
+          </div>
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
-      <exo-chat-contact-list v-if="ap" :contacts="contactList" :selected="selectedContact" :loading-contacts="loadingContacts" @open-side-menu="sideMenuArea = !sideMenuArea" @load-more-contacts="loadMoreContacts" @search-contact="searchContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
+      <exo-chat-contact-list
+        v-if="ap"
+        :contacts="contactList"
+        :selected="selectedContact"
+        :loading-contacts="loadingContacts"
+        @open-side-menu="sideMenuArea = !sideMenuArea"
+        @load-more-contacts="loadMoreContacts"
+        @search-contact="searchContacts"
+        @contact-selected="setSelectedContact"
+        @refresh-contacts="refreshContacts($event)" />
     </div>
     <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
-      <exo-chat-room-detail v-if="Object.keys(selectedContact).length !== 0" :meeting-started="selectedContact.meetingStarted" :contact="selectedContact" @back-to-contact-list="conversationArea = false"></exo-chat-room-detail>
+      <exo-chat-room-detail
+        v-if="Object.keys(selectedContact).length !== 0"
+        :contact="selectedContact"
+        @back-to-contact-list="conversationArea = false" />
       <div class="room-content">
-        <exo-chat-message-list :contact="selectedContact" :user-settings="userSettings" :is-opened-contact-apps="contactOpened"></exo-chat-message-list>
-        <exo-chat-room-participants :contact="selectedContact" @participants-loaded="setContactParticipants($event)" @back-to-conversation="participantsArea = false"></exo-chat-room-participants>
+        <exo-chat-message-list
+          :contact="selectedContact"
+          :user-settings="userSettings"
+          :is-opened-contact-apps="contactOpened" />
+        <exo-chat-room-participants
+          :contact="selectedContact"
+          @participants-loaded="setContactParticipants($event)"
+          @back-to-conversation="participantsArea = false" />
       </div>
     </div>
     <div v-if="mq==='mobile'" class="chat-side-menu">
       <div class="side-menu-header">
-        <exo-chat-contact :user-name="userSettings.username" :name="userSettings.fullName" :status="userSettings.status" type="u" list @status-changed="setStatus($event)"></exo-chat-contact>
+        <exo-chat-contact
+          :user-name="userSettings.username"
+          :name="userSettings.fullName"
+          :status="userSettings.status"
+          type="u"
+          list
+          @status-changed="setStatus($event)" />
       </div>
       <ul class="side-menu-list">
         <li><a href="#" @click="openSettingModal"><i class="uiIconSetting"></i>{{ $t('exoplatform.chat.settings.button.tip') }}</a></li>
@@ -29,13 +70,20 @@
     <div v-if="mq !== 'mobile' && !(selectedContact && (selectedContact.room || selectedContact.user))" class="chat-no-conversation muted">
       <span class="text">{{ $t('exoplatform.chat.no.conversation') }}</span>
     </div>
-    <exo-chat-global-notification-modal :show="settingModal" @close-modal="settingModal = false"></exo-chat-global-notification-modal>
-    <exo-chat-modal v-show="loggedout" :title="$t('exoplatform.chat.timeout.title')" :display-close="false" class="logout-popup">
+    <exo-chat-global-notification-modal :show="settingModal" @close-modal="settingModal = false" />
+    <exo-chat-modal
+      v-show="loggedout"
+      :title="$t('exoplatform.chat.timeout.title')"
+      :display-close="false"
+      class="logout-popup">
       <div class="modal-body">
         {{ $t('exoplatform.chat.timeout.description') }}
       </div>
       <div class="uiAction uiActionBorder">
-        <a href="#" class="btn btn-primary" @click="reloadPage">
+        <a
+          href="#"
+          class="btn btn-primary"
+          @click="reloadPage">
           {{ $t('exoplatform.chat.timeout.login') }}
         </a>
       </div>
@@ -134,7 +182,7 @@ export default {
       this.setStatus(this.userSettings.status);
       installExtensions(this.userSettings);
       const thiss = this;
-      if(this.userSettings.offlineDelay) {
+      if (this.userSettings.offlineDelay) {
         setInterval(
           function() {thiss.refreshContacts(true);},
           this.userSettings.offlineDelay);
@@ -147,7 +195,7 @@ export default {
 
       if (this.mq !== 'mobile') {
         const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
-        if(selectedRoom) {
+        if (selectedRoom) {
           this.setSelectedContact(selectedRoom);
         }
       }
@@ -156,10 +204,10 @@ export default {
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
     setSelectedContact(selectedContact) {
-      if(this.mq === 'mobile') {
+      if (this.mq === 'mobile') {
         this.conversationArea = true;
       }
-      if(!selectedContact) {
+      if (!selectedContact) {
         selectedContact = {};
       }
       if (typeof selectedContact === 'string') {
@@ -168,7 +216,7 @@ export default {
       if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
         eXo.chat.selectedContact = selectedContact;
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
-        if(indexOfRoom < 0) {
+        if (indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         }
         this.selectedContact = selectedContact;
@@ -179,7 +227,7 @@ export default {
         });
         chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
           this.selectedContact.participants = data.users;
-          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
         });
       }
     },
@@ -199,7 +247,7 @@ export default {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
       if (updatedContact && (updatedContact.room || updatedContact.user)) {
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room || contact.user === updatedContact.user);
-        if(indexOfRoom < 0) {
+        if (indexOfRoom < 0) {
           this.contactList.unshift(updatedContact);
         } else {
           this.contactList.splice(indexOfRoom, 1, updatedContact);
@@ -234,7 +282,7 @@ export default {
         && contact.fullName.trim().length > 0
         && (contact.room && contact.room.trim().length > 0 || contact.user && contact.user.trim().length > 0)
         && !contacts.find(otherContact => otherContact.room === contact.room || otherContact.user === contact.user));
-      if(rooms && rooms.length > 0) {
+      if (rooms && rooms.length > 0) {
         rooms.forEach(room => {
           this.contactList.push(room);
         });
@@ -264,7 +312,7 @@ export default {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
-            if(contactToChange) {
+            if (contactToChange) {
               this.setSelectedContact(contactToChange);
             }
           }
@@ -283,7 +331,7 @@ export default {
     },
     setContactParticipants(participants) {
       this.selectedContact.participants = participants;
-      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, {'detail' : this.selectedContact}));
+      document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, {'detail': this.selectedContact}));
     },
     reloadPage() {
       window.location.reload();
@@ -291,7 +339,7 @@ export default {
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
-      if(roomName && roomName.trim().length) {
+      if (roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId => {
           // if selected room is not present in already loaded rooms then refresh the contact list
           if (!this.contactList.some(contact => contact.room === roomId || contact.user === roomId)) {
@@ -315,7 +363,7 @@ export default {
     showHidePlatformAdminToolbar(){
       if (location.pathname==='/portal/'.concat(eXo.env.portal.portalName).concat('/chat')) {
         return $('#PlatformAdminToolbarContainer').css('display', 'none') && $('#UITopBarContainerParent').css('display', 'none');
-      }else {
+      } else {
         return $('#PlatformAdminToolbarContainer').css('display', 'block') && $('#UITopBarContainerParent').css('display', 'block');
       }
     }

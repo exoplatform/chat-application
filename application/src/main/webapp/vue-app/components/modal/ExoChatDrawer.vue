@@ -1,24 +1,46 @@
 <template>
   <div class="VuetifyApp">
-    <v-app v-if="!ap" id="miniChatDrawer" class="miniChatDrawer">
-      <v-btn :class="statusClass" class="dropdown-toggle" icon @click="openDrawer">
-        <v-icon class="my-auto uiIconStatus uiNotifChatIcon"></v-icon>
+    <v-app
+      v-if="!ap"
+      id="miniChatDrawer"
+      class="miniChatDrawer">
+      <v-btn
+        :class="statusClass"
+        class="dropdown-toggle"
+        icon
+        @click="openDrawer">
+        <v-icon class="my-auto uiIconStatus uiNotifChatIcon" />
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
       </v-btn>
-      <exo-drawer ref="chatDrawer"
-                  class="chatDrawer"
-                  body-classes="hide-scroll"
-                  right
-                  @closed="resetSelectedContact">
+      <exo-drawer
+        ref="chatDrawer"
+        class="chatDrawer"
+        body-classes="hide-scroll"
+        right
+        @closed="resetSelectedContact">
         <template v-if="!showSearch" slot="title">
           <div class="leftHeaderDrawer">
             <span v-if="!selectedContact && !showSearch" class="chatContactDrawer">
-              <exo-chat-contact :chat-drawer-contact="showChatDrawer" :user-name="userSettings.username" :status="userSettings.status" :is-current-user="true" type="u" @status-changed="setStatus($event)"></exo-chat-contact>
+              <exo-chat-contact
+                :chat-drawer-contact="showChatDrawer"
+                :user-name="userSettings.username"
+                :status="userSettings.status"
+                :is-current-user="true"
+                type="u"
+                @status-changed="setStatus($event)" />
             </span>
-            <v-icon v-show="selectedContact" class="my-auto backButton" @click="backChat()">mdi-keyboard-backspace</v-icon>
-            <span v-if="selectedContact" >
-              <img :src="contactAvatar" class="chatAvatar" alt="avatar of discussion"/>
+            <v-icon
+              v-show="selectedContact"
+              class="my-auto backButton"
+              @click="backChat()">
+              mdi-keyboard-backspace
+            </v-icon>
+            <span v-if="selectedContact">
+              <img
+                :src="contactAvatar"
+                class="chatAvatar"
+                alt="avatar of discussion">
               <span :class="statusStyle" class="user-status">
                 <i v-if="selectedContact.type=='u' && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)" class="uiIconStatus"></i>
                 <span :title="getName">{{ getName }}</span>
@@ -27,17 +49,27 @@
           </div>
         </template>
         <template v-if="showChatDrawer && !selectedContact" slot="title">
-          <input v-show="showSearch" v-model="searchTerm" :placeholder="$t('exoplatform.chat.contact.search.placeholder')" class="searchDrawer" type="text">
+          <input
+            v-show="showSearch"
+            v-model="searchTerm"
+            :placeholder="$t('exoplatform.chat.contact.search.placeholder')"
+            class="searchDrawer"
+            type="text">
         </template>
         <template slot="titleIcons">
-          <div v-show="selectedContact && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)"
-               class="title-action-component">
-            <div v-for="action in titleActionComponents" v-if="action.enabled" :key="action.key"
-                 :class="`${action.appClass} ${action.typeClass}`" :ref="action.key">
+          <div
+            v-show="selectedContact && (selectedContact.isEnabledUser || selectedContact.isEnabledUser === null)"
+            class="title-action-component">
+            <div
+              v-for="action in enabledTitleActionComponents"
+              :key="action.key"
+              :class="`${action.appClass} ${action.typeClass}`"
+              :ref="action.key">
               <div v-if="action.component">
-                <component v-dynamic-events="action.component.events"
-                           v-bind="action.component.props ? action.component.props : {}"
-                           :is="action.component.name"></component>
+                <component
+                  v-dynamic-events="action.component.events"
+                  v-bind="action.component.props ? action.component.props : {}"
+                  :is="action.component.name" />
               </div>
               <div v-else-if="action.element" v-html="action.element.outerHTML">
               </div>
@@ -46,14 +78,44 @@
               {{ initTitleActionComponent(action) }}
             </div>
           </div>
-          <v-icon v-show = "showSearch && !selectedContact" class="my-auto" @click="closeContactSearch">mdi-filter-remove</v-icon>
-          <v-icon v-show = "!showSearch && !selectedContact" class="my-auto" @click="openContactSearch">mdi-filter</v-icon>
-          <v-icon v-show="mq !=='mobile' && !showSearch" :title="$t('exoplatform.chat.open.chat')" class="my-auto" @click="navigateTo">mdi-open-in-new</v-icon>
+          <v-icon
+            v-show="showSearch && !selectedContact"
+            class="my-auto"
+            @click="closeContactSearch">
+            mdi-filter-remove
+          </v-icon>
+          <v-icon
+            v-show="!showSearch && !selectedContact"
+            class="my-auto"
+            @click="openContactSearch">
+            mdi-filter
+          </v-icon>
+          <v-icon
+            v-show="mq !=='mobile' && !showSearch"
+            :title="$t('exoplatform.chat.open.chat')"
+            class="my-auto"
+            @click="navigateTo">
+            mdi-open-in-new
+          </v-icon>
         </template>
         <template slot="content">
           <div :class="!selectedContact ? 'contentDrawer ' : 'contentDrawerOfList'">
-            <exo-chat-contact-list v-show="!selectedContact && contactList.length > 0" :search-word="searchTerm" :drawer-status="showChatDrawer" :contacts="contactList" :contacts-size="contactsSize" :selected="selectedContact" :loading-contacts="loadingContacts" @load-more-contacts="loadMoreContacts" @contact-selected="setSelectedContact" @refresh-contacts="refreshContacts($event)"></exo-chat-contact-list>
-            <exo-chat-message-list v-show="selectedContact" :contact="selectedContact" :user-settings="userSettings" :is-opened-contact="!selectedContact"></exo-chat-message-list>
+            <exo-chat-contact-list
+              v-show="!selectedContact && contactList.length > 0"
+              :search-word="searchTerm"
+              :drawer-status="showChatDrawer"
+              :contacts="contactList"
+              :contacts-size="contactsSize"
+              :selected="selectedContact"
+              :loading-contacts="loadingContacts"
+              @load-more-contacts="loadMoreContacts"
+              @contact-selected="setSelectedContact"
+              @refresh-contacts="refreshContacts($event)" />
+            <exo-chat-message-list
+              v-show="selectedContact"
+              :contact="selectedContact"
+              :user-settings="userSettings"
+              :is-opened-contact="!selectedContact" />
           </div>
         </template>
       </exo-drawer>
@@ -83,23 +145,27 @@ export default {
   data () {
     return {
       contactList: [],
-      showSearch:false,
+      showSearch: false,
       loadingContacts: true,
       selectedContact: [],
       contactsSize: 0,
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
-      showChatDrawer:false,
-      fullNameOfUser:'',
-      isOnline : true,
-      searchTerm:'',
-      totalUnreadMsg:0,
+      showChatDrawer: false,
+      fullNameOfUser: '',
+      isOnline: true,
+      searchTerm: '',
+      totalUnreadMsg: 0,
       external: this.$t('exoplatform.chat.external'),
+      chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents
     };
   },
-  computed:{
+  computed: {
+    enabledTitleActionComponents() {
+      return this.titleActionComponents && this.titleActionComponents.filter(action => action.enabled) || [];
+    },
     statusClass() {
       if (this.userSettings.status === 'invisible') {
         return 'user-offline';
@@ -108,7 +174,7 @@ export default {
       }
     },
     contactAvatar() {
-      if(this.selectedContact){
+      if (this.selectedContact){
         if (this.selectedContact.type === 'u') {
           return getUserAvatar(this.selectedContact.user);
         } else if (this.selectedContact.type === 's') {
@@ -117,6 +183,7 @@ export default {
           return chatConstants.DEFAULT_ROOM_AVATAR;
         }
       }
+      return '';
     },
     statusStyle: function() {
       if (!this.selectedContact) {
@@ -125,13 +192,14 @@ export default {
         } else {
           return `user-${this.userSettings.status}`;
         }
-      } else if(typeof this.selectedContact !== 'undefined'){
+      } else if (typeof this.selectedContact !== 'undefined'){
         if (!this.isOnline||  this.selectedContact.status === 'invisible') {
           return 'user-offline';
         } else {
           return `user-${this.selectedContact.status}`;
         }
       }
+      return '';
     },
     getName(){
       if (!this.selectedContact) {
@@ -172,7 +240,7 @@ export default {
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
-  methods:{
+  methods: {
     openDrawer() {
       this.$refs.chatDrawer.startLoading();
       chatServices.initChatSettings(this.userSettings.username, false,
@@ -180,7 +248,7 @@ export default {
         chatRoomsData => {
           this.initChatRooms(chatRoomsData);
           const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) + Number(chatRoomsData.unreadSpaces)+Number(chatRoomsData.unreadOnline) + Number(chatRoomsData.unreadTeams));
-          if(totalUnreadMsg >= 0) {
+          if (totalUnreadMsg >= 0) {
             this.totalUnreadMsg = totalUnreadMsg;
           }
           this.$nextTick(this.$refs.chatDrawer.endLoading);
@@ -193,7 +261,7 @@ export default {
       window.setTimeout(this.$refs.chatDrawer.endLoading, chatConstants.LOADING_ANIMATION_DURATION);
     },
     navigateTo() {
-      window.open('/portal/'.concat(eXo.env.portal.portalName).concat('/chat'),'_blank');
+      window.open(this.chatLink, '_blank');
     },
     resetSelectedContact() {
       this.showChatDrawer = false;
@@ -213,7 +281,7 @@ export default {
     },
     totalUnreadMessagesUpdated(e) {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
-      if(totalUnreadMsg >= 0) {
+      if (totalUnreadMsg >= 0) {
         this.totalUnreadMsg = totalUnreadMsg;
       }
     },
@@ -236,7 +304,7 @@ export default {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
       if (updatedContact && (updatedContact.room || updatedContact.user)) {
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === updatedContact.room || contact.user === updatedContact.user);
-        if(indexOfRoom < 0) {
+        if (indexOfRoom < 0) {
           this.contactList.unshift(updatedContact);
         } else {
           this.contactList.splice(indexOfRoom, 1, updatedContact);
@@ -249,7 +317,7 @@ export default {
               && contact.fullName.trim().length > 0
               && (contact.room && contact.room.trim().length > 0 || contact.user && contact.user.trim().length > 0)
               && !contacts.find(otherContact => otherContact.room === contact.room || otherContact.user === contact.user));
-      if(rooms && rooms.length > 0) {
+      if (rooms && rooms.length > 0) {
         rooms.forEach(room => {
           this.contactList.push(room);
         });
@@ -264,7 +332,7 @@ export default {
       });
       installExtensions(this.userSettings);
       const thiss = this;
-      if(this.userSettings.offlineDelay) {
+      if (this.userSettings.offlineDelay) {
         setInterval(
           function() {thiss.refreshContacts(true);},
           this.userSettings.offlineDelay);
@@ -288,7 +356,7 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      if(!selectedContact && selectedContact.length() === 0) {
+      if (!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
       if (typeof selectedContact === 'string') {
@@ -297,7 +365,7 @@ export default {
       if (selectedContact && selectedContact.fullName && (selectedContact.room || selectedContact.user)) {
         eXo.chat.selectedContact = selectedContact;
         const indexOfRoom = this.contactList.findIndex(contact => contact.room === selectedContact.room || contact.user === selectedContact.user);
-        if(indexOfRoom < 0) {
+        if (indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         } else {
           this.contactList.splice(indexOfRoom, 1, selectedContact);
@@ -306,7 +374,7 @@ export default {
       this.selectedContact = selectedContact;
       chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
         this.selectedContact.participants = data.users;
-        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail' : this.selectedContact}));
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
       });
       this.showSearch = false;
     },
@@ -317,7 +385,7 @@ export default {
           this.contactsSize = chatRoomsData.roomsCount;
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
-            if(contactToChange) {
+            if (contactToChange) {
               this.setSelectedContact(contactToChange);
             }
           }
@@ -346,7 +414,7 @@ export default {
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
-      if(roomName && roomName.trim().length) {
+      if (roomName && roomName.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId =>
           chatServices.getRoomDetail(this.userSettings, roomId).then( room => {
             this.openDrawer();

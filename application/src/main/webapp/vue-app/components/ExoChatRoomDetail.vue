@@ -1,22 +1,47 @@
 <template>
   <div id="room-detail" class="room-detail">
     <div v-if="mq == 'mobile'" @click="backToContactList"><i class="uiIconGoBack"></i></div>
-    <exo-chat-contact v-if="!showMeetingDrawer" :is-external="contact.isExternal === 'true'" :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'" :type="contact.type" :user-name="contact.user" :pretty-name="contact.prettyName" :group-id="contact.groupId" :name="contact.fullName" :status="contact.status" :nb-members="nbMembers">
-      <div v-exo-tooltip.bottom.body="favoriteTooltip" v-if="mq !== 'mobile'" :class="{'is-fav': contact.isFavorite}" class="uiIcon favorite" @click.stop="toggleFavorite(contact)"></div>
+    <exo-chat-contact
+      v-if="!showMeetingDrawer"
+      :is-external="contact.isExternal === 'true'"
+      :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'"
+      :type="contact.type"
+      :user-name="contact.user"
+      :pretty-name="contact.prettyName"
+      :group-id="contact.groupId"
+      :name="contact.fullName"
+      :status="contact.status"
+      :nb-members="nbMembers">
+      <div
+        v-exo-tooltip.bottom.body="favoriteTooltip"
+        v-if="mq !== 'mobile'"
+        :class="{'is-fav': contact.isFavorite}"
+        class="uiIcon favorite"
+        @click.stop="toggleFavorite(contact)"></div>
     </exo-chat-contact>
     <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
       <div class="room-search">
-        <input ref="searchRoom" v-model="searchText" type="text" placeholder="search here" @blur="closeSearchRoom" @keyup.esc="closeSearchRoom">
+        <input
+          ref="searchRoom"
+          v-model="searchText"
+          type="text"
+          placeholder="search here"
+          @blur="closeSearchRoom"
+          @keyup.esc="closeSearchRoom">
         <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
       </div>
       <div class="room-action-menu">
         <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="room-action-components">
-          <div v-for="action in roomActionComponents" v-if="action.enabled" :key="action.key"
-               :class="`${action.appClass} ${action.typeClass}`" :ref="action.key">
+          <div
+            v-for="action in enabledRoomActionComponents"
+            :key="action.key"
+            :class="`${action.appClass} ${action.typeClass}`"
+            :ref="action.key">
             <div v-if="action.component">
-              <component v-dynamic-events="action.component.events"
-                         v-bind="action.component.props ? action.component.props : {}"
-                         :is="action.component.name"></component>
+              <component
+                v-dynamic-events="action.component.events"
+                v-bind="action.component.props ? action.component.props : {}"
+                :is="action.component.name" />
             </div>
             <div v-else-if="action.element" v-html="action.element.outerHTML">
             </div>
@@ -24,12 +49,27 @@
             </div>
           </div>
         </div>
-        <div v-exo-tooltip.bottom="$t('exoplatform.chat.search')" class="room-search-btn" @click="openSearchRoom">
+        <div
+          v-exo-tooltip.bottom="$t('exoplatform.chat.search')"
+          class="room-search-btn"
+          @click="openSearchRoom">
           <i class="uiIconSearchLight"></i>    
         </div>
-        <exo-dropdown-select v-if="displayMenu" class="room-settings-dropdown chat-team-button-dropdown" position="right" @click.native="checkMeetingStatus">
-          <i v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')" slot="toggle" class="uiIconVerticalDots"></i>
-          <li v-for="settingAction in settingActions" v-if="displayItem(settingAction)" slot="menu" :class="`room-setting-action-${settingAction.key}`" :key="settingAction.key" @click.stop="executeAction(settingAction)">
+        <exo-dropdown-select
+          v-if="displayMenu"
+          class="room-settings-dropdown chat-team-button-dropdown"
+          position="right"
+          @click.native="checkMeetingStatus">
+          <i
+            v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')"
+            slot="toggle"
+            class="uiIconVerticalDots"></i>
+          <li
+            v-for="settingAction in enabledSettingActions"
+            slot="menu"
+            :class="`room-setting-action-${settingAction.key}`"
+            :key="settingAction.key"
+            @click.stop="executeAction(settingAction)">
             <a href="#">
               <i :class="settingAction.class" class="uiIconRoomSetting"></i>
               {{ $t(settingAction.labelKey) }}
@@ -38,17 +78,35 @@
         </exo-dropdown-select>
       </div>
     </div>
-    <exo-chat-room-notification-modal :room="contact.room" :room-name="contact.fullName" :show="openNotificationSettings" @modal-closed="closeNotificationSettingsModal"></exo-chat-room-notification-modal>
-    <exo-chat-modal v-show="showConfirmModal" :title="$t(confirmTitle)" @modal-closed="showConfirmModal=false">
+    <exo-chat-room-notification-modal
+      :room="contact.room"
+      :room-name="contact.fullName"
+      :show="openNotificationSettings"
+      @modal-closed="closeNotificationSettingsModal" />
+    <exo-chat-modal
+      v-show="showConfirmModal"
+      :title="$t(confirmTitle)"
+      @modal-closed="showConfirmModal=false">
       <div class="modal-body">
         <p>
-          <span id="team-delete-window-chat-name" class="confirmationIcon" v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
+          <span
+            id="team-delete-window-chat-name"
+            class="confirmationIcon"
+            v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
           </span>
         </p>
       </div>
       <div class="uiAction uiActionBorder">
-        <a id="team-delete-button-ok" href="#" class="btn btn-primary" @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
-        <a id="team-delete-button-cancel" href="#" class="btn" @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
+        <a
+          id="team-delete-button-ok"
+          href="#"
+          class="btn btn-primary"
+          @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
+        <a
+          id="team-delete-button-cancel"
+          href="#"
+          class="btn"
+          @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
       </div>
     </exo-chat-modal>
   </div>
@@ -81,12 +139,6 @@ export default {
         return {};
       }
     },
-    meetingStarted: {
-      type: Boolean,
-      default() {
-        return false;
-      }
-    },
     showMeetingDrawer: {
       type: Boolean,
       default: false
@@ -95,6 +147,7 @@ export default {
   data() {
     return {
       settingActions: roomActions,
+      meetingStarted: false,
       nbMembers: 0,
       showSearchRoom: false,
       searchText: '',
@@ -117,6 +170,12 @@ export default {
     },
     displayMenu() {
       return this.contact.type === 's' || this.contact.type === 't';
+    },
+    enabledSettingActions() {
+      return this.settingActions && this.settingActions.filter(settingAction => this.displayItem(settingAction)) || [];
+    },
+    enabledRoomActionComponents() {
+      return this.roomActionComponents && this.roomActionComponents.filter(action => action.enabled) || [];
     }
   },
   watch: {
@@ -124,7 +183,7 @@ export default {
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEARCH, {detail: value}));
     },
     contact(newContact) {
-      if(!newContact) {
+      if (!newContact) {
         this.nbMembers = 0;
       } else {
         this.nbMembers = newContact.participantsCount ? newContact.participantsCount.length : 0;
@@ -139,6 +198,7 @@ export default {
     document.addEventListener(chatConstants.EVENT_ROOM_PARTICIPANTS_LOADED, this.participantsLoaded);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_ADD, this.addToFavorite);
     document.addEventListener(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, this.removeFromFavorite);
+    this.meetingStarted = this.contact && this.contact.meetingStarted;
   },
   mounted() {
     this.initRoomActionComponents();
@@ -181,7 +241,7 @@ export default {
       this.openNotificationSettings = false;
     },
     executeAction(settingAction) {
-      if(settingAction.confirm) {
+      if (settingAction.confirm) {
         this.confirmTitle = settingAction.confirm.title;
         this.confirmMessage = settingAction.confirm.message;
         this.confirmOKMessage = settingAction.confirm.okMessage;
@@ -216,8 +276,8 @@ export default {
     sendMeetingMessage(startMeeting, fromTimestamp) {
       const msgType = startMeeting ? 'type-meeting-start' : 'type-meeting-stop';
       const message = {
-        message : this.newMessage,
-        room : this.contact.room,
+        message: this.newMessage,
+        room: this.contact.room,
         clientId: new Date().getTime().toString(),
         timestamp: Date.now(),
         user: eXo.chat.userSettings.username,
@@ -229,7 +289,7 @@ export default {
           fromTimestamp: fromTimestamp
         }
       };
-      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail' : message}));
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': message}));
     },
     displayItem(settingAction) {
       return (!settingAction.enabled || settingAction.enabled(this)) && (!settingAction.type || settingAction.type === this.contact.type);
@@ -251,7 +311,7 @@ export default {
       for (const action of this.roomActionComponents) {
         if (action.init && action.enabled) {
           let container = this.$refs[action.key];
-          if(container && container.length > 0) {
+          if (container && container.length > 0) {
             container = container[0];
           }
           action.init(container, eXo.chat);

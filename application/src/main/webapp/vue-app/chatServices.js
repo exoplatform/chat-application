@@ -33,7 +33,7 @@ export function setUserStatus(userSettings, status, callback) {
 }
 
 export function getNotReadMessages(userSettings, withDetails) {
-  if(!withDetails) {
+  if (!withDetails) {
     withDetails = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&withDetails=${withDetails}`, {
@@ -88,8 +88,8 @@ export function initSettings(username, userSettings, userSettingsLoadedCallback)
     eXo.chat.userSettings.chatPage = getBaseURL() + eXo.chat.userSettings.chatPage;
     userSettingsLoadedCallback(userSettings);
     
-    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_USER_SETTINGS_LOADED, {'detail' : userSettings}));
-  } catch(e) {
+    document.dispatchEvent(new CustomEvent(chatConstants.EVENT_USER_SETTINGS_LOADED, {'detail': userSettings}));
+  } catch (e) {
     console.error('Error initializing chat settings', e);
     setTimeout(() => initSettings(status, userSettings, userSettingsLoadedCallback), REATTEMPT_INIT_PERIOD);
   }
@@ -112,7 +112,7 @@ export function setProfileStatus(event) {
   const username = contactChanged.sender;
   if (username && status) {
     const $profileMenuStatusBtn = $(`.uiProfileMenu .profileMenuNavHeader [data-userid='${username}'] i`);
-    if($profileMenuStatusBtn.length) {
+    if ($profileMenuStatusBtn.length) {
       updateStatusElement($profileMenuStatusBtn, status, eXo.chat.userSettings.statusLabels ? eXo.chat.userSettings.statusLabels[status] : '');
     }
   }
@@ -187,10 +187,10 @@ export function toggleFavorite(room, user, favorite) {
 }
 
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {
-  if(!limit) {
+  if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
-  if(!filter) {
+  if (!filter) {
     filter = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&limit=${limit}&timestamp=${new Date().getTime()}`, {
@@ -199,13 +199,13 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
     }}).then(resp =>  resp.json());
 }
 export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limit) {
-  if(!limit) {
+  if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
-  if(!offset) {
+  if (!offset) {
     offset = DEFAULT_OFFSET;
   }
-  if(!filter) {
+  if (!filter) {
     filter = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
@@ -215,12 +215,12 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
 }
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
-  if(!limit && isNaN(limit)) {
+  if (!limit && isNaN(limit)) {
     limit = DEFAULT_USER_LIMIT;
   }
   onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true;
 
-  if(!onlineUsers) {
+  if (!onlineUsers) {
     onlineUsers = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&onlineUsers=${onlineUsers}&limit=${limit}&onlineOnly=${onlineUsersOnly}`, {
@@ -261,7 +261,7 @@ export function getRoomMessages(userSettings, contact, toTimestamp, limit) {
   if (!limit) {
     limit = '';
   }
-  if(!toTimestamp) {
+  if (!toTimestamp) {
     toTimestamp = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}read?user=${userSettings.username}&room=${contact.room}&toTimestamp=${toTimestamp}&limit=${limit}`, {
@@ -307,19 +307,19 @@ export function getUserNotificationSettings(userSettings) {
 }
 
 export function loadNotificationSettings(settings) {
-  if(settings && settings.userDesktopNotificationSettings) {
+  if (settings && settings.userDesktopNotificationSettings) {
     eXo.chat.desktopNotificationSettings = settings.userDesktopNotificationSettings;
-    if(eXo.chat.desktopNotificationSettings.preferredNotification) {
+    if (eXo.chat.desktopNotificationSettings.preferredNotification) {
       eXo.chat.desktopNotificationSettings.preferredNotification = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotification);
     } else {
       eXo.chat.desktopNotificationSettings.preferredNotification = [];
     }
-    if(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
+    if (eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
       eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger);
     } else {
       eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = [];
     }
-    if(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
+    if (eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
       eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger);
     } else {
       eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = [];
@@ -328,7 +328,7 @@ export function loadNotificationSettings(settings) {
 }
 
 export function getChatUsers(userSettings, filter, limit) {
-  if(!limit) {
+  if (!limit) {
     limit = DEFAULT_USER_LIMIT;
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&filter=${filter}&limit=${limit}`, {
@@ -401,7 +401,7 @@ export function getRoomParticipantsToSuggest(usersList) {
     method: 'POST',
     body: JSON.stringify(usersList),
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
@@ -427,7 +427,7 @@ export function getSpaceByPrettyName(prettyName) {
     credentials: 'include',
     method: 'GET',
   }).then((resp) => {
-    if(resp && resp.ok) {
+    if (resp && resp.ok) {
       return resp.json();
     }
     else {
@@ -474,7 +474,7 @@ export function getMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) 
 }
 
 export function saveWiki(userSettings, targetFullName, content) {
-  if(!content || content === 'ko') {
+  if (!content || content === 'ko') {
     return;
   }
   const data = {

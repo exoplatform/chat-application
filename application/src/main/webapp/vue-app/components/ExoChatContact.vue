@@ -1,20 +1,32 @@
 <template>
   <div class="chat-contact">
-    <div :style="`backgroundImage: url(${contactAvatar})`" :class="statusStyle" class="chat-contact-avatar">
-      <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" :href="contactUrl" class="chat-contact-link"></a>
+    <div
+      :style="`backgroundImage: url(${contactAvatar})`"
+      :class="statusStyle"
+      class="chat-contact-avatar">
+      <a
+        v-if="!list && type!=='t' && (isEnabled || isEnabled === null)"
+        :href="contactUrl"
+        class="chat-contact-link"></a>
       <i v-if="list && type=='u' && (isEnabled || isEnabled === null)" class="uiIconStatus"></i>
     </div>
     <div class="contactDetail">
       <div :class="isActive" class="contactLabel">
-        <span v-sanitized-html="escapedName" />
+        <span v-sanitized-html="escapedName"></span>
         <span v-if="isExternal" class="externalTagClass">{{ externalTag }}</span>
         <slot></slot>
       </div>
-      <div v-if="type =='u' && !list && !isCurrentUser" :class="statusStyle" class="user-status">
+      <div
+        v-if="type =='u' && !list && !isCurrentUser"
+        :class="statusStyle"
+        class="user-status">
         <i v-if="isEnabled || isEnabled === null" class="uiIconStatus"></i>
         <span class="user-status">{{ getStatus }}</span>
       </div>
-      <exo-dropdown-select v-if="type =='u' && !list && isCurrentUser" toggler-class="user-status" class="status-dropdown">
+      <exo-dropdown-select
+        v-if="type =='u' && !list && isCurrentUser"
+        toggler-class="user-status"
+        class="status-dropdown">
         <div slot="toggle" :class="statusStyle">
           <div class="statusMargin">
             <i class="uiIconStatus"></i>
@@ -25,12 +37,22 @@
             <a v-if="!list && type!=='t' && (isEnabled || isEnabled === null)" class="chat-contact-link"></a>
           </div>
         </div>
-        <li v-for="(value, key) in statusMap" v-if="key !== 'offline' && key !== 'inactive'" slot="menu" :class="`user-${key}`" :key="key" @click="setStatus(key)"><a href="#" class="status-link"><span><i class="uiIconStatus"></i></span>{{ value }}</a></li>
+        <li
+          v-for="(value, key) in activeStatusMap"
+          slot="menu"
+          :class="`user-${key}`"
+          :key="key"
+          @click="setStatus(key)">
+          <a href="#" class="status-link"><span><i class="uiIconStatus"></i></span>{{ value }}</a>
+        </li>
       </exo-dropdown-select>
       <div v-if="type !='u' && !list && nbMembers > 0" class="room-number-members">
         {{ nbMembers }} {{ $t('exoplatform.chat.members') }}
       </div>
-      <div v-sanitized-html="lastMessage" v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact" :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' "></div>
+      <div
+        v-sanitized-html="lastMessage"
+        v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact"
+        :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' "></div>
     </div>
   </div>
 </template>
@@ -112,17 +134,23 @@ export default {
       default: false
     }
   },
-  data : function() {
+  data: function() {
     return {
-      isOnline : true,
-      statusMap : {
+      isOnline: true,
+      statusMap: {
         available: this.$t('exoplatform.chat.available'),
         away: this.$t('exoplatform.chat.away'),
         inactive: this.$t('exoplatform.chat.inactive'),
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
         offline: this.$t('exoplatform.chat.button.offline')
-      }
+      },
+      activeStatusMap: {
+        available: this.$t('exoplatform.chat.available'),
+        away: this.$t('exoplatform.chat.away'),
+        donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
+        invisible: this.$t('exoplatform.chat.invisible'),
+      },
     };
   },
   computed: {
@@ -154,7 +182,7 @@ export default {
     },
     escapedName() {
       const name = escapeHtml(this.name);
-      if(!this.isEnabled && this.list === true) {
+      if (!this.isEnabled && this.list === true) {
         return name.concat(' ').concat('(').concat(this.statusMap.inactive).concat(')');
       } else {
         return name;
