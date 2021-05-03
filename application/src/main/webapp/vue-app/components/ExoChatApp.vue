@@ -32,8 +32,9 @@
         :selected="selectedContact"
         :loading-contacts="loadingContacts"
         @open-side-menu="sideMenuArea = !sideMenuArea"
-        @load-more-contacts="loadMoreContacts"
+        @load-more-contacts="changeFilter"
         @search-contact="searchContacts"
+        @change-filter-type="changeFilter"
         @contact-selected="setSelectedContact"
         @refresh-contacts="refreshContacts($event)" />
     </div>
@@ -298,6 +299,7 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms, true);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -307,6 +309,24 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
+          this.loadingContacts = false;
+        });
+      });
+    },
+    changeFilter(term, filter, pageNumber) {
+      let offset = 0;
+      if(filter === 'All') {
+        filter = '';
+      }
+      if(pageNumber) {
+        offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
+      }
+      this.loadingContacts = true;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, pageNumber);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });

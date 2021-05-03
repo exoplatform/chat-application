@@ -52,8 +52,10 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
       //mini chat only need fetching notifications
       getNotReadMessages(settings).then(notifications => chatRoomsLoadedCallback(notifications));
     } else {
+      // Get the selected room type filter
+      const roomTypeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
       // fetch online users then fetch chat rooms
-      getOnlineUsers().then(users => getUserChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
+      getOnlineUsers().then(users => getUserChatRooms(settings, users, '', roomTypeFilter)).then(data => chatRoomsLoadedCallback(data));
     }
 
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
@@ -197,8 +199,9 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
-export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limit) {
-  if (!limit) {
+
+export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, offset, limit) {
+  if(!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
   if(!offset) {
@@ -207,7 +210,10 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
   if (!filter) {
     filter = '';
   }
-  return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
+  if(!roomType || roomType === 'All') {
+    roomType = '';
+  }
+  return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&roomType=${roomType}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());

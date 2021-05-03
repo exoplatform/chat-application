@@ -80,6 +80,7 @@ export const chatConstants = {
   ACTION_ROOM_SHOW_PARTICIPANTS: 'exo-chat-setting-showParticipants-requested',
   ACTION_APPS_CLOSE: 'exo-chat-apps-close-requested',
   ACTION_ROOM_OPEN_CHAT: 'exo-chat-room-open-requested',
+  ACTION_FILTER_ROOM_TYPE: 'exo-chat-room-filter-changed',
   EVENT_CONNECTED: 'exo-chat-connected',
   EVENT_DISCONNECTED: 'exo-chat-disconnected',
   EVENT_RECONNECTED: 'exo-chat-reconnected',
