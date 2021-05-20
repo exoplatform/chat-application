@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 import static org.exoplatform.chat.services.ChatService.*;
+import static org.exoplatform.chat.services.UserDataStorage.STATUS_OFFLINE;
 import static org.exoplatform.chat.services.mongodb.UserMongoDataStorage.M_USERS_COLLECTION;
 
 @Named("chatStorage")
@@ -829,6 +830,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   }
 
+
   /**
    * This will load all user rooms with pagination
    * @param user the user for whom roomw will be loaded
@@ -841,6 +843,22 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    * @return RoomsBean containing all rooms with unread messages
    */
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService) {
+    return getUserRooms(user, onlineUsers, filter, offset, limit, notificationService, tokenService, null);
+  }
+
+  /**
+   * This will load all user rooms with pagination
+   * @param user the user for whom roomw will be loaded
+   * @param onlineUsers list of online users
+   * @param filter the filter used to filter rooms
+   * @param offset the current offset
+   * @param limit the limit of rooms
+   * @param notificationService service storing rooms notifications
+   * @param tokenService service storing tokens
+   * @param roomType type of the room : u for one to one , t for team room or s for space rooms
+   * @return RoomsBean containing all rooms with unread messages
+   */
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService, String roomType) {
     List<RoomBean> rooms = new ArrayList<>();;
     int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0, roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
@@ -854,22 +872,28 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       List<BasicDBObject> andList = new ArrayList<>();
       List<BasicDBObject> orList = new ArrayList<>();
       DBObject doc = cursor.next();
-      BasicDBList spaces = (BasicDBList)doc.get("spaces");
-      BasicDBList teams = (BasicDBList)doc.get("teams");
-      if(spaces != null) {
-        for (Object room : spaces) {
-          roomsIds.add((String) room);
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+        BasicDBList spaces = (BasicDBList) doc.get("spaces");
+        if(spaces != null) {
+          for (Object room : spaces) {
+            roomsIds.add((String) room);
+          }
         }
       }
-      if(teams != null) {
-        for (Object room : teams) {
-          roomsIds.add((String) room);
+      if(StringUtils.isBlank(roomType) ||  TYPE_ROOM_TEAM.equals(roomType)) {
+        BasicDBList teams = (BasicDBList) doc.get("teams");
+        if (teams != null) {
+          for (Object room : teams) {
+            roomsIds.add((String) room);
+          }
         }
       }
       // Add spaces and teams rooms
       orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
-      // Add user to user rooms
-      orList.add(new BasicDBObject("users", user));
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
+        // Add user to user rooms
+        orList.add(new BasicDBObject("users", user));
+      }
 
       DBObject roomsQuery = new BasicDBObject("$and", andList);
       List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
@@ -907,10 +931,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     List<RoomBean> finalRooms = new ArrayList<RoomBean>();
     if (StringUtils.isNotBlank(filter)) {
+      roomsCount = 0;
       for (RoomBean roomBean : rooms) {
         String targetUser = roomBean.getFullName();
         if (filter(targetUser, filter))
           finalRooms.add(roomBean);
+          roomsCount ++;
       }
     } else {
       finalRooms = rooms;
@@ -960,7 +986,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setFullName(targetUserBean.getFullname());
           roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
           roomBean.setEnabledUser(targetUserBean.isEnabledUser());
-          roomBean.setAvailableUser(onlineUsers.contains(targetUser));
+          if(onlineUsers.contains(targetUser)) {
+            roomBean.setAvailableUser(true);
+            roomBean.setStatus(userDataStorage.getStatus(targetUser));
+          } else {
+            roomBean.setAvailableUser(false);
+            roomBean.setStatus(STATUS_OFFLINE);
+          }
           roomBean.setUser(targetUser);
           roomBean.setType(TYPE_ROOM_USER);
         }

@@ -80,6 +80,7 @@ export const chatConstants = {
   ACTION_ROOM_SHOW_PARTICIPANTS: 'exo-chat-setting-showParticipants-requested',
   ACTION_APPS_CLOSE: 'exo-chat-apps-close-requested',
   ACTION_ROOM_OPEN_CHAT: 'exo-chat-room-open-requested',
+  ACTION_FILTER_ROOM_TYPE: 'exo-chat-room-filter-changed',
   EVENT_CONNECTED: 'exo-chat-connected',
   EVENT_DISCONNECTED: 'exo-chat-disconnected',
   EVENT_RECONNECTED: 'exo-chat-reconnected',
@@ -101,5 +102,7 @@ export const chatConstants = {
   EVENT_ROOM_UPDATED: 'exo-chat-room-updated',
   EVENT_ROOM_SELECTION_CHANGED: 'exo-chat-selected-contact-changed',
   EVENT_USER_SETTINGS_LOADED: 'exo-chat-settings-loaded',
-  EVENT_USER_STATUS_CHANGED: 'exo-chat-user-status-changed'
+  EVENT_USER_STATUS_CHANGED: 'exo-chat-user-status-changed',
+  DEFAULT_OFFSET: 0,
+  DEFAULT_USER_LIMIT: 20
 };
