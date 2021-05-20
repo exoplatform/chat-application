@@ -201,16 +201,16 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
 }
 
 export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, offset, limit) {
-  if(!limit) {
+  if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
-  if(!offset) {
+  if (!offset) {
     offset = chatConstants.DEFAULT_OFFSET;
   }
   if (!filter) {
     filter = '';
   }
-  if(!roomType || roomType === 'All') {
+  if (!roomType || roomType === 'All') {
     roomType = '';
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&roomType=${roomType}&timestamp=${new Date().getTime()}`, {
@@ -220,7 +220,7 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, of
 }
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
-  if(!limit && isNaN(limit)) {
+  if (!limit && isNaN(limit)) {
     limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true;
@@ -333,7 +333,7 @@ export function loadNotificationSettings(settings) {
 }
 
 export function getChatUsers(userSettings, filter, limit) {
-  if(!limit) {
+  if (!limit) {
     limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&filter=${filter}&limit=${limit}`, {

@@ -280,7 +280,7 @@ export default {
       }
     },
     addRooms(rooms, append) {
-      if(!append) {
+      if (!append) {
         this.contactList = [];
       }
       const contacts = this.contactList.slice(0);
@@ -316,10 +316,10 @@ export default {
     },
     changeFilter(term, filter, pageNumber) {
       let offset = 0;
-      if(filter === 'All') {
+      if (filter === 'All') {
         filter = '';
       }
-      if(pageNumber) {
+      if (pageNumber) {
         offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
       }
       this.loadingContacts = true;

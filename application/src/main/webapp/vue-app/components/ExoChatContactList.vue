@@ -320,7 +320,7 @@ export default {
       this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages = 0);
     },
     searchWord(newValue) {
-      if(newValue) {
+      if (newValue) {
         this.searchTerm = newValue;
         chatServices.getOnlineUsers().then(users => {
           chatServices.getUserChatRooms(eXo.chat.userSettings, users, this.searchTerm).then(chatRoomsData => {

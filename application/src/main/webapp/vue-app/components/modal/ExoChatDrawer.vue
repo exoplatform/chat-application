@@ -347,10 +347,10 @@ export default {
     },
     loadMoreContacts(term, filter, pageNumber) {
       let offset = 0;
-      if(filter === 'All') {
+      if (filter === 'All') {
         filter = '';
       }
-      if(pageNumber) {
+      if (pageNumber) {
         offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
       }
       this.loadingContacts = true;
