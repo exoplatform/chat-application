@@ -132,6 +132,8 @@ public interface ChatService
 
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService);
 
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService, String roomType);
+
   public int getNumberOfRooms();
 
   public int getNumberOfMessages();

@@ -50,6 +50,7 @@
         </template>
         <template v-if="showChatDrawer && !selectedContact" slot="title">
           <input
+            ref="contactSearch"
             v-show="showSearch"
             v-model="searchTerm"
             :placeholder="$t('exoplatform.chat.contact.search.placeholder')"
@@ -252,7 +253,8 @@ export default {
             this.totalUnreadMsg = totalUnreadMsg;
           }
           this.$nextTick(this.$refs.chatDrawer.endLoading);
-        });
+        },
+        !this.ap);
       this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
       this.selectedContact = null;
@@ -345,11 +347,18 @@ export default {
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
-    loadMoreContacts(nbPages) {
+    loadMoreContacts(term, filter, pageNumber) {
+      let offset = 0;
+      if (filter === 'All' || this.ap) {
+        filter = '';
+      }
+      if (pageNumber) {
+        offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
+      }
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
+        chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, pageNumber);
           this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
@@ -395,7 +404,7 @@ export default {
     searchContacts(term) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
@@ -428,6 +437,7 @@ export default {
     },
     openContactSearch() {
       this.showSearch = true;
+      this.$nextTick(() => this.$refs.contactSearch.focus());
     },
     closeContactSearch() {
       this.showSearch = false;
