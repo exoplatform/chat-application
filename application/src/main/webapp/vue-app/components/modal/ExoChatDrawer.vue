@@ -345,11 +345,18 @@ export default {
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
-    loadMoreContacts(nbPages) {
+    loadMoreContacts(term, filter, pageNumber) {
+      let offset = 0;
+      if (filter === 'All') {
+        filter = '';
+      }
+      if (pageNumber) {
+        offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
+      }
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
+        chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, pageNumber);
           this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
@@ -395,7 +402,7 @@ export default {
     searchContacts(term) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
