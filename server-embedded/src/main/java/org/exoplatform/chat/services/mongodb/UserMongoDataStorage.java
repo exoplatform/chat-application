@@ -663,6 +663,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         String targetUser = users.get(0);
         roomBean.setUser(targetUser);
         roomBean.setFullName(this.getUserFullName(targetUser));
+        roomBean.setExternal(this.getExternalValue(targetUser));
       }
       else if (ChatService.TYPE_ROOM_EXTERNAL.equals(type))
       {
@@ -1024,6 +1025,25 @@ public class UserMongoDataStorage implements UserDataStorage {
     }
 
     return fullname;
+  }
+
+
+  @Override
+  public String getExternalValue(String user)
+  {
+    String isExternal = null;
+    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put("user", user);
+    DBCursor cursor = coll.find(query);
+    if (cursor.hasNext())
+    {
+      DBObject doc = cursor.next();
+      if (doc.get("isExternal") != null)
+        isExternal = doc.get("isExternal").toString();
+    }
+
+    return isExternal;
   }
 
   @Override

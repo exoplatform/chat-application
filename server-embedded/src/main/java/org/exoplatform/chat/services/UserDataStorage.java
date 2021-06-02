@@ -115,6 +115,8 @@ public interface UserDataStorage {
 
   String getUserFullName(String user);
 
+  String getExternalValue(String user);
+
   UserBean getUser(String user);
 
   UserBean getUser(String user, boolean withFavorites);
