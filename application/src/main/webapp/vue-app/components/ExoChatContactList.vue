@@ -308,7 +308,7 @@ export default {
       return sortedContacts.slice(0, this.contactsToDisplay.length);
     },
     hasMoreContacts() {
-      return Math.floor(this.contactsSize / 20) > this.nbrePages;
+      return Math.floor(this.contactsSize / chatConstants.ROOMS_PER_PAGE) > this.nbrePages;
     }
   },
   watch: {
