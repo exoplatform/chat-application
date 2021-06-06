@@ -41,7 +41,7 @@ export function getNotReadMessages(userSettings, withDetails) {
     }}).then(resp =>  resp.json());
 }
 
-export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
+export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback, isChatDrawer) {
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
@@ -53,7 +53,10 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
       getNotReadMessages(settings).then(notifications => chatRoomsLoadedCallback(notifications));
     } else {
       // Get the selected room type filter
-      const roomTypeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+      let roomTypeFilter = '';
+      if (!isChatDrawer) {
+        roomTypeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+      }
       // fetch online users then fetch chat rooms
       getOnlineUsers().then(users => getUserChatRooms(settings, users, '', roomTypeFilter)).then(data => chatRoomsLoadedCallback(data));
     }
