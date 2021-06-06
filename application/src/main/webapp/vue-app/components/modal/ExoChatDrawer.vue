@@ -50,6 +50,7 @@
         </template>
         <template v-if="showChatDrawer && !selectedContact" slot="title">
           <input
+            ref="contactSearch"
             v-show="showSearch"
             v-model="searchTerm"
             :placeholder="$t('exoplatform.chat.contact.search.placeholder')"
@@ -252,7 +253,8 @@ export default {
             this.totalUnreadMsg = totalUnreadMsg;
           }
           this.$nextTick(this.$refs.chatDrawer.endLoading);
-        });
+        },
+        !this.ap);
       this.$refs.chatDrawer.open();
       this.showChatDrawer = true;
       this.selectedContact = null;
@@ -347,7 +349,7 @@ export default {
     },
     loadMoreContacts(term, filter, pageNumber) {
       let offset = 0;
-      if (filter === 'All') {
+      if (filter === 'All' || this.ap) {
         filter = '';
       }
       if (pageNumber) {
@@ -435,6 +437,7 @@ export default {
     },
     openContactSearch() {
       this.showSearch = true;
+      this.$nextTick(() => this.$refs.contactSearch.focus());
     },
     closeContactSearch() {
       this.showSearch = false;
