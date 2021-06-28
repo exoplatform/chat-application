@@ -860,7 +860,11 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    */
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService, String roomType) {
     List<RoomBean> rooms = new ArrayList<>();;
-    int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0, roomsCount = 0;
+    int unreadOffline = 0;
+    int unreadOnline = 0;
+    int unreadSpaces = 0;
+    int unreadTeams = 0;
+    int roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
 
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
@@ -903,8 +907,16 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       andList.add(new BasicDBObject("$or", orList));
 
       roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
-      DBCursor roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
-              .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
+      DBCursor roomsCursor;
+      if(StringUtils.isBlank(filter)) {
+        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
+      } else {
+        // There is no way to do a Join in MongoDB, data structure should be altered to make it possible to search for rooms and get user fullNames
+        // we added a hard limit 100 to load the latest 100 rooms of the user and then search their display names
+        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                .sort(new BasicDBObject("timestamp", -1)).limit(100);
+      }
       while(roomsCursor.hasNext()) {
         DBObject room = roomsCursor.next();
         RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
@@ -929,7 +941,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
     }
 
-    List<RoomBean> finalRooms = new ArrayList<RoomBean>();
+    List<RoomBean> finalRooms = new ArrayList<>();
     if (StringUtils.isNotBlank(filter)) {
       roomsCount = 0;
       for (RoomBean roomBean : rooms) {
