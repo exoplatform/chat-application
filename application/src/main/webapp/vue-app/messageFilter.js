@@ -11,11 +11,17 @@ export default function(msg, highlight, emojis) {
     words.forEach(w => {
       // check link
       if (w.indexOf('http:') === 0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
+      // retrieve the URL of the message
+        const domain = (new URL(this.messageContent));
         // check image link
         if (w.endsWith('.jpg') || w.endsWith('.png') || w.endsWith('.gif') || w.endsWith('.JPG') || w.endsWith('.PNG') || w.endsWith('.GIF')) {
           w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
-        } else {
-          w = `<a href="${w}" target='_blank'>${w}</a>`;
+          // check  external links
+        } else if (!(domain.host === window.location.host)) {
+          w = `<a href="${w}" target='_blank' rel="noopener">${w}</a>`;
+        }
+        else {
+          w = `<a href="${w}">${w}</a>`;
         }
       } else if (highlight !== '' && w.indexOf(highlight) >= 0) {
         w = w.replace(highlight, `<span class="search-highlight">${highlight}</span>`);
