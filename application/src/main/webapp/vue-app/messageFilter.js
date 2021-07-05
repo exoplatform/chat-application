@@ -14,21 +14,23 @@ export default function(msg, highlight, emojis) {
       // retrieve the URL of the message
         try {
           const urlMessage = (new URL(w));
+          if (urlMessage) {
           // check image link
-          if (w.endsWith('.jpg') || w.endsWith('.png') || w.endsWith('.gif') || w.endsWith('.JPG') || w.endsWith('.PNG') || w.endsWith('.GIF')) {
-          // external image link
-            if (!(urlMessage.host === window.location.host)) {
-              w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
+            if (w.endsWith('.jpg') || w.endsWith('.png') || w.endsWith('.gif') || w.endsWith('.JPG') || w.endsWith('.PNG') || w.endsWith('.GIF')) {
+              // external image link
+              if (!(urlMessage.host === window.location.host)) {
+                w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
+              }
+              else {
+                w = `<a href="${w}"><img src="${w}" alt="${w}"/></a>`;
+              }
+              // check  external links
+            } else if (!(urlMessage.host === window.location.host)) {
+              w = `<a href="${w}" target='_blank'>${w}</a>`;
             }
             else {
-              w = `<a href="${w}"><img src="${w}" alt="${w}"/></a>`;
+              w = `<a href="${w}">${w}</a>`;
             }
-          // check  external links
-          } else if (!(urlMessage.host === window.location.host)) {
-            w = `<a href="${w}" target='_blank'>${w}</a>`;
-          }
-          else {
-            w = `<a href="${w}">${w}</a>`;
           }
         }
         catch (urlError) {
