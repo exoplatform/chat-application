@@ -16,7 +16,13 @@ export default function(msg, highlight, emojis) {
           const urlMessage = (new URL(w));
           // check image link
           if (w.endsWith('.jpg') || w.endsWith('.png') || w.endsWith('.gif') || w.endsWith('.JPG') || w.endsWith('.PNG') || w.endsWith('.GIF')) {
-            w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
+          // external image link
+            if (!(urlMessage.host === window.location.host)) {
+              w = `<a href="${w}" target='_blank'><img src="${w}" alt="${w}"/></a>`;
+            }
+            else {
+              w = `<a href="${w}"><img src="${w}" alt="${w}"/></a>`;
+            }
           // check  external links
           } else if (!(urlMessage.host === window.location.host)) {
             w = `<a href="${w}" target='_blank'>${w}</a>`;
