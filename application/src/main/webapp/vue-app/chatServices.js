@@ -3,8 +3,7 @@ import * as chatWebStorage from './chatWebStorage';
 import * as chatWebSocket from './chatWebSocket';
 import * as desktopNotification from './desktopNotification';
 
-const DEFAULT_OFFSET = 0;
-const DEFAULT_USER_LIMIT = 20;
+
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
 const MAX_UNREAD_NUMBER = 99;
@@ -42,7 +41,7 @@ export function getNotReadMessages(userSettings, withDetails) {
     }}).then(resp =>  resp.json());
 }
 
-export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback) {
+export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback, isChatDrawer) {
   if (!eXo) { eXo = {}; }
   if (!eXo.chat) { eXo.chat = {}; }
   if (!eXo.chat.userSettings) { eXo.chat.userSettings = {}; }
@@ -53,8 +52,13 @@ export function initChatSettings(username, isMiniChat, userSettingsLoadedCallbac
       //mini chat only need fetching notifications
       getNotReadMessages(settings).then(notifications => chatRoomsLoadedCallback(notifications));
     } else {
+      // Get the selected room type filter
+      let roomTypeFilter = '';
+      if (!isChatDrawer) {
+        roomTypeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+      }
       // fetch online users then fetch chat rooms
-      getOnlineUsers().then(users => getUserChatRooms(settings, users)).then(data => chatRoomsLoadedCallback(data));
+      getOnlineUsers().then(users => getUserChatRooms(settings, users, '', roomTypeFilter)).then(data => chatRoomsLoadedCallback(data));
     }
 
     document.addEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, (e) => {
@@ -198,17 +202,21 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
 }
-export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limit) {
+
+export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, offset, limit) {
   if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
   }
   if (!offset) {
-    offset = DEFAULT_OFFSET;
+    offset = chatConstants.DEFAULT_OFFSET;
   }
   if (!filter) {
     filter = '';
   }
-  return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&timestamp=${new Date().getTime()}`, {
+  if (!roomType || roomType === 'All') {
+    roomType = '';
+  }
+  return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&roomType=${roomType}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
@@ -216,7 +224,7 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, offset, limi
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
   if (!limit && isNaN(limit)) {
-    limit = DEFAULT_USER_LIMIT;
+    limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   onlineUsersOnly = onlineUsersOnly && onlineUsersOnly === true;
 
@@ -329,7 +337,7 @@ export function loadNotificationSettings(settings) {
 
 export function getChatUsers(userSettings, filter, limit) {
   if (!limit) {
-    limit = DEFAULT_USER_LIMIT;
+    limit = chatConstants.DEFAULT_USER_LIMIT;
   }
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&filter=${filter}&limit=${limit}`, {
     headers: {

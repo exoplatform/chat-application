@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 import static org.exoplatform.chat.services.ChatService.*;
+import static org.exoplatform.chat.services.UserDataStorage.STATUS_OFFLINE;
 import static org.exoplatform.chat.services.mongodb.UserMongoDataStorage.M_USERS_COLLECTION;
 
 @Named("chatStorage")
@@ -829,6 +830,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   }
 
+
   /**
    * This will load all user rooms with pagination
    * @param user the user for whom roomw will be loaded
@@ -841,8 +843,28 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    * @return RoomsBean containing all rooms with unread messages
    */
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService) {
+    return getUserRooms(user, onlineUsers, filter, offset, limit, notificationService, tokenService, null);
+  }
+
+  /**
+   * This will load all user rooms with pagination
+   * @param user the user for whom roomw will be loaded
+   * @param onlineUsers list of online users
+   * @param filter the filter used to filter rooms
+   * @param offset the current offset
+   * @param limit the limit of rooms
+   * @param notificationService service storing rooms notifications
+   * @param tokenService service storing tokens
+   * @param roomType type of the room : u for one to one , t for team room or s for space rooms
+   * @return RoomsBean containing all rooms with unread messages
+   */
+  public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService, String roomType) {
     List<RoomBean> rooms = new ArrayList<>();;
-    int unreadOffline = 0, unreadOnline = 0, unreadSpaces = 0, unreadTeams = 0, roomsCount = 0;
+    int unreadOffline = 0;
+    int unreadOnline = 0;
+    int unreadSpaces = 0;
+    int unreadTeams = 0;
+    int roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
 
     DBCollection coll = db().getCollection(M_USERS_COLLECTION);
@@ -854,22 +876,28 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       List<BasicDBObject> andList = new ArrayList<>();
       List<BasicDBObject> orList = new ArrayList<>();
       DBObject doc = cursor.next();
-      BasicDBList spaces = (BasicDBList)doc.get("spaces");
-      BasicDBList teams = (BasicDBList)doc.get("teams");
-      if(spaces != null) {
-        for (Object room : spaces) {
-          roomsIds.add((String) room);
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+        BasicDBList spaces = (BasicDBList) doc.get("spaces");
+        if(spaces != null) {
+          for (Object room : spaces) {
+            roomsIds.add((String) room);
+          }
         }
       }
-      if(teams != null) {
-        for (Object room : teams) {
-          roomsIds.add((String) room);
+      if(StringUtils.isBlank(roomType) ||  TYPE_ROOM_TEAM.equals(roomType)) {
+        BasicDBList teams = (BasicDBList) doc.get("teams");
+        if (teams != null) {
+          for (Object room : teams) {
+            roomsIds.add((String) room);
+          }
         }
       }
       // Add spaces and teams rooms
       orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
-      // Add user to user rooms
-      orList.add(new BasicDBObject("users", user));
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
+        // Add user to user rooms
+        orList.add(new BasicDBObject("users", user));
+      }
 
       DBObject roomsQuery = new BasicDBObject("$and", andList);
       List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
@@ -879,8 +907,16 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       andList.add(new BasicDBObject("$or", orList));
 
       roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
-      DBCursor roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
-              .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
+      DBCursor roomsCursor;
+      if(StringUtils.isBlank(filter)) {
+        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
+      } else {
+        // There is no way to do a Join in MongoDB, data structure should be altered to make it possible to search for rooms and get user fullNames
+        // we added a hard limit 100 to load the latest 100 rooms of the user and then search their display names
+        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                .sort(new BasicDBObject("timestamp", -1)).limit(100);
+      }
       while(roomsCursor.hasNext()) {
         DBObject room = roomsCursor.next();
         RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
@@ -905,12 +941,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
     }
 
-    List<RoomBean> finalRooms = new ArrayList<RoomBean>();
+    List<RoomBean> finalRooms = new ArrayList<>();
     if (StringUtils.isNotBlank(filter)) {
+      roomsCount = 0;
       for (RoomBean roomBean : rooms) {
         String targetUser = roomBean.getFullName();
         if (filter(targetUser, filter))
           finalRooms.add(roomBean);
+          roomsCount ++;
       }
     } else {
       finalRooms = rooms;
@@ -961,7 +999,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
           roomBean.setEnabledUser(targetUserBean.isEnabledUser());
           roomBean.setExternal(targetUserBean.isExternal());
-          roomBean.setAvailableUser(onlineUsers.contains(targetUser));
+          if(onlineUsers.contains(targetUser)) {
+            roomBean.setAvailableUser(true);
+            roomBean.setStatus(userDataStorage.getStatus(targetUser));
+          } else {
+            roomBean.setAvailableUser(false);
+            roomBean.setStatus(STATUS_OFFLINE);
+          }
           roomBean.setUser(targetUser);
           roomBean.setType(TYPE_ROOM_USER);
         }

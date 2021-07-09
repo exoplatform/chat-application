@@ -28,11 +28,13 @@
       <exo-chat-contact-list
         v-if="ap"
         :contacts="contactList"
+        :contacts-size="contactsSize"
         :selected="selectedContact"
         :loading-contacts="loadingContacts"
         @open-side-menu="sideMenuArea = !sideMenuArea"
-        @load-more-contacts="loadMoreContacts"
+        @load-more-contacts="changeFilter"
         @search-contact="searchContacts"
+        @change-filter-type="changeFilter"
         @contact-selected="setSelectedContact"
         @refresh-contacts="refreshContacts($event)" />
     </div>
@@ -109,6 +111,7 @@ export default {
   data() {
     return {
       contactList: [],
+      contactsSize: 0,
       /**
        * chatPage: {String}
        * cometdToken: {String}
@@ -192,6 +195,7 @@ export default {
       this.loadingContacts = false;
       
       this.addRooms(chatRoomsData.rooms);
+      this.contactsSize = chatRoomsData.roomsCount;
 
       if (this.mq !== 'mobile') {
         const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
@@ -275,8 +279,10 @@ export default {
         this.userSettings.status = this.userSettings.originalStatus;
       }
     },
-    addRooms(rooms) {
-      this.contactList = [];
+    addRooms(rooms, append) {
+      if (!append) {
+        this.contactList = [];
+      }
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
         && contact.fullName.trim().length > 0
@@ -291,8 +297,9 @@ export default {
     loadMoreContacts(nbPages) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, '', nbPages).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
+        chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, true);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -300,15 +307,33 @@ export default {
     searchContacts(term) {
       this.loadingContacts = true;
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users, term).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
+          this.contactsSize = chatRoomsData.roomsCount;
+          this.loadingContacts = false;
+        });
+      });
+    },
+    changeFilter(term, filter, pageNumber) {
+      let offset = 0;
+      if (filter === 'All') {
+        filter = '';
+      }
+      if (pageNumber) {
+        offset = pageNumber * chatConstants.ROOMS_PER_PAGE;
+      }
+      this.loadingContacts = true;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
+          this.addRooms(chatRoomsData.rooms, pageNumber);
+          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
     },
     refreshContacts(keepSelectedContact) {
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getChatRooms(this.userSettings, users).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
