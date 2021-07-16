@@ -28,6 +28,10 @@ import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.UserService;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -45,7 +49,8 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   @Inject
   private NotificationDataStorage storage;
-
+  @Inject
+  private UserService userService;
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
                               String content, String link) {
     storage.addNotification(receiver, sender, type, category, categoryId, content, link, null);
@@ -98,15 +103,31 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   private void sendNotification(String receiver) {
     Map<String, Object> data = new HashMap<>();
-    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver));
+    try {
+      String bean = userService.getUserDesktopNotificationSettings(receiver).getEnabledRoomTriggers();
+      JSONParser parser = new JSONParser();
+      JSONObject json = (JSONObject) parser.parse(bean);
+      List<NotificationBean> notifications = getUnreadNotifications(receiver,userService);
+      List<NotificationBean> result = new ArrayList<>();
+      for (NotificationBean notificationBean : notifications) {
+           JSONObject settingJson =  (JSONObject)json.get(notificationBean.getCategoryId());
+           if(((settingJson.get("notifCond") != null) && settingJson.get("notifCond") == "normal") || (notificationBean.getRoomType() == "u")){
+             result.add(notificationBean);
+           }
+      }
+      data.put("totalUnreadMsg", result.size());
+      // Deliver the saved message to sender's subscribed channel itself.
+      RealTimeMessageBean messageBean = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
+              null,
+              receiver,
+              null,
+              data);
+      realTimeMessageService.sendMessage(messageBean, receiver);
 
-    // Deliver the saved message to sender's subscribed channel itself.
-    RealTimeMessageBean messageBean = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
-        null,
-        receiver,
-        null,
-        data);
-    realTimeMessageService.sendMessage(messageBean, receiver);
+    } catch (JSONException | ParseException e) {
+      e.printStackTrace();
+    }
+
   }
 }

@@ -9,19 +9,27 @@ import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
 import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
+import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.JSONObject;
+import org.mockito.Mock;
+
+import javax.annotation.meta.When;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class ChatTestCase extends AbstractChatTestCase
 {
+  @Mock
+  UserService userService;
   @Before
   public void setUp()
   {
@@ -41,7 +49,7 @@ public class ChatTestCase extends AbstractChatTestCase
 
     ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
 
-    UserService userService = ServiceBootstrap.getUserService();
+     this.userService = ServiceBootstrap.getUserService();
     userService.addUserFullName("benjamin", "Benjamin Paillereau");
     userService.addUserEmail("benjamin", "bpaillereau@exoplatform.com");
     userService.addUserFullName("john", "John Smith");
@@ -55,6 +63,7 @@ public class ChatTestCase extends AbstractChatTestCase
   @Test
   public void testGetRoom() throws Exception
   {
+
     ChatService chatService = ServiceBootstrap.getChatService();
     List<String> users = new ArrayList<String>();
     users.add("benjamin");
@@ -267,6 +276,9 @@ public class ChatTestCase extends AbstractChatTestCase
   @Test
   public void testGetExistingRooms() throws Exception
   {
+    String settings = "{ \"7e627d568016638322c641744e68bad9d97be780\" : { \"notifCond\" : \"silence\" , \"time\" : 1619190209010}}";
+    when(userService.getUserDesktopNotificationSettings("jhon").getEnabledRoomTriggers()).thenReturn(settings);
+
     ChatService chatService = ServiceBootstrap.getChatService();
     TokenService tokenService = ServiceBootstrap.getTokenService();
     NotificationService notificationService = ServiceBootstrap.getNotificationService();
