@@ -106,6 +106,7 @@
               :search-word="searchTerm"
               :drawer-status="showChatDrawer"
               :contacts="contactList"
+              :settings="roomSettings"
               :contacts-size="contactsSize"
               :selected="selectedContact"
               :loading-contacts="loadingContacts"
@@ -150,6 +151,7 @@ export default {
       loadingContacts: true,
       selectedContact: [],
       contactsSize: 0,
+      roomSettings: [],
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
