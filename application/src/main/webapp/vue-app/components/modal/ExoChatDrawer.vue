@@ -223,6 +223,9 @@ export default {
       chatServices.getNotReadMessages(this.userSettings).then(data => {
         this.totalUnreadMsg = data.total;
       });
+      chatServices.getUserNotificationSettings(this.userSettings).then(data => {
+        this.roomSettings = JSON.parse(data.userDesktopNotificationSettings.preferredRoomNotificationTrigger);
+      });
     });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
