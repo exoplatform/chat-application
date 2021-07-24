@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.exoplatform.addons.chat</groupId>
     <artifactId>packaging</artifactId>
-    <version>3.3.x-SNAPSHOT</version>
+    <version>3.3.x-maintenance-SNAPSHOT</version>
   </parent>
   <artifactId>chat-standalone-server-tomcat-distrib</artifactId>
   <packaging>pom</packaging>
