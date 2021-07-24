@@ -80,8 +80,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.wiki</groupId>
-      <artifactId>wiki-service</artifactId>
+      <groupId>org.exoplatform.addons.notes</groupId>
+      <artifactId>notes-service</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
