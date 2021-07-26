@@ -19,15 +19,11 @@
 
 package org.exoplatform.chat.services;
 
-import com.mongodb.*;
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.listener.ConnectionManager;
+
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RealTimeMessageBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.RealTimeMessageService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,6 +40,8 @@ import java.util.*;
 @Singleton
 public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
 {
+  private static final Log LOG = ExoLogger.getLogger(NotificationService.class.getName());
+
   @Inject
   private RealTimeMessageService realTimeMessageService;
 
@@ -133,7 +131,7 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
         }
       }
     } catch (ParseException | JSONException e) {
-      e.printStackTrace();
+      LOG.error("Error while processing roomSettings ", e);
     }
     return(result);
   }
