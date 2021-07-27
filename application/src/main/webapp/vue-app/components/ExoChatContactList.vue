@@ -92,6 +92,15 @@
               v-if="mq === 'mobile'"
               :class="{'is-fav': contact.isFavorite}"
               class="uiIcon favorite"></div>
+            <div v-if="isRoomSilent(contact.room)">
+              <v-icon
+                class="my-auto"
+                color="red"
+                right="true"
+                left="true">
+                mdi-volume-off
+              </v-icon>
+            </div>
             <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
           <div v-if="contact.unreadTotal > 0 && contact.unreadTotal <= 99" class="unreadMessages">{{ contact.unreadTotal }}</div>
@@ -197,6 +206,12 @@ export default {
      * }
      */
     unreadMessages: {
+      type: Array,
+      default: function () {
+        return [{}];
+      }
+    },
+    settings: {
       type: Array,
       default: function () {
         return [{}];
@@ -478,6 +493,9 @@ export default {
         array[index] = object;
         return false;
       }
+    },
+    isRoomSilent(room) {
+      return room && this.settings && this.settings[room] && this.settings[room].notifCond === 'silence';
     },
     messageReceived(event) {
       const message = event.detail;

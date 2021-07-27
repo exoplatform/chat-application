@@ -106,6 +106,7 @@
               :search-word="searchTerm"
               :drawer-status="showChatDrawer"
               :contacts="contactList"
+              :settings="roomSettings"
               :contacts-size="contactsSize"
               :selected="selectedContact"
               :loading-contacts="loadingContacts"
@@ -153,6 +154,7 @@ export default {
       loadingContacts: true,
       selectedContact: [],
       contactsSize: 0,
+      roomSettings: [],
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
@@ -221,6 +223,12 @@ export default {
   created() {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
+      chatServices.getNotReadMessages(this.userSettings).then(data => {
+        this.totalUnreadMsg = data.total;
+      }).finally(() => this.$root.$applicationLoaded());
+      chatServices.getUserNotificationSettings(this.userSettings).then(data => {
+        this.roomSettings = JSON.parse(data.userDesktopNotificationSettings.preferredRoomNotificationTrigger);
+      });
     });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
