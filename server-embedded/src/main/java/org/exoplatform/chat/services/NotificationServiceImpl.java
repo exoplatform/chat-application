@@ -19,15 +19,15 @@
 
 package org.exoplatform.chat.services;
 
-import com.mongodb.*;
-import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.chat.listener.ConnectionManager;
+
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.RealTimeMessageBean;
-import org.exoplatform.chat.model.RoomBean;
-import org.exoplatform.chat.services.ChatService;
-import org.exoplatform.chat.services.RealTimeMessageService;
-import org.exoplatform.chat.services.UserService;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -40,12 +40,15 @@ import java.util.*;
 @Singleton
 public class NotificationServiceImpl implements org.exoplatform.chat.services.NotificationService
 {
+  private static final Log LOG = ExoLogger.getLogger(NotificationService.class.getName());
+
   @Inject
   private RealTimeMessageService realTimeMessageService;
 
   @Inject
   private NotificationDataStorage storage;
-
+  @Inject
+  UserService userService;
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
                               String content, String link) {
     storage.addNotification(receiver, sender, type, category, categoryId, content, link, null);
@@ -98,15 +101,38 @@ public class NotificationServiceImpl implements org.exoplatform.chat.services.No
 
   private void sendNotification(String receiver) {
     Map<String, Object> data = new HashMap<>();
-    data.put("totalUnreadMsg", getUnreadNotificationsTotal(receiver));
 
+
+    data.put("totalUnreadMsg", filteredNotifications(receiver).size());
     // Deliver the saved message to sender's subscribed channel itself.
     RealTimeMessageBean messageBean = new RealTimeMessageBean(
-        RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
-        null,
-        receiver,
-        null,
-        data);
+            RealTimeMessageBean.EventType.NOTIFICATION_COUNT_UPDATED,
+            null,
+            receiver,
+            null,
+            data);
     realTimeMessageService.sendMessage(messageBean, receiver);
+  }
+  private List<NotificationBean> filteredNotifications(String receiver) {
+    List<NotificationBean> result = new ArrayList<>();
+    try {
+      String bean = userService.getUserDesktopNotificationSettings(receiver).getEnabledRoomTriggers();
+      if(bean!=null) {
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(bean);
+        List<NotificationBean> notifications = getUnreadNotifications(receiver, userService);
+        for (NotificationBean notificationBean : notifications) {
+          JSONObject settingJson = (JSONObject) json.get(notificationBean.getCategoryId());
+          if (settingJson != null) {
+            if (((settingJson.get("notifCond") != null) && settingJson.get("notifCond") == "normal") || (notificationBean.getRoomType() == "u")) {
+              result.add(notificationBean);
+            }
+          }
+        }
+      }
+    } catch (ParseException | JSONException e) {
+      LOG.error("Error while processing roomSettings ", e);
+    }
+    return(result);
   }
 }
