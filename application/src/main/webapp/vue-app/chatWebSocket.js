@@ -106,7 +106,11 @@ export function setStatus(status, callback, errorCallback) {
     }), function (publishAck) {
       if (publishAck.successful) {
         if (typeof callback === 'function') {
-          callback(status);
+          if (document.readyState === 'complete') {
+            callback(status);
+          } else {
+            errorCallback(status);
+          }
         }
       } else if (errorCallback && typeof errorCallback === 'function') {
         errorCallback();
