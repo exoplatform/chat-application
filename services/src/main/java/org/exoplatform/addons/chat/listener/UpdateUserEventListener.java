@@ -10,10 +10,7 @@ public class UpdateUserEventListener extends UserEventListener {
 
   private static final Log LOG = ExoLogger.getLogger(UpdateUserEventListener.class.getName());
 
-  public void postSave(User user, boolean isNew) throws Exception {
-    if (ConversationState.getCurrent() == null) {
-      return;
-    }
+  public void postSave(User user, boolean isNew) {
     try {
       ServerBootstrap.addUserFullNameAndEmail(user.getUserName(), user.getDisplayName(), user.getEmail());
     } catch (Exception e) {
