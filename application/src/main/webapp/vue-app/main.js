@@ -42,25 +42,33 @@ if (extensionRegistry) {
 }
 
 export function init() {
-  exoi18n.loadLanguageAsync(lang, url).then(i18n => {
-    registerExternalExtensions(i18n.messages[lang]['exoplatform.chat.open.chat']);
+  const useFullChatApp = $('#chatApplication').length;
+  const useTopBarChatApp = $('#chatNotification').length;
+  const appName = useFullChatApp && 'Chat' || 'Chat Topbar';
+  if (useFullChatApp || useTopBarChatApp) {
+    // emit the start loading event from here since
+    // The I18N bundle is loaded in sync way
+    document.dispatchEvent(new CustomEvent('vue-app-loading-start', {detail: appName}));
+  }
 
-    if ($('#chatApplication').length) {
-      new Vue({
-        el: '#chatApplication',
-        template: '<exo-chat-app></exo-chat-app>',
-        i18n,
-        vuetify
-      });
-    } else if ($('#chatNotification').length) {
-      new Vue({
-        el: '#chatNotification',
-        template: '<exo-chat-drawer></exo-chat-drawer>',
-        i18n,
-        vuetify
-      });
-    }
-  });
+  exoi18n.loadLanguageAsync(lang, url, 'sync')
+    .then(i18n => {
+      registerExternalExtensions(i18n.messages[lang]['exoplatform.chat.open.chat']);
+
+      if (useFullChatApp) {
+        Vue.createApp({
+          template: '<exo-chat-app></exo-chat-app>',
+          i18n,
+          vuetify
+        }, '#chatApplication', appName);
+      } else if (useTopBarChatApp) {
+        Vue.createApp({
+          template: '<exo-chat-drawer></exo-chat-drawer>',
+          i18n,
+          vuetify
+        }, '#chatNotification', appName);
+      }
+    });
 }
 
 // A global data
