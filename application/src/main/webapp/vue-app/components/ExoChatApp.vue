@@ -152,6 +152,13 @@ export default {
       return this.mq === 'mobile' && this.participantsArea === true ? true : false;
     }
   },
+  watch: {
+    loadingContacts() {
+      if (!this.loadingContacts) {
+        this.$root.$applicationLoaded();
+      }
+    },
+  },
   created() {
     this.showHidePlatformAdminToolbar();
     chatServices.initChatSettings(this.userSettings.username, false,
