@@ -55,7 +55,7 @@ public class PropertyManagerTestCase {
     Assert.assertEquals("/portal/intranet/chat", PropertyManager.getProperty(PropertyManager.PROPERTY_CHAT_PORTAL_PAGE));
     Assert.assertEquals("60000", PropertyManager.getProperty(PropertyManager.PROPERTY_INTERVAL_SESSION));
     Assert.assertEquals("chat", PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE));
-    Assert.assertEquals("0 0/60 * * * ?", PropertyManager.getProperty(PropertyManager.PROPERTY_CRON_NOTIF_CLEANUP));
+    Assert.assertEquals("0 0 * * * ?", PropertyManager.getProperty(PropertyManager.PROPERTY_CRON_NOTIF_CLEANUP));
     Assert.assertEquals("/platform/administrators", PropertyManager.getProperty(PropertyManager.PROPERTY_PUBLIC_ADMIN_GROUP));
     Assert.assertEquals("/platform/users", PropertyManager.getProperty(PropertyManager.PROPERTY_TEAM_ADMIN_GROUP));
     Assert.assertEquals("60000", PropertyManager.getProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY));

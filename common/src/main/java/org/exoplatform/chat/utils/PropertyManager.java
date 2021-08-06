@@ -146,7 +146,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
       overridePropertyIfNotSet(PROPERTY_INTERVAL_SESSION, "60000");
       overridePropertyIfNotSet(PROPERTY_PASSPHRASE, "chat");
-      overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0/60 * * * ?");
+      overridePropertyIfNotSet(PROPERTY_CRON_NOTIF_CLEANUP, "0 0 * * * ?");
       overridePropertyIfNotSet(PROPERTY_PUBLIC_ADMIN_GROUP, "/platform/administrators");
       overridePropertyIfNotSet(PROPERTY_TEAM_ADMIN_GROUP, "/platform/users");
       overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "60000");
