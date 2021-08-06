@@ -220,7 +220,7 @@ export default {
       this.initSettings(userSettings);
       chatServices.getNotReadMessages(this.userSettings).then(data => {
         this.totalUnreadMsg = data.total;
-      });
+      }).finally(() => this.$root.$applicationLoaded());
     });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
