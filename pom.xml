@@ -52,10 +52,6 @@
     <org.apache.tomcat.version>8.5.65</org.apache.tomcat.version>
     <quartz.version>2.2.2</quartz.version>
     <org.slf4j.version>1.7.7</org.slf4j.version>
-    <ch.qas.logback.version>1.1.2</ch.qas.logback.version>
-    <!-- Additional LOGBACK dependencies -->
-    <org.codehaus.janino.version>2.6.1</org.codehaus.janino.version>
-    <org.fusesource.jansi.version>1.11</org.fusesource.jansi.version>
 
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
@@ -254,28 +250,6 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${org.slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${ch.qas.logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${ch.qas.logback.version}</version>
-      </dependency>
-      <!-- Required by conditional processing in logback -->
-      <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>janino</artifactId>
-        <version>${org.codehaus.janino.version}</version>
-      </dependency>
-      <!-- Required by logback for colorized console on windows -->
-      <dependency>
-        <groupId>org.fusesource.jansi</groupId>
-        <artifactId>jansi</artifactId>
-        <version>${org.fusesource.jansi.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
