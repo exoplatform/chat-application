@@ -242,14 +242,12 @@ export default {
       }
     },
     addRooms(rooms) {
-      this.contactList = [];
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
-              && contact.timestamp !== -1
-              && contact.fullName.trim().length > 0
-              && (contact.room && contact.room.trim().length > 0 || contact.user && contact.user.trim().length > 0)
-              && !contacts.find(otherContact => otherContact.room === contact.room || otherContact.user === contact.user));
-      if(rooms && rooms.length > 0) {
+                  && contact.fullName.trim().length > 0
+                  && (contact.room && contact.room.trim().length > 0 || contact.user && contact.user.trim().length > 0)
+                  && !contacts.find(otherContact => otherContact.room === contact.room || otherContact.user === contact.user));
+      if (rooms && rooms.length > 0) {
         rooms.forEach(room => {
           this.contactList.push(room);
         });
