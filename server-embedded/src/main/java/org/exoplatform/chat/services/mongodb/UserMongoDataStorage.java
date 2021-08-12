@@ -620,6 +620,7 @@ public class UserMongoDataStorage implements UserDataStorage {
       }
       if (ChatService.TYPE_ROOM_SPACE.equals(type))
       {
+        roomBean.setPrettyName(doc.get("prettyName").toString());
         roomBean.setUser(ChatService.SPACE_PREFIX+roomId);
         roomBean.setFullName(doc.get("displayName").toString());
         if (doc.containsField("meetingStarted")) {
