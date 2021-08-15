@@ -122,7 +122,7 @@
       </exo-drawer>
     </v-app>
     <div class="hide">
-      <audio id="chat-audio-notif" controls>
+      <audio id="chat-audio-notif" controls hidden="hidden">
         <source src="/chat/audio/notif.wav">
         <source src="/chat/audio/notif.mp3">
         <source src="/chat/audio/notif.ogg">
@@ -218,9 +218,6 @@ export default {
   created() {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
-      chatServices.getNotReadMessages(this.userSettings).then(data => {
-        this.totalUnreadMsg = data.total;
-      }).finally(() => this.$root.$applicationLoaded());
     });
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
@@ -327,10 +324,10 @@ export default {
     },
     initSettings(userSettings) {
       this.userSettings = userSettings;
-      // Trigger that the new status has been loaded
-      this.setStatus(this.userSettings.status);
       chatServices.initSettings(userSettings.userName, userSettings, userSettings => {
-        chatServices.getNotReadMessages(userSettings).then(data => this.totalUnreadMsg = data.total);
+        chatServices.getNotReadMessages(userSettings)
+          .then(data => this.totalUnreadMsg = data.total)
+          .finally(() => this.$root.$applicationLoaded());
       });
       installExtensions(this.userSettings);
       const thiss = this;
