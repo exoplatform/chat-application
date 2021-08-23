@@ -145,13 +145,13 @@ CATALINA_OPTS="$CATALINA_OPTS -Dexo.properties.url=jar:/conf/configuration.prope
 
 CATALINA_OPTS="$CATALINA_OPTS -Dfile.encoding=UTF-8"
 
-# Used JDK_JAVA_OPTIONS for JDK 9 options since this variable is only recognized by JDK 9+
-JDK_JAVA_OPTIONS="--add-modules java.activation --add-modules java.xml.bind"
 # Open all required modules for reflective access operations
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.io=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.lang=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.lang.invoke=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.lang.reflect=ALL-UNNAMED"
+JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens=java.base/java.lang.module=ALL-UNNAMED"
+JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens=java.base/jdk.internal.module=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.math=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.net=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.base/java.nio=ALL-UNNAMED"
@@ -164,5 +164,6 @@ JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.desktop/java.awt.font=ALL-U
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED"
 JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS --add-opens java.xml/com.sun.org.apache.xerces.internal.parsers=ALL-UNNAMED"
+JDK_JAVA_OPTIONS="$JDK_JAVA_OPTIONS  -noverify"
 
 export JDK_JAVA_OPTIONS
