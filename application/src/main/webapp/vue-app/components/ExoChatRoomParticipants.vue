@@ -77,7 +77,7 @@ export default {
           Connect: vnode.context.$t('exoplatform.chat.user.popup.connect'),
           Confirm: vnode.context.$t('exoplatform.chat.user.popup.confirm'),
           CancelRequest: vnode.context.$t('exoplatform.chat.user.popup.cancel'),
-          External: vnode.context.$t('exoplatform.chat.user.popup.external'),
+          External: vnode.context.$t('exoplatform.chat.external'),
           RemoveConnection: vnode.context.$t('exoplatform.chat.user.popup.remove.connection')
         },
         content: false,
