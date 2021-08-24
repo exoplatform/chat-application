@@ -48,7 +48,7 @@
                             <string>ChatMentionNotificationPlugin</string>
                         </field>
                         <field name="resourceBundleKey">
-                            <string>exoplatform.chat.ChatMentionNotificationPlugin</string>
+                            <string>UINotification.label.ChatMentionNotificationPlugin</string>
                         </field>
                         <field name="order">
                             <string>11</string>
