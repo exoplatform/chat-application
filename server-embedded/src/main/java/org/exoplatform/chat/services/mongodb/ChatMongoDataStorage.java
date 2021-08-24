@@ -859,7 +859,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    * @return RoomsBean containing all rooms with unread messages
    */
   public RoomsBean getUserRooms(String user, List<String> onlineUsers, String filter, int offset, int limit, NotificationService notificationService, TokenService tokenService, String roomType) {
-    List<RoomBean> rooms = new ArrayList<>();;
+    List<RoomBean> rooms = new ArrayList<>();
     int unreadOffline = 0;
     int unreadOnline = 0;
     int unreadSpaces = 0;
@@ -876,7 +876,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       List<BasicDBObject> andList = new ArrayList<>();
       List<BasicDBObject> orList = new ArrayList<>();
       DBObject doc = cursor.next();
-      if(StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
         BasicDBList spaces = (BasicDBList) doc.get("spaces");
         if(spaces != null) {
           for (Object room : spaces) {
@@ -884,7 +884,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           }
         }
       }
-      if(StringUtils.isBlank(roomType) ||  TYPE_ROOM_TEAM.equals(roomType)) {
+      if(StringUtils.isBlank(roomType) ||  TYPE_ROOM_TEAM.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
         BasicDBList teams = (BasicDBList) doc.get("teams");
         if (teams != null) {
           for (Object room : teams) {
@@ -894,7 +894,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
       // Add spaces and teams rooms
       orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
-      if(StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
+      if(StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
         // Add user to user rooms
         orList.add(new BasicDBObject("users", user));
       }
@@ -937,7 +937,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
               break;
           }
         }
-        rooms.add(roomBean);
+        if (TYPE_ROOM_FAVORITE.equals(roomType)) {
+          if (userBean.getFavorites().contains(roomBean.getRoom())) {
+            rooms.add(roomBean);
+          }
+        } else {
+          rooms.add(roomBean);
+        }
       }
     }
 
@@ -996,7 +1002,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           String targetUser = users.get(0);
           UserBean targetUserBean = userDataStorage.getUser(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
-          roomBean.setFavorite(userBean.isFavorite(roomBean.getRoom()));
+          roomBean.setFavorite(userBean.isFavorite(room.get("_id").toString()));
           roomBean.setEnabledUser(targetUserBean.isEnabledUser());
           roomBean.setExternal(targetUserBean.isExternal());
           if(onlineUsers.contains(targetUser)) {
