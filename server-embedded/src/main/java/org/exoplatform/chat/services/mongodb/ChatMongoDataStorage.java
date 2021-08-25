@@ -872,47 +872,47 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     query.put("user", user);
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
-      DBObject roomsQuery = null;
+      List<String> roomsIds = new ArrayList<>();
+      List<BasicDBObject> andList = new ArrayList<>();
+      List<BasicDBObject> orList = new ArrayList<>();
+      DBObject doc = cursor.next();
+      if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+        BasicDBList spaces = (BasicDBList) doc.get("spaces");
+        if (spaces != null) {
+          for (Object room : spaces) {
+            roomsIds.add((String) room);
+          }
+        }
+      }
+      if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
+        BasicDBList teams = (BasicDBList) doc.get("teams");
+        if (teams != null) {
+          for (Object room : teams) {
+            roomsIds.add((String) room);
+          }
+        }
+      }
+
       if (TYPE_ROOM_FAVORITE.equals(roomType)) {
         List<String> favoriteRoomsIds = userBean.getFavorites();
         if (favoriteRoomsIds != null) {
-          roomsQuery = new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds));
+          orList.add(new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds)));
         }
       } else {
-        List<String> roomsIds = new ArrayList<>();
-        List<BasicDBObject> andList = new ArrayList<>();
-        List<BasicDBObject> orList = new ArrayList<>();
-        DBObject doc = cursor.next();
-        if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
-          BasicDBList spaces = (BasicDBList) doc.get("spaces");
-          if (spaces != null) {
-            for (Object room : spaces) {
-              roomsIds.add((String) room);
-            }
-          }
-        }
-        if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
-          BasicDBList teams = (BasicDBList) doc.get("teams");
-          if (teams != null) {
-            for (Object room : teams) {
-              roomsIds.add((String) room);
-            }
-          }
-        }
         // Add spaces and teams rooms
         orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
         if (StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
           // Add user to user rooms
           orList.add(new BasicDBObject("users", user));
         }
-
-        roomsQuery = new BasicDBObject("$and", andList);
-        List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
-        enabledRoomOrList.add(new BasicDBObject("isEnabled", true));
-        enabledRoomOrList.add(new BasicDBObject("isEnabled", new BasicDBObject("$exists", false)));
-        andList.add(new BasicDBObject("$or", enabledRoomOrList));
-        andList.add(new BasicDBObject("$or", orList));
       }
+
+      DBObject roomsQuery = new BasicDBObject("$and", andList);
+      List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
+      enabledRoomOrList.add(new BasicDBObject("isEnabled", true));
+      enabledRoomOrList.add(new BasicDBObject("isEnabled", new BasicDBObject("$exists", false)));
+      andList.add(new BasicDBObject("$or", enabledRoomOrList));
+      andList.add(new BasicDBObject("$or", orList));
 
       roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
       DBCursor roomsCursor;
