@@ -872,43 +872,51 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     query.put("user", user);
     DBCursor cursor = coll.find(query);
     if (cursor.hasNext()) {
-      List<String> roomsIds = new ArrayList<>();
-      List<BasicDBObject> andList = new ArrayList<>();
-      List<BasicDBObject> orList = new ArrayList<>();
-      DBObject doc = cursor.next();
-      if(StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
-        BasicDBList spaces = (BasicDBList) doc.get("spaces");
-        if(spaces != null) {
-          for (Object room : spaces) {
-            roomsIds.add((String) room);
+      DBObject roomsQuery = null;
+      if (TYPE_ROOM_FAVORITE.equals(roomType)) {
+        List<String> favoriteRoomsIds = userBean.getFavorites();
+        if (favoriteRoomsIds != null) {
+          roomsQuery = new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds));
+        }
+      } else {
+        List<String> roomsIds = new ArrayList<>();
+        List<BasicDBObject> andList = new ArrayList<>();
+        List<BasicDBObject> orList = new ArrayList<>();
+        DBObject doc = cursor.next();
+        if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+          BasicDBList spaces = (BasicDBList) doc.get("spaces");
+          if (spaces != null) {
+            for (Object room : spaces) {
+              roomsIds.add((String) room);
+            }
           }
         }
-      }
-      if(StringUtils.isBlank(roomType) ||  TYPE_ROOM_TEAM.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
-        BasicDBList teams = (BasicDBList) doc.get("teams");
-        if (teams != null) {
-          for (Object room : teams) {
-            roomsIds.add((String) room);
+        if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
+          BasicDBList teams = (BasicDBList) doc.get("teams");
+          if (teams != null) {
+            for (Object room : teams) {
+              roomsIds.add((String) room);
+            }
           }
         }
-      }
-      // Add spaces and teams rooms
-      orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
-      if(StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType) || TYPE_ROOM_FAVORITE.equals(roomType)) {
-        // Add user to user rooms
-        orList.add(new BasicDBObject("users", user));
-      }
+        // Add spaces and teams rooms
+        orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
+        if (StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
+          // Add user to user rooms
+          orList.add(new BasicDBObject("users", user));
+        }
 
-      DBObject roomsQuery = new BasicDBObject("$and", andList);
-      List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
-      enabledRoomOrList.add(new BasicDBObject("isEnabled", true));
-      enabledRoomOrList.add(new BasicDBObject("isEnabled", new BasicDBObject("$exists", false)));
-      andList.add(new BasicDBObject("$or", enabledRoomOrList));
-      andList.add(new BasicDBObject("$or", orList));
+        roomsQuery = new BasicDBObject("$and", andList);
+        List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
+        enabledRoomOrList.add(new BasicDBObject("isEnabled", true));
+        enabledRoomOrList.add(new BasicDBObject("isEnabled", new BasicDBObject("$exists", false)));
+        andList.add(new BasicDBObject("$or", enabledRoomOrList));
+        andList.add(new BasicDBObject("$or", orList));
+      }
 
       roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
       DBCursor roomsCursor;
-      if(StringUtils.isBlank(filter)) {
+      if (StringUtils.isBlank(filter)) {
         roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
                 .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
       } else {
@@ -917,33 +925,27 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
                 .sort(new BasicDBObject("timestamp", -1)).limit(100);
       }
-      while(roomsCursor.hasNext()) {
+      while (roomsCursor.hasNext()) {
         DBObject room = roomsCursor.next();
         RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
         if (roomBean.getUnreadTotal() > 0) {
-          switch(roomBean.getType()) {
-            case "u" :
+          switch (roomBean.getType()) {
+            case "u":
               if (roomBean.isActive()) {
                 unreadOnline += roomBean.getUnreadTotal();
               } else {
                 unreadOffline += roomBean.getUnreadTotal();
               }
               break;
-            case "s" :
+            case "s":
               unreadSpaces += roomBean.getUnreadTotal();
               break;
-            case "t" :
+            case "t":
               unreadTeams += roomBean.getUnreadTotal();
               break;
           }
         }
-        if (TYPE_ROOM_FAVORITE.equals(roomType)) {
-          if (userBean.getFavorites().contains(roomBean.getRoom())) {
-            rooms.add(roomBean);
-          }
-        } else {
-          rooms.add(roomBean);
-        }
+        rooms.add(roomBean);
       }
     }
 
@@ -954,7 +956,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         String targetUser = roomBean.getFullName();
         if (filter(targetUser, filter))
           finalRooms.add(roomBean);
-          roomsCount ++;
+        roomsCount++;
       }
     } else {
       finalRooms = rooms;
