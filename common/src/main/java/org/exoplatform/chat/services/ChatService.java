@@ -34,6 +34,7 @@ public interface ChatService
   public static final String TYPE_ROOM_USER = "u";
   public static final String TYPE_ROOM_SPACE = "s";
   public static final String TYPE_ROOM_TEAM = "t";
+  public static final String TYPE_ROOM_FAVORITE = "Favorites";
   public static final String TYPE_ROOM_EXTERNAL = "e";
 
   public static final String TYPE_DELETED = "DELETED";
