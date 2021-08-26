@@ -876,22 +876,6 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       List<BasicDBObject> andList = new ArrayList<>();
       List<BasicDBObject> orList = new ArrayList<>();
       DBObject doc = cursor.next();
-      if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
-        BasicDBList spaces = (BasicDBList) doc.get("spaces");
-        if (spaces != null) {
-          for (Object room : spaces) {
-            roomsIds.add((String) room);
-          }
-        }
-      }
-      if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
-        BasicDBList teams = (BasicDBList) doc.get("teams");
-        if (teams != null) {
-          for (Object room : teams) {
-            roomsIds.add((String) room);
-          }
-        }
-      }
 
       if (TYPE_ROOM_FAVORITE.equals(roomType)) {
         List<String> favoriteRoomsIds = userBean.getFavorites();
@@ -899,6 +883,22 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           orList.add(new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds)));
         }
       } else {
+        if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+          BasicDBList spaces = (BasicDBList) doc.get("spaces");
+          if (spaces != null) {
+            for (Object room : spaces) {
+              roomsIds.add((String) room);
+            }
+          }
+        }
+        if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
+          BasicDBList teams = (BasicDBList) doc.get("teams");
+          if (teams != null) {
+            for (Object room : teams) {
+              roomsIds.add((String) room);
+            }
+          }
+        }
         // Add spaces and teams rooms
         orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
         if (StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
