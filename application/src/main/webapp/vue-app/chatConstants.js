@@ -103,6 +103,8 @@ export const chatConstants = {
   EVENT_ROOM_SELECTION_CHANGED: 'exo-chat-selected-contact-changed',
   EVENT_USER_SETTINGS_LOADED: 'exo-chat-settings-loaded',
   EVENT_USER_STATUS_CHANGED: 'exo-chat-user-status-changed',
+  RESEND_FAILED_MESSAGE: 'exo-chat-resend-failed-message',
+  DELETE_FAILED_MESSAGE: 'exo-chat-delete-failed-message',
   DEFAULT_OFFSET: 0,
   DEFAULT_USER_LIMIT: 20
 };

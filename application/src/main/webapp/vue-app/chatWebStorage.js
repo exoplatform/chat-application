@@ -1,10 +1,7 @@
 import {chatConstants} from './chatConstants';
 
 const DEFAULT_EXPIRATION_PERIOD = 300;
-const MAX_RESEND_MESSAGE_ATTEMPT = 2;
 const RESEND_MESSAGE_PERIOD = 5000;
-
-let resendIntervalID;
 
 export function getStoredParam(key, defaultValue) {
   let ts  = localStorage.getItem(`${key}TS`);
@@ -112,33 +109,26 @@ export function storeMessageAsSent(messageToStore) {
 export function deleteFromStore(user, clientId) {
   const notSentMessages = getNotSentMessages(user);
   if (notSentMessages && notSentMessages[clientId]) {
+    document.dispatchEvent(
+      new CustomEvent(chatConstants.EVENT_MESSAGE_DELETED, {
+        detail: {data: notSentMessages[clientId]}
+      })
+    );
     delete notSentMessages[clientId];
     setStoredParam(`${chatConstants.STORED_PARAM_PENDING_MESSAGES}-${user}`, JSON.stringify(notSentMessages));
+
     return true;
   }
   return false;
 }
 
-export function sendFailedMessages() {
+export function sendFailedMessage(user, message) {
   if (!getStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING)) {
     setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING, 'true', RESEND_MESSAGE_PERIOD / chatConstants.NB_MILLISECONDS_PERD_SECOND);
     try {
-      const notSentMessages = getSortedNotSentMessages(eXo.chat.userSettings.username);
-      if (notSentMessages && notSentMessages.length) {
-        notSentMessages.forEach(messageToResend => {
-          if (messageToResend) {
-            if (eXo.chat.isOnline) {
-              if (messageToResend.attemptCount > MAX_RESEND_MESSAGE_ATTEMPT) {
-                // Give up retrying send message when the user is online
-                // but the message sending always fails
-                storeMessageAsSent(messageToResend);
-              } else {
-                messageToResend.attemptCount = messageToResend.attemptCount ? messageToResend.attemptCount + 1 : 1;
-              }
-            }
-            document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': messageToResend}));
-          }
-        });
+      const notSentMessages = getNotSentMessages(user);
+      if (notSentMessages && notSentMessages[message.clientId]) {
+        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {'detail': notSentMessages[message.clientId]}));
       }
       setStoredParam(chatConstants.STORED_PARAM_MESSAGES_SENDING);
     } catch (e) {
@@ -152,9 +142,9 @@ document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
   storeMessageAsSent(message);
 });
 
-document.addEventListener(chatConstants.EVENT_CONNECTED, () => {
-  if (resendIntervalID) {
-    window.clearInterval(resendIntervalID);
-  }
-  resendIntervalID = window.setInterval(sendFailedMessages, RESEND_MESSAGE_PERIOD);
+document.addEventListener(chatConstants.RESEND_FAILED_MESSAGE, (e) => {
+  sendFailedMessage(e.detail.user, e.detail.message);
+});
+document.addEventListener(chatConstants.DELETE_FAILED_MESSAGE, (e) => {
+  deleteFromStore(e.detail.user, e.detail.clientId);
 });
