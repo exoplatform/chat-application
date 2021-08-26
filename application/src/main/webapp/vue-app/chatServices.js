@@ -418,6 +418,24 @@ export function getRoomParticipantsToSuggest(usersList) {
   });
 }
 
+export function getModalParticipantsToSuggest(usersList) {
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getModalParticipantsToSuggest`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'POST',
+    body: JSON.stringify(usersList),
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    }
+    else {
+      throw new Error ('Error when loading user list');
+    }
+  });
+}
+
 
 export function getUserProfileLink(user) {
   return `${chatConstants.PORTAL}/${chatConstants.PORTAL_NAME}/${chatConstants.PROFILE_PAGE_NAME}/${user}`;
