@@ -152,8 +152,14 @@
         <i v-else-if="message.options && messageOptionsType === chatConstants.EVENT_MESSAGE" class="uiIconChatCreateEvent"></i>
         <i v-else-if="message.options && (messageOptionsType === chatConstants.MEETING_START_MESSAGE || messageOptionsType === chatConstants.MEETING_STOP_MESSAGE || messageOptionsType === chatConstants.NOTES_MESSAGE)" class="uiIconChatMeeting"></i>
         <i v-else-if="isSpecificMessageType && specificMessageClass" :class="specificMessageClass"></i>
-
-        <i v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')" class="uiIconNotification"></i>
+        <i
+          :class="!message.notSent && 'hidden'"
+          class="uiIcon16x16 primary--text clickable mdi mdi-refresh"
+          @click="sendFailedMessage()"></i>
+        <i
+          :class="!message.notSent && 'hidden'"
+          class="uiIcon16x16 delete-message-icon clickable mdi mdi-delete"
+          @click="deleteFailedMessage()"></i>
       </div>
     </div>
     <div class="chat-message-action">
@@ -194,8 +200,13 @@
           </li>
         </ul>
       </div>
+      <i
+        v-else
+        v-exo-tooltip.top="$t('exoplatform.chat.msg.notDelivered')"
+        class="uiIconNotification"></i>
       <div v-if="!hideTime" class="message-time">{{ dateString }}</div>
     </div>
+
     <exo-chat-modal
       v-show="showConfirmModal"
       :title="$t(confirmTitle)"
@@ -594,6 +605,20 @@ export default {
     },
     getProfileLink(user) {
       return chatServices.getUserProfileLink(user);
+    },
+    sendFailedMessage() {
+      document.dispatchEvent(
+        new CustomEvent(chatConstants.RESEND_FAILED_MESSAGE, {
+          detail: {user: eXo.chat.userSettings.username, message: this.message}
+        })
+      );
+    },
+    deleteFailedMessage() {
+      document.dispatchEvent(
+        new CustomEvent(chatConstants.DELETE_FAILED_MESSAGE, {
+          detail: {user: eXo.chat.userSettings.username, clientId: this.message.clientId}
+        })
+      );
     }
   }
 };
