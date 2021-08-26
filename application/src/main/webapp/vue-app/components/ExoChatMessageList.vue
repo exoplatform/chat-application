@@ -21,7 +21,7 @@
         <div class="day-separator"><span>{{ dayDate }}</span></div>
         <exo-chat-message-detail
           v-for="messageObj in subMessages"
-          :key="messageObj.clientId"
+          :key="messageObj"
           :highlight="searchKeyword"
           :room="contact.room"
           :room-fullname="contact.fullName"
@@ -178,6 +178,7 @@ export default {
       const messageObj = e.detail;
       const message = messageObj.data;
       if (message) {
+        this.setScrollToBottom();
         this.addOrUpdateMessageToList(message);
       }
     },
@@ -320,7 +321,13 @@ export default {
         if (!message.fullname) {
           message.fullname = this.messages[index].fullname;
         }
-        this.messages.splice(index, 1, message);
+        if (this.messages[index].notSent) {
+          //remove the old failed message to not push the new succeed one instead of it in the list.
+          this.messages.splice(index, 1);
+          this.messages.push(message);
+        } else {
+          this.messages.splice(index, 1, message);
+        }
       } else {
         this.messages.push(message);
       }
@@ -328,8 +335,15 @@ export default {
     messageDeleted(e) {
       const messageObj = e.detail;
       const message = messageObj.data;
-      this.unifyMessageFormat(messageObj, message);
-      this.addOrUpdateMessageToList(message);
+      if (!message.notSent) {
+        this.unifyMessageFormat(messageObj, message);
+        this.addOrUpdateMessageToList(message);
+      } else {
+        const msgIndex = this.messages.findIndex(msg => msg.clientId === message.clientId && !msg.msgId);
+        if (msgIndex > 0) {
+          this.messages.splice(msgIndex, 1);
+        }
+      }
     },
     unifyMessageFormat(messageObj, message) {
       if (!message.room && messageObj.room) {

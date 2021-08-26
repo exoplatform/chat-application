@@ -123,7 +123,10 @@
       </exo-drawer>
     </v-app>
     <div class="hide">
-      <audio id="chat-audio-notif" controls hidden="hidden">
+      <audio
+        id="chat-audio-notif"
+        controls
+        hidden="hidden">
         <source src="/chat/audio/notif.wav">
         <source src="/chat/audio/notif.mp3">
         <source src="/chat/audio/notif.ogg">
