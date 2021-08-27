@@ -172,7 +172,7 @@ export function sendMessage(messageObj, callback) {
     'fullname': cometDSettings.fullname
   };
 
-  if (!isConnected()) {
+  if (!isConnected() || !navigator.onLine) {
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail': data}));
     document.dispatchEvent(new CustomEvent(chatConstants.EVENT_DISCONNECTED));
     return;
