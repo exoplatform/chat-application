@@ -76,13 +76,8 @@ public class UserBean
     this.favorites = favorites;
   }
 
-  public boolean isFavorite(String user)
-  {
-    if (favorites!=null)
-    {
-      return (favorites.contains(user));
-    }
-    return false;
+  public boolean isFavorite(String room) {
+    return favorites != null && favorites.contains(room);
   }
 
   public String isExternal()
