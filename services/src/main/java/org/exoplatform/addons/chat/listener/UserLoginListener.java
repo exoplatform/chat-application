@@ -24,12 +24,6 @@ public class UserLoginListener extends Listener<ConversationRegistry, Conversati
     if (StringUtils.isBlank(userId) || StringUtils.equalsIgnoreCase(userId, IdentityConstants.ANONIM)) {
       return;
     }
-    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId);
-    Boolean isExternal = identity.getProfile() !=  null && identity.getProfile().getProperty("external") != null  && identity.getProfile().getProperty("external").equals("true");
-    if(isExternal) {
-      ServerBootstrap.setExternalUser(userId, isExternal.toString());
-    }
     ServerBootstrap.saveSpaces(userId);
     if (Boolean.valueOf(ServerBootstrap.shouldUpdate(userId))) {
       ServerBootstrap.setEnabledUser(userId, true);
