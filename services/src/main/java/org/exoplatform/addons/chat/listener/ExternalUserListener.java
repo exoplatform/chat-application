@@ -1,9 +1,5 @@
 package org.exoplatform.addons.chat.listener;
 
-import org.exoplatform.chat.services.UserService;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.services.listener.Asynchronous;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Membership;
@@ -13,8 +9,6 @@ public class ExternalUserListener extends MembershipEventListener {
 
   private static final Log LOG = ExoLogger.getLogger(ExternalUserListener.class);
   private static final String PLATFORM_EXTERNALS_GROUP  = "/platform/externals";
-
-  private UserService userService;
 
 
   @Override
