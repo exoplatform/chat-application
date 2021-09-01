@@ -230,13 +230,13 @@ export default {
         if (indexOfRoom < 0) {
           this.contactList.unshift(selectedContact);
         }
-        this.selectedContact = selectedContact;
         this.contactOpened = false;
         chatServices.getRoomParticipantsCount(eXo.chat.userSettings, selectedContact).then( data => {
           this.selectedContact.participantsCount = data.usersCount;
           this.selectedContact.activeParticipantsCount = data.activeUsersCount;
         });
         chatServices.getRoomParticipants(eXo.chat.userSettings, selectedContact).then( data => {
+          this.selectedContact = selectedContact;
           this.selectedContact.participants = data.users;
           document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
         });
