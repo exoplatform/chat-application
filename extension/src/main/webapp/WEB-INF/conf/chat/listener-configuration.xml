@@ -21,4 +21,13 @@
             <type>org.exoplatform.addons.chat.listener.UpdateUserEventListener</type>
         </component-plugin>
     </external-component-plugins>
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
+        <component-plugin>
+            <name>external.user.listener</name>
+            <set-method>addListenerPlugin</set-method>
+            <type>org.exoplatform.addons.chat.listener.ExternalUserListener</type>
+            <description>Update external user property</description>
+        </component-plugin>
+    </external-component-plugins>
 </configuration>
