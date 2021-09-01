@@ -1,14 +1,8 @@
 package org.exoplatform.addons.chat.listener;
 
 import org.apache.commons.lang3.StringUtils;
-
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.listener.*;
 import org.exoplatform.services.security.*;
-import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
-
 /**
  * This listener will be used to update current user chat rooms list on login.
  */
@@ -23,12 +17,6 @@ public class UserLoginListener extends Listener<ConversationRegistry, Conversati
 
     if (StringUtils.isBlank(userId) || StringUtils.equalsIgnoreCase(userId, IdentityConstants.ANONIM)) {
       return;
-    }
-    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId);
-    Boolean isExternal = identity.getProfile() !=  null && identity.getProfile().getProperty("external") != null  && identity.getProfile().getProperty("external").equals("true");
-    if(isExternal) {
-      ServerBootstrap.setExternalUser(userId, isExternal.toString());
     }
     ServerBootstrap.saveSpaces(userId);
     if (Boolean.valueOf(ServerBootstrap.shouldUpdate(userId))) {
