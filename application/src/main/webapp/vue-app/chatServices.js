@@ -389,8 +389,8 @@ export function getSpaceAvatar(space) {
   return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
 }
 
-export function getUserInfo() {
-  return fetch(`${chatConstants.SOCIAL_USER_API}${eXo.env.portal.userName}`,{
+export function getUserInfo(userName) {
+  return fetch(`${chatConstants.SOCIAL_USER_API}${userName}`,{
     credentials: 'include',
     method: 'GET',
   }).then((resp) => {
