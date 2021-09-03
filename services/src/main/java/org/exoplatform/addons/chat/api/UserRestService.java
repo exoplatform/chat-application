@@ -56,6 +56,8 @@ public class UserRestService implements ResourceContainer {
   /* The Constant IF_MODIFIED_SINCE_DATE_FORMAT */
   protected static final String IF_MODIFIED_SINCE_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
+  protected static final String EXTERNAL_PROPERTY             = "external";
+
   private DocumentService       documentService;
 
   private WikiService           wikiService;
@@ -186,11 +188,37 @@ public class UserRestService implements ResourceContainer {
   @ApiOperation(value = "Get room participants to suggest",
       httpMethod = "POST",
       response = Response.class,
-      notes = "This returns the list of room participants as non externals or current user connections")
+      notes = "This returns the list of room participants (external and internal)")
   @ApiResponses(value = {
       @ApiResponse (code = 200, message = "Request fulfilled"),
       @ApiResponse (code = 404, message = "Resource not found")})
   public Response getRoomParticipantsToSuggest(@Context UriInfo uriInfo,
+                                               @Context HttpServletRequest request,
+                                               @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
+    List<UserBean> roomParticipantsToSuggest = new ArrayList<>();
+    for (UserBean userBean : userList) {
+      Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
+      if (userIdentity.getProfile() != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY).equals("true")) {
+        userBean.setFullname(userBean.getFullname() + " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")");
+        roomParticipantsToSuggest.add(userBean);
+      } else if (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) == null || userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY).equals("false"))) {
+        roomParticipantsToSuggest.add(userBean);
+      }
+    }
+    return Response.ok(roomParticipantsToSuggest, MediaType.APPLICATION_JSON).build();
+  }
+
+  @POST
+  @Path("getModalParticipantsToSuggest")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Get room participants to suggest in room modal",
+          httpMethod = "POST",
+          response = Response.class,
+          notes = "This returns the list of room participants as non externals or current user connections")
+  @ApiResponses(value = {
+          @ApiResponse (code = 200, message = "Request fulfilled"),
+          @ApiResponse (code = 404, message = "Resource not found")})
+  public Response getModalParticipantsToSuggest(@Context UriInfo uriInfo,
                                                @Context HttpServletRequest request,
                                                @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
     String authenticatedUser;
@@ -204,12 +232,9 @@ public class UserRestService implements ResourceContainer {
     List<Identity> currentUserConnections = Arrays.asList(relationshipManager.getConnections(authenticatedUserIdentity).load(0, 0));
 
     List<UserBean> roomParticipantsToSuggest = new ArrayList<>();
-    for(UserBean userBean : userList){
+    for (UserBean userBean : userList) {
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
-      if(currentUserConnections.contains(userIdentity) || (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty("external") == null || userIdentity.getProfile().getProperty("external").equals("false")))){
-        if(userIdentity.getProfile().getProperty("external") != null && userIdentity.getProfile().getProperty("external").equals("true")){
-          userBean.setFullname(userBean.getFullname() + " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")");
-        }
+      if (currentUserConnections.contains(userIdentity) && userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) == null || (userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY).equals("false")))) {
         roomParticipantsToSuggest.add(userBean);
       }
     }
