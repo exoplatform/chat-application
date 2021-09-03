@@ -163,7 +163,7 @@ export default {
       }
       chatServices.getChatUsers(eXo.chat.userSettings, query).then(data => {
         if (data && data.users) {
-          chatServices.getRoomParticipantsToSuggest(data.users).then(users => {
+          chatServices.getModalParticipantsToSuggest(data.users).then(users => {
             users.forEach(user => {
               if (user.isEnabled === 'null') {
                 chatServices.getUserState(user.name).then(userState => {
