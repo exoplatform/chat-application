@@ -15,16 +15,13 @@
           class="add-room-name"
           type="text">
         <label>{{ $t('exoplatform.chat.team.people') }}</label>
-        <input id="add-room-suggestor" type="text">
-        <div v-show="otherParticiants && otherParticiants.length > 0" class="room-suggest-list">
-          <div
-            v-for="participant in otherParticiants"
-            :key="participant.name"
-            class="uiMention">
-            {{ participant.fullname }}
-            <span @click="removeSuggest(participant)"><i class="uiIconClose"></i></span>
-          </div>
-        </div>
+        <exo-identity-suggester
+          ref="invitedPeopleAutoComplete"
+          v-model="participants"
+          :search-options="{}"
+          name="invitePeople"
+          multiple
+          include-users />
         <span class="team-add-user-label">{{ $t('exoplatform.chat.team.help') }}</span>
       </div>
       <div class="uiAction uiActionBorder">
@@ -84,11 +81,11 @@ export default {
       const key = !this.selected || !this.selected.room ? 'exoplatform.chat.team.add.title' : 'exoplatform.chat.team.edit';
       return this.$t(key);
     },
-    otherParticiants() {
-      return this.participants.filter(participant => participant.name !== eXo.chat.userSettings.username);
+    validNewRoomName() {
+      return this.fullName && this.fullName.trim().length;
     },
     disableSave() {
-      return !this.fullName || !this.fullName.trim().length;
+      return !this.validNewRoomName;
     }
   },
   watch: {
@@ -96,127 +93,19 @@ export default {
       if (this.selected && newValue) {
         this.fullName = this.selected.fullName;
         this.participants = this.selected.participants ? this.selected.participants : [];
-        this.initSuggester();
       }
-    }
+    },
   },
   created() {
     if (this.selected) {
       this.fullName = this.selected.fullName;
       this.participants = this.selected.participants ? this.selected.participants : [];
-      this.initSuggester();
     }
   },
   methods: {
-    initSuggester() {
-      const $roomFormSuggestor = $('#add-room-suggestor');
-      if ($roomFormSuggestor && $roomFormSuggestor.length && $roomFormSuggestor.suggester) {
-        if (!$roomFormSuggestor[0].selectize) {
-          const component = this;
-          const suggesterData = {
-            type: 'tag',
-            create: false,
-            createOnBlur: false,
-            highlight: false,
-            openOnFocus: false,
-            sourceProviders: ['exo:chatuser'],
-            valueField: 'name',
-            labelField: 'fullname',
-            searchField: ['fullname', 'name'],
-            closeAfterSelect: true,
-            dropdownParent: 'body',
-            hideSelected: true,
-            renderMenuItem (item, escape) {
-              return component.renderMenuItem(item, escape);
-            },
-            renderItem(item) {
-              return `<span class="hidden" data-value="${item.value}"></span>`;
-            },
-            onItemAdd(item) {
-              component.addSuggestedItem(item);
-            },
-            sortField: [{field: 'order'}, {field: '$score'}],
-            providers: {
-              'exo:chatuser': component.findUsers
-            }
-          };
-          //init suggester
-          $roomFormSuggestor.suggester(suggesterData);
-        } else {
-          //clear suggester
-          $roomFormSuggestor.suggester('setValue', '');
-          $roomFormSuggestor[0].selectize.clear(true);
-          $roomFormSuggestor[0].selectize.renderCache['item'] = {};
-        }
-
-        if (this.otherParticiants && this.otherParticiants.length) {
-          this.otherParticiants.forEach(participant => {
-            $roomFormSuggestor[0].selectize.addOption(participant);
-            $roomFormSuggestor[0].selectize.addItem(participant.isExternal === 'true' ? `${participant.name} (this.$t('exoplatform.chat.external'))` : participant.name);
-          });
-        }
-      }
-    },
-    findUsers (query, callback) {
-      if (!query.length) {
-        return callback(); 
-      }
-      chatServices.getChatUsers(eXo.chat.userSettings, query).then(data => {
-        if (data && data.users) {
-          chatServices.getModalParticipantsToSuggest(data.users).then(users => {
-            users.forEach(user => {
-              if (user.isEnabled === 'null') {
-                chatServices.getUserState(user.name).then(userState => {
-                  chatServices.updateUser(eXo.chat.userSettings, user.name, userState.isDeleted, userState.isEnabled, userState.isExternal);
-                  user.isEnabled = userState.isEnabled;
-                  user.isDeleted = userState.isDeleted;
-                  user.isExternal = userState.isExternal;
-                });
-              }
-            });
-            callback(users.filter(user => user.name !== eXo.chat.userSettings.username));
-          });
-        }
-      });
-    },
-    renderMenuItem (item, escape) {
-      const avatar = chatServices.getUserAvatar(item.name);
-      const defaultAvatar = '/chat/img/room-default.jpg';
-      return `
-        <div class="avatarMini">
-          <img src="${avatar}" onerror="this.src='${defaultAvatar}'">
-        </div>
-        <div class="user-name">${escape(item.fullname)} (${item.name})</div>
-        <div class="user-status"><i class="chat-status-${item.status}"></i></div>
-      `;
-    },
-    addSuggestedItem(item) {
-      if ($('#add-room-suggestor') && $('#add-room-suggestor').length && $('#add-room-suggestor')[0].selectize) {
-        const selectize = $('#add-room-suggestor')[0].selectize;
-        item = selectize.options[item];
-      }
-      if (!this.participants.find(participant => participant.name === item.name)) {
-        this.participants.push(item);
-      }
-    },
-    removeSuggest(deletedParticipant) {
-      const $suggesterInput = $('#add-room-suggestor');
-      if ($suggesterInput && $suggesterInput.length && $suggesterInput[0].selectize) {
-        const selectize = $suggesterInput[0].selectize;
-        if (deletedParticipant && deletedParticipant.name) {
-          selectize.removeItem(deletedParticipant.name, true);
-          const indexOfItemToRemove = selectize.items.indexOf(deletedParticipant.name);
-          if (indexOfItemToRemove >= 0) {
-            selectize.items.splice(indexOfItemToRemove, 1);
-          }
-        }
-      }
-      // remove suggest for participants list
-      this.participants = this.participants.filter(participant => deletedParticipant.name !== participant.name);
-    },
     saveRoom() {
       if (this.fullName) {
-        let users = this.participants.map(user => user.name);
+        let users = this.participants.map(user => user.remoteId || user.name);
         if (users.indexOf(eXo.chat.userSettings.username) < 0) {
           users.unshift(eXo.chat.userSettings.username);
         }
