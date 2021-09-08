@@ -140,8 +140,6 @@ import * as chatServices from '../../chatServices';
 import {installExtensions} from '../../extension';
 import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
-import {getUserAvatar} from '../../chatServices';
-import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
 
@@ -165,7 +163,9 @@ export default {
       totalUnreadMsg: 0,
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
-      titleActionComponents: miniChatTitleActionComponents
+      titleActionComponents: miniChatTitleActionComponents,
+      userAvatar: '',
+      spaceAvatar: ''
     };
   },
   computed: {
@@ -182,9 +182,11 @@ export default {
     contactAvatar() {
       if (this.selectedContact){
         if (this.selectedContact.type === 'u') {
-          return getUserAvatar(this.selectedContact.user);
+          this.getUserInformation(this.selectedContact.user);
+          return this.userAvatar;
         } else if (this.selectedContact.type === 's') {
-          return getSpaceAvatar(this.selectedContact.prettyName);
+          this.getSpaceInformation(this.selectedContact.prettyName);
+          return this.spaceAvatar;
         } else {
           return chatConstants.DEFAULT_ROOM_AVATAR;
         }
@@ -472,7 +474,17 @@ export default {
           action.init(container, eXo.chat);
         }
       }
-    }
+    },
+    getSpaceInformation(spaceprettyName) {
+      chatServices.getSpaceByPrettyName(spaceprettyName).then((data) => {
+        this.spaceAvatar = data.avatarUrl;
+      });
+    },
+    getUserInformation(username) {
+      chatServices.getUserInfo(username).then((data) => {
+        this.userAvatar = data.avatar;
+      });
+    },
   }
 };
 </script>
