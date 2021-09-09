@@ -55,9 +55,15 @@ export default {
       }
     }
   },
+  data: function() {
+    return {
+      userAvatar: ''
+    };
+  },
   computed: {
     avatar() {
-      return chatServices.getUserAvatar(this.notif.from);
+      this.getUserInformation(this.notif.from);
+      return this.userAvatar;
     },
     messageClass() {
       const messageType = this.notif.options ? this.notif.options.type : '';
@@ -133,7 +139,12 @@ export default {
   methods: {
     unescapeHTML(html) {
       return chatServices.unescapeHtml(html);
-    }
+    },
+    getUserInformation(username) {
+      chatServices.getUserInfo(username).then((data) => {
+        this.userAvatar = data.avatar;
+      });
+    },
   }
 };
 </script>
