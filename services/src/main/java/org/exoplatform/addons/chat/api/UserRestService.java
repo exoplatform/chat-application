@@ -199,9 +199,10 @@ public class UserRestService implements ResourceContainer {
     for (UserBean userBean : userList) {
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
       if (userIdentity.getProfile() != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY).equals("true")) {
-        userBean.setFullname(userBean.getFullname() + " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")");
+        userBean.setFullname(userIdentity.getProfile().getFullName() + " " + "(" + getResourceBundleLabel(request.getLocale(), "exoplatform.chat.external") + ")");
         roomParticipantsToSuggest.add(userBean);
       } else if (userIdentity.getProfile() != null && (userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) == null || userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY) != null && userIdentity.getProfile().getProperty(EXTERNAL_PROPERTY).equals("false"))) {
+        userBean.setFullname(userIdentity.getProfile().getFullName());
         roomParticipantsToSuggest.add(userBean);
       }
     }
