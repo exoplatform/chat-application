@@ -352,7 +352,7 @@ export default {
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
     this.contactsToDisplay = this.contacts.slice();
     this.initFilterMobile();
-    chatServices.getUserInfo(eXo.env.portal.userName).then(
+    chatServices.getUserInfo().then(
       (data) => {
         this.externalUser = data && data.external === 'true';
       }
