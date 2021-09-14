@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { getUserInfo, getSpaceByPrettyName, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -151,8 +151,6 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
       },
-      space: {},
-      user: {}
     };
   },
   computed: {
@@ -175,11 +173,9 @@ export default {
     },
     contactAvatar() {
       if (this.type === 'u') {
-        this.getUserInformation(this.userName);
-        return this.user.avatar;
+        return getUserAvatar(this.userName);
       } else if (this.type === 's') {
-        this.getSpaceInformation(this.prettyName);
-        return this.space.avatarUrl;
+        return getSpaceAvatar(this.prettyName);
       } else {
         return chatConstants.DEFAULT_ROOM_AVATAR;
       }
@@ -226,17 +222,7 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
-    },
-    getSpaceInformation(spaceprettyName) {
-      getSpaceByPrettyName(spaceprettyName).then((data) => {
-        this.space = data;
-      });
-    },
-    getUserInformation(username) {
-      getUserInfo(username).then((data) => {
-        this.user = data;
-      });
-    },
+    }
   }
 };
 </script>
