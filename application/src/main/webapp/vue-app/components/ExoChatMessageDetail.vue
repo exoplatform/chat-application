@@ -296,8 +296,7 @@ export default {
       confirmMessage: '',
       confirmOKMessage: '',
       confirmKOMessage: '',
-      confirmAction(){return;},
-      user: {}
+      confirmAction(){return;}
     };
   },
   computed: {
@@ -329,8 +328,7 @@ export default {
       return chatTime.getTimeString(this.message.timestamp);
     },
     contactAvatar() {
-      this.getUserInformation(this.message.user);
-      return this.user.avatar;
+      return chatServices.getUserAvatar(this.message.user);
     },
     isEditedMessage() {
       return this.messageType === chatConstants.EDITED_MESSAGE;
@@ -621,12 +619,7 @@ export default {
           detail: {user: eXo.chat.userSettings.username, clientId: this.message.clientId}
         })
       );
-    },
-    getUserInformation(username) {
-      chatServices.getUserInfo(username).then((data) => {
-        this.user = data;
-      });
-    },
+    }
   }
 };
 </script>
