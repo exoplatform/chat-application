@@ -115,8 +115,7 @@ export default {
       composerApplications: [],
       showEmojiPanel: false,
       participants: [],
-      mentionedUsers: [],
-      userAvatar: ''
+      mentionedUsers: []
     };
   },
   computed: {
@@ -343,7 +342,7 @@ export default {
       chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
       this.mentionedUsers = [];
       return message;
-    },
+    }
   }
 };
 </script>

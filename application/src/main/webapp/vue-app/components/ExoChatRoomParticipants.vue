@@ -68,18 +68,10 @@ import {chatConstants} from '../chatConstants';
 export default {
   // a directive for user popup plugin
   directives: {
-    tiptip(el, binding, vnode) {
+    tiptip(el, binding) {
       $(el).find('.chat-contact-avatar').userPopup({
         restURL: chatConstants.PEOPLE_INFO_API,
         userId: binding.value,
-        labels: {
-          StatusTitle: vnode.context.$t('exoplatform.chat.user.popup.status'),
-          Connect: vnode.context.$t('exoplatform.chat.user.popup.connect'),
-          Confirm: vnode.context.$t('exoplatform.chat.user.popup.confirm'),
-          CancelRequest: vnode.context.$t('exoplatform.chat.user.popup.cancel'),
-          External: vnode.context.$t('exoplatform.chat.external'),
-          RemoveConnection: vnode.context.$t('exoplatform.chat.user.popup.remove.connection')
-        },
         content: false,
         defaultPosition: 'left',
         keepAlive: true,

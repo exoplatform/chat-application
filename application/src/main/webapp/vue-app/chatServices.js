@@ -381,8 +381,16 @@ export function updateRoomMeetingStatus(userSettings, room, start, startTime) {
   });
 }
 
-export function getUserInfo(userName) {
-  return fetch(`${chatConstants.SOCIAL_USER_API}${userName}`,{
+export function getUserAvatar(user) {
+  return `${chatConstants.SOCIAL_USER_API}${user}/avatar`;
+}
+
+export function getSpaceAvatar(space) {
+  return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
+}
+
+export function getUserInfo() {
+  return fetch(`${chatConstants.SOCIAL_USER_API}${eXo.env.portal.userName}`,{
     credentials: 'include',
     method: 'GET',
   }).then((resp) => {
