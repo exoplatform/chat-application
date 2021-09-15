@@ -184,11 +184,9 @@ export default {
         dropdownParent: 'body',
         hideSelected: true,
         renderMenuItem: function (item) {
-          chatServices.getUserInfo(item.name).then((data) => {
-            this.userAvatar = data.avatar ;
-          });
+          const avatar = chatServices.getUserAvatar(item.name);
           const defaultAvatar = '/chat/img/room-default.jpg';
-          return `<img src="${this.userAvatar}" onerror="this.src='${defaultAvatar}'" width="20px" height="20px">
+          return `<img src="${avatar}" onerror="this.src='${defaultAvatar}'" width="20px" height="20px">
                       ${chatServices.escapeHtml(item.fullname)}<span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>`;
         },
         /* eslint-disable no-template-curly-in-string */
