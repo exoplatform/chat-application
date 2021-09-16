@@ -19,6 +19,7 @@
           ref="invitedPeopleAutoComplete"
           v-model="participants"
           :search-options="{}"
+          :key="participants"
           name="invitePeople"
           multiple
           include-users />
