@@ -480,44 +480,6 @@ export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp)
   }).then(resp =>  resp.text());
 }
 
-export function getMeetingNotes(userSettings, room, fromTimestamp, toTimestamp) {
-  const data = {
-    user: userSettings.username,
-    room: room,
-    portalURI: `${eXo.env.portal.context}/${eXo.env.portal.portalName}`,
-    fromTimestamp: fromTimestamp,
-    toTimestamp: toTimestamp
-  };
-
-  return fetch(`${chatConstants.CHAT_SERVER_API}getMeetingNotes`, {
-    headers: {
-      'Authorization': `Bearer ${userSettings.token}`,
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    },
-    method: 'post',
-    body: decodeURI($.param(data))
-  }).then(resp =>  resp.text());
-}
-
-export function saveWiki(userSettings, targetFullName, content) {
-  if (!content || content === 'ko') {
-    return;
-  }
-  const data = {
-    targetFullname: targetFullName,
-    content: typeof content === Object ? JSON.stringify(content) : content
-  };
-
-  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_WIKI_API}saveWiki`, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    },
-    credentials: 'include',
-    method: 'post',
-    body: decodeURI($.param(data))
-  }).then(resp =>  resp.json());
-}
-
 export function getBaseURL() {
   const port = !window.location.port || window.location.port === DEFAULT_HTTP_PORT ? '':`:${  window.location.port}`;
   return `${window.location.protocol  }//${  window.location.hostname  }${port}`;

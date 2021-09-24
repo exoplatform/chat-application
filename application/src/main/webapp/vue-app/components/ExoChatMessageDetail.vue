@@ -338,10 +338,6 @@ export default {
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
-    document.addEventListener(
-      'exo-chat-message-action-saveNotes-requested',
-      this.saveNotes
-    );
   },
   destroyed() {
     document.removeEventListener(
@@ -351,10 +347,6 @@ export default {
     document.removeEventListener(
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
-    );
-    document.removeEventListener(
-      'exo-chat-message-action-saveNotes-requested',
-      this.saveNotes
     );
   },
   methods: {
@@ -399,81 +391,9 @@ export default {
         })
       );
     },
-    saveNotes(e) {
-      if (
-        !e ||
-        !e.detail ||
-        !e.detail.msgId ||
-        e.detail.msgId !== this.message.msgId
-      ) {
-        return;
-      }
-      const messageToSend = {
-        message: this.newMessage,
-        room: this.room,
-        clientId: new Date().getTime().toString(),
-        timestamp: Date.now(),
-        user: eXo.chat.userSettings.username,
-        isSystem: true,
-        options: {
-          type: chatConstants.NOTES_MESSAGE,
-          fromTimestamp: this.message.timestamp
-            ? this.message.timestamp
-            : this.message.options.timestamp,
-          fromUser: eXo.chat.userSettings.username,
-          fromFullname: eXo.chat.userSettings.fullName
-        }
-      };
-      document.dispatchEvent(
-        new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, { detail: messageToSend })
-      );
-    },
-    sendMeetingNotes() {
-      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
-      const $meetingNotes = $chatMessageDetailContainer.closest(
-        '.msMeetingNotes'
-      );
-      const ANIMATION_PERIOD = chatConstants.ANIMATION_PERIOD;
-      $meetingNotes.animate({ opacity: 'toggle' },
-        ANIMATION_PERIOD, this.sendMeetingNotesAnimationDone
-      );
-    },
-    sendMeetingNotesAnimationDone() {
-      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
-      const $meetingNotes = $chatMessageDetailContainer.closest(
-        '.msMeetingNotes'
-      );
-      const ANIMATION_PERIOD = chatConstants.ANIMATION_PERIOD;
-
-      const room = this.room;
-      let from = this.message.options.fromTimestamp;
-      let to = this.message.timestamp;
-
-      from = Math.round(from) - 1;
-      to = Math.round(to) + 1;
-
-      $meetingNotes.find('.meetingNotesSent').hide();
-      chatServices
-        .sendMeetingNotes(eXo.chat.userSettings, room, from, to)
-        .then(response => {
-          if (response === 'sent') {
-            $meetingNotes.find('.meetingNotesSent').animate(
-              { opacity: 'toggle' },
-              ANIMATION_PERIOD,
-              () => {
-                $meetingNotes.animate(
-                  { opacity: 'toggle' },
-                  ANIMATION_PERIOD
-                );
-              }
-            );
-          }
-        });
-    },
     unescapeHTML(html) {
       return unescape(html);
     },
-
     setActionsPosition() {
       const $message = $(this.$refs.message);
       const $dropdown = $message.find('.dropdown');
