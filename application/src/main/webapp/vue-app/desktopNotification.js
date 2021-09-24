@@ -75,12 +75,6 @@ function highlightMessage(msgObject) {
       case 'type-link':
         highlightedMsg = msgObject.options.link;
         break;
-      case 'type-meeting-start':
-        highlightedMsg = 'Start Meeting';
-        break;
-      case 'type-meeting-stop':
-        highlightedMsg = 'End Meeting';
-        break;
       case 'type-mention':
         highlightedMsg = `You have been mentioned in ${msgObject.roomDisplayName}`;
         break;
