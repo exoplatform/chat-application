@@ -108,8 +108,6 @@ export default {
         case chatConstants.EVENT_MESSAGE : content = this.notif.options.summary; break;
         case chatConstants.LINK_MESSAGE : content = this.notif.options.link; break;
         case chatConstants.NOTES_MESSAGE : content = this.$t('exoplatform.chat.notes.saved'); break;
-        case chatConstants.MEETING_START_MESSAGE : content = this.$t('exoplatform.chat.meeting.started'); break;
-        case chatConstants.MEETING_STOP_MESSAGE : content = this.$t('exoplatform.chat.meeting.finished'); break;
         case chatConstants.ADD_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.adduser', {0: this.notif.options.fullname, 1: this.notif.options.users}); break;
         case chatConstants.REMOVE_USER_MESSAGE : content = this.$t('exoplatform.chat.team.msg.removeuser', {0: this.notif.options.fullname,1: this.notif.options.users}); break;
         case chatConstants.ROOM_MEMBER_LEFT : content = this.$t('exoplatform.chat.team.msg.leaveroom', {0: this.notif.options.fullName}); break;

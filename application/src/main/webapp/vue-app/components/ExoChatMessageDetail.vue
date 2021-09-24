@@ -97,47 +97,6 @@
       <div v-else-if="(messageOptionsType === chatConstants.RAISE_HAND || messageOptionsType === chatConstants.QUESTION_MESSAGE)" class="message-content">
         <b>{{ messageContent }}</b>
       </div>
-      <div v-else-if="messageOptionsType === chatConstants.MEETING_START_MESSAGE" class="message-content">
-        <b>{{ $t('exoplatform.chat.meeting.started') }}</b>
-        <div>
-          <em class="muted">{{ $t('exoplatform.chat.meeting.started.message') }}</em>
-        </div>
-      </div>
-      <div v-else-if="(messageOptionsType === chatConstants.NOTES_MESSAGE || messageOptionsType === chatConstants.MEETING_STOP_MESSAGE)" class="message-content msMeetingNotes">
-        <b>{{ $t('exoplatform.chat.notes.saved') }}</b>
-        <br>
-        <div class="custom-message-item">
-          <i class="uiIconChatSendEmail"></i>
-          <a class="btn-link send-meeting-notes" @click="sendMeetingNotes">{{ $t('exoplatform.chat.notes') }}</a>
-        </div>
-        <div class="custom-message-item">
-          <i class="uiIconChatWiki"></i>
-          <a class="btn-link save-meeting-notes" @click="saveMeetingNotes">{{ $t('exoplatform.chat.save.wiki') }}</a>
-        </div>
-        <div class="alert alert-success meetingNotesSent" style="display:none;">
-          <button
-            type="button"
-            class="close"
-            style="right: 0;">
-            ×
-          </button>
-          <strong>{{ $t('exoplatform.chat.sent') }}</strong>
-          {{ $t('exoplatform.chat.check.mailbox') }}
-        </div>
-        <div
-          :id="message.timestamp"
-          class="alert alert-success meetingNotesSaved"
-          style="display:none;">
-          <button
-            type="button"
-            class="close"
-            style="right: 0;">
-            ×
-          </button>
-          <strong>{{ $t('exoplatform.chat.saved') }}</strong>
-          <a href="#" target="_blank">{{ $t('exoplatform.chat.open.wiki') }}</a>.
-        </div>
-      </div>
       <div
         v-sanitized-html="specificMessageContent"
         v-else-if="isSpecificMessageType"
@@ -514,79 +473,7 @@ export default {
     unescapeHTML(html) {
       return unescape(html);
     },
-    saveMeetingNotes() {
-      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
-      const $meetingNotes = $chatMessageDetailContainer.closest(
-        '.msMeetingNotes'
-      );
-      const ANIMATION_PERIOD = chatConstants.ANIMATION_PERIOD;
-      $meetingNotes.animate({ opacity: 'toggle' },
-        ANIMATION_PERIOD, this.saveMeetingNotesAnimationDone
-      );
-    },
-    saveMeetingNotesAnimationDone() {
-      const $chatMessageDetailContainer = $(`#${this.message.timestamp}`);
-      const $meetingNotes = $chatMessageDetailContainer.closest(
-        '.msMeetingNotes'
-      );
-      const ANIMATION_PERIOD = chatConstants.ANIMATION_PERIOD;
 
-      const room = this.room;
-      let from = this.message.options.fromTimestamp;
-      let to = this.message.timestamp;
-
-      from = Math.round(from) - 1;
-      to = Math.round(to) + 1;
-
-      $meetingNotes.find('.meetingNotesSaved').hide();
-
-      chatServices.getMeetingNotes(eXo.chat.userSettings, room, from, to).then(content => {
-        if (!content) {
-          return;
-        }
-        chatServices
-          .saveWiki(eXo.chat.userSettings, this.roomFullname, content)
-          .then(data => {
-            if (data.path && data.path.trim().length) {
-              const wikiPageURI = `${data.path}`;
-              const options = {
-                type: chatConstants.LINK_MESSAGE,
-                link: wikiPageURI,
-                from: eXo.chat.userSettings.username,
-                fullname: this.roomFullname
-              };
-              const msg = this.$t('exoplatform.chat.meeting.notes');
-
-              const messageToSend = {
-                message: msg,
-                room: this.room,
-                clientId: new Date().getTime().toString(),
-                timestamp: Date.now(),
-                user: eXo.chat.userSettings.username,
-                isSystem: true,
-                options: options
-              };
-              document.dispatchEvent(
-                new CustomEvent(chatConstants.ACTION_MESSAGE_SEND, {
-                  detail: messageToSend
-                })
-              );
-
-              $meetingNotes.find('.meetingNotesSaved a').attr('href', wikiPageURI);
-              $meetingNotes.find('.meetingNotesSaved').animate(
-                { opacity: 'toggle' },
-                ANIMATION_PERIOD,
-                function() {
-                  $meetingNotes.animate(
-                    { opacity: 'toggle' },
-                    ANIMATION_PERIOD
-                  );
-                }
-              );
-            }
-          });
-      });
-    },
     setActionsPosition() {
       const $message = $(this.$refs.message);
       const $dropdown = $message.find('.dropdown');

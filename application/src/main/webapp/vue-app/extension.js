@@ -224,22 +224,6 @@ export const DEFAULT_COMPOSER_APPS = [
 
 
 export const DEFAULT_ROOM_ACTIONS = [{
-  key: 'startMeeting',
-  rank: 10,
-  labelKey: 'exoplatform.chat.meeting.start',
-  class: 'uiIconChatRecordStart',
-  enabled: (comp) => {
-    return !comp.meetingStarted;
-  }
-}, {
-  key: 'stopMeeting',
-  rank: 20,
-  labelKey: 'exoplatform.chat.meeting.stop',
-  class: 'uiIconChatRecordStop',
-  enabled: (comp) => {
-    return comp.meetingStarted;
-  }
-} , {
   key: 'notificationSettings',
   rank: 30,
   labelKey: 'exoplatform.stats.notifications',
