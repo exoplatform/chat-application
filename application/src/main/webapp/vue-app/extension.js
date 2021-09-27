@@ -224,22 +224,6 @@ export const DEFAULT_COMPOSER_APPS = [
 
 
 export const DEFAULT_ROOM_ACTIONS = [{
-  key: 'startMeeting',
-  rank: 10,
-  labelKey: 'exoplatform.chat.meeting.start',
-  class: 'uiIconChatRecordStart',
-  enabled: (comp) => {
-    return !comp.meetingStarted;
-  }
-}, {
-  key: 'stopMeeting',
-  rank: 20,
-  labelKey: 'exoplatform.chat.meeting.stop',
-  class: 'uiIconChatRecordStop',
-  enabled: (comp) => {
-    return comp.meetingStarted;
-  }
-} , {
   key: 'notificationSettings',
   rank: 30,
   labelKey: 'exoplatform.stats.notifications',
@@ -398,20 +382,6 @@ export const EMOTICONS = [
   }
 ];
 
-export const WIKI_MESSAGE_ACTIONS = [{
-  key: 'saveNotes',
-  rank: 40,
-  labelKey: 'exoplatform.chat.notes',
-  enabled: comp => {
-    const saveNotes =  !comp.message.isDeleted && !comp.message.notSent;
-    if (comp.message.options) {
-      return (
-        !(comp.message.options.type ==='type-file') && saveNotes
-      );
-    }
-    return saveNotes && !comp.message.isSystem ;
-  }
-}];
 
 export const DEFAULT_MESSAGE_ACTIONS = [
   {
@@ -546,9 +516,6 @@ export function installExtensions(settings) {
 
   if (settings.canUploadFiles) {
     registerDefaultExtensions('composer-application', ECMS_EVENT_COMPOSER_APP);
-  }
-  if (settings.canAddWiki) {
-    registerDefaultExtensions('message-action', WIKI_MESSAGE_ACTIONS);
   }
 
   composerApplications = getExtensionsByType('composer-application');
