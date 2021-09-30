@@ -314,6 +314,13 @@ export default {
       }
     },
     addRooms(rooms) {
+      // force update room unread msg
+      this.contactList.forEach(contact => {
+        const indexOfRoom = rooms.findIndex(room => room.room === contact.room || room.user === contact.user);
+        if (rooms[indexOfRoom].unreadTotal !== contact.unreadTotal) {
+          contact.unreadTotal = rooms[indexOfRoom].unreadTotal;
+        }
+      });
       const contacts = this.contactList.slice(0);
       rooms = rooms.filter(contact => contact.fullName
               && contact.fullName.trim().length > 0
