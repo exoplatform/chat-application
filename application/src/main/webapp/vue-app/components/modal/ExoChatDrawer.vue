@@ -317,7 +317,7 @@ export default {
       // force update room unread msg
       this.contactList.forEach(contact => {
         const indexOfRoom = rooms.findIndex(room => room.room === contact.room || room.user === contact.user);
-        if (rooms[indexOfRoom].unreadTotal !== contact.unreadTotal) {
+        if (indexOfRoom >= 0 && rooms[indexOfRoom].unreadTotal !== contact.unreadTotal) {
           contact.unreadTotal = rooms[indexOfRoom].unreadTotal;
         }
       });
