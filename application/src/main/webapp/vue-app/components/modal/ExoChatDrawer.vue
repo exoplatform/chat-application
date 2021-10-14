@@ -36,9 +36,9 @@
               @click="backChat()">
               mdi-keyboard-backspace
             </v-icon>
-            <span v-if="selectedContact">
+            <span v-if="selectedContact && avatarUrl">
               <img
-                :src="contactAvatar"
+                :src="avatarUrl"
                 class="chatAvatar"
                 alt="avatar of discussion">
               <span :class="statusStyle" class="user-status">
@@ -139,10 +139,9 @@ import * as chatServices from '../../chatServices';
 import {installExtensions} from '../../extension';
 import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
-import {getUserAvatar} from '../../chatServices';
-import {getSpaceAvatar} from '../../chatServices';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
+import {getSpaceByPrettyName, getUserInfo} from '../../chatServices';
 
 export default {
   name: 'ExoChatDrawer',
@@ -163,7 +162,8 @@ export default {
       totalUnreadMsg: 0,
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
-      titleActionComponents: miniChatTitleActionComponents
+      titleActionComponents: miniChatTitleActionComponents,
+      avatarUrl: '',
     };
   },
   computed: {
@@ -176,18 +176,6 @@ export default {
       } else {
         return `user-${this.userSettings.status}`;
       }
-    },
-    contactAvatar() {
-      if (this.selectedContact){
-        if (this.selectedContact.type === 'u') {
-          return getUserAvatar(this.selectedContact.user);
-        } else if (this.selectedContact.type === 's') {
-          return getSpaceAvatar(this.selectedContact.prettyName);
-        } else {
-          return chatConstants.DEFAULT_ROOM_AVATAR;
-        }
-      }
-      return '';
     },
     statusStyle: function() {
       if (!this.selectedContact) {
@@ -373,6 +361,7 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
+      this.avatarUrl = null;
       if (!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -393,6 +382,7 @@ export default {
         this.selectedContact.participants = data.users;
         document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
       });
+      this.retrieveAvatarUrl();
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
@@ -470,6 +460,21 @@ export default {
             container = container[0];
           }
           action.init(container, eXo.chat);
+        }
+      }
+    },
+    retrieveAvatarUrl() {
+      if (this.selectedContact) {
+        if (this.selectedContact.type === 'u') {
+          getUserInfo(this.selectedContact.user).then((user) => {
+            this.avatarUrl = user.avatar;
+          });
+        } else if (this.selectedContact.type === 's') {
+          getSpaceByPrettyName(this.selectedContact.prettyName).then((space) => {
+            this.avatarUrl = space.avatarUrl;
+          });
+        } else {
+          this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
         }
       }
     }

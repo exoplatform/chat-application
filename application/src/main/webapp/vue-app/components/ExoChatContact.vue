@@ -1,7 +1,7 @@
 <template>
   <div class="chat-contact">
     <div
-      :style="`backgroundImage: url(${contactAvatar})`"
+      :style="`backgroundImage: url(${avatarUrl})`"
       :class="statusStyle"
       class="chat-contact-avatar">
       <a
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { getUserAvatar, getSpaceAvatar, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import { getUserInfo, getSpaceByPrettyName, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -151,6 +151,7 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
       },
+      avatarUrl: '',
     };
   },
   computed: {
@@ -169,15 +170,6 @@ export default {
         return this.statusMap.offline;
       } else {
         return this.statusMap[this.status];
-      }
-    },
-    contactAvatar() {
-      if (this.type === 'u') {
-        return getUserAvatar(this.userName);
-      } else if (this.type === 's') {
-        return getSpaceAvatar(this.prettyName);
-      } else {
-        return chatConstants.DEFAULT_ROOM_AVATAR;
       }
     },
     escapedName() {
@@ -207,6 +199,7 @@ export default {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
+    this.retrieveAvatarUrl();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
@@ -222,6 +215,19 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
+    },
+    retrieveAvatarUrl() {
+      if (this.type === 'u') {
+        getUserInfo(this.userName).then((user) => {
+          this.avatarUrl = user.avatar;
+        });
+      } else if (this.type === 's') {
+        getSpaceByPrettyName(this.prettyName).then((data) => {
+          this.avatarUrl = data.avatarUrl;
+        });
+      } else {
+        this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
+      }
     }
   }
 };
