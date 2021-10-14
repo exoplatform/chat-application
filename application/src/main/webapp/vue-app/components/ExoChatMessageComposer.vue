@@ -94,13 +94,13 @@ export default {
     },
     contact: {
       type: Object,
-      default: function() {
+      default: function () {
         return {};
       }
     },
     userSettings: {
       type: Object,
-      default: function() {
+      default: function () {
         return {};
       }
     }
@@ -115,7 +115,8 @@ export default {
       composerApplications: [],
       showEmojiPanel: false,
       participants: [],
-      mentionedUsers: []
+      mentionedUsers: [],
+      userAvatar: ''
     };
   },
   computed: {
@@ -184,7 +185,8 @@ export default {
         dropdownParent: 'body',
         hideSelected: true,
         renderMenuItem: function (item) {
-          const avatar = chatServices.getUserAvatar(item.name);
+          this.retrieveAvatarUrl(item.name);
+          const avatar = this.userAvatar;
           const defaultAvatar = '/chat/img/room-default.jpg';
           return `<img src="${avatar}" onerror="this.src='${defaultAvatar}'" width="20px" height="20px">
                       ${chatServices.escapeHtml(item.fullname)}<span style="float: right" class="chat-status-task chat-status-'+item.status+'"></span>`;
@@ -266,7 +268,12 @@ export default {
               application.shortcutCallback(chatServices, $, newMessage, this.contact);
             } else if (application.shortcutTriggeredEvent) {
               found = true;
-              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {detail: {msg: newMessage, contact: this.contact}}));
+              document.dispatchEvent(new CustomEvent(application.shortcutTriggeredEvent, {
+                detail: {
+                  msg: newMessage,
+                  contact: this.contact
+                }
+              }));
             }
           }
         });
@@ -340,7 +347,12 @@ export default {
       chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
       this.mentionedUsers = [];
       return message;
-    }
+    },
+    retrieveAvatarUrl(username) {
+      chatServices.getUserInfo(username).then((data) => {
+        this.userAvatar = data.avatar;
+      });
+    },
   }
 };
 </script>

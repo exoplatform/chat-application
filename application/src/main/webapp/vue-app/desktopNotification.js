@@ -1,5 +1,5 @@
 import {chatConstants} from './chatConstants.js';
-import {getUserAvatar,getSpaceAvatar} from './chatServices.js';
+import {getSpaceByPrettyName,getUserInfo} from './chatServices.js';
 import {composerApplications} from './extension.js';
 
 const ROOM_NOTIF_TRIGGER_NORMAL = 'normal';
@@ -182,9 +182,9 @@ function showDesktopNotif(path, msg) {
     } else {
       let avatarUrl = null;
       if (msg.roomType === 'u') {
-        avatarUrl = getUserAvatar(msg.from);
+        avatarUrl = getUserInfo(msg.from).then((user) => { return user.avatar ; });
       } else if (msg.roomType === 's') {
-        avatarUrl = getSpaceAvatar(msg.roomDisplayName);
+        avatarUrl = getSpaceByPrettyName(msg.roomDisplayName).then((space) => { return space.avatarUrl ; });
       } else {
         avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
       }
