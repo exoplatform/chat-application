@@ -1,5 +1,5 @@
 <template>
-  <div class="contactListContainer">
+  <div class="contactListContainer" role="navigation">
     <div v-if="ap">
       <div v-show="mq !== 'mobile' || contactSearchMobile" class="contactFilter">
         <i v-if="mq !== 'mobile'" class="uiIconSearchLight"></i>
@@ -12,7 +12,7 @@
         <div
           v-show="searchTerm !== ''"
           class="contact-search-close"
-          @click="closeContactSearch">
+          @click="closeContactSearch">ActivityStream
           <i class="uiIconClose"></i>
         </div>
       </div>

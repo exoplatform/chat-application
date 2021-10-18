@@ -38,7 +38,9 @@
         @contact-selected="setSelectedContact"
         @refresh-contacts="refreshContacts($event)" />
     </div>
-    <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'" class="uiGlobalRoomsContainer">
+    <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'"
+      class="uiGlobalRoomsContainer"
+      role="main">
       <exo-chat-room-detail
         v-if="Object.keys(selectedContact).length !== 0"
         :contact="selectedContact"
