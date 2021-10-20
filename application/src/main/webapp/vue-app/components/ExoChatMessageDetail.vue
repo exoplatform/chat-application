@@ -7,12 +7,12 @@
     <div class="chat-sender-avatar">
       <a
         v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')"
-        :style="`backgroundImage: url(${contactAvatar}`"
+        :style="`backgroundImage: url(${avatarUrl}`"
         :href="getProfileLink(message.user)"
         class="chat-contact-avatar"></a>
       <div
         v-else-if="displayUserInformation"
-        :style="`backgroundImage: url(${contactAvatar}`"
+        :style="`backgroundImage: url(${avatarUrl}`"
         class="chat-contact-avatar"></div>
     </div>
     <div v-hold-tap="openMessageActions" class="chat-message-bubble">
@@ -242,6 +242,7 @@ import * as chatServices from '../chatServices';
 import {messageActions, EMOTICONS, extraMessageTypes} from '../extension';
 import messageFilter from '../messageFilter.js';
 import {chatConstants} from '../chatConstants';
+import {getUserInfo} from '../chatServices';
 
 export default {
   props: {
@@ -296,7 +297,8 @@ export default {
       confirmMessage: '',
       confirmOKMessage: '',
       confirmKOMessage: '',
-      confirmAction(){return;}
+      confirmAction(){return;},
+      avatarUrl: ''
     };
   },
   computed: {
@@ -326,9 +328,6 @@ export default {
     },
     dateString() {
       return chatTime.getTimeString(this.message.timestamp);
-    },
-    contactAvatar() {
-      return chatServices.getUserAvatar(this.message.user);
     },
     isEditedMessage() {
       return this.messageType === chatConstants.EDITED_MESSAGE;
@@ -379,10 +378,7 @@ export default {
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
-    document.addEventListener(
-      'exo-chat-message-action-saveNotes-requested',
-      this.saveNotes
-    );
+    this.retrieveAvatarUrl();
   },
   destroyed() {
     document.removeEventListener(
@@ -619,6 +615,11 @@ export default {
           detail: {user: eXo.chat.userSettings.username, clientId: this.message.clientId}
         })
       );
+    },
+    retrieveAvatarUrl() {
+      getUserInfo(this.message.user).then((user) => {
+        this.avatarUrl = user.avatar;
+      });
     }
   }
 };
