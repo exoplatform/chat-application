@@ -5,7 +5,7 @@
     @click="$emit('select-room', room)">
     <span class="avatarXSmall">
       <img
-        :src="avatar"
+        :src="avatarUrl"
         onerror="this.src='/chat/img/user-default.jpg'"
         class="avatar-image">
     </span>
@@ -55,10 +55,15 @@ export default {
       }
     }
   },
+  data: function() {
+    return {
+      avatarUrl: ''
+    };
+  },
+  created() {
+    this.retrieveAvatarUrl();
+  },
   computed: {
-    avatar() {
-      return chatServices.getUserAvatar(this.notif.from);
-    },
     messageClass() {
       const messageType = this.notif.options ? this.notif.options.type : '';
       if (messageType) {
@@ -133,7 +138,12 @@ export default {
   methods: {
     unescapeHTML(html) {
       return chatServices.unescapeHtml(html);
-    }
+    },
+    retrieveAvatarUrl(username) {
+      chatServices.getUserInfo(username).then((user) => {
+        this.avatarUrl = user.avatar;
+      });
+    },
   }
 };
 </script>
