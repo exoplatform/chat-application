@@ -128,10 +128,15 @@ public class ChatServiceImpl implements ChatService
                 mentionData);
         realTimeMessageService.sendMessage(mentionMessage, mentionedUsers);
       }
+      List<String> silentReceivers = new ArrayList<>();
+      usersToBeNotified.stream().filter( name -> notificationService.isRoomSilentForUser(name, room))
+              .forEach(silentReceivers::add);
+
       JSONObject data = msg.toJSONObject();
       data.put("clientId", clientId);
       data.put("roomType", roomType);
       data.put("room", room);
+      data.put("silentReceivers", silentReceivers);
       if (ChatService.TYPE_ROOM_USER.equals(roomType)) {
         data.put("roomDisplayName", user.getFullname());
       } else {

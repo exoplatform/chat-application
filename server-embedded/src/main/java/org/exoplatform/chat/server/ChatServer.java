@@ -642,6 +642,19 @@ public class ChatServer
 
     try{
       userService.setRoomNotificationTrigger(user, room, notifCondition, notifConditionType, time);
+      Map<String, Object> data = new HashMap<>();
+
+      data.put("notificationTrigger", notifConditionType);
+      data.put("targetRoom", room);
+
+      // Deliver the saved message to sender's subscribed channel itself.
+      RealTimeMessageBean messageBean = new RealTimeMessageBean(
+              RealTimeMessageBean.EventType.ROOM_NOTIFICATION_SETTINGS_UPDATED,
+              null,
+              user,
+              null,
+              data);
+      realTimeMessageService.sendMessage(messageBean, user);
     } catch(Exception e) {
     }
 
@@ -979,7 +992,8 @@ public class ChatServer
     if (!detailed)
     {
       // GETTING TOTAL NOTIFICATION WITHOUT DETAILS
-      totalUnread = notificationService.getUnreadNotificationsTotal(user);
+      List<NotificationBean> notificationBeans = notificationService.getUnreadNotifications(user, userService);
+      totalUnread = notificationBeans.size();
       if (userService.isAdmin(user)) {
         totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
       }
