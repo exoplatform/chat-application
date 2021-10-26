@@ -12,6 +12,7 @@ public class RoomsBean {
   int unreadSpaces = 0;
   int unreadTeams = 0;
   int roomsCount = 0;
+  int unreadSilentRooms = 0;
 
   public List<RoomBean> getRooms() {
     return rooms;
@@ -61,6 +62,14 @@ public class RoomsBean {
     this.roomsCount = roomsCount;
   }
 
+  public int getUnreadSilentRooms() {
+    return unreadSilentRooms;
+  }
+
+  public void setUnreadSilentRooms(int unreadSilentRooms) {
+    this.unreadSilentRooms = unreadSilentRooms;
+  }
+
   public String roomsToJSON()
   {
     StringBuilder sb = new StringBuilder();
@@ -70,6 +79,7 @@ public class RoomsBean {
     sb.append("\"unreadSpaces\": \"").append(unreadSpaces).append("\",");
     sb.append("\"unreadTeams\": \"").append(unreadTeams).append("\",");
     sb.append("\"roomsCount\": \"").append(roomsCount).append("\",");
+    sb.append("\"unreadSilentRooms\": \"").append(unreadSilentRooms).append("\",");
     sb.append("\"rooms\": [");
     boolean first=true;
     for (RoomBean roomBean:this.getRooms()) {
