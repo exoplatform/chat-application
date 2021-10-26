@@ -54,12 +54,32 @@
         v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact"
         :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' "></div>
     </div>
+    <div
+      v-if="!isRoomNotificationSilence && unreadTotal > 0 && unreadTotal <= maxShowUnread"
+      class="unreadMessages">
+      {{ unreadTotal }}
+    </div>
+    <div
+      v-if="!isRoomNotificationSilence && unreadTotal > maxShowUnread"
+      class="unreadMessages maxUnread">
+      +{{ maxShowUnread }}
+    </div>
+    <div>
+      <v-icon
+        color="red darken-2"
+        dense
+        class="ml-2 mb-1"
+        v-if="isRoomNotificationSilence">
+        mdi-volume-off
+      </v-icon>
+    </div>
   </div>
 </template>
 
 <script>
 import { getUserInfo, getSpaceByPrettyName, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
+import * as desktopNotification from '../desktopNotification';
 
 export default {
   props: {
@@ -132,6 +152,14 @@ export default {
     chatDrawerContact: {
       type: Boolean,
       default: false
+    },
+    contactRoomId: {
+      type: String,
+      default: null
+    },
+    unreadTotal: {
+      type: Number,
+      default: null
     }
   },
   data: function() {
@@ -152,6 +180,7 @@ export default {
         invisible: this.$t('exoplatform.chat.invisible'),
       },
       avatarUrl: '',
+      maxShowUnread: 99
     };
   },
   computed: {
@@ -193,7 +222,10 @@ export default {
         return getSpaceProfileLink(this.groupId, this.prettyName);
       }
       return '#';
-    }
+    },
+    isRoomNotificationSilence() {
+      return this.contactRoomId && desktopNotification.isRoomNotificationSilence(this.contactRoomId);
+    },
   },
   created() {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
