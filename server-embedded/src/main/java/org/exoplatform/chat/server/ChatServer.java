@@ -979,7 +979,8 @@ public class ChatServer
     if (!detailed)
     {
       // GETTING TOTAL NOTIFICATION WITHOUT DETAILS
-      totalUnread = notificationService.getUnreadNotificationsTotal(user);
+      List<NotificationBean> notificationBeans = notificationService.getUnreadNotifications(user, userService);
+      totalUnread = notificationBeans.size();
       if (userService.isAdmin(user)) {
         totalUnread += notificationService.getUnreadNotificationsTotal(UserService.SUPPORT_USER);
       }

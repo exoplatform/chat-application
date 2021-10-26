@@ -12,7 +12,7 @@
         <div
           v-show="searchTerm !== ''"
           class="contact-search-close"
-          @click="closeContactSearch">ActivityStream
+          @click="closeContactSearch">
           <i class="uiIconClose"></i>
         </div>
       </div>
@@ -87,6 +87,8 @@
             :group-id="contact.groupId"
             :name="contact.fullName"
             :status="contact.status"
+            :unread-total="contact.unreadTotal"
+            :contact-room-id="contact.room"
             :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div
               v-if="mq === 'mobile'"
@@ -94,8 +96,6 @@
               class="uiIcon favorite"></div>
             <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">{{ getLastMessageTime(contact) }}</div>
           </exo-chat-contact>
-          <div v-if="contact.unreadTotal > 0 && contact.unreadTotal <= 99" class="unreadMessages">{{ contact.unreadTotal }}</div>
-          <div v-if="contact.unreadTotal > 99" class="unreadMessages maxUnread">+99</div>
           <i
             v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')"
             v-if="!drawerStatus"
@@ -175,9 +175,11 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatTime from '../chatTime';
-import {chatConstants} from '../chatConstants';
+import * as desktopNotification from '../desktopNotification';
 
+import {chatConstants} from '../chatConstants';
 import {composerApplications} from '../extension';
+
 
 export default {
   props: {
@@ -283,7 +285,7 @@ export default {
       contactsToDisplay: [],
       inactive: this.$t('exoplatform.chat.inactive'),
       external: this.$t('exoplatform.chat.external'),
-      nbrePages: 0
+      nbrePages: 0,
     };
   },
   computed: {
@@ -294,6 +296,9 @@ export default {
       const sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
+          if (desktopNotification.isRoomNotificationSilence(b.room)) {
+            return -1;
+          }
           const unreadTotal = b.unreadTotal - a.unreadTotal;
           if (unreadTotal === 0) {
             return b.timestamp - a.timestamp;
@@ -302,6 +307,9 @@ export default {
         });
       } else {
         sortedContacts.sort(function(a, b){
+          if (desktopNotification.isRoomNotificationSilence(b.room)) {
+            return -1;
+          }
           return b.timestamp - a.timestamp;
         });
       }
@@ -309,7 +317,7 @@ export default {
     },
     hasMoreContacts() {
       return Math.floor(this.filteredContacts.length / chatConstants.ROOMS_PER_PAGE) > this.nbrePages;
-    }
+    },
   },
   watch: {
     contacts() {

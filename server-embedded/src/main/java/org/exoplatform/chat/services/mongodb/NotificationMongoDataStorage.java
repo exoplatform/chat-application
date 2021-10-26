@@ -23,10 +23,17 @@ import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
+import org.exoplatform.chat.model.NotificationSettingsBean;
 import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationDataStorage;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -39,6 +46,8 @@ import java.util.List;
 @Singleton
 public class NotificationMongoDataStorage implements NotificationDataStorage
 {
+  private static final Log LOG = ExoLogger.getLogger(NotificationMongoDataStorage.class);
+
   private DB db()
   {
     return ConnectionManager.getInstance().getDB();
@@ -140,16 +149,44 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
         notificationBean.setOptions(doc.get("options").toString());
       }
       RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
-      notificationBean.setRoomType(roomBean.getType());
-      if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
-        notificationBean.setRoomDisplayName(roomBean.getFullName());
+      if (roomBean != null) {
+        notificationBean.setRoomType(roomBean.getType());
+        if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
+          notificationBean.setRoomDisplayName(roomBean.getFullName());
+        }
       }
       notificationBean.setLink(doc.get("link").toString());
 
       notifications.add(notificationBean);
     }
+    notifications = filterNotifications(notifications, userService, user);
 
     return notifications;
+  }
+
+  private List<NotificationBean> filterNotifications(List<NotificationBean> notifications, UserService userService, String receiver) {
+    List<NotificationBean> notificationBeans = new ArrayList<>();
+    try {
+      if (notifications != null && !notifications.isEmpty()) {
+        NotificationSettingsBean settings = userService.getUserDesktopNotificationSettings(receiver);
+        if (settings != null && settings.getEnabledRoomTriggers() != null) {
+          String bean = settings.getEnabledRoomTriggers();
+          JSONParser parser = new JSONParser();
+          JSONObject json = (JSONObject) parser.parse(bean);
+          for (NotificationBean notification : notifications) {
+            JSONObject roomSettings = (JSONObject) json.get(notification.getCategoryId());
+            if (roomSettings != null && roomSettings.get("notifCond") != null && roomSettings.get("notifCond").equals("silence")
+                    && notification.getCategory().equals("room")) {
+              continue;
+            }
+            notificationBeans.add(notification);
+          }
+        }
+      }
+    } catch (ParseException | JSONException e) {
+      LOG.error("error parsing chat notifications data", e);
+    }
+    return notificationBeans;
   }
 
   public int getUnreadNotificationsTotal(String user)
