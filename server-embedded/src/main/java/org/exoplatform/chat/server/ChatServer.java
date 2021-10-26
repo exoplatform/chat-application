@@ -737,7 +737,6 @@ public class ChatServer
       if ("true".equals(withDetail)) {
         roomBean = userService.getRoom(user, room);
       }
-      notificationService.setNotificationsAsRead(user, "chat", "room", room);
     }
     catch (Exception e)
     {
