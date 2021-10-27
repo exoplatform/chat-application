@@ -185,7 +185,7 @@ export default {
         dropdownParent: 'body',
         hideSelected: true,
         renderMenuItem: function (item) {
-          this.retrieveAvatarUrl(item.name);
+          component.retrieveAvatarUrl(item.name);
           const avatar = this.userAvatar;
           const defaultAvatar = '/chat/img/room-default.jpg';
           return `<img src="${avatar}" onerror="this.src='${defaultAvatar}'" width="20px" height="20px">
