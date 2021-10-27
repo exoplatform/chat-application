@@ -296,8 +296,11 @@ export default {
       const sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       if (this.sortFilter === 'Unread') {
         sortedContacts.sort(function(a, b){
-          if (desktopNotification.isRoomNotificationSilence(b.room)) {
+          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal !== 0) {
             return -1;
+          }
+          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal === 0) {
+            return 0;
           }
           const unreadTotal = b.unreadTotal - a.unreadTotal;
           if (unreadTotal === 0) {
@@ -307,8 +310,11 @@ export default {
         });
       } else {
         sortedContacts.sort(function(a, b){
-          if (desktopNotification.isRoomNotificationSilence(b.room)) {
+          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal !== 0) {
             return -1;
+          }
+          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal === 0) {
+            return 0;
           }
           return b.timestamp - a.timestamp;
         });
