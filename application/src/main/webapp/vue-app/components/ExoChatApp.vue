@@ -220,7 +220,11 @@ export default {
         }
       }
 
-      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
+      const totalUnreadMsg = (Math.abs(chatRoomsData.unreadOffline)
+              + Math.abs(chatRoomsData.unreadOnline)
+              + Math.abs(chatRoomsData.unreadSpaces)
+              + Math.abs(chatRoomsData.unreadTeams))
+          - Number(chatRoomsData.unreadSilentRooms);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
     setSelectedContact(selectedContact) {
