@@ -181,6 +181,8 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
             }
             notificationBeans.add(notification);
           }
+        } else {
+          return notifications;
         }
       }
     } catch (ParseException | JSONException e) {
