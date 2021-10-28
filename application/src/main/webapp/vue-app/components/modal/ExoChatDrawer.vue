@@ -287,7 +287,7 @@ export default {
     },
     connectionEstablished() {
       eXo.chat.isOnline = true;
-      if (this.userSettings.originalStatus !== this.userSettings.status) {
+      if (this.userSettings.originalStatus && this.userSettings.originalStatus !== this.userSettings.status) {
         this.setStatus(this.userSettings.originalStatus);
       } else if (this.userSettings && this.userSettings.originalStatus) {
         this.userSettings.status = this.userSettings.originalStatus;
