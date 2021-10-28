@@ -7,6 +7,7 @@
           :user-name="userSettings.username"
           :name="userSettings.fullName"
           :status="userSettings.status"
+          :avatar-url="userSettings.avatarUrl"
           :is-current-user="true"
           type="u"
           @status-changed="setStatus($event)">

@@ -89,6 +89,7 @@
             :status="contact.status"
             :unread-total="contact.unreadTotal"
             :contact-room-id="contact.room"
+            :avatar-url="contact.avatarUrl"
             :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div
               v-if="mq === 'mobile'"
