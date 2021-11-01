@@ -46,6 +46,7 @@ public class RoomBean implements Comparable<RoomBean>
   org.json.JSONObject lastMessage;
   String groupId;
   private boolean isRoomSilent = false;
+  private String avatarUrl = "";
 
   public String getPrettyName() {
     return prettyName;
@@ -209,6 +210,14 @@ public class RoomBean implements Comparable<RoomBean>
     isRoomSilent = roomSilent;
   }
 
+  public String getAvatarUrl() {
+    return avatarUrl;
+  }
+
+  public void setAvatarUrl(String avatarUrl) {
+    this.avatarUrl = avatarUrl;
+  }
+
   @SuppressWarnings("unchecked")
   public JSONObject toJSONObject() {
     JSONObject obj = new JSONObject();
@@ -232,6 +241,7 @@ public class RoomBean implements Comparable<RoomBean>
       obj.put("groupId", this.getGroupId());
     }
     obj.put("isRoomSilent", this.isRoomSilent());
+    obj.put("avatarUrl", this.getAvatarUrl());
     if (this.getAdmins() != null) {
       try {
         obj.put("admins", new JSONArray(this.getAdmins()));
