@@ -275,7 +275,6 @@ export default {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
       if (totalUnreadMsg >= 0) {
         this.totalUnreadMsg = totalUnreadMsg;
-        this.refreshContacts(true);
       }
     },
     userStatusChanged(e) {
