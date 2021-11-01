@@ -23,6 +23,7 @@ import org.exoplatform.commons.notification.impl.NotificationContextImpl;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
@@ -303,7 +304,11 @@ public class UserRestService implements ResourceContainer {
       chatCometDServerUrl = "/cometd/cometd";
     }
     String userStatus = ServerBootstrap.getStatus(currentUsername, token, currentUsername);
-
+    String avatarUrl = "";
+    Profile profile = userIdentity.getProfile();
+    if (profile != null) {
+      avatarUrl = profile.getAvatarUrl();
+    }
     JSONObject userSettings = new JSONObject();
     userSettings.put("username", currentUsername);
     userSettings.put("token", token);
@@ -317,6 +322,7 @@ public class UserRestService implements ResourceContainer {
     userSettings.put("chatPage", chatPage);
     userSettings.put("offlineDelay", userStateService.getDelay());
     userSettings.put("wsEndpoint", chatCometDServerUrl);
+    userSettings.put("avatarUrl", avatarUrl);
 
     int uploadLimitInMB = 0;
     boolean canUploadFiles = getDocumentService() != null;

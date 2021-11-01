@@ -26,6 +26,7 @@
                 :chat-drawer-contact="showChatDrawer"
                 :user-name="userSettings.username"
                 :status="userSettings.status"
+                :avatar-url="userSettings.avatarUrl"
                 :is-current-user="true"
                 type="u"
                 @status-changed="setStatus($event)" />
@@ -36,9 +37,9 @@
               @click="backChat()">
               mdi-keyboard-backspace
             </v-icon>
-            <span v-if="selectedContact && avatarUrl">
+            <span v-if="selectedContact">
               <img
-                :src="avatarUrl"
+                :src="selectedContact.avatarUrl ? selectedContact.avatarUrl : defaultRoomAvatarUrl"
                 class="chatAvatar"
                 alt="avatar of discussion">
               <span :class="statusStyle" class="user-status">
@@ -141,7 +142,6 @@ import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
-import {getSpaceByPrettyName, getUserInfo} from '../../chatServices';
 
 export default {
   name: 'ExoChatDrawer',
@@ -163,7 +163,7 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      avatarUrl: '',
+      defaultRoomAvatarUrl: chatConstants.DEFAULT_ROOM_AVATAR
     };
   },
   computed: {
@@ -363,7 +363,6 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      this.avatarUrl = null;
       if (!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -384,7 +383,6 @@ export default {
         this.selectedContact.participants = data.users;
         document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
       });
-      this.retrieveAvatarUrl();
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
@@ -465,21 +463,6 @@ export default {
         }
       }
     },
-    retrieveAvatarUrl() {
-      if (this.selectedContact) {
-        if (this.selectedContact.type === 'u') {
-          getUserInfo(this.selectedContact.user).then((user) => {
-            this.avatarUrl = user.avatar;
-          });
-        } else if (this.selectedContact.type === 's') {
-          getSpaceByPrettyName(this.selectedContact.prettyName).then((space) => {
-            this.avatarUrl = space.avatarUrl;
-          });
-        } else {
-          this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
-        }
-      }
-    }
   }
 };
 </script>
