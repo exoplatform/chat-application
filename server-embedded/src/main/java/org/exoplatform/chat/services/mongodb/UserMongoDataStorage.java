@@ -22,6 +22,7 @@ package org.exoplatform.chat.services.mongodb;
 import com.mongodb.*;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.addons.chat.utils.ChatRoomUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.ChatService;
@@ -863,6 +864,10 @@ public class UserMongoDataStorage implements UserDataStorage {
           }
           if (doc.get("isExternal") != null) {
             userBean.setExternal(doc.get("isExternal").toString());
+          }
+          String avatar = ChatRoomUtils.getUserAvatar(userBean.getName());
+          if (avatar != null) {
+            userBean.setAvatarUrl(avatar);
           }
           users.add(userBean);
         }

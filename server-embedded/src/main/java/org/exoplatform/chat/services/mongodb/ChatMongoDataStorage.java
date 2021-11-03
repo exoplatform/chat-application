@@ -22,6 +22,7 @@ package org.exoplatform.chat.services.mongodb;
 import com.mongodb.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.exoplatform.addons.chat.utils.ChatRoomUtils;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.*;
 import org.exoplatform.chat.services.*;
@@ -1016,6 +1017,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           }
           roomBean.setUser(targetUser);
           roomBean.setType(TYPE_ROOM_USER);
+          String avatar = ChatRoomUtils.getUserAvatar(roomBean.getUser());
+          if (avatar != null) {
+            roomBean.setAvatarUrl(avatar);
+          }
         }
         break;
       }
@@ -1029,8 +1034,11 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setGroupId(room.get("groupId").toString());
         if (room.containsField("prettyName")) {
           roomBean.setPrettyName(room.get("prettyName").toString());
+          String avatar = ChatRoomUtils.getSpaceAvatar(roomBean.getPrettyName());
+          if (avatar != null) {
+            roomBean.setAvatarUrl(avatar);
+          }
         }
-
         roomBean.setFavorite(userBean.isFavorite(roomId));
         break;
       }

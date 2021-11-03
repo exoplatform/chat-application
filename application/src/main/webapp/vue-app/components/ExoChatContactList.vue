@@ -87,6 +87,7 @@
             :group-id="contact.groupId"
             :name="contact.fullName"
             :status="contact.status"
+            :avatar-url="contact.avatarUrl"
             :last-message="getLastMessage(contact.lastMessage, contact.type)">
             <div
               v-if="mq === 'mobile'"
