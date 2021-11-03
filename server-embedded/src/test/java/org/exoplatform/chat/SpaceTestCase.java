@@ -1,10 +1,12 @@
 package org.exoplatform.chat;
 
 import static org.junit.Assert.assertEquals;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exoplatform.addons.chat.utils.ChatRoomUtils;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.SpaceBean;
@@ -13,12 +15,23 @@ import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ChatRoomUtils.class)
 public class SpaceTestCase extends AbstractChatTestCase
 {
   @Before
   public void setUp()
   {
+    PowerMockito.mockStatic(ChatRoomUtils.class);
+    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("userAvatar");
+    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("spaceAvatar");
+
     ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
     ServiceBootstrap.getUserService().addUserFullName("benjamin", "Benjamin Paillereau");
     ServiceBootstrap.getUserService().addUserEmail("benjamin", "bpaillereau@exoplatform.com");

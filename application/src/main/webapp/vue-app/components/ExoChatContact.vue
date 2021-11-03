@@ -1,7 +1,7 @@
 <template>
   <div class="chat-contact">
     <div
-      :style="`backgroundImage: url(${avatarUrl})`"
+      :style="`backgroundImage: url(${avatarUrl? avatarUrl : defaultRoomAvatar})`"
       :class="statusStyle"
       class="chat-contact-avatar">
       <a
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { getUserInfo, getSpaceByPrettyName, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import {getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -132,6 +132,10 @@ export default {
     chatDrawerContact: {
       type: Boolean,
       default: false
+    },
+    avatarUrl: {
+      type: String,
+      default: null
     }
   },
   data: function() {
@@ -151,7 +155,7 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
       },
-      avatarUrl: '',
+      defaultRoomAvatar: chatConstants.DEFAULT_ROOM_AVATAR,
     };
   },
   computed: {
@@ -199,7 +203,6 @@ export default {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
-    this.retrieveAvatarUrl();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
@@ -216,19 +219,6 @@ export default {
     setOffline() {
       this.isOnline = false;
     },
-    retrieveAvatarUrl() {
-      if (this.type === 'u') {
-        getUserInfo(this.userName).then((user) => {
-          this.avatarUrl = user.avatar;
-        });
-      } else if (this.type === 's') {
-        getSpaceByPrettyName(this.prettyName).then((data) => {
-          this.avatarUrl = data.avatarUrl;
-        });
-      } else {
-        this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
-      }
-    }
   }
 };
 </script>
