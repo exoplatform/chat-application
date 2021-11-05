@@ -495,24 +495,15 @@ export default {
         }
         foundContact.lastMessage = message.data;
         foundContact.timestamp = message.ts;
-        if (this.selected){
-          if (this.selected.room !== foundContact.room || this.mq === 'mobile') {
-            const msgId = message.msgId && typeof message.msgId !== 'undefined' ? message.msgId : message.data.msgId;
-            if (this.pushObjectIfNotExists(this.unreadMessages, {'msgId': msgId, 'room': room})) {
-              foundContact.unreadTotal++;
-            }
-          }
-        } else {
-          foundContact.unreadTotal ++;
-        }
       } else {
         chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
           if (contact && contact.user && contact.user.length && contact.user !== 'undefined') {
-            contact.unreadTotal = 1;
             this.contactsToDisplay.unshift(contact);
           }
         });
       }
+      this.$emit('refresh-contacts', true);
+      this.$forceUpdate();
     },
     messageSent(event) {
       const message = event.detail;
