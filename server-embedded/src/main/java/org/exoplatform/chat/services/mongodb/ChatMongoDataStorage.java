@@ -38,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.regex.Pattern;
 
 import static org.exoplatform.chat.services.ChatService.*;
 import static org.exoplatform.chat.services.UserDataStorage.STATUS_OFFLINE;
@@ -864,6 +863,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     int unreadOnline = 0;
     int unreadSpaces = 0;
     int unreadTeams = 0;
+    int unreadSilentRooms = 0;
     int roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
 
@@ -928,6 +928,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       while (roomsCursor.hasNext()) {
         DBObject room = roomsCursor.next();
         RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
+
         if (roomBean.getUnreadTotal() > 0) {
           switch (roomBean.getType()) {
             case "u":
@@ -939,9 +940,15 @@ public class ChatMongoDataStorage implements ChatDataStorage {
               break;
             case "s":
               unreadSpaces += roomBean.getUnreadTotal();
+              if (roomBean.isRoomSilent()) {
+                unreadSilentRooms += roomBean.getUnreadTotal();
+              }
               break;
             case "t":
               unreadTeams += roomBean.getUnreadTotal();
+              if (roomBean.isRoomSilent()) {
+                unreadSilentRooms += roomBean.getUnreadTotal();
+              }
               break;
           }
         }
@@ -969,7 +976,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     roomsBean.setUnreadSpaces(unreadSpaces);
     roomsBean.setUnreadTeams(unreadTeams);
     roomsBean.setRoomsCount(roomsCount);
-
+    roomsBean.setUnreadSilentRooms(unreadSilentRooms);
     return roomsBean;
   }
 
@@ -1037,6 +1044,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
     roomBean.setRoom(roomId);
     roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", "room", roomId));
+    boolean isSilent = notificationService.isRoomSilentForUser(userBean.getName(), roomId);
+    roomBean.setRoomSilent(isSilent);
 
     if (room.containsField("meetingStarted")) {
       roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));

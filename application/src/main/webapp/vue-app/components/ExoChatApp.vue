@@ -3,6 +3,7 @@
     <div class="uiChatLeftContainer">
       <div class="userDetails">
         <exo-chat-contact
+          :contact-room-id="selectedContact.room"
           :user-name="userSettings.username"
           :name="userSettings.fullName"
           :status="userSettings.status"
@@ -38,11 +39,13 @@
         @contact-selected="setSelectedContact"
         @refresh-contacts="refreshContacts($event)" />
     </div>
-    <div v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'"
+    <div
+      v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'"
       class="uiGlobalRoomsContainer"
       role="main">
       <exo-chat-room-detail
         v-if="Object.keys(selectedContact).length !== 0"
+        :is-room-notification-silence="isSelectedRoomSilence"
         :contact="selectedContact"
         @back-to-contact-list="conversationArea = false" />
       <div class="room-content">
@@ -106,6 +109,7 @@
 import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
+import * as desktopNotification from '../desktopNotification';
 import {chatConstants} from '../chatConstants';
 import {installExtensions} from '../extension';
 
@@ -147,6 +151,9 @@ export default {
     };
   },
   computed: {
+    isSelectedRoomSilence() {
+      return this.selectedContact && desktopNotification.isRoomNotificationSilence(this.selectedContact.room) || this.selectedContact.isRoomSilent;
+    },
     showMobileConversations() {
       return this.mq === 'mobile' && this.conversationArea === true ? true : false;
     },
@@ -213,7 +220,11 @@ export default {
         }
       }
 
-      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
+      const totalUnreadMsg = (Math.abs(chatRoomsData.unreadOffline)
+              + Math.abs(chatRoomsData.unreadOnline)
+              + Math.abs(chatRoomsData.unreadSpaces)
+              + Math.abs(chatRoomsData.unreadTeams))
+          - Number(chatRoomsData.unreadSilentRooms);
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
     setSelectedContact(selectedContact) {
