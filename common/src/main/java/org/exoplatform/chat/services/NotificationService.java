@@ -45,4 +45,5 @@ public interface NotificationService
 
   public int getNumberOfUnreadNotifications();
 
+  public boolean isRoomSilentForUser(String user, String roomId);
 }

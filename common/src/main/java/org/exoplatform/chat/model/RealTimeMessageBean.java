@@ -26,6 +26,7 @@ public class RealTimeMessageBean {
     FAVORITE_REMOVED("favorite-removed"),
     ROOM_SETTINGS_UPDATED("room-settings-updated"),
     NOTIFICATION_COUNT_UPDATED("notification-count-updated"),
+    ROOM_NOTIFICATION_SETTINGS_UPDATED("room-notification-settings-updated"),
     LOGOUT_SENT("logout-sent");
 
     private final String eventType;
