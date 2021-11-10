@@ -27,7 +27,6 @@ public class UserBean
   private String name, fullname="", isExternal="", email="", status;
   private List<String> favorites;
   private Boolean enabled, deleted;
-  private String avatarUrl;
 
   public String getName()
   {
@@ -114,14 +113,6 @@ public class UserBean
     return this.enabled == null || this.enabled ? true : false;
   }
 
-  public String getAvatarUrl() {
-    return avatarUrl;
-  }
-
-  public void setAvatarUrl(String avatarUrl) {
-    this.avatarUrl = avatarUrl;
-  }
-
   public String toJSON()
   {
     StringBuffer sb = new StringBuffer();
@@ -134,8 +125,7 @@ public class UserBean
     sb.append("\"fullname\": \"" + this.getFullname() + "\",");
     sb.append("\"isEnabled\": \"" + this.isEnabled() + "\",");
     sb.append("\"isDeleted\": \"" + this.isDeleted() + "\",");
-    sb.append("\"isExternal\": \"" + this.isExternal() + "\",");
-    sb.append("\"avatarUrl\": \"" + this.getAvatarUrl() + "\"");
+    sb.append("\"isExternal\": \"" + this.isExternal() + "\"");
 
     sb.append("}");
 
