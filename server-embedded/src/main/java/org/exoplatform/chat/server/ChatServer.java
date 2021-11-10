@@ -67,8 +67,6 @@ import juzu.template.Template;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.portal.localization.LocaleContextInfoUtils;
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.LocalePolicy;
@@ -144,15 +142,10 @@ public class ChatServer
 
     List<String> limitUsers = Arrays.asList(onlineUsers.split(","));
 
-    PortalContainer container = PortalContainer.getInstance();
-    RequestLifeCycle.begin(container);
-    RoomsBean roomsBean;
-    try {
-      roomsBean = chatService.getUserRooms(user, limitUsers, filter, offsetValue, limitValue,
-              notificationService, tokenService, roomType);
-    } finally {
-      RequestLifeCycle.end();
-    }
+    RoomsBean roomsBean = chatService.getUserRooms(user, limitUsers, filter, offsetValue, limitValue,
+            notificationService, tokenService, roomType);
+
+
     return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
@@ -1105,15 +1098,8 @@ public class ChatServer
     }
 
     List<String> onlineUserList = StringUtils.isNotBlank(onlineUsers) ? Arrays.asList(onlineUsers.split(",")) : null;
-    PortalContainer container = PortalContainer.getInstance();
-    RequestLifeCycle.begin(container);
-    List<UserBean> users;
-    try {
-      users = userService.getUsers(room, onlineUserList, filter, limit_, showOnlyOnlineUsers);
-    } finally {
-      RequestLifeCycle.end();
-    }
-    if (StringUtils.isNotBlank(user)) {
+    List<UserBean> users = userService.getUsers(room, onlineUserList, filter, limit_, showOnlyOnlineUsers);
+    if(StringUtils.isNotBlank(user)) {
       UserBean currentUser = userService.getUser(user);
       users.remove(currentUser);
     }

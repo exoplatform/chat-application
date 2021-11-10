@@ -1,6 +1,5 @@
 package org.exoplatform.chat;
 
-import org.exoplatform.addons.chat.utils.ChatRoomUtils;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationSettingsBean;
@@ -18,26 +17,14 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.JSONObject;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.mockito.ArgumentMatchers;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ChatRoomUtils.class)
 public class ChatTestCase extends AbstractChatTestCase
 {
   @Before
   public void setUp()
   {
-    PowerMockito.mockStatic(ChatRoomUtils.class);
-    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("userAvatar");
-    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("spaceAvatar");
-
     List<String> users = new ArrayList<String>();
     users.add("benjamin");
     users.add("john");
@@ -364,6 +351,7 @@ public class ChatTestCase extends AbstractChatTestCase
     ServiceBootstrap.getUserService().addTeamRoom(user, room1);
     ServiceBootstrap.getUserService().addTeamRoom(user, room2);
     ServiceBootstrap.getUserService().addTeamRoom(user, room3);
+
     RoomsBean roomsBean = ServiceBootstrap.getChatDataStorage().getUserRooms("benjamin", new ArrayList<>(),null, 0,20, notificationService, tokenService);
     assertEquals("Should have 8 rooms", 8, roomsBean.getRooms().size());
     int teamsRooms=0, spacesRooms =0, usersRooms =0;
@@ -447,7 +435,6 @@ public class ChatTestCase extends AbstractChatTestCase
 
 
     String spaceId1 = chatService.getSpaceRoom("test_space");
-
     chatService.write("foo", "benjamin", spaceId1, "false");
 
     String spaceId2 = chatService.getSpaceRoom("test_space_2");

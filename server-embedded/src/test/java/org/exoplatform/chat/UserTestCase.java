@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-import org.exoplatform.addons.chat.utils.ChatRoomUtils;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
@@ -15,16 +13,10 @@ import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.exoplatform.chat.utils.PropertyManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ChatRoomUtils.class)
+
 public class UserTestCase extends AbstractChatTestCase
 {
   String username = "benjamin";
@@ -32,10 +24,6 @@ public class UserTestCase extends AbstractChatTestCase
   @Before
   public void setUp()
   {
-    PowerMockito.mockStatic(ChatRoomUtils.class);
-    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("userAvatar");
-    when(ChatRoomUtils.getUserAvatar(ArgumentMatchers.anyString())).thenReturn("spaceAvatar");
-
     ConnectionManager.getInstance().getDB().getCollection(UserMongoDataStorage.M_USERS_COLLECTION).drop();
   }
 

@@ -50,7 +50,6 @@
             :user-name="participant.name"
             :name="participant.fullname"
             :status="participant.status"
-            :avatar-url="participant.avatarUrl"
             type="u" />
         </div>
         <div v-show="!isCollapsed || mq === 'mobile'" class="room-participants-title">
