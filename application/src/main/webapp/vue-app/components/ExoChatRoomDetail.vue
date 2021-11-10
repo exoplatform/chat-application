@@ -10,7 +10,6 @@
       :pretty-name="contact.prettyName"
       :group-id="contact.groupId"
       :name="contact.fullName"
-      :avatar-url="contact.avatarUrl"
       :status="contact.status"
       :nb-members="nbMembers">
       <div
