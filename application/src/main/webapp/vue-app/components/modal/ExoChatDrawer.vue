@@ -141,7 +141,7 @@ import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
-import {getSpaceByPrettyName, getUserInfo} from '../../chatServices';
+import {getSpaceAvatar, getUserAvatar} from '../../chatServices';
 
 export default {
   name: 'ExoChatDrawer',
@@ -163,7 +163,6 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      avatarUrl: '',
     };
   },
   computed: {
@@ -198,6 +197,15 @@ export default {
         return this.userSettings.username;
       } else {
         return this.selectedContact.isExternal === 'true' ? `${this.selectedContact.fullName} (${this.external})` : this.selectedContact.fullName;
+      }
+    },
+    avatarUrl() {
+      if (this.selectedContact.type === 'u') {
+        return  getUserAvatar(this.selectedContact.user);
+      } else if (this.selectedContact.type === 's') {
+        return getSpaceAvatar(this.selectedContact.prettyName);
+      } else {
+        return chatConstants.DEFAULT_ROOM_AVATAR;
       }
     }
   },
@@ -362,7 +370,6 @@ export default {
       });
     },
     setSelectedContact(selectedContact) {
-      this.avatarUrl = null;
       if (!selectedContact && selectedContact.length() === 0) {
         selectedContact = {};
       }
@@ -383,7 +390,6 @@ export default {
         this.selectedContact.participants = data.users;
         document.dispatchEvent(new CustomEvent(chatConstants.EVENT_ROOM_SELECTION_CHANGED, {'detail': this.selectedContact}));
       });
-      this.retrieveAvatarUrl();
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
@@ -461,21 +467,6 @@ export default {
             container = container[0];
           }
           action.init(container, eXo.chat);
-        }
-      }
-    },
-    retrieveAvatarUrl() {
-      if (this.selectedContact) {
-        if (this.selectedContact.type === 'u') {
-          getUserInfo(this.selectedContact.user).then((user) => {
-            this.avatarUrl = user.avatar;
-          });
-        } else if (this.selectedContact.type === 's') {
-          getSpaceByPrettyName(this.selectedContact.prettyName).then((space) => {
-            this.avatarUrl = space.avatarUrl;
-          });
-        } else {
-          this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
         }
       }
     }
