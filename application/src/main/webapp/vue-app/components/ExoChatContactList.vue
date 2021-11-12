@@ -390,7 +390,7 @@ export default {
     document.removeEventListener(chatConstants.ACTION_ROOM_SELECT, this.selectContact);
     document.removeEventListener(chatConstants.EVENT_ROOM_SELECTION_CHANGED, this.contactChanged);
     document.removeEventListener(chatConstants.EVENT_MESSAGE_NOT_SENT, this.messageNotSent);
-    document.addEventListener(chatConstants.ROOM_NOTIFICATION_SETTINGS_UPDATED, this.refreshNotificationSettings);
+    document.removeEventListener(chatConstants.ROOM_NOTIFICATION_SETTINGS_UPDATED, this.refreshNotificationSettings);
   },
   methods: {
     refreshNotificationSettings(event) {
