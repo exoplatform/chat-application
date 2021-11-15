@@ -1,115 +1,123 @@
 <template>
-  <div id="room-detail" class="room-detail">
-    <div v-if="mq == 'mobile'" @click="backToContactList"><i class="uiIconGoBack"></i></div>
-    <exo-chat-contact
-      v-if="!showMeetingDrawer"
-      :is-external="contact.isExternal === 'true'"
-      :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'"
-      :type="contact.type"
-      :user-name="contact.user"
-      :pretty-name="contact.prettyName"
-      :group-id="contact.groupId"
-      :name="contact.fullName"
-      :status="contact.status"
-      :nb-members="nbMembers">
-      <div
-        v-exo-tooltip.bottom.body="favoriteTooltip"
-        v-if="mq !== 'mobile'"
-        :class="{'is-fav': contact.isFavorite}"
-        class="uiIcon favorite"
-        @click.stop="toggleFavorite(contact)"></div>
-    </exo-chat-contact>
-    <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
-      <div class="room-search">
-        <input
-          ref="searchRoom"
-          v-model="searchText"
-          type="text"
-          placeholder="search here"
-          @blur="closeSearchRoom"
-          @keyup.esc="closeSearchRoom">
-        <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
-      </div>
-      <div class="room-action-menu">
-        <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="room-action-components">
-          <div
-            v-for="action in enabledRoomActionComponents"
-            :key="action.key"
-            :class="`${action.appClass} ${action.typeClass}`"
-            :ref="action.key">
-            <div v-if="action.component">
-              <component
-                v-dynamic-events="action.component.events"
-                v-bind="action.component.props ? action.component.props : {}"
-                :is="action.component.name" />
-            </div>
-            <div v-else-if="action.element" v-html="action.element.outerHTML">
-            </div>
-            <div v-else-if="action.html" v-html="action.html">
+  <v-app>
+    <div id="room-detail" class="room-detail">
+      <div v-if="mq == 'mobile'" @click="backToContactList"><i class="uiIconGoBack"></i></div>
+      <exo-chat-contact
+        v-if="!showMeetingDrawer"
+        :is-external="contact.isExternal === 'true'"
+        :is-enabled="contact.isEnabledUser === 'true' || contact.isEnabledUser === 'null'"
+        :type="contact.type"
+        :user-name="contact.user"
+        :pretty-name="contact.prettyName"
+        :group-id="contact.groupId"
+        :name="contact.fullName"
+        :status="contact.status"
+        :nb-members="nbMembers">
+        <div
+          v-exo-tooltip.bottom.body="favoriteTooltip"
+          v-if="mq !== 'mobile'"
+          :class="{'is-fav': contact.isFavorite}"
+          class="uiIcon favorite"
+          @click.stop="toggleFavorite(contact)"></div>
+        <v-icon
+          color="red darken-2"
+          dense
+          v-if="isRoomNotificationSilence">
+          mdi-volume-off
+        </v-icon>
+      </exo-chat-contact>
+      <div :class="{'search-active': showSearchRoom}" class="room-actions-container">
+        <div class="room-search">
+          <input
+            ref="searchRoom"
+            v-model="searchText"
+            type="text"
+            placeholder="search here"
+            @blur="closeSearchRoom"
+            @keyup.esc="closeSearchRoom">
+          <i class="uiIconCloseLight" @click.stop.prevent="closeSearchRoom"></i>
+        </div>
+        <div class="room-action-menu">
+          <div v-if="contact.isEnabledUser === 'null' || contact.isEnabledUser === 'true'" class="room-action-components">
+            <div
+              v-for="action in enabledRoomActionComponents"
+              :key="action.key"
+              :class="`${action.appClass} ${action.typeClass}`"
+              :ref="action.key">
+              <div v-if="action.component">
+                <component
+                  v-dynamic-events="action.component.events"
+                  v-bind="action.component.props ? action.component.props : {}"
+                  :is="action.component.name" />
+              </div>
+              <div v-else-if="action.element" v-html="action.element.outerHTML">
+              </div>
+              <div v-else-if="action.html" v-html="action.html">
+              </div>
             </div>
           </div>
+          <div
+            v-exo-tooltip.bottom="$t('exoplatform.chat.search')"
+            class="room-search-btn"
+            @click="openSearchRoom">
+            <i class="uiIconSearchLight"></i>
+          </div>
+          <exo-dropdown-select
+            v-if="displayMenu"
+            class="room-settings-dropdown chat-team-button-dropdown"
+            position="right"
+            @click.native="checkMeetingStatus">
+            <i
+              v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')"
+              slot="toggle"
+              class="uiIconVerticalDots"></i>
+            <li
+              v-for="settingAction in enabledSettingActions"
+              slot="menu"
+              :class="`room-setting-action-${settingAction.key}`"
+              :key="settingAction.key"
+              @click.stop="executeAction(settingAction)">
+              <a href="#">
+                <i :class="settingAction.class" class="uiIconRoomSetting"></i>
+                {{ $t(settingAction.labelKey) }}
+              </a>
+            </li>
+          </exo-dropdown-select>
         </div>
-        <div
-          v-exo-tooltip.bottom="$t('exoplatform.chat.search')"
-          class="room-search-btn"
-          @click="openSearchRoom">
-          <i class="uiIconSearchLight"></i>    
-        </div>
-        <exo-dropdown-select
-          v-if="displayMenu"
-          class="room-settings-dropdown chat-team-button-dropdown"
-          position="right"
-          @click.native="checkMeetingStatus">
-          <i
-            v-exo-tooltip.bottom="$t('exoplatform.chat.moreActions')"
-            slot="toggle"
-            class="uiIconVerticalDots"></i>
-          <li
-            v-for="settingAction in enabledSettingActions"
-            slot="menu"
-            :class="`room-setting-action-${settingAction.key}`"
-            :key="settingAction.key"
-            @click.stop="executeAction(settingAction)">
-            <a href="#">
-              <i :class="settingAction.class" class="uiIconRoomSetting"></i>
-              {{ $t(settingAction.labelKey) }}
-            </a>
-          </li>
-        </exo-dropdown-select>
       </div>
+      <exo-chat-room-notification-modal
+        :room="contact.room"
+        :room-name="contact.fullName"
+        :show="openNotificationSettings"
+        @modal-closed="closeNotificationSettingsModal" />
+      <exo-chat-modal
+        v-show="showConfirmModal"
+        :title="$t(confirmTitle)"
+        @modal-closed="showConfirmModal=false">
+        <div class="modal-body">
+          <p>
+            <span
+              id="team-delete-window-chat-name"
+              class="confirmationIcon"
+              v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
+            </span>
+          </p>
+        </div>
+        <div class="uiAction uiActionBorder">
+          <a
+            id="team-delete-button-ok"
+            href="#"
+            class="btn btn-primary"
+            @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
+          <a
+            id="team-delete-button-cancel"
+            href="#"
+            class="btn"
+            @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
+        </div>
+      </exo-chat-modal>
     </div>
-    <exo-chat-room-notification-modal
-      :room="contact.room"
-      :room-name="contact.fullName"
-      :show="openNotificationSettings"
-      @modal-closed="closeNotificationSettingsModal" />
-    <exo-chat-modal
-      v-show="showConfirmModal"
-      :title="$t(confirmTitle)"
-      @modal-closed="showConfirmModal=false">
-      <div class="modal-body">
-        <p>
-          <span
-            id="team-delete-window-chat-name"
-            class="confirmationIcon"
-            v-html="unescapeHTML($t(confirmMessage, {0: escapeHTML(contact.fullName)}))">
-          </span>
-        </p>
-      </div>
-      <div class="uiAction uiActionBorder">
-        <a
-          id="team-delete-button-ok"
-          href="#"
-          class="btn btn-primary"
-          @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
-        <a
-          id="team-delete-button-cancel"
-          href="#"
-          class="btn"
-          @click="showConfirmModal=false">{{ $t(confirmKOMessage) }}</a>
-      </div>
-    </exo-chat-modal>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -137,11 +145,17 @@ export default {
       type: Object,
       default() {
         return {};
-      }
+      },
     },
     showMeetingDrawer: {
       type: Boolean,
       default: false
+    },
+    isRoomNotificationSilence: {
+      type: Boolean,
+      default() {
+        return false;
+      }
     }
   },
   data() {

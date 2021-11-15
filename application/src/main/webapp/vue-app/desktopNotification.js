@@ -34,8 +34,18 @@ function canBypassDonotDisturb() {
   return eXo.chat.userSettings.status !== 'donotdisturb' || eXo.chat.desktopNotificationSettings.preferredNotificationTrigger.indexOf('notify-even-not-disturb') !== -1;
 }
 
-function canPlaySound() {
-  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_BIP) !== -1;
+export function isRoomNotificationSilence(roomId) {
+  if (eXo.chat.desktopNotificationSettings && eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger &&
+      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[roomId]) {
+    return eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger[roomId].notifCond === 'silence';
+  } else {
+    return false;
+  }
+}
+
+function canPlaySound(roomId, silentReceivers) {
+  return eXo.chat.desktopNotificationSettings.preferredNotification.indexOf(ROOM_BIP) !== -1 && !isRoomNotificationSilence(roomId)
+      && !isRoomSilentForCurrentUser(silentReceivers);
 }
 
 function canShowDesktopNotif() {
@@ -136,7 +146,7 @@ function notify(e) {
     };
 
     if (canNotifySwitchStatus() && canBypassRoomNotif(notification)) {
-      if (canPlaySound()) {
+      if (canPlaySound(message.room, message.silentReceivers)) {
         $('#chat-audio-notif')[0].play();
       }
       if (canShowDesktopNotif()) {
@@ -144,6 +154,10 @@ function notify(e) {
       }
     }
   });
+}
+
+function isRoomSilentForCurrentUser(silentReceivers) {
+  return silentReceivers.includes(eXo.env.portal.userName);
 }
 
 function showDesktopNotif(path, msg) {

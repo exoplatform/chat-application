@@ -54,6 +54,25 @@
         v-if="mq === 'mobile' && list && lastMessage || chatDrawerContact"
         :class="chatDrawerContact ? 'lastMessageDrawer last-message' : 'last-message' "></div>
     </div>
+    <div
+      v-if="!isRoomSilent && unreadTotal > 0 && unreadTotal <= maxShowUnread"
+      class="unreadMessages">
+      {{ unreadTotal }}
+    </div>
+    <div
+      v-if="!isRoomSilent && unreadTotal > maxShowUnread"
+      class="unreadMessages maxUnread">
+      +{{ maxShowUnread }}
+    </div>
+    <div>
+      <v-icon
+        color="red darken-2"
+        dense
+        class="ml-2 mb-1"
+        v-if="isRoomSilent">
+        mdi-volume-off
+      </v-icon>
+    </div>
   </div>
 </template>
 
@@ -132,7 +151,19 @@ export default {
     chatDrawerContact: {
       type: Boolean,
       default: false
-    }
+    },
+    contactRoomId: {
+      type: String,
+      default: null
+    },
+    unreadTotal: {
+      type: Number,
+      default: null
+    },
+    isRoomSilent: {
+      type: Boolean,
+      default: false
+    },
   },
   data: function() {
     return {
@@ -152,6 +183,7 @@ export default {
         invisible: this.$t('exoplatform.chat.invisible'),
       },
       avatarUrl: '',
+      maxShowUnread: 99
     };
   },
   computed: {
@@ -193,7 +225,7 @@ export default {
         return getSpaceProfileLink(this.groupId, this.prettyName);
       }
       return '#';
-    }
+    },
   },
   created() {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
