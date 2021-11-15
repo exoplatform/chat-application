@@ -93,6 +93,7 @@ export const chatConstants = {
   EVENT_MESSAGE_UPDATED: 'exo-chat-message-updated',
   EVENT_MESSAGE_STATISTIC: 'exo-statistic-message',
   EVENT_GLOBAL_UNREAD_COUNT_UPDATED: 'exo-chat-notification-count-updated',
+  ROOM_NOTIFICATION_SETTINGS_UPDATED: 'exo-chat-room-notification-settings-updated',
   EVENT_ROOM_PARTICIPANTS_LOADED: 'exo-chat-participants-loaded',
   EVENT_ROOM_DELETED: 'exo-chat-room-deleted',
   EVENT_ROOM_FAVORITE_ADDED: 'exo-chat-room-favorite-added',
