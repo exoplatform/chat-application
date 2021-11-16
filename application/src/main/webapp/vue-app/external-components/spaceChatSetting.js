@@ -1,7 +1,7 @@
 import * as chatServices from '../chatServices';
 
 export const template = `
-        <v-card id="FromChat" class="border-radius" flat>
+        <v-card id="FromChat" class="border-radius" flat v-if="displayed">
           <v-list>
             <v-list-item>
               <v-list-item-content>
@@ -20,7 +20,9 @@ export const template = `
         </v-card>
       `;
 export const data = {
+  id: `ChatApp${parseInt(Math.random() * 10000)}`,
   spaceChatEnabled: false,
+  displayed: true,
 };
 export const props = {
 };
@@ -34,6 +36,12 @@ export const created = function() {
           this.spaceChatEnabled = value === 'true';
         });
     });
+  document.addEventListener('hideSettingsApps', (event) => {
+    if (event && event.detail && this.id !== event.detail) {
+      this.displayed = false;
+    }
+  });
+  document.addEventListener('showSettingsApps', () => this.displayed = true);
 };
 export const methods = {
   enableDisableChat() {
