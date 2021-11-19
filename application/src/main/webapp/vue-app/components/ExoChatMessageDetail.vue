@@ -242,7 +242,7 @@ import * as chatServices from '../chatServices';
 import {messageActions, EMOTICONS, extraMessageTypes} from '../extension';
 import messageFilter from '../messageFilter.js';
 import {chatConstants} from '../chatConstants';
-import {getUserInfo} from '../chatServices';
+import {getUserAvatar} from '../chatServices';
 
 export default {
   props: {
@@ -298,7 +298,6 @@ export default {
       confirmOKMessage: '',
       confirmKOMessage: '',
       confirmAction(){return;},
-      avatarUrl: ''
     };
   },
   computed: {
@@ -370,6 +369,9 @@ export default {
         return '('.concat('',this.$t('exoplatform.chat.inactive')).concat(')');
       }
       return '';
+    },
+    avatarUrl() {
+      return getUserAvatar(this.message.user);
     }
   },
   created() {
@@ -378,7 +380,6 @@ export default {
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
-    this.retrieveAvatarUrl();
   },
   destroyed() {
     document.removeEventListener(
@@ -615,11 +616,6 @@ export default {
           detail: {user: eXo.chat.userSettings.username, clientId: this.message.clientId}
         })
       );
-    },
-    retrieveAvatarUrl() {
-      getUserInfo(this.message.user).then((user) => {
-        this.avatarUrl = user.avatar;
-      });
     }
   }
 };
