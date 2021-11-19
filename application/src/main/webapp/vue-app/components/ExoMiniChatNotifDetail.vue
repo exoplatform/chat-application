@@ -32,6 +32,7 @@ import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
 import {extraMessageNotifs} from '../extension';
 import {chatConstants} from '../chatConstants';
+import {getUserAvatar} from "../chatServices";
 
 export default {
   props: {
@@ -54,14 +55,6 @@ export default {
         };
       }
     }
-  },
-  data: function() {
-    return {
-      avatarUrl: ''
-    };
-  },
-  created() {
-    this.retrieveAvatarUrl();
   },
   computed: {
     messageClass() {
@@ -133,17 +126,15 @@ export default {
         }
       }
       return content;
+    },
+    avatarUrl() {
+      return getUserAvatar(this.message.user);
     }
   },
   methods: {
     unescapeHTML(html) {
       return chatServices.unescapeHtml(html);
-    },
-    retrieveAvatarUrl(username) {
-      chatServices.getUserInfo(username).then((user) => {
-        this.avatarUrl = user.avatar;
-      });
-    },
+    }
   }
 };
 </script>

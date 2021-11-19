@@ -77,7 +77,13 @@
 </template>
 
 <script>
-import { getUserInfo, getSpaceByPrettyName, getUserProfileLink, getSpaceProfileLink, escapeHtml } from '../chatServices';
+import {
+  getUserProfileLink,
+  getSpaceProfileLink,
+  escapeHtml,
+  getSpaceAvatar,
+  getUserAvatar
+} from '../chatServices';
 import {chatConstants} from '../chatConstants';
 
 export default {
@@ -182,7 +188,6 @@ export default {
         donotdisturb: this.$t('exoplatform.chat.donotdisturb'),
         invisible: this.$t('exoplatform.chat.invisible'),
       },
-      avatarUrl: '',
       maxShowUnread: 99
     };
   },
@@ -226,12 +231,20 @@ export default {
       }
       return '#';
     },
+    avatarUrl() {
+      if (this.type === 'u') {
+        return  getUserAvatar(this.userName);
+      } else if (this.type === 's') {
+        return getSpaceAvatar(this.prettyName);
+      } else {
+        return chatConstants.DEFAULT_ROOM_AVATAR;
+      }
+    }
   },
   created() {
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
     document.addEventListener(chatConstants.EVENT_CONNECTED, this.setOnline);
     document.addEventListener(chatConstants.EVENT_RECONNECTED, this.setOnline);
-    this.retrieveAvatarUrl();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.setOffline);
@@ -247,19 +260,6 @@ export default {
     },
     setOffline() {
       this.isOnline = false;
-    },
-    retrieveAvatarUrl() {
-      if (this.type === 'u') {
-        getUserInfo(this.userName).then((user) => {
-          this.avatarUrl = user.avatar;
-        });
-      } else if (this.type === 's') {
-        getSpaceByPrettyName(this.prettyName).then((data) => {
-          this.avatarUrl = data.avatarUrl;
-        });
-      } else {
-        this.avatarUrl = chatConstants.DEFAULT_ROOM_AVATAR;
-      }
     }
   }
 };

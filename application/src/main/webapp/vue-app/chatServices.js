@@ -7,6 +7,15 @@ import * as desktopNotification from './desktopNotification';
 const DEFAULT_HTTP_PORT = 80;
 const REATTEMPT_INIT_PERIOD = 1000;
 const MAX_UNREAD_NUMBER = 99;
+
+export function getUserAvatar(user) {
+  return `${chatConstants.SOCIAL_USER_API}${user}/avatar`;
+}
+
+export function getSpaceAvatar(space) {
+  return `${chatConstants.SOCIAL_SPACE_API}${space}/avatar`;
+}
+
 export function getUserStatus(userSettings, user) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getStatus?user=${userSettings.username}&targetUser=${user}`, {
     headers: {
