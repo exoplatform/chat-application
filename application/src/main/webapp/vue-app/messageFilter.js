@@ -7,7 +7,7 @@ export default function(msg, highlight, emojis) {
 
   lines.forEach( (line, index) => {
     line = $('<div />').html(line).text();
-    const words = line.split(/(?:<br\s*\/?>|\s|&nbsp;)+/gi);
+    const words = line.split(/\s|&nbsp;/g);
     words.forEach(w => {
       // check link
       if (w.indexOf('http:') === 0 || w.indexOf('https:') === 0 || w.indexOf('ftp:') === 0) {
