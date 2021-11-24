@@ -7,7 +7,6 @@
       modal-class="create-room-modal"
       @modal-closed="closeModal">
       <meta charset="utf-8">
-  
       <div class="add-room-form">
         <label>{{ $t('exoplatform.chat.team.name') }}</label>
         <input
@@ -93,14 +92,14 @@ export default {
     show(newValue) {
       if (this.selected && newValue) {
         this.fullName = this.selected.fullName;
-        this.participants = this.selected.participants ? this.selected.participants : [];
+        this.participants = this.selected.participants ? this.mapParticipants(this.selected.participants) : [];
       }
-    },
+    }
   },
   created() {
     if (this.selected) {
       this.fullName = this.selected.fullName;
-      this.participants = this.selected.participants ? this.selected.participants : [];
+      this.participants = this.selected.participants ? this.mapParticipants(this.selected.participants) : [];
     }
   },
   methods: {
@@ -135,6 +134,19 @@ export default {
             }
           });
       }
+    },
+    mapParticipants(participants) {
+      return participants.map(participant => {
+        return {
+          'id': participant.name,
+          'profile': {
+            fullName: participant.fullname,
+            external: participant.isExternal,
+            avatarUrl: chatServices.getUserAvatar(participant.name)
+          },
+          'remoteId': participant.name
+        };
+      });
     },
     closeModal() {
       this.$emit('modal-closed');
