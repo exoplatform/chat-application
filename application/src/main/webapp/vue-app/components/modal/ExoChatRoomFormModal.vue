@@ -16,9 +16,9 @@
         <label>{{ $t('exoplatform.chat.team.people') }}</label>
         <exo-identity-suggester
           ref="invitedPeopleAutoComplete"
-          v-model="mappedParticipants"
+          v-model="participants"
           :search-options="{}"
-          :key="mappedParticipants"
+          :key="participants"
           name="invitePeople"
           multiple
           include-users />
@@ -86,19 +86,6 @@ export default {
     },
     disableSave() {
       return !this.validNewRoomName;
-    },
-    mappedParticipants() {
-      return this.participants.map(participant => {
-        return {
-          'id': participant.name,
-          'profile': {
-            fullName: participant.fullname,
-            external: participant.isExternal,
-            avatarUrl: chatServices.getUserAvatar(participant.name)
-          },
-          'remoteId': participant.name
-        };
-      });
     }
   },
   watch: {
@@ -118,7 +105,7 @@ export default {
   methods: {
     saveRoom() {
       if (this.fullName) {
-        let users = this.mappedParticipants.map(user => user.remoteId || user.name);
+        let users = this.participants.map(user => user.remoteId || user.name);
         if (users.indexOf(eXo.chat.userSettings.username) < 0) {
           users.unshift(eXo.chat.userSettings.username);
         }
