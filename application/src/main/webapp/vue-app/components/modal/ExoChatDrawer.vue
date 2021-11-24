@@ -244,12 +244,6 @@ export default {
         userSettings => this.initSettings(userSettings),
         chatRoomsData => {
           this.initChatRooms(chatRoomsData);
-          const totalUnreadMsg = Math.abs(Number(chatRoomsData.unreadOffline) +
-              Number(chatRoomsData.unreadSpaces) + Number(chatRoomsData.unreadOnline) +
-              Number(chatRoomsData.unreadTeams)) - Number(chatRoomsData.unreadSilentRooms);
-          if (totalUnreadMsg >= 0) {
-            this.totalUnreadMsg = totalUnreadMsg;
-          }
           this.$nextTick(this.$refs.chatDrawer.endLoading);
         },
         !this.ap);
@@ -349,7 +343,14 @@ export default {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
       this.contactsSize = chatRoomsData.roomsCount;
-      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline) + Math.abs(chatRoomsData.unreadOnline) + Math.abs(chatRoomsData.unreadSpaces) + Math.abs(chatRoomsData.unreadTeams);
+      const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline)
+                           + Math.abs(chatRoomsData.unreadOnline)
+                           + Math.abs(chatRoomsData.unreadSpaces)
+                           + Math.abs(chatRoomsData.unreadTeams)
+                           - Number(chatRoomsData.unreadSilentRooms);
+      if (totalUnreadMsg >= 0) {
+        this.totalUnreadMsg = totalUnreadMsg;
+      }
       chatServices.updateTotalUnread(totalUnreadMsg);
     },
     loadMoreContacts(term, filter, pageNumber) {
