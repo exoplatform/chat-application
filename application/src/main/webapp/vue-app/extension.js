@@ -473,7 +473,7 @@ export function registerExternalComponents(componentName, template, props, data,
   };
 
   if (extensionRegistry) {
-    extensionRegistry.registerComponent('external-space', 'settings', externalComponentOptions);
+    extensionRegistry.registerComponent('external-apps-space-settings', 'space-settings', externalComponentOptions);
   }
 }
 
