@@ -102,6 +102,7 @@
         <template slot="content">
           <div :class="!selectedContact ? 'contentDrawer ' : 'contentDrawerOfList'">
             <exo-chat-contact-list
+              :is-chat-drawer="true"
               v-show="!selectedContact && contactList.length > 0"
               :search-word="searchTerm"
               :drawer-status="showChatDrawer"
