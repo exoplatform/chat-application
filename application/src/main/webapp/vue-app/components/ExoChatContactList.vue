@@ -176,7 +176,6 @@ import * as chatServices from '../chatServices';
 import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import * as chatTime from '../chatTime';
-import * as desktopNotification from '../desktopNotification';
 
 import {chatConstants} from '../chatConstants';
 import {composerApplications} from '../extension';
@@ -252,6 +251,10 @@ export default {
     searchWord: {
       type: String,
       default: ''
+    },
+    isChatDrawer: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -295,29 +298,36 @@ export default {
     },
     filteredContacts: function() {
       const sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
-      if (this.sortFilter === 'Unread') {
-        sortedContacts.sort(function(a, b){
-          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal !== 0) {
-            return -1;
-          }
-          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal === 0) {
-            return 0;
-          }
+      const self = this;
+      if (this.sortFilter === 'Unread' && !this.isChatDrawer) {
+        sortedContacts.sort(function (a, b) {
           const unreadTotal = b.unreadTotal - a.unreadTotal;
           if (unreadTotal === 0) {
-            return b.timestamp - a.timestamp;
+            if (a.timestamp < b.timestamp) {
+              return self.compareSilentsForSort(a, b, 1);
+            } else if (a.timestamp > b.timestamp) {
+              return self.compareSilentsForSort(a, b, -1);
+            } else {
+              return self.compareSilentsForSort(a, b, 0);
+            }
           }
-          return unreadTotal;
+          if (a.unreadTotal < b.unreadTotal) {
+            return self.compareSilentsForSort(a, b, 1);
+          } else if (a.unreadTotal > b.unreadTotal) {
+            return self.compareSilentsForSort(a, b, -1);
+          } else {
+            return self.compareSilentsForSort(a, b, 0);
+          }
         });
       } else {
-        sortedContacts.sort(function(a, b){
-          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal !== 0) {
-            return -1;
+        sortedContacts.sort(function (a, b) {
+          if (a.timestamp < b.timestamp) {
+            return self.compareSilentsForSort(a, b, 1);
+          } else if (a.timestamp > b.timestamp) {
+            return self.compareSilentsForSort(a, b, -1);
+          } else {
+            return self.compareSilentsForSort(a, b, 0);
           }
-          if (desktopNotification.isRoomNotificationSilence(b.room) && a.unreadTotal === 0) {
-            return 0;
-          }
-          return b.timestamp - a.timestamp;
         });
       }
       return sortedContacts.slice(0, this.contactsToDisplay.length);
@@ -393,6 +403,15 @@ export default {
     document.removeEventListener(chatConstants.ROOM_NOTIFICATION_SETTINGS_UPDATED, this.refreshNotificationSettings);
   },
   methods: {
+    compareSilentsForSort(a, b, v) {
+      if (a.isRoomSilent && b.unreadTotal !== 0 && !b.isRoomSilent) {
+        return 1;
+      }
+      if (!a.isRoomSilent && b.isRoomSilent && a.unreadTotal !== 0) {
+        return -1;
+      }
+      return v;
+    },
     refreshNotificationSettings(event) {
       const roomId = event.detail.data.targetRoom;
       this.filteredContacts.filter(contact => {
