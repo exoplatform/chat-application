@@ -353,16 +353,14 @@ export default {
       // consider the first item (can be easily extended for multiple items)
       const item = e.clipboardData.items[0];
       //test if the type of item e
-      if (item.type.indexOf('image') === 0)
-      {
-        const blob = item.getAsFile();
+      if (item.type.indexOf('image') === 0) {
+        const pastedImage = item.getAsFile();
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           document.getElementById('container').src = event.target.result;
         };
-        reader.readAsDataURL(blob);
-      }
-      else {
+        reader.readAsDataURL(pastedImage);
+      } else {
         // cancel paste
         e.preventDefault();
         // get text representation of clipboard
