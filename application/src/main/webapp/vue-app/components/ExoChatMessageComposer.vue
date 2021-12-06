@@ -357,7 +357,7 @@ export default {
         const pastedImage = item.getAsFile();
         const reader = new FileReader();
         reader.onload = function (event) {
-          document.getElementById('container').src = event.target.result;
+          document.getElementById('messageComposerArea').src = event.target.result;
         };
         reader.readAsDataURL(pastedImage);
       } else {
