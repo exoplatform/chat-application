@@ -61,7 +61,8 @@
           @keyup.enter="sendMessageWithKey"
           @keyup.up="editLastMessage"
           @keyup="resizeTextarea($event)"
-          @paste="paste"></div>
+          @paste="paste"
+          @setEndOfContenteditable="setEndOfContenteditable"></div>
         <div
           v-exo-tooltip.top="$t('exoplatform.chat.send')"
           v-if="!miniChat"
@@ -366,7 +367,7 @@ export default {
         // get text representation of clipboard
         this.text = (e.originalEvent || e).clipboardData.getData('text/plain');
         // insert text manually
-        this.$refs.messageComposerArea.innerHTML = this.$refs.messageComposerArea.innerHTML + this.text;
+        $(this.$refs.messageComposerArea).insertAtCaret(this.text);
       }
     },
   }
