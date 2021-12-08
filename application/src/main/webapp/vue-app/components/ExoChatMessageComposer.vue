@@ -61,8 +61,7 @@
           @keyup.enter="sendMessageWithKey"
           @keyup.up="editLastMessage"
           @keyup="resizeTextarea($event)"
-          @paste="paste"
-          @setEndOfContenteditable="setEndOfContenteditable"></div>
+          @paste="paste"></div>
         <div
           v-exo-tooltip.top="$t('exoplatform.chat.send')"
           v-if="!miniChat"
