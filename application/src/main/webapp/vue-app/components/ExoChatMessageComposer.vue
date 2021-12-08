@@ -366,7 +366,7 @@ export default {
         // get text representation of clipboard
         this.text = (e.originalEvent || e).clipboardData.getData('text/plain');
         // insert text manually
-        document.execCommand('insertHTML', false, this.text);
+        this.$refs.messageComposerArea.innerHTML = this.$refs.messageComposerArea.innerHTML + this.text;
       }
     },
   }
