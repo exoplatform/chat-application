@@ -32,7 +32,7 @@ import * as chatTime from '../chatTime';
 import * as chatServices from '../chatServices';
 import {extraMessageNotifs} from '../extension';
 import {chatConstants} from '../chatConstants';
-import {getUserAvatar} from "../chatServices";
+import {getUserAvatar} from '../chatServices';
 
 export default {
   props: {

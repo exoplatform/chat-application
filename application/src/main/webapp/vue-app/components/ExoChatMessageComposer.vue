@@ -60,7 +60,8 @@
           @keypress.enter="preventDefault"
           @keyup.enter="sendMessageWithKey"
           @keyup.up="editLastMessage"
-          @keyup="resizeTextarea($event)"></div>
+          @keyup="resizeTextarea($event)"
+          @paste="paste"></div>
         <div
           v-exo-tooltip.top="$t('exoplatform.chat.send')"
           v-if="!miniChat"
@@ -347,7 +348,27 @@ export default {
       chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
       this.mentionedUsers = [];
       return message;
-    }
+    },
+    paste(e) {
+      // consider the first item (can be easily extended for multiple items)
+      const item = e.clipboardData.items[0];
+      //test if the type of item e
+      if (item.type.indexOf('image') === 0) {
+        const pastedImage = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          this.$refs.messageComposerArea.src = event.target.result;
+        };
+        reader.readAsDataURL(pastedImage);
+      } else {
+        // cancel paste
+        e.preventDefault();
+        // get text representation of clipboard
+        this.text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        // insert text manually
+        $(this.$refs.messageComposerArea).insertAtCaret(this.text);
+      }
+    },
   }
 };
 </script>
