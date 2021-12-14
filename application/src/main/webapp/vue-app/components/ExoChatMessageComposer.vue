@@ -139,7 +139,7 @@ export default {
   },
   updated() {
     if (this.contact) {
-      if (this.mq === 'desktop' && (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null')) { // set autofocus only for enabled contact on desktop
+      if (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null') {
         this.$nextTick(() => {
           this.$refs.messageComposerArea.focus();
           this.composerApplications.forEach(application => {
