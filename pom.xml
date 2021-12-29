@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
     <version>15-M02</version>
-    <relativePath />
+    <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>3.3.0-20211229</version>
+  <version>3.3.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
@@ -26,15 +27,15 @@
     <connection>scm:git:git://github.com/exoplatform/chat-application.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/exoplatform/chat-application.git</developerConnection>
     <url>https://github.com/exoplatform/chat-application</url>
-    <tag>3.3.0-20211229</tag>
+    <tag>HEAD</tag>
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>6.3.0-20211229</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.social.version>6.3.0-20211229</org.exoplatform.social.version>
-    <addon.exo.ecms.version>6.3.0-20211229</addon.exo.ecms.version>
-    <addon.exo.notes.version>1.1.0-20211229</addon.exo.notes.version>
-  	<org.juzu.version>1.2.0</org.juzu.version>
+    <org.exoplatform.gatein.portal.version>6.3.x-SNAPSHOT</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.social.version>6.3.x-SNAPSHOT</org.exoplatform.social.version>
+    <addon.exo.ecms.version>6.3.x-SNAPSHOT</addon.exo.ecms.version>
+    <addon.exo.notes.version>1.1.x-SNAPSHOT</addon.exo.notes.version>
+  	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
