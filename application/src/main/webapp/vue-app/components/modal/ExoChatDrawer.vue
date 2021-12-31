@@ -219,6 +219,7 @@ export default {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
     });
+    document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.addEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -229,6 +230,7 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   destroyed() {
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.removeEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -239,6 +241,45 @@ export default {
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
   },
   methods: {
+    messageReceived(event) {
+      const message = event.detail;
+      const room = message.room;
+      if (!room) {
+        return;
+      }
+
+      const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
+
+      if (foundContact) {
+        if (!foundContact.lastMessage) {
+          foundContact.lastMessage = {};
+        }
+        foundContact.lastMessage = message.data;
+        foundContact.timestamp = message.ts;
+      } else {
+        chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
+          if (contact && contact.user && contact.user.length && contact.user !== 'undefined') {
+            this.contactList.unshift(contact);
+          }
+        });
+      }
+    },
+    findContactByRoomOrUser(room, targetUser) {
+      let foundContact = null;
+      if (room && room.trim().length)  {
+        foundContact = this.findContact(room, 'room');
+      }
+      if (!foundContact && targetUser && targetUser.trim().length) {
+        foundContact = this.findContact(targetUser, 'user');
+      }
+      return foundContact;
+    },
+    findContact(value, field) {
+      if (!field)  {
+        field = 'room';
+      }
+      return this.contactList.find(contact => contact[field] === value);
+    },
     openDrawer() {
       this.$refs.chatDrawer.startLoading();
       chatServices.initChatSettings(this.userSettings.username, false,
