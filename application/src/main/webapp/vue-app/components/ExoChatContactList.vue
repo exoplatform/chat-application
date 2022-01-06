@@ -391,7 +391,7 @@ export default {
     document.removeEventListener(chatConstants.EVENT_ROOM_FAVORITE_ADDED, this.favoriteAdded);
     document.removeEventListener(chatConstants.EVENT_ROOM_FAVORITE_REMOVED, this.favoriteRemoved);
     document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
-    document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, this.messageSent);
+    document.removeEventListener(chatConstants.EVENT_MESSAGE_SENT, this.messageSent);
     document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.contactStatusChanged);
     document.removeEventListener(chatConstants.EVENT_MESSAGE_READ, this.markRoomMessagesRead);
     document.removeEventListener(chatConstants.ACTION_ROOM_EDIT, this.editRoom);
@@ -527,28 +527,7 @@ export default {
         return false;
       }
     },
-    messageReceived(event) {
-      const message = event.detail;
-      const room = message.room;
-      if (!room) {
-        return;
-      }
-
-      const foundContact = this.findContactByRoomOrUser(room, message.data ? message.data.user : message.sender);
-
-      if (foundContact) {
-        if (!foundContact.lastMessage) {
-          foundContact.lastMessage = {};
-        }
-        foundContact.lastMessage = message.data;
-        foundContact.timestamp = message.ts;
-      } else {
-        chatServices.getRoomDetail(eXo.chat.userSettings, room).then((contact) => {
-          if (contact && contact.user && contact.user.length && contact.user !== 'undefined') {
-            this.contactsToDisplay.unshift(contact);
-          }
-        });
-      }
+    messageReceived() {
       this.$emit('refresh-contacts', true);
       this.$forceUpdate();
     },
