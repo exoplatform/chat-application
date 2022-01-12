@@ -3,8 +3,8 @@ package org.exoplatform.chat.services.upgrade;
 import java.util.regex.Pattern;
 
 import org.exoplatform.chat.services.mongodb.ChatMongoDataStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.chat.services.mongodb.MongoBootstrap;
 
 import com.mongodb.BasicDBObject;
@@ -15,7 +15,7 @@ import com.mongodb.DBObject;
 
 public class MigrateService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MigrateService.class);
+  private static final Log LOG = ExoLogger.getLogger(MigrateService.class);
 
   private DB db;
 

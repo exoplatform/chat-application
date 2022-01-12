@@ -248,24 +248,7 @@
       </dependency>
 
       <!-- Logging -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <!-- Redirect everything from JUL to SLF4J -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
       <!-- Use SLF4J and not log4j -->
-      <!-- log4j must be removed from dependencies -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>log4j-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
       <!-- SLF4J API -->
       <dependency>
         <groupId>org.slf4j</groupId>

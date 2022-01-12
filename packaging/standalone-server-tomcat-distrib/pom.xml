@@ -22,12 +22,6 @@
       <artifactId>chat-server-standalone</artifactId>
       <type>war</type>
     </dependency>
-
-    <!-- Redirect everything from JUL to SLF4J -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-    </dependency>
     <!-- Use SLF4J and not log4j -->
     <!-- SLF4J API -->
     <dependency>
