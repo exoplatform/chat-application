@@ -26,8 +26,8 @@ import org.exoplatform.chat.services.SettingDataStorage;
 import org.exoplatform.chat.services.mongodb.MongoBootstrap;
 import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 import org.exoplatform.chat.utils.ChatUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class FavoritesMigrationService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FavoritesMigrationService.class);
+  private static final Log    LOG                      = ExoLogger.getLogger(FavoritesMigrationService.class);
 
   private static final String SETTING_MIGRATION_STATUS = "upgrade-favorites";
 
