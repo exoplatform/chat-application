@@ -49,7 +49,7 @@
     <com.google.json-simple.version>1.1.1</com.google.json-simple.version>
 
     <!-- The apache tomcat version to bundle -->
-    <org.apache.tomcat.version>8.5.65</org.apache.tomcat.version>
+    <org.apache.tomcat.version>8.5.72</org.apache.tomcat.version>
     <quartz.version>2.2.2</quartz.version>
     <org.slf4j.version>1.7.7</org.slf4j.version>
 
