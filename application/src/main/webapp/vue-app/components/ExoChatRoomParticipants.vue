@@ -43,7 +43,6 @@
           :key="participant.name"
           class="contact-list-item">
           <exo-chat-contact
-            v-tiptip="participant.name"
             :is-external="participant.isExternal === 'true'"
             :is-enabled="participant.isEnabled === 'true' || participant.isEnabled === 'null'"
             :list="true"
@@ -66,19 +65,6 @@ import * as chatWebStorage from '../chatWebStorage';
 import {chatConstants} from '../chatConstants';
 
 export default {
-  // a directive for user popup plugin
-  directives: {
-    tiptip(el, binding) {
-      $(el).find('.chat-contact-avatar').userPopup({
-        restURL: chatConstants.PEOPLE_INFO_API,
-        userId: binding.value,
-        content: false,
-        defaultPosition: 'left',
-        keepAlive: true,
-        maxWidth: '240px'
-      });
-    }
-  },
   data: function() {
     return {
       isCollapsed: true,
