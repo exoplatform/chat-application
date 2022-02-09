@@ -436,7 +436,7 @@ export function registerExternalExtensions(chatTitle) {
     id: 'profile-chat',
     title: chatTitle,
     icon: 'uiIconBannerChat',
-    icon2: 'fas fa-comments',
+    class: 'fas fa-comments',
     additionalClass: 'mt-1',
     order: 10,
     enabled: () => true,
