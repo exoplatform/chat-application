@@ -145,9 +145,9 @@ export default {
           this.composerApplications.forEach(application => {
             if (application.mount) {
               application.mount($, chatServices);
-              this.initSuggester();
             }
           });
+          this.initSuggester();
         });
       }
     }
