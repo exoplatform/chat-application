@@ -38,7 +38,7 @@
   	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
-    <commons-lang3.version>3.2</commons-lang3.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-codec.version>1.4</commons-codec.version>
     <de.flapdoodle.embed.mongo.version>2.0.3</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.5</commons-compress.version>
