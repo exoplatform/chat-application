@@ -452,32 +452,23 @@ export function registerExternalExtensions(chatTitle) {
     },
   };
   
-
-  const spaceExtensionAction = {
-    id: 'space-chat',
-    title: chatTitle,
-    icon: 'fas fa-comments',
-    order: 10,
-    enabled: () => true,
-    click: (spaceId) => {
-      const chatType = 'space-id';
-      const chatRoomName = spaceId;
-
-      document.dispatchEvent(
-        new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, { detail: {
-          name: chatRoomName,
-          type: chatType,
-        }}));
-    },
-  };
-
   if (extensionRegistry) {
     extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
-    extensionRegistry.registerExtension('space-popup', 'space-popup-action', spaceExtensionAction);
   }
 
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
-  document.dispatchEvent(new CustomEvent('space-extension-updated', { detail: spaceExtensionAction}));
+
+  extensionRegistry.registerComponent('SpacePopover', 'space-popover-action', {
+    id: 'chat',
+    vueComponent: Vue.options.components['popover-chat-button'],
+    rank: 40,
+  });
+
+  extensionRegistry.registerComponent('UserPopover', 'user-popover-action', {
+    id: 'chat',
+    vueComponent: Vue.options.components['popover-chat-button'],
+    rank: 40,
+  });
 }
 
 export function registerExternalComponents(componentName, template, props, data, created, methods) {

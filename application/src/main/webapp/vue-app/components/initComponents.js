@@ -9,6 +9,7 @@ import ExoChatRoomDetail from './ExoChatRoomDetail.vue';
 import ExoChatMessageList from './ExoChatMessageList.vue';
 import ExoChatMessageDetail from './ExoChatMessageDetail.vue';
 import ExoChatMessageComposer from './ExoChatMessageComposer.vue';
+import PopoverChatButton from './PopoverChatButton.vue';
 
 import ExoChatGlobalNotificationModal from './modal/ExoChatGlobalNotificationModal.vue';
 import ExoChatComposerAppsModal from './modal/ExoChatComposerAppsModal.vue';
@@ -36,7 +37,9 @@ const components = {
   'exo-chat-message-composer': ExoChatMessageComposer,
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
   'exo-content-editable': ExoContentEditable,
-  'exo-chat-drawer': ExoChatDrawer
+  'exo-chat-drawer': ExoChatDrawer,
+  'popover-chat-button': PopoverChatButton,
+
 };
 
 // external components
