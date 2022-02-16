@@ -6,12 +6,10 @@
         v-on="on">
         <v-btn
           :ripple="false"
-          x-small
           icon
           color="primary"
-          class="pa-2"
           @click="openChatDrawer($event)">
-          <v-icon>fas fa-comments</v-icon>
+          <v-icon size="18">fas fa-comments</v-icon>
         </v-btn>
       </div>
     </template>
