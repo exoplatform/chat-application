@@ -55,6 +55,15 @@ export function init() {
     .then(i18n => {
       registerExternalExtensions(i18n.messages[lang]['exoplatform.chat.open.chat']);
 
+
+      if (extensionRegistry) {
+        extensionRegistry.registerComponent('SpaceSettings', 'space-settings-components', {
+          id: 'chat-space-setting',
+          vueComponent: Vue.options.components['exo-chat-space-settings'],
+          rank: 10,
+        });
+      }
+
       if (useFullChatApp) {
         Vue.createApp({
           template: '<exo-chat-app></exo-chat-app>',

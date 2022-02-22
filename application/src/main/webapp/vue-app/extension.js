@@ -457,26 +457,6 @@ export function registerExternalExtensions(chatTitle) {
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
 }
 
-export function registerExternalComponents(componentName, template, props, data, created, methods) {
-  const externalComponentOptions = {
-    name: componentName,
-    componentImpl: {
-      template: template,
-      props: props,
-      data() {
-        return data;
-      },
-      created: created,
-      methods: methods
-      
-    }
-  };
-
-  if (extensionRegistry) {
-    extensionRegistry.registerComponent('external-apps-space-settings', 'space-settings', externalComponentOptions);
-  }
-}
-
 export function registerDefaultExtensions(extensionType, defaultExtensions) {
   for (const extension of defaultExtensions) {
     if (extensionRegistry) {
