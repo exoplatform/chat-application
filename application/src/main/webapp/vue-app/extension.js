@@ -436,6 +436,8 @@ export function registerExternalExtensions(chatTitle) {
     id: 'profile-chat',
     title: chatTitle,
     icon: 'uiIconBannerChat',
+    class: 'fas fa-comments',
+    additionalClass: 'mt-1',
     order: 10,
     enabled: () => true,
     click: (profile) => {
@@ -449,12 +451,24 @@ export function registerExternalExtensions(chatTitle) {
         }}));
     },
   };
-
+  
   if (extensionRegistry) {
     extensionRegistry.registerExtension('profile-extension', 'action', profileExtensionAction);
   }
 
   document.dispatchEvent(new CustomEvent('profile-extension-updated', { detail: profileExtensionAction}));
+
+  extensionRegistry.registerComponent('SpacePopover', 'space-popover-action', {
+    id: 'chat',
+    vueComponent: Vue.options.components['popover-chat-button'],
+    rank: 40,
+  });
+
+  extensionRegistry.registerComponent('UserPopover', 'user-popover-action', {
+    id: 'chat',
+    vueComponent: Vue.options.components['popover-chat-button'],
+    rank: 40,
+  });
 }
 
 export function registerExternalComponents(componentName, template, props, data, created, methods) {

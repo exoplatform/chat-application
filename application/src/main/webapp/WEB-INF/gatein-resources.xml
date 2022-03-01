@@ -80,9 +80,6 @@
             <module>bts_tooltip</module>
         </depends>
         <depends>
-            <module>userPopupPlugin</module>
-        </depends>
-        <depends>
             <module>fetchPolyfill</module>
         </depends>
         <depends>
