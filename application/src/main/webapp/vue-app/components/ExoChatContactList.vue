@@ -97,7 +97,7 @@
               class="uiIcon favorite"></div>
             <div
               v-if="mq === 'mobile' || drawerStatus"
-              :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time', {'mr-1':isMobile}]">
+              :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time', {'mr-1':mq==='mobile'}]">
               {{ getLastMessageTime(contact) }}
             </div>
           </exo-chat-contact>
@@ -338,9 +338,6 @@ export default {
     },
     hasMoreContacts() {
       return Math.floor(this.filteredContacts.length / chatConstants.ROOMS_PER_PAGE) > this.nbrePages;
-    },
-    isMobile() {
-      return this.$vuetify.breakpoint.name === 'xs' || this.$vuetify.breakpoint.name === 'sm';
     },
   },
   watch: {
