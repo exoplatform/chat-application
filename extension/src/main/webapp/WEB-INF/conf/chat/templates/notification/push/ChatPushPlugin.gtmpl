@@ -1,1 +1,19 @@
-<%=_ctx.appRes("exoplatform.chat.MentionPlugin", USER, ROOM_NAME)%>
+<%
+def notificationDescription = "";
+switch(NOTIF_TYPE) {
+ case "ChatMentionNotificationPlugin":
+   notificationDescription =  _ctx.appRes("exoplatform.chat.MentionPlugin", USER, ROOM_NAME);
+   break;
+ default:
+    if(Boolean.parseBoolean(IS_GROUPE_CHAT))
+      notificationDescription = "<b>"+ROOM_NAME+"</b><br>"+USER+": "+MESSAGE
+    else
+      notificationDescription = "<b>"+USER+"</b><br>"+MESSAGE
+
+   break;
+}
+%>
+
+$notificationDescription
+
+
