@@ -1,5 +1,5 @@
 <template>    
-  <v-tooltip bottom>
+  <v-tooltip v-if="isChatEnabled" bottom>
     <template v-slot:activator="{ on, attrs }">
       <div
         v-bind="attrs"
@@ -20,6 +20,7 @@
 </template>
 <script>
 import {chatConstants} from '../chatConstants';
+import * as chatServices from '../chatServices';
 export default {
   props: {
     identity: {
@@ -27,9 +28,35 @@ export default {
       default: null,
     }
   },
+  data() {
+    return {
+      spaceChatEnabled: true,
+    };
+  },
   computed: {
-    identityId() {
-      return this.identity && this.identity.id;
+    isSpace() {
+      return this.identity && this.identity.prettyName ? true : false;
+    },
+    spaceId() {
+      if (this.isSpace) {
+        return this.identity.id;
+      } 
+      return '';
+    },
+    isChatEnabled() {
+      return this.spaceChatEnabled;
+    }
+  },
+  created() {
+    if ( this.isSpace ) {
+      chatServices.getUserSettings()
+        .then(userSettings => {
+          this.userSettings = userSettings;
+          chatServices.isRoomEnabled(this.userSettings, this.spaceId)
+            .then(value => {
+              this.spaceChatEnabled = value === 'true';
+            });
+        });
     }
   },
   methods: {
@@ -44,7 +71,7 @@ export default {
           name: chatRoomName,
           type: chatType,
         }}));
-    }
+    },
   }
 
 };

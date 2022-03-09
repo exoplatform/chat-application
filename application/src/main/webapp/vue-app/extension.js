@@ -1,5 +1,6 @@
 import {chatConstants} from './chatConstants.js';
 import {initTiptip} from './tiptip.js';
+//import * as chatServices from './chatServices';
 
 export const ECMS_EVENT_COMPOSER_APP = [{
   key: 'file',
