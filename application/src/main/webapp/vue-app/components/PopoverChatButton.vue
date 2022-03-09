@@ -14,7 +14,7 @@
       </div>
     </template>
     <span>
-      {{ $t('exoplatform.chat') }}
+      {{ $t('exoplatform.chat.send.message') }}
     </span>
   </v-tooltip>
 </template>
