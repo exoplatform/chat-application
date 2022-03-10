@@ -97,7 +97,7 @@
               class="uiIcon favorite"></div>
             <div
               v-if="mq === 'mobile' || drawerStatus"
-              :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time', {'mr-1':mq==='mobile'}]">
+              :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">
               {{ getLastMessageTime(contact) }}
             </div>
           </exo-chat-contact>
