@@ -5,7 +5,7 @@ switch(NOTIF_TYPE) {
    notificationDescription =  _ctx.appRes("exoplatform.chat.MentionPlugin", USER, ROOM_NAME);
    break;
  default:
-    if(Boolean.parseBoolean(IS_GROUPE_CHAT))
+    if(Boolean.parseBoolean(IS_GROUP_CHAT))
       notificationDescription = "<b>"+ROOM_NAME+"</b><br>"+USER+": "+MESSAGE
     else
       notificationDescription = "<b>"+USER+"</b><br>"+MESSAGE
@@ -15,5 +15,3 @@ switch(NOTIF_TYPE) {
 %>
 
 $notificationDescription
-
-

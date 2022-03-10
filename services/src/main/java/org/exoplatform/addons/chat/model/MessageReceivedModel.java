@@ -76,13 +76,4 @@ public class MessageReceivedModel {
 		return "MessageReceivedModel [roomId=" + roomId + ", roomName=" + roomName + ", message=" + message
 				+ ", sender=" + sender + ", senderFullName=" + senderFullName + ", receivers=" + receivers + "]";
 	}
-	
-	
-	
-    
-    
-    
-	
-	
-
 }

@@ -49,7 +49,7 @@ public class NotificationUtils {
         TemplateContext templateContext = getTemplateContext(templateProvider, notification, language);
         Boolean isRead = Boolean.valueOf(notification.getValueOwnerParameter(NotificationMessageUtils.READ_PORPERTY.getKey()));
         templateContext.put("MESSAGE",notification.getValueOwnerParameter("message"));
-        templateContext.put("IS_GROUPE_CHAT",notification.getValueOwnerParameter("isGroupeChat"));
+        templateContext.put("IS_GROUP_CHAT",notification.getValueOwnerParameter("isGroupeChat"));
         templateContext.put("READ", isRead != null && isRead.booleanValue() ? "read" : "unread");
         templateContext.put("NOTIFICATION_ID", notification.getId());
         templateContext.put("ROOM_ID", notification.getValueOwnerParameter("roomId"));
