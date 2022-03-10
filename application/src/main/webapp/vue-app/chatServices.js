@@ -163,6 +163,30 @@ export function sendMentionNotification(roomId, roomName, mentionedUsers) {
   });
 }
 
+export function sendMessageReceivedNotification(roomId, roomName, message, receivers){
+  const sender = eXo.chat.userSettings.username;
+  const senderFullName = eXo.chat.userSettings.fullName;
+  const MessageReceived = {
+    roomId,
+    roomName,
+    message,
+    sender,
+    senderFullName,
+    receivers
+  };
+  return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}messageReceivedNotification`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    method: 'POST',
+    body: JSON.stringify(MessageReceived)
+  }).then((data) => {
+    return data;
+  });
+
+}
+
 export function getUserState(user) {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getUserState?user=${user}`, {credentials: 'include'})
     .then(resp => resp.json());

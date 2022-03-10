@@ -1,6 +1,7 @@
 package org.exoplatform.addons.chat.utils;
 
 import org.exoplatform.addons.chat.model.MentionModel;
+import org.exoplatform.addons.chat.model.MessageReceivedModel;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.api.notification.NotificationMessageUtils;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;
@@ -22,11 +23,17 @@ public class NotificationUtils {
 
     public static final ArgumentLiteral<MentionModel> MENTION_MODEL                                 =
             new ArgumentLiteral<>(MentionModel.class, "mention_model");
-
+    
+    public static final ArgumentLiteral<MessageReceivedModel> MESSAGE_RECEIVED_MODEL                                 =
+            new ArgumentLiteral<>(MessageReceivedModel.class, "message_received_model");
+    
     public static final String                CHAT_MENTION_NOTIFICATION_PLUGIN   = "ChatMentionNotificationPlugin";
 
-    public static final PluginKey             CHAT_MENTION_KEY                          =
-            PluginKey.key(CHAT_MENTION_NOTIFICATION_PLUGIN);
+    public static final PluginKey             CHAT_MENTION_KEY = PluginKey.key(CHAT_MENTION_NOTIFICATION_PLUGIN);
+    
+    public static final String CHAT_MESSAGE_RECEIVED_NOTIFICATION_PLUGIN = "ChatMessageReceivedNotificationPlugin";
+    
+    public static final PluginKey CHAT_MESSAGE_RECEIVED_KEY = PluginKey.key(CHAT_MESSAGE_RECEIVED_NOTIFICATION_PLUGIN);
 
     private static String                     defaultSite;
 
@@ -41,6 +48,8 @@ public class NotificationUtils {
         String language = NotificationPluginUtils.getLanguage(notification.getTo());
         TemplateContext templateContext = getTemplateContext(templateProvider, notification, language);
         Boolean isRead = Boolean.valueOf(notification.getValueOwnerParameter(NotificationMessageUtils.READ_PORPERTY.getKey()));
+        templateContext.put("MESSAGE",notification.getValueOwnerParameter("message"));
+        templateContext.put("IS_GROUP_CHAT",notification.getValueOwnerParameter("isGroupeChat"));
         templateContext.put("READ", isRead != null && isRead.booleanValue() ? "read" : "unread");
         templateContext.put("NOTIFICATION_ID", notification.getId());
         templateContext.put("ROOM_ID", notification.getValueOwnerParameter("roomId"));
