@@ -3,6 +3,7 @@ package org.exoplatform.addons.chat.notification.builder;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.addons.chat.utils.NotificationUtils;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.channel.template.AbstractTemplateBuilder;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;
@@ -49,7 +50,9 @@ public class ChatTemplateBuilder extends AbstractTemplateBuilder {
         RequestLifeCycle.begin(container);
         try {
             TemplateContext templateContext = buildTemplateParameters(templateProvider, notification);
-            String subject = TemplateUtils.processSubject(templateContext);
+            if(this.isPushNotification)
+            	templateContext.put("NOTIF_TYPE",this.key.getId());
+            String subject = templateContext.get("CHAT_URL").toString();
             String body = TemplateUtils.processGroovy(templateContext);
             //binding the exception throws by processing template
             ctx.setException(templateContext.getException());
