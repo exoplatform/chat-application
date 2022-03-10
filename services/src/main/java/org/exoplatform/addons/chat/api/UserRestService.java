@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.addons.chat.model.MentionModel;
+import org.exoplatform.addons.chat.model.MessageReceivedModel;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
@@ -166,8 +167,22 @@ public class UserRestService implements ResourceContainer {
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
     ctx.append(MENTION_MODEL, mentionModel);
     ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(CHAT_MENTION_NOTIFICATION_PLUGIN))).execute(ctx);
-
+    
     return Response.ok(mentionModel.getMentionedUsers(), MediaType.TEXT_PLAIN).build();
+  }
+
+  @POST
+  @Path("/messageReceivedNotification")
+  @RolesAllowed("users")
+  @SuppressWarnings("unchecked")
+  public Response sendNotificationToUsers(@Context HttpServletRequest request, @ApiParam(value = "MessageReceivedModel", required = true) MessageReceivedModel messageReceivedModel  ) throws Exception {
+    init(request);
+
+    NotificationContext ctx = NotificationContextImpl.cloneInstance();
+    ctx.append(MESSAGE_RECEIVED_MODEL, messageReceivedModel);
+    ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(CHAT_MESSAGE_RECEIVED_NOTIFICATION_PLUGIN))).execute(ctx);
+    
+    return Response.ok(messageReceivedModel.toString(), MediaType.TEXT_PLAIN).build();
   }
 
   @GET
