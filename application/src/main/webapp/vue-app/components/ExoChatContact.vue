@@ -56,12 +56,12 @@
     </div>
     <div
       v-if="!isRoomSilent && unreadTotal > 0 && unreadTotal <= maxShowUnread"
-      class="unreadMessages">
+      :class="['unreadMessages', {'mt-10':mq==='mobile'}]">
       {{ unreadTotal }}
     </div>
     <div
       v-if="!isRoomSilent && unreadTotal > maxShowUnread"
-      class="unreadMessages maxUnread">
+      :class="['unreadMessages', 'maxUnread', {'mt-10':mq==='mobile'}]">
       +{{ maxShowUnread }}
     </div>
     <div>
