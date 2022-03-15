@@ -95,7 +95,11 @@
               v-if="mq === 'mobile'"
               :class="{'is-fav': contact.isFavorite}"
               class="uiIcon favorite"></div>
-            <div v-if="mq === 'mobile' || drawerStatus" :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">{{ getLastMessageTime(contact) }}</div>
+            <div
+              v-if="mq === 'mobile' || drawerStatus"
+              :class="[drawerStatus ? 'last-message-time-drawer last-message-time' : 'last-message-time']">
+              {{ getLastMessageTime(contact) }}
+            </div>
           </exo-chat-contact>
           <i
             v-exo-tooltip.top.body="$t('exoplatform.chat.msg.notDelivered')"
