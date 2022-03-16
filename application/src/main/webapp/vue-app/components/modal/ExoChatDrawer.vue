@@ -218,6 +218,10 @@ export default {
   created() {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('pushNotifRoomid')){
+        this.openRoomWithId(urlParams.get('pushNotifRoomid'));
+      }
     });
     document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -511,6 +515,16 @@ export default {
           }
           action.init(container, eXo.chat);
         }
+      }
+    },
+    openRoomWithId(roomId){
+      chatServices.getRoomDetail(this.userSettings,roomId).then(room => {
+        this.openDrawer();
+        this.setSelectedContact(room);
+      }).catch(()=>{this.openDrawer();});
+      const tiptip = document.getElementById('tiptip_holder');
+      if (tiptip) {
+        tiptip.style.display = 'none';
       }
     }
   }

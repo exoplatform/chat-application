@@ -95,9 +95,9 @@ public class NotificationUtils {
         }
         String notificationURL = "";
         if (roomId != null) {
-            notificationURL = currentDomain + "portal/" + currentSite + "/chat?roomId=" + roomId;
+            notificationURL = currentDomain + "portal/" + currentSite + "/?pushNotifRoomid=" + roomId;
         } else {
-            notificationURL = currentDomain + "portal/" + currentSite + "/chat";
+            notificationURL = currentDomain + "portal/" + currentSite + "/?pushNotifRoomid";
         }
         return notificationURL;
     }
