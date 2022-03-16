@@ -1,5 +1,5 @@
 <template>    
-  <v-tooltip v-if="isChatEnabled" bottom>
+  <v-tooltip v-if="spaceChatEnabled" bottom>
     <template v-slot:activator="{ on, attrs }">
       <div
         v-bind="attrs"
@@ -33,26 +33,12 @@ export default {
       spaceChatEnabled: true,
     };
   },
-  computed: {
-    isSpace() {
-      return this.identity && this.identity.prettyName ? true : false;
-    },
-    spaceId() {
-      if (this.isSpace) {
-        return this.identity.id;
-      }
-      return '';
-    },
-    isChatEnabled() {
-      return this.spaceChatEnabled;
-    }
-  },
   created() {
-    if ( this.isSpace ) {
+    if ( this.identity && this.identity.prettyName ) {
       chatServices.getUserSettings()
         .then(userSettings => {
           this.userSettings = userSettings;
-          chatServices.isRoomEnabled(this.userSettings, this.spaceId)
+          chatServices.isRoomEnabled(this.userSettings, this.identity.id)
             .then(value => {
               this.spaceChatEnabled = value === 'true';
             });
