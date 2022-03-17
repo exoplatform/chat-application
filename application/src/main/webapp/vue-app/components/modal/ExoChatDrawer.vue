@@ -219,8 +219,8 @@ export default {
     chatServices.getUserSettings(this.userSettings.username).then(userSettings => {
       this.initSettings(userSettings);
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('pushNotifRoomid')){
-        this.openRoomWithId(urlParams.get('pushNotifRoomid'));
+      if (urlParams.has('chatRoomId')){
+        this.openRoomWithId(urlParams.get('chatRoomId'));
       }
     });
     document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
