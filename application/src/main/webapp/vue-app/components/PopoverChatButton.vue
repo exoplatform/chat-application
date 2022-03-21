@@ -23,9 +23,13 @@ import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
 export default {
   props: {
-    identity: {
-      type: Object,
-      default: null,
+    identityType: {
+      type: String,
+      default: '',
+    },
+    identityId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -34,11 +38,11 @@ export default {
     };
   },
   created() {
-    if ( this.identity && this.identity.prettyName ) {
+    if ( this.identityType === 'space' ) {
       chatServices.getUserSettings()
         .then(userSettings => {
           this.userSettings = userSettings;
-          chatServices.isRoomEnabled(this.userSettings, this.identity.id)
+          chatServices.isRoomEnabled(this.userSettings, this.identityId)
             .then(value => {
               this.spaceChatEnabled = value === 'true';
             });
@@ -49,8 +53,8 @@ export default {
     openChatDrawer(event) {
       event.preventDefault();
       event.stopPropagation();
-      const chatType = this.identity && this.identity.groupId ? 'space-id' : 'username';
-      const chatRoomName = this.identity && this.identity.prettyName ? this.identity.id : this.identity.username;
+      const chatType =  this.identityType === 'space' ? 'space-id' : 'username';
+      const chatRoomName = this.identityId;
 
       document.dispatchEvent(
         new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, { detail: {
@@ -59,6 +63,5 @@ export default {
         }}));
     },
   }
-
 };
 </script>
