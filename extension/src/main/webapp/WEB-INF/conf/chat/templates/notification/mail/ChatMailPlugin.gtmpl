@@ -1,24 +1,13 @@
 <table border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="#ffffff" align="center"
        style="background-color: #ffffff; font-size: 13px;color:#333333;line-height: 18px;font-family: HelveticaNeue, Helvetica, Arial, sans-serif;"
        xmlns="http://www.w3.org/1999/html">
-    <tr>
-        <td align="center"  valign="middle" >
-            <table  cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="border:1px solid #d8d8d8;">
-                <tr>
-                    <td  height="45" valign="middle" style="margin:0;height:45px;font-weight:bold;vertical-align:middle;;background-color: #efefef;font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;color:#2f5e92;font-size:18px;text-align:center">
-                        <a href="#" style="text-decoration: none; color: #2f5e92; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif; font-size: 18px;">
-                            <%
-                            def title = _ctx.appRes("Notification.subject.ChatMentionNotificationPlugin");
-                            String profileUrl = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + USER + "</a>";
-                            String chatRoom = "<a class=\"user-name text-bold\" href=\"" + CHAT_URL + "\">" + ROOM_NAME + "</a>";
-                            %>
-                            $title
-                        </a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr><!--end header area-->
+    <%
+      _templateContext.put("header_title", _ctx.appRes("Notification.subject.ChatMentionNotificationPlugin"));
+      _ctx.include("war:/notification/templates/mail/NotificationHeader.gtmpl", _templateContext);
+
+      String profileUrl = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + USER + "</a>";
+      String chatRoom = "<a class=\"user-name text-bold\" href=\"" + CHAT_URL + "\">" + ROOM_NAME + "</a>";
+    %>
     <tr>
         <td bgcolor="#ffffff" style="background-color: #ffffff;">
             <table cellpadding="0" cellspacing="0" width="100%"  bgcolor="#ffffff" style="background-color: #ffffff; border-left:1px solid #d8d8d8;border-right:1px solid #d8d8d8;">
@@ -101,16 +90,5 @@
 
         </td>
     </tr><!--end content area-->
-    <tr>
-        <td bgcolor="#456693" align="center"  style="border:1px solid #456693;">
-            <table border="0" cellpadding="0" cellspacing="0" width="92%"  style="font-size: 13px;line-height: 18px;font-family:HelveticaNeue,verdana,arial,tahoma">
-                <tr>
-                    <td align="left" valign="top" style="font-family: HelveticaNeue, Helvetica, Arial, sans-serif,serif;color:#ffffff;font-size:13px;" >
-                        <h3 style="text-align: center; margin: 0; padding: 10px 0;">
-                        </h3>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr><!--end footer area-->
+    <% _ctx.include("war:/notification/templates/mail/NotificationFooter.gtmpl", _templateContext);%>
 </table>
