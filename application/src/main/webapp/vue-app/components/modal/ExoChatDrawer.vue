@@ -6,10 +6,11 @@
       class="miniChatDrawer">
       <v-btn
         :class="statusClass"
+        :title="$t('Notification.chat.button.tooltip')"
         class="dropdown-toggle"
         icon
         @click="openDrawer">
-        <v-icon class="my-auto uiIconStatus uiNotifChatIcon" />
+        <v-icon size="22" class="my-auto uiIconStatus icon-default-color fas fa-comments" />
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
         <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
       </v-btn>
