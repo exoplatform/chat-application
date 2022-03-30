@@ -70,6 +70,42 @@
                 </object-param>
             </init-params>
         </component-plugin>
+        <component-plugin>
+            <name>notification.plugins</name>
+            <set-method>addPlugin</set-method>
+            <type>org.exoplatform.addons.chat.notification.plugin.ChatMessageNotificationPlugin</type>
+            <init-params>
+                <value-param>
+                    <name>notification.id</name>
+                    <value>ChatMessageReceivedNotificationPlugin</value>
+                </value-param>
+                <object-param>
+                    <name>template.ChatMessageReceivedNotificationPlugin</name>
+                    <description>The template of ChatMessageReceivedNotificationPlugin</description>
+                    <object type="org.exoplatform.commons.api.notification.plugin.config.PluginConfig">
+                        <field name="pluginId">
+                            <string>ChatMessageReceivedNotificationPlugin</string>
+                        </field>
+                        <field name="resourceBundleKey">
+                            <string>UINotification.label.ChatMessageReceivedNotificationPlugin</string>
+                        </field>
+                        <field name="order">
+                            <string>12</string>
+                        </field>
+                        <field name="defaultConfig">
+                            <collection type="java.util.ArrayList">
+                            </collection>
+                        </field>
+                        <field name="groupId">
+                            <string>chat</string>
+                        </field>
+                        <field name="bundlePath">
+                            <string>locale.portlet.chat.Resource</string>
+                        </field>
+                    </object>
+                </object-param>
+            </init-params>
+        </component-plugin>
     </external-component-plugins>
 
     <external-component-plugins>

@@ -282,6 +282,14 @@ export default {
       if (!found) {
         this.$emit('message-written', message);
       }
+      const receivers=[];
+      if (this.contact.participants.length === 0){
+        receivers.push(this.contact.user);
+      }
+      else {
+        this.contact.participants.forEach(item=>{receivers.push(item.name);});
+      }
+      chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,Array.from(receivers));     
       this.$refs.messageComposerArea.innerHTML = '';
     },
     sendMessageWithKey(event) {

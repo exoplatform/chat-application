@@ -213,11 +213,9 @@ export default {
       this.addRooms(chatRoomsData.rooms);
       this.contactsSize = chatRoomsData.roomsCount;
 
-      if (this.mq !== 'mobile') {
-        const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
-        if (selectedRoom) {
-          this.setSelectedContact(selectedRoom);
-        }
+      const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
+      if (selectedRoom) {
+        this.setSelectedContact(selectedRoom);
       }
 
       const totalUnreadMsg = (Math.abs(chatRoomsData.unreadOffline)
