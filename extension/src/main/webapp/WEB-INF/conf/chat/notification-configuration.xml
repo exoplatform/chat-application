@@ -30,6 +30,7 @@
 
     <external-component-plugins>
         <target-component>org.exoplatform.commons.api.notification.service.setting.PluginContainer</target-component>
+        
         <component-plugin>
             <name>notification.plugins</name>
             <set-method>addPlugin</set-method>
