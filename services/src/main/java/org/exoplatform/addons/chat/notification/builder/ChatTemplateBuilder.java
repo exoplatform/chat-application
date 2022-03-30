@@ -3,7 +3,6 @@ package org.exoplatform.addons.chat.notification.builder;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.addons.chat.utils.NotificationUtils;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.channel.template.AbstractTemplateBuilder;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;

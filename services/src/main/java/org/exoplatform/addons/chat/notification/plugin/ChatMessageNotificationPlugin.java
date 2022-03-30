@@ -1,7 +1,6 @@
 package org.exoplatform.addons.chat.notification.plugin;
 
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.addons.chat.model.MentionModel;
 import org.exoplatform.addons.chat.model.MessageReceivedModel;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
@@ -9,6 +8,7 @@ import org.exoplatform.commons.api.notification.plugin.BaseNotificationPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import static org.exoplatform.addons.chat.utils.NotificationUtils.*;
+
 public class ChatMessageNotificationPlugin extends BaseNotificationPlugin{
 
 	public ChatMessageNotificationPlugin(InitParams initParams) {
