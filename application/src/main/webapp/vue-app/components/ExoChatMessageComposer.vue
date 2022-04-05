@@ -289,7 +289,9 @@ export default {
       else {
         this.contact.participants.forEach(item=>{receivers.push(item.name);});
       }
-      chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,Array.from(receivers));     
+      chatServices.getReceiversForMessagePushNotif(this.userSettings,receivers,this.contact.room,).then(data=>{
+        chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,Array.from(data));
+      });
       this.$refs.messageComposerArea.innerHTML = '';
     },
     sendMessageWithKey(event) {

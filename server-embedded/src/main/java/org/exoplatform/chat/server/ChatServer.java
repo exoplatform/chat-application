@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.google.javascript.jscomp.jarjar.com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
@@ -113,7 +114,23 @@ public class ChatServer
   {
     return index.ok();
   }
-
+  
+  @Resource
+  @Route("/filterOutSilentUsers")
+  public Response.Content getFilteredList(String user,List<String> roomUsers, String roomId, String token){
+	    if (!tokenService.hasUserWithToken(user, token)){
+	      return Response.notFound("Petit malin !");
+	    }
+	  List<String> receivers =  new ArrayList<>();
+	  for(String participant : roomUsers.get(0).split(",")) {
+		  if(!notificationService.isRoomSilentForUser(participant, roomId))
+			  receivers.add(participant);
+	  }
+	  return Response.ok(new Gson().toJson(receivers)).withMimeType("application/json").withHeader
+	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+	  
+  }
+  
   @Resource
   @Route("/userRooms")
   public Response.Content getUserRooms(String user, String onlineUsers, String token, String filter, String offset, String limit, String roomType)
