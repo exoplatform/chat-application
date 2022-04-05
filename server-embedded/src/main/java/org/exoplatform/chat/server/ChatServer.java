@@ -84,6 +84,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 @ApplicationScoped
 public class ChatServer
 {
+  private static final String mimeTypeJson =  "application/json";	
   private static final Logger LOG = Logger.getLogger("ChatServer");
 
   @Inject
@@ -163,7 +164,7 @@ public class ChatServer
             notificationService, tokenService, roomType);
 
 
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType(mimeTypeJson).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 @Resource
@@ -187,7 +188,7 @@ public class ChatServer
     RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService);
 
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType(mimeTypeJson).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -294,7 +295,7 @@ public class ChatServer
       }
     }
 
-    return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(data).withMimeType(mimeTypeJson).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -487,7 +488,7 @@ public class ChatServer
       }
     }
 
-    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(jsonObject.toString()).withMimeType(mimeTypeJson).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -609,7 +610,7 @@ public class ChatServer
   }
 
   @Resource
-  @MimeType("application/json")
+  @MimeType(mimeTypeJson)
   @Route("/getUserDesktopNotificationSettings")
   public Response.Content getUserDesktopNotificationSettings(String user, String token) throws JSONException {
     if (!tokenService.hasUserWithToken(user, token)) {
@@ -645,7 +646,7 @@ public class ChatServer
       response.put("done",false);
     }
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(response.toString()).withMimeType(mimeTypeJson).withHeader("Cache-Control", "no-cache")
             .withCharset(Tools.UTF_8);
   }
 
@@ -779,7 +780,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType(mimeTypeJson).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -921,7 +922,7 @@ public class ChatServer
       LOG.log(Level.WARNING, "Error while saving room " + teamName, e);
       return Response.notFound("No Room yet");
     }
-    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(jsonObject.toString()).withMimeType(mimeTypeJson).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -1039,7 +1040,7 @@ public class ChatServer
       data = json.toJSONString();
     }
 
-    return Response.ok(data).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType(mimeTypeJson).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -1136,7 +1137,7 @@ public class ChatServer
     }
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(usersBean.usersToJSON()).withMimeType(mimeTypeJson).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -1155,7 +1156,7 @@ public class ChatServer
     data.append(" \"activeUsersCount\": ").append(userService.getActiveUsersCount(room, filter));
     data.append("}");
 
-    return Response.ok(data).withMimeType("application/json").withHeader
+    return Response.ok(data).withMimeType(mimeTypeJson).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -1172,7 +1173,7 @@ public class ChatServer
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType(mimeTypeJson).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   private Session getMailSession() {
