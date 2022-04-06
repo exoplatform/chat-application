@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.google.javascript.jscomp.jarjar.com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
@@ -127,7 +126,7 @@ public class ChatServer
 		  if(!notificationService.isRoomSilentForUser(participant, roomId))
 			  receivers.add(participant);
 	  }
-	  return Response.ok(new Gson().toJson(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
+	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
 	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
 	  
   }
