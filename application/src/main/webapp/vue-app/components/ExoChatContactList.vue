@@ -723,6 +723,10 @@ export default {
       }
       return '';
     },
+    decodeHtml(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+      return doc.documentElement.textContent;
+    },
     filterLastMessage(msg) {
       if (msg === chatConstants.DELETED_MESSAGE) {
         return this.$t('exoplatform.chat.deleted');
@@ -731,7 +735,7 @@ export default {
       if (msg.indexOf('<br/>') >= 0) {
         return msg.replace(msg.slice(msg.indexOf('<br/>')),'...');
       }
-      return msg;
+      return this.decodeHtml(msg);
     },
     contactStatusChanged(e) {
       const contactChanged = e.detail;
