@@ -6,7 +6,7 @@
       class="miniChatDrawer">
       <v-btn
         :class="statusClass"
-        :title="$t('Notification.ChatMentionNotificationPlugin.label.tooltip')"
+        :title="$t('Notification.chat.button.tooltip')"
         class="dropdown-toggle"
         icon
         @click="openDrawer">
