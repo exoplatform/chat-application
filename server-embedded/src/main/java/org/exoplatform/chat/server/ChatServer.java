@@ -125,8 +125,8 @@ public class ChatServer
 	}
 	List<String> receivers =  new ArrayList<>();
 	for(String participant : roomUsers) {
-	  if (!notificationService.isRoomSilentForUser(participant, roomId))
-		receivers.add(participant);
+		if (!notificationService.isRoomSilentForUser(participant, roomId))
+			receivers.add(participant);
 	  }
 	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
 	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
