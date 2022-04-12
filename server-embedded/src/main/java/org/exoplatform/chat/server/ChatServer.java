@@ -122,7 +122,7 @@ public class ChatServer
 	      return Response.notFound("Petit malin !");
 	    }
 	  List<String> receivers =  new ArrayList<>();
-	  for(String participant : roomUsers.get(0).split(",")) {
+	  for(String participant : roomUsers) {
 		  if(!notificationService.isRoomSilentForUser(participant, roomId))
 			  receivers.add(participant);
 	  }
