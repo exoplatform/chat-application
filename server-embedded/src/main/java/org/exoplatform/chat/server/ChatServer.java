@@ -117,18 +117,19 @@ public class ChatServer
   
   @Resource
   @Route("/filterOutSilentUsers")
-  public Response.Content getFilteredList(String user,List<String> roomUsers, String roomId, String token){
-	    if (!tokenService.hasUserWithToken(user, token)){
-	      return Response.notFound("Petit malin !");
-	    }
-	  List<String> receivers =  new ArrayList<>();
-	  for(String participant : roomUsers) {
-		  if(!notificationService.isRoomSilentForUser(participant, roomId))
-			  receivers.add(participant);
+  public Response.Content getFilteredList(String user,List<String> roomUsers, String roomId, String token)
+  {
+	if (!tokenService.hasUserWithToken(user, token))
+	{
+	  return Response.notFound("Petit malin !");
+	}
+	List<String> receivers =  new ArrayList<>();
+	for(String participant : roomUsers) {
+	  if (!notificationService.isRoomSilentForUser(participant, roomId))
+		receivers.add(participant);
 	  }
 	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
 	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
-	  
   }
   
   @Resource
