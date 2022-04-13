@@ -128,9 +128,9 @@ public class ChatServer
 	if  (roomParticipants.isEmpty())
 	  roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
 	for(UserBean roomUser :roomParticipants) {
-		if  (!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
-		  receivers.add(roomUser.getName());
-		}
+	  if  (!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
+	    receivers.add(roomUser.getName());
+	  }
 	}
 	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
 	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
