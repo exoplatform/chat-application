@@ -125,11 +125,11 @@ public class ChatServer
 	}
 	List<String> receivers =  new ArrayList<>();
 	List<UserBean> roomParticipants = userService.getUsers(roomId);
-	if  (roomParticipants.size() == 0)
-		roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
+	if  (roomParticipants.isEmpty())
+	  roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
 	for(UserBean roomUser :roomParticipants) {
 		if  (!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
-			receivers.add(roomUser.getName());
+		  receivers.add(roomUser.getName());
 		}
 	}
 	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
