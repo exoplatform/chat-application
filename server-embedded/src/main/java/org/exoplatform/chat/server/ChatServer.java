@@ -83,6 +83,7 @@ import org.exoplatform.chat.utils.PropertyManager;
 @ApplicationScoped
 public class ChatServer
 {
+  private static final String MIME_TYPE_JSON =  "application/json";	
   private static final Logger LOG = Logger.getLogger("ChatServer");
 
   @Inject
@@ -113,7 +114,28 @@ public class ChatServer
   {
     return index.ok();
   }
-
+  
+  @Resource
+  @Route("/filterOutSilentUsers")
+  public Response.Content getFilteredList(String user, String roomId, String token)
+  {
+	if  (!tokenService.hasUserWithToken(user, token))
+	{
+	  return Response.notFound("Petit malin !");
+	}
+	List<String> receivers =  new ArrayList<>();
+	List<UserBean> roomParticipants = userService.getUsers(roomId);
+	if  (roomParticipants.isEmpty())
+	  roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
+	for(UserBean roomUser :roomParticipants) {
+	  if  (!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
+	    receivers.add(roomUser.getName());
+	  }
+	}
+	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
+	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
+  }
+  
   @Resource
   @Route("/userRooms")
   public Response.Content getUserRooms(String user, String onlineUsers, String token, String filter, String offset, String limit, String roomType)
@@ -146,7 +168,7 @@ public class ChatServer
             notificationService, tokenService, roomType);
 
 
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType(MIME_TYPE_JSON ).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 @Resource
@@ -170,7 +192,7 @@ public class ChatServer
     RoomsBean roomsBean = chatService.getRooms(user, limitUsers, filter, true, true, true, true, false, ilimit,
             notificationService, tokenService);
 
-    return Response.ok(roomsBean.roomsToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(roomsBean.roomsToJSON()).withMimeType(MIME_TYPE_JSON ).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -277,7 +299,7 @@ public class ChatServer
       }
     }
 
-    return Response.ok(data).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(data).withMimeType(MIME_TYPE_JSON ).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -470,7 +492,7 @@ public class ChatServer
       }
     }
 
-    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(jsonObject.toString()).withMimeType(MIME_TYPE_JSON ).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -592,7 +614,7 @@ public class ChatServer
   }
 
   @Resource
-  @MimeType("application/json")
+  @MimeType(MIME_TYPE_JSON )
   @Route("/getUserDesktopNotificationSettings")
   public Response.Content getUserDesktopNotificationSettings(String user, String token) throws JSONException {
     if (!tokenService.hasUserWithToken(user, token)) {
@@ -628,7 +650,7 @@ public class ChatServer
       response.put("done",false);
     }
 
-    return Response.ok(response.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(response.toString()).withMimeType(MIME_TYPE_JSON ).withHeader("Cache-Control", "no-cache")
             .withCharset(Tools.UTF_8);
   }
 
@@ -762,7 +784,7 @@ public class ChatServer
       out = roomBean.toJSON();
     }
 
-    return Response.ok(out).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(out).withMimeType(MIME_TYPE_JSON ).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -904,7 +926,7 @@ public class ChatServer
       LOG.log(Level.WARNING, "Error while saving room " + teamName, e);
       return Response.notFound("No Room yet");
     }
-    return Response.ok(jsonObject.toString()).withMimeType("application/json").withHeader("Cache-Control", "no-cache")
+    return Response.ok(jsonObject.toString()).withMimeType(MIME_TYPE_JSON ).withHeader("Cache-Control", "no-cache")
                    .withCharset(Tools.UTF_8);
   }
 
@@ -1022,7 +1044,7 @@ public class ChatServer
       data = json.toJSONString();
     }
 
-    return Response.ok(data).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data).withMimeType(MIME_TYPE_JSON ).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   @Resource
@@ -1119,7 +1141,7 @@ public class ChatServer
     }
     UsersBean usersBean = new UsersBean();
     usersBean.setUsers(users);
-    return Response.ok(usersBean.usersToJSON()).withMimeType("application/json").withHeader
+    return Response.ok(usersBean.usersToJSON()).withMimeType(MIME_TYPE_JSON ).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -1138,7 +1160,7 @@ public class ChatServer
     data.append(" \"activeUsersCount\": ").append(userService.getActiveUsersCount(room, filter));
     data.append("}");
 
-    return Response.ok(data).withMimeType("application/json").withHeader
+    return Response.ok(data).withMimeType(MIME_TYPE_JSON ).withHeader
             ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }
 
@@ -1155,7 +1177,7 @@ public class ChatServer
     data.append(" \"notificationsUnread\": "+notificationService.getNumberOfUnreadNotifications());
     data.append("}");
 
-    return Response.ok(data.toString()).withMimeType("application/json").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    return Response.ok(data.toString()).withMimeType(MIME_TYPE_JSON ).withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
   }
 
   private Session getMailSession() {
