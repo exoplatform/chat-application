@@ -119,16 +119,16 @@ public class ChatServer
   @Route("/filterOutSilentUsers")
   public Response.Content getFilteredList(String user, String roomId, String token)
   {
-	if (!tokenService.hasUserWithToken(user, token))
+	if  (!tokenService.hasUserWithToken(user, token))
 	{
 	  return Response.notFound("Petit malin !");
 	}
 	List<String> receivers =  new ArrayList<>();
 	List<UserBean> roomParticipants = userService.getUsers(roomId);
-	if	(roomParticipants.size() == 0)
+	if  (roomParticipants.size() == 0)
 		roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
 	for(UserBean roomUser :roomParticipants) {
-		if	(!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
+		if  (!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
 			receivers.add(roomUser.getName());
 		}
 	}
