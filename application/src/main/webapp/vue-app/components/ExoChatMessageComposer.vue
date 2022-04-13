@@ -282,14 +282,7 @@ export default {
       if (!found) {
         this.$emit('message-written', message);
       }
-      const receivers=[];
-      if (this.contact.participants.length === 0){
-        receivers.push(this.contact.user);
-      }
-      else {
-        this.contact.participants.forEach(item=>{receivers.push(item.name);});
-      }
-      chatServices.getReceiversForMessagePushNotif(this.userSettings,receivers,this.contact.room,).then(data=>{
+      chatServices.getReceiversForMessagePushNotif(this.userSettings,this.contact.room,).then(data=>{
         chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,data);
       });
       this.$refs.messageComposerArea.innerHTML = '';

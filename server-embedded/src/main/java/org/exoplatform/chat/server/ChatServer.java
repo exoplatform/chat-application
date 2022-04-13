@@ -124,10 +124,14 @@ public class ChatServer
 	  return Response.notFound("Petit malin !");
 	}
 	List<String> receivers =  new ArrayList<>();
-	for(String participant : roomUsers) {
-		if (!notificationService.isRoomSilentForUser(participant, roomId))
-			receivers.add(participant);
-	  }
+	List<UserBean> roomParticipants = userService.getUsers(roomId);
+	if	(roomParticipants.size() == 0)
+		roomParticipants = userService.getUsersInRoomChatOneToOne(roomId);
+	for(UserBean roomUser :roomParticipants) {
+		if	(!roomUser.getName().equals(user) && !notificationService.isRoomSilentForUser(roomUser.getName(), roomId)) {
+			receivers.add(roomUser.getName());
+		}
+	}
 	  return Response.ok(JSONArray.toJSONString(receivers)).withMimeType(MIME_TYPE_JSON ).withHeader
 	            ("Cache-Control", "no-cache").withCharset(Tools.UTF_8);
   }

@@ -223,8 +223,8 @@ export function toggleFavorite(room, user, favorite) {
   }
 }
 
-export function getReceiversForMessagePushNotif(userSettings,users,roomId){
-  return fetch(`${chatConstants.CHAT_SERVER_API}filterOutSilentUsers?roomUsers=${users.join('&roomUsers=')}&roomId=${roomId}&user=${userSettings.username}`, {
+export function getReceiversForMessagePushNotif(userSettings,roomId){
+  return fetch(`${chatConstants.CHAT_SERVER_API}filterOutSilentUsers?roomId=${roomId}&user=${userSettings.username}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then(resp =>  resp.json());
