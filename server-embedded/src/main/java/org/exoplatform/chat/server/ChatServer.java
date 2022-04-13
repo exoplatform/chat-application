@@ -117,7 +117,7 @@ public class ChatServer
   
   @Resource
   @Route("/filterOutSilentUsers")
-  public Response.Content getFilteredList(String user,List<String> roomUsers, String roomId, String token)
+  public Response.Content getFilteredList(String user, String roomId, String token)
   {
 	if (!tokenService.hasUserWithToken(user, token))
 	{
