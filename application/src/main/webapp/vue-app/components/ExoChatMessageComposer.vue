@@ -340,6 +340,7 @@ export default {
     checkMention(message) {
       message = $('<div />').html(message).text();
       message = message.replace(/\s\s+/g, ' ');
+      message = this.encodeHTMLEntities(message);
       for (let i = 0; i < this.participants.length; i++) {
         if (message.includes(`@${this.participants[i].fullname}`) ){
           this.mentionedUsers.push(this.participants[i].name);
@@ -351,6 +352,11 @@ export default {
       chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
       this.mentionedUsers = [];
       return message;
+    },
+    encodeHTMLEntities(text) {
+      const textArea = document.createElement('p');
+      textArea.innerText = text;
+      return textArea.innerHTML;
     },
     paste(e) {
       // consider the first item (can be easily extended for multiple items)
@@ -367,7 +373,7 @@ export default {
         // cancel paste
         e.preventDefault();
         // get text representation of clipboard
-        this.text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        this.text = this.encodeHTMLEntities((e.originalEvent || e).clipboardData.getData('text/plain'));
         // insert text manually
         $(this.$refs.messageComposerArea).insertAtCaret(this.text);
       }
