@@ -223,6 +223,12 @@ export function toggleFavorite(room, user, favorite) {
   }
 }
 
+export function getReceiversForMessagePushNotif(userSettings,roomId){
+  return fetch(`${chatConstants.CHAT_SERVER_API}filterOutSilentUsers?roomId=${roomId}&user=${userSettings.username}`, {
+    headers: {
+      'Authorization': `Bearer ${userSettings.token}`
+    }}).then(resp =>  resp.json());
+}
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   if (!limit) {
     limit = chatConstants.ROOMS_PER_PAGE;
