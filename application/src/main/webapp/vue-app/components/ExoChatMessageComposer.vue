@@ -280,7 +280,6 @@ export default {
         });
       }
       if (!found) {
-        console.log('sendMessage message : ',message.message);
         this.$emit('message-written', message);
       }
       chatServices.getReceiversForMessagePushNotif(this.userSettings,this.contact.room,).then(data=>{
