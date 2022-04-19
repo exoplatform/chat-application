@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>3.4.x-SNAPSHOT</version>
+  <version>3.4.x-maintenance-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with Juzu and MongoDB</description>
@@ -31,10 +31,10 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>6.4.x-exo-SNAPSHOT</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.social.version>6.4.x-exo-SNAPSHOT</org.exoplatform.social.version>
-    <addon.exo.ecms.version>6.4.x-SNAPSHOT</addon.exo.ecms.version>
-    <addon.exo.notes.version>1.2.x-exo-SNAPSHOT</addon.exo.notes.version>
+    <org.exoplatform.gatein.portal.version>6.4.x-maintenance-SNAPSHOT</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.social.version>6.4.x-maintenance-SNAPSHOT</org.exoplatform.social.version>
+    <addon.exo.ecms.version>6.4.x-maintenance-SNAPSHOT</addon.exo.ecms.version>
+    <addon.exo.notes.version>1.2.x-maintenance-SNAPSHOT</addon.exo.notes.version>
   	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
