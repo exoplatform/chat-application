@@ -27,8 +27,8 @@
       <div v-if="messageType === chatConstants.DELETED_MESSAGE" class="message-content">
         <em class="muted">{{ $t('exoplatform.chat.deleted') }}</em>
       </div>
-      <div v-else-if="messageOptionsType === chatConstants.FILE_MESSAGE" class="message-content">
-        <b>
+      <div v-else-if="messageOptionsType === chatConstants.FILE_MESSAGE"  class="message-content">
+        <b :style="!downloadEnabled ? 'pointer-events: none;' : '' ">
           <a :href="message.options.restPath" target="_blank">{{ message.options.title }}</a>
         </b>
         <span class="message-file-size">{{ message.options.sizeLabel }}</span>
@@ -257,6 +257,7 @@ export default {
       confirmOKMessage: '',
       confirmKOMessage: '',
       confirmAction(){return;},
+      downloadEnabled: true,
     };
   },
   computed: {
@@ -339,6 +340,7 @@ export default {
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
+    Vue.prototype.$transferRulesService.getTransfertRulesDownloadDocumentStatus().then(data=>{this.downloadEnabled = data;});
   },
   destroyed() {
     document.removeEventListener(
