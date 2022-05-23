@@ -340,7 +340,7 @@ export default {
       'exo-chat-message-action-delete-requested',
       this.deleteMessage
     );
-    Vue.prototype.$transferRulesService.getTransfertRulesDownloadDocumentStatus().then(data=>{this.downloadEnabled = data;});
+    this.$transferRulesService?.getTransfertRulesDownloadDocumentStatus().then(enabled=> this.downloadEnabled = enabled);
   },
   destroyed() {
     document.removeEventListener(
