@@ -21,7 +21,7 @@
         right
         @closed="resetSelectedContact">
         <template v-if="!showSearch" slot="title">
-          <div class="leftHeaderDrawer">
+          <div class="leftHeaderDrawer flex-shrink-1 text-truncate">
             <span v-if="!selectedContact && !showSearch" class="chatContactDrawer">
               <exo-chat-contact
                 :chat-drawer-contact="showChatDrawer"
