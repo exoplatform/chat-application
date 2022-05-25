@@ -29,6 +29,7 @@
           :hide-time="messageObj.hideTime"
           :hide-avatar="messageObj.hideAvatar"
           :mini-chat="miniChat"
+          :download-document-enabled="downloadDocumentEnabled"
           @edit-message="editMessage" />
       </div>
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
@@ -104,7 +105,8 @@ export default {
       totalMessagesToLoad: 0,
       searchKeyword: '',
       windowFocused: true,
-      newMessagesLoading: false
+      newMessagesLoading: false,
+      downloadDocumentEnabled: false
     };
   },
   computed: {
@@ -145,6 +147,9 @@ export default {
 
     $(window).focus(this.chatFocused);
     $(window).blur(this.chatFocused);
+    this.$transferRulesService?.getTransfertRulesDownloadDocumentStatus().then(enabled => {
+      this.downloadDocumentEnabled = enabled;
+    });
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
