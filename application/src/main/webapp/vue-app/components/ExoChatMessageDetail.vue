@@ -50,7 +50,7 @@
                     <i class="uiIconSearch uiIconWhite"></i>
                   </a>
                 </p>
-                <p>
+                <p v-if="downloadDocumentEnabled">
                   <a :href="message.options.downloadLink" target="_blank">
                     <i class="uiIconDownload uiIconWhite"></i>
                   </a>
@@ -244,6 +244,10 @@ export default {
     hideTime: {
       type: Boolean,
       default: false
+    },
+    downloadDocumentEnabled: {
+      type: Boolean,
+      default: false,
     }
   },
   data: function() {
