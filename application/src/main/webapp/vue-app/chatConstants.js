@@ -8,7 +8,6 @@ export const chatConstants = {
   USER_STATE_API: `${eXo.env.portal.context}/${eXo.env.portal.rest}/state/status/`,
   BY_PRETTY_NAME: 'byPrettyName/',
   CHAT_API: '/chat/api/1.0/user/',
-  CHAT_WIKI_API: '/chat/api/1.0/wiki/',
   PROFILE_PAGE_NAME: 'profile',
   PROFILE_SPACE_LINK: '/g/',
   CHAT_SERVER_API: '/chatServer/',

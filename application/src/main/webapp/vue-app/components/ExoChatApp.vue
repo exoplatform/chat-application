@@ -126,7 +126,6 @@ export default {
        * maxUploadSize: {Number}
        * canUploadFiles: {Boolean}
        * canAddEvent: {Boolean}
-       * canAddWiki: {Boolean}
        * offlineDelay: {Number}
        * serverURL: {String}
        * sessionId: {String}
