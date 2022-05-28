@@ -27,7 +27,6 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
@@ -40,8 +39,6 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.user.UserStateService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import static org.exoplatform.addons.chat.utils.NotificationUtils.*;
 
@@ -60,8 +57,6 @@ public class UserRestService implements ResourceContainer {
   protected static final String EXTERNAL_PROPERTY             = "external";
 
   private DocumentService       documentService;
-
-  private WikiService           wikiService;
 
   private OrganizationService   organizationService;
 
@@ -340,9 +335,6 @@ public class UserRestService implements ResourceContainer {
     }
     userSettings.put("canUploadFiles", canUploadFiles);
 
-    boolean canAddWiki = getWikiService() != null;
-    userSettings.put("canAddWiki", canAddWiki);
-
     return Response.ok(userSettings, MediaType.APPLICATION_JSON).build();
   }
 
@@ -371,13 +363,6 @@ public class UserRestService implements ResourceContainer {
       documentService = CommonsUtils.getService(DocumentService.class);
     }
     return documentService;
-  }
-
-  public WikiService getWikiService() {
-    if (wikiService == null) {
-      wikiService = CommonsUtils.getService(WikiService.class);
-    }
-    return wikiService;
   }
 
   private String getResourceBundleLabel(Locale locale, String label) {
