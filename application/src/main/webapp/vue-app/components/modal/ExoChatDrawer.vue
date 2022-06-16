@@ -4,16 +4,6 @@
       v-if="!ap"
       id="miniChatDrawer"
       class="miniChatDrawer">
-      <v-btn
-        :class="statusClass"
-        :title="$t('Notification.chat.button.tooltip')"
-        class="dropdown-toggle"
-        icon
-        @click="openDrawer">
-        <v-icon size="22" class="my-auto uiIconStatus icon-default-color fas fa-comments" />
-        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
-        <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
-      </v-btn>
       <exo-drawer
         ref="chatDrawer"
         class="chatDrawer"
@@ -244,6 +234,10 @@ export default {
     document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+  },
+  mounted() {
+    const chatButtonElement = document.getElementById('btnChatButton');
+    chatButtonElement.addEventListener('click',this.openDrawer);
   },
   methods: {
     messageReceived(event) {
