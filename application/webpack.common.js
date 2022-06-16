@@ -5,7 +5,8 @@ const { VueLoaderPlugin } = require('vue-loader')
 let config = {
   context: path.resolve(__dirname, '.'),
   entry: {
-    chat: './src/main/webapp/vue-app/main.js'
+    chat: './src/main/webapp/vue-app/main.js',
+    chatButton: './src/main/webapp/vue-app/chatButton/main.js'
   },
   output: {
     filename: 'js/[name].bundle.js',

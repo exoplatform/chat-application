@@ -34,11 +34,11 @@
       <init-params>
         <value-param>
           <name>priority</name>
-          <value>5</value>
+          <value>4</value>
         </value-param>
         <value-param>
           <name>containerName</name>
-          <value>middle-topNavigation-container</value>
+          <value>bottom-all-container</value>
         </value-param>
         <object-param>
           <name>ChatNotificationApplication</name>
@@ -48,6 +48,36 @@
               <object type="org.exoplatform.portal.config.model.TransientApplicationState">
                 <field name="contentId">
                   <string>chat/ChatNotificationApplication</string>
+                </field>
+              </object>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+
+    <component-plugin>
+      <name>addPlugin</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.commons.addons.AddOnPluginImpl</type>
+      <description>add application Config</description>
+      <init-params>
+        <value-param>
+          <name>priority</name>
+          <value>5</value>
+        </value-param>                                                                                                                                                                                                                                
+        <value-param>
+          <name>containerName</name>
+          <value>middle-topNavigation-container</value>
+        </value-param>
+        <object-param>
+          <name>ChatButtonApplication</name>
+          <description>Chat button portlet</description>
+          <object type="org.exoplatform.portal.config.serialize.PortletApplication">
+            <field name="state">
+              <object type="org.exoplatform.portal.config.model.TransientApplicationState">
+                <field name="contentId">
+                  <string>chat/ChatButtonApplication</string>
                 </field>
               </object>
             </field>
