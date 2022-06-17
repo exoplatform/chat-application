@@ -1,5 +1,6 @@
 package org.exoplatform.chat.services;
 
+import org.cometd.bayeux.Promise;
 import org.cometd.bayeux.server.BayeuxServer;
 import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
@@ -45,6 +46,6 @@ public class CometdMessageServiceImpl implements RealTimeMessageService {
 
   @Override
   public void sendMessageToAll(RealTimeMessageBean realTimeMessageBean) {
-    bayeux.getSessions().stream().forEach(s -> s.deliver(s, COMETD_CHANNEL_NAME, realTimeMessageBean.toJSON()));
+    bayeux.getSessions().stream().forEach(s -> s.deliver(s, COMETD_CHANNEL_NAME, realTimeMessageBean.toJSON(), Promise.noop()));
   }
 }

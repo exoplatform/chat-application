@@ -18,11 +18,11 @@ package org.exoplatform.chat.server;
  */
 
 import org.cometd.bayeux.ChannelId;
+import org.cometd.bayeux.Promise;
 import org.cometd.bayeux.server.*;
 import org.cometd.oort.Oort;
 import org.cometd.oort.Seti;
 import org.cometd.server.ServerSessionImpl;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -133,7 +133,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
     ServerSessionImpl fromClient = getSystemClient();
     ServerChannel ch = getChannel(channel);
     if (ch != null) {
-      ch.publish(fromClient, data);
+      ch.publish(fromClient, data, Promise.noop());
       if (LOG.isDebugEnabled())
         LOG.debug("Send broadcast message " + data.toString() + " on channel " + channel);
     } else {
@@ -194,7 +194,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
   @Override
   public void dispose() {
     for (ServerSession session : getSessions()) {
-      ((ServerSessionImpl)session).cancelSchedule();
+      ((ServerSessionImpl) session).destroyScheduler();
     }
 
     try {
@@ -206,7 +206,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
     }
   }
 
-  public static class EXoSecurityPolicy implements SecurityPolicy, ServerSession.RemoveListener {
+  public static class EXoSecurityPolicy implements SecurityPolicy, ServerSession.RemovedListener {
 
     private EXoContinuationBayeux bayeux;
 
@@ -248,7 +248,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
         eXoID = bayeux.toCloudId(eXoID);
         Set<String> cIds = clientIDs.get(eXoID);
         if (cIds == null) {
-          cIds = new ConcurrentHashSet<String>();
+          cIds = ConcurrentHashMap.newKeySet();
           clientIDs.put(eXoID, cIds);
         }
         bayeux.seti.associate(eXoID, client);
@@ -277,7 +277,7 @@ public class EXoContinuationBayeux extends org.mortbay.cometd.continuation.EXoCo
     }
 
     @Override
-    public void removed(ServerSession session, boolean timeout) {
+    public void removed(ServerSession session, ServerMessage message, boolean timeout) {
       Iterator<Entry<String, Set<String>>> iter = clientIDs.entrySet().iterator();
 
       while (iter.hasNext()) {

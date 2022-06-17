@@ -51,11 +51,11 @@ public class CometdService {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Listener(COMETD_CHANNEL_NAME)
   public void onMessageReceived(final ServerSession remoteSession, final ServerMessage message) {
-    LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[]{COMETD_CHANNEL_NAME, message.getJSON()});
 
     try {
       JSONParser jsonParser = new JSONParser();
       JSONObject jsonMessage = (JSONObject) jsonParser.parse((String) message.getData());
+      LOG.log(Level.FINE, "Cometd message received on {0} : {1}", new Object[] { COMETD_CHANNEL_NAME, jsonMessage.toString() });
 
       String sender = (String) jsonMessage.get("sender");
       String token = (String) jsonMessage.get("token");
