@@ -243,9 +243,6 @@ export default {
         event.preventDefault();
       }
     },
-    appendAlternativeToImage(str, index, stringToAdd) {
-      return str.substring(0, index) + stringToAdd + str.substring(index, str.length);
-    },
     sendMessage() {
       let newMessage = this.$refs.messageComposerArea.innerHTML;
       if (newMessage.indexOf('@') > -1) {
@@ -254,8 +251,8 @@ export default {
       if (!newMessage || !newMessage.trim()) {
         return;
       }
-      if (newMessage.includes('<img')) {
-        newMessage = this.appendAlternativeToImage(newMessage,newMessage.indexOf('src'),`alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" `);
+      if (newMessage.match(/<img src="data:image\/.*;base64[^>]*>/g)) {
+        newMessage = newMessage.replaceAll(/<img src="data:image/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="data:image`);
       }
       const message = {
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
