@@ -254,7 +254,9 @@ export default {
       if (!newMessage || !newMessage.trim()) {
         return;
       }
-      newMessage = this.appendAlternativeToImage(newMessage,newMessage.indexOf('src'),`alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" `);
+      if (newMessage.includes('<img')) {
+        newMessage = this.appendAlternativeToImage(newMessage,newMessage.indexOf('src'),`alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" `);
+      }
       const message = {
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
         room: this.contact.room,
