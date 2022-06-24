@@ -89,7 +89,7 @@
                                     </tbody>
                                     </table>
                                     <br>
-                                    <p style="margin: 0 0 10px; color: #999999; font-size: 13px; line-height: 18px;">
+                                    <p style="margin: 0 0 10px; color: #767676; font-size: 13px; line-height: 18px;">
                                         <%=_ctx.appRes("Notification.ChatMentionNotificationPlugin.label.footer", "" + FOOTER_LINK)%>
                                     </p>
                                 </td>
