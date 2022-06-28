@@ -252,8 +252,7 @@ export default {
         return;
       }
       if (newMessage.match(/<img (alt)?[^>]*>/g)) {
-        const src = newMessage.match(/src=\"([^"]*)"/g);
-        newMessage = newMessage.replaceAll(/<img (alt)?[^>]*>/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" ${src[0]}>`);
+        newMessage = newMessage.replaceAll(/<img (alt)?[^>]*src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);
       }
       const message = {
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
