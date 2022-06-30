@@ -60,5 +60,28 @@
        <keywords>Chat</keywords>
      </portlet-info>
    </portlet>
+   <portlet>
+     <portlet-name>ChatButtonApplication</portlet-name>
+     <display-name xml:lang="EN">Chat button Application</display-name>
+     <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+     <init-param>
+      <name>portlet-view-dispatched-file-path</name>
+      <value>/index-chat-button.html</value>
+     </init-param>
+     <init-param>
+       <name>preload.resource.bundles</name>
+       <value>locale.portlet.chat.Resource</value>
+     </init-param>
+     <expiration-cache>-1</expiration-cache>
+     <cache-scope>PUBLIC</cache-scope>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <supported-locale>en</supported-locale>
+     <portlet-info>
+       <title>Chat button Application</title>
+       <keywords>ChatButton</keywords>
+     </portlet-info>
+   </portlet>
 
 </portlet-app>
