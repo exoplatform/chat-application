@@ -31,11 +31,11 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>6.4.x-SNAPSHOT</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.social.version>6.4.x-SNAPSHOT</org.exoplatform.social.version>
-    <addon.exo.ecms.version>6.4.x-SNAPSHOT</addon.exo.ecms.version>
-    <addon.exo.notes.version>1.2.x-SNAPSHOT</addon.exo.notes.version>
-  	<org.juzu.version>1.2.x-SNAPSHOT</org.juzu.version>
+    <org.exoplatform.gatein.portal.version>6.4.0-M06</org.exoplatform.gatein.portal.version>
+    <org.exoplatform.social.version>6.4.0-M06</org.exoplatform.social.version>
+    <addon.exo.ecms.version>6.4.0-M06</addon.exo.ecms.version>
+    <addon.exo.notes.version>1.2.0-M06</addon.exo.notes.version>
+  	<org.juzu.version>1.2.0</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
