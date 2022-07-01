@@ -248,7 +248,6 @@ export default {
       }
     },
     appendAlternativeToImage(str, index, stringToAdd) {
-      console.log(str)
       return (str.substring(0, index) + stringToAdd + str.substring(index, str.length)) || '';
     },
     sendMessage() {
@@ -259,13 +258,21 @@ export default {
       if (!newMessage || !newMessage.trim()) {
         return;
       }
-      if (newMessage.match(/<img (alt(="")?)?[^>]*>/g)) {
-        newMessage = newMessage.match(/alt="" /g) ? newMessage.replace(/alt="" /g, '') : newMessage;
+      const images = newMessage.match(/<img (alt(="")?)?[^>]*>/g);
+      let newMessage2 = '';
+      if (images) {
+        images.forEach(tag =>{
+          let img = tag.match(/alt="" /g) ? tag.replace(/alt="" /g, '') : tag;
+          const alt = img.match(/alt="([^"]*)"/g);
+          img = alt ? this.appendAlternativeToImage(img, img.indexOf('src'), `${alt} `) : img;
+          newMessage2 += img;
+        });
+        console.log(newMessage2.replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`));
+        /*newMessage = newMessage.match(/alt="" /g) ? newMessage.replace(/alt="" /g, '') : newMessage;
         const alt = newMessage.match(/alt="([^"]*)"/g);
         newMessage = alt ? this.appendAlternativeToImage(newMessage, newMessage.indexOf('src'), `${alt} `) : newMessage;
-        console.log(newMessage);
-        //console.log({alt});
-        newMessage = newMessage.replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);
+        newMessage = newMessage.replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);*/
+        newMessage = newMessage2.replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`)
       }
       const message = {
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
