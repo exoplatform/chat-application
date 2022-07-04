@@ -8,14 +8,18 @@
         <skin-name>Enterprise</skin-name>
         <css-path>/css/main.css</css-path>
     </portlet-skin>
-
     <portlet-skin>
         <application-name>chat</application-name>
         <portlet-name>ChatNotificationApplication</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/main.css</css-path>
     </portlet-skin>
-
+    <portlet-skin>
+        <application-name>chat</application-name>
+        <portlet-name>ChatButtonApplication</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/main.css</css-path>
+    </portlet-skin>
     <portlet>
         <name>ChatApplication</name>
         <module>
@@ -33,6 +37,18 @@
         <module>
             <depends>
                 <module>chatBundle</module>
+            </depends>
+            <depends>
+                <module>commonVueComponents</module>
+            </depends>
+        </module>
+    </portlet>
+
+    <portlet>
+        <name>ChatButtonApplication</name>
+        <module>
+            <depends>
+                <module>chatButtonBundle</module>
             </depends>
             <depends>
                 <module>commonVueComponents</module>
@@ -107,6 +123,41 @@
         </depends>
         <depends>
             <module>jquery_cometd</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>chatButtonBundle</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/chatButton.bundle.js</path>
+        </script>
+        <depends>
+            <module>vue</module>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+        <depends>
+            <module>eXoVueI18n</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>jquery-touch</module>
+            <as>jqueryTouch</as>
+        </depends>
+        <depends>
+            <module>chatCometD</module>
+            <as>cCometD</as>
+        </depends>
+        <depends>
+            <module>extensionRegistry</module>
+        </depends>
+        <depends>
+            <module>commonVueComponents</module>
         </depends>
     </module>
 </gatein-resources>
