@@ -269,7 +269,7 @@ export default {
           // append the alt attribute before the src
           img = alt ? this.appendAlternativeToImage(img, img.indexOf('src'), `${alt} `) : img;
           // keep the same message elements order for well displaying
-          allMessageContentTab[allMessageContentTab.findIndex(e => e === undefined)] = img;
+          allMessageContentTab[allMessageContentTab.findIndex(e => !e)] = img;
         });
         // create new string contains all the message elements with same order
         newMessage = allMessageContentTab.join('').toString().replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);
