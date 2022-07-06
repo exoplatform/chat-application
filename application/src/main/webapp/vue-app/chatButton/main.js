@@ -3,7 +3,7 @@ import '../components/initComponents';
 // getting language of user
 const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
 
-const resourceBundleName = 'locale.addon.Sample';
+const resourceBundleName = 'locale.portlet.chat.Resource';
 const url = `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/${resourceBundleName}-${lang}.json`;
 
 // getting locale ressources
