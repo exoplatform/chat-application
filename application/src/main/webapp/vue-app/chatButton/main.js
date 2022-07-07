@@ -1,10 +1,9 @@
 import app from './components/chatButton.vue';
 import '../components/initComponents';
+import {chatConstants} from '../chatConstants.js';
 // getting language of user
-const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en';
-
-const resourceBundleName = 'locale.addon.Sample';
-const url = `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/${resourceBundleName}-${lang}.json`;
+const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
+const url = `${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}/i18n/bundle/locale.portlet.chat.Resource-${lang}.json`;
 
 // getting locale ressources
 exoi18n.loadLanguageAsync(lang, url)
