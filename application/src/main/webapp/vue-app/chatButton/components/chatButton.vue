@@ -85,8 +85,9 @@ export default {
       if (event){
         event.preventDefault();
         event.stopPropagation();
-        document.dispatchEvent(new CustomEvent(chatConstants.ACTION_CHAT_OPEN_DRAWER));
       }
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_CHAT_OPEN_DRAWER));
+
     }
   }
 };
