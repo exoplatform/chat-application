@@ -4,7 +4,6 @@
       <div class="v-application--wrap">
         <v-btn
           id="btnChatButton"
-          ref="chatButton"
           class="dropdown-toggle"
           :class="statusClass()"
           :title="$t('Notification.chat.button.tooltip')"
