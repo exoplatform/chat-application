@@ -234,14 +234,10 @@ export default {
     document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
-    document.getElementById('btnChatButton').removeEventListener('click',this.openDrawer);
-
+    document.removeEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
   },
   mounted() {
-    window.addEventListener('load', () => {
-      const chatButtonElement = document.getElementById('btnChatButton');
-      chatButtonElement.addEventListener('click',this.openDrawer);
-    });
+    document.addEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
   },
   methods: {
     messageReceived(event) {
