@@ -242,10 +242,7 @@ export default {
     chatWebSocket.unregistreEventListener();
   },
   mounted() {
-    window.addEventListener('load', () => {
-      const chatButtonElement = document.getElementById('btnChatButton');
-      chatButtonElement.addEventListener('click',this.openDrawer);
-    });
+    document.addEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
   },
   methods: {
     messageReceived(event) {

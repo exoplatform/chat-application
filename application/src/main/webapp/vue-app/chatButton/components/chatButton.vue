@@ -1,20 +1,21 @@
 <template id="chatButtonApplication"> 
-<div class="VuetifyApp">
-  <div class="v-application miniChatDrawer v-application--is-ltr theme--light">
-  <div class="v-application--wrap">
-    <v-btn
-      id="btnChatButton"
-      class="dropdown-toggle"
-      :class="statusClass()"
-      title="chatButton"
-      icon>
-      <v-icon size="22" class="my-auto uiIconStatus icon-default-color fas fa-comments" />
-      <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
-      <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
-    </v-btn>
+  <div class="VuetifyApp">
+    <div class="v-application miniChatDrawer v-application--is-ltr theme--light">
+      <div class="v-application--wrap">
+        <v-btn
+          id="btnChatButton"
+          class="dropdown-toggle"
+          :class="statusClass()"
+          :title="$t('Notification.chat.button.tooltip')"
+          @click="openChatDrawer"
+          icon>
+          <v-icon size="22" class="my-auto uiIconStatus icon-default-color fas fa-comments" />
+          <span :class="canShowOnSiteNotif() && totalUnreadMsg > 0 && totalUnreadMsg <= 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini">{{ totalUnreadMsg }}</span>
+          <span :class="canShowOnSiteNotif() && totalUnreadMsg > 99 ? '' : 'hidden'" class="notif-total badgeDefault badgePrimary mini max">+99</span>
+        </v-btn>
+      </div>
+    </div>
   </div>
-  </div>
-</div>
 </template>
 <script>
 import * as chatServices from '../../chatServices';
@@ -79,6 +80,14 @@ export default {
       } else {
         return `user-${this.userSettings.status}`;
       }
+    },
+    openChatDrawer(event){
+      if (event){
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_CHAT_OPEN_DRAWER));
+
     }
   }
 };
