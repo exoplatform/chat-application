@@ -259,6 +259,7 @@ function renewToken() {
     error: e => console.error('Error while retrieving cometd token from server', e)
   });
 }
+
 export function registreEventListener(){
   document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
     const message = e.detail;
