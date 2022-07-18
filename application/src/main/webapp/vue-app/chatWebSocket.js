@@ -259,7 +259,7 @@ function renewToken() {
     error: e => console.error('Error while retrieving cometd token from server', e)
   });
 }
-export function extensionAddEventListener(){
+export function registreEventListener(){
   document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
     const message = e.detail;
 
@@ -285,7 +285,7 @@ export function extensionAddEventListener(){
   });
 }
 
-export function extensionRemoveEventListener(){
+export function unregistreEventListener(){
   document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
     const message = e.detail;
 

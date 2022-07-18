@@ -224,8 +224,8 @@ export default {
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
-    chatWebStorage.extensionAddEventListener();
-    chatWebSocket.extensionAddEventListener();
+    chatWebStorage.registreEventListener();
+    chatWebSocket.registreEventListener();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
@@ -238,8 +238,8 @@ export default {
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     document.removeEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
-    chatWebStorage.extensionRemoveEventListener();
-    chatWebSocket.extensionRemoveEventListener();
+    chatWebStorage.unregistreEventListener();
+    chatWebSocket.unregistreEventListener();
   },
   mounted() {
     window.addEventListener('load', () => {
