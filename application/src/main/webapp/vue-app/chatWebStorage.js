@@ -137,7 +137,7 @@ export function sendFailedMessage(user, message) {
   }
 }
 
-export function extensionAddEventListener(){
+export function registreEventListener(){
   document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
     const message = e.detail;
     storeMessageAsSent(message);
@@ -151,7 +151,7 @@ export function extensionAddEventListener(){
   });
 }
 
-export function extensionRemoveEventListener(){
+export function unregistreEventListener(){
   document.removeEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
     const message = e.detail;
     storeMessageAsSent(message);
