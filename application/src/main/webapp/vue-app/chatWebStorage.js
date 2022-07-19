@@ -137,14 +137,30 @@ export function sendFailedMessage(user, message) {
   }
 }
 
-document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
-  const message = e.detail;
-  storeMessageAsSent(message);
-});
+export function registreEventListener(){
+  document.addEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
+    const message = e.detail;
+    storeMessageAsSent(message);
+  });
+  
+  document.addEventListener(chatConstants.RESEND_FAILED_MESSAGE, (e) => {
+    sendFailedMessage(e.detail.user, e.detail.message);
+  });
+  document.addEventListener(chatConstants.DELETE_FAILED_MESSAGE, (e) => {
+    deleteFromStore(e.detail.user, e.detail.clientId);
+  });
+}
 
-document.addEventListener(chatConstants.RESEND_FAILED_MESSAGE, (e) => {
-  sendFailedMessage(e.detail.user, e.detail.message);
-});
-document.addEventListener(chatConstants.DELETE_FAILED_MESSAGE, (e) => {
-  deleteFromStore(e.detail.user, e.detail.clientId);
-});
+export function unregistreEventListener(){
+  document.removeEventListener(chatConstants.EVENT_MESSAGE_SENT, (e) => {
+    const message = e.detail;
+    storeMessageAsSent(message);
+  });
+  
+  document.removeEventListener(chatConstants.RESEND_FAILED_MESSAGE, (e) => {
+    sendFailedMessage(e.detail.user, e.detail.message);
+  });
+  document.removeEventListener(chatConstants.DELETE_FAILED_MESSAGE, (e) => {
+    deleteFromStore(e.detail.user, e.detail.clientId);
+  });
+}

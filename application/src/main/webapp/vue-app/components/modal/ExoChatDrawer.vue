@@ -128,6 +128,7 @@
 
 <script>
 import * as chatServices from '../../chatServices';
+import * as chatWebStorage from '../../chatWebStorage';
 import {installExtensions} from '../../extension';
 import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
@@ -223,6 +224,8 @@ export default {
     document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
+    chatWebStorage.registreEventListener();
+    chatWebSocket.registreEventListener();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
@@ -234,8 +237,9 @@ export default {
     document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
     document.removeEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
-    document.getElementById('btnChatButton').removeEventListener('click',this.openDrawer);
-
+    document.removeEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
+    chatWebStorage.unregistreEventListener();
+    chatWebSocket.unregistreEventListener();
   },
   mounted() {
     window.addEventListener('load', () => {
