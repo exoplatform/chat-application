@@ -259,27 +259,54 @@ function renewToken() {
     error: e => console.error('Error while retrieving cometd token from server', e)
   });
 }
+export function registreEventListener(){
+  document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
+    const message = e.detail;
 
-document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
-  const message = e.detail;
+    if (message && message.data && message.data.sessionId === cometDSettings.sessionId) {
+      cometDSettings.cCometD.disconnect();
+      cometDSettings.cCometD.explicitlyDisconnected = true;
+    }
+  });
 
-  if (message && message.data && message.data.sessionId === cometDSettings.sessionId) {
-    cometDSettings.cCometD.disconnect();
-    cometDSettings.cCometD.explicitlyDisconnected = true;
-  }
-});
+  document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, (e) => {
+    const message = e.detail;
+    sendMessage(message);
+  });
 
-document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, (e) => {
-  const message = e.detail;
-  sendMessage(message);
-});
+  document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, (e) => {
+    deleteMessage(e.detail);
+  });
 
-document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, (e) => {
-  deleteMessage(e.detail);
-});
+  document.addEventListener(chatConstants.ACTION_ROOM_SET_READ, (e) => {
+    if (e.detail && e.detail.trim()) {
+      setRoomMessagesAsRead(e.detail);
+    }
+  });
+}
 
-document.addEventListener(chatConstants.ACTION_ROOM_SET_READ, (e) => {
-  if (e.detail && e.detail.trim()) {
-    setRoomMessagesAsRead(e.detail);
-  }
-});
+export function unregistreEventListener(){
+  document.removeEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
+    const message = e.detail;
+
+    if (message && message.data && message.data.sessionId === cometDSettings.sessionId) {
+      cometDSettings.cCometD.disconnect();
+      cometDSettings.cCometD.explicitlyDisconnected = true;
+    }
+  });
+
+  document.removeEventListener(chatConstants.ACTION_MESSAGE_SEND, (e) => {
+    const message = e.detail;
+    sendMessage(message);
+  });
+
+  document.removeEventListener(chatConstants.ACTION_MESSAGE_DELETE, (e) => {
+    deleteMessage(e.detail);
+  });
+
+  document.removeEventListener(chatConstants.ACTION_ROOM_SET_READ, (e) => {
+    if (e.detail && e.detail.trim()) {
+      setRoomMessagesAsRead(e.detail);
+    }
+  });
+}
