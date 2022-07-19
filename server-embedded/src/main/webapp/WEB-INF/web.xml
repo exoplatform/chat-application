@@ -84,7 +84,9 @@
     </init-param>
     <init-param>
       <param-name>transports</param-name>
-      <param-value>org.cometd.server.transport.JSONPTransport,org.cometd.server.transport.JSONTransport,org.cometd.websocket.server.WebSocketTransport</param-value>
+      <param-value>
+        org.cometd.server.http.JSONPTransport,org.cometd.server.http.JSONTransport,org.cometd.server.websocket.javax.WebSocketTransport
+      </param-value>
     </init-param>
     <init-param>
       <param-name>JSONCommented</param-name>

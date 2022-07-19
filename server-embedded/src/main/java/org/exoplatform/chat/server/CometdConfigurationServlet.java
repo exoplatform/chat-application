@@ -1,12 +1,12 @@
 package org.exoplatform.chat.server;
 
-import org.cometd.annotation.AnnotationCometDServlet;
-import org.cometd.annotation.ServerAnnotationProcessor;
+import org.cometd.annotation.server.AnnotationCometDServlet;
+import org.cometd.annotation.server.ServerAnnotationProcessor;
 import org.cometd.bayeux.server.BayeuxServer;
-import org.cometd.client.transport.LongPollingTransport;
+import org.cometd.client.http.jetty.JettyHttpClientTransport;
 import org.cometd.oort.*;
 import org.cometd.server.BayeuxServerImpl;
-import org.cometd.websocket.client.WebSocketTransport;
+import org.cometd.client.websocket.javax.WebSocketTransport;
 import org.eclipse.jetty.client.HttpClient;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.services.RealTimeMessageService;
@@ -156,7 +156,7 @@ public class CometdConfigurationServlet extends AnnotationCometDServlet {
     ServletConfig config = getServletConfig();
     String transport = config.getInitParameter("transports");
     if (transport == null || !transport.contains(WebSocketTransport.class.getName())) {
-      oort.getClientTransportFactories().add(new LongPollingTransport.Factory(new HttpClient()));
+      oort.getClientTransportFactories().add(new JettyHttpClientTransport.Factory(new HttpClient()));
     }
     return oort;
   }
