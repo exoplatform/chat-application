@@ -5,7 +5,7 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>16-M03</version>
+    <version>16-M04</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
