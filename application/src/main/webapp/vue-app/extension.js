@@ -485,10 +485,6 @@ function getExtensionsByType(type) {
 
 initTiptip();
 
-registerDefaultExtensions('composer-application', DEFAULT_COMPOSER_APPS);
-registerDefaultExtensions('message-action', DEFAULT_MESSAGE_ACTIONS);
-registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
-
 export const extraMessageTypes = getExtensionsByType('message-type');
 export const extraMessageNotifs = getExtensionsByType('message-notif');
 export const roomActions = getExtensionsByType('room-action');
@@ -502,16 +498,16 @@ export function installExtensions(settings) {
   if (!settings || !settings.fullName) {
     return;
   }
-
   if (additionalExtensionsInstalled) {
     return;
   }
   additionalExtensionsInstalled = true;
-
+  registerDefaultExtensions('composer-application', DEFAULT_COMPOSER_APPS);
+  registerDefaultExtensions('message-action', DEFAULT_MESSAGE_ACTIONS);
+  registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
   if (settings.canUploadFiles) {
     registerDefaultExtensions('composer-application', ECMS_EVENT_COMPOSER_APP);
   }
-
   composerApplications = getExtensionsByType('composer-application');
   messageActions = getExtensionsByType('message-action');
 }
