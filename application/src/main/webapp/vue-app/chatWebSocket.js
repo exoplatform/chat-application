@@ -263,6 +263,10 @@ export function registreEventListener(){
   document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
     const message = e.detail;
 
+export function registreEventListener(){
+  document.addEventListener(chatConstants.EVENT_LOGGED_OUT, (e) => {
+    const message = e.detail;
+
     if (message && message.data && message.data.sessionId === cometDSettings.sessionId) {
       cometDSettings.cCometD.disconnect();
       cometDSettings.cCometD.explicitlyDisconnected = true;
