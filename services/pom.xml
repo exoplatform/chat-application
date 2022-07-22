@@ -30,6 +30,11 @@
   <packaging>jar</packaging>
   <name>eXo Add-on:: Chat Services</name>
   <description>eXo Chat Extension Configuration</description>
+  <properties>
+    <rest.api.doc.title>Chat application Rest Api</rest.api.doc.title>
+    <rest.api.doc.version>1.0</rest.api.doc.version>
+    <rest.api.doc.description>Chat application addon rest endpoints</rest.api.doc.description>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>javax.annotation</groupId>
@@ -99,4 +104,30 @@
           <artifactId>social-component-notification</artifactId>
       </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.openapitools.swagger</groupId>
+        <artifactId>swagger-maven-plugin</artifactId>
+        <configuration>
+          <useResourcePackagesChildren>true</useResourcePackagesChildren>
+          <resourcePackages>
+            <locations>org.exoplatform.addons.chat.api</locations>
+            <locations>org.exoplatform.chat.services</locations>
+          </resourcePackages>
+          <swaggerConfig>
+            <info>
+              <title>${rest.api.doc.title}</title>
+              <version>${rest.api.doc.version}</version>
+              <description>${rest.api.doc.description}</description>
+              <license>
+                <url>https://www.gnu.org/licenses/agpl-3.0.en.html</url>
+                <name>AGPL</name>
+              </license>
+            </info>
+          </swaggerConfig>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
