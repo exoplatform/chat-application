@@ -135,6 +135,7 @@ import * as chatWebSocket from '../../chatWebSocket';
 import * as desktopNotification from '../../desktopNotification';
 import {miniChatTitleActionComponents} from '../../extension';
 import {getSpaceAvatar, getUserAvatar} from '../../chatServices';
+import {additionalExtensionsInstalled} from '../../extension';
 
 export default {
   name: 'ExoChatDrawer',
@@ -377,7 +378,9 @@ export default {
           .then(data => this.totalUnreadMsg = data.total)
           .finally(() => this.$root.$applicationLoaded());
       });
-      installExtensions(this.userSettings);
+      if (!additionalExtensionsInstalled){
+        installExtensions(this.userSettings);
+      }
       const thiss = this;
       if (this.userSettings.offlineDelay) {
         setInterval(

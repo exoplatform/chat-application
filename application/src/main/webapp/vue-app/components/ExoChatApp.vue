@@ -112,6 +112,7 @@ import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
 import {chatConstants} from '../chatConstants';
 import {installExtensions} from '../extension';
+import {additionalExtensionsInstalled} from '../extension';
 
 export default {
   data() {
@@ -202,7 +203,9 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
-      installExtensions(this.userSettings);
+      if (!additionalExtensionsInstalled){
+        installExtensions(this.userSettings);
+      }
       const thiss = this;
       if (this.userSettings.offlineDelay) {
         setInterval(

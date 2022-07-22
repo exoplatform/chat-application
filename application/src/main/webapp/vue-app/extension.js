@@ -493,12 +493,9 @@ export const miniChatTitleActionComponents = getExtensionsByType('mini-chat-titl
 export let composerApplications = getExtensionsByType('composer-application');
 export let messageActions = getExtensionsByType('message-action');
 
-let additionalExtensionsInstalled = false;
+export let additionalExtensionsInstalled = false;
 export function installExtensions(settings) {
   if (!settings || !settings.fullName) {
-    return;
-  }
-  if (additionalExtensionsInstalled) {
     return;
   }
   additionalExtensionsInstalled = true;
