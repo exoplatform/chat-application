@@ -98,7 +98,6 @@
               :search-word="searchTerm"
               :drawer-status="showChatDrawer"
               :contacts="contactList"
-              :contacts-size="contactsSize"
               :selected="selectedContact"
               :loading-contacts="loadingContacts"
               @load-more-contacts="loadMoreContacts"
@@ -106,6 +105,7 @@
               @refresh-contacts="refreshContacts($event)" />
             <exo-chat-message-list
               v-show="selectedContact"
+              :composers-applications="composerApplications"
               :contact="selectedContact"
               :user-settings="userSettings"
               :is-opened-contact="!selectedContact" />
@@ -133,18 +133,18 @@ import {installExtensions} from '../../extension';
 import {chatConstants} from '../../chatConstants';
 import * as chatWebSocket from '../../chatWebSocket';
 import * as desktopNotification from '../../desktopNotification';
-import {miniChatTitleActionComponents} from '../../extension';
+import {miniChatTitleActionComponents,composerApplications} from '../../extension';
 import {getSpaceAvatar, getUserAvatar} from '../../chatServices';
 
 export default {
   name: 'ExoChatDrawer',
   data () {
     return {
+      composerApplications: [],
       contactList: [],
       showSearch: false,
       loadingContacts: true,
       selectedContact: [],
-      contactsSize: 0,
       userSettings: {
         username: typeof eXo !== 'undefined' ? eXo.env.portal.userName : ''
       },
@@ -214,6 +214,8 @@ export default {
       if (urlParams.has('chatRoomId')){
         this.openRoomWithId(urlParams.get('chatRoomId'));
       }
+      installExtensions(userSettings);
+      this.composerApplications = composerApplications;
     });
     document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -226,6 +228,7 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
+
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
@@ -243,6 +246,7 @@ export default {
   },
   mounted() {
     document.addEventListener(chatConstants.ACTION_CHAT_OPEN_DRAWER,this.openDrawer);
+    this.composerApplications=composerApplications;
   },
   methods: {
     messageReceived(event) {
@@ -377,7 +381,6 @@ export default {
           .then(data => this.totalUnreadMsg = data.total)
           .finally(() => this.$root.$applicationLoaded());
       });
-      installExtensions(this.userSettings);
       const thiss = this;
       if (this.userSettings.offlineDelay) {
         setInterval(
@@ -388,7 +391,6 @@ export default {
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
       this.addRooms(chatRoomsData.rooms);
-      this.contactsSize = chatRoomsData.roomsCount;
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline)
                            + Math.abs(chatRoomsData.unreadOnline)
                            + Math.abs(chatRoomsData.unreadSpaces)
@@ -411,7 +413,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms, pageNumber);
-          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -443,7 +444,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          this.contactsSize = chatRoomsData.roomsCount;
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
             if (contactToChange) {
@@ -458,7 +458,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });

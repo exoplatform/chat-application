@@ -35,6 +35,7 @@
       <span v-show="!newMessagesLoading && (!messages || !messages.length)" class="text">{{ $t('exoplatform.chat.no.messages') }}</span>
     </div>
     <exo-chat-message-composer
+      :composers-applications="composerApplications"
       :contact="contact"
       :mini-chat="miniChat"
       :user-settings="userSettings"
@@ -72,6 +73,12 @@ import {chatConstants} from '../chatConstants';
 
 export default {
   props: {
+    composersApplications: {
+      type: Object,
+      default: function () {
+        return {};
+      }
+    },
     miniChat: {
       type: Boolean,
       default: false
@@ -106,8 +113,12 @@ export default {
       searchKeyword: '',
       windowFocused: true,
       newMessagesLoading: false,
-      downloadDocumentEnabled: false
+      downloadDocumentEnabled: false,
+      composerApplications: [],
     };
+  },
+  mounted () {
+    this.composerApplications = this.composersApplications;
   },
   computed: {
     messagesMap() {
@@ -135,6 +146,7 @@ export default {
   },
   updated() {
     this.scrollToEnd();
+    this.composerApplications = this.composersApplications;
   },
   created() {
     document.addEventListener(chatConstants.EVENT_MESSAGE_UPDATED, this.messageReceived);
