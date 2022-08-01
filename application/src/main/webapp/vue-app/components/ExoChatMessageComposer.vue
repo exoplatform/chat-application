@@ -84,12 +84,18 @@
 
 <script>
 import * as chatServices from '../chatServices';
-import {composerApplications, EMOTICONS} from '../extension';
+import {EMOTICONS} from '../extension';
 import {chatConstants} from '../chatConstants';
 import {getUserAvatar} from '../chatServices';
 
 export default {
   props: {
+    composersApplications: {
+      type: Object,
+      default: function () {
+        return {};
+      }
+    },
     miniChat: {
       type: Boolean,
       default: false
@@ -134,10 +140,11 @@ export default {
   },
   watch: {
     userSettings() {
-      this.composerApplications = composerApplications;
+      this.composerApplications = this.composersApplications;
     }
   },
   updated() {
+    this.composerApplications = this.composersApplications;
     if (this.contact) {
       if (this.contact.isEnabledUser === 'true' || this.contact.isEnabledUser === 'null') {
         this.$nextTick(() => {
@@ -158,9 +165,6 @@ export default {
     document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
-  },
-  mounted() {
-    this.composerApplications = composerApplications;
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);

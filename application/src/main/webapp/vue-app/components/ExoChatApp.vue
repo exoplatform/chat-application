@@ -27,9 +27,7 @@
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
       </div>
       <exo-chat-contact-list
-        v-if="ap"
         :contacts="contactList"
-        :contacts-size="contactsSize"
         :selected="selectedContact"
         :loading-contacts="loadingContacts"
         @open-side-menu="sideMenuArea = !sideMenuArea"
@@ -50,6 +48,7 @@
         @back-to-contact-list="conversationArea = false" />
       <div class="room-content">
         <exo-chat-message-list
+          :composers-applications="composerApplications"
           :contact="selectedContact"
           :user-settings="userSettings"
           :is-opened-contact-apps="contactOpened" />
@@ -111,13 +110,12 @@ import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
 import {chatConstants} from '../chatConstants';
-import {installExtensions} from '../extension';
+import {installExtensions,composerApplications} from '../extension';
 
 export default {
   data() {
     return {
       contactList: [],
-      contactsSize: 0,
       /**
        * chatPage: {String}
        * cometdToken: {String}
@@ -146,7 +144,8 @@ export default {
       settingModal: false,
       conversationArea: false,
       participantsArea: false,
-      sideMenuArea: false
+      sideMenuArea: false,
+      composerApplications: [],
     };
   },
   computed: {
@@ -170,7 +169,11 @@ export default {
   created() {
     this.showHidePlatformAdminToolbar();
     chatServices.initChatSettings(this.userSettings.username, false,
-      userSettings => this.initSettings(userSettings),
+      userSettings => {
+        this.initSettings(userSettings);
+        installExtensions(userSettings);
+        this.composerApplications = composerApplications;
+      },
       chatRoomsData => this.initChatRooms(chatRoomsData));
 
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
@@ -202,7 +205,6 @@ export default {
       this.userSettings = userSettings;
       // Trigger that the new status has been loaded
       this.setStatus(this.userSettings.status);
-      installExtensions(this.userSettings);
       const thiss = this;
       if (this.userSettings.offlineDelay) {
         setInterval(
@@ -212,15 +214,11 @@ export default {
     },
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
-      
       this.addRooms(chatRoomsData.rooms);
-      this.contactsSize = chatRoomsData.roomsCount;
-
       const selectedRoom = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_LAST_SELECTED_ROOM);
       if (selectedRoom) {
         this.setSelectedContact(selectedRoom);
       }
-
       const totalUnreadMsg = (Math.abs(chatRoomsData.unreadOffline)
               + Math.abs(chatRoomsData.unreadOnline)
               + Math.abs(chatRoomsData.unreadSpaces)
@@ -320,7 +318,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, '', nbPages * chatConstants.DEFAULT_USER_LIMIT).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms, true);
-          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -330,7 +327,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
-          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
@@ -347,7 +343,6 @@ export default {
       chatServices.getOnlineUsers().then(users => {
         chatServices.getUserChatRooms(this.userSettings, users, term, filter, offset).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms, pageNumber);
-          this.contactsSize = chatRoomsData.roomsCount;
           this.loadingContacts = false;
         });
       });
