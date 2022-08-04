@@ -216,10 +216,6 @@ export default {
       type: Array,
       default: function() { return [];}
     },
-    contactsSize: {
-      type: Number,
-      default: 0
-    },
     contactsLoaded: {
       type: Boolean,
       default: function() { return false;}
@@ -294,6 +290,7 @@ export default {
       inactive: this.$t('exoplatform.chat.inactive'),
       external: this.$t('exoplatform.chat.external'),
       nbrePages: 0,
+      contactList: [],
     };
   },
   computed: {
@@ -301,7 +298,7 @@ export default {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
     filteredContacts: function() {
-      const sortedContacts = this.contacts.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
+      const sortedContacts = this.contactList.slice(0).filter(contact => (contact.room || contact.user) && contact.fullName);
       const self = this;
       if (this.sortFilter === 'Unread' && !this.isChatDrawer) {
         sortedContacts.sort(function (a, b) {
@@ -341,8 +338,9 @@ export default {
     },
   },
   watch: {
-    contacts() {
-      this.contactsToDisplay = this.contacts.slice();
+    contacts(newVal) {
+      this.contactList = newVal;
+      this.contactsToDisplay = this.contactList;
     },
     searchTerm(value) {
       this.searchTerm = value;
@@ -350,15 +348,12 @@ export default {
       this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages);
     },
     searchWord(newValue) {
-      if (newValue) {
-        this.searchTerm = newValue;
-        chatServices.getOnlineUsers().then(users => {
-          chatServices.getUserChatRooms(eXo.chat.userSettings, users, this.searchTerm).then(chatRoomsData => {
-            this.contacts = chatRoomsData.rooms;
-            this.contactsSize = chatRoomsData.roomsCount;
-          });
+      this.searchTerm = newValue;
+      chatServices.getOnlineUsers().then(users => {
+        chatServices.getUserChatRooms(eXo.chat.userSettings, users, this.searchTerm).then(chatRoomsData => {
+          this.contactList = chatRoomsData.rooms;
         });
-      }
+      });
     }
   },
   created() {
@@ -380,7 +375,6 @@ export default {
     document.addEventListener(chatConstants.ROOM_NOTIFICATION_SETTINGS_UPDATED, this.refreshNotificationSettings);
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
-    this.contactsToDisplay = this.contacts.slice();
     this.initFilterMobile();
     chatServices.getUserInfo(eXo.env.portal.userName).then(
       (data) => {
