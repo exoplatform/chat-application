@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.addons.chat.model.MentionModel;
 import org.exoplatform.addons.chat.model.MessageReceivedModel;
@@ -156,7 +157,7 @@ public class UserRestService implements ResourceContainer {
   @Path("/mentionNotifications")
   @RolesAllowed("users")
   @SuppressWarnings("unchecked")
-  public Response sendNotificationToMentionUsers(@Context HttpServletRequest request, @ApiParam(value = "MentionModel", required = true) MentionModel mentionModel  ) throws Exception {
+  public Response sendNotificationToMentionUsers(@Context HttpServletRequest request, @RequestBody(description = "MentionModel", required = true) MentionModel mentionModel  ) throws Exception {
     init(request);
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
@@ -169,7 +170,7 @@ public class UserRestService implements ResourceContainer {
   @Path("/messageReceivedNotification")
   @RolesAllowed("users")
   @SuppressWarnings("unchecked")
-  public Response sendNotificationToUsers(@Context HttpServletRequest request, @ApiParam(value = "MessageReceivedModel", required = true) MessageReceivedModel messageReceivedModel  ) throws Exception {
+  public Response sendNotificationToUsers(@Context HttpServletRequest request, @RequestBody(description = "MessageReceivedModel", required = true) MessageReceivedModel messageReceivedModel  ) throws Exception {
     init(request);
 
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
@@ -194,16 +195,16 @@ public class UserRestService implements ResourceContainer {
   @POST
   @Path("getRoomParticipantsToSuggest")
   @RolesAllowed("users")
-  @ApiOperation(value = "Get room participants to suggest",
-      httpMethod = "POST",
-      response = Response.class,
-      notes = "This returns the list of room participants (external and internal)")
+  @Operation(
+          summary = "Get room participants to suggest",
+          method = "POST",
+          description = "This returns the list of room participants (external and internal)")
   @ApiResponses(value = {
-      @ApiResponse (code = 200, message = "Request fulfilled"),
-      @ApiResponse (code = 404, message = "Resource not found")})
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "404", description = "Resource not found")})
   public Response getRoomParticipantsToSuggest(@Context UriInfo uriInfo,
                                                @Context HttpServletRequest request,
-                                               @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
+                                               @Parameter(description = "List of users.") List<UserBean> userList) throws Exception {
     List<UserBean> roomParticipantsToSuggest = new ArrayList<>();
     for (UserBean userBean : userList) {
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userBean.getName());
@@ -220,16 +221,16 @@ public class UserRestService implements ResourceContainer {
   @POST
   @Path("getModalParticipantsToSuggest")
   @RolesAllowed("users")
-  @ApiOperation(value = "Get room participants to suggest in room modal",
-          httpMethod = "POST",
-          response = Response.class,
-          notes = "This returns the list of room participants as non externals or current user connections")
+  @Operation(
+          summary = "Get room participants to suggest in room modal",
+          method = "POST",
+          description = "This returns the list of room participants as non externals or current user connections")
   @ApiResponses(value = {
-          @ApiResponse (code = 200, message = "Request fulfilled"),
-          @ApiResponse (code = 404, message = "Resource not found")})
+          @ApiResponse (responseCode = "200", description = "Request fulfilled"),
+          @ApiResponse (responseCode = "404", description = "Resource not found")})
   public Response getModalParticipantsToSuggest(@Context UriInfo uriInfo,
                                                @Context HttpServletRequest request,
-                                               @ApiParam(value = "List of users.", required = false) List<UserBean> userList) throws Exception {
+                                               @Parameter(description = "List of users.") List<UserBean> userList) throws Exception {
     String authenticatedUser;
     try {
       authenticatedUser = ConversationState.getCurrent().getIdentity().getUserId();
