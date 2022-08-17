@@ -382,7 +382,7 @@ export default {
       }
     );
     this.contactList = this.contacts;
-    this.contactsToDisplay = this.this.contacts.slice();
+    this.contactsToDisplay = this.contacts.slice();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);

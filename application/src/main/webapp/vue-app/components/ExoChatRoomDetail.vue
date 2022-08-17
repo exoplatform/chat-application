@@ -262,6 +262,9 @@ export default {
         this.confirmKOMessage = settingAction.confirm.koMessage;
         this.confirmAction = settingAction.confirm.confirmed;
         this.showConfirmModal = true;
+        if (this.contact && this.contact.isFavorite){
+          document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_FAVORITE_REMOVE, {'detail': this.contact}));
+        }
       } else {
         document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}-requested`, {'detail': this.contact}));
       }
