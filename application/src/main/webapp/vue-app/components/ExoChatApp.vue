@@ -38,7 +38,7 @@
         @refresh-contacts="refreshContacts($event)" />
     </div>
     <div
-      v-show="(selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'"
+      v-show="(isSelectedContact && selectedContact && (selectedContact.room || selectedContact.user)) || mq === 'mobile'"
       class="uiGlobalRoomsContainer"
       role="main">
       <exo-chat-room-detail
@@ -152,6 +152,9 @@ export default {
     isSelectedRoomSilence() {
       return this.selectedContact && desktopNotification.isRoomNotificationSilence(this.selectedContact.room) || this.selectedContact.isRoomSilent;
     },
+    isSelectedContact(){
+      return this.selectedContact;
+    },
     showMobileConversations() {
       return this.mq === 'mobile' && this.conversationArea === true ? true : false;
     },
@@ -187,6 +190,9 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
+    this.$root.$on('refresh-contacts', keepSelectedContact => {
+      this.refreshContacts(keepSelectedContact);
+    });
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -348,13 +354,17 @@ export default {
       });
     },
     refreshContacts(keepSelectedContact) {
+      const typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+      const termFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, chatConstants.TERM_FILTER_DEFAULT);
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings,users, termFilter, typeFilter).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
             if (contactToChange) {
               this.setSelectedContact(contactToChange);
+            } else {
+              this.selectedContact = {};
             }
           }
         });
