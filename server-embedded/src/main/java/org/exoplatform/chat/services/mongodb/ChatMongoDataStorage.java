@@ -999,6 +999,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setAvailableUser(true);
         roomBean.setFullName(room.get("team").toString());
         roomBean.setType(TYPE_ROOM_TEAM);
+        roomBean.setFavorite(userBean.isFavorite(roomId));
         if (StringUtils.isNotBlank(roomBean.getUser())) {
           roomBean.setAdmins(new String[]{room.get("user").toString()});
         }
