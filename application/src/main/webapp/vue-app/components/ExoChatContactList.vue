@@ -338,13 +338,14 @@ export default {
     },
   },
   watch: {
-    contacts(newVal) {
-      this.contactList = newVal;
-      this.contactsToDisplay = this.contactList;
+    contacts() {
+      this.contactList = this.contacts.slice();
+      this.contactsToDisplay = this.contacts.slice();
     },
     searchTerm(value) {
       this.searchTerm = value;
       this.nbrePages = 0;
+      chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, this.searchTerm);
       this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages);
     },
     searchWord(newValue) {
@@ -381,8 +382,8 @@ export default {
         this.externalUser = data && data.external === 'true';
       }
     );
-    this.contactList = this.contacts;
-    this.contactsToDisplay = this.this.contacts.slice();
+    this.contactList = this.contacts.slice();
+    this.contactsToDisplay = this.contacts.slice();
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
@@ -462,7 +463,13 @@ export default {
       this.unreadMessages.shift();
     },
     toggleFavorite(contact) {
-      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
+      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(
+        () => {
+          contact.isFavorite = !contact.isFavorite;
+          this.$emit('refresh-contacts', true);
+          this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
+        }
+      );
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
@@ -473,6 +480,7 @@ export default {
       chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, this.typeFilter);
       this.nbrePages = 0;
       this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages);
+      this.$emit('refresh-contacts', true);
     },
     initFilterMobile() {
       this.typeFilterMobile = this.typeFilter;
