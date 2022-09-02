@@ -45,6 +45,7 @@
         v-if="Object.keys(selectedContact).length !== 0"
         :is-room-notification-silence="isSelectedRoomSilence"
         :contact="selectedContact"
+        :roomActions="roomActions"
         @back-to-contact-list="conversationArea = false" />
       <div class="room-content">
         <exo-chat-message-list
@@ -110,7 +111,7 @@ import * as chatWebStorage from '../chatWebStorage';
 import * as chatWebSocket from '../chatWebSocket';
 import * as desktopNotification from '../desktopNotification';
 import {chatConstants} from '../chatConstants';
-import {installExtensions,composerApplications} from '../extension';
+import {installExtensions,composerApplications,roomActions} from '../extension';
 
 export default {
   data() {
@@ -146,6 +147,7 @@ export default {
       participantsArea: false,
       sideMenuArea: false,
       composerApplications: [],
+      roomActions: [],
     };
   },
   computed: {
@@ -173,6 +175,7 @@ export default {
         this.initSettings(userSettings);
         installExtensions(userSettings);
         this.composerApplications = composerApplications;
+        this.roomActions = roomActions;
       },
       chatRoomsData => this.initChatRooms(chatRoomsData));
 
@@ -187,6 +190,9 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
+    this.$root.$on('refresh-contacts', keepSelectedContact => {
+      this.refreshContacts(keepSelectedContact);
+    });
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_DISCONNECTED, this.changeUserStatusToOffline);
@@ -348,13 +354,17 @@ export default {
       });
     },
     refreshContacts(keepSelectedContact) {
+      const typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+      const termFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, chatConstants.TERM_FILTER_DEFAULT);
       chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
+        chatServices.getUserChatRooms(this.userSettings, users, termFilter, typeFilter).then(chatRoomsData => {
           this.addRooms(chatRoomsData.rooms);
           if (!keepSelectedContact && this.selectedContact) {
             const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
             if (contactToChange) {
               this.setSelectedContact(contactToChange);
+            } else {
+              this.selectedContact = {};
             }
           }
         });
