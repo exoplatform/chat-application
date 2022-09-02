@@ -491,7 +491,7 @@ registerDefaultExtensions('room-action', DEFAULT_ROOM_ACTIONS);
 
 export const extraMessageTypes = getExtensionsByType('message-type');
 export const extraMessageNotifs = getExtensionsByType('message-notif');
-export const roomActions = getExtensionsByType('room-action');
+export let roomActions = getExtensionsByType('room-action');
 export const roomActionComponents = getExtensionsByType('room-action-component');
 export const miniChatTitleActionComponents = getExtensionsByType('mini-chat-title-action-component');
 export let composerApplications = getExtensionsByType('composer-application');
@@ -514,4 +514,5 @@ export function installExtensions(settings) {
 
   composerApplications = getExtensionsByType('composer-application');
   messageActions = getExtensionsByType('message-action');
+  roomActions = getExtensionsByType('room-action');
 }

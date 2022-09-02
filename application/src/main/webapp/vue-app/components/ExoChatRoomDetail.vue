@@ -108,7 +108,7 @@
             id="team-delete-button-ok"
             href="#"
             class="btn btn-primary"
-            @click="confirmAction(contact);showConfirmModal=false;">{{ $t(confirmOKMessage) }}</a>
+            @click="confirmAction(contact);leaveRoomAndRemoveFavorite(contact);">{{ $t(confirmOKMessage) }}</a>
           <a
             id="team-delete-button-cancel"
             href="#"
@@ -123,7 +123,6 @@
 <script>
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
-import {roomActions} from '../extension';
 import {roomActionComponents} from '../extension';
 
 export default {
@@ -156,11 +155,17 @@ export default {
       default() {
         return false;
       }
-    }
+    },
+    roomActions: {
+      type: Array,
+      default: function () {
+        return [{}];
+      }
+    },
   },
   data() {
     return {
-      settingActions: roomActions,
+      settingActions: [],
       meetingStarted: false,
       nbMembers: 0,
       showSearchRoom: false,
@@ -172,7 +177,8 @@ export default {
       confirmOKMessage: '',
       confirmKOMessage: '',
       confirmAction(){return;},
-      roomActionComponents: roomActionComponents
+      roomActionComponents: roomActionComponents,
+      settingKey: '',
     };
   },
   computed: {
@@ -206,6 +212,7 @@ export default {
     }
   },
   created() {
+    this.settingActions = this.roomActions;
     document.addEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
     document.addEventListener(chatConstants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
@@ -228,14 +235,26 @@ export default {
   methods: {
     addToFavorite(e) {
       const contact = e.detail;
-      chatServices.toggleFavorite(contact.room, contact.user, true).then(contact.isFavorite = true);
+      chatServices.toggleFavorite(contact.room, contact.user, true).then(() => 
+      {
+        contact.isFavorite = true;
+        this.$root.$emit('refresh-contacts', true);
+      });
     },
     removeFromFavorite(e) {
       const contact = e.detail;
-      chatServices.toggleFavorite(contact.room, contact.user, false).then(contact.isFavorite = false);
+      chatServices.toggleFavorite(contact.room, contact.user, false).then(() => 
+      {
+        contact.isFavorite = false;
+        this.$root.$emit('refresh-contacts', true);
+      });
     },
     toggleFavorite(contact) {
-      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(contact.isFavorite = !contact.isFavorite);
+      chatServices.toggleFavorite(contact.room, contact.user, !contact.isFavorite).then(() =>
+      {
+        contact.isFavorite = !contact.isFavorite;
+        this.$root.$emit('refresh-contacts', true);
+      });
     },
     openSearchRoom() {
       this.showSearchRoom = true;
@@ -262,10 +281,22 @@ export default {
         this.confirmKOMessage = settingAction.confirm.koMessage;
         this.confirmAction = settingAction.confirm.confirmed;
         this.showConfirmModal = true;
+        this.settingKey = settingAction.key;
       } else {
         document.dispatchEvent(new CustomEvent(`exo-chat-setting-${settingAction.key}-requested`, {'detail': this.contact}));
       }
-      this.$children[1].$el.classList.remove('open');
+      if (this.$children[1] && this.$children[1].$el && this.$children[1].$el.classList) {
+        this.$children[1].$el.classList.remove('open');
+      }
+    },
+    leaveRoomAndRemoveFavorite(contact) {
+      if (this.settingKey === 'leaveRoom') {
+        if (contact && contact.isFavorite) {
+          chatServices.toggleFavorite(contact.room, contact.user, false).then(contact.isFavorite = false);
+        }
+        this.$root.$emit('refresh-contacts', false);
+      }
+      this.showConfirmModal=false;
     },
     checkMeetingStatus() {
       chatServices.getRoomDetail(eXo.chat.userSettings, this.contact.room).then(contact => {
