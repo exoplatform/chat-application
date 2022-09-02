@@ -123,7 +123,6 @@
 <script>
 import {chatConstants} from '../chatConstants';
 import * as chatServices from '../chatServices';
-import {roomActions} from '../extension';
 import {roomActionComponents} from '../extension';
 
 export default {
@@ -156,11 +155,17 @@ export default {
       default() {
         return false;
       }
-    }
+    },
+    roomActions: {
+      type: Array,
+      default: function () {
+        return [{}];
+      }
+    },
   },
   data() {
     return {
-      settingActions: roomActions,
+      settingActions: [],
       meetingStarted: false,
       nbMembers: 0,
       showSearchRoom: false,
@@ -207,6 +212,7 @@ export default {
     }
   },
   created() {
+    this.settingActions = this.roomActions;
     document.addEventListener(chatConstants.ACTION_ROOM_START_MEETING, this.startMeeting);
     document.addEventListener(chatConstants.ACTION_ROOM_STOP_MEETING, this.stopMeeting);
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_SETTINGS, this.openNotificationSettingsModal);
