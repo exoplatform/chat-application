@@ -247,6 +247,9 @@ export default {
         event.preventDefault();
       }
     },
+    appendAlternativeToImage(str, index, stringToAdd) {
+      return (str.substring(0, index) + stringToAdd + str.substring(index, str.length)) || '';
+    },
     sendMessage() {
       let newMessage = this.$refs.messageComposerArea.innerHTML;
       if (newMessage.indexOf('@') > -1) {
@@ -254,6 +257,22 @@ export default {
       }
       if (!newMessage || !newMessage.trim()) {
         return;
+      }
+      const imgTags = newMessage.match(/<img (alt(="")?)?[^>]*>/g);
+      if (imgTags) {
+        // create a tab containing the message elements
+        const allMessageContentTab = newMessage.split(/<img (alt(="")?)?[^>]*>/g);
+        imgTags.forEach(tag =>{
+          // delete al="" if exists
+          let img = tag.match(/alt="" /g) ? tag.replace(/alt="" /g, '') : tag;
+          const alt = img.match(/alt="([^"]*)"/g);
+          // append the alt attribute before the src
+          img = alt ? this.appendAlternativeToImage(img, img.indexOf('src'), `${alt} `) : img;
+          // keep the same message elements order for well displaying
+          allMessageContentTab[allMessageContentTab.findIndex(e => !e)] = img;
+        });
+        // create new string contains all the message elements with same order
+        newMessage = allMessageContentTab.join('').toString().replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);
       }
       const message = {
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
