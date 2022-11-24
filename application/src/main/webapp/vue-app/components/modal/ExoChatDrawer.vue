@@ -72,7 +72,7 @@
           </div>
           <v-icon
             v-exo-tooltip.bottom="$t('exoplatform.chat.quick.create.discussion')"
-            v-show="!showSearch && !selectedContact"
+            v-show="quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
             class="my-auto"
             @click="openQuickCreateChatDiscussionDrawer">
             mdi-plus
@@ -163,6 +163,7 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
+      quickCreateChatDiscussionFeatureEnabled: false
     };
   },
   computed: {
@@ -235,6 +236,8 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
+    this.$featureService.isFeatureEnabled('quickCreateChatDiscussion')
+      .then(enabled => this.quickCreateChatDiscussionFeatureEnabled = enabled);
 
   },
   destroyed() {
