@@ -34,7 +34,7 @@
           </value-param>
         </init-params>
     </component>
-    
+
     <external-component-plugins>
         <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
         <component-plugin>
