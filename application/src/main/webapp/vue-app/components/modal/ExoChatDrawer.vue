@@ -71,10 +71,10 @@
             </div>
           </div>
           <v-icon
-            v-exo-tooltip.bottom="$t('exoplatform.chat.add.new.discussion')"
-            v-show="chatDiscussionFeatureEnabled && !showSearch && !selectedContact"
+            v-exo-tooltip.bottom="$t('exoplatform.chat.quick.create.discussion')"
+            v-show="quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
             class="my-auto"
-            @click="openCreateRoomDrower">
+            @click="openQuickCreateChatDiscussionDrawer">
             mdi-plus
           </v-icon>  
           <v-icon
@@ -163,7 +163,7 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      chatDiscussionFeatureEnabled: false 
+      quickCreateChatDiscussionFeatureEnabled: false 
     };
   },
   computed: {
@@ -237,7 +237,7 @@ export default {
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
     this.$featureService.isFeatureEnabled('quickCreateChatDiscussion')
-      .then(enabled => this.chatDiscussionFeatureEnabled = enabled);
+      .then(enabled => this.quickCreateChatDiscussionFeatureEnabled = enabled);
 
   },
   destroyed() {
@@ -504,8 +504,8 @@ export default {
       this.showSearch = false;
       this.searchTerm = '';
     },
-    openCreateRoomDrower(){
-      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_ROOM_DRAWER);
+    openQuickCreateChatDiscussionDrawer(){
+      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
     },
     selectContactSearch() {
       this.showSearch = false;
