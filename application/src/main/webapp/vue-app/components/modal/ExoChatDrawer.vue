@@ -71,6 +71,13 @@
             </div>
           </div>
           <v-icon
+            v-exo-tooltip.bottom="$t('exoplatform.chat.quick.create.discussion')"
+            v-show="!showSearch && !selectedContact"
+            class="my-auto"
+            @click="openQuickCreateChatDiscussionDrawer">
+            mdi-plus
+          </v-icon>  
+          <v-icon
             v-show="showSearch && !selectedContact"
             class="my-auto"
             @click="closeContactSearch">
@@ -493,6 +500,9 @@ export default {
     closeContactSearch() {
       this.showSearch = false;
       this.searchTerm = '';
+    },
+    openQuickCreateChatDiscussionDrawer(){
+      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
     },
     selectContactSearch() {
       this.showSearch = false;
