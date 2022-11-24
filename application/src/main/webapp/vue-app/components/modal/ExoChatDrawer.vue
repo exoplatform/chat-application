@@ -71,6 +71,13 @@
             </div>
           </div>
           <v-icon
+            v-exo-tooltip.bottom="$t('exoplatform.chat.add.new.discussion')"
+            v-show="chatDiscussionFeatureEnabled && !showSearch && !selectedContact"
+            class="my-auto"
+            @click="openCreateRoomDrower">
+            mdi-plus
+          </v-icon>  
+          <v-icon
             v-show="showSearch && !selectedContact"
             class="my-auto"
             @click="closeContactSearch">
@@ -156,6 +163,7 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
+      chatDiscussionFeatureEnabled: false 
     };
   },
   computed: {
@@ -228,6 +236,8 @@ export default {
     document.addEventListener(chatConstants.ACTION_ROOM_OPEN_CHAT, this.openRoom);
     chatWebStorage.registreEventListener();
     chatWebSocket.registreEventListener();
+    this.$featureService.isFeatureEnabled('quickCreateChatDiscussion')
+      .then(enabled => this.chatDiscussionFeatureEnabled = enabled);
 
   },
   destroyed() {
@@ -493,6 +503,9 @@ export default {
     closeContactSearch() {
       this.showSearch = false;
       this.searchTerm = '';
+    },
+    openCreateRoomDrower(){
+      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_ROOM_DRAWER);
     },
     selectContactSearch() {
       this.showSearch = false;
