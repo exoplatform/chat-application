@@ -43,7 +43,6 @@ const components = {
   'exo-chat-space-settings': spaceChatSetting,
   'exo-chat-quick-create-discussion-drawer': ExoChatQuickCreateDiscussionDrawer,
   'exo-chat-quick-discussion-participant-item': ExoChatQuickDiscussionParticipantItem,
-
 };
 
 // external components
