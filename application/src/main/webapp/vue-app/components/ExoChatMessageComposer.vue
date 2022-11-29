@@ -389,7 +389,7 @@ export default {
         const pastedImage = item.getAsFile();
         const reader = new FileReader();
         reader.onload = function (event) {
-          this.$refs.messageComposerArea.src = event.target.result;
+          $('#messageComposerArea').src = event.target.result;
         };
         reader.readAsDataURL(pastedImage);
       } else {

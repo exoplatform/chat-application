@@ -25,7 +25,8 @@ export function initSettings(settings) {
       const wsConfig = {
         url: cometDSettings.wsEndpoint,
         'exoId': cometDSettings.username,
-        'exoToken': cometDSettings.cometdToken
+        'exoToken': cometDSettings.cometdToken,
+        maxSendBayeuxMessageSize: 10485760
       };
       cometDSettings.cCometD.configure(wsConfig);
     }
@@ -140,6 +141,8 @@ export function leaveRoom(room, callback) {
   cometDSettings.cCometD.publish('/service/chat', content, function(publishAck) {
     if (publishAck && publishAck.successful && callback) {
       callback();
+    } else if (publishAck.failure) {
+      console.error(`Error when sending message on ${publishAck.failure.connectionType} with exception : ${publishAck.failure.exception}`);
     }
   });
 }
@@ -156,6 +159,8 @@ export function deleteRoom(room, callback) {
   cometDSettings.cCometD.publish('/service/chat', content, function(publishAck) {
     if (publishAck && publishAck.successful && callback) {
       callback();
+    } else if (publishAck.failure) {
+      console.error(`Error when sending message on ${publishAck.failure.connectionType} with exception : ${publishAck.failure.exception}`);
     }
   });
 }
@@ -189,6 +194,7 @@ export function sendMessage(messageObj, callback) {
   try {
     cometDSettings.cCometD.publish('/service/chat', JSON.stringify(content), function(publishAck) {
       if (!publishAck || !publishAck.successful) {
+        console.error(`Error when sending message on ${publishAck.failure.connectionType} with exception : ${publishAck.failure.exception}`);
         document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_NOT_SENT, {'detail': data}));
       } else {
         document.dispatchEvent(new CustomEvent(chatConstants.EVENT_MESSAGE_SENT, {detail: content}));
@@ -219,6 +225,8 @@ export function deleteMessage(messageObj, callback) {
       if (typeof callback === 'function') {
         callback();
       }
+    } else if (publishAck.failure) {
+      console.error(`Error when sending message on ${publishAck.failure.connectionType} with exception : ${publishAck.failure.exception}`);
     }
   });
 }
@@ -236,6 +244,8 @@ export function setRoomMessagesAsRead(room, callback) {
         if (typeof callback === 'function') {
           callback();
         }
+      } else if (publishAck.failure) {
+        console.error(`Error when sending message on ${publishAck.failure.connectionType} with exception : ${publishAck.failure.exception}`);
       }
     });
   }
@@ -251,7 +261,8 @@ function renewToken() {
       const wsConfig = {
         url: cometDSettings.wsEndpoint,
         'exoId': cometDSettings.username,
-        'exoToken': cometDSettings.cometdToken
+        'exoToken': cometDSettings.cometdToken,
+        maxSendBayeuxMessageSize: 10485760
       };
       cometDSettings.cCometD.configure(wsConfig);
       initChatCometd();
