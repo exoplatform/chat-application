@@ -17,6 +17,8 @@ import ExoDropdownSelect from './ExoDropdownSelect.vue';
 import ExoChatModal from './modal/ExoChatModal.vue';
 import ExoChatDrawer from './modal/ExoChatDrawer.vue';
 import ExoContentEditable from './modal/ExoContentEditable.vue';
+import ExoChatQuickCreateDiscussionDrawer from './modal/ExoChatQuickCreateDiscussionDrawer.vue';
+import ExoChatQuickDiscussionParticipantItem from './modal/ExoChatQuickDiscussionParticipantItem.vue';
 
 import spaceChatSetting from '../external-components/spaceChatSetting.vue';
 
@@ -38,7 +40,9 @@ const components = {
   'exo-content-editable': ExoContentEditable,
   'exo-chat-drawer': ExoChatDrawer,
   'popover-chat-button': PopoverChatButton,
-  'exo-chat-space-settings': spaceChatSetting
+  'exo-chat-space-settings': spaceChatSetting,
+  'exo-chat-quick-create-discussion-drawer': ExoChatQuickCreateDiscussionDrawer,
+  'exo-chat-quick-discussion-participant-item': ExoChatQuickDiscussionParticipantItem,
 };
 
 // external components
