@@ -88,7 +88,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           </div>
           <v-icon
             v-exo-tooltip.bottom="$t('exoplatform.chat.quick.create.discussion')"
-            v-show="quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
+            v-show="!isExternal && quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
             class="my-auto"
             @click="openQuickCreateChatDiscussionDrawer">
             mdi-plus
@@ -179,7 +179,8 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      quickCreateChatDiscussionFeatureEnabled: false
+      quickCreateChatDiscussionFeatureEnabled: false,
+      currentUser: null
     };
   },
   computed: {
@@ -224,6 +225,10 @@ export default {
       } else {
         return chatConstants.DEFAULT_ROOM_AVATAR;
       }
+    },
+    isExternal() {
+      const profile = this.currentUser && this.currentUser.profile ;
+      return profile && (profile.dataEntity && profile.dataEntity.external === 'true' || profile.external);
     }
   },
   watch: {
@@ -241,6 +246,8 @@ export default {
       installExtensions(userSettings);
       this.composerApplications = composerApplications;
     });
+    const currentUserIdentityId = eXo.env.portal.profileOwnerIdentityId;
+    this.$identityService.getIdentityById(currentUserIdentityId).then( user => this.currentUser = user );
     document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
