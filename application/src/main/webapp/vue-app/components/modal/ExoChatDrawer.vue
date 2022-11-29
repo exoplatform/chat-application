@@ -137,6 +137,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           </div>
         </template>
       </exo-drawer>
+      <exo-chat-quick-create-discussion-drawer />
     </v-app>
     <div class="hide">
       <audio

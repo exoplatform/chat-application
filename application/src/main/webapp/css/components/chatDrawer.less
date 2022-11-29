@@ -442,3 +442,20 @@ input#taskDueDate:focus {
 input.add-room-name:focus {
   border-color: @focusInputColor;
 }
+#Quicksuggester {
+  .v-autocomplete.identitySuggester {
+    .v-input__slot {
+      margin: auto !important;
+    }
+    .v-select__selections {
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      overflow: hidden;
+      margin: auto;
+      display: flex !important;
+    }
+    input {
+      padding: 0;
+    }
+  }
+}
