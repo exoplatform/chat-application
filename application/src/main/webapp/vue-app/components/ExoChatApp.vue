@@ -45,7 +45,7 @@
         v-if="Object.keys(selectedContact).length !== 0"
         :is-room-notification-silence="isSelectedRoomSilence"
         :contact="selectedContact"
-        :roomActions="roomActions"
+        :room-actions="roomActions"
         @back-to-contact-list="conversationArea = false" />
       <div class="room-content">
         <exo-chat-message-list
