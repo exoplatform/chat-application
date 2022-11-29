@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2022 eXo Platform SAS.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 export const chatConstants = {
   PORTAL: eXo.env.portal.context || '',
   PORTAL_NAME: eXo.env.portal.portalName || '',
@@ -83,6 +99,7 @@ export const chatConstants = {
   ACTION_ROOM_OPEN_CHAT: 'exo-chat-room-open-requested',
   ACTION_FILTER_ROOM_TYPE: 'exo-chat-room-filter-changed',
   ACTION_CHAT_OPEN_DRAWER: 'exo-chat-open-drawer',
+  ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER: 'exo-chat-open-quick-create-discussion-drawer',
   EVENT_CONNECTED: 'exo-chat-connected',
   EVENT_DISCONNECTED: 'exo-chat-disconnected',
   EVENT_RECONNECTED: 'exo-chat-reconnected',
