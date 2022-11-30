@@ -101,6 +101,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           </v-icon>
           <v-icon
             v-show="!showSearch && !selectedContact"
+            id="chatFilter"
             class="my-auto"
             @click="openContactSearch">
             mdi-filter
@@ -108,6 +109,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <v-icon
             v-show="mq !=='mobile' && !showSearch"
             :title="$t('exoplatform.chat.open.chat')"
+            id="openChat"
             class="my-auto"
             @click="navigateTo">
             mdi-open-in-new
