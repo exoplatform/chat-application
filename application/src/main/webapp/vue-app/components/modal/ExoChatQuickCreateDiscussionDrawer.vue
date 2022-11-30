@@ -37,7 +37,7 @@
             <label class="d-flex flex-row font-weight-bold my-2">{{ $t('exoplatform.chat.team.name') }}</label>
             <div class="d-flex flex-row">
               <input
-                :placeholder="$t('exoplatform.chat.quick.create.discussion.placeholder')"
+                :placeholder="$t('exoplatform.chat.quick.create.discussion.room.placeholder')"
                 type="text"
                 class="input-block-level ignore-vuetify-classes my-3"
                 v-model="fullName">
