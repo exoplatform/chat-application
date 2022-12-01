@@ -52,7 +52,7 @@
         <button
           :disabled="disabledSaveButton"
           class="btn btn-primary"
-          @click="saveRoom">
+          @click="quickCreateChatDiscussion">
           {{ $t('exoplatform.chat.save') }}
         </button>
       </div>
@@ -90,8 +90,8 @@ export default {
       return this.participantItem !== null && this.participantItem.length > 1 ? true : false;
     },
     disabledSaveButton(){
-      return this.participantItem && this.participantItem.length === 1 && !this.validNewRoomName || 
-        this.participantItem && this.participantItem.length > 1 && this.validNewRoomName ? false : true ;
+      return !(this.participantItem && this.participantItem.length === 1 && !this.validNewRoomName || 
+        this.participantItem && this.participantItem.length > 1 && this.validNewRoomName);
     }
   },
   watch: {
@@ -138,14 +138,14 @@ export default {
         this.participantItem.splice(index, 1);
       }
     },
-    saveQuickChatDiscussion() {
+    openRoomQuickDiscussion() {
       if (this.fullName) {
         let users = this.participantItem.map(user => user.identity.remoteId || user.identity.name);
         if (users.indexOf(eXo.chat.userSettings.username) < 0) {
           users.unshift(eXo.chat.userSettings.username);
         }
         users = users.join(',');
-        chatServices.saveRoom(eXo.chat.userSettings,  this.fullName, users, null)
+        chatServices.saveRoom(eXo.chat.userSettings, this.fullName, users, null)
           .then(resp => {
             const HTTP_OK_CODE = 200;
             if (resp.status === HTTP_OK_CODE) {
@@ -174,15 +174,17 @@ export default {
       }}));
     },
     openOneToOneQuickDiscussion(){
-      const remoteId = this.participantItem[0].identity.remoteId ;
+      const remoteId = this.participantItem[0].identity.remoteId;
       this.close();
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, {detail: {name: remoteId, type: 'username'}}));
       this.displayAlert(this.$t('exoplatform.chat.quick.create.discussion.success.notification'));
     },
-    saveRoom(){
+    quickCreateChatDiscussion(){
       if (this.validNewRoomName){
-        this.saveQuickChatDiscussion();
-      } else {this.openOneToOneQuickDiscussion();}
+        this.openRoomQuickDiscussion();
+      } else {
+        this.openOneToOneQuickDiscussion();
+      }
     }
   }
 };
