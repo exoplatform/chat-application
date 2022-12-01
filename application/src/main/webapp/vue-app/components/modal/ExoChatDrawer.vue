@@ -88,7 +88,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           </div>
           <v-icon
             v-exo-tooltip.bottom="$t('exoplatform.chat.quick.create.discussion')"
-            v-show="quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
+            v-show="!isExternal && quickCreateChatDiscussionFeatureEnabled && !showSearch && !selectedContact"
             class="my-auto"
             @click="openQuickCreateChatDiscussionDrawer">
             mdi-plus
@@ -178,7 +178,8 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      quickCreateChatDiscussionFeatureEnabled: false
+      quickCreateChatDiscussionFeatureEnabled: false,
+      isExternal: false
     };
   },
   computed: {
@@ -240,6 +241,7 @@ export default {
       installExtensions(userSettings);
       this.composerApplications = composerApplications;
     });
+    this.$userService.getUser(eXo.env.portal.userName).then(user => { this.isExternal = user.external === 'true'; });
     document.addEventListener(chatConstants.EVENT_MESSAGE_RECEIVED, this.messageReceived);
     document.addEventListener(chatConstants.EVENT_ROOM_UPDATED, this.roomUpdated);
     document.addEventListener(chatConstants.EVENT_LOGGED_OUT, this.userLoggedout);
