@@ -384,6 +384,7 @@ export default {
     );
     this.contactList = this.contacts.slice();
     this.contactsToDisplay = this.contacts.slice();
+    this.$root.$on('quick-chat-discussion-saved', e => this.roomSaved(e));
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);

@@ -62,6 +62,17 @@
         </div>
       </v-form>
     </template>
+    <template slot="footer">
+      <div class="d-flex my-2 flex-row justify-end">
+        <button class="mx-5 px-8 btn" @click="close()">{{ $t('exoplatform.chat.cancel') }}</button>
+        <button
+          :disabled="disabledSaveButton"
+          class="btn btn-primary"
+          @click="quickCreateChatDiscussion">
+          {{ $t('exoplatform.chat.save') }}
+        </button>
+      </div>
+    </template>
   </exo-drawer>
 </template>
 
@@ -69,6 +80,8 @@
 <script>
 
 import {chatConstants} from '../../chatConstants';
+import * as chatServices from '../../chatServices';
+
 export default {
   name: 'ExoChatDrawer',
   components: {},
@@ -92,6 +105,10 @@ export default {
     displayQuickDiscussionInputName() {
       return this.participantItem !== null && this.participantItem.length > 1 ? true : false;
     },
+    disabledSaveButton(){
+      return !(this.participantItem && this.participantItem.length === 1 && !this.validNewRoomName || 
+        this.participantItem && this.participantItem.length > 1 && this.validNewRoomName);
+    }
   },
   watch: {
     participants() {
@@ -137,6 +154,54 @@ export default {
         this.participantItem.splice(index, 1);
       }
     },
+    openRoomQuickDiscussion() {
+      if (this.fullName) {
+        let users = this.participantItem.map(user => user.identity.remoteId || user.identity.name);
+        if (users.indexOf(eXo.chat.userSettings.username) < 0) {
+          users.unshift(eXo.chat.userSettings.username);
+        }
+        users = users.join(',');
+        chatServices.saveRoom(eXo.chat.userSettings, this.fullName, users, null)
+          .then(resp => {
+            const HTTP_OK_CODE = 200;
+            if (resp.status === HTTP_OK_CODE) {
+              return resp.json();
+            } else {
+              return resp.text();
+            }
+          })
+          .then((response) => {
+            if (response && response.room) {
+              this.$root.$emit('quick-chat-discussion-saved', response.room);
+              this.close();
+              this.displayAlert(this.$t('exoplatform.chat.quick.create.discussion.success.notification'));
+            } else if (response === 'roomAlreadyExists.creator') {
+              this.displayAlert(this.$t('exoplatform.chat.CreatorErrorRoomCreationMessage'),'error');
+            } else if (response === 'roomAlreadyExists.notCreator') {
+              this.displayAlert(this.$t('exoplatform.chat.NotCreatorErrorRoomCreationMessage'),'error');
+            }
+          });
+      }
+    },
+    displayAlert(message, type) {
+      document.dispatchEvent(new CustomEvent('notification-alert', {detail: {
+        message,
+        type: type || 'success',
+      }}));
+    },
+    openOneToOneQuickDiscussion(){
+      const remoteId = this.participantItem[0].identity.remoteId;
+      this.close();
+      document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, {detail: {name: remoteId, type: 'username'}}));
+      this.displayAlert(this.$t('exoplatform.chat.quick.create.discussion.success.notification'));
+    },
+    quickCreateChatDiscussion(){
+      if (this.validNewRoomName){
+        this.openRoomQuickDiscussion();
+      } else {
+        this.openOneToOneQuickDiscussion();
+      }
+    }
   }
 };
 </script>
