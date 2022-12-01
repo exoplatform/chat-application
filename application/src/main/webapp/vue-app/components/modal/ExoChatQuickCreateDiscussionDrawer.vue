@@ -44,7 +44,7 @@
                     @remove-attendee="removeAttendee" />
                 </div>
                 <p class="caption font-weight-light ps-1 muted font-italic">
-                  <span><v-icon small>info</v-icon></span>{{ $t('exoplatform.chat.quick.create.discussion.info') }}
+                  <span class="mr-2"><v-icon small>info</v-icon></span>{{ $t('exoplatform.chat.quick.create.discussion.info') }}
                 </p>
               </v-flex>
             </div>
