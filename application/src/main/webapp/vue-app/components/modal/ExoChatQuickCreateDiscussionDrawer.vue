@@ -24,7 +24,7 @@
       <span class="PopupTitle"> <v-icon left @click="close">mdi-arrow-left</v-icon>{{ $t('exoplatform.chat.quick.create.discussion') }}</span>
     </template>
     <template slot="content">
-      <v-form ref="Quicksuggester" class="pa-2 ms-2 mt-4">
+      <v-form ref="Quicksuggester" id="Quicksuggester" class="pa-2 ms-2 mt-4">
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex flex-column mb-2">
             <label class="d-flex flex-row font-weight-bold my-2">{{ $t('exoplatform.chat.quick.create.discussion.add.people') }}</label>
@@ -69,7 +69,7 @@
           :disabled="disabledSaveButton"
           class="btn btn-primary"
           @click="quickCreateChatDiscussion">
-          {{ $t('exoplatform.chat.save') }}
+          {{ $t('exoplatform.chat.quick.discussion.add') }}
         </button>
       </div>
     </template>
@@ -193,7 +193,6 @@ export default {
       const remoteId = this.participantItem[0].identity.remoteId;
       this.close();
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, {detail: {name: remoteId, type: 'username'}}));
-      this.displayAlert(this.$t('exoplatform.chat.quick.create.discussion.success.notification'));
     },
     quickCreateChatDiscussion(){
       if (this.validNewRoomName){
