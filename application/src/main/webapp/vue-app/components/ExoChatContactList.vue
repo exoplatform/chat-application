@@ -128,9 +128,9 @@
               src="/chat/img/no-result-filter.png">
             <br>
             <span @click="openQuickCreateChatDiscussionDrawer" class="text">
-              <a id="noresultFiltertmessage">{{ $t('exoplatform.chat.no.results.filter.message') }}</a>
+              <a id="noResultFiltermessage">{{ $t('exoplatform.chat.no.results.filter.message') }}</a>
               <i
-                id="noresultFilterPlusIcon"
+                id="noResultFilterPlusIcon"
                 class="fa fa-plus  ml-1"
                 aria-hidden="true">
               </i>
@@ -789,7 +789,7 @@ export default {
       }
       return '#';
     },
-    openQuickCreateChatDiscussionDrawer(){
+    openQuickCreateChatDiscussionDrawer() {
       this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
     },
   }
