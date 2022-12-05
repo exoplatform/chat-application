@@ -84,7 +84,7 @@
       </div>
     </div>
     <div id="chat-users" class="contactList isList">
-      <transition-group name="chat-contact-list">
+      <transition-group name="chat-contact-list" v-if="filteredContacts.length > 0">
         <div
           v-hold-tap="openContactActions"
           v-for="contact in filteredContacts"
@@ -132,6 +132,26 @@
       <div v-show="loadingContacts" class="contact-list-item isList">
         <div class="seeMoreContacts">
           {{ $t('exoplatform.chat.loading') }}
+        </div>
+      </div>
+      <div v-if="filteredContacts.length === 0">
+        <div class="center">
+          <div class="noResultFilter">
+            <img
+              class="mb-2"
+              alt=""
+              loading="lazy"
+              src="/chat/img/no-result-filter.png">
+            <br>
+            <span @click="openQuickCreateChatDiscussionDrawer" class="text">
+              <a id="noResultFiltermessage">{{ $t('exoplatform.chat.no.results.filter.message') }}</a>
+              <i
+                id="noResultFilterPlusIcon"
+                class="fa fa-plus  ml-1"
+                aria-hidden="true">
+              </i>
+            </span>
+          </div>
         </div>
       </div>
       <div
@@ -784,7 +804,10 @@ export default {
         return chatServices.getSpaceProfileLink(this.contactMenu.fullName);
       }
       return '#';
-    }
+    },
+    openQuickCreateChatDiscussionDrawer() {
+      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
+    },
   }
 };
 </script>
