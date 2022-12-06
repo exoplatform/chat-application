@@ -189,12 +189,12 @@ export default {
         type: type || 'success',
       }}));
     },
-    openOneToOneQuickDiscussion(){
+    openOneToOneQuickDiscussion() {
       const remoteId = this.participantItem[0].identity.remoteId;
       this.close();
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_ROOM_OPEN_CHAT, {detail: {name: remoteId, type: 'username'}}));
     },
-    quickCreateChatDiscussion(){
+    quickCreateChatDiscussion() {
       if (this.validNewRoomName){
         this.openRoomQuickDiscussion();
       } else {

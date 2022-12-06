@@ -524,7 +524,7 @@ export default {
       this.showSearch = false;
       this.searchTerm = '';
     },
-    openQuickCreateChatDiscussionDrawer(){
+    openQuickCreateChatDiscussionDrawer() {
       this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
     },
     selectContactSearch() {
