@@ -126,7 +126,6 @@
               alt=""
               loading="lazy"
               src="/chat/img/no-result-filter.png">
-            <br>
             <span class="text">
               {{ $t('exoplatform.chat.no.results.filter.message') }}
               <v-icon
