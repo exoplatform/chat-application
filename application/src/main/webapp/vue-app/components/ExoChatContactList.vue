@@ -127,13 +127,14 @@
               loading="lazy"
               src="/chat/img/no-result-filter.png">
             <br>
-            <span @click="openQuickCreateChatDiscussionDrawer" class="text">
-              <a id="noResultFiltermessage">{{ $t('exoplatform.chat.no.results.filter.message') }}</a>
-              <i
-                id="noResultFilterPlusIcon"
-                class="fa fa-plus  ml-1"
-                aria-hidden="true">
-              </i>
+            <span class="text">
+              {{ $t('exoplatform.chat.no.results.filter.message') }}
+              <v-icon
+                class="my-auto"
+                :size="16"
+                @click="openQuickCreateChatDiscussionDrawer">
+                fa-plus
+              </v-icon> 
             </span>
           </div>
         </div>
