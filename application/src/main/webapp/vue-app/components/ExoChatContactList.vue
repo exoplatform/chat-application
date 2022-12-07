@@ -134,7 +134,7 @@
           {{ $t('exoplatform.chat.loading') }}
         </div>
       </div>
-      <div v-if="filteredContacts.length === 0">
+      <div v-if="filteredContacts.length === 0 && !isExternal">
         <div class="center">
           <div class="noResultFilter">
             <img
@@ -327,6 +327,7 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       nbrePages: 0,
       contactList: [],
+      isExternal: false
     };
   },
   computed: {
@@ -394,6 +395,7 @@ export default {
     }
   },
   created() {
+    this.$userService.getUser(eXo.env.portal.userName).then(user => { this.isExternal = user.external === 'true'; });
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
     document.addEventListener(chatConstants.EVENT_ROOM_DELETED, this.leftRoom);
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_JOINED, this.joinedToNewRoom);
