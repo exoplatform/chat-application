@@ -134,7 +134,7 @@
           {{ $t('exoplatform.chat.loading') }}
         </div>
       </div>
-      <div v-if="filteredContacts.length === 0 && !isExternal">
+      <div v-if="filteredContacts.length === 0">
         <div class="center">
           <div class="noResultFilter">
             <div>
@@ -145,8 +145,8 @@
               src="/chat/img/no-result-filter.png">
             </div>
             <span class="text">
-              {{ $t('exoplatform.chat.no.results.filter.message') }}
-              <v-icon
+              {{noResultFilterMessage}}
+              <v-icon v-if="!isExternal"
                 class="my-auto"
                 :size="16"
                 @click="openQuickCreateChatDiscussionDrawer">
@@ -333,6 +333,9 @@ export default {
     };
   },
   computed: {
+    noResultFilterMessage() {
+      return this.isExternal ? this.$t('exoplatform.chat.no.results.filter.external.message') : this.$t('exoplatform.chat.no.results.filter.message') ;
+    },
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
