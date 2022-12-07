@@ -137,11 +137,13 @@
       <div v-if="filteredContacts.length === 0 && !isExternal">
         <div class="center">
           <div class="noResultFilter">
+            <div>
             <img
               class="mb-2"
               alt=""
               loading="lazy"
               src="/chat/img/no-result-filter.png">
+            </div>
             <span class="text">
               {{ $t('exoplatform.chat.no.results.filter.message') }}
               <v-icon
