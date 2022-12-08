@@ -84,7 +84,7 @@
       </div>
     </div>
     <div id="chat-users" class="contactList isList">
-      <transition-group name="chat-contact-list">
+      <transition-group name="chat-contact-list" v-if="filteredContacts.length > 0">
         <div
           v-hold-tap="openContactActions"
           v-for="contact in filteredContacts"
@@ -132,6 +132,28 @@
       <div v-show="loadingContacts" class="contact-list-item isList">
         <div class="seeMoreContacts">
           {{ $t('exoplatform.chat.loading') }}
+        </div>
+      </div>
+      <div v-if="filteredContacts.length === 0">
+        <div class="center">
+          <div class="noResultFilter">
+            <div>
+            <img
+              class="mb-2"
+              alt=""
+              loading="lazy"
+              src="/chat/img/no-result-filter.png">
+            </div>
+            <span class="text">
+              {{noResultFilterMessage}}
+              <v-icon v-if="!isExternal"
+                class="my-auto"
+                :size="16"
+                @click="openQuickCreateChatDiscussionDrawer">
+                fa-plus
+              </v-icon> 
+            </span>
+          </div>
         </div>
       </div>
       <div
@@ -307,9 +329,13 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       nbrePages: 0,
       contactList: [],
+      isExternal: false
     };
   },
   computed: {
+    noResultFilterMessage() {
+      return this.isExternal ? this.$t('exoplatform.chat.no.results.filter.external.message') : this.$t('exoplatform.chat.no.results.filter.message') ;
+    },
     statusStyle() {
       return this.contactStatus === 'inline' ? 'user-available' : 'user-invisible';
     },
@@ -374,6 +400,7 @@ export default {
     }
   },
   created() {
+    this.$userService.getUser(eXo.env.portal.userName).then(user => { this.isExternal = user.external === 'true'; });
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_LEFT, this.leftRoom);
     document.addEventListener(chatConstants.EVENT_ROOM_DELETED, this.leftRoom);
     document.addEventListener(chatConstants.EVENT_ROOM_MEMBER_JOINED, this.joinedToNewRoom);
@@ -784,7 +811,10 @@ export default {
         return chatServices.getSpaceProfileLink(this.contactMenu.fullName);
       }
       return '#';
-    }
+    },
+    openQuickCreateChatDiscussionDrawer() {
+      this.$root.$emit(chatConstants.ACTION_CHAT_OPEN_QUICK_CREATE_DISCUSSION_DRAWER);
+    },
   }
 };
 </script>
