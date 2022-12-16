@@ -43,10 +43,10 @@
                     :attendee="item"
                     @remove-attendee="removeAttendee" />
                 </div>
-                <p class="caption font-weight-light ps-1 muted font-italic">
-                  <span class="mr-2"><v-icon small>info</v-icon></span>{{ $t('exoplatform.chat.quick.create.discussion.info') }}
-                </p>
               </v-flex>
+            </div>
+            <div class="caption font-weight-light ps-1 muted font-italic">
+                <span class="mr-2"><v-icon small>info</v-icon></span>{{ $t('exoplatform.chat.quick.create.discussion.info') }}.
             </div>
           </div>
           <div v-if="displayQuickDiscussionInputName" class="d-flex flex-column mb-2">
