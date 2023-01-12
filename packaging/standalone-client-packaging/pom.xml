@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.addons.chat</groupId>
     <artifactId>packaging</artifactId>
-    <version>3.4.x-SNAPSHOT</version>
+    <version>3.4.0-M34</version>
   </parent>
   <artifactId>chat-standalone-client-packaging</artifactId>
   <packaging>pom</packaging>
