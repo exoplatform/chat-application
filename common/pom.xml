@@ -4,7 +4,7 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>3.4.x-SNAPSHOT</version>
+    <version>3.4.0-20230119</version>
   </parent>
   <artifactId>chat-common</artifactId>
   <name>eXo Add-on:: Chat Client Server Common</name>
