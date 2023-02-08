@@ -5,12 +5,12 @@
   <parent>
     <artifactId>addons-exo-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>18-M02</version>
+    <version>18-security-fix-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>chat-application</artifactId>
-  <version>3.6.x-SNAPSHOT</version>
+  <version>3.6.x-security-fix-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Application / Server</name>
   <description>Chat application and server developed with MongoDB</description>
@@ -31,10 +31,8 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <addon.exo.ecms.version>6.6.x-SNAPSHOT</addon.exo.ecms.version>
-
-    <!-- Used to reference the folder name in Tomcat Zip only for standalone mode -->
-    <org.apache.tomcat.version>10.1.17</org.apache.tomcat.version>
+    <addon.exo.ecms.version>6.6.x-security-fix-SNAPSHOT</addon.exo.ecms.version>
+  	<org.juzu.version>1.2.0</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
     <mongodb-java-driver.version>4.11.1</mongodb-java-driver.version>
