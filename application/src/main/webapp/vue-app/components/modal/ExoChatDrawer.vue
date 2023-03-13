@@ -317,9 +317,11 @@ export default {
     },
     openDrawer() {
       this.$refs.chatDrawer.startLoading();
+      this.contactList = [];
       chatServices.initChatSettings(this.userSettings.username, false,
         userSettings => this.initSettings(userSettings),
         chatRoomsData => {
+          this.contactList = chatRoomsData.rooms.slice();
           this.initChatRooms(chatRoomsData);
           this.$nextTick(this.$refs.chatDrawer.endLoading);
         },
@@ -417,7 +419,6 @@ export default {
     },
     initChatRooms(chatRoomsData) {
       this.loadingContacts = false;
-      this.addRooms(chatRoomsData.rooms);
       const totalUnreadMsg = Math.abs(chatRoomsData.unreadOffline)
                            + Math.abs(chatRoomsData.unreadOnline)
                            + Math.abs(chatRoomsData.unreadSpaces)
