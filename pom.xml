@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>addons-parent-exo-pom</artifactId>
+    <artifactId>addons-exo-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>17-security-fix-SNAPSHOT</version>
+    <version>17-M01</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
