@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>addons-parent-pom</artifactId>
+    <artifactId>addons-exo-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>17-exo-M01</version>
+    <version>17-M01</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
@@ -31,10 +31,7 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.gatein.portal.version>6.5.x-exo-SNAPSHOT</org.exoplatform.gatein.portal.version>
-    <org.exoplatform.social.version>6.5.x-exo-SNAPSHOT</org.exoplatform.social.version>
     <addon.exo.ecms.version>6.5.x-SNAPSHOT</addon.exo.ecms.version>
-    <addon.exo.notes.version>1.3.x-exo-SNAPSHOT</addon.exo.notes.version>
   	<org.juzu.version>1.2.0</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
@@ -175,37 +172,11 @@
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
-      <dependency>
-        <groupId>org.exoplatform.gatein.portal</groupId>
-        <artifactId>exo.portal.component.portal</artifactId>
-        <version>${org.exoplatform.gatein.portal.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.gatein.portal</groupId>
-        <artifactId>exo.portal.webui.portal</artifactId>
-        <version>${org.exoplatform.gatein.portal.version}</version>
-      </dependency>
-      <!-- Import versions from social project -->
-      <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social</artifactId>
-        <version>${org.exoplatform.social.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <!-- Import versions from ecms project -->
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>
         <artifactId>ecms</artifactId>
         <version>${addon.exo.ecms.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- Import versions from notes project -->
-      <dependency>
-        <groupId>org.exoplatform.addons.notes</groupId>
-        <artifactId>notes</artifactId>
-        <version>${addon.exo.notes.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
