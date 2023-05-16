@@ -2,6 +2,7 @@ package org.exoplatform.chat.service;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -188,6 +189,10 @@ public class DocumentService implements ResourceContainer {
     String workspace = node.getSession().getWorkspace().getName();
     String repository = ((ManageableRepository) node.getSession().getRepository()).getConfiguration().getName();
     String nodePathWithWorkspace = workspace + node.getPath();
+    String nodeName = node.getName();
+    String encodedNodeName = URLEncoder.encode(nodeName, "UTF-8")
+    //encode the node name twice because the URL is decoded automaticly during transmission
+    nodePathWithWorkspace = nodePathWithWorkspace.replace(nodeName, URLEncoder.encode(encodedNodeName, "UTF-8"));
     String baseDavPath = "/jcr/" + repository + "/" + nodePathWithWorkspace;
     String publicURL = RestUtils.getBaseRestUrl() + baseDavPath;
     String thumbnailURL = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/thumbnailImage/large/" + repository + "/"
