@@ -21,11 +21,15 @@ package org.exoplatform.chat.services.mongodb;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mongodb.*;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.connection.ConnectionPoolSettings;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.mongodb.utils.ConnectionHelper;
 import org.exoplatform.chat.utils.PropertyManager;
@@ -44,7 +48,7 @@ public class MongoBootstrap
   private static MongodExecutable mongodExe;
   private static MongodProcess mongod;
   private MongoClient m;
-  private DB db;
+  private MongoDatabase db;
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
 
   private MongoClient mongo()
@@ -61,11 +65,9 @@ public class MongoBootstrap
           setupEmbedMongo();
         }
 
-        MongoClientOptions options = MongoClientOptions.builder()
-                .connectionsPerHost(200)
-                .connectTimeout(60000)
-                .threadsAllowedToBlockForConnectionMultiplier(10)
-                .build();
+        MongoClientSettings settings = MongoClientSettings.builder().applyToConnectionPoolSettings((ConnectionPoolSettings.builder()
+                .maxSize(200)
+                .maxConnectionIdleTime(60000, TimeUnit.SECONDS).build())).builder().build();
         boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION));
         if (authenticate) {
           MongoCredential credential = MongoCredential.createCredential(
