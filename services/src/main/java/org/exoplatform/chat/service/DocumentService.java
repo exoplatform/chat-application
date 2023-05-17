@@ -2,7 +2,6 @@ package org.exoplatform.chat.service;
 
 import java.io.*;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -17,6 +16,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.services.cms.impl.Utils;
 import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
@@ -189,10 +189,6 @@ public class DocumentService implements ResourceContainer {
     String workspace = node.getSession().getWorkspace().getName();
     String repository = ((ManageableRepository) node.getSession().getRepository()).getConfiguration().getName();
     String nodePathWithWorkspace = workspace + node.getPath();
-    String nodeName = node.getName();
-    String encodedNodeName = URLEncoder.encode(nodeName, "UTF-8")
-    //encode the node name twice because the URL is decoded automaticly during transmission
-    nodePathWithWorkspace = nodePathWithWorkspace.replace(nodeName, URLEncoder.encode(encodedNodeName, "UTF-8"));
     String baseDavPath = "/jcr/" + repository + "/" + nodePathWithWorkspace;
     String publicURL = RestUtils.getBaseRestUrl() + baseDavPath;
     String thumbnailURL = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/thumbnailImage/large/" + repository + "/"
@@ -233,7 +229,7 @@ public class DocumentService implements ResourceContainer {
                          List<String> usernames) {
     String filename = getFileName(uploadResource);
     String title = filename;
-    filename = Text.escapeIllegalJcrChars(filename);
+    filename = Text.escapeIllegalJcrChars(Utils.cleanName(filename));
 
     boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
 
