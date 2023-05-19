@@ -20,7 +20,15 @@
 package org.exoplatform.chat.services.mongodb;
 
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.*;
@@ -52,20 +60,34 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   public static final String M_ROOM_PREFIX = "messages_room_";
   public static final String M_ROOMS_COLLECTION = "rooms";
+  public static final String BR = "<br/>";
+  public static final String MESSAGE = "message";
+  public static final String TIMESTAMP = "timestamp";
+  public static final String USER = "user";
+  public static final String IS_SYSTEM = "isSystem";
+  public static final String ROOM_ID = "roomId";
+  public static final String OPTIONS = "options";
+  public static final String LAST_UPDATED_TIMESTAMP = "lastUpdatedTimestamp";
+  public static final String MEETING_STARTED = "meetingStarted";
+  public static final String START_TIME = "startTime";
+  public static final String IS_ENABLED = "isEnabled";
+  public static final String USERS = "users";
+  public static final String TYPE = "type";
 
-  private int readTotalJson, readTotalTxt;
+  private final int readTotalJson;
+  private final int readTotalTxt;
 
   @Inject
   private UserDataStorage userDataStorage;
 
-  private SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
+  private final SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy hh:mm aaa");
 
   public ChatMongoDataStorage() {
     readTotalJson = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_JSON));
     readTotalTxt = Integer.parseInt(PropertyManager.getProperty(PropertyManager.PROPERTY_READ_TOTAL_TXT));
   }
 
-  private DB db() {
+  private MongoDatabase db() {
     return ConnectionManager.getInstance().getDB();
   }
 
@@ -79,29 +101,29 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   public String save(String message, String user, String room, String isSystem, String options) {
     String roomType = getTypeRoomChat(room);
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
-    message = message.replaceAll("&", "&#38");
-    message = message.replaceAll("<", "&lt;");
-    message = message.replaceAll(">", "&gt;");
-    message = message.replaceAll("\"", "&quot;");
-    message = message.replaceAll("\n", "<br/>");
-    message = message.replaceAll("\\\\", "&#92");
-    message = message.replaceAll("\t", "  ");
+    message = message.replace("&", "&#38");
+    message = message.replace("<", "&lt;");
+    message = message.replace(">", "&gt;");
+    message = message.replace("\"", "&quot;");
+    message = message.replace("\n", BR);
+    message = message.replace("\\\\", "&#92");
+    message = message.replace("\t", "  ");
 
-    BasicDBObject doc = new BasicDBObject();
-    doc.put("user", user);
-    doc.put("message", message);
-    doc.put("timestamp", System.currentTimeMillis());
-    doc.put("isSystem", isSystem);
-    doc.put("roomId", room);
+    Document doc = new Document();
+    doc.put(USER, user);
+    doc.put(MESSAGE, message);
+    doc.put(TIMESTAMP, System.currentTimeMillis());
+    doc.put(IS_SYSTEM, isSystem);
+    doc.put(ROOM_ID, room);
     if (options != null) {
-      options = options.replaceAll("<", "&lt;");
-      options = options.replaceAll(">", "&gt;");
-      doc.put("options", options);
+      options = options.replace("<", "&lt;");
+      options = options.replace(">", "&gt;");
+      doc.put(OPTIONS, options);
     }
-    coll.insert(doc);
+    coll.insertOne(doc);
 
     this.updateRoomTimestamp(room);
 
@@ -110,83 +132,83 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   public void delete(String room, String user, String messageId) {
     String roomType = getTypeRoomChat(room);
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
-    BasicDBObject query = new BasicDBObject();
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + roomType);
+    Document query = new Document();
     query.put("_id", new ObjectId(messageId));
-    query.put("user", user);
-    query.put("roomId", room);
-    DBCursor cursor = coll.find(query);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("message", TYPE_DELETED);
-      dbo.put("type", TYPE_DELETED);
-      dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
-    }
+    query.put(USER, user);
+    query.put(ROOM_ID, room);
+    FindIterable<Document> cursor = coll.find(query);
+    cursor.forEach(document -> {
+      document.put(MESSAGE, TYPE_DELETED);
+      document.put(TYPE, TYPE_DELETED);
+      document.put(LAST_UPDATED_TIMESTAMP, System.currentTimeMillis());
+      coll.insertOne(document);
+    });
   }
 
   @Override
   public List<RoomBean> getTeamRoomByName(String teamName) {
     if (StringUtils.isBlank(teamName))
       return null;
-    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
-    BasicDBObject qRoom = new BasicDBObject();
+    MongoCollection<Document> cRooms = db().getCollection(M_ROOMS_COLLECTION);
+    Document qRoom = new Document();
     qRoom.put("team", teamName);
-    qRoom.put("type", TYPE_ROOM_TEAM);
+    qRoom.put(TYPE, TYPE_ROOM_TEAM);
     List<RoomBean> roomBeans = new ArrayList<>();
-    DBCursor roomsCursor = cRooms.find(qRoom);
-    while (roomsCursor.hasNext()) {
-      DBObject dbRoom = roomsCursor.next();
+    FindIterable<Document> roomsCursor = cRooms.find(qRoom);
+    roomsCursor.forEach(dbRoom -> {
       RoomBean room = new RoomBean();
       room.setRoom((String) dbRoom.get("_id"));
       room.setFullName((String) dbRoom.get("team"));
-      room.setUser((String) dbRoom.get("user"));
-      room.setType((String) dbRoom.get("type"));
-      if (dbRoom.containsField("meetingStarted")) {
-        room.setMeetingStarted((Boolean) dbRoom.get("meetingStarted"));
+      room.setUser((String) dbRoom.get(USER));
+      room.setType((String) dbRoom.get(TYPE));
+      if (dbRoom.containsKey(MEETING_STARTED)) {
+        room.setMeetingStarted((Boolean) dbRoom.get(MEETING_STARTED));
       }
-      if (dbRoom.containsField("startTime")) {
-        room.setStartTime((String) dbRoom.get("startTime"));
+      if (dbRoom.containsKey(START_TIME)) {
+        room.setStartTime((String) dbRoom.get(START_TIME));
       }
       if (StringUtils.isNotBlank(room.getUser())) {
         room.setAdmins(new String[]{room.getUser()});
       }
-      if (dbRoom.containsField("timestamp")) {
-        room.setTimestamp((Long) dbRoom.get("timestamp"));
+      if (dbRoom.containsKey(TIMESTAMP)) {
+        room.setTimestamp((Long) dbRoom.get(TIMESTAMP));
       }
       roomBeans.add(room);
-    }
+    });
     return roomBeans;
   }
 
   public RoomBean getTeamRoomById(String roomId) {
     if (roomId == null || roomId.isEmpty())
       return null;
-    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
-    BasicDBObject qRoom = new BasicDBObject();
+    MongoCollection<Document> cRooms = db().getCollection(M_ROOMS_COLLECTION);
+    Document qRoom = new Document();
     qRoom.put("_id", roomId);
-    qRoom.put("type", TYPE_ROOM_TEAM);
-    DBObject dbRoom = cRooms.findOne(qRoom);
-    if (dbRoom == null)
+    qRoom.put(TYPE, TYPE_ROOM_TEAM);
+    Document document = cRooms.find(qRoom).first();
+    if(document != null) {
+      RoomBean room = new RoomBean();
+      room.setRoom((String) document.get("_id"));
+      room.setFullName((String) document.get("team"));
+      room.setUser((String) document.get(USER));
+      room.setType((String) document.get(TYPE));
+      if (document.containsKey(MEETING_STARTED)) {
+        room.setMeetingStarted((Boolean) document.get(MEETING_STARTED));
+      }
+      if (document.containsKey(START_TIME)) {
+        room.setStartTime((String) document.get(START_TIME));
+      }
+      if (StringUtils.isNotBlank(room.getUser())) {
+        room.setAdmins(new String[]{room.getUser()});
+      }
+      if (document.containsKey(TIMESTAMP)) {
+        room.setTimestamp((Long) document.get(TIMESTAMP));
+      }
+      return room;
+    } else {
       return null;
-    RoomBean room = new RoomBean();
-    room.setRoom((String) dbRoom.get("_id"));
-    room.setFullName((String) dbRoom.get("team"));
-    room.setUser((String) dbRoom.get("user"));
-    room.setType((String) dbRoom.get("type"));
-    if (dbRoom.containsField("meetingStarted")) {
-      room.setMeetingStarted((Boolean) dbRoom.get("meetingStarted"));
     }
-    if (dbRoom.containsField("startTime")) {
-      room.setStartTime((String) dbRoom.get("startTime"));
-    }
-    if (StringUtils.isNotBlank(room.getUser())) {
-      room.setAdmins(new String[]{room.getUser()});
-    }
-    if (dbRoom.containsField("timestamp")) {
-      room.setTimestamp((Long) dbRoom.get("timestamp"));
-    }
-    return room;
   }
 
   public void deleteTeamRoom(String roomId, String user) {
@@ -201,16 +223,15 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
     LOG.info("Deleting Team Chat Room [" + room.getFullName() + "] (id:" + room.getRoom() + ")");
     // Check if the requester is the owner of the Team Chat Room
-    if (user == null || room.getUser().equals(user) == false) {
+    if (!room.getUser().equals(user)) {
       LOG.warning("The user [" + user + "] is not the owner of the room with id [" + roomId + "] so this room won't be deleted.");
       return;
     }
 
     // Delete all message of the Team Chat Room
-    DBCollection cMessages = db().getCollection(M_ROOM_PREFIX + TYPE_ROOM_TEAM);
-    BasicDBObject qMessages = new BasicDBObject();
-    qMessages.put("roomId", roomId);
-    cMessages.remove(qMessages, WriteConcern.ACKNOWLEDGED);
+    MongoCollection<Document> cMessages = db().getCollection(M_ROOM_PREFIX + TYPE_ROOM_TEAM);
+    Bson filter = Filters.eq(ROOM_ID, roomId);
+    cMessages.deleteMany(filter);
     LOG.info("Messages of room [" + roomId + "] deleted");
 
     // Remove the Team Chat Room from all the users
@@ -219,37 +240,27 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     LOG.info("All users removed from the team room [" + roomId + "]");
 
     // Delete the Team Chat Room
-    DBCollection cRooms = db().getCollection(M_ROOMS_COLLECTION);
-    BasicDBObject qRoom = new BasicDBObject();
-    qRoom.put("_id", roomId);
-    cRooms.remove(qRoom, WriteConcern.ACKNOWLEDGED);
+    MongoCollection<Document> cRooms = db().getCollection(M_ROOMS_COLLECTION);
+    Bson qRoom = Filters.eq("_id", roomId);
+    cRooms.deleteMany(qRoom);
     LOG.info("Team room [" + roomId + "] deleted");
   }
 
   public void edit(String room, String user, String messageId, String message) {
     String roomType = getTypeRoomChat(room);
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     message = StringUtils.chomp(message);
-    message = message.replaceAll("&", "&#38");
-    message = message.replaceAll("<", "&lt;");
-    message = message.replaceAll(">", "&gt;");
-    message = message.replaceAll("\"", "&quot;");
-    message = message.replaceAll("\n", "<br/>");
-    message = message.replaceAll("\\\\", "&#92");
+    message = message.replace("&", "&#38");
+    message = message.replace("<", "&lt;");
+    message = message.replace(">", "&gt;");
+    message = message.replace("\"", "&quot;");
+    message = message.replace("\n", BR);
+    message = message.replace("\\\\", "&#92");
 
-    BasicDBObject query = new BasicDBObject();
-    query.put("_id", new ObjectId(messageId));
-    query.put("user", user);
-    query.put("roomId", room);
-    DBCursor cursor = coll.find(query);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("message", message);
-      dbo.put("type", TYPE_EDITED);
-      dbo.put("lastUpdatedTimestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
-    }
+    Bson query = Filters.and(Filters.eq("_id", new ObjectId(messageId)), Filters.eq(USER, user), Filters.eq(ROOM_ID, room));
+    Document updateDocument = new Document().append(MESSAGE, message).append(TYPE, TYPE_EDITED).append(LAST_UPDATED_TIMESTAMP, System.currentTimeMillis());
+    coll.findOneAndUpdate(query, updateDocument);
   }
 
   public String read(String room) {
@@ -267,10 +278,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     calendar.set(Calendar.SECOND, 0);
 
     String roomType = getTypeRoomChat(room);
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
     BasicDBObject query = new BasicDBObject();
-    query.put("roomId", room);
+    query.put(ROOM_ID, room);
 
     BasicDBObject duration = null;
     if (fromTimestamp != null) {
@@ -286,85 +297,83 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     }
 
     if (duration != null) {
-      BasicDBObject ts = new BasicDBObject("timestamp", duration);
-      BasicDBObject updts = new BasicDBObject("lastUpdatedTimestamp", duration);
+      BasicDBObject ts = new BasicDBObject(TIMESTAMP, duration);
+      BasicDBObject updts = new BasicDBObject(LAST_UPDATED_TIMESTAMP, duration);
       query.put("$or", new BasicDBObject[]{ts, updts});
     }
 
     BasicDBObject sort = new BasicDBObject();
-    sort.put("timestamp", -1);
+    sort.put(TIMESTAMP, -1);
     int limit = limitToLoad > 0 ? limitToLoad : (isTextOnly) ? readTotalTxt : readTotalJson;
-    DBCursor cursor = coll.find(query).sort(sort).limit(limit);
     StringBuilder sb = new StringBuilder();
-    if (!cursor.hasNext()) {
-      if (isTextOnly) {
-        sb.append("no messages");
+    try (MongoCursor<Document> messagesCursor = coll.find(query).sort(sort).limit(limit).cursor()){
+      if (!messagesCursor.hasNext()) {
+        if (isTextOnly) {
+          sb.append("no messages");
+        } else {
+          sb.append("{\"room\": \"").append(room).append("\",\"messages\": []}");
+        }
       } else {
-        sb.append("{\"room\": \"").append(room).append("\",\"messages\": []}");
-      }
-    } else {
-      // Just being used as a local cache
-      Map<String, UserBean> users = new HashMap<String, UserBean>();
+        // Just being used as a local cache
+        Map<String, UserBean> users = new HashMap<>();
 
-      boolean first = true;
-      JSONObject data = new JSONObject();
-      while (cursor.hasNext()) {
-        DBObject dbo = cursor.next();
-        String timestamp = dbo.get("timestamp").toString();
-        if (first) //first element (most recent one)
-        {
-          if (!isTextOnly) {
+        boolean first = true;
+        JSONObject data = new JSONObject();
+        while (messagesCursor.hasNext()) {
+          Document dbo = messagesCursor.next();
+          String timestamp = dbo.get(TIMESTAMP).toString();
+          if (first && !isTextOnly) {
             data.put("room", room);
-            data.put("timestamp", timestamp);
+            data.put(TIMESTAMP, timestamp);
             data.put("messages", new JSONArray());
           }
-        }
 
-        String user = dbo.get("user").toString();
-        UserBean userBean = users.get(user);
-        if (userBean == null) {
-          userBean = userDataStorage.getUser(user);
-          users.put(user, userBean);
-        }
-        String fullName = userBean.getFullname();
-
-        if (isTextOnly) {
-          String date = "";
-          try {
-            Date date1 = new Date(Long.parseLong(timestamp));
-            date = formatterDate.format(date1);
-          } catch (Exception e) {
-            LOG.info("Message Date Format Error : " + e.getMessage());
+          String user = dbo.get(USER).toString();
+          UserBean userBean = users.get(user);
+          if (userBean == null) {
+            userBean = userDataStorage.getUser(user);
+            users.put(user, userBean);
           }
+          String fullName = userBean.getFullname();
 
-          StringBuilder line = new StringBuilder();
-          line.append("[").append(date).append("] ");
-          String message = dbo.get("message").toString();
-          if (TYPE_DELETED.equals(message)) message = TYPE_DELETED;
-          if ("true".equals(dbo.get("isSystem"))) {
-            line.append("System Message: ");
-            if (message.endsWith("<br/>")) message = message.substring(0, message.length() - 5);
-            line.append(message).append("\n");
+          if (isTextOnly) {
+            String date = "";
+            try {
+              Date date1 = new Date(Long.parseLong(timestamp));
+              date = formatterDate.format(date1);
+            } catch (Exception e) {
+              LOG.info("Message Date Format Error : " + e.getMessage());
+            }
+
+            StringBuilder line = new StringBuilder();
+            line.append("[").append(date).append("] ");
+            String message = dbo.get(MESSAGE).toString();
+            if (TYPE_DELETED.equals(message)) message = TYPE_DELETED;
+            if ("true".equals(dbo.get(IS_SYSTEM))) {
+              line.append("System Message: ");
+              if (message.endsWith(BR)) message = message.substring(0, message.length() - 5);
+              line.append(message).append("\n");
+            } else {
+              line.append(fullName).append(": ");
+              message = message.replace(BR, "\n");
+              line.append(message).append("\n");
+            }
+            sb.insert(0, line);
           } else {
-            line.append(fullName).append(": ");
-            message = message.replaceAll("<br/>", "\n");
-            line.append(message).append("\n");
-          }
-          sb.insert(0, line);
-        } else {
-          MessageBean msg = toMessageBean(dbo);
-          msg.setFullName(fullName);
-          msg.setEnabledUser(userBean.isEnabledUser());
-          msg.setExternal(userBean.isExternal());
+            MessageBean msg = toMessageBean(dbo);
+            msg.setFullName(fullName);
+            msg.setEnabledUser(userBean.isEnabledUser());
+            msg.setExternal(userBean.isExternal());
 
-          ((JSONArray)data.get("messages")).add(msg.toJSONObject());
+            ((JSONArray) data.get("messages")).add(msg.toJSONObject());
+          }
+
+          first = false;
         }
 
-        first = false;
-      }
-
-      if (!isTextOnly) {
-        sb.append(data.toJSONString());
+        if (!isTextOnly) {
+          sb.append(data.toJSONString());
+        }
       }
     }
 
@@ -374,14 +383,10 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public MessageBean getMessage(String roomId, String messageId) {
 
     String roomType = getTypeRoomChat(roomId);
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + roomType);
 
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + roomType);
-
-    BasicDBObject query = new BasicDBObject();
-    query.put("roomId", roomId);
-    query.put("_id", new ObjectId(messageId));
-
-    DBObject object = coll.findOne(query);
+    Bson query = Filters.and(Filters.eq(ROOM_ID, roomId), Filters.eq("_id", new ObjectId(messageId)));
+    Document object = coll.find(query).first();
     if (object != null) {
       return toMessageBean(object);
     } else {
@@ -390,64 +395,44 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   private void updateRoomTimestamp(String room) {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
-
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("timestamp", System.currentTimeMillis());
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
-    }
-
-  }
-
-  private void ensureIndexInRoom(String type) {
-    DBCollection coll = db().getCollection(M_ROOM_PREFIX + type);
-    BasicDBObject doc = new BasicDBObject();
-    doc.put("timestamp", System.currentTimeMillis());
-    coll.insert(doc);
-    ConnectionManager.getInstance().ensureIndexesInRoom(type);
-    coll.remove(doc);
+    MongoCollection<Document> coll = db().getCollection(M_ROOMS_COLLECTION);
+    Bson query = Filters.eq("_id", room);
+    coll.findOneAndUpdate(query, new Document().append(TIMESTAMP, System.currentTimeMillis()));
   }
 
   public String getSpaceRoom(String space) {
     String room = ChatUtils.getRoomId(space);
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> spaceCollection = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
+    Bson filter = Filters.eq("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext()) {
-      try {
-        basicDBObject.put("space", space);
-        basicDBObject.put("type", TYPE_ROOM_SPACE);
-        basicDBObject.put("meetingStarted", false);
-        basicDBObject.put("startTime", "");
-        coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_SPACE);
-      } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+    try(MongoCursor<Document> spacesIterator = spaceCollection.find(filter).cursor()) {
+      if (!spacesIterator.hasNext()) {
+        try {
+          Document document = new Document();
+          document.put("space", space);
+          document.put(TYPE, TYPE_ROOM_SPACE);
+          document.put(MEETING_STARTED, false);
+          document.put(START_TIME, "");
+          spaceCollection.insertOne(document);
+        } catch (MongoException me) {
+          LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        }
       }
     }
-
     return room;
   }
 
   public String getSpaceRoomByName(String name) {
     String room = null;
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> coll = db().getCollection(M_ROOMS_COLLECTION);
+    Bson filter = Filters.eq("shortName", name);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("shortName", name);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      DBObject doc = cursor.next();
-      room = doc.get("_id").toString();
+    try(MongoCursor<Document> roomIterator = coll.find(filter).cursor()) {
+      if (roomIterator.hasNext()) {
+        Document doc = roomIterator.next();
+        room = doc.get("_id").toString();
+      }
     }
 
     return room;
@@ -455,51 +440,49 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   public String getTeamRoom(String team, String user) {
     String room = ChatUtils.getRoomId(team, user);
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> teamRoomCollection = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
+    Bson filterById = Filters.eq("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext()) {
-      try {
-        basicDBObject.put("team", team);
-        basicDBObject.put("user", user);
-        basicDBObject.put("type", TYPE_ROOM_TEAM);
-        basicDBObject.put("meetingStarted", false);
-        basicDBObject.put("startTime", "");
-        basicDBObject.put("timestamp", System.currentTimeMillis());
-        basicDBObject.put("isEnabled", true);
-        coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_TEAM);
-      } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+    try(MongoCursor<Document> teamRoomiterator = teamRoomCollection.find(filterById).cursor()) {
+      if (!teamRoomiterator.hasNext()) {
+        try {
+          Document document = new Document();
+          document.put("team", team);
+          document.put(USER, user);
+          document.put(TYPE, TYPE_ROOM_TEAM);
+          document.put(MEETING_STARTED, false);
+          document.put(START_TIME, "");
+          document.put(TIMESTAMP, System.currentTimeMillis());
+          document.put(IS_ENABLED, true);
+          teamRoomCollection.insertOne(document);
+        } catch (MongoException me) {
+          LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        }
       }
     }
-
     return room;
   }
 
   public String getExternalRoom(String identifier) {
     String room = ChatUtils.getExternalRoomId(identifier);
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> externalRoomsCollection = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
+    Bson filter = Filters.eq("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext()) {
-      try {
-        basicDBObject.put("identifier", identifier);
-        basicDBObject.put("type", TYPE_ROOM_EXTERNAL);
-        basicDBObject.put("isEnabled", true);
-        coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_EXTERNAL);
-      } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+    try(MongoCursor<Document> iterator = externalRoomsCollection.find(filter).cursor()) {
+      if (!iterator.hasNext()) {
+        try {
+          Document document = new Document();
+          document.put("identifier", identifier);
+          document.put(TYPE, TYPE_ROOM_EXTERNAL);
+          document.put(IS_ENABLED, true);
+          externalRoomsCollection.insertOne(document);
+        } catch (MongoException me) {
+          LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        }
       }
     }
-
     return room;
   }
 
@@ -507,19 +490,20 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     if (room.indexOf(ChatService.TEAM_PREFIX) == 0) {
       room = room.substring(ChatService.TEAM_PREFIX.length());
     }
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> teamCreatorCollection = db().getCollection(M_ROOMS_COLLECTION);
 
     String creator = "";
     BasicDBObject basicDBObject = new BasicDBObject();
     basicDBObject.put("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      try {
-        DBObject dbo = cursor.next();
-        creator = dbo.get("user").toString();
-      } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+    try(MongoCursor<Document> teamCreatorsIterator = teamCreatorCollection.find(basicDBObject).cursor()) {
+      if (teamCreatorsIterator.hasNext()) {
+        try {
+          Document dbo = teamCreatorsIterator.next();
+          creator = dbo.get(USER).toString();
+        } catch (MongoException me) {
+          LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        }
       }
     }
 
@@ -527,39 +511,35 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public void setRoomName(String room, String name) {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> roomsCollection = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
+    Bson filterById = Filters.eq("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("team", name);
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
+    try(MongoCursor<Document> roomsIterator = roomsCollection.find(filterById).cursor()) {
+      if (roomsIterator.hasNext()) {
+        roomsCollection.updateOne(filterById, new Document().append("team", name));
+      }
     }
   }
 
   @Override
   public boolean isRoomEnabled(String room) {
     boolean isEnabled = true;
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> coll = db().getCollection(M_ROOMS_COLLECTION);
+    Bson filterById = Filters.eq("_id", room);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      try {
-        DBObject doc = cursor.next();
-        if (doc.get("isEnabled") != null) {
-          isEnabled = (StringUtils.equals(doc.get("isEnabled").toString(), "true"));
-        } else {
-          doc.put("isEnabled", true);
-          coll.save(doc, WriteConcern.UNACKNOWLEDGED);
+    try (MongoCursor<Document> roomsIterator = coll.find(filterById).cursor()) {
+      if (roomsIterator.hasNext()) {
+        try {
+          Document doc = roomsIterator.next();
+          if (doc.get(IS_ENABLED) != null) {
+            isEnabled = (StringUtils.equals(doc.get(IS_ENABLED).toString(), "true"));
+          } else {
+            coll.updateOne(filterById, new Document().append(IS_ENABLED, true));
+          }
+        } catch (MongoException me) {
+          LOG.severe(me.getCode() + " : " + room + " : " + me.getMessage());
         }
-      } catch (MongoException me) {
-        LOG.severe(me.getCode() + " : " + room + " : " + me.getMessage());
       }
     }
 
@@ -568,53 +548,49 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
   @Override
   public void setRoomEnabled(String room, boolean enabled) {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> roomCollection = db().getCollection(M_ROOMS_COLLECTION);
+    Bson filterById = Filters.eq("_id", room);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("isEnabled", enabled);
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
+    try(MongoCursor<Document> cursor = roomCollection.find(filterById).cursor()) {
+      if (cursor.hasNext()) {
+        roomCollection.updateOne(filterById, new Document().append(IS_ENABLED, enabled));
+      }
     }
   }
 
   @Override
   public void setRoomMeetingStatus(String room, boolean start, String startTime) {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> roomCollection = db().getCollection(M_ROOMS_COLLECTION);
+    Bson filterById = Filters.eq("_id", room);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
-
-    DBCursor cursor = coll.find(basicDBObject);
-    if (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      dbo.put("meetingStarted", start);
-      dbo.put("startTime", startTime);
-      coll.save(dbo, WriteConcern.UNACKNOWLEDGED);
-    }    
+    try(MongoCursor<Document> roomIterator = roomCollection.find(filterById).cursor()) {
+      if (roomIterator.hasNext()) {
+        Document updateDocument = new Document();
+        updateDocument.put(MEETING_STARTED, start);
+        updateDocument.put(START_TIME, startTime);
+        roomCollection.updateOne(filterById, updateDocument);
+      }
+    }
   }
 
   public String getRoom(List<String> users) {
     Collections.sort(users);
     String room = ChatUtils.getRoomId(users);
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> roomCollection = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("_id", room);
+    Bson filterById = Filters.eq("_id", room);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    if (!cursor.hasNext()) {
-      try {
-        basicDBObject.put("users", users);
-        basicDBObject.put("type", TYPE_ROOM_USER);
-        basicDBObject.put("isEnabled", true);
-        coll.insert(basicDBObject);
-        ensureIndexInRoom(TYPE_ROOM_USER);
-      } catch (MongoException me) {
-        LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+    try(MongoCursor<Document> roomIterator = roomCollection.find(filterById).iterator()) {
+      if (!roomIterator.hasNext()) {
+        try {
+          Document document = new Document();
+          document.put(USERS, users);
+          document.put(TYPE, TYPE_ROOM_USER);
+          document.put(IS_ENABLED, true);
+          roomCollection.insertOne(document);
+        } catch (MongoException me) {
+          LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
+        }
       }
     }
 
@@ -622,63 +598,63 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public String getTypeRoomChat(String roomId) {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("_id", roomId);
-    DBCursor cursor = coll.find(query);
-    Object roomType = null;
-    while (cursor.hasNext()) {
-      DBObject doc = cursor.next();
-      roomType = doc.get("type");
+    MongoCollection<Document> roomsCollection = db().getCollection(M_ROOMS_COLLECTION);
+    Bson filterById = Filters.eq("_id", roomId);
+
+    Iterator<Document> roomsIterator = roomsCollection.find(filterById).iterator();
+    String roomType = "";
+    while (roomsIterator.hasNext()) {
+      Document doc = roomsIterator.next();
+      roomType = (String) doc.get(TYPE);
     }
-    return roomType == null ? "" : roomType.toString();
+    return roomType;
   }
 
   public List<RoomBean> getExistingRooms(String user, boolean withPublic, boolean isAdmin, NotificationService notificationService, TokenService tokenService) {
-    List<RoomBean> rooms = new ArrayList<RoomBean>();
-    String roomId = null;
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    List<RoomBean> rooms = new ArrayList<>();
+    String roomId;
+    MongoCollection<Document> coll = db().getCollection(M_ROOMS_COLLECTION);
 
-    BasicDBObject basicDBObject = new BasicDBObject();
-    basicDBObject.put("users", user);
+    Bson filterByUsers = Filters.eq(USERS, user);
 
-    DBCursor cursor = coll.find(basicDBObject);
-    while (cursor.hasNext()) {
-      DBObject dbo = cursor.next();
-      roomId = dbo.get("_id").toString();
-      long timestamp = -1;
-      if (dbo.containsField("timestamp")) {
-        timestamp = ((Long) dbo.get("timestamp")).longValue();
-      }
-      List<String> users = ((List<String>) dbo.get("users"));
-      users.remove(user);
-      if (users.size() > 0 && !user.equals(users.get(0))) {
-        String targetUser = users.get(0);
-        UserBean targetUserBean = userDataStorage.getUser(targetUser);
-        boolean isDemoUser = tokenService.isDemoUser(targetUser);
-        if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser)))) {
-          RoomBean roomBean = new RoomBean();
-          roomBean.setRoom(roomId);
-          roomBean.setEnabledUser(targetUserBean.isEnabled());
-          roomBean.setExternal(targetUserBean.isExternal());
-          roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
-          roomBean.setUser(users.get(0));
-          roomBean.setTimestamp(timestamp);
-          roomBean.setType((String) dbo.get("type"));
-          if (dbo.containsField("isEnabled")) {
-            roomBean.setEnabledRoom((StringUtils.equals(dbo.get("isEnabled").toString(), "true")));
+    try (MongoCursor<Document> cursor = coll.find(filterByUsers).cursor()) {
+      while (cursor.hasNext()) {
+        Document dbo = cursor.next();
+        roomId = dbo.get("_id").toString();
+        long timestamp = -1;
+        if (dbo.containsKey(TIMESTAMP)) {
+          timestamp = (Long) dbo.get(TIMESTAMP);
+        }
+        List<String> users = ((List<String>) dbo.get(USERS));
+        users.remove(user);
+        if (!users.isEmpty() && !user.equals(users.get(0))) {
+          String targetUser = users.get(0);
+          UserBean targetUserBean = userDataStorage.getUser(targetUser);
+          boolean isDemoUser = tokenService.isDemoUser(targetUser);
+          if (!isAdmin || (isAdmin && ((!withPublic && !isDemoUser) || (withPublic && isDemoUser)))) {
+            RoomBean roomBean = new RoomBean();
+            roomBean.setRoom(roomId);
+            roomBean.setEnabledUser(targetUserBean.isEnabled());
+            roomBean.setExternal(targetUserBean.isExternal());
+            roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
+            roomBean.setUser(users.get(0));
+            roomBean.setTimestamp(timestamp);
+            roomBean.setType((String) dbo.get(TYPE));
+            if (dbo.containsKey(IS_ENABLED)) {
+              roomBean.setEnabledRoom((StringUtils.equals(dbo.get(IS_ENABLED).toString(), "true")));
+            }
+            if (dbo.containsKey(MEETING_STARTED)) {
+              roomBean.setMeetingStarted((Boolean) dbo.get(MEETING_STARTED));
+            }
+            if (dbo.containsKey(START_TIME)) {
+              roomBean.setStartTime((String) dbo.get(START_TIME));
+            }
+            String creator = (String) dbo.get(USER);
+            if (StringUtils.isNotBlank(creator)) {
+              roomBean.setAdmins(new String[]{creator});
+            }
+            rooms.add(roomBean);
           }
-          if (dbo.containsField("meetingStarted")) {
-            roomBean.setMeetingStarted((Boolean) dbo.get("meetingStarted"));
-          }
-          if (dbo.containsField("startTime")) {
-            roomBean.setStartTime((String) dbo.get("startTime"));
-          }
-          String creator = (String) dbo.get("user");
-          if (StringUtils.isNotBlank(creator)) {
-            roomBean.setAdmins(new String[]{creator});
-          }
-          rooms.add(roomBean);
         }
       }
     }
@@ -689,7 +665,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService) {
     List<RoomBean> rooms;
     UserBean userBean = userDataStorage.getUser(user, true);
-    int unreadOffline = 0, unreadOnline = 0, totalRooms = 0;
+    int unreadOffline = 0, unreadOnline = 0;
 
     if (withUsers) {
       rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
@@ -804,7 +780,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     }
 
-    List<RoomBean> finalRooms = new ArrayList<RoomBean>();
+    List<RoomBean> finalRooms = new ArrayList<>();
     if (StringUtils.isNotBlank(filter)) {
       for (RoomBean roomBean : rooms) {
         String targetUser = roomBean.getFullName();
@@ -867,92 +843,92 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     int roomsCount = 0;
     UserBean userBean = userDataStorage.getUser(user, true);
 
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    DBCursor cursor = coll.find(query);
-    if (cursor.hasNext()) {
-      List<String> roomsIds = new ArrayList<>();
-      List<BasicDBObject> andList = new ArrayList<>();
-      List<BasicDBObject> orList = new ArrayList<>();
-      DBObject doc = cursor.next();
+    MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
+    Bson filterByUser = Filters.eq(USER, user);
+    try (MongoCursor<Document> userRooms = coll.find(filterByUser).cursor()) {
+      if (userRooms.hasNext()) {
+        List<String> roomsIds = new ArrayList<>();
+        List<BasicDBObject> andList = new ArrayList<>();
+        List<BasicDBObject> orList = new ArrayList<>();
+        Document doc = userRooms.next();
 
-      if (TYPE_ROOM_FAVORITE.equals(roomType)) {
-        List<String> favoriteRoomsIds = userBean.getFavorites();
-        if (favoriteRoomsIds != null) {
-          orList.add(new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds)));
-        }
-      } else {
-        if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
-          BasicDBList spaces = (BasicDBList) doc.get("spaces");
-          if (spaces != null) {
-            for (Object room : spaces) {
-              roomsIds.add((String) room);
+        if (TYPE_ROOM_FAVORITE.equals(roomType)) {
+          List<String> favoriteRoomsIds = userBean.getFavorites();
+          if (favoriteRoomsIds != null) {
+            orList.add(new BasicDBObject("_id", new BasicDBObject("$in", favoriteRoomsIds)));
+          }
+        } else {
+          if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
+            BasicDBList spaces = (BasicDBList) doc.get("spaces");
+            if (spaces != null) {
+              for (Object room : spaces) {
+                roomsIds.add((String) room);
+              }
             }
           }
-        }
-        if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
-          BasicDBList teams = (BasicDBList) doc.get("teams");
-          if (teams != null) {
-            for (Object room : teams) {
-              roomsIds.add((String) room);
+          if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
+            BasicDBList teams = (BasicDBList) doc.get("teams");
+            if (teams != null) {
+              for (Object room : teams) {
+                roomsIds.add((String) room);
+              }
             }
           }
-        }
-        // Add spaces and teams rooms
-        orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
-        if (StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
-          // Add user to user rooms
-          orList.add(new BasicDBObject("users", user));
-        }
-      }
-
-      DBObject roomsQuery = new BasicDBObject("$and", andList);
-      List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
-      enabledRoomOrList.add(new BasicDBObject("isEnabled", true));
-      enabledRoomOrList.add(new BasicDBObject("isEnabled", new BasicDBObject("$exists", false)));
-      andList.add(new BasicDBObject("$or", enabledRoomOrList));
-      andList.add(new BasicDBObject("$or", orList));
-
-      roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).count();
-      DBCursor roomsCursor;
-      if (StringUtils.isBlank(filter)) {
-        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
-                .sort(new BasicDBObject("timestamp", -1)).skip(offset).limit(limit);
-      } else {
-        // There is no way to do a Join in MongoDB, data structure should be altered to make it possible to search for rooms and get user fullNames
-        // we added a hard limit 100 to load the latest 100 rooms of the user and then search their display names
-        roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
-                .sort(new BasicDBObject("timestamp", -1)).limit(100);
-      }
-      while (roomsCursor.hasNext()) {
-        DBObject room = roomsCursor.next();
-        RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
-
-        if (roomBean.getUnreadTotal() > 0) {
-          switch (roomBean.getType()) {
-            case "u":
-              if (roomBean.isActive()) {
-                unreadOnline += roomBean.getUnreadTotal();
-              } else {
-                unreadOffline += roomBean.getUnreadTotal();
-              }
-              break;
-            case "s":
-              unreadSpaces += roomBean.getUnreadTotal();
-              if (roomBean.isRoomSilent()) {
-                unreadSilentRooms += roomBean.getUnreadTotal();
-              }
-              break;
-            case "t":
-              unreadTeams += roomBean.getUnreadTotal();
-              if (roomBean.isRoomSilent()) {
-                unreadSilentRooms += roomBean.getUnreadTotal();
-              }
-              break;
+          // Add spaces and teams rooms
+          orList.add(new BasicDBObject("_id", new BasicDBObject("$in", roomsIds)));
+          if (StringUtils.isBlank(roomType) || TYPE_ROOM_USER.equals(roomType)) {
+            // Add user to user rooms
+            orList.add(new BasicDBObject(USERS, user));
           }
         }
-        rooms.add(roomBean);
+
+        Bson roomsQuery = new BasicDBObject("$and", andList);
+        List<BasicDBObject> enabledRoomOrList = new ArrayList<>();
+        enabledRoomOrList.add(new BasicDBObject(IS_ENABLED, true));
+        enabledRoomOrList.add(new BasicDBObject(IS_ENABLED, new BasicDBObject("$exists", false)));
+        andList.add(new BasicDBObject("$or", enabledRoomOrList));
+        andList.add(new BasicDBObject("$or", orList));
+
+        roomsCount = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery).cursor().available();
+        MongoCursor<Document> roomsCursor;
+        if (StringUtils.isBlank(filter)) {
+          roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                  .sort(Sorts.descending(TIMESTAMP)).skip(offset).limit(limit).cursor();
+        } else {
+          // There is no way to do a Join in MongoDB, data structure should be altered to make it possible to search for rooms and get user fullNames
+          // we added a hard limit 100 to load the latest 100 rooms of the user and then search their display names
+          roomsCursor = db().getCollection(M_ROOMS_COLLECTION).find(roomsQuery)
+                  .sort(Sorts.descending(TIMESTAMP)).limit(100).cursor();
+        }
+        while (roomsCursor.hasNext()) {
+          Document room = roomsCursor.next();
+          RoomBean roomBean = convertToBean(userBean, onlineUsers, room, notificationService);
+
+          if (roomBean.getUnreadTotal() > 0) {
+            switch (roomBean.getType()) {
+              case "u":
+                if (roomBean.isActive()) {
+                  unreadOnline += roomBean.getUnreadTotal();
+                } else {
+                  unreadOffline += roomBean.getUnreadTotal();
+                }
+                break;
+              case "s":
+                unreadSpaces += roomBean.getUnreadTotal();
+                if (roomBean.isRoomSilent()) {
+                  unreadSilentRooms += roomBean.getUnreadTotal();
+                }
+                break;
+              case "t":
+                unreadTeams += roomBean.getUnreadTotal();
+                if (roomBean.isRoomSilent()) {
+                  unreadSilentRooms += roomBean.getUnreadTotal();
+                }
+                break;
+            }
+          }
+          rooms.add(roomBean);
+        }
       }
     }
 
@@ -988,8 +964,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
    * @param notificationService
    * @return a RoomBean representing the loaded room from Database
    */
-  private RoomBean convertToBean(UserBean userBean, List<String> onlineUsers, DBObject room, NotificationService notificationService) {
-    String type = room.get("type").toString();
+  private RoomBean convertToBean(UserBean userBean, List<String> onlineUsers, Document room, NotificationService notificationService) {
+    String type = room.get(TYPE).toString();
     String roomId = room.get("_id").toString();
     RoomBean roomBean = new RoomBean();
     switch (type) {
@@ -1001,14 +977,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setType(TYPE_ROOM_TEAM);
         roomBean.setFavorite(userBean.isFavorite(roomId));
         if (StringUtils.isNotBlank(roomBean.getUser())) {
-          roomBean.setAdmins(new String[]{room.get("user").toString()});
+          roomBean.setAdmins(new String[]{room.get(USER).toString()});
         }
         break;
       }
       case "u": {
-        List<String> users = ((List<String>)room.get("users"));
+        List<String> users = ((List<String>)room.get(USERS));
         users.remove(userBean.getName());
-        if(users.size() > 0) {
+        if(!users.isEmpty()) {
           String targetUser = users.get(0);
           UserBean targetUserBean = userDataStorage.getUser(targetUser);
           roomBean.setFullName(targetUserBean.getFullname());
@@ -1035,7 +1011,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setAvailableUser(true);
         roomBean.setType(ChatService.TYPE_ROOM_SPACE);
         roomBean.setGroupId(room.get("groupId").toString());
-        if (room.containsField("prettyName")) {
+        if (room.containsKey("prettyName")) {
           roomBean.setPrettyName(room.get("prettyName").toString());
         }
 
@@ -1048,14 +1024,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     boolean isSilent = notificationService.isRoomSilentForUser(userBean.getName(), roomId);
     roomBean.setRoomSilent(isSilent);
 
-    if (room.containsField("meetingStarted")) {
-      roomBean.setMeetingStarted((Boolean) room.get("meetingStarted"));
+    if (room.containsKey(MEETING_STARTED)) {
+      roomBean.setMeetingStarted((Boolean) room.get(MEETING_STARTED));
     }
-    if (room.containsField("startTime")) {
-      roomBean.setStartTime((String) room.get("startTime"));
+    if (room.containsKey(START_TIME)) {
+      roomBean.setStartTime((String) room.get(START_TIME));
     }
-    if (room.containsField("timestamp")) {
-      roomBean.setTimestamp((Long) room.get("timestamp"));
+    if (room.containsKey(TIMESTAMP)) {
+      roomBean.setTimestamp((Long) room.get(TIMESTAMP));
     }
     return roomBean;
   }
@@ -1077,40 +1053,40 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   }
 
   public int getNumberOfRooms() {
-    DBCollection coll = db().getCollection(M_ROOMS_COLLECTION);
+    MongoCollection<Document> coll = db().getCollection(M_ROOMS_COLLECTION);
     BasicDBObject query = new BasicDBObject();
-    DBCursor cursor = coll.find(query);
-    return cursor.count();
+    FindIterable<Document> rooms = coll.find(query);
+    return rooms.cursor().available();
   }
 
   public int getNumberOfMessages() {
     int nb = 0;
     String[] roomTypes = {TYPE_ROOM_USER, TYPE_ROOM_SPACE, TYPE_ROOM_TEAM, TYPE_ROOM_EXTERNAL};
     for (String type : roomTypes) {
-      DBCollection collr = db().getCollection(M_ROOM_PREFIX + type);
-      BasicDBObject queryr = new BasicDBObject();
-      DBCursor cursorr = collr.find(queryr);
-      nb += cursorr.count();
+      MongoCollection<Document> collaboration = db().getCollection(M_ROOM_PREFIX + type);
+      Bson queryMessages = new Document();
+      MongoCursor<Document> messagesCursor = collaboration.find(queryMessages).cursor();
+      nb += messagesCursor.available();
     }
 
     return nb;
   }
 
-  private MessageBean toMessageBean(DBObject dbo) {
+  private MessageBean toMessageBean(Document dbo) {
     MessageBean msg = new MessageBean();
     msg.setId(dbo.get("_id").toString());
-    msg.setUser(dbo.get("user").toString());
-    msg.setMessage(dbo.get("message").toString());
-    msg.setTimestamp(Long.parseLong(dbo.get("timestamp").toString()));
-    if (dbo.containsField("lastUpdatedTimestamp")) {
-      msg.setLastUpdatedTimestamp(Long.parseLong(dbo.get("lastUpdatedTimestamp").toString()));
+    msg.setUser(dbo.get(USER).toString());
+    msg.setMessage(dbo.get(MESSAGE).toString());
+    msg.setTimestamp(Long.parseLong(dbo.get(TIMESTAMP).toString()));
+    if (dbo.containsKey(LAST_UPDATED_TIMESTAMP)) {
+      msg.setLastUpdatedTimestamp(Long.parseLong(dbo.get(LAST_UPDATED_TIMESTAMP).toString()));
     }
-    msg.setSystem(Boolean.parseBoolean(dbo.get("isSystem").toString()));
-    if (dbo.containsField("options")) {
-      msg.setOptions(dbo.get("options").toString());
+    msg.setSystem(Boolean.parseBoolean(dbo.get(IS_SYSTEM).toString()));
+    if (dbo.containsKey(OPTIONS)) {
+      msg.setOptions(dbo.get(OPTIONS).toString());
     }
-    if (dbo.containsField("type")) {
-      msg.setType(dbo.get("type").toString());
+    if (dbo.containsKey(TYPE)) {
+      msg.setType(dbo.get(TYPE).toString());
     }
 
     return msg;
