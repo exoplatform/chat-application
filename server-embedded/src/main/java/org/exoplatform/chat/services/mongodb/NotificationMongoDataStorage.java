@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 eXo Platform SAS.
+ * Copyright (C) 2023 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -19,8 +19,13 @@
 
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.NotificationBean;
 import org.exoplatform.chat.model.NotificationSettingsBean;
@@ -47,24 +52,24 @@ import java.util.List;
 public class NotificationMongoDataStorage implements NotificationDataStorage
 {
   private static final Log LOG = ExoLogger.getLogger(NotificationMongoDataStorage.class);
+  public static final String TIMESTAMP = "timestamp";
+  public static final String USER = "user";
+  public static final String FROM = "from";
+  public static final String TYPE = "type";
+  public static final String CATEGORY = "category";
+  public static final String CATEGORY_ID = "categoryId";
+  public static final String CONTENT = "content";
+  public static final String OPTIONS = "options";
 
-  private DB db()
+  private MongoDatabase db()
   {
     return ConnectionManager.getInstance().getDB();
   }
 
-  public static void cleanupNotifications()
-  {
-    DBCollection coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-    query.put("timestamp", new BasicDBObject("$lt", System.currentTimeMillis()-24*60*60*1000));
-//    query.put("isRead", true);
-    DBCursor cursor = coll.find(query);
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      coll.remove(doc);
-    }
+  public static void cleanupNotifications() {
+    MongoCollection<Document> coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
+    Bson query = Filters.lt(TIMESTAMP, System.currentTimeMillis() - 24*60*60*1000);
+    coll.deleteMany(query);
   }
 
   public void addNotification(String receiver, String sender, String type, String category, String categoryId,
@@ -79,44 +84,42 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
       return;
     }
 
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
-    BasicDBObject doc = new BasicDBObject();
+    MongoCollection<Document> notificationsCollection = db().getCollection(M_NOTIFICATIONS);
+    Document doc = new Document();
 
     content = StringUtils.chomp(content);
-    content = content.replaceAll("&", "&#38");
-    content = content.replaceAll("<", "&lt;");
-    content = content.replaceAll(">", "&gt;");
-    content = content.replaceAll("\"", "&quot;");
-    content = content.replaceAll("\n", "<br/>");
-    content = content.replaceAll("\\\\", "&#92");
-    content = content.replaceAll("\t", "  ");
+    content = content.replace("&", "&#38");
+    content = content.replace("<", "&lt;");
+    content = content.replace(">", "&gt;");
+    content = content.replace("\"", "&quot;");
+    content = content.replace("\n", "<br/>");
+    content = content.replace("\\\\", "&#92");
+    content = content.replace("\t", "  ");
 
-    doc.put("timestamp", System.currentTimeMillis());
-    doc.put("user", receiver);
-    doc.put("from", sender);
-    doc.put("type", type);
-    doc.put("category", category);
-    doc.put("categoryId", categoryId);
-    doc.put("content", content);
+    doc.put(TIMESTAMP, System.currentTimeMillis());
+    doc.put(USER, receiver);
+    doc.put(FROM, sender);
+    doc.put(TYPE, type);
+    doc.put(CATEGORY, category);
+    doc.put(CATEGORY_ID, categoryId);
+    doc.put(CONTENT, content);
     if (options != null) {
-      options = options.replaceAll("<", "&lt;");
-      options = options.replaceAll(">", "&gt;");
-      options = options.replaceAll("'", "\\\\\"");
-//      options = options.replaceAll("\"", "&quot;");
-//      options = options.replaceAll("\\\\", "&#92");
-      doc.put("options", options);
+      options = options.replace("<", "&lt;");
+      options = options.replace(">", "&gt;");
+      options = options.replace("'", "\\\\\"");
+      doc.put(OPTIONS, options);
     }
     doc.put("link", link);
     doc.put("isRead", false);
 
-    coll.insert(doc);
+    notificationsCollection.insertOne(doc);
   }
 
   public void setNotificationsAsRead(String user, String type, String category, String categoryId)
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = buildQuery(user, type, category, categoryId);
-    coll.remove(query);
+    MongoCollection<Document> coll = db().getCollection(M_NOTIFICATIONS);
+    Bson query = buildQuery(user, type, category, categoryId);
+    coll.deleteMany(query);
   }
 
   @Override
@@ -126,40 +129,39 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
 
   @Override
   public List<NotificationBean> getUnreadNotifications(String user, UserService userService, String type, String category, String categoryId) {
-    List<NotificationBean> notifications = new ArrayList<NotificationBean>();
+    List<NotificationBean> notifications = new ArrayList<>();
 
-    DBCursor cursor = find(user, type, category, categoryId);
+    try(MongoCursor<Document> cursor = find(user, type, category, categoryId)) {
 
-    while (cursor.hasNext())
-    {
-      DBObject doc = cursor.next();
-      NotificationBean notificationBean = new NotificationBean();
-      notificationBean.setTimestamp((Long)doc.get("timestamp"));
-      notificationBean.setUser(user);
-      if (doc.containsField("from")) {
-        notificationBean.setFrom(doc.get("from").toString());
-        notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom()).getFullname());
-      }
-      notificationBean.setCategory(doc.get("category").toString());
-      notificationBean.setCategoryId(doc.get("categoryId").toString());
-      notificationBean.setType(doc.get("type").toString());
-      notificationBean.setContent(doc.get("content").toString());
-      if (doc.containsField("options"))
-      {
-        notificationBean.setOptions(doc.get("options").toString());
-      }
-      RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
-      if (roomBean != null) {
-        notificationBean.setRoomType(roomBean.getType());
-        if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
-          notificationBean.setRoomDisplayName(roomBean.getFullName());
+      while (cursor.hasNext()) {
+        Document doc = cursor.next();
+        NotificationBean notificationBean = new NotificationBean();
+        notificationBean.setTimestamp((Long) doc.get(TIMESTAMP));
+        notificationBean.setUser(user);
+        if (doc.containsKey(FROM)) {
+          notificationBean.setFrom(doc.get(FROM).toString());
+          notificationBean.setFromFullName(userService.getUser(notificationBean.getFrom()).getFullname());
         }
-      }
-      notificationBean.setLink(doc.get("link").toString());
+        notificationBean.setCategory(doc.get(CATEGORY).toString());
+        notificationBean.setCategoryId(doc.get(CATEGORY_ID).toString());
+        notificationBean.setType(doc.get(TYPE).toString());
+        notificationBean.setContent(doc.get(CONTENT).toString());
+        if (doc.containsKey(OPTIONS)) {
+          notificationBean.setOptions(doc.get(OPTIONS).toString());
+        }
+        RoomBean roomBean = userService.getRoom(user, notificationBean.getCategoryId());
+        if (roomBean != null) {
+          notificationBean.setRoomType(roomBean.getType());
+          if (roomBean.getType().equals(ChatService.TYPE_ROOM_SPACE) || roomBean.getType().equals(ChatService.TYPE_ROOM_TEAM)) {
+            notificationBean.setRoomDisplayName(roomBean.getFullName());
+          }
+        }
+        notificationBean.setLink(doc.get("link").toString());
 
-      notifications.add(notificationBean);
+        notifications.add(notificationBean);
+      }
+      notifications = filterNotifications(notifications, userService, user);
     }
-    notifications = filterNotifications(notifications, userService, user);
 
     return notifications;
   }
@@ -199,40 +201,38 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
 
   public int getUnreadNotificationsTotal(String user, String type, String category, String categoryId)
   {
-    DBCursor cursor = find(user, type, category, categoryId);
-    int total = cursor.size();
-    return total;
+    try (MongoCursor<Document> cursor = find(user, type, category, categoryId)) {
+      return cursor.available();
+    }
   }
 
   public int getNumberOfNotifications()
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-    DBCursor cursor = coll.find(query);
-    return cursor.count();
+    MongoCollection<Document> coll = db().getCollection(M_NOTIFICATIONS);
+    try(MongoCursor<Document> cursor = coll.find(new Document()).cursor()){
+      return cursor.available();
+    }
   }
 
   public int getNumberOfUnreadNotifications()
   {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = new BasicDBObject();
-    DBCursor cursor = coll.find(query);
-    return cursor.count();
+    MongoCollection<Document> coll = db().getCollection(M_NOTIFICATIONS);
+    try(MongoCursor<Document> cursor = coll.find(new Document()).cursor()) {
+      return cursor.available();
+    }
   }
 
-  private DBCursor find(String user, String type, String category, String categoryId) {
-    DBCollection coll = db().getCollection(M_NOTIFICATIONS);
-    BasicDBObject query = buildQuery(user, type, category, categoryId);
-    return coll.find(query);
+  private MongoCursor<Document> find(String user, String type, String category, String categoryId) {
+    MongoCollection<Document> coll = db().getCollection(M_NOTIFICATIONS);
+    Bson query = buildQuery(user, type, category, categoryId);
+    return coll.find(query).cursor();
   }
 
-  private BasicDBObject buildQuery(String user, String type, String category, String categoryId) {
-    BasicDBObject query = new BasicDBObject();
-
-    query.put("user", user);
-    if (type != null) query.put("type", type);
-    if (category != null) query.put("category", category);
-    if (categoryId != null) query.put("categoryId", categoryId);
+  private Bson buildQuery(String user, String type, String category, String categoryId) {
+    Bson query = Filters.eq(USER, user);
+    if (type != null) query = Filters.and(query, Filters.eq(TYPE, type));
+    if (category != null) query = Filters.and(query, Filters.eq(CATEGORY, category));
+    if (categoryId != null) query = Filters.and(query, Filters.eq(CATEGORY_ID, categoryId));
     return query;
   }
 }
