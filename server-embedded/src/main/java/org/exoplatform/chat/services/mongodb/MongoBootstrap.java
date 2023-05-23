@@ -21,6 +21,7 @@ package org.exoplatform.chat.services.mongodb;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,31 +33,29 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.connection.ConnectionPoolSettings;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.StateID;
+import de.flapdoodle.reverse.TransitionWalker;
+import de.flapdoodle.reverse.Transitions;
+import de.flapdoodle.reverse.transitions.Start;
 import org.bson.Document;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.utils.PropertyManager;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
 
-import javax.print.Doc;
+import de.flapdoodle.embed.mongo.distribution.Version;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.exoplatform.chat.services.mongodb.utils.ConnectionHelper.getMongoServerAdresses;
 
 public class MongoBootstrap
 {
-  private static MongodExecutable mongodExe;
-  private static MongodProcess mongod;
   private MongoClient m;
   private MongoDatabase db;
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
@@ -67,16 +66,11 @@ public class MongoBootstrap
     {
       try
       {
-//                .connectTimeout(60000)
-//                .threadsAllowedToBlockForConnectionMultiplier(10)
-//                .build();
         StringBuilder connectionString = new StringBuilder().append(getMongoServerAdresses().stream().map(s -> s.getHost() + ":" + s.getPort()).collect(Collectors.joining(",")))
                 .append("/?")
                 .append("maxPoolSize=200")
                 .append("&")
                 .append("connectTimeoutMS=60000")
-                .append("&")
-                .append("waitQueueMultiple=10")
                 .append("&")
                 .append("w=majority");
         ConnectionPoolSettings connectionPoolSettings = ConnectionPoolSettings
@@ -100,18 +94,25 @@ public class MongoBootstrap
           connectionString = new StringBuilder("mongodb://")
                   .append(connectionString);
         }
+        if (PropertyManager.PROPERTY_SERVER_TYPE_EMBED.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVER_TYPE)))
+        {
+          LOG.warning("WE WILL NOW USE MONGODB IN EMBED MODE...");
+          LOG.warning("BE AWARE...");
+          LOG.warning("EMBED MODE SHOULD NEVER BE USED IN PRODUCTION!");
+          setupEmbedMongo();
+        }
         m = MongoClients.create(connectionString.toString());
       }
       catch (Exception e)
       {
-        LOG.log(Level.SEVERE, "Error occur when get Mongo server adresses .", e);
+        LOG.log(Level.SEVERE, "Error occur when get MongoDB server addresses .", e);
       }
     }
     return m;
   }
 
   public void close() {
-    try {
+/*    try {
       if (mongod != null) {
         mongod.stop();
         mongodExe.stop();
@@ -120,7 +121,7 @@ public class MongoBootstrap
         m.close();
     } catch (NullPointerException e) {
       return;
-    }
+    }*/
   }
 
   public void initialize() {
@@ -161,7 +162,12 @@ public class MongoBootstrap
   }
 
   private static void setupEmbedMongo() throws Exception {
-    MongodStarter runtime = MongodStarter.getDefaultInstance();
+    Mongod mongod = Mongod.builder()
+            .net(Start.to(Net.class).initializedWith(Net.defaults()
+                    .withPort(27777)))
+            .build();
+    Transitions transitions1 = mongod.transitions(Version.Main.PRODUCTION);
+
     List<ServerAddress> mongoServerAdresses = getMongoServerAdresses();
     if(mongoServerAdresses == null || mongoServerAdresses.isEmpty()) {
       throw new Exception("No mongodb server host and port defined");
@@ -169,12 +175,12 @@ public class MongoBootstrap
       throw new Exception("Several mongodb server host and port defined, embedded mode supports only one mongodb server");
     }
     ServerAddress mongdbServer = mongoServerAdresses.get(0);
-    IMongodConfig mongodConfig = new MongodConfigBuilder()
+    /*IMongodConfig mongodConfig = new MongodConfigBuilder()
             .version(Version.V3_6_0)
             .net(new Net(mongdbServer.getPort(), Network.localhostIsIPv6()))
             .build();
     mongodExe = runtime.prepare(mongodConfig);
-    mongod = mongodExe.start();
+    mongod = mongodExe.start();*/
   }
 
   public void initCappedCollection(String name, int size)

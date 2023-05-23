@@ -28,7 +28,7 @@ public class AbstractChatTestCase
     PropertyManager.overrideProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY, "100");
 
     ConnectionManager.forceNew();
-    ConnectionManager.getInstance().getDB("unittest");
+    ConnectionManager.getInstance();
 
     GuiceManager.forceNew(new TestModule());
     ServiceBootstrap.forceNew();

@@ -24,6 +24,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -87,9 +88,7 @@ public class TokenMongoService implements TokenStorage
       query.put(USER, user);
       try (MongoCursor<Document> cursor = coll.find(query).cursor()) {
         if (cursor.hasNext()) {
-          Document updateDocument = new Document();
-          updateDocument.put(TOKEN, token);
-          updateDocument.put(IS_DEMO_USER, user.startsWith(ANONIM_USER));
+          Bson updateDocument = Updates.combine(Updates.set(TOKEN, token), Updates.set(IS_DEMO_USER, user.startsWith(ANONIM_USER)));
           coll.updateOne(query, updateDocument);
         } else {
           Document doc = new Document();
@@ -124,7 +123,7 @@ public class TokenMongoService implements TokenStorage
     } else {
       query = Filters.eq(IS_DEMO_USER, user.startsWith(ANONIM_USER));
     }
-    query = Filters.and(query, Filters.in(USER, new BasicDBObject("$in", limitedFilter)));
+    query = Filters.and(query, Filters.in(USER, limitedFilter));
     if (limit < 0) limit = 0;
 
     HashMap<String, UserBean> users = new HashMap<>();

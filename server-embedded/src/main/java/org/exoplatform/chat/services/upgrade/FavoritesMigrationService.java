@@ -20,6 +20,13 @@
 package org.exoplatform.chat.services.upgrade;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.SettingDataStorage;
@@ -33,6 +40,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.print.Doc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +60,9 @@ public class FavoritesMigrationService {
   private static final Log    LOG                      = ExoLogger.getLogger(FavoritesMigrationService.class);
 
   private static final String SETTING_MIGRATION_STATUS = "upgrade-favorites";
+  public static final String ID = "_id";
+  public static final String FAVORITES = "favorites";
+  public static final String USER = "user";
 
   @Inject
   private SettingDataStorage settingDataStorage;
@@ -66,7 +77,7 @@ public class FavoritesMigrationService {
 
   public void processMigration() {
     MongoBootstrap mongoBootstrap = ConnectionManager.getInstance();
-    DB db = mongoBootstrap.getDB();
+    MongoDatabase db = mongoBootstrap.getDB();
 
     FavoritesMigrationStatus migrationStatus = getMigrationStatus();
 
@@ -75,18 +86,18 @@ public class FavoritesMigrationService {
 
       LOG.info("== Chat users favorites migration starting ==");
 
-      DBCollection usersCol = db.getCollection(UserMongoDataStorage.M_USERS_COLLECTION);
-      long totalNbOfUsers = usersCol.count();
+      MongoCollection<Document> usersCol = db.getCollection(UserMongoDataStorage.M_USERS_COLLECTION);
+      long totalNbOfUsers = usersCol.countDocuments();
       LOG.info("  Chat users favorites migration - Nb of users to migrate : " + totalNbOfUsers);
-      DBCursor usersCursor = usersCol.find();
+      MongoCursor<Document> usersCursor = usersCol.find().cursor();
 
       int nbOfUsersProcessed = 0;
       while(usersCursor.hasNext()) {
-        DBObject user = usersCursor.next();
+        Document user = usersCursor.next();
         try {
           migrateUserFavorites(usersCol, user);
         } catch (Exception e) {
-          LOG.error("Error while migrating Chat favorites of user " + user.get("user") + " : " + e.getMessage(), e);
+          LOG.error("Error while migrating Chat favorites of user " + user.get(USER) + " : " + e.getMessage(), e);
         }
         nbOfUsersProcessed++;
         if(nbOfUsersProcessed%100 == 0 || nbOfUsersProcessed == totalNbOfUsers) {
@@ -116,11 +127,10 @@ public class FavoritesMigrationService {
    * Migrate favorites of the given user
    * @param usersCol Mongo users collection
    * @param user Mongo user object
-   * @throws Exception
    */
-  private void migrateUserFavorites(DBCollection usersCol, DBObject user) throws Exception {
+  private void migrateUserFavorites(MongoCollection<Document> usersCol, Document user) {
     if (user != null) {
-      List<String> favorites = (List<String>) user.get("favorites");
+      List<String> favorites = (List<String>) user.get(FAVORITES);
 
       if (favorites != null) {
         List<String> newFavorites = favorites.stream().filter(Objects::nonNull).map(oldFavorite -> {
@@ -129,16 +139,15 @@ public class FavoritesMigrationService {
           } else if (oldFavorite.startsWith(ChatService.SPACE_PREFIX)) {
             return oldFavorite.substring(ChatService.SPACE_PREFIX.length());
           } else {
-            return ChatUtils.getRoomId(Arrays.asList((String) user.get("user"), oldFavorite));
+            return ChatUtils.getRoomId(Arrays.asList((String) user.get(USER), oldFavorite));
           }
-        }).collect(Collectors.toList());
+        }).toList();
 
-        BasicDBObject searchQuery = new BasicDBObject("_id", user.get("_id"));
+        Bson searchQuery = Filters.eq(ID, user.get(ID));
 
-        BasicDBObject updateQuery = new BasicDBObject();
-        updateQuery.append("$set", new BasicDBObject().append("favorites", newFavorites));
+        Bson updateDocument = Updates.set(FAVORITES, newFavorites);
 
-        usersCol.update(searchQuery, updateQuery);
+        usersCol.updateMany(searchQuery, updateDocument);
       }
     }
   }

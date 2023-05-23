@@ -33,6 +33,7 @@ import com.mongodb.client.model.UpdateOptions;
 
 import com.mongodb.BasicDBObject;
 
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.exoplatform.chat.listener.ConnectionManager;
@@ -46,6 +47,8 @@ public class SettingMongoDataStorage implements SettingDataStorage {
   private static final Logger LOG = Logger.getLogger(SettingMongoDataStorage.class.getName());
 
   public static final String M_SETTINGS_COLLECTION = "settings";
+  public static final String NAME = "name";
+  public static final String VALUE = "value";
 
   private MongoDatabase db()
   {
@@ -57,11 +60,11 @@ public class SettingMongoDataStorage implements SettingDataStorage {
     MongoCollection<Document> coll = db().getCollection(M_SETTINGS_COLLECTION);
 
     BasicDBObject query = new BasicDBObject();
-    query.put("name", name);
+    query.put(NAME, name);
 
     try(MongoCursor<Document> dbCursor = coll.find(query).cursor()) {
       if (dbCursor.hasNext()) {
-        return (String) dbCursor.next().get("value");
+        return (String) dbCursor.next().get(VALUE);
       }
     }
     return null;
@@ -71,11 +74,9 @@ public class SettingMongoDataStorage implements SettingDataStorage {
   public void setSetting(String name, String value) {
     MongoCollection<Document> settingsCol = db().getCollection(M_SETTINGS_COLLECTION);
 
-    Bson query = Filters.eq("name", name);
+    Bson query = Filters.eq(NAME, name);
 
-    Document newStatusDBObject = new Document();
-    newStatusDBObject.put("name", name);
-    newStatusDBObject.put("value", value);
+    Bson newStatusDBObject = Updates.combine(Updates.set(NAME, name), Updates.set(VALUE, value));
 
     UpdateOptions options = new UpdateOptions().upsert(true);
     settingsCol.updateOne(query, newStatusDBObject, options);
