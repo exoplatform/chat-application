@@ -35,10 +35,7 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.transitions.Mongod;
-import de.flapdoodle.embed.mongo.transitions.MongodStarter;
 import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
-import de.flapdoodle.reverse.TransitionWalker;
-import de.flapdoodle.reverse.Transitions;
 import de.flapdoodle.reverse.transitions.Start;
 import org.bson.Document;
 import org.exoplatform.chat.services.ChatService;
@@ -54,7 +51,6 @@ public class MongoBootstrap
   private MongoClient m;
   private MongoDatabase db;
 
-  private Mongod mongod;
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
   private RunningMongodProcess runningProcess;
 
@@ -146,8 +142,8 @@ public class MongoBootstrap
     return db;
   }
 
-  private void setupEmbedMongo() throws Exception {
-    mongod = Mongod.builder()
+  private void setupEmbedMongo() {
+    Mongod mongod = Mongod.builder()
             .net(Start.to(Net.class).initializedWith(Net.defaults()
                     .withPort(27777)))
             .build();

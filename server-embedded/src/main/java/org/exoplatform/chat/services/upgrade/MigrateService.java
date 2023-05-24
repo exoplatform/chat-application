@@ -31,13 +31,13 @@ public class MigrateService {
 
   public void migrate() {
     // Detect if migration has been done before by checking if rooms "room_{roomId}" exist
-    MongoCollection namespacesCol = db.getCollection("system.namespaces");
+    MongoCollection<Document> namespacesCol = db.getCollection("system.namespaces");
     BasicDBObject getRoomNamespaces = new BasicDBObject();
     Pattern regex = Pattern.compile("^"+db.getName()+".room_");
     getRoomNamespaces.append("name", regex);
     MongoCursor<Document> roomNamespaces = namespacesCol.find(getRoomNamespaces).cursor();
     if (roomNamespaces.available() > 0) {
-      String roomTypes[] = {"u", "s", "t", "e"};
+      String[] roomTypes = {"u", "s", "t", "e"};
       for (String type : roomTypes) {
         migrateRoom(type);
       }

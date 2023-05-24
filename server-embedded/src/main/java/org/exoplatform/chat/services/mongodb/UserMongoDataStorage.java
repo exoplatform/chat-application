@@ -1029,11 +1029,8 @@ public class UserMongoDataStorage implements UserDataStorage {
       if (doc.get(IS_EXTERNAL) != null) {
         userBean.setExternal(doc.get(IS_EXTERNAL).toString());
       }
-      if (withFavorites)
-      {
-        if (doc.containsKey(FAVORITES)) {
+      if (withFavorites && (doc.containsKey(FAVORITES))) {
           userBean.setFavorites ((List<String>) doc.get(FAVORITES));
-        }
       }
     }
 

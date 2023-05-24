@@ -63,7 +63,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public static final String M_ROOMS_COLLECTION = "rooms";
   public static final String BR = "<br/>";
   public static final String MESSAGE = "message";
-  public static final String TIMESTAMP = "timestamp";
+  public static final String TIMESTAMP1 = "timestamp";
+  public static final String TIMESTAMP = TIMESTAMP1;
   public static final String USER = "user";
   public static final String IS_SYSTEM = "isSystem";
   public static final String ROOM_ID = "roomId";
@@ -75,6 +76,11 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public static final String USERS = "users";
   public static final String TYPE = "type";
   public static final String ID = "_id";
+  public static final String TEAM = "team";
+  public static final String ROOM = "room";
+  public static final String MESSAGES = "messages";
+  public static final String TRUE = "true";
+  public static final String SPACE = "space";
 
   private final int readTotalJson;
   private final int readTotalTxt;
@@ -154,14 +160,14 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       return null;
     MongoCollection<Document> cRooms = db().getCollection(M_ROOMS_COLLECTION);
     Document qRoom = new Document();
-    qRoom.put("team", teamName);
+    qRoom.put(TEAM, teamName);
     qRoom.put(TYPE, TYPE_ROOM_TEAM);
     List<RoomBean> roomBeans = new ArrayList<>();
     FindIterable<Document> roomsCursor = cRooms.find(qRoom);
     roomsCursor.forEach(dbRoom -> {
       RoomBean room = new RoomBean();
       room.setRoom(dbRoom.get(ID).toString());
-      room.setFullName((String) dbRoom.get("team"));
+      room.setFullName((String) dbRoom.get(TEAM));
       room.setUser((String) dbRoom.get(USER));
       room.setType((String) dbRoom.get(TYPE));
       if (dbRoom.containsKey(MEETING_STARTED)) {
@@ -192,7 +198,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     if(document != null) {
       RoomBean room = new RoomBean();
       room.setRoom((String) document.get(ID));
-      room.setFullName((String) document.get("team"));
+      room.setFullName((String) document.get(TEAM));
       room.setUser((String) document.get(USER));
       room.setType((String) document.get(TYPE));
       if (document.containsKey(MEETING_STARTED)) {
@@ -325,9 +331,9 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           Document dbo = messagesCursor.next();
           String timestamp = dbo.get(TIMESTAMP).toString();
           if (first && !isTextOnly) {
-            data.put("room", room);
+            data.put(ROOM, room);
             data.put(TIMESTAMP, timestamp);
-            data.put("messages", new JSONArray());
+            data.put(MESSAGES, new JSONArray());
           }
 
           String user = dbo.get(USER).toString();
@@ -351,7 +357,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
             line.append("[").append(date).append("] ");
             String message = dbo.get(MESSAGE).toString();
             if (TYPE_DELETED.equals(message)) message = TYPE_DELETED;
-            if ("true".equals(dbo.get(IS_SYSTEM))) {
+            if (TRUE.equals(dbo.get(IS_SYSTEM))) {
               line.append("System Message: ");
               if (message.endsWith(BR)) message = message.substring(0, message.length() - 5);
               line.append(message).append("\n");
@@ -367,7 +373,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
             msg.setEnabledUser(userBean.isEnabledUser());
             msg.setExternal(userBean.isExternal());
 
-            ((JSONArray) data.get("messages")).add(msg.toJSONObject());
+            ((JSONArray) data.get(MESSAGES)).add(msg.toJSONObject());
           }
 
           first = false;
@@ -402,6 +408,16 @@ public class ChatMongoDataStorage implements ChatDataStorage {
     coll.findOneAndUpdate(query, Updates.set(TIMESTAMP, System.currentTimeMillis()));
   }
 
+  private void ensureIndexInRoom(String type) {
+    MongoCollection<Document> coll = db().getCollection(M_ROOM_PREFIX + type);
+    Document doc = new Document();
+    Long currentMessageTimestamp = System.currentTimeMillis();
+    doc.put(TIMESTAMP, currentMessageTimestamp);
+    doc.put(MESSAGE, "#### TO DELETE ####");
+    coll.insertOne(doc);
+    ConnectionManager.getInstance().ensureIndexesInRoom(type);
+    coll.deleteOne(Filters.and(Filters.eq(TIMESTAMP, currentMessageTimestamp), Filters.eq(MESSAGE, "#### TO DELETE ####")));
+  }
   public String getSpaceRoom(String space) {
     String room = ChatUtils.getRoomId(space);
     MongoCollection<Document> spaceCollection = db().getCollection(M_ROOMS_COLLECTION);
@@ -412,11 +428,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       if (!spacesIterator.hasNext()) {
         try {
           Document document = new Document();
-          document.put("space", space);
+          document.put(SPACE, space);
           document.put(TYPE, TYPE_ROOM_SPACE);
           document.put(MEETING_STARTED, false);
           document.put(START_TIME, "");
           spaceCollection.insertOne(document);
+          ensureIndexInRoom(TYPE_ROOM_SPACE);
         } catch (MongoException me) {
           LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
         }
@@ -451,7 +468,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         try {
           Document document = new Document();
           document.put(ID, room);
-          document.put("team", team);
+          document.put(TEAM, team);
           document.put(USER, user);
           document.put(TYPE, TYPE_ROOM_TEAM);
           document.put(MEETING_STARTED, false);
@@ -459,6 +476,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           document.put(TIMESTAMP, System.currentTimeMillis());
           document.put(IS_ENABLED, true);
           teamRoomCollection.insertOne(document);
+          ensureIndexInRoom(TYPE_ROOM_TEAM);
         } catch (MongoException me) {
           LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
         }
@@ -481,6 +499,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           document.put(TYPE, TYPE_ROOM_EXTERNAL);
           document.put(IS_ENABLED, true);
           externalRoomsCollection.insertOne(document);
+          ensureIndexInRoom(TYPE_ROOM_EXTERNAL);
         } catch (MongoException me) {
           LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
         }
@@ -519,7 +538,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
     try(MongoCursor<Document> roomsIterator = roomsCollection.find(filterById).cursor()) {
       if (roomsIterator.hasNext()) {
-        roomsCollection.updateOne(filterById, Updates.set("team", name));
+        roomsCollection.updateOne(filterById, Updates.set(TEAM, name));
       }
     }
   }
@@ -535,7 +554,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         try {
           Document doc = roomsIterator.next();
           if (doc.get(IS_ENABLED) != null) {
-            isEnabled = (StringUtils.equals(doc.get(IS_ENABLED).toString(), "true"));
+            isEnabled = (StringUtils.equals(doc.get(IS_ENABLED).toString(), TRUE));
           } else {
             coll.updateOne(filterById, Updates.set(IS_ENABLED, true));
           }
@@ -589,6 +608,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           document.put(TYPE, TYPE_ROOM_USER);
           document.put(IS_ENABLED, true);
           roomCollection.insertOne(document);
+          ensureIndexInRoom(TYPE_ROOM_USER);
         } catch (MongoException me) {
           LOG.warning(me.getCode() + " : " + room + " : " + me.getMessage());
         }
@@ -637,12 +657,12 @@ public class ChatMongoDataStorage implements ChatDataStorage {
             roomBean.setRoom(roomId);
             roomBean.setEnabledUser(targetUserBean.isEnabled());
             roomBean.setExternal(targetUserBean.isExternal());
-            roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", roomId));
+            roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", ROOM, roomId));
             roomBean.setUser(users.get(0));
             roomBean.setTimestamp(timestamp);
             roomBean.setType((String) dbo.get(TYPE));
             if (dbo.containsKey(IS_ENABLED)) {
-              roomBean.setEnabledRoom((StringUtils.equals(dbo.get(IS_ENABLED).toString(), "true")));
+              roomBean.setEnabledRoom((StringUtils.equals(dbo.get(IS_ENABLED).toString(), TRUE)));
             }
             if (dbo.containsKey(MEETING_STARTED)) {
               roomBean.setMeetingStarted((Boolean) dbo.get(MEETING_STARTED));
@@ -666,7 +686,8 @@ public class ChatMongoDataStorage implements ChatDataStorage {
   public RoomsBean getRooms(String user, List<String> onlineUsers, String filter, boolean withUsers, boolean withSpaces, boolean withPublic, boolean withOffline, boolean isAdmin, int limit, NotificationService notificationService, TokenService tokenService) {
     List<RoomBean> rooms;
     UserBean userBean = userDataStorage.getUser(user, true);
-    int unreadOffline = 0, unreadOnline = 0;
+    int unreadOffline = 0;
+    int unreadOnline = 0;
 
     if (withUsers) {
       rooms = this.getExistingRooms(user, withPublic, isAdmin, notificationService, tokenService);
@@ -724,7 +745,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         }
       }
     } else {
-      rooms = new ArrayList<RoomBean>();
+      rooms = new ArrayList<>();
     }
 
     int unreadSpaces = 0;
@@ -744,7 +765,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       String spaceRoomId = getSpaceRoom(SPACE_PREFIX + space.getRoom());
       room.setEnabledRoom(isRoomEnabled(spaceRoomId));
 
-      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", spaceRoomId));
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", ROOM, spaceRoomId));
       if (room.getUnreadTotal() > 0)
         unreadSpaces += room.getUnreadTotal();
       room.setFavorite(userBean.isFavorite(room.getRoom()));
@@ -771,7 +792,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       room.setAdmins(team.getAdmins());
       room.setEnabledRoom(team.isEnabledRoom());
 
-      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", "room", team.getRoom()));
+      room.setUnreadTotal(notificationService.getUnreadNotificationsTotal(user, "chat", ROOM, team.getRoom()));
       if (room.getUnreadTotal() > 0)
         unreadTeams += room.getUnreadTotal();
       room.setFavorite(userBean.isFavorite(room.getRoom()));
@@ -792,7 +813,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       finalRooms = rooms;
     }
     //get rid of disabled rooms
-    finalRooms = finalRooms.stream().filter(roomBean -> roomBean.isEnabledRoom()).collect(Collectors.toList());
+    finalRooms = finalRooms.stream().filter(RoomBean::isEnabledRoom).collect(Collectors.toList());
 
     RoomsBean roomsBean = new RoomsBean();
     roomsBean.setRooms(finalRooms);
@@ -862,17 +883,13 @@ public class ChatMongoDataStorage implements ChatDataStorage {
           if (StringUtils.isBlank(roomType) || TYPE_ROOM_SPACE.equals(roomType)) {
             ArrayList<String> spaces = (ArrayList<String>) doc.get("spaces");
             if (spaces != null) {
-              for (String room : spaces) {
-                roomsIds.add(room);
-              }
+              roomsIds.addAll(spaces);
             }
           }
           if (StringUtils.isBlank(roomType) || TYPE_ROOM_TEAM.equals(roomType)) {
             ArrayList<String> teams = (ArrayList<String>) doc.get("teams");
             if (teams != null) {
-              for (String room : teams) {
-                roomsIds.add(room);
-              }
+              roomsIds.addAll(teams);
             }
           }
           // Add spaces and teams rooms
@@ -907,25 +924,25 @@ public class ChatMongoDataStorage implements ChatDataStorage {
 
           if (roomBean.getUnreadTotal() > 0) {
             switch (roomBean.getType()) {
-              case "u":
+              case "u" -> {
                 if (roomBean.isActive()) {
                   unreadOnline += roomBean.getUnreadTotal();
                 } else {
                   unreadOffline += roomBean.getUnreadTotal();
                 }
-                break;
-              case "s":
+              }
+              case "s" -> {
                 unreadSpaces += roomBean.getUnreadTotal();
                 if (roomBean.isRoomSilent()) {
                   unreadSilentRooms += roomBean.getUnreadTotal();
                 }
-                break;
-              case "t":
+              }
+              case "t" -> {
                 unreadTeams += roomBean.getUnreadTotal();
                 if (roomBean.isRoomSilent()) {
                   unreadSilentRooms += roomBean.getUnreadTotal();
                 }
-                break;
+              }
             }
           }
           rooms.add(roomBean);
@@ -974,7 +991,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
         roomBean.setUser(TEAM_PREFIX + roomId);
         roomBean.setStatus(UserService.STATUS_TEAM);
         roomBean.setAvailableUser(true);
-        roomBean.setFullName(room.get("team").toString());
+        roomBean.setFullName(room.get(TEAM).toString());
         roomBean.setType(TYPE_ROOM_TEAM);
         roomBean.setFavorite(userBean.isFavorite(roomId));
         if (StringUtils.isNotBlank(roomBean.getUser())) {
@@ -1021,7 +1038,7 @@ public class ChatMongoDataStorage implements ChatDataStorage {
       }
     }
     roomBean.setRoom(roomId);
-    roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", "room", roomId));
+    roomBean.setUnreadTotal(notificationService.getUnreadNotificationsTotal(userBean.getName(), "chat", ROOM, roomId));
     boolean isSilent = notificationService.isRoomSilentForUser(userBean.getName(), roomId);
     roomBean.setRoomSilent(isSilent);
 
