@@ -31,8 +31,6 @@ public class ConnectionManager implements ServletContextListener {
   public static MongoBootstrap forceNew()
   {
     LOG.warning("ConnectionManager.forceNew has been used : this should never happen in Production!");
-    if (mongoBootstrap!=null)
-      mongoBootstrap.close();
     mongoBootstrap = new MongoBootstrap();
     return mongoBootstrap;
   }

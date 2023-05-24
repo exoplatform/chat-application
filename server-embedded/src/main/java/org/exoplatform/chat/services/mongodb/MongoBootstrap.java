@@ -21,8 +21,6 @@ package org.exoplatform.chat.services.mongodb;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -33,14 +31,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import com.mongodb.connection.ConnectionPoolSettings;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.MongodStarter;
 import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
-import de.flapdoodle.reverse.StateID;
 import de.flapdoodle.reverse.TransitionWalker;
 import de.flapdoodle.reverse.Transitions;
 import de.flapdoodle.reverse.transitions.Start;
@@ -51,14 +47,16 @@ import org.exoplatform.chat.utils.PropertyManager;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.exoplatform.chat.services.mongodb.utils.ConnectionHelper.getMongoServerAdresses;
 
 public class MongoBootstrap
 {
   private MongoClient m;
   private MongoDatabase db;
+
+  private Mongod mongod;
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
+  private RunningMongodProcess runningProcess;
 
   private MongoClient mongo()
   {
@@ -70,23 +68,19 @@ public class MongoBootstrap
                 .append("/?")
                 .append("maxPoolSize=200")
                 .append("&")
+                .append("minPoolSize=10")
+                .append("&")
                 .append("connectTimeoutMS=60000")
                 .append("&")
                 .append("w=majority");
-        ConnectionPoolSettings connectionPoolSettings = ConnectionPoolSettings
-                .builder()
-                .minSize(50)
-                .maxSize(200)
-                .maxConnectionIdleTime(60000, MILLISECONDS)
-                .maxConnectionLifeTime(300000, MILLISECONDS)
-                .build();
+
         boolean authenticate = "true".equals(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_AUTHENTICATION)) 
                 && PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD) != null 
                 && !PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD).isEmpty();
         if (authenticate) {
           connectionString = new StringBuilder("mongodb://").append(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_USER))
                   .append(":")
-                  .append(URLEncoder.encode(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD), StandardCharsets.UTF_8.name()))
+                  .append(URLEncoder.encode(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD), StandardCharsets.UTF_8))
                   .append("@").append(connectionString)
                   .append("&authSource=")
                   .append(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
@@ -112,17 +106,8 @@ public class MongoBootstrap
   }
 
   public void close() {
-/*    try {
-      if (mongod != null) {
-        mongod.stop();
-        mongodExe.stop();
-      }
-      if (m!=null)
-        m.close();
-    } catch (NullPointerException e) {
-      return;
-    }*/
-  }
+    this.runningProcess.stop();
+ }
 
   public void initialize() {
     this.close();
@@ -161,26 +146,12 @@ public class MongoBootstrap
     return db;
   }
 
-  private static void setupEmbedMongo() throws Exception {
-    Mongod mongod = Mongod.builder()
+  private void setupEmbedMongo() throws Exception {
+    mongod = Mongod.builder()
             .net(Start.to(Net.class).initializedWith(Net.defaults()
                     .withPort(27777)))
             .build();
-    Transitions transitions1 = mongod.transitions(Version.Main.PRODUCTION);
-
-    List<ServerAddress> mongoServerAdresses = getMongoServerAdresses();
-    if(mongoServerAdresses == null || mongoServerAdresses.isEmpty()) {
-      throw new Exception("No mongodb server host and port defined");
-    } else if(mongoServerAdresses.size() > 1) {
-      throw new Exception("Several mongodb server host and port defined, embedded mode supports only one mongodb server");
-    }
-    ServerAddress mongdbServer = mongoServerAdresses.get(0);
-    /*IMongodConfig mongodConfig = new MongodConfigBuilder()
-            .version(Version.V3_6_0)
-            .net(new Net(mongdbServer.getPort(), Network.localhostIsIPv6()))
-            .build();
-    mongodExe = runtime.prepare(mongodConfig);
-    mongod = mongodExe.start();*/
+    this.runningProcess = mongod.start(Version.Main.V6_0).current();
   }
 
   public void initCappedCollection(String name, int size)

@@ -35,7 +35,7 @@ public class AbstractChatTestCase
   }
 
   @AfterClass
-  public static void teardown() throws Exception {
+  public static void after() throws Exception {
     ConnectionManager.getInstance().close();
   }
 
