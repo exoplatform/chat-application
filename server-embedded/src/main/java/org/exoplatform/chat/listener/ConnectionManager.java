@@ -20,7 +20,6 @@ public class ConnectionManager implements ServletContextListener {
   @Override
   public void contextDestroyed(ServletContextEvent servletContextEvent) {
     LOG.info("CLOSING MONGODB");
-    mongoBootstrap.close();
   }
 
   public static MongoBootstrap getInstance()

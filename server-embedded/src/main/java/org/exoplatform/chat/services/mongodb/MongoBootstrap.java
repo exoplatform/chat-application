@@ -33,16 +33,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.transitions.Mongod;
-import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
-import de.flapdoodle.reverse.transitions.Start;
 import org.bson.Document;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.utils.PropertyManager;
 
 
-import de.flapdoodle.embed.mongo.distribution.Version;
 
 import static org.exoplatform.chat.services.mongodb.utils.ConnectionHelper.getMongoServerAdresses;
 
@@ -52,8 +47,6 @@ public class MongoBootstrap
   private MongoDatabase db;
 
   private static final Logger LOG = Logger.getLogger("MongoBootstrap");
-  private RunningMongodProcess runningProcess;
-
   private MongoClient mongo()
   {
     if (m==null)
@@ -89,7 +82,6 @@ public class MongoBootstrap
           LOG.warning("WE WILL NOW USE MONGODB IN EMBED MODE...");
           LOG.warning("BE AWARE...");
           LOG.warning("EMBED MODE SHOULD NEVER BE USED IN PRODUCTION!");
-          setupEmbedMongo();
         }
         m = MongoClients.create(connectionString.toString());
       }
@@ -99,24 +91,6 @@ public class MongoBootstrap
       }
     }
     return m;
-  }
-
-  public void close() {
-    this.runningProcess.stop();
- }
-
-  public void initialize() {
-    this.close();
-    this.m = null;
-    this.mongo();
-  }
-
-  public void dropDB(String dbName)
-  {
-    LOG.info("---- Dropping DB " + dbName);
-    mongo().getDatabase(dbName).drop();
-    LOG.info("-------- DB " + dbName + " dropped!");
-
   }
 
   public MongoDatabase getDB()
@@ -142,13 +116,6 @@ public class MongoBootstrap
     return db;
   }
 
-  private void setupEmbedMongo() {
-    Mongod mongod = Mongod.builder()
-            .net(Start.to(Net.class).initializedWith(Net.defaults()
-                    .withPort(27777)))
-            .build();
-    this.runningProcess = mongod.start(Version.Main.V6_0).current();
-  }
 
   public void initCappedCollection(String name, int size)
   {
