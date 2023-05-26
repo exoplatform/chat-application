@@ -72,7 +72,7 @@ public class MongoBootstrap
                   .append(URLEncoder.encode(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_PASSWORD), StandardCharsets.UTF_8))
                   .append("@").append(connectionString)
                   .append("&authSource=")
-                  .append(PropertyManager.getProperty(PropertyManager.PROPERTY_DB_NAME));
+                  .append(PropertyManager.getProperty(PropertyManager.PROPERTY_ADMIN_DB));
         } else {
           connectionString = new StringBuilder("mongodb://")
                   .append(connectionString);
