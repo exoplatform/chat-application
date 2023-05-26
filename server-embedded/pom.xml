@@ -156,7 +156,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>@{argLine} --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dde.flapdoodle.os.override=Linux|X86_64|Ubuntu|Ubuntu_22_10</argLine>
+          <argLine>@{argLine} --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dde.flapdoodle.os.override=Linux|X86_64|Ubuntu|Ubuntu_14_04</argLine>
         </configuration>
       </plugin>
 

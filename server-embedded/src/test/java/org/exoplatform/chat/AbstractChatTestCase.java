@@ -44,7 +44,7 @@ public class AbstractChatTestCase
             .net(Start.to(Net.class).initializedWith(Net.defaults()
                     .withPort(27777)))
             .build();
-    runningProcess = mongod.start(Version.Main.V6_0).current();
+    runningProcess = mongod.start(Version.Main.V4_0).current();
   }
 
   @AfterClass
