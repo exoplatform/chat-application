@@ -84,6 +84,9 @@ public class PropertyManager {
   public static final String PROPERTY_READ_TOTAL_TXT = "chatReadTotalTxt";
 
   public static final String PROPERTY_SERVER_TYPE_EMBED = "embed";
+
+  public static final String EMBEDDED_MONGODB_VERSION = "embeddedMongoDBVersion";
+
   public static final String PROPERTY_SERVER_TYPE_MONGO = "mongo";
 
   public static final String PROPERTY_SERVICE_IMPL_MONGO = "mongo";
@@ -154,6 +157,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "60000");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
+      overridePropertyIfNotSet(EMBEDDED_MONGODB_VERSION, "6.0");
 
       overridePropertyIfNotSet(PROPERTY_MAIL_PROTOCAL, "smtp");
       overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "localhost");
