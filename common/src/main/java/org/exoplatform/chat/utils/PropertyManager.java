@@ -69,6 +69,7 @@ public class PropertyManager {
   public static final String PROPERTY_DB_AUTHENTICATION = "dbAuthentication";
   public static final String PROPERTY_DB_USER = "dbUser";
   public static final String PROPERTY_DB_PASSWORD = "dbPassword";
+  public static final String PROPERTY_ADMIN_DB = "adminDatabase";
   public static final String PROPERTY_CHAT_SERVER_BASE = "chatServerBase";
   public static final String PROPERTY_CHAT_FRONT_END_SERVER_URL = "chatServerUrl";
   public static final String PROPERTY_CHAT_BACKEND_END_SERVER_URL = "chatServiceUrl";
@@ -83,6 +84,9 @@ public class PropertyManager {
   public static final String PROPERTY_READ_TOTAL_TXT = "chatReadTotalTxt";
 
   public static final String PROPERTY_SERVER_TYPE_EMBED = "embed";
+
+  public static final String EMBEDDED_MONGODB_VERSION = "embeddedMongoDBVersion";
+
   public static final String PROPERTY_SERVER_TYPE_MONGO = "mongo";
 
   public static final String PROPERTY_SERVICE_IMPL_MONGO = "mongo";
@@ -141,6 +145,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_DB_AUTHENTICATION, "false");
       overridePropertyIfNotSet(PROPERTY_DB_USER, "");
       overridePropertyIfNotSet(PROPERTY_DB_PASSWORD, "");
+      overridePropertyIfNotSet(PROPERTY_ADMIN_DB, "admin");
       overridePropertyIfNotSet(PROPERTY_CHAT_SERVER_BASE, "");
       overridePropertyIfNotSet(PROPERTY_CHAT_FRONT_END_SERVER_URL, "/chatServer");
       overridePropertyIfNotSet(PROPERTY_CHAT_PORTAL_PAGE, "/portal/intranet/chat");
@@ -152,6 +157,7 @@ public class PropertyManager {
       overridePropertyIfNotSet(PROPERTY_TOKEN_VALIDITY, "60000");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_JSON, "200");
       overridePropertyIfNotSet(PROPERTY_READ_TOTAL_TXT, "2000");
+      overridePropertyIfNotSet(EMBEDDED_MONGODB_VERSION, "6.0");
 
       overridePropertyIfNotSet(PROPERTY_MAIL_PROTOCAL, "smtp");
       overridePropertyIfNotSet(PROPERTY_MAIL_HOST, "localhost");

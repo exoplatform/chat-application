@@ -294,30 +294,6 @@ public class ChatTools
   }
 
   @Resource
-  @Route("/dropDB")
-  public Response.Content dropDB(String db, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
-    }
-
-    if (db == null)
-    {
-      return Response.notFound("{ \"message\": \"db is null\"}");
-    }
-
-    ConnectionManager.getInstance().dropDB(db);
-
-    StringBuffer data = new StringBuffer();
-    data.append("{");
-    data.append(" \"message\": \"deleting db="+db+"\"");
-    data.append("}");
-
-    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
-  }
-
-  @Resource
   @Route("/ensureIndexes")
   public Response.Content ensureIndexes(String db, String passphrase)
   {
