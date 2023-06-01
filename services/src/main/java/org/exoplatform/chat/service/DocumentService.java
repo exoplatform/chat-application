@@ -233,7 +233,7 @@ public class DocumentService implements ResourceContainer {
                          List<String> usernames) {
     String filename = getFileName(uploadResource);
     String title = filename;
-    filename = Text.escapeIllegalJcrChars(Utils.cleanName(filename));
+    filename = Text.escapeIllegalJcrChars(Utils.cleanName(Utils.cleanNameWithAccents(filename)));
 
     boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
 
