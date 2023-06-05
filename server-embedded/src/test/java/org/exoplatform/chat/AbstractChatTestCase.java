@@ -1,6 +1,11 @@
 package org.exoplatform.chat;
 
 import com.google.inject.AbstractModule;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.transitions.Start;
 import org.cometd.bayeux.server.BayeuxServer;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
@@ -9,7 +14,9 @@ import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.services.*;
 import org.exoplatform.chat.services.mongodb.*;
 import org.exoplatform.chat.utils.PropertyManager;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
@@ -19,6 +26,7 @@ import java.util.logging.Logger;
 public class AbstractChatTestCase
 {
   static Logger log = Logger.getLogger("ChatTestCase");
+  private static RunningMongodProcess runningProcess;
 
   @BeforeClass
   public static void before() throws IOException
@@ -28,17 +36,38 @@ public class AbstractChatTestCase
     PropertyManager.overrideProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY, "100");
 
     ConnectionManager.forceNew();
-    ConnectionManager.getInstance().getDB("unittest");
 
     GuiceManager.forceNew(new TestModule());
     ServiceBootstrap.forceNew();
+
+    Mongod mongod = Mongod.builder()
+            .net(Start.to(Net.class).initializedWith(Net.defaults()
+                    .withPort(27777)))
+            .build();
+    String mongoDBVersion = PropertyManager.getProperty(PropertyManager.EMBEDDED_MONGODB_VERSION);
+    Version.Main mongoVersion = Version.Main.V6_0;
+    switch (mongoDBVersion) {
+      case "4.0" :
+        mongoVersion = Version.Main.V4_0;
+        break;
+      case "4.2" :
+        mongoVersion = Version.Main.V4_2;
+        break;
+      case "4.4" :
+        mongoVersion = Version.Main.V4_4;
+        break;
+      case "5.0" :
+      case "5" :
+        mongoVersion = Version.Main.V5_0;
+        break;
+    }
+    runningProcess = mongod.start(mongoVersion).current();
   }
 
   @AfterClass
-  public static void teardown() throws Exception {
-    ConnectionManager.getInstance().close();
+  public static void after() throws Exception {
+    runningProcess.stop();
   }
-
   /**
    * Guice module allowing to mock services for tests
    */

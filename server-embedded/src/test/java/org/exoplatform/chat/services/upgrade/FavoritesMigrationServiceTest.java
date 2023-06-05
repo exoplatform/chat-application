@@ -5,12 +5,15 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 
 import org.exoplatform.chat.AbstractChatTestCase;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
@@ -24,7 +27,7 @@ import org.exoplatform.chat.services.mongodb.UserMongoDataStorage;
 
 public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
 
-  private DB db;
+  private MongoDatabase db;
 
   private UserService userService;
 
@@ -132,14 +135,13 @@ public class FavoritesMigrationServiceTest extends AbstractChatTestCase {
 
   private void setOldFavoritesToUser(String username, List<String> oldFavorites) {
     MongoBootstrap mongoBootstrap = ConnectionManager.getInstance();
-    DB db = mongoBootstrap.getDB();
-    DBCollection usersCol = db.getCollection(UserMongoDataStorage.M_USERS_COLLECTION);
+    MongoDatabase db = mongoBootstrap.getDB();
+    MongoCollection<Document> usersCol = db.getCollection(UserMongoDataStorage.M_USERS_COLLECTION);
 
-    BasicDBObject searchQuery = new BasicDBObject("user", username);
+    Bson searchQuery = Filters.eq("user", username);
 
-    BasicDBObject updateQuery = new BasicDBObject();
-    updateQuery.append("$set", new BasicDBObject().append("favorites", oldFavorites));
+    Bson updateDocument = Updates.set("favorites", oldFavorites);
 
-    usersCol.update(searchQuery, updateQuery);
+    usersCol.updateMany(searchQuery, updateDocument);
   }
 }
