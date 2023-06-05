@@ -191,12 +191,12 @@ public class DocumentService implements ResourceContainer {
     String repository = ((ManageableRepository) node.getSession().getRepository()).getConfiguration().getName();
     String nodePathWithWorkspace = workspace + node.getPath();
     String nodeName = node.getName();
-    String encodedNodeName = URLEncoder.encode(nodeName, "UTF-8").replace("%", "%25");
+    String encodedNodeName = URLEncoder.encode(nodeName, "UTF-8");
     nodePathWithWorkspace = nodePathWithWorkspace.replace(nodeName, encodedNodeName);
     String baseDavPath = "/jcr/" + repository + "/" + nodePathWithWorkspace;
     String publicURL = RestUtils.getBaseRestUrl() + baseDavPath;
     String thumbnailURL = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/thumbnailImage/large/" + repository + "/"
-        + nodePathWithWorkspace;
+        + nodePathWithWorkspace.replace("%", "%25");
     String restPath = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + baseDavPath;
     String downloadLink = "/" + PortalContainer.getCurrentPortalContainerName() + "/" + CommonsUtils.getRestContextName() + "/contents/download/" + nodePathWithWorkspace;
 
