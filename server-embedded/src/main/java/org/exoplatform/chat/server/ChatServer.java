@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -328,7 +327,7 @@ public class ChatServer
       LOG.info("fromTimestamp is not a valid Long number");
     }
     String data = chatService.read(user, room, false, from, to, 0);
-    BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    BasicDBObject datao = BasicDBObject.parse(data);
     String roomType = chatService.getTypeRoomChat(room);
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
     String date = formatter.format(new GregorianCalendar().getTime());
@@ -441,7 +440,7 @@ public class ChatServer
     }
     String data = chatService.read(user, room, false, from, to, 0);
     String typeRoom = chatService.getTypeRoomChat(room);
-    BasicDBObject datao = (BasicDBObject)JSON.parse(data);
+    BasicDBObject datao = BasicDBObject.parse(data);
     if (datao.containsField("messages")) {
       if(ChatService.TYPE_ROOM_USER.equalsIgnoreCase(typeRoom)) {
         users = userService.getUsersInRoomChatOneToOne(room)

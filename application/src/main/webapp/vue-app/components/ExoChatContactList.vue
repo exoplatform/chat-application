@@ -134,7 +134,7 @@
           {{ $t('exoplatform.chat.loading') }}
         </div>
       </div>
-      <div v-if="filteredContacts.length === 0">
+      <div v-if="!filteredContacts.length && isChatDrawer">
         <div class="center">
           <div class="noResultFilter">
             <div>
