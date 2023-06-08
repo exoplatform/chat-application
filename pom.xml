@@ -36,9 +36,8 @@
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
-    <commons-codec.version>1.4</commons-codec.version>
     <de.flapdoodle.embed.mongo.version>4.6.3</de.flapdoodle.embed.mongo.version>
-    <commons-compress.version>1.5</commons-compress.version>
+    <commons-compress.version>1.22</commons-compress.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <mongodb-java-driver.version>4.9.1</mongodb-java-driver.version>
     <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
@@ -76,11 +75,6 @@
         <groupId>com.googlecode.json-simple</groupId>
         <artifactId>json-simple</artifactId>
         <version>${com.google.json-simple.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>de.flapdoodle.embed</groupId>
