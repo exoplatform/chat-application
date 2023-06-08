@@ -25,13 +25,17 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.services.SettingDataStorage;
 
@@ -43,37 +47,38 @@ public class SettingMongoDataStorage implements SettingDataStorage {
   private static final Logger LOG = Logger.getLogger(SettingMongoDataStorage.class.getName());
 
   public static final String M_SETTINGS_COLLECTION = "settings";
+  public static final String NAME = "name";
+  public static final String VALUE = "value";
 
-  private DB db()
+  private MongoDatabase db()
   {
     return ConnectionManager.getInstance().getDB();
   }
 
   @Override
   public String getSetting(String name) {
-    DBCollection coll = db().getCollection(M_SETTINGS_COLLECTION);
+    MongoCollection<Document> coll = db().getCollection(M_SETTINGS_COLLECTION);
 
     BasicDBObject query = new BasicDBObject();
-    query.put("name", name);
+    query.put(NAME, name);
 
-    DBCursor dbCursor = coll.find(query);
-    if(dbCursor.hasNext()) {
-      return (String) dbCursor.next().get("value");
+    try(MongoCursor<Document> dbCursor = coll.find(query).cursor()) {
+      if (dbCursor.hasNext()) {
+        return (String) dbCursor.next().get(VALUE);
+      }
     }
     return null;
   }
 
   @Override
   public void setSetting(String name, String value) {
-    DBCollection settingsCol = db().getCollection("settings");
+    MongoCollection<Document> settingsCol = db().getCollection(M_SETTINGS_COLLECTION);
 
-    BasicDBObject query = new BasicDBObject();
-    query.put("name", name);
+    Bson query = Filters.eq(NAME, name);
 
-    BasicDBObject newStatusDBObject = new BasicDBObject();
-    newStatusDBObject.put("name", name);
-    newStatusDBObject.put("value", value);
+    Bson newStatusDBObject = Updates.combine(Updates.set(NAME, name), Updates.set(VALUE, value));
 
-    settingsCol.update(query, newStatusDBObject, true, false);
+    UpdateOptions options = new UpdateOptions().upsert(true);
+    settingsCol.updateOne(query, newStatusDBObject, options);
   }
 }

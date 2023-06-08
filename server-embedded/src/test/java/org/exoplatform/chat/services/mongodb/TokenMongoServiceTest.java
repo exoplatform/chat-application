@@ -1,6 +1,6 @@
 package org.exoplatform.chat.services.mongodb;
 
-import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
 import org.exoplatform.chat.AbstractChatTestCase;
 import org.exoplatform.chat.bootstrap.ServiceBootstrap;
 import org.exoplatform.chat.listener.ConnectionManager;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TokenMongoServiceTest extends AbstractChatTestCase {
 
-  private DB db;
+  private MongoDatabase db;
 
   private UserService userService;
 

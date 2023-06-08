@@ -20,7 +20,14 @@
 package org.exoplatform.chat.services.mongodb;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.TokenStorage;
@@ -42,8 +49,18 @@ import static org.exoplatform.chat.services.TokenService.ANONIM_USER;
 public class TokenMongoService implements TokenStorage
 {
   public static final String M_USERS_COLLECTION = "users";
+  public static final String IS_DEMO_USER = "isDemoUser";
+  public static final String TOKEN = "token";
+  public static final String USER = "user";
+  public static final String ID = "_id";
+  public static final String FULLNAME = "fullname";
+  public static final String STATUS = "status";
+  public static final String IS_ENABLED = "isEnabled";
+  public static final String IS_DELETED = "isDeleted";
+  public static final String IS_EXTERNAL = "isExternal";
+  public static final String TRUE = "true";
 
-  private DB db()
+  private MongoDatabase db()
   {
     return ConnectionManager.getInstance().getDB();
   }
@@ -52,104 +69,91 @@ public class TokenMongoService implements TokenStorage
   {
     String passphrase = PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE);
     String in = user+passphrase;
-    String token = MessageDigester.getHash(in);
-    return token;
+    return MessageDigester.getHash(in);
   }
 
   public boolean hasUserWithToken(String user, String token)
   {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("token", token);
-    DBCursor cursor = coll.find(query);
-    return (cursor.hasNext());
+    MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
+    Bson query = Filters.and(Filters.eq(USER, user), Filters.eq(TOKEN, token));
+    return coll.find(query).cursor().hasNext();
   }
 
   public void addUser(String user, String token)
   {
-    if (!hasUserWithToken(user, token))
-    {
-      DBCollection coll = db().getCollection(M_USERS_COLLECTION);
+    if (!hasUserWithToken(user, token)) {
+      MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
 
       BasicDBObject query = new BasicDBObject();
-      query.put("user", user);
-      DBCursor cursor = coll.find(query);
-      if (cursor.hasNext())
-      {
-        DBObject doc = cursor.next();
-        doc.put("token", token);
-        doc.put("isDemoUser", user.startsWith(ANONIM_USER));
-        coll.save(doc, WriteConcern.SAFE);
-      }
-      else
-      {
-        BasicDBObject doc = new BasicDBObject();
-        doc.put("_id", user);
-        doc.put("user", user);
-        doc.put("token", token);
-        doc.put("isDemoUser", user.startsWith(ANONIM_USER));
-        doc.put("isEnabled", Boolean.TRUE.toString());
-        doc.put("isDeleted", Boolean.FALSE.toString());
-        coll.insert(doc);
+      query.put(USER, user);
+      try (MongoCursor<Document> cursor = coll.find(query).cursor()) {
+        if (cursor.hasNext()) {
+          Bson updateDocument = Updates.combine(Updates.set(TOKEN, token), Updates.set(IS_DEMO_USER, user.startsWith(ANONIM_USER)));
+          coll.updateOne(query, updateDocument);
+        } else {
+          Document doc = new Document();
+          doc.put(ID, user);
+          doc.put(USER, user);
+          doc.put(TOKEN, token);
+          doc.put(IS_DEMO_USER, user.startsWith(ANONIM_USER));
+          doc.put(IS_ENABLED, Boolean.TRUE.toString());
+          doc.put(IS_DELETED, Boolean.FALSE.toString());
+          coll.insertOne(doc);
+        }
       }
     }
   }
 
-  public void removeUserToken(String user, String token)
-  {
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    BasicDBObject query = new BasicDBObject();
-    query.put("user", user);
-    query.put("token", token);
-    BasicDBObject tokenUpdate = new BasicDBObject();
-    tokenUpdate.put("token", "");
-    BasicDBObject set = new BasicDBObject("$set", tokenUpdate);
-    coll.update(query, set);
+  public void removeUserToken(String user, String token) {
+    MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
+    Bson query = Filters.and(Filters.eq(USER, user), Filters.eq(TOKEN, token));
+    Document tokenUpdate = new Document().append(TOKEN, "");
+    coll.updateOne(query, tokenUpdate);
   }
 
   public Map<String, UserBean> getActiveUsersFilterBy(String user, List<String> limitedFilter, boolean withUsers, boolean withPublic, boolean isAdmin, int limit)
   {
-    BasicDBObject query = new BasicDBObject();
+    Bson query = new Document();
     if (isAdmin) {
       if (withPublic && !withUsers) {
-        query.put("isDemoUser", true);
+        query = Filters.eq(IS_DEMO_USER, true);
       } else if (!withPublic && withUsers) {
-        query.put("isDemoUser", false);
+        query = Filters.eq(IS_DEMO_USER, false);
       }
     } else {
-      query.put("isDemoUser", user.startsWith(ANONIM_USER));
+      query = Filters.eq(IS_DEMO_USER, user.startsWith(ANONIM_USER));
     }
-    query.put("user", new BasicDBObject("$in", limitedFilter));
+    query = Filters.and(query, Filters.in(USER, limitedFilter));
     if (limit < 0) limit = 0;
 
-    DBCollection coll = db().getCollection(M_USERS_COLLECTION);
-    DBCursor cursor = coll.find(query).limit(limit);
     HashMap<String, UserBean> users = new HashMap<>();
-    while (cursor.hasNext()) {
-      DBObject doc = cursor.next();
-      String target = doc.get("user").toString();
-      // Exclude current user and offline users
-      if (!user.equals(target)) {
-        UserBean userBean = new UserBean();
-        userBean.setName(target);
-        if (doc.get("fullname") != null) {
-          userBean.setFullname(doc.get("fullname").toString());
-        }
-        if (doc.get("status") != null) {
-          userBean.setStatus(doc.get("status").toString());
-        }
-        if (doc.get("isEnabled") != null) {
-          userBean.setEnabled(StringUtils.equals(doc.get("isEnabled").toString(), "true"));
-        }
-        if (doc.get("isDeleted") != null) {
-          userBean.setDeleted(StringUtils.equals(doc.get("isDeleted").toString(), "true"));
-        }
-        if (doc.get("isExternal") != null) {
-          userBean.setExternal(doc.get("isExternal").toString());
-        }
-        if (userBean.isEnabled()) {
-          users.put(target, userBean);
+    MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
+    try (MongoCursor<Document> cursor = coll.find(query).limit(limit).cursor()) {
+      while (cursor.hasNext()) {
+        Document doc = cursor.next();
+        String target = doc.get(USER).toString();
+        // Exclude current user and offline users
+        if (!user.equals(target)) {
+          UserBean userBean = new UserBean();
+          userBean.setName(target);
+          if (doc.get(FULLNAME) != null) {
+            userBean.setFullname(doc.get(FULLNAME).toString());
+          }
+          if (doc.get(STATUS) != null) {
+            userBean.setStatus(doc.get(STATUS).toString());
+          }
+          if (doc.get(IS_ENABLED) != null) {
+            userBean.setEnabled(StringUtils.equals(doc.get(IS_ENABLED).toString(), TRUE));
+          }
+          if (doc.get(IS_DELETED) != null) {
+            userBean.setDeleted(StringUtils.equals(doc.get(IS_DELETED).toString(), TRUE));
+          }
+          if (doc.get(IS_EXTERNAL) != null) {
+            userBean.setExternal(doc.get(IS_EXTERNAL).toString());
+          }
+          if (Boolean.TRUE.equals(userBean.isEnabled())) {
+            users.put(target, userBean);
+          }
         }
       }
     }
