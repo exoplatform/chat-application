@@ -310,17 +310,19 @@ public class UserMongoDataStorage implements UserDataStorage {
         wrapperDoc = new Document();
       }
 
-      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION)!=null){
+      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION) != null){
         settings.setEnabledChannels(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION).toString());
       } else {
         //default values to the untouched settings
         settings.setEnabledChannels(DEFAULT_ENABLED_CHANNELS);
       }
-      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER)!=null){
-        settings.setEnabledTriggers(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER).toString());
+      if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER) != null){
+        Document preferredNotificationsTrigger = (Document)(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER));
+        settings.setEnabledTriggers(preferredNotificationsTrigger.toJson());
       }
       if(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
-        settings.setEnabledRoomTriggers(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER).toString());
+        Document preferredRoomNotificationTrigger = (Document) wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
+        settings.setEnabledRoomTriggers(preferredRoomNotificationTrigger.toJson());
       }
     }
     return settings;
