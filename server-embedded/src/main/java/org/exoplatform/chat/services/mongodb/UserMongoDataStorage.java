@@ -138,7 +138,7 @@ public class UserMongoDataStorage implements UserDataStorage {
     if (cursor.hasNext()) {
       Document doc = cursor.next();
       if(ChatService.BIP.equals(notifManner) || ChatService.DESKTOP_NOTIFICATION.equals(notifManner) || ChatService.ON_SITE.equals(notifManner)) {
-        BasicDBObject settings = (BasicDBObject) doc.get(NOTIFICATIONS_SETTINGS);
+        Document settings = (Document) doc.get(NOTIFICATIONS_SETTINGS);
         Object prefNotif = null;
         Object prefTriger = null;
         Object existingRoomNotif =null;
@@ -147,7 +147,7 @@ public class UserMongoDataStorage implements UserDataStorage {
           prefTriger = settings.get(PREFERRED_NOTIFICATION_TRIGGER);
           existingRoomNotif = settings.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
         } else {
-          settings = new BasicDBObject();
+          settings = new Document();
         }
         List<String> existingPrefNotif = null;
         if(prefNotif==null) {
