@@ -695,6 +695,7 @@ public class ChatServer
         try {
           userService.setPreferredNotification(user, notifCondition);
         } catch (Exception e) {
+          LOG.severe("Error while updating the preferences of the user notifications: " + e.getMessage());
         }
       }
     }
