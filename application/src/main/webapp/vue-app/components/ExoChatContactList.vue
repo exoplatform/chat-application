@@ -625,7 +625,7 @@ export default {
       this.selectContact(room);
     },
     editRoom() {
-      chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected).then(data => {
+      chatServices.getRoomParticipants(eXo.chat.userSettings, this.selected, null, 0).then(data => {
         // eslint-disable-next-line vue/no-mutating-props
         this.selected.participants = data.users;
         this.newRoom = JSON.parse(JSON.stringify(this.selected));
