@@ -317,8 +317,7 @@ public class UserMongoDataStorage implements UserDataStorage {
         settings.setEnabledChannels(DEFAULT_ENABLED_CHANNELS);
       }
       if(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER) != null){
-        Document preferredNotificationsTrigger = (Document)(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER));
-        settings.setEnabledTriggers(preferredNotificationsTrigger.toJson());
+        settings.setEnabledTriggers(wrapperDoc.get(UserDataStorage.PREFERRED_NOTIFICATION_TRIGGER).toString());
       }
       if(wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER) != null) {
         Document preferredRoomNotificationTrigger = (Document) wrapperDoc.get(PREFERRED_ROOM_NOTIFICATION_TRIGGER);
