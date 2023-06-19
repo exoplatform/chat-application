@@ -481,8 +481,9 @@ export default {
                 this.setSelectedContact(contactToChange);
               }
             }
-            this.unresolvedRequests--;
           });
+        }).finally(() => {
+          this.unresolvedRequests--;
         });
       }
     },

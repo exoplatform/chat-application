@@ -370,8 +370,9 @@ export default {
                 this.selectedContact = {};
               }
             }
-            this.unresolvedRequests--;
           });
+        }).finally(() => {
+          this.unresolvedRequests--;
         });
       }
     },
