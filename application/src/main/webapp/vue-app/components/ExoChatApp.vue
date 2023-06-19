@@ -148,6 +148,7 @@ export default {
       sideMenuArea: false,
       composerApplications: [],
       roomActions: [],
+      unresolvedRequests: 0,
     };
   },
   computed: {
@@ -354,21 +355,25 @@ export default {
       });
     },
     refreshContacts(keepSelectedContact) {
-      const typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
-      const termFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, chatConstants.TERM_FILTER_DEFAULT);
-      chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users, termFilter, typeFilter).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
-          if (!keepSelectedContact && this.selectedContact) {
-            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
-            if (contactToChange) {
-              this.setSelectedContact(contactToChange);
-            } else {
-              this.selectedContact = {};
+      if (this.unresolvedRequests < 3) {
+        this.unresolvedRequests++;
+        const typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
+        const termFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, chatConstants.TERM_FILTER_DEFAULT);
+        chatServices.getOnlineUsers().then(users => {
+          chatServices.getUserChatRooms(this.userSettings, users, termFilter, typeFilter).then(chatRoomsData => {
+            this.addRooms(chatRoomsData.rooms);
+            if (!keepSelectedContact && this.selectedContact) {
+              const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
+              if (contactToChange) {
+                this.setSelectedContact(contactToChange);
+              } else {
+                this.selectedContact = {};
+              }
             }
-          }
+            this.unresolvedRequests--;
+          });
         });
-      });
+      }
     },
     changeUserStatusToOffline() {
       if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {

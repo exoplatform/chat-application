@@ -181,7 +181,8 @@ export default {
       external: this.$t('exoplatform.chat.external'),
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
-      isExternal: false
+      isExternal: false,
+      unresolvedRequests: 0
     };
   },
   computed: {
@@ -414,7 +415,7 @@ export default {
       if (this.userSettings.offlineDelay) {
         setInterval(
           function() {thiss.refreshContacts(true);},
-          this.userSettings.offlineDelay);
+          500);
       }
     },
     initChatRooms(chatRoomsData) {
@@ -469,17 +470,21 @@ export default {
       this.showSearch = false;
     },
     refreshContacts(keepSelectedContact) {
-      chatServices.getOnlineUsers().then(users => {
-        chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
-          this.addRooms(chatRoomsData.rooms);
-          if (!keepSelectedContact && this.selectedContact) {
-            const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
-            if (contactToChange) {
-              this.setSelectedContact(contactToChange);
+      if (this.unresolvedRequests < 3) {
+        this.unresolvedRequests++;
+        chatServices.getOnlineUsers().then(users => {
+          chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
+            this.addRooms(chatRoomsData.rooms);
+            if (!keepSelectedContact && this.selectedContact) {
+              const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
+              if (contactToChange) {
+                this.setSelectedContact(contactToChange);
+              }
             }
-          }
+            this.unresolvedRequests--;
+          });
         });
-      });
+      }
     },
     searchContacts(term) {
       this.loadingContacts = true;
