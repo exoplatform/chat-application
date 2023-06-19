@@ -415,7 +415,7 @@ export default {
       if (this.userSettings.offlineDelay) {
         setInterval(
           function() {thiss.refreshContacts(true);},
-          500);
+          this.userSettings.offlineDelay);
       }
     },
     initChatRooms(chatRoomsData) {
