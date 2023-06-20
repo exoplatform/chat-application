@@ -19,6 +19,7 @@
           v-model="participants"
           :search-options="{}"
           :key="participants"
+          :ignore-items="listIgnoreItems"
           name="invitePeople"
           multiple
           include-users />
@@ -70,6 +71,7 @@ export default {
   data() {
     return {
       participants: [],
+      listIgnoreItems: [],
       fullName: '',
       showErrorModal: false,
       errorModalTitle: '',
@@ -89,6 +91,13 @@ export default {
     }
   },
   watch: {
+    participants(newVal) {
+      this.listIgnoreItems = newVal.forEach(participant => {
+        if (participant.id.indexOf('organization:')<0) {
+          participant.id = 'organization:'.concat(participant.id);
+        }
+      });
+    },
     show(newValue) {
       if (this.selected && newValue) {
         this.fullName = this.selected.fullName;
