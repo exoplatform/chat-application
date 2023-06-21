@@ -354,20 +354,32 @@ export function getUserNotificationSettings(userSettings) {
 }
 
 export function loadNotificationSettings(settings) {
-  if (settings && settings.userDesktopNotificationSettings) {
+  if (settings?.userDesktopNotificationSettings) {
     eXo.chat.desktopNotificationSettings = settings.userDesktopNotificationSettings;
     if (eXo.chat.desktopNotificationSettings.preferredNotification) {
-      eXo.chat.desktopNotificationSettings.preferredNotification = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotification);
+      try {
+        eXo.chat.desktopNotificationSettings.preferredNotification = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotification);
+      } catch (ignoredException) {
+        // we do nothing
+      }
     } else {
       eXo.chat.desktopNotificationSettings.preferredNotification = [];
     }
     if (eXo.chat.desktopNotificationSettings.preferredNotificationTrigger) {
-      eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger);
+      try {
+        eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredNotificationTrigger);
+      } catch (IgnoredException) {
+        // Nothing to do , settings is already parsed
+      }
     } else {
       eXo.chat.desktopNotificationSettings.preferredNotificationTrigger = [];
     }
     if (eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger) {
-      eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger);
+      try {
+        eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = JSON.parse(eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger);
+      } catch (IgnoredException) {
+        // Nothing to do , settings is already parsed
+      }
     } else {
       eXo.chat.desktopNotificationSettings.preferredRoomNotificationTrigger = [];
     }

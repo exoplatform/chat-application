@@ -5,7 +5,7 @@
   <parent>
     <artifactId>addons-exo-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>17-M03</version>
+    <version>17-M04</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
@@ -36,7 +36,6 @@
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
-    <commons-codec.version>1.4</commons-codec.version>
     <de.flapdoodle.embed.mongo.version>4.6.3</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.23.0</commons-compress.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
@@ -76,11 +75,6 @@
         <groupId>com.googlecode.json-simple</groupId>
         <artifactId>json-simple</artifactId>
         <version>${com.google.json-simple.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>de.flapdoodle.embed</groupId>
