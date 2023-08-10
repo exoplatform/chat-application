@@ -31,7 +31,7 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <addon.exo.ecms.version>6.5.x-SNAPSHOT</addon.exo.ecms.version>
+    <addon.exo.ecms.version>6.5.0-M19</addon.exo.ecms.version>
   	<org.juzu.version>1.2.0</org.juzu.version>
 
     <!-- TODO check dependencies from parent pom -->
