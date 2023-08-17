@@ -34,19 +34,21 @@ export default {
   },
   data() {
     return {
-      spaceChatEnabled: true,
+      spaceChatEnabled: false,
     };
   },
   created() {
     if ( this.identityType === 'space' ) {
-      chatServices.getUserSettings()
-        .then(userSettings => {
-          this.userSettings = userSettings;
-          chatServices.isRoomEnabled(this.userSettings, this.identityId)
-            .then(value => {
+      chatServices.getUserSettings().then(userSettings => {
+        this.userSettings = userSettings;
+        this.$spaceService.isSpaceMember(this.identityId, this.userSettings.username).then(data => {
+          if (data.isMember === 'true') {
+            chatServices.isRoomEnabled(this.userSettings, this.identityId).then(value => {
               this.spaceChatEnabled = value === 'true';
             });
+          }
         });
+      });
     }
   },
   methods: {
