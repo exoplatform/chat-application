@@ -34,11 +34,12 @@ export default {
   },
   data() {
     return {
-      spaceChatEnabled: false,
+      spaceChatEnabled: true,
     };
   },
   created() {
     if ( this.identityType === 'space' ) {
+      this.spaceChatEnabled = false;
       chatServices.getUserSettings().then(userSettings => {
         this.userSettings = userSettings;
         this.$spaceService.isSpaceMember(this.identityId, this.userSettings.username).then(data => {
