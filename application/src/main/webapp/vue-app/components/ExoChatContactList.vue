@@ -419,6 +419,7 @@ export default {
     document.addEventListener(chatConstants.ROOM_NOTIFICATION_SETTINGS_UPDATED, this.refreshNotificationSettings);
     this.typeFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, chatConstants.TYPE_FILTER_DEFAULT);
     this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
+    chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, '');
     this.initFilterMobile();
     chatServices.getUserInfo(eXo.env.portal.userName).then(
       (data) => {
@@ -511,16 +512,19 @@ export default {
         () => {
           contact.isFavorite = !contact.isFavorite;
           this.$emit('refresh-contacts', true);
+          chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, this.searchTerm);         
           this.sortFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, chatConstants.SORT_FILTER_DEFAULT);
         }
       );
     },
     selectSortFilter(filter) {
       this.sortFilter = filter;
+      chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, this.searchTerm);
       chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_SORT_FILTER, this.sortFilter);
     },
     selectTypeFilter(filter) {
       this.typeFilter = filter;
+      chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, this.searchTerm);
       chatWebStorage.setStoredParam(chatConstants.STORED_PARAM_TYPE_FILTER, this.typeFilter);
       this.nbrePages = 0;
       this.$emit('change-filter-type', this.searchTerm, this.typeFilter, this.nbrePages);
