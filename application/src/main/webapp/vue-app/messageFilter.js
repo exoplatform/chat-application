@@ -3,7 +3,9 @@ export default function(msg, highlight, emojis) {
     return msg;
   }
   let message = '';
-  const lines = msg.split(/<br\s*\/?>/);
+  // '&lt;' represents the '<'
+  // '&gt;' represents the '>'
+  const lines = msg.split(/<br\s*\/?>|&lt;br\s*\/?&gt;/);
 
   lines.forEach( (line, index) => {
     line = $('<div />').html(line).text();
