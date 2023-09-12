@@ -53,6 +53,22 @@
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
+    <dependencySet>
+      <outputDirectory>${file.separator}</outputDirectory>
+      <includes>
+        <include>org.exoplatform.commons-exo:commons-juzu:jar</include>
+        <include>org.juzu:*:jar</include>
+        <include>aopalliance:aopalliance:jar</include>
+        <include>com.google.inject:guice:jar</include>
+        <include>org.hibernate:hibernate-validator:jar</include>
+        <include>org.mozilla:rhino:jar</include>
+        <include>javax.validation:validation-api:jar</include>
+        <include>org.webjars:webjars-locator:jar</include>
+
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>

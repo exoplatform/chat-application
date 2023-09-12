@@ -99,10 +99,14 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-          <groupId>org.exoplatform.social</groupId>
-          <artifactId>social-component-notification</artifactId>
-      </dependency>
+    <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social-component-notification</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons-exo</groupId>
+      <artifactId>commons-juzu</artifactId>
+    </dependency>
     <!-- swagger -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
