@@ -73,7 +73,7 @@ function transformQuote(quote) {
   const quoteUser = quote.slice(QUOTE_START.length, quote.indexOf(']'));
   const quoteContent = quote.slice(quote.indexOf(']') + 1, quote.indexOf(QUOTE_END)).trim();
  
-  quote = `<blockquote><span class="quote-user-name">${quoteUser}:</span>${quoteContent}</blockquote>`;
+  quote = `<div><blockquote><span class="quote-user-name">${quoteUser}:</span>${quoteContent}</blockquote></div>`;
 
   return quote;
 }
