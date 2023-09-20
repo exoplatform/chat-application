@@ -43,7 +43,7 @@
   }
 }
 
-.chat-message-box {
+#chats .chat-message-box {
   display: flex;
   margin-top: 20px;
   .chat-sender-avatar, .chat-message-action {
@@ -81,7 +81,7 @@
     .flex-remaining-width;
     background: @messageBubbleColor;
     border: @defaultBorder;
-    border-radius: @messageBubbleRadius; 
+    border-radius: @messageBubbleRadius;
     padding: 12px 7px;
     position: relative;
     min-height: 20px;
@@ -114,6 +114,7 @@
       font-style: italic;
       color: @quoteTextColor;
       border-color: @quoteBarColor;
+      border-left-style: solid;
       .quote-user-name {
         display: block;
       }
