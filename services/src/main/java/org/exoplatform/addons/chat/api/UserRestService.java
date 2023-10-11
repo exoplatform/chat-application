@@ -163,7 +163,9 @@ public class UserRestService implements ResourceContainer {
     NotificationContext ctx = NotificationContextImpl.cloneInstance();
     ctx.append(MENTION_MODEL, mentionModel);
     ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(CHAT_MENTION_NOTIFICATION_PLUGIN))).execute(ctx);
-    return Response.ok(mentionModel.getMentionedUsers(), MediaType.TEXT_PLAIN).build();
+    JSONObject mentionedUsers = new JSONObject();
+    mentionedUsers.put("mentionedUsers", String.join(",", mentionModel.getMentionedUsers()));
+    return Response.ok(mentionedUsers, MediaType.APPLICATION_JSON).build();
   }
 
   @POST
