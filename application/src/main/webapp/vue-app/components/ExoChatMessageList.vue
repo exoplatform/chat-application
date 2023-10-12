@@ -39,28 +39,9 @@
       :contact="contact"
       :mini-chat="miniChat"
       :user-settings="userSettings"
-      @message-written="messageWritten" />
-    <exo-chat-modal
-      v-if="!miniChat"
-      v-show="showEditMessageModal"
-      :title="$t('exoplatform.chat.msg.edit')"
-      modal-class="edit-message-modal"
-      @modal-closed="closeModal">
-      <exo-content-editable
-        v-if="showEditMessageModal"
-        id="editMessageComposerArea"
-        ref="editMessageComposerArea"
-        v-model="messageToEdit.msg"
-        name="editMessageComposerArea"
-        autofocus
-        @keydown.enter="preventDefault"
-        @keypress.enter="preventDefault"
-        @keyup.enter="saveEditMessage" />
-      <div class="uiAction uiActionBorder">
-        <div class="btn btn-primary" @click="saveEditMessage(false)">{{ $t('exoplatform.chat.save') }}</div>
-        <div class="btn" @click="closeModal">{{ $t('exoplatform.chat.cancel') }}</div>
-      </div>
-    </exo-chat-modal>
+      :message="messageToEdit"
+      @message-written="messageWritten" 
+      @message-modified="messageModified" />
   </div>
 </template>
 
@@ -403,6 +384,7 @@ export default {
           document.execCommand('selectAll', false, null);
           document.getSelection().collapseToEnd();
         }
+        this.$root.$emit('edit-chat-message', this.messageToEdit);
       });
     },
     saveEditMessage(event) {
