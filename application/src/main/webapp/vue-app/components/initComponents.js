@@ -32,7 +32,6 @@ import ExoChatRoomFormModal from './modal/ExoChatRoomFormModal.vue';
 import ExoDropdownSelect from './ExoDropdownSelect.vue';
 import ExoChatModal from './modal/ExoChatModal.vue';
 import ExoChatDrawer from './modal/ExoChatDrawer.vue';
-import ExoContentEditable from './modal/ExoContentEditable.vue';
 import ExoChatQuickCreateDiscussionDrawer from './modal/ExoChatQuickCreateDiscussionDrawer.vue';
 import ExoChatQuickDiscussionParticipantItem from './modal/ExoChatQuickDiscussionParticipantItem.vue';
 
@@ -53,7 +52,6 @@ const components = {
   'exo-chat-message-detail': ExoChatMessageDetail,
   'exo-chat-message-composer': ExoChatMessageComposer,
   'exo-chat-room-notification-modal': ExoChatRoomNotificationModal,
-  'exo-content-editable': ExoContentEditable,
   'exo-chat-drawer': ExoChatDrawer,
   'popover-chat-button': PopoverChatButton,
   'exo-chat-space-settings': spaceChatSetting,

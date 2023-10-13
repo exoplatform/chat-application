@@ -10,5 +10,5 @@ module.exports = merge(webpackCommonConfig, {
   output: {
     path: path.resolve(__dirname, exoServerPath + 'webapps/chat/')
   },
-  devtool: 'inline-source-map'
+  devtool: 'eval-source-map'
 });

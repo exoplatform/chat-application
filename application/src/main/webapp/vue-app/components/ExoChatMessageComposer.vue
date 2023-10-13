@@ -56,7 +56,7 @@
           ref="messageComposerArea"
           contenteditable="true"
           name="messageComposerArea"
-          @keydown.enter="preventDefault"
+          @keydown.enter="checkIfMentioning"
           @keypress.enter="preventDefault"
           @keyup.enter="sendMessageWithKey"
           @keyup.up="editLastMessage"
@@ -124,7 +124,9 @@ export default {
       showEmojiPanel: false,
       participants: [],
       mentionedUsers: [],
-      userAvatar: ''
+      userAvatar: '',
+      chatMessage: {},
+      mentioningInProgress: false
     };
   },
   computed: {
@@ -141,6 +143,11 @@ export default {
   watch: {
     userSettings() {
       this.composerApplications = this.composersApplications;
+    },
+    chatMessage() {
+      if (this.$refs.messageComposerArea) {
+        this.$refs.messageComposerArea.innerHTML = this.chatMessage.msg;
+      }
     }
   },
   updated() {
@@ -165,6 +172,10 @@ export default {
     document.addEventListener(chatConstants.ACTION_MESSAGE_SEND, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
+    this.$root.$on('edit-chat-message', messageToEdit => {
+      this.chatMessage = messageToEdit;
+      this.$refs.messageComposerArea.innerHTML = this.chatMessage.msg;
+    });
   },
   destroyed() {
     document.removeEventListener('keyup', this.closeApps);
@@ -275,6 +286,7 @@ export default {
         newMessage = allMessageContentTab.join('').toString().replaceAll(/<img (alt(="")?)? *src="/g,`<img alt="${this.$t('exoplatform.chat.team.msg.img.alt')}" src="`);
       }
       const message = {
+        msgId: this.chatMessage.msgId,
         message: newMessage.trim().replace(/(&nbsp;|<br>|<br \/>)$/g, ''),
         room: this.contact.room,
         clientId: new Date().getTime().toString(),
@@ -286,7 +298,7 @@ export default {
       if (!this.miniChat) {
         // shortcuts for specific applications actions
         this.composerApplications.forEach(application => {
-          if (application.shortcutMatches && application.shortcutMatches(newMessage)) {
+          if (application?.shortcutMatches && application?.shortcutMatches(newMessage)) {
             if (application.shortcutCallback) {
               found = true;
               application.shortcutCallback(chatServices, $, newMessage, this.contact);
@@ -303,7 +315,11 @@ export default {
         });
       }
       if (!found) {
-        this.$emit('message-written', message);
+        if (message.msgId) {
+          this.$emit('message-modified', message);
+        } else {
+          this.$emit('message-written', message);
+        }
       }
       chatServices.getReceiversForMessagePushNotif(this.userSettings,this.contact.room,).then(data=>{
         chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,data);
@@ -311,13 +327,16 @@ export default {
       this.$refs.messageComposerArea.innerHTML = '';
     },
     sendMessageWithKey(event) {
-      if (event && event.keyCode === chatConstants.ENTER_CODE_KEY) {
+      if (event && event.keyCode === chatConstants.ENTER_CODE_KEY && !this.mentioningInProgress) {
         if (event.ctrlKey || event.altKey || event.shiftKey) {
           $(this.$refs.messageComposerArea).insertAtCaret('\n');
         } else {
           this.sendMessage();
         }
       }
+    },
+    checkIfMentioning() {
+      this.mentioningInProgress = this.$refs.messageComposerArea.lastElementChild?.className==='atwho-query' && !this.$refs.messageComposerArea.lastChild.wholeText;
     },
     quoteMessage(e) {
       const quotedMessage = e.detail;
@@ -364,12 +383,12 @@ export default {
       message = $('<div />').html(message).text();
       message = message.replace(/\s\s+/g, ' ');
       message = this.encodeHTMLEntities(message);
-      for (let i = 0; i < this.participants.length; i++) {
-        if (message.includes(`@${this.participants[i].fullname}`) ){
-          this.mentionedUsers.push(this.participants[i].name);
-          const profil = chatServices.getUserProfileLink(this.participants[i].name);
-          const html = `<a href='${profil}' target='_blank'>@${this.participants[i].fullname}</a>`;
-          message = message.replace(`@${this.participants[i].fullname}`, html);
+      for (const element of this.participants) {
+        if (message.includes(`@${element.fullname}`) ){
+          this.mentionedUsers.push(element.name);
+          const profil = chatServices.getUserProfileLink(element.name);
+          const html = `<a href='${profil}' target='_blank'>@${element.fullname}</a>`;
+          message = message.replaceAll(`@${element.fullname}`, html);
         }
       }
       chatServices.sendMentionNotification(this.contact.room, this.contact.fullName, this.mentionedUsers);
