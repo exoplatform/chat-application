@@ -2,6 +2,7 @@ package org.exoplatform.addons.chat.notification.plugin;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.addons.chat.model.MentionModel;
+import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.commons.api.notification.plugin.BaseNotificationPlugin;
@@ -44,6 +45,8 @@ public class ChatNotificationPlugin extends BaseNotificationPlugin {
             notification.with("sender", String.valueOf(mention.getSender()));
             notification.with("senderFullName", String.valueOf(mention.getSenderFullName()));
             notification.with("roomName", String.valueOf(mention.getRoomName()));
+            notification.with("chatUrl", getRoomURL(mention.getRoomId()));
+            notification.with("avatar", ChatService.USER_AVATAR_URL.replace("{}", mention.getSender()));
             return notification;
         }
     }
