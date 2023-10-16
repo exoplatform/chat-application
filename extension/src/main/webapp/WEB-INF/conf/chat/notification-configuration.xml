@@ -63,6 +63,9 @@
                         <field name="groupId">
                             <string>chat</string>
                         </field>
+                        <field name="mutable">
+                            <boolean>false</boolean>
+                        </field>
                         <field name="bundlePath">
                             <string>locale.portlet.chat.Resource</string>
                         </field>
@@ -110,17 +113,6 @@
 
     <external-component-plugins>
         <target-component>org.exoplatform.commons.api.notification.channel.ChannelManager</target-component>
-        <component-plugin>
-            <name>web.channel.chat.template</name>
-            <set-method>registerTemplateProvider</set-method>
-            <type>org.exoplatform.addons.chat.notification.provider.WebTemplateProvider</type>
-            <init-params>
-                <value-param>
-                    <name>channel-id</name>
-                    <value>WEB_CHANNEL</value>
-                </value-param>
-            </init-params>
-        </component-plugin>
         <component-plugin>
             <name>push.channel.chat.template</name>
             <set-method>registerTemplateProvider</set-method>
