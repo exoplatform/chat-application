@@ -261,10 +261,11 @@ public class UserRestService implements ResourceContainer {
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, user);
     JSONObject userStatus = new JSONObject();
-    userStatus.put("isDeleted", userIdentity.isDeleted());
-    userStatus.put("isEnabled", userIdentity.isEnable());
-    userStatus.put("isExternal", userIdentity.getProfile() != null && userIdentity.getProfile().getProperty("external").equals("true") ? "true" : "false");
-
+    userStatus.put("isDeleted", userIdentity == null || userIdentity.isDeleted());
+    userStatus.put("isEnabled", userIdentity != null && userIdentity.isEnable());
+    if(userIdentity != null ) {
+      userStatus.put("isExternal", userIdentity.getProfile() != null && userIdentity.getProfile().getProperty("external").equals("true") ? "true" : "false");
+    }
     return Response.ok(userStatus, MediaType.APPLICATION_JSON).build();
   }
 
