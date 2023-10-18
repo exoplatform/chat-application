@@ -19,6 +19,7 @@ package org.exoplatform.addons.chat.notification.plugin;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.addons.chat.model.MessageReceivedModel;
+import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.commons.api.notification.plugin.BaseNotificationPlugin;
@@ -56,12 +57,15 @@ public class ChatMessageNotificationPlugin extends BaseNotificationPlugin{
 	            return null;
 	        } else {
 	        	notification.with("isGroupeChat",String.valueOf(messageModel.getReceivers().size()>1));
-	            notification.with("roomId", String.valueOf(messageModel.getRoomId()));
-	            notification.with("sender", String.valueOf(messageModel.getSender()));
-	            notification.with("senderFullName", String.valueOf(messageModel.getSenderFullName()));
-	            notification.with("roomName", String.valueOf(messageModel.getRoomName()));
-	            notification.with("message",String.valueOf(messageModel.getMessage()));
-	            return notification;
+						notification.with("roomId", String.valueOf(messageModel.getRoomId()));
+						notification.with("sender", String.valueOf(messageModel.getSender()));
+						notification.with("senderFullName", String.valueOf(messageModel.getSenderFullName()));
+						notification.with("roomName", String.valueOf(messageModel.getRoomName()));
+						notification.with("message",String.valueOf(messageModel.getMessage()));
+						notification.with("chatUrl", getRoomURL(messageModel.getRoomId()));
+						notification.with("avatar", ChatService.USER_AVATAR_URL.replace("{}", messageModel.getSender()));
+
+				    return notification;
 	        }
 	        
 	}
