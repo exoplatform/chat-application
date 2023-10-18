@@ -175,6 +175,7 @@ export default {
     this.$root.$on('edit-chat-message', messageToEdit => {
       this.chatMessage = messageToEdit;
       this.$refs.messageComposerArea.innerHTML = this.chatMessage.msg;
+      this.putFocusOnComposer();
     });
   },
   destroyed() {
@@ -325,6 +326,8 @@ export default {
         chatServices.sendMessageReceivedNotification(this.contact.room, this.contact.fullName,message.message,data);
       });
       this.$refs.messageComposerArea.innerHTML = '';
+      this.chatMessage = { msgId: '', msg: '' };
+      this.mentioningInProgress = false;
     },
     sendMessageWithKey(event) {
       if (event && event.keyCode === chatConstants.ENTER_CODE_KEY && !this.mentioningInProgress) {
@@ -336,7 +339,7 @@ export default {
       }
     },
     checkIfMentioning() {
-      this.mentioningInProgress = this.$refs.messageComposerArea.lastElementChild?.className==='atwho-query' && !this.$refs.messageComposerArea.lastChild.wholeText;
+      this.mentioningInProgress = this.$refs.messageComposerArea.lastElementChild?.className === 'atwho-query' && !this.$refs.messageComposerArea.lastChild.wholeText;
     },
     quoteMessage(e) {
       const quotedMessage = e.detail;
@@ -364,6 +367,7 @@ export default {
 
       if (!newMessage || !newMessage.trim().length) {
         this.$refs.messageComposerArea.innerHTML = '';
+        this.putFocusOnComposer();
         document.dispatchEvent(new CustomEvent(chatConstants.ACTION_MESSAGE_EDIT_LAST));
       }
     },
