@@ -36,7 +36,7 @@
 
     <!-- TODO check dependencies from parent pom -->
     <commons-lang3.version>3.2</commons-lang3.version>
-    <de.flapdoodle.embed.mongo.version>4.6.3</de.flapdoodle.embed.mongo.version>
+    <de.flapdoodle.embed.mongo.version>4.9.2</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.22</commons-compress.version>
     <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
     <mongodb-java-driver.version>4.9.1</mongodb-java-driver.version>

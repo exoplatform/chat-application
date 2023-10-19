@@ -151,7 +151,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>@{argLine} --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dde.flapdoodle.os.override=Linux|X86_64|Ubuntu|Ubuntu_20_04 -Dchat.embeddedMongoDBVersion=6.0</argLine>
+          <argLine>@{argLine} --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dchat.embeddedMongoDBVersion=6.0</argLine>
         </configuration>
       </plugin>
 
