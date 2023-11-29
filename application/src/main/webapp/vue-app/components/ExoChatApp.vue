@@ -149,6 +149,8 @@ export default {
       composerApplications: [],
       roomActions: [],
       unresolvedRequests: 0,
+      failingRequests: 1,
+      refreshContactsInterval: 0
     };
   },
   computed: {
@@ -214,9 +216,9 @@ export default {
       this.setStatus(this.userSettings.status);
       const thiss = this;
       if (this.userSettings.offlineDelay) {
-        setInterval(
+        this.refreshContactsInterval = setInterval(
           function() {thiss.refreshContacts(true);},
-          this.userSettings.offlineDelay);
+          this.userSettings.offlineDelay * this.failingRequests);
       }
     },
     initChatRooms(chatRoomsData) {
@@ -268,10 +270,8 @@ export default {
       });
     },
     userLoggedout() {
-      if (!chatWebSocket.isConnected()) {
-        this.changeUserStatusToOffline();
-        this.loggedout = true;
-      }
+      this.changeUserStatusToOffline();
+      this.loggedout = true;
     },
     roomUpdated(e) {
       const updatedContact = e.detail && e.detail.data ? e.detail.data : null;
@@ -361,6 +361,7 @@ export default {
         const termFilter = chatWebStorage.getStoredParam(chatConstants.STORED_PARAM_TERM_FILTER, chatConstants.TERM_FILTER_DEFAULT);
         chatServices.getOnlineUsers().then(users => {
           chatServices.getUserChatRooms(this.userSettings, users, termFilter, typeFilter).then(chatRoomsData => {
+            this.failingRequests = 1;
             this.addRooms(chatRoomsData.rooms);
             if (!keepSelectedContact && this.selectedContact) {
               const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user);
@@ -371,13 +372,20 @@ export default {
               }
             }
           });
+        }).catch(() => {
+          this.failingRequests++;
+          clearInterval(this.refreshContactsInterval);
+          const cloneOfThis = this;
+          this.refreshContactsInterval = setInterval(
+            function () { cloneOfThis.refreshContacts(true); },
+            cloneOfThis.userSettings.offlineDelay * cloneOfThis.failingRequests);
         }).finally(() => {
           this.unresolvedRequests--;
         });
       }
     },
     changeUserStatusToOffline() {
-      if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {
+      if (this?.userSettings?.status && !this.userSettings.originalStatus) {
         this.userSettings.originalStatus = this.userSettings.status;
       }
       eXo.chat.isOnline = false;
@@ -396,7 +404,7 @@ export default {
     openRoom(e) {
       const roomName = e.detail ? e.detail.name : null;
       const roomType = e.detail ? e.detail.type : null;
-      if (roomName && roomName.trim().length) {
+      if (roomName?.trim().length) {
         chatServices.getRoomId(this.userSettings, roomName, roomType).then(roomId => {
           // if selected room is not present in already loaded rooms then refresh the contact list
           if (!this.contactList.some(contact => contact.room === roomId || contact.user === roomId)) {
