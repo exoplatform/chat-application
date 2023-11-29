@@ -20,11 +20,17 @@ export function getUserStatus(userSettings, user) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getStatus?user=${userSettings.username}&targetUser=${user}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error(`Could not get the status of user ${user} enabled/disabled`);
+    }
+  });
 }
 
 export function setUserStatus(userSettings, status, callback) {
-  if (chatWebSocket && chatWebSocket.isConnected()) {
+  if (chatWebSocket?.isConnected()) {
     chatWebSocket.setStatus(status, () => {
       fetch(`${chatConstants.USER_STATE_API}${userSettings.username}?status=${status}`, {
         credentials: 'include',
@@ -47,7 +53,16 @@ export function getNotReadMessages(userSettings, withDetails) {
   return fetch(`${chatConstants.CHAT_SERVER_API}notification?user=${userSettings.username}&withDetails=${withDetails}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
+      throw new Error('Could not get the unread messages');
+    }
+  });
 }
 
 export function initChatSettings(username, isMiniChat, userSettingsLoadedCallback, chatRoomsLoadedCallback, isChatDrawer) {
@@ -133,12 +148,30 @@ export function setProfileStatus(event) {
 
 export function getUserSettings() {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}settings`, {credentials: 'include'})
-    .then(resp => resp.json());
+    .then((resp) => {
+      if (resp?.ok) {
+        return resp.json();
+      } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
+        throw new Error('Could not get the user settings');
+      }
+    });
 }
 
 export function getOnlineUsers() {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}onlineUsers`, {credentials: 'include'})
-    .then(resp => resp.text());
+    .then((resp) => {
+      if (resp?.ok) {
+        return resp.text();
+      } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
+        throw new Error('Could not get the online users');
+      }
+    });
 }
 
 export function sendMentionNotification(roomId, roomName, mentionedUsers) {
@@ -158,8 +191,15 @@ export function sendMentionNotification(roomId, roomName, mentionedUsers) {
     credentials: 'include',
     method: 'POST',
     body: JSON.stringify(MentionModel)
-  }).then((data) => {
-    return data.json();
+  }).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
+      throw new Error('Could not send mention notifications');
+    }
   });
 }
 
@@ -189,37 +229,70 @@ export function sendMessageReceivedNotification(roomId, roomName, message, recei
 
 export function getUserState(user) {
   return fetch(`${chatConstants.PORTAL}/${chatConstants.PORTAL_REST}${chatConstants.CHAT_API}getUserState?user=${user}`, {credentials: 'include'})
-    .then(resp => resp.json());
+    .then((resp) => {
+      if (resp?.ok) {
+        return resp.json();
+      } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
+        throw new Error('Could not get the user state');
+      }
+    });
 }
 
 export function updateUser(userSettings, targetUser, isDeleted, isEnabled, isExternal) {
   return fetch(`${chatConstants.CHAT_SERVER_API}updateUser?user=${userSettings.username}&targetUser=${targetUser}&isDeleted=${isDeleted}&isEnabled=${isEnabled}&isExternal=${isExternal}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error(`Could not update the user ${targetUser}`);
+    }
+  });
 }
 
 export function setExternal(userSettings, targetUser, isExternal) {
   return fetch(`${chatConstants.CHAT_SERVER_API}setExternal?user=${userSettings.username}&targetUser=${targetUser}&isExternal=${isExternal}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error('Could not set the user as external');
+    }
+  });
 }
 
 export function toggleFavorite(room, user, favorite) {
-  if ((!room || !room.trim().length) && user && user.trim().length) {
+  if ((!room?.trim().length) && user && user.trim().length) {
     return getRoomId(eXo.chat.userSettings, user, 'username').then((roomId) => {
       room = roomId;
       return fetch(`${chatConstants.CHAT_SERVER_API}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}`, {
         headers: {
           'Authorization': `Bearer ${eXo.chat.userSettings.token}`
-        }}).then(resp =>  resp.text());
+        }}).then((resp) => {
+        if (resp?.ok) {
+          return resp.text();
+        } else {
+          throw new Error(`Could not the room ${room} as favorite`);
+        }
+      });
     });
   } else {
     return fetch(`${chatConstants.CHAT_SERVER_API}toggleFavorite?user=${eXo.chat.userSettings.username}&targetUser=${room}&favorite=${favorite}`, {
       headers: {
         'Authorization': `Bearer ${eXo.chat.userSettings.token}`
-      }}).then(resp =>  resp.text());
+      }}).then((resp) => {
+      if (resp?.ok) {
+        return resp.text();
+      } else {
+        throw new Error('Could not get the space avatar');
+      }
+    });
   }
 }
 
@@ -227,7 +300,13 @@ export function getReceiversForMessagePushNotif(userSettings,roomId){
   return fetch(`${chatConstants.CHAT_SERVER_API}filterOutSilentUsers?roomId=${roomId}&user=${userSettings.username}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Could not get the list of users to who it will send the push notification');
+    }
+  });
 }
 export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   if (!limit) {
@@ -239,7 +318,13 @@ export function getChatRooms(userSettings, onlineUsers, filter, limit) {
   return fetch(`${chatConstants.CHAT_SERVER_API}whoIsOnline?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&limit=${limit}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not get the chat rooms of user ${userSettings.username}`);
+    }
+  });
 }
 
 export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, offset, limit) {
@@ -258,7 +343,13 @@ export function getUserChatRooms(userSettings, onlineUsers, filter, roomType, of
   return fetch(`${chatConstants.CHAT_SERVER_API}userRooms?user=${userSettings.username}&onlineUsers=${onlineUsers}&filter=${filter}&offset=${offset}&limit=${limit}&roomType=${roomType}&timestamp=${new Date().getTime()}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not get the chat rooms of user ${userSettings.username}`);
+    }
+  });
 }
 
 export function getRoomParticipants(userSettings, room, onlineUsers, limit, onlineUsersOnly) {
@@ -273,35 +364,65 @@ export function getRoomParticipants(userSettings, room, onlineUsers, limit, onli
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&onlineUsers=${onlineUsers}&limit=${limit}&onlineOnly=${onlineUsersOnly}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not get the room participants of ${room}`);
+    }
+  });
 }
 
 export function getRoomParticipantsCount(userSettings, room) {
   return fetch(`${chatConstants.CHAT_SERVER_API}usersCount?user=${userSettings.username}&room=${room.room}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Could not get the count of room participants');
+    }
+  });
 }
 
 export function getUsersToMention(userSettings, room, filter) {
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&room=${room.room}&filter=${filter}&limit=10`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error(`Could not get the users to mention of the room ${room}`);
+    }
+  });
 }
 
 export function getRoomId(userSettings, targetUser, fieldName) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getRoom?targetUser=${targetUser}&user=${userSettings.username}&type=${fieldName}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error('Could not get room id');
+    }
+  });
 }
 
 export function getRoomDetail(userSettings, room) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getRoom?targetUser=${room}&user=${userSettings.username}&withDetail=true&type=room-id`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not get details of room ${room}`);
+    }
+  });
 }
 
 export function getRoomMessages(userSettings, contact, toTimestamp, limit) {
@@ -314,14 +435,26 @@ export function getRoomMessages(userSettings, contact, toTimestamp, limit) {
   return fetch(`${chatConstants.CHAT_SERVER_API}read?user=${userSettings.username}&room=${contact.room}&toTimestamp=${toTimestamp}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not get the messages of the room ${contact.room}`);
+    }
+  });
 }
 
 export function setRoomNotificationTrigger(userSettings, room, notifConditionType, notifCondition, time) {
   return fetch(`${chatConstants.CHAT_SERVER_API}setRoomNotificationTrigger?user=${userSettings.username}&room=${room}&notifConditionType=${notifConditionType}&notifCondition=${notifCondition}&time=${time}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not set the notification trigger for the room ${room}`);
+    }
+  });
 }
 
 export function setUserNotificationPreferences(userSettings, preferredNotifications, preferredNotificationTriggers) {
@@ -336,21 +469,39 @@ export function setUserNotificationPreferences(userSettings, preferredNotificati
   return fetch(`${chatConstants.CHAT_SERVER_API}setNotificationSettings?user=${userSettings.username}${preferredNotificationParam}${preferredNotificationTriggerParam}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not set the preferences of the user ${userSettings.username}`);
+    }
+  });
 }
 
 export function setUserPreferredNotification(userSettings, notifManner) {
   return fetch(`${chatConstants.CHAT_SERVER_API}setPreferredNotification?user=${userSettings.username}&notifManner=${notifManner}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error(`Could not set the preferred manner of notification for ${userSettings.username}`);
+    }
+  });
 }
 
 export function getUserNotificationSettings(userSettings) {
   return fetch(`${chatConstants.CHAT_SERVER_API}getUserDesktopNotificationSettings?user=${userSettings.username}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Could not get the notification settings');
+    }
+  });
 }
 
 export function loadNotificationSettings(settings) {
@@ -393,7 +544,13 @@ export function getChatUsers(userSettings, filter, limit) {
   return fetch(`${chatConstants.CHAT_SERVER_API}users?user=${userSettings.username}&filter=${filter}&limit=${limit}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.json());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Could not get the chat users');
+    }
+  });
 }
 
 export function saveRoom(userSettings, roomName, users, room) {
@@ -437,8 +594,13 @@ export function getUserInfo(userName) {
     credentials: 'include',
     method: 'GET',
   }).then((resp) => {
-    if (resp && resp.ok) {
+    if (resp?.ok) {
       return resp.json();
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
+      throw new Error('Could not get the user information');
     }
   });
 }
@@ -452,10 +614,12 @@ export function getRoomParticipantsToSuggest(usersList) {
     method: 'POST',
     body: JSON.stringify(usersList),
   }).then((resp) => {
-    if (resp && resp.ok) {
+    if (resp?.ok) {
       return resp.json();
-    }
-    else {
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading user list');
     }
   });
@@ -470,10 +634,12 @@ export function getModalParticipantsToSuggest(usersList) {
     method: 'POST',
     body: JSON.stringify(usersList),
   }).then((resp) => {
-    if (resp && resp.ok) {
+    if (resp?.ok) {
       return resp.json();
-    }
-    else {
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading user list');
     }
   });
@@ -496,10 +662,12 @@ export function getSpaceByPrettyName(prettyName) {
     credentials: 'include',
     method: 'GET',
   }).then((resp) => {
-    if (resp && resp.ok) {
+    if (resp?.ok) {
       return resp.json();
-    }
-    else {
+    } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading space');
     }
   });
@@ -520,7 +688,13 @@ export function sendMeetingNotes(userSettings, room, fromTimestamp, toTimestamp)
     },
     method: 'post',
     body: decodeURI($.param(data))
-  }).then(resp =>  resp.text());
+  }).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error('Could not save meeting notes');
+    }
+  });
 }
 
 export function getBaseURL() {
@@ -566,7 +740,7 @@ export function updateRoomEnabled(userSettings, spaceId, enabled) {
     enabled: enabled,
   };
 
-  return fetch('/chatServer/updateRoomEnabled', {
+  return fetch(`${chatConstants.CHAT_SERVER_API}updateRoomEnabled`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -577,8 +751,14 @@ export function updateRoomEnabled(userSettings, spaceId, enabled) {
 }
 
 export function isRoomEnabled(userSettings, spaceId) {
-  return fetch(`/chatServer/isRoomEnabled?user=${userSettings.username}&spaceId=${spaceId}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}isRoomEnabled?user=${userSettings.username}&spaceId=${spaceId}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
-    }}).then(resp =>  resp.text());
+    }}).then((resp) => {
+    if (resp?.ok) {
+      return resp.text();
+    } else {
+      throw new Error('Could not get the status of the room enabled/disabled');
+    }
+  });
 }
