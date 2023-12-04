@@ -3,7 +3,7 @@
     <template v-if="displayed">
       <v-card
         id="chatSpaceSetting"
-        class="border-radius"
+        class="card-border-radius"
         flat
         v-if="displayed">
         <v-list>
