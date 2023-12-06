@@ -57,6 +57,9 @@ export function getNotReadMessages(userSettings, withDetails) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error('Could not get the unread messages');
     }
   });
@@ -149,6 +152,9 @@ export function getUserSettings() {
       if (resp?.ok) {
         return resp.json();
       } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
         throw new Error('Could not get the user settings');
       }
     });
@@ -160,6 +166,9 @@ export function getOnlineUsers() {
       if (resp?.ok) {
         return resp.text();
       } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
         throw new Error('Could not get the online users');
       }
     });
@@ -186,6 +195,9 @@ export function sendMentionNotification(roomId, roomName, mentionedUsers) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error('Could not send mention notifications');
     }
   });
@@ -221,6 +233,9 @@ export function getUserState(user) {
       if (resp?.ok) {
         return resp.json();
       } else {
+        if (resp.status === 403) {
+          document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+        }
         throw new Error('Could not get the user state');
       }
     });
@@ -582,6 +597,9 @@ export function getUserInfo(userName) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error('Could not get the user information');
     }
   });
@@ -599,6 +617,9 @@ export function getRoomParticipantsToSuggest(usersList) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading user list');
     }
   });
@@ -616,6 +637,9 @@ export function getModalParticipantsToSuggest(usersList) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading user list');
     }
   });
@@ -641,6 +665,9 @@ export function getSpaceByPrettyName(prettyName) {
     if (resp?.ok) {
       return resp.json();
     } else {
+      if (resp.status === 403) {
+        document.dispatchEvent(new CustomEvent(chatConstants.EVENT_LOGGED_OUT));
+      }
       throw new Error ('Error when loading space');
     }
   });
@@ -713,7 +740,7 @@ export function updateRoomEnabled(userSettings, spaceId, enabled) {
     enabled: enabled,
   };
 
-  return fetch('/chatServer/updateRoomEnabled', {
+  return fetch(`${chatConstants.CHAT_SERVER_API}updateRoomEnabled`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`,
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -724,7 +751,7 @@ export function updateRoomEnabled(userSettings, spaceId, enabled) {
 }
 
 export function isRoomEnabled(userSettings, spaceId) {
-  return fetch(`/chatServer/isRoomEnabled?user=${userSettings.username}&spaceId=${spaceId}`, {
+  return fetch(`${chatConstants.CHAT_SERVER_API}isRoomEnabled?user=${userSettings.username}&spaceId=${spaceId}`, {
     headers: {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then((resp) => {
