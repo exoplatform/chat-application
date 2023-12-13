@@ -392,7 +392,7 @@ export function getUsersToMention(userSettings, room, filter) {
       'Authorization': `Bearer ${userSettings.token}`
     }}).then((resp) => {
     if (resp?.ok) {
-      return resp.text();
+      return resp.json();
     } else {
       throw new Error(`Could not get the users to mention of the room ${room}`);
     }
