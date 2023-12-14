@@ -16,28 +16,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.exoplatform.chat.server;
 
 import java.io.IOException;
-import java.util.*;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.ApplicationScoped;
-
-import juzu.Resource;
-import juzu.Response;
-import juzu.Route;
-import juzu.impl.common.Tools;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.RealTimeMessageBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.model.UserBean;
+import org.exoplatform.chat.services.ChatException;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationService;
 import org.exoplatform.chat.services.RealTimeMessageService;
@@ -46,52 +44,161 @@ import org.exoplatform.chat.services.UserService;
 import org.exoplatform.chat.utils.ChatUtils;
 import org.exoplatform.chat.utils.PropertyManager;
 
-@ApplicationScoped
-public class ChatTools
-{
-  private static final Logger LOG = Logger.getLogger("ChatTools");
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-  UserService userService;
+abstract class ChatTools extends HttpServlet {
 
-  TokenService tokenService;
+  protected static final String UNIQUE_SESSION_PARAM             = "uniqueSession";
 
-  NotificationService notificationService;
+  protected static final String SESSION_ID_PARAM                 = "sessionId";
 
-  RealTimeMessageService realTimeMessageService;
+  protected static final String PASSPHRASE_DOESN_T_MATCH_MESSAGE = "{ \"message\": \"passphrase doesn't match\"}";
 
-  public ChatTools()
-  {
+  protected static final String PASSPHRASE_PARAM                 = "passphrase";
+
+  protected static final String USERNAME_PARAM                   = "username";
+
+  protected static final String MIME_TYPE_JSON                   = "application/json";
+
+  protected static final String MIME_TYPE_TEXT                   = "text/plain";
+
+  protected static final String MESSAGES_PARAM                   = "messages";
+
+  protected static final String UPDATED_MESSAGE                  = "Updated!";
+
+  protected static final String ONLINE_ONLY_PARAM                = "onlineOnly";
+
+  protected static final String STATUS_PARAM                     = "status";
+
+  protected static final String DATA_PARAM                       = "data";
+
+  protected static final String WITH_DETAILS_PARAM               = "withDetails";
+
+  protected static final String EVENT_PARAM                      = "event";
+
+  protected static final String ENABLED_PARAM                    = "enabled";
+
+  protected static final String SPACE_ID_PARAM                   = "spaceId";
+
+  protected static final String START_TIME_PARAM                 = "startTime";
+
+  protected static final String START_PARAM                      = "start";
+
+  protected static final String USERS_PARAM                      = "users";
+
+  protected static final String TEAM_NAME_PARAM                  = "teamName";
+
+  protected static final String TYPE_PARAM                       = "type";
+
+  protected static final String WITH_DETAIL_PARAM                = "withDetail";
+
+  protected static final String TIME_PARAM                       = "time";
+
+  protected static final String NOTIF_CONDITION_TYPE_PARAM       = "notifConditionType";
+
+  protected static final String NOTIF_CONDITION_PARAM            = "notifCondition";
+
+  protected static final String NOTIF_MANNER_PARAM               = "notifManner";
+
+  protected static final String FAVORITE_PARAM                   = "favorite";
+
+  protected static final String MESSAGE_ID_PARAM                 = "messageId";
+
+  protected static final String PORTAL_URI_PARAM                 = "portalURI";
+
+  protected static final String IS_TEXT_ONLY_PARAM               = "isTextOnly";
+
+  protected static final String TO_TIMESTAMP_PARAM               = "toTimestamp";
+
+  protected static final String FROM_TIMESTAMP_PARAM             = "fromTimestamp";
+
+  protected static final String OPTIONS_PARAM                    = "options";
+
+  protected static final String IS_SYSTEM_PARAM                  = "isSystem";
+
+  protected static final String ROOM_PARAM                       = "room";
+
+  protected static final String MESSAGE_PARAM                    = "message";
+
+  protected static final String SENDER_PARAM                     = "sender";
+
+  protected static final String IS_EXTERNAL_PARAM                = "isExternal";
+
+  protected static final String IS_ENABLED_PARAM                 = "isEnabled";
+
+  protected static final String IS_DELETED_PARAM                 = "isDeleted";
+
+  protected static final String TARGET_USER_PARAM                = "targetUser";
+
+  protected static final String ROOM_TYPE_PARAM                  = "roomType";
+
+  protected static final String LIMIT_PARAM                      = "limit";
+
+  protected static final String OFFSET_PARAM                     = "offset";
+
+  protected static final String FILTER_PARAM                     = "filter";
+
+  protected static final String ONLINE_USERS_PARAM               = "onlineUsers";
+
+  protected static final String USER_PARAM                       = "user";
+
+  protected static final String ROOM_ID                          = "roomId";
+
+  protected static final String TOKEN_PARAM                      = "token";
+
+  private static final long     serialVersionUID                 = 3942640732294577324L;
+
+  private static final Logger   LOG                              = Logger.getLogger("ChatTools");
+
+  ChatService                   chatService;                                                                      // NOSONAR
+
+  UserService                   userService;                                                                      // NOSONAR
+
+  TokenService                  tokenService;                                                                     // NOSONAR
+
+  NotificationService           notificationService;                                                              // NOSONAR
+
+  RealTimeMessageService        realTimeMessageService;                                                           // NOSONAR
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    chatService = GuiceManager.getInstance().getInstance(ChatService.class);
     userService = GuiceManager.getInstance().getInstance(UserService.class);
     tokenService = GuiceManager.getInstance().getInstance(TokenService.class);
     notificationService = GuiceManager.getInstance().getInstance(NotificationService.class);
     realTimeMessageService = GuiceManager.getInstance().getInstance(RealTimeMessageService.class);
   }
 
-  @Resource
-  @Route("/addUser")
-  public Response.Content addUser(String username, String token, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void addUser(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String token = request.getParameter(TOKEN_PARAM);
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     tokenService.addUser(username, token);
-
-    return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @SuppressWarnings("unchecked")
-  @Resource
-  @Route("/logout")
-  public Response.Content logout(String username, String token, String sessionId, String passphrase, String uniqueSession)
-  {
+  protected void logout(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String sessionId = request.getParameter(SESSION_ID_PARAM);
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    String uniqueSession = request.getParameter(UNIQUE_SESSION_PARAM);
     if (!checkPassphrase(passphrase)) {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
-    Map options = new HashMap<>();
-    options.put("sessionId", sessionId);
+    Map<String, Object> options = new HashMap<>();
+    options.put(SESSION_ID_PARAM, sessionId);
 
     // send logout message to all sessions of the given user to check if their
     // session is closed
@@ -104,8 +211,8 @@ public class ChatTools
 
     if (StringUtils.equals(uniqueSession, "true")) {
       // Notify other users about the session logout of user
-      Map<String, Object> data = new HashMap<String, Object>();
-      data.put("status", UserService.STATUS_OFFLINE);
+      Map<String, Object> data = new HashMap<>();
+      data.put(STATUS_PARAM, UserService.STATUS_OFFLINE);
       realTimeMessageBean = new RealTimeMessageBean(RealTimeMessageBean.EventType.USER_STATUS_CHANGED,
                                                     username,
                                                     username,
@@ -113,226 +220,265 @@ public class ChatTools
                                                     data);
       realTimeMessageService.sendMessageToAll(realTimeMessageBean);
     }
-    return Response.ok("OK").withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/setAsAdmin")
-  public Response.Content setAsAdmin(String username, String isAdmin, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void setAsAdmin(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String isAdmin = request.getParameter("isAdmin");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     userService.setAsAdmin(username, "true".equals(isAdmin));
 
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/addUserFullNameAndEmail")
-  public Response.Content addUserFullNameAndEmail(String username, String fullname, String email, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void addUserFullNameAndEmail(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String fullname = request.getParameter("fullname");
+    String email = request.getParameter("email");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
     try {
       userService.addUserEmail(username, email);
-      fullname = (String)ChatUtils.fromString(fullname);
+      fullname = (String) ChatUtils.fromString(fullname);
       userService.addUserFullName(username, fullname);
+      writeTextResponse(response, "OK");
     } catch (Exception e) {
-      LOG.log(Level.SEVERE, "The fullName with value " + fullname +  " of the user " + username + " couldn't be serialized : " + e.getMessage(), e);
+      LOG.log(Level.SEVERE,
+              String.format("The fullName with value %s of the user %s couldn't be serialized : ", fullname, username),
+              e);
+      writeTextResponse(response, e.getMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
-
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
   }
 
-  @Resource
-  @Route("/deleteUser")
-  public Response.Content deleteUser(String username, String passphrase, String dbName)
-  {
+  protected void deleteUser(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
     if (!checkPassphrase(passphrase)) {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
-
     userService.deleteUser(username);
-
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/setEnabledUser")
-  public Response.Content setEnabledUser(String username, String enabled, String passphrase, String dbName)
-  {
+  protected void setEnabledUser(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String enabled = request.getParameter(ENABLED_PARAM);
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
     if (!checkPassphrase(passphrase)) {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     Boolean isEnabled = StringUtils.equals(enabled, "true");
     userService.setEnabledUser(username, isEnabled);
-
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/setExternalUser")
-  public Response.Content setExternalUser(String username, String external, String passphrase, String dbName)
-  {
+  protected void setExternalUser(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String external = request.getParameter("external");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
     if (!checkPassphrase(passphrase)) {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     userService.setExternalUser(username, external);
 
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/setSpaces")
-  public Response.Content setSpaces(String username, String spaces, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void setSpaces(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String spaces = request.getParameter("spaces");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     try {
-      SpaceBeans spaceBeans = (SpaceBeans)ChatUtils.fromString(spaces);
+      SpaceBeans spaceBeans = (SpaceBeans) ChatUtils.fromString(spaces);
       userService.setSpaces(username, spaceBeans.getSpaces());
-    } catch (IOException e) {
-      LOG.warning(e.getMessage());
-    } catch (ClassNotFoundException e) {
+    } catch (IOException | ClassNotFoundException e) {
       LOG.warning(e.getMessage());
     }
 
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/getUserFullName")
-  public Response.Content getUserFullName(String username, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void getUserFullName(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     String fullname = userService.getUserFullName(username);
-
-    return Response.ok(String.valueOf(fullname)).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    writeTextResponse(response, fullname);
   }
 
-  @Resource
-  @Route("/shouldUpdate")
-  public Response.Content shouldUpdate(String user, String passphrase)
-  {
+  protected void shouldUpdate(HttpServletRequest request, HttpServletResponse response) {
+    String user = request.getParameter("user");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
     if (!checkPassphrase(passphrase)) {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     UserBean userBean = userService.getUser(user);
-    Boolean shouldUpdate = userBean.isEnabled() == null || userBean.isDeleted() == null ? true : false;
-
-    return Response.ok(shouldUpdate.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    boolean shouldUpdate = userBean.isEnabled() == null || userBean.isDeleted() == null;
+    writeTextResponse(response, String.valueOf(shouldUpdate));
   }
 
-  @Resource
-  @Route("/updateUnreadTestMessages")
-  public Response.Content updateUnreadTestMessages(String username, String room, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void updateUnreadTestMessages(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String room = request.getParameter("room");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
-    if (username == null)
-    {
-      return Response.notFound("{ \"message\": \"username is null\"}");
+    if (username == null) {
+      writeJsonResponse(response, "{ \"message\": \"username is null\"}", HttpStatus.SC_NOT_FOUND);
+      return;
     }
-
-    if (room == null)
-    {
-      return Response.notFound("{ \"message\": \"room is null\"}");
+    if (room == null) {
+      writeJsonResponse(response, "{ \"message\": \"room is null\"}", HttpStatus.SC_NOT_FOUND);
+      return;
     }
-
-    if (username.startsWith(ChatService.SPACE_PREFIX))
-      return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
-
-    if (!room.equals("ALL"))
+    if (username.startsWith(ChatService.SPACE_PREFIX)) {
+      writeTextResponse(response, "OK");
+      return;
+    }
+    if (!room.equals("ALL")) {
       notificationService.setNotificationsAsRead(username, "chat", "room", room);
-    else
+    } else {
       notificationService.setNotificationsAsRead(username, null, null, null);
-
-    return Response.ok("OK").withMimeType("text/event-stream; charset=UTF-8").withHeader("Cache-Control", "no-cache");
+    }
+    writeTextResponse(response, "OK");
   }
 
-  @Resource
-  @Route("/initDB")
-  public Response.Content initDB(String db, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void initDB(HttpServletRequest request, HttpServletResponse response) {
+    String db = request.getParameter("db");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
-//    if (PropertyManager.PROPERTY_SERVICE_IMPL_MONGO.equals(PropertyManager.getProperty(PropertyManager.PROPERTY_SERVICES_IMPLEMENTATION)))
-    if (db == null)
-    {
-      return Response.notFound("{ \"message\": \"db is null\"}");
+    if (db == null) {
+      writeJsonResponse(response, "{ \"message\": \"db is null\"}", HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     ConnectionManager.getInstance().getDB(db);
 
-    StringBuffer data = new StringBuffer();
+    StringBuilder data = new StringBuilder();
     data.append("{");
-    data.append(" \"message\": \"using db="+db+"\"");
+    data.append(" \"message\": \"using db=" + db + "\"");
     data.append("}");
-
-    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    writeJsonResponse(response, data.toString());
   }
 
-  @Resource
-  @Route("/ensureIndexes")
-  public Response.Content ensureIndexes(String db, String passphrase)
-  {
-    if (!checkPassphrase(passphrase))
-    {
-      return Response.notFound("{ \"message\": \"passphrase doesn't match\"}");
+  protected void ensureIndexes(HttpServletRequest request, HttpServletResponse response) {
+    String db = request.getParameter("db");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
-    if (db == null)
-    {
-      return Response.notFound("{ \"message\": \"db is null\"}");
+    if (db == null) {
+      writeJsonResponse(response, "{ \"message\": \"db is null\"}", HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
-    if (!db.equals(ConnectionManager.getInstance().getDB().getName()))
-    {
-      return Response.notFound("{ \"message\": \"db name doesn't match\"}");
+    if (!db.equals(ConnectionManager.getInstance().getDB().getName())) {
+      writeJsonResponse(response, "{ \"message\": \"db name doesn't match\"}", HttpStatus.SC_NOT_FOUND);
+      return;
     }
 
     ConnectionManager.getInstance().ensureIndexes();
 
-    StringBuffer data = new StringBuffer();
+    StringBuilder data = new StringBuilder();
     data.append("{");
-    data.append(" \"message\": \"indexes created or updated on db="+db+"\"");
+    data.append(" \"message\": \"indexes created or updated on db=" + db + "\"");
     data.append("}");
-
-    return Response.ok(data.toString()).withMimeType("text/event-stream").withCharset(Tools.UTF_8).withHeader("Cache-Control", "no-cache");
+    writeJsonResponse(response, data.toString());
   }
 
+  protected void writeJsonResponse(HttpServletResponse response, String content) {
+    writeJsonResponse(response, content, HttpStatus.SC_OK);
+  }
 
-  private boolean checkPassphrase(String passphrase)
-  {
+  protected void writeJsonResponse(HttpServletResponse response, String content, int status) {
+    writeResponse(response, content, MIME_TYPE_JSON, status);
+  }
+
+  protected void writeTextResponse(HttpServletResponse response, String content) {
+    writeTextResponse(response, content, HttpStatus.SC_OK);
+  }
+
+  protected void writeTextResponse(HttpServletResponse response, String content, int status) {
+    writeResponse(response, content, MIME_TYPE_TEXT, status);
+  }
+
+  protected void writeErrorResponse(HttpServletResponse response, Exception e) {
+    LOG.log(Level.WARNING,
+            "Error processing request",
+            e);
+    writeTextResponse(response, e.getMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
+  }
+
+  protected void writeErrorResponse(HttpServletResponse response, ChatException e) {
+    LOG.log(Level.WARNING,
+            "Error processing request",
+            e);
+    writeTextResponse(response, e.getMessage(), e.getStatus());
+  }
+
+  protected void writeErrorResponse(HttpServletResponse response, String message) {
+    LOG.log(Level.FINE, "Error processing request: {}", message);
+    writeTextResponse(response, message, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+  }
+
+  protected void writeResponse(HttpServletResponse response, String content, String contentType, int status) {
+    try {
+      response.setDateHeader("Last-Modified", System.currentTimeMillis());
+      response.setHeader("Cache-Control", "no-cache");
+      response.setStatus(status);
+      if (StringUtils.isNotBlank(contentType) && StringUtils.isNotBlank(content)) {
+        response.setContentType(contentType);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        OutputStream out = response.getOutputStream();
+        out.write(content.getBytes());
+        out.close();
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Error writing response", e);
+    }
+  }
+
+  private boolean checkPassphrase(String passphrase) {
     boolean checkPP = false;
 
-    if (PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase))
-    {
+    if (PropertyManager.getProperty(PropertyManager.PROPERTY_PASSPHRASE).equals(passphrase)) {
       checkPP = true;
     }
-    if ("".equals(passphrase) || "chat".equals(passphrase))
-    {
+    if ("".equals(passphrase) || "chat".equals(passphrase)) {
       LOG.warning("ChatServer is not secured! Please change 'chatPassPhrase' property in " + PropertyManager.PROPERTIES_PATH);
     }
 

@@ -27,27 +27,6 @@
     <listener-class>org.exoplatform.chat.listener.SchedulerManager</listener-class>
   </listener>
   <servlet>
-    <servlet-name>JuzuServlet</servlet-name>
-    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
-    <init-param>
-      <param-name>juzu.app_name</param-name>
-      <param-value>org.exoplatform.chat.server</param-value>
-    </init-param>
-    <init-param>
-      <param-name>juzu.inject</param-name>
-      <param-value>guice</param-value>
-    </init-param>
-    <init-param>
-      <param-name>juzu.resource_bundle</param-name>
-      <param-value>locale.chat.server.Resource</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>AssetServlet</servlet-name>
-    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet>
     <servlet-name>cometd</servlet-name>
     <servlet-class>org.exoplatform.chat.server.CometdConfigurationServlet</servlet-class>
 
@@ -121,10 +100,6 @@
   <servlet-mapping>
     <servlet-name>JuzuServlet</servlet-name>
     <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AssetServlet</servlet-name>
-    <url-pattern>/assets/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>cometd</servlet-name>

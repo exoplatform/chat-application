@@ -3,8 +3,8 @@ package org.exoplatform.chat.listener;
 import org.exoplatform.chat.services.SchedulerService;
 import org.quartz.SchedulerException;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.util.logging.Logger;
 
 public class SchedulerManager implements ServletContextListener {

@@ -23,7 +23,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
