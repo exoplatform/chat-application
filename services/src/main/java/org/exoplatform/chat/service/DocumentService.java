@@ -1,24 +1,33 @@
 package org.exoplatform.chat.service;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.jcr.Node;
 import javax.jcr.Session;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang.StringUtils;
-
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.services.cms.impl.Utils;
-import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,8 +36,10 @@ import org.json.simple.JSONObject;
 import org.exoplatform.addons.chat.listener.ServerBootstrap;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.cms.BasePath;
+import org.exoplatform.services.cms.impl.Utils;
 import org.exoplatform.services.cms.jcrext.activity.ActivityCommonService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -48,6 +59,8 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.rest.api.RestUtils;
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Path("/chat/api/1.0/file/")
 public class DocumentService implements ResourceContainer {

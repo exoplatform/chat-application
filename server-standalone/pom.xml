@@ -14,10 +14,6 @@
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
     <!-- Application dependencies-->
     <dependency>
       <groupId>org.exoplatform.addons.chat</groupId>
@@ -47,16 +43,6 @@
     <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.commons-exo</groupId>
-      <artifactId>commons-juzu</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
@@ -111,22 +97,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-less</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-portlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-upload</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.inject</groupId>

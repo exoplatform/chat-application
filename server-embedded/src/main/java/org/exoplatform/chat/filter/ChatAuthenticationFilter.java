@@ -24,10 +24,10 @@ import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.services.TokenService;
 
 import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;

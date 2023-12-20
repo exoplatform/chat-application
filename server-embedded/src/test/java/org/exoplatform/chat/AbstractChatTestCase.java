@@ -29,8 +29,7 @@ public class AbstractChatTestCase
   private static RunningMongodProcess runningProcess;
 
   @BeforeClass
-  public static void before() throws IOException
-  {
+  public static void before() {
     PropertyManager.overrideProperty(PropertyManager.PROPERTY_SERVER_TYPE, "embed");
     PropertyManager.overrideProperty(PropertyManager.PROPERTY_SERVERS_HOSTS, "localhost:27777");
     PropertyManager.overrideProperty(PropertyManager.PROPERTY_TOKEN_VALIDITY, "100");
