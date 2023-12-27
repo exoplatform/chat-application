@@ -1,6 +1,6 @@
 package org.exoplatform.addons.chat.notification.plugin;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.addons.chat.model.MentionModel;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.commons.api.notification.NotificationContext;
