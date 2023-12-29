@@ -1,4 +1,9 @@
 <div class="VuetifyApp">
   <div id="chatApplication">
+    <script>
+      require(['SHARED/chatBundle'], function(chatApp) {
+        chatApp.init();
+      });
+    </script>
   </div>
 </div>
