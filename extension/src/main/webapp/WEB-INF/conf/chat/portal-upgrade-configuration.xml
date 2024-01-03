@@ -3,7 +3,7 @@
   <external-component-plugins>
     <target-component>org.exoplatform.commons.upgrade.UpgradeProductService</target-component>
     <component-plugin>
-      <name>ExoChatPageUpgrade</name>
+      <name>ExoChatPageUpgradeV1</name>
       <set-method>addUpgradePlugin</set-method>
       <type>io.meeds.social.upgrade.LayoutUpgradePlugin</type>
       <description>Replaces the old property value with the new property value</description>
