@@ -76,7 +76,7 @@ public class ChatAuthenticationFilterTest {
   }
 
   @Test
-  public void doFilterWithJuzu() throws Exception {
+  public void doFilter() throws Exception {
     // Given
     Mockito.when(request.getRequestURI()).thenReturn("/");
     Mockito.when(request.getContextPath()).thenReturn("/");

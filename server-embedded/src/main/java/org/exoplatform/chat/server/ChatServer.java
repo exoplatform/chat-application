@@ -969,7 +969,7 @@ public class ChatServer extends ChatTools {
           }
           String addTeamUserOptions = "{\"type\":\"type-add-team-user\",\"users\":\"" + sbUsers + "\", " +
               "\"fullname\":\"" + userService.getUserFullName(user) + "\"}";
-          send(response, user, token, StringUtils.EMPTY, room, "true", addTeamUserOptions);
+          send(user, StringUtils.EMPTY, room, "true", addTeamUserOptions);
         }
       }
 
@@ -1353,16 +1353,12 @@ public class ChatServer extends ChatTools {
       return;
     }
 
-    if (message != null) {
-      message = URLDecoder.decode(message, StandardCharsets.UTF_8);
-      options = URLDecoder.decode(options, StandardCharsets.UTF_8);
-      try {
-        chatService.write(null, message, sender, room, isSystem, options);
-      } catch (ChatException e) {
-        writeErrorResponse(response, e);
-      }
+    try {
+      send(sender, message, room, isSystem, options);
+      writeTextResponse(response, "ok");
+    } catch (ChatException e) {
+      writeErrorResponse(response, e);
     }
-    writeTextResponse(response, "ok");
   }
 
   private JSONObject getUserDesktopNotificationSettings(String user) {
@@ -1378,6 +1374,18 @@ public class ChatServer extends ChatTools {
       return ResourceBundle.getBundle("locale.chat.server.Resource", locale, request.getServletContext().getClassLoader());
     } catch (Exception e) {
       return ResourceBundle.getBundle("locale.chat.server.Resource", Locale.ENGLISH, request.getServletContext().getClassLoader());
+    }
+  }
+
+  private void send(String sender,
+                    String message,
+                    String room,
+                    String isSystem,
+                    String options) {
+    if (message != null) {
+      message = URLDecoder.decode(message, StandardCharsets.UTF_8);
+      options = URLDecoder.decode(options, StandardCharsets.UTF_8);
+      chatService.write(null, message, sender, room, isSystem, options);
     }
   }
 

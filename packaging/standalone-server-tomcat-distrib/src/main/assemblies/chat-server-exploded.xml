@@ -88,6 +88,7 @@
       <includes>
         <include>*:*:jar</include>
       </includes>
+      <outputFileNameMapping>${artifact.artifactId}.jar</outputFileNameMapping>
     </dependencySet>
   </dependencySets>
 </assembly>

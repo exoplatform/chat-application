@@ -11,6 +11,7 @@
   <filter>
     <filter-name>ChatAuthenticationFilter</filter-name>
     <filter-class>org.exoplatform.chat.filter.ChatAuthenticationFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>ChatAuthenticationFilter</filter-name>
@@ -97,12 +98,19 @@
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
-  <servlet-mapping>
-    <servlet-name>JuzuServlet</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ChatServer</servlet-name>
+    <servlet-class>org.exoplatform.chat.server.ChatServer</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>cometd</servlet-name>
     <url-pattern>/cometd/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ChatServer</servlet-name>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>
