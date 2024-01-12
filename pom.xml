@@ -13,7 +13,7 @@
   <version>3.6.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Application / Server</name>
-  <description>Chat application and server developed with Juzu and MongoDB</description>
+  <description>Chat application and server developed with MongoDB</description>
   <modules>
     <module>common</module>
     <module>server-embedded</module>
@@ -32,24 +32,15 @@
   <properties>
     <!-- 3rd party libraries versions -->
     <addon.exo.ecms.version>6.6.x-SNAPSHOT</addon.exo.ecms.version>
-  	<org.juzu.version>1.2.0</org.juzu.version>
+
+    <!-- Used to reference the folder name in Tomcat Zip only for standalone mode -->
+    <org.apache.tomcat.version>10.1.17</org.apache.tomcat.version>
 
     <!-- TODO check dependencies from parent pom -->
-    <commons-lang3.version>3.2</commons-lang3.version>
+    <mongodb-java-driver.version>4.11.1</mongodb-java-driver.version>
     <de.flapdoodle.embed.mongo.version>4.9.2</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.22</commons-compress.version>
-    <javax.enterprise.cdi.version>1.0-SP4</javax.enterprise.cdi.version>
-    <mongodb-java-driver.version>4.11.1</mongodb-java-driver.version>
     <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
-    <aopalliance.version>1.0</aopalliance.version>
-    <com.google.json-simple.version>1.1.1</com.google.json-simple.version>
-
-    <!-- The apache tomcat version to bundle -->
-    <org.apache.tomcat.version>9.0.60</org.apache.tomcat.version>
-    <org.slf4j.version>1.7.36</org.slf4j.version>
-    <ch.qas.logback.version>1.2.9</ch.qas.logback.version>
-    <org.codehaus.janino.version>2.6.1</org.codehaus.janino.version>
-
 
     <!-- **************************************** -->
     <!-- Jenkins Settings -->
@@ -61,110 +52,6 @@
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>aopalliance</groupId>
-        <artifactId>aopalliance</artifactId>
-        <version>${aopalliance.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>${com.google.inject.guice.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.googlecode.json-simple</groupId>
-        <artifactId>json-simple</artifactId>
-        <version>${com.google.json-simple.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>de.flapdoodle.embed</groupId>
-        <artifactId>de.flapdoodle.embed.mongo</artifactId>
-        <version>${de.flapdoodle.embed.mongo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.enterprise</groupId>
-        <artifactId>cdi-api</artifactId>
-        <version>${javax.enterprise.cdi.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>${commons-lang3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress</artifactId>
-        <version>${commons-compress.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat</artifactId>
-        <version>${org.apache.tomcat.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-common</artifactId>
-        <version>${project.version}</version>
-        <type>jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>application</artifactId>
-        <version>${project.version}</version>
-        <type>jar</type>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>application</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-extension</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-services</artifactId>
-        <version>${project.version}</version>
-        <type>jar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-server-embedded</artifactId>
-        <version>${project.version}</version>
-        <type>jar</type>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-server-embedded</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-server-embedded</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-        <classifier>embedded</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-server-standalone</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.addons.chat</groupId>
-        <artifactId>chat-standalone-client-packaging</artifactId>
-        <version>${project.version}</version>
-        <type>zip</type>
-      </dependency>
       <!-- Import versions from ecms project -->
       <dependency>
         <groupId>org.exoplatform.ecms</groupId>
@@ -173,71 +60,92 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-core</artifactId>
-        <version>${org.juzu.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-core</artifactId>
-        <version>${org.juzu.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-plugins-less</artifactId>
-        <version>${org.juzu.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-plugins-portlet</artifactId>
-        <version>${org.juzu.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-plugins-upload</artifactId>
-        <version>${org.juzu.version}</version>
-      </dependency>
+
+      <!-- Addon specific third party libraries -->
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
         <version>${mongodb-java-driver.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>${com.google.inject.guice.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <version>${de.flapdoodle.embed.mongo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
+      </dependency>
 
-      <!-- Logging -->
-      <!-- Use SLF4J and not log4j -->
-      <!-- SLF4J API -->
+      <!-- Current project artifacts -->
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${org.slf4j.version}</version>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-common</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <!--logback-->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${ch.qas.logback.version}</version>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>application</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${ch.qas.logback.version}</version>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>application</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>janino</artifactId>
-        <version>${org.codehaus.janino.version}</version>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-extension</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>commons-compiler</artifactId>
-        <version>${org.codehaus.janino.version}</version>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-services</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-server-embedded</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-server-embedded</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-server-embedded</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+        <classifier>embedded</classifier>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-server-standalone</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>chat-standalone-client-packaging</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -56,9 +56,6 @@
     <dependencySet>
       <outputDirectory>${file.separator}</outputDirectory>
       <includes>
-        <include>org.exoplatform.commons-exo:commons-juzu:jar</include>
-        <include>org.juzu:*:jar</include>
-        <include>aopalliance:aopalliance:jar</include>
         <include>com.google.inject:guice:jar</include>
         <include>org.hibernate:hibernate-validator:jar</include>
         <include>org.mozilla:rhino:jar</include>

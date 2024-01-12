@@ -98,12 +98,6 @@
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-notification</artifactId>
     </dependency>
-    <!-- swagger -->
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

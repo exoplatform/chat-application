@@ -11,6 +11,7 @@
   <filter>
     <filter-name>ChatAuthenticationFilter</filter-name>
     <filter-class>org.exoplatform.chat.filter.ChatAuthenticationFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>ChatAuthenticationFilter</filter-name>
