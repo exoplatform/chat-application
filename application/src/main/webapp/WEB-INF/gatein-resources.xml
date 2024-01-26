@@ -90,7 +90,7 @@
             <module>iphoneStyleCheckbox</module>
         </depends>
         <depends>
-            <module>filedrop</module>
+            <module>file_drop</module>
         </depends>
         <depends>
             <module>bts_tooltip</module>
