@@ -21,7 +21,7 @@
             v-exo-tooltip.right="$t('exoplatform.chat.home')"
             v-if="mq !== 'mobile'"
             class="home-button">
-            <a href="/"><i class="uiIconHomeInfo"></i></a>
+            <a href="/" :aria-label="$t('exoplatform.chat.home')"><i class="uiIconHomeInfo"></i></a>
           </div>
         </exo-chat-contact>
         <div v-if="mq === 'mobile'" class="discussion-label">{{ $t('exoplatform.chat.discussion') }}</div>
