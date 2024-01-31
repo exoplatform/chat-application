@@ -9,6 +9,7 @@
         v-if="displayUserInformation && (!message.isEnabledUser || message.isEnabledUser === 'true')"
         :style="`backgroundImage: url(${avatarUrl}`"
         :href="getProfileLink(message.user)"
+        :aria-label="$t('popover.userAvatar.title',{0: attendeeFullname})"
         class="chat-contact-avatar"></a>
       <div
         v-else-if="displayUserInformation"
