@@ -7,6 +7,7 @@
       <a
         v-if="!list && type!=='t' && (isEnabled || isEnabled === null)"
         :href="contactUrl"
+        :aria-label="type === 'u' ? $t('popover.userAvatar.title',{0:escapedName}) : $t('space.avatar.href.title',{0:escapedName})"
         class="chat-contact-link"></a>
       <i v-if="list && type=='u' && (isEnabled || isEnabled === null)" class="uiIconStatus"></i>
     </div>
