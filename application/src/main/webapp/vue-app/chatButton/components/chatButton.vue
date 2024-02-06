@@ -5,7 +5,7 @@
         <v-btn
           id="btnChatButton"
           class="dropdown-toggle"
-          :class="statusClass()"
+          :class="statusClass"
           :title="$t('Notification.chat.button.tooltip')"
           @click="openChatDrawer"
           icon>
@@ -31,6 +31,15 @@ export default {
       totalUnreadMsg: 0,
     };
   },
+  computed: {
+    statusClass() {
+      if (this.userSettings.status === 'invisible') {
+        return 'user-offline';
+      } else {
+        return `user-${this.userSettings.status}`;
+      }
+    },
+  },
   watch: {
     totalUnreadMsg() {
       chatServices.updateTotalUnread(this.totalUnreadMsg);
@@ -41,9 +50,11 @@ export default {
       this.initSettings(userSettings);
     });
     document.addEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.addEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
   },
   destroyed() {
     document.removeEventListener(chatConstants.EVENT_GLOBAL_UNREAD_COUNT_UPDATED, this.totalUnreadMessagesUpdated);
+    document.removeEventListener(chatConstants.EVENT_USER_STATUS_CHANGED, this.userStatusChanged);
   },
   methods: {
     totalUnreadMessagesUpdated(e) {
@@ -74,13 +85,6 @@ export default {
     canShowOnSiteNotif() {
       return desktopNotification.canShowOnSiteNotif();
     },
-    statusClass() {
-      if (this.userSettings.status === 'invisible') {
-        return 'user-offline';
-      } else {
-        return `user-${this.userSettings.status}`;
-      }
-    },
     openChatDrawer(event){
       if (event){
         event.preventDefault();
@@ -88,7 +92,13 @@ export default {
       }
       document.dispatchEvent(new CustomEvent(chatConstants.ACTION_CHAT_OPEN_DRAWER));
 
-    }
+    },
+    userStatusChanged(e) {
+      const changedUser = e.detail;
+      if (this.userSettings.username === changedUser.sender) {
+        this.userSettings.status = changedUser.status ? changedUser.status : changedUser.data ? changedUser.data.status : null;
+      }
+    },
   }
 };
 </script>
