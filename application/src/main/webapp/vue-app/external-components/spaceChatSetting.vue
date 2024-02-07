@@ -9,7 +9,12 @@
         <v-list>
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title class="title text-color">
+              <v-list-item-title class="my-0">
+                <h4 class="font-weight-bold mt-0">
+                  {{ $t('exoplatform.chat.spaceSettings.title') }}
+                </h4>
+              </v-list-item-title >
+              <v-list-item-title class="pt-2">
                 {{ $t('exoplatform.chat.spaceSettings.external.component.title') }}
               </v-list-item-title>
               <v-list-item-subtitle>
@@ -17,7 +22,8 @@
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-switch v-model="spaceChatEnabled" @change="enableDisableChat" />
+              <v-switch v-model="spaceChatEnabled" @change="enableDisableChat" class="pt-5"
+              :aria-label="this.$t(`exoplatform.chat.spaceSettings.switch.label.${this.switchAriaLabel}`)" />
             </v-list-item-action>
           </v-list-item>
         </v-list>
@@ -49,6 +55,11 @@ export default {
       }
     });
     document.addEventListener('showSettingsApps', () => this.displayed = true);
+  },
+  computed: {
+    switchAriaLabel() {
+      return this.spaceChatEnabled && 'disable' || 'enable';
+    },
   },
   methods: {
     enableDisableChat() {
