@@ -31,7 +31,7 @@
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <addon.exo.ecms.version>6.6.x-SNAPSHOT</addon.exo.ecms.version>
+    <addon.exo.ecms.version>6.6.0-20240211</addon.exo.ecms.version>
 
     <!-- Used to reference the folder name in Tomcat Zip only for standalone mode -->
     <org.apache.tomcat.version>10.1.17</org.apache.tomcat.version>
