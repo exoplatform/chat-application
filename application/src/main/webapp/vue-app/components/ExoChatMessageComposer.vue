@@ -265,7 +265,15 @@ export default {
     sendMessage() {
       let newMessage = this.$refs.messageComposerArea.innerHTML;
       if (newMessage.indexOf('@') > -1) {
-        newMessage = this.checkMention(newMessage);
+        const tab = newMessage.split('<br>');
+        newMessage = '';
+        for (const elm of tab) {
+          let element = elm;
+          if (element.indexOf('@') > -1) {
+            element = this.checkMention(element);
+          }
+          newMessage = newMessage.concat(element).concat('<br>');
+        }
       }
       if (!newMessage || !newMessage.trim()) {
         return;
