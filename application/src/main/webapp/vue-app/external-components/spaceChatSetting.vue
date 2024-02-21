@@ -9,11 +9,9 @@
         <v-list>
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title class="my-0">
-                <h4 class="font-weight-bold mt-0">
+              <v-list-item-title class="title text-color">
                   {{ $t('exoplatform.chat.spaceSettings.title') }}
-                </h4>
-              </v-list-item-title >
+              </v-list-item-title>
               <v-list-item-title class="pt-2">
                 {{ $t('exoplatform.chat.spaceSettings.external.component.title') }}
               </v-list-item-title>
