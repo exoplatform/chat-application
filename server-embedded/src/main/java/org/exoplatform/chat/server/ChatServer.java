@@ -276,6 +276,10 @@ public class ChatServer extends ChatTools {
       deleteTeamRoom(req, resp);
       break;
     }
+    case "/updateRoomEnabled": {
+      setRoomEnabled(req, resp);
+      break;
+    }
     default:
       writeTextResponse(resp, null, HttpStatus.SC_NOT_FOUND);
     }
