@@ -96,6 +96,9 @@
             <module>bts_tooltip</module>
         </depends>
         <depends>
+            <module>bts_dropdown</module>
+        </depends>
+        <depends>
             <module>fetchPolyfill</module>
         </depends>
         <depends>
