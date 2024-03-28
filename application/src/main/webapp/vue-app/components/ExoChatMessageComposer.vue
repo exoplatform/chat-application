@@ -173,6 +173,7 @@ export default {
     document.addEventListener(chatConstants.ACTION_MESSAGE_DELETE, this.putFocusOnComposer);
     document.addEventListener(chatConstants.ACTION_MESSAGE_QUOTE, this.quoteMessage);
     this.$root.$on('edit-chat-message', messageToEdit => {
+      messageToEdit.msg = messageToEdit.msg.replaceAll('\n','<br>');
       this.chatMessage = messageToEdit;
       this.$refs.messageComposerArea.innerHTML = this.chatMessage.msg;
       this.putFocusOnComposer();
