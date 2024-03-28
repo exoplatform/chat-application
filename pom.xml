@@ -39,7 +39,7 @@
     <!-- TODO check dependencies from parent pom -->
     <mongodb-java-driver.version>4.11.1</mongodb-java-driver.version>
     <de.flapdoodle.embed.mongo.version>4.9.2</de.flapdoodle.embed.mongo.version>
-    <commons-compress.version>1.22</commons-compress.version>
+    <commons-compress.version>1.26.0</commons-compress.version>
     <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
 
     <!-- **************************************** -->
