@@ -12,7 +12,6 @@ import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.services.RealTimeMessageService;
 import org.exoplatform.chat.services.TokenService;
 import org.exoplatform.chat.utils.PropertyManager;
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.RootContainer;
@@ -223,7 +222,7 @@ public class CometdConfigurationServlet extends AnnotationCometDServlet {
     public Enumeration<String> getInitParameterNames() {
       if (configs == null) {
         List<String> keys = new LinkedList<String>();
-        Properties props = PrivilegedSystemHelper.getProperties();
+        Properties props = System.getProperties();
         int len = PREFIX.length();
 
         for (Object key : props.keySet()) {
