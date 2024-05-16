@@ -428,9 +428,22 @@ export default {
         // cancel paste
         e.preventDefault();
         // get text representation of clipboard
-        this.text = this.encodeHTMLEntities((e.originalEvent || e).clipboardData.getData('text/plain'));
+        const pastedText = document.createTextNode((e.originalEvent || e).clipboardData.getData('text/plain'));
         // insert text manually
-        $(this.$refs.messageComposerArea).insertAtCaret(this.text);
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        if (selection.toString()) {
+          range.deleteContents();
+          range.insertNode(pastedText);
+        } else {
+          range.insertNode(pastedText);
+        }
+        if (pastedText) {
+          range.setStartAfter(pastedText);
+          range.setEndAfter(pastedText);
+        }
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
     },
   }
