@@ -125,7 +125,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>@{argLine} --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dchat.embeddedMongoDBVersion=6.0</argLine>
+          <argLine>@{surefire.argLine} -Dchat.embeddedMongoDBVersion=6.0</argLine>
         </configuration>
       </plugin>
 
