@@ -18,7 +18,9 @@
     <div class="composer-container">
       <div class="composer-box">
         <div v-if="!miniChat" class="composer-action">
-          <div class="action-emoji">
+          <div
+            v-if="mq!=='mobile'"
+            class="action-emoji">
             <i
               v-exo-tooltip.top="$t('exoplatform.chat.emoji.tip')"
               class="uiIconChatSmile"
