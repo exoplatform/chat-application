@@ -4,11 +4,11 @@
   <parent>
     <artifactId>chat-application</artifactId>
     <groupId>org.exoplatform.addons.chat</groupId>
-    <version>3.5.2</version>
+    <version>3.5.2-patched</version>
   </parent>
   <groupId>org.exoplatform.addons.chat</groupId>
   <artifactId>packaging</artifactId>
-  <version>3.5.2</version>
+  <version>3.5.2-patched</version>
   <packaging>pom</packaging>
   <name>eXo Add-on:: Chat Packaging</name>
   <description>Chat application packaging module</description>
