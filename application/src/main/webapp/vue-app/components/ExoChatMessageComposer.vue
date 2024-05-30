@@ -48,6 +48,7 @@
           ref="messageComposerArea"
           name="messageComposerArea"
           type="text"
+          class="text-break"
           autofocus
           @keydown.enter="preventDefault"
           @keypress.enter="preventDefault"
@@ -58,6 +59,7 @@
           ref="messageComposerArea"
           contenteditable="true"
           name="messageComposerArea"
+          class="text-break"
           @keydown.enter="checkIfMentioning"
           @keypress.enter="preventDefault"
           @keyup.enter="sendMessageWithKey"
