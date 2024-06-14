@@ -439,7 +439,7 @@ export function registerExternalExtensions(chatTitle) {
     class: 'fas fa-comments',
     additionalClass: 'mt-1',
     order: 10,
-    enabled: () => true,
+    enabled: (user) => user?.enabled,
     click: (profile) => {
       const chatType = profile.groupId ? 'space-id' : 'username';
       const chatRoomName = profile.prettyName ? profile.id : profile.username;
