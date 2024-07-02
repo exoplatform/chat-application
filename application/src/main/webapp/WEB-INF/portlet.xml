@@ -21,6 +21,10 @@
        <name>preload.resource.rest</name>
        <value><![CDATA[/portal/rest/chat/api/1.0/user/settings]]></value>
      </init-param>
+     <init-param>
+       <name>layout-css-class</name>
+       <value>no-layout-style</value>
+     </init-param>
      <expiration-cache>-1</expiration-cache>
      <cache-scope>PUBLIC</cache-scope>
      <supports>
@@ -49,6 +53,10 @@
        <name>preload.resource.rest</name>
        <value><![CDATA[/portal/rest/chat/api/1.0/user/settings]]></value>
      </init-param>
+     <init-param>
+       <name>layout-css-class</name>
+       <value>no-layout-style</value>
+     </init-param>
      <expiration-cache>-1</expiration-cache>
      <cache-scope>PUBLIC</cache-scope>
      <supports>
@@ -71,6 +79,10 @@
      <init-param>
        <name>preload.resource.bundles</name>
        <value>locale.portlet.chat.Resource</value>
+     </init-param>
+     <init-param>
+       <name>layout-css-class</name>
+       <value>no-layout-style</value>
      </init-param>
      <expiration-cache>-1</expiration-cache>
      <cache-scope>PUBLIC</cache-scope>
