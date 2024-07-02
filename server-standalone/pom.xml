@@ -26,11 +26,11 @@
     </dependency>
 
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.exoplatform.commons</groupId>
+          <groupId>io.meeds.commons</groupId>
           <artifactId>commons-testing</artifactId>
         </exclusion>
         <exclusion>
@@ -53,127 +53,127 @@
     </dependency>
     <!-- Transitive dependencies to exclude from WAR packaging -->
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.common</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.common</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.file-storage</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.file-storage</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.resources</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.resources</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.identity</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.identity</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.pc</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.pc</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.portal</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.portal</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.scripting</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.scripting</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.web.controller</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.web.controller</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.web.security</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.web.security</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.web.server</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.web.server</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.web.api</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.web.api</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.web.resources</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.web.resources</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.management</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.management</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-api</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-component-common</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-component-product</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-search</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.test.core</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.test.core</artifactId>
       <scope>test</scope>
       <!-- Exclude Test artifacts from packaging -->
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.gatein.portal</groupId>
-      <artifactId>exo.portal.component.test.web</artifactId>
+      <groupId>io.meeds.portal</groupId>
+      <artifactId>portal.component.test.web</artifactId>
       <scope>test</scope>
       <!-- Exclude Test artifacts from packaging -->
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.commons</groupId>
+      <groupId>io.meeds.commons</groupId>
       <artifactId>commons-testing</artifactId>
       <scope>test</scope>
       <!-- Exclude Test artifacts from packaging -->
