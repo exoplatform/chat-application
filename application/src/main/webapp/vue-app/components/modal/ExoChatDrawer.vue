@@ -183,7 +183,9 @@ export default {
       chatLink: `/portal/${eXo.env.portal.portalName}/chat`,
       titleActionComponents: miniChatTitleActionComponents,
       isExternal: false,
-      unresolvedRequests: 0
+      unresolvedRequests: 0,
+      failingRequests: 1,
+      refreshContactsInterval: 0
     };
   },
   computed: {
@@ -350,9 +352,7 @@ export default {
       });
     },
     userLoggedout() {
-      if (!chatWebSocket.isConnected()) {
-        this.changeUserStatusToOffline();
-      }
+      this.changeUserStatusToOffline();
     },
     totalUnreadMessagesUpdated(e) {
       const totalUnreadMsg = e.detail ? e.detail.data.totalUnreadMsg : e.totalUnreadMsg;
@@ -414,9 +414,10 @@ export default {
       });
       const thiss = this;
       if (this.userSettings.offlineDelay) {
-        setInterval(
+        clearInterval(this.refreshContactsInterval);
+        this.refreshContactsInterval = setInterval(
           function() {thiss.refreshContacts(true);},
-          this.userSettings.offlineDelay);
+          this.userSettings.offlineDelay * this.failingRequests);
       }
     },
     initChatRooms(chatRoomsData) {
@@ -475,6 +476,7 @@ export default {
         this.unresolvedRequests++;
         chatServices.getOnlineUsers().then(users => {
           chatServices.getUserChatRooms(this.userSettings, users).then(chatRoomsData => {
+            this.failingRequests = 1;
             this.addRooms(chatRoomsData.rooms);
             if (!keepSelectedContact && this.selectedContact) {
               const contactToChange = this.contactList.find(contact => contact.room === this.selectedContact.room || contact.user === this.selectedContact.user || contact.room === this.selectedContact);
@@ -483,6 +485,13 @@ export default {
               }
             }
           });
+        }).catch(() => {
+          this.failingRequests++;
+          clearInterval(this.refreshContactsInterval);
+          const cloneOfThis = this;
+          this.refreshContactsInterval = setInterval(
+            function () { cloneOfThis.refreshContacts(true); },
+            cloneOfThis.userSettings.offlineDelay * cloneOfThis.failingRequests);
         }).finally(() => {
           this.unresolvedRequests--;
         });
@@ -498,7 +507,7 @@ export default {
       });
     },
     changeUserStatusToOffline() {
-      if (this.userSettings && this.userSettings.status && !this.userSettings.originalStatus) {
+      if (this?.userSettings?.status && !this.userSettings.originalStatus) {
         this.userSettings.originalStatus = this.userSettings.status;
       }
       eXo.chat.isOnline = false;
