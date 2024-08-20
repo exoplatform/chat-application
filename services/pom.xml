@@ -98,6 +98,10 @@
       <groupId>io.meeds.social</groupId>
       <artifactId>social-component-notification</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.meeds.pwa</groupId>
+      <artifactId>pwa-service</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
