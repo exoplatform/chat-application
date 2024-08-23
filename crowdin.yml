@@ -52,7 +52,7 @@ files: [
     "escape_quotes" : 0,
   },
   {
-    "source" : "/chat-application/src/main/resources/locale/commons/Commons_en.properties",
+    "source" : "/application/src/main/resources/locale/commons/Commons_en.properties",
 
     "translation" : "%original_path%/%file_name%!_%locale_with_underscore%.%file_extension%",
     "translation_replace" : {
