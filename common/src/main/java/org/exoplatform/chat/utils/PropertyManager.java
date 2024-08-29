@@ -110,6 +110,8 @@ public class PropertyManager {
 
   public static final String PROPERTY_REQUEST_TIMEOUT = "request.timeout";
 
+  public static final String PROPERTY_NOTIFICATION_DAYS_TO_LIVE = "chat.notifications.days.toLive";
+
   public static String getProperty(String key)
   {
     String value = (String)properties().get(key);
