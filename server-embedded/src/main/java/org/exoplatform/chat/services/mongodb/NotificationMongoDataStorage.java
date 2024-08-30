@@ -33,6 +33,7 @@ import org.exoplatform.chat.model.RoomBean;
 import org.exoplatform.chat.services.ChatService;
 import org.exoplatform.chat.services.NotificationDataStorage;
 import org.exoplatform.chat.services.UserService;
+import org.exoplatform.chat.utils.PropertyManager;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.json.JSONException;
@@ -68,7 +69,16 @@ public class NotificationMongoDataStorage implements NotificationDataStorage
 
   public static void cleanupNotifications() {
     MongoCollection<Document> coll = ConnectionManager.getInstance().getDB().getCollection(M_NOTIFICATIONS);
-    Bson query = Filters.lt(TIMESTAMP, System.currentTimeMillis() - 24*60*60*1000);
+    long daysToLive = 30;
+    String daysToLiveProp = PropertyManager.getProperty(PropertyManager.PROPERTY_NOTIFICATION_DAYS_TO_LIVE);
+    if (!StringUtils.isBlank(daysToLiveProp)) {
+      try {
+        daysToLive = Long.parseLong(daysToLiveProp);
+      } catch (NumberFormatException e) {
+        LOG.warn("value set as chat notifications days to live is not a number, the default value will be used");
+      }
+    }
+    Bson query = Filters.lt(TIMESTAMP, System.currentTimeMillis() - 24*60*60*1000*daysToLive);
     coll.deleteMany(query);
   }
 
