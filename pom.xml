@@ -37,7 +37,7 @@
     <org.apache.tomcat.version>10.1.17</org.apache.tomcat.version>
 
     <!-- TODO check dependencies from parent pom -->
-    <mongodb-java-driver.version>4.11.2</mongodb-java-driver.version>
+    <mongodb-java-driver.version>4.11.3</mongodb-java-driver.version>
     <de.flapdoodle.embed.mongo.version>4.16.2</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.26.0</commons-compress.version>
     <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
