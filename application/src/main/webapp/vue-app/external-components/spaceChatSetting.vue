@@ -6,8 +6,8 @@
         class="card-border-radius"
         flat
         v-if="displayed">
-        <v-list>
-          <v-list-item>
+        <v-list class="pa-0">
+          <v-list-item class="pa-0">
             <v-list-item-content>
               <v-list-item-title class="text-title">
                   {{ $t('exoplatform.chat.spaceSettings.title') }}
