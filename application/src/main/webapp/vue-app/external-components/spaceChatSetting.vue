@@ -10,7 +10,7 @@
           <v-list-item class="pa-0">
             <v-list-item-content>
               <v-list-item-title class="text-title">
-                  {{ $t('exoplatform.chat.spaceSettings.title') }}
+                {{ $t('exoplatform.chat.spaceSettings.title') }}
               </v-list-item-title>
               <v-list-item-title class="pt-2">
                 {{ $t('exoplatform.chat.spaceSettings.external.component.title') }}
@@ -20,8 +20,11 @@
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-switch v-model="spaceChatEnabled" @change="enableDisableChat" class="pt-5"
-              :aria-label="this.$t(`exoplatform.chat.spaceSettings.switch.label.${this.switchAriaLabel}`)" />
+              <v-switch
+                v-model="spaceChatEnabled"
+                @change="enableDisableChat"
+                class="pt-5"
+                :aria-label="this.$t(`exoplatform.chat.spaceSettings.switch.label.${this.switchAriaLabel}`)" />
             </v-list-item-action>
           </v-list-item>
         </v-list>

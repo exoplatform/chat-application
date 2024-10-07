@@ -25,7 +25,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         class="chatDrawer"
         body-classes="hide-scroll"
         right
-        attached
         @closed="resetSelectedContact">
         <template v-if="!showSearch" slot="title">
           <div class="leftHeaderDrawer flex-shrink-1 text-truncate">
