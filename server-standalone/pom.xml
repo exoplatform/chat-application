@@ -108,12 +108,6 @@
     </dependency>
     <dependency>
       <groupId>io.meeds.portal</groupId>
-      <artifactId>portal.component.web.server</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.meeds.portal</groupId>
       <artifactId>portal.component.web.api</artifactId>
       <type>test-jar</type>
       <scope>test</scope>

@@ -198,7 +198,7 @@ public class DocumentService implements ResourceContainer {
       return Response.status(Status.NOT_ACCEPTABLE).build();
     }
 
-    Node node = storeFile(uploadResource, remoteUser, targetRoom, targetFullname, usernames);
+    Node node = storeFile(uploadResource, remoteUser, token, targetRoom, targetFullname, usernames);
 
     String workspace = node.getSession().getWorkspace().getName();
     String repository = ((ManageableRepository) node.getSession().getRepository()).getConfiguration().getName();
@@ -241,14 +241,15 @@ public class DocumentService implements ResourceContainer {
 
   private Node storeFile(UploadResource uploadResource,
                          String remoteUser,
-                         String room,
+                         String token,
+                         String roomId,
                          String roomFullName,
                          List<String> usernames) {
     String filename = getFileName(uploadResource);
     String title = filename;
     filename = Text.escapeIllegalJcrChars(Utils.cleanName(Utils.cleanNameWithAccents(filename)));
 
-    boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
+    boolean isPrivateContext = !roomId.startsWith(ChatService.SPACE_PREFIX);
 
     SessionProvider sessionProvider = sessionProviderService_.getSystemSessionProvider(null);
 
@@ -263,7 +264,9 @@ public class DocumentService implements ResourceContainer {
         String workspaceName = currentRepository.getConfiguration().getDefaultWorkspaceName();
         Session session = sessionProvider.getSession(workspaceName, currentRepository);
 
-        Space space = spaceService_.getSpaceByDisplayName(roomFullName);
+        String roomJSONObject = ServerBootstrap.getRoom(remoteUser, token, roomId);
+        org.json.JSONObject room = new org.json.JSONObject(roomJSONObject);
+        Space space = spaceService_.getSpaceByPrettyName(room.get("prettyName").toString());
         String groupPath = nodeHierarchyCreator_.getJcrPath(BasePath.CMS_GROUPS_PATH);
         String spaceParentPath = groupPath + space.getGroupId();
         if (!session.itemExists(spaceParentPath)) {

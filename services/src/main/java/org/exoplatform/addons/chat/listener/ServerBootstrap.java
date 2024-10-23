@@ -56,6 +56,10 @@ public class ServerBootstrap {
     return callServer("users", "user=" + username + "&room=" + room + "&token=" + token);
   }
 
+  public static String getRoom(String username, String token, String room) {
+    return callServer("getRoom", "user=" + username + "&room=" + room + "&targetUser=" + room + "&token=" + token + "&withDetail=true");
+  }
+
   public static String getUserFullName(String username) {
     return callServer("getUserFullName", "username=" + username);
   }
@@ -112,7 +116,7 @@ public class ServerBootstrap {
       SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
       ListAccess<Space> spacesListAccess = spaceService.getAccessibleSpacesWithListAccess(username);
       List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
-      ArrayList<SpaceBean> beans = new ArrayList<SpaceBean>();
+      ArrayList<SpaceBean> beans = new ArrayList<>();
       for (Space space : spaces) {
         SpaceBean spaceBean = new SpaceBean();
         spaceBean.setDisplayName(space.getDisplayName());
