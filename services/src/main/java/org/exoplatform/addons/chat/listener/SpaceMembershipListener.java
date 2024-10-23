@@ -29,14 +29,6 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
   }
 
   @Override
-  public void spaceAccessEdited(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void spaceBannerEdited(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
   public void spaceCreated(SpaceLifeCycleEvent event) {
     Space space = event.getSpace();
     refreshSpaceChatRoom(space);
@@ -49,41 +41,9 @@ public class SpaceMembershipListener extends SpaceListenerPlugin {
   }
 
   @Override
-  public void applicationActivated(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void applicationAdded(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void applicationDeactivated(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void applicationRemoved(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
   public void spaceRenamed(SpaceLifeCycleEvent event) {
     Space space = event.getSpace();
     refreshSpaceChatRoom(space);
-  }
-
-  @Override
-  public void spaceDescriptionEdited(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void spaceAvatarEdited(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void addInvitedUser(SpaceLifeCycleEvent event) {
-  }
-
-  @Override
-  public void addPendingUser(SpaceLifeCycleEvent event) {
   }
 
   private void refreshSpaceChatRoom(Space space) {
