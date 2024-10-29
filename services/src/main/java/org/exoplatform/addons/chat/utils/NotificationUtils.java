@@ -83,7 +83,7 @@ public class NotificationUtils {
             return defaultSite;
         }
         UserPortalConfigService portalConfig = CommonsUtils.getService(UserPortalConfigService.class);
-        defaultSite = portalConfig.getDefaultPortal();
+        defaultSite = portalConfig.getMetaPortal();
         return defaultSite;
     }
 
