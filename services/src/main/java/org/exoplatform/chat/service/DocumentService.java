@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.services.security.ConversationState;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -249,18 +250,18 @@ public class DocumentService implements ResourceContainer {
     filename = Text.escapeIllegalJcrChars(Utils.cleanName(Utils.cleanNameWithAccents(filename)));
 
     boolean isPrivateContext = !room.startsWith(ChatService.SPACE_PREFIX);
-
-    SessionProvider sessionProvider = sessionProviderService_.getSystemSessionProvider(null);
-
     Node node = null;
     try {
+      ManageableRepository currentRepository = repositoryService_.getCurrentRepository();
+      String workspaceName = currentRepository.getConfiguration().getDefaultWorkspaceName();
+      SessionProvider sessionProvider = new SessionProvider(ConversationState.getCurrent());
+      sessionProvider.setCurrentRepository(currentRepository);
+      sessionProvider.setCurrentWorkspace(workspaceName);
       Node homeNode;
       if (isPrivateContext) {
         Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, remoteUser);
         homeNode = userNode.getNode("Private");
       } else {
-        ManageableRepository currentRepository = repositoryService_.getCurrentRepository();
-        String workspaceName = currentRepository.getConfiguration().getDefaultWorkspaceName();
         Session session = sessionProvider.getSession(workspaceName, currentRepository);
 
         Space space = spaceService_.getSpaceByDisplayName(roomFullName);
