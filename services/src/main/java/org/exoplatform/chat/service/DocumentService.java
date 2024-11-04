@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.services.jcr.core.ExtendedNode;
+import org.exoplatform.services.jcr.core.ExtendedSession;
 import org.exoplatform.services.security.ConversationState;
 import org.gatein.common.text.EntityEncoder;
 import org.json.JSONArray;
@@ -254,27 +256,27 @@ public class DocumentService implements ResourceContainer {
     try {
       ManageableRepository currentRepository = repositoryService_.getCurrentRepository();
       String workspaceName = currentRepository.getConfiguration().getDefaultWorkspaceName();
+
       SessionProvider sessionProvider = new SessionProvider(ConversationState.getCurrent());
       sessionProvider.setCurrentRepository(currentRepository);
       sessionProvider.setCurrentWorkspace(workspaceName);
-      Node homeNode;
-      if (isPrivateContext) {
-        Node userNode = nodeHierarchyCreator_.getUserNode(sessionProvider, remoteUser);
-        homeNode = userNode.getNode("Private");
-      } else {
-        Session session = sessionProvider.getSession(workspaceName, currentRepository);
+      Session session = sessionProvider.getSession(workspaceName, currentRepository);
+      Node docNode;
 
+      if (isPrivateContext) {
+        SessionProvider systemSessionProvider = sessionProviderService_.getSystemSessionProvider(null); // Need system session to get the User root node
+        Node userNode = nodeHierarchyCreator_.getUserNode(systemSessionProvider, remoteUser);
+        docNode = userNode.getNode("Private/Documents");
+        docNode = ((ExtendedSession) session).getNodeByIdentifier(((ExtendedNode) docNode).getIdentifier()); // Get the user private documents node using the user session, to use it as creator.
+      } else {
         Space space = spaceService_.getSpaceByDisplayName(roomFullName);
         String groupPath = nodeHierarchyCreator_.getJcrPath(BasePath.CMS_GROUPS_PATH);
-        String spaceParentPath = groupPath + space.getGroupId();
-        if (!session.itemExists(spaceParentPath)) {
-          throw new IllegalStateException("Root node of space '" + spaceParentPath + "' doesn't exist");
+        String spaceDocumentsPath = groupPath + space.getGroupId() + "/Documents";
+        if (!session.itemExists(spaceDocumentsPath)) {
+          throw new IllegalStateException("Documents node of space '" + spaceDocumentsPath + "' doesn't exist");
         }
-        homeNode = (Node) session.getItem(spaceParentPath);
+        docNode = (Node) session.getItem(spaceDocumentsPath);
       }
-
-      Node docNode = homeNode.getNode("Documents");
-
       int suffix = 1;
       while (docNode.hasNode(filename)) {
         filename = filename.contains(".") ? filename.replace(".", "-" + suffix + ".") : filename + "-" + suffix;
