@@ -43,7 +43,7 @@ export default {
       chatServices.getUserSettings().then(userSettings => {
         this.userSettings = userSettings;
         this.$spaceService.isSpaceMember(this.identityId, this.userSettings.username).then(data => {
-          if (data.isMember === 'true') {
+          if (data) {
             chatServices.isRoomEnabled(this.userSettings, this.identityId).then(value => {
               this.spaceChatEnabled = value === 'true';
             });
