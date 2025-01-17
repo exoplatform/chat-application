@@ -69,7 +69,7 @@
     <external-component-plugins>
         <target-component>org.exoplatform.commons.upgrade.UpgradeProductService</target-component>
         <component-plugin  profiles="chat">
-            <name>ChatSpacesAdministratorsUpgradePlugin</name>
+            <name>ChatSpacesAdministratorsUpgradePlugin-1</name>
             <set-method>addUpgradePlugin</set-method>
             <type>org.exoplatform.addons.chat.upgrade.ChatSpacesAdministratorsUpgradePlugin</type>
             <description>Check and fix administrators space room</description>

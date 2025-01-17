@@ -57,6 +57,10 @@ public class ChatSpacesAdministratorsUpgradePlugin extends UpgradeProductPlugin 
       }
     }
 
+    if (!chatServerStarted) {
+      throw new RuntimeException("Unable to join chatServer");
+    }
+
     try {
       ListAccess<Space> allSpaces = spaceService.getAllSpacesByFilter(new SpaceFilter());
       int current = 0;
