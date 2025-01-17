@@ -24,6 +24,7 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.DeleteOneModel;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.apache.commons.lang3.StringUtils;
@@ -462,6 +463,26 @@ public class UserMongoDataStorage implements UserDataStorage {
       doc.append(IS_ENABLED, Boolean.toString(true));
       doc.append(IS_DELETED, Boolean.toString(false));
       usersCollection.insertOne(doc);
+    }
+  }
+
+  @Override
+  public void removeUserFromSpace(String user, SpaceBean space) {
+    String spaceRoomId =ChatUtils.getRoomId(space.getId());
+    MongoCollection<Document> coll = db().getCollection(M_USERS_COLLECTION);
+    BasicDBObject query = new BasicDBObject();
+    query.put(USER, user);
+    MongoCursor<Document> cursor = coll.find(query).cursor();
+    if (cursor.hasNext()) {
+      Document doc = cursor.next();
+      if (doc.containsKey(SPACES)) {
+        List<String> spaces = (List<String>) doc.get(SPACES);
+        if (spaces.contains(spaceRoomId)) {
+          spaces.remove(spaceRoomId);
+          doc.put(SPACES, spaces);
+          coll.replaceOne(query, doc);
+        }
+      }
     }
   }
 

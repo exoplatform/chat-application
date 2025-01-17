@@ -33,6 +33,7 @@ import org.apache.http.HttpStatus;
 import org.exoplatform.chat.listener.ConnectionManager;
 import org.exoplatform.chat.listener.GuiceManager;
 import org.exoplatform.chat.model.RealTimeMessageBean;
+import org.exoplatform.chat.model.SpaceBean;
 import org.exoplatform.chat.model.SpaceBeans;
 import org.exoplatform.chat.model.UserBean;
 import org.exoplatform.chat.services.ChatException;
@@ -316,6 +317,25 @@ abstract class ChatTools extends HttpServlet {
 
     writeTextResponse(response, "OK");
   }
+  protected void removeUserFromSpace(HttpServletRequest request, HttpServletResponse response) {
+    String username = request.getParameter(USERNAME_PARAM);
+    String space = request.getParameter("space");
+    String passphrase = request.getParameter(PASSPHRASE_PARAM);
+    if (!checkPassphrase(passphrase)) {
+      writeJsonResponse(response, PASSPHRASE_DOESN_T_MATCH_MESSAGE, HttpStatus.SC_NOT_FOUND);
+      return;
+    }
+
+    try {
+      SpaceBean spaceBean = (SpaceBean) ChatUtils.fromString(space);
+      userService.removeUserFromSpace(username, spaceBean);
+    } catch (IOException | ClassNotFoundException e) {
+      LOG.warning(e.getMessage());
+    }
+
+    writeTextResponse(response, "OK");
+  }
+
 
   protected void getUserFullName(HttpServletRequest request, HttpServletResponse response) {
     String username = request.getParameter(USERNAME_PARAM);

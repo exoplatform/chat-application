@@ -268,6 +268,10 @@ public class ChatServer extends ChatTools {
       setSpaces(req, resp);
       break;
     }
+    case "/removeUserFromSpace": {
+      removeUserFromSpace(req, resp);
+      break;
+    }
     case "/delete": {
       delete(req, resp);
       break;

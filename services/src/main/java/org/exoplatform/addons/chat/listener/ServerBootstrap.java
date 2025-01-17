@@ -35,6 +35,7 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.space.SpaceFilter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
@@ -56,8 +57,20 @@ public class ServerBootstrap {
     return callServer("users", "user=" + username + "&room=" + room + "&token=" + token);
   }
 
+  public static String getUsersWithLimit(String username, String token, String room, int limit) {
+    return callServer("users", "user=" + username + "&room=" + room + "&token=" + token + "&limit="+limit);
+  }
+
+  public static String getUserCount(String username, String token, String room) {
+    return callServer("usersCount", "user=" + username + "&room=" + room + "&token=" + token);
+  }
+
   public static String getRoom(String username, String token, String room) {
     return callServer("getRoom", "user=" + username + "&room=" + room + "&targetUser=" + room + "&token=" + token + "&withDetail=true");
+  }
+
+  public static String getSpaceRoom(String username, String token, String spaceName) {
+    return callServer("getRoom", "user=" + username + "&targetUser=" + spaceName + "&type=space-id&token=" + token + "&withDetail=true");
   }
 
   public static String getUserFullName(String username) {
@@ -114,7 +127,7 @@ public class ServerBootstrap {
   public static void saveSpaces(String username) {
     try {
       SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
-      ListAccess<Space> spacesListAccess = spaceService.getAccessibleSpacesWithListAccess(username);
+      ListAccess<Space> spacesListAccess = spaceService.getMemberSpacesByFilter(username,new SpaceFilter());
       List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
       ArrayList<SpaceBean> beans = new ArrayList<>();
       for (Space space : spaces) {
@@ -132,6 +145,25 @@ public class ServerBootstrap {
     }
   }
 
+  public static void removeUserFromSpace(String username, String spaceId) {
+    try {
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space space = spaceService.getSpaceById(spaceId);
+      if (space != null) {
+        SpaceBean spaceBean = new SpaceBean();
+        spaceBean.setDisplayName(space.getDisplayName());
+        spaceBean.setGroupId(space.getGroupId());
+        spaceBean.setId(space.getId());
+        spaceBean.setShortName(space.getShortName());
+        spaceBean.setPrettyName(space.getPrettyName());
+        removeUserFromSpace(username, spaceBean);
+
+      }
+    } catch (Exception e) {
+      LOG.warn("Error while removing user from spaces'" + username + "'", e);
+    }
+  }
+
   public static void setSpaces(String username, SpaceBeans beans) {
     String params = "username=" + username;
     String serSpaces = "";
@@ -143,6 +175,19 @@ public class ServerBootstrap {
     }
     params += "&spaces=" + serSpaces;
     postServer("setSpaces", params);
+  }
+
+  public static void removeUserFromSpace(String username, SpaceBean bean) {
+    String params = "username=" + username;
+    String serSpace = "";
+    try {
+      serSpace = ChatUtils.toString(bean);
+      serSpace = URLEncoder.encode(serSpace, "UTF-8");
+    } catch (IOException e) {
+      LOG.error("Error encoding spaces", e);
+    }
+    params += "&space=" + serSpace;
+    postServer("removeUserFromSpace", params);
   }
 
   private static String callServer(String serviceUri, String params) {

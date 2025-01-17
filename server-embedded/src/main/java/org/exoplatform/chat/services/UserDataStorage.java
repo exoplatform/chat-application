@@ -84,6 +84,7 @@ public interface UserDataStorage {
   }
 
   void setSpaces(String user, List<SpaceBean> spaces);
+  void removeUserFromSpace(String user, SpaceBean space);
 
   void addTeamRoom(String user, String teamRoomId);
 
