@@ -88,6 +88,8 @@ public interface UserService
 
   public void setSpaces(String user, List<SpaceBean> spaces);
 
+  public void removeUserFromSpace(String user, SpaceBean space);
+
   public void addTeamRoom(String user, String teamRoomId);
 
   public void addTeamUsers(String teamRoomId, List<String> users);

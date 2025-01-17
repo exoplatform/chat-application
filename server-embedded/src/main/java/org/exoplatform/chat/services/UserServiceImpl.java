@@ -148,6 +148,10 @@ public class UserServiceImpl implements UserService {
     userStorage.setSpaces(user, spaces);
   }
 
+  public void removeUserFromSpace(String user, SpaceBean space) {
+    userStorage.removeUserFromSpace(user, space);
+  }
+
   public void addTeamRoom(String user, String teamRoomId) {
     userStorage.addTeamRoom(user, teamRoomId);
 
