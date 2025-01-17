@@ -45,12 +45,13 @@ public class ChatSpacesAdministratorsUpgradePlugin extends UpgradeProductPlugin 
     int nbTest = 0;
     while (!chatServerStarted && nbTest<100) {
       try {
-        Thread.sleep(500);
+        Thread.sleep(1000);
       } catch (Exception e2) {
         //do nothing
       }
       nbTest++;
       log.debug("Test if chatServer is running ({} times)", nbTest);
+      ServerBootstrap.addUser(this.superUser, this.superUserChatToken);
       String result = ServerBootstrap.getStatus(this.superUser, this.superUserChatToken, this.superUser);
       if (result!=null) {
         chatServerStarted=true;
