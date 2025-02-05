@@ -38,7 +38,7 @@
         </value-param>
         <value-param>
           <name>containerName</name>
-          <value>bottom-end-container</value>
+          <value>body-end-container</value>
         </value-param>
         <object-param>
           <name>ChatNotificationApplication</name>
