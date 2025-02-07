@@ -3,6 +3,11 @@ on:
   push:
     branches: [ stable/3.5.x ]
   pull_request:
+
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sonar-analysis:
     name: Analyse Project with SonarCloud 
