@@ -12,8 +12,8 @@ import org.exoplatform.commons.api.notification.model.PluginKey;
 import org.exoplatform.commons.api.notification.plugin.NotificationPluginUtils;
 import org.exoplatform.commons.api.notification.service.template.TemplateContext;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.TimeConvertUtils;
 import org.exoplatform.portal.config.UserPortalConfigService;
-import org.exoplatform.webui.utils.TimeConvertUtils;
 
 import java.util.Calendar;
 import java.util.List;
