@@ -99,15 +99,6 @@
             <module>bts_dropdown</module>
         </depends>
         <depends>
-            <module>fetchPolyfill</module>
-        </depends>
-        <depends>
-            <module>customEventPolyfill</module>
-        </depends>
-        <depends>
-            <module>iePolyfills</module>
-        </depends>
-        <depends>
             <module>extensionRegistry</module>
         </depends>
         <depends>
