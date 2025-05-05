@@ -1187,7 +1187,7 @@ public class ChatServer extends ChatTools {
     }
 
     boolean showOnlyOnlineUsers = StringUtils.isNotBlank(onlineOnly) && "true".equals(onlineOnly);
-    int limit = StringUtils.isNumeric(limitString) ? Integer.parseInt(limitString) : 20;
+    int limit = StringUtils.isNumeric(limitString) ? Integer.parseInt(limitString) : 0;
     List<String> onlineUserList = StringUtils.isNotBlank(onlineUsers) ? Arrays.asList(onlineUsers.split(",")) : null;
     List<UserBean> users = userService.getUsers(room, onlineUserList, filter, limit, showOnlyOnlineUsers);
     if (StringUtils.isNotBlank(user)) {
