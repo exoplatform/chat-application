@@ -37,7 +37,7 @@
     <org.apache.tomcat.version>10.1.30</org.apache.tomcat.version>
  
     <!-- TODO check dependencies from parent pom -->
-    <de.flapdoodle.embed.mongo.version>4.16.2</de.flapdoodle.embed.mongo.version>
+    <de.flapdoodle.embed.mongo.version>4.33.0</de.flapdoodle.embed.mongo.version>
     <commons-compress.version>1.26.0</commons-compress.version>
     <com.google.inject.guice.version>3.0</com.google.inject.guice.version>
 
