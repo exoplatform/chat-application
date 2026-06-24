@@ -1,6 +1,9 @@
 name: PR Build
 on:
   pull_request:
+    branches:
+      - develop
+      - stable/*
 
 concurrency:
   group: pr-${{ github.ref }}
