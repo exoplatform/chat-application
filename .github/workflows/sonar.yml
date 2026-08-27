@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - feature/maintenance
+      - feature/mips
       - develop
       - stable/*
 
