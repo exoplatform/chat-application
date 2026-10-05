@@ -11,6 +11,8 @@
 @bodyTextColor: @grayDark;
 @chatBackground: #fafdff;
 @grayLight: #999;
+/* Platform icon colour cascade (app > page > container or platform), the chat's own grey as the built-in default */
+@iconColor: ~"var(--appIconColor, var(--allPagesBaseIconColor, #999))";
 @maskColor: rgba(0,0,0,0.3);
 @leftContainerTextColor: #fff;
 @greyColor: #DEE4F2;
@@ -48,7 +50,7 @@
 @sizeIcon24x24: 22px;
 
 // Icon color
-@secondaryIconColor: @grayLight;
+@secondaryIconColor: @iconColor;
 @tertiaryIconColor: #fff;
 @actionIconsSize: 20px;
 
